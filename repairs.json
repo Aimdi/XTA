@@ -15,6 +15,8 @@
     "threads.replies_refetch_doc_id": "28965099446515427",
     "threads.search_refetch_doc_id": "29180318631617452",
     "threads.profile_refetch_doc_id": "29222947497321867",
+    "threads.reposts_refetch_doc_id": "30054019074236536",
+    "threads.feed_refetch_doc_id": "41291939227071792",
     "instagram.app_id": "936619743392459",
     "instagram.user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
     "tiktok.aid": "1988",

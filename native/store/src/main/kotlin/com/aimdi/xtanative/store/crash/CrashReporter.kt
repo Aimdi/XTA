@@ -199,8 +199,9 @@ class CrashReporter(
 }
 
 /** The GitHub call over OkHttp, given up after 30 seconds. */
-class OkHttpCrashReports(client: OkHttpClient = OkHttpClient()) : CrashReportHttp {
-    private val client = client.newBuilder().callTimeout(30, TimeUnit.SECONDS).build()
+class OkHttpCrashReports(client: OkHttpClient? = null) : CrashReportHttp {
+    // Built when a report is first sent, not as the app starts: a client sets up its own pool and trust.
+    private val client by lazy { (client ?: OkHttpClient()).newBuilder().callTimeout(30, TimeUnit.SECONDS).build() }
 
     override suspend fun post(url: String, headers: Map<String, String>, body: String): Int = withContext(Dispatchers.IO) {
         val request = Request.Builder().url(url)

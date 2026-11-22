@@ -179,7 +179,7 @@
     <string name="media_picture_of">Vyjava %1$d z %2$d</string>
     <string name="media_covered">Threads pastaviŭ papiaredžannie na hetyja medyja</string>
     <string name="add_accounts_hint">Niekalki adrazu: padzialicie ich prabiełami abo koskami</string>
-    <string name="session_unlocks">Što daje sesija: čytačoŭ i padpiski, tych, kamu spadabaŭsia dopis, vašu aktyŭnasć i pošuk liudziej — kožnaje čytajecca z vašym akaŭntam tolki tady, kali vy heta adkryvajecie. Kali pieraklučalnik vyšej uklučany, z joj čytajucca taksama Hałoŭnaja i «Dla vas».</string>
+    <string name="session_unlocks">Što daje sesija: vašu stužku padpisak, upadabanyja i zachavanyja dopisy, vašu aktyŭnasć, čytačoŭ i padpiski, tych, kamu spadabaŭsia dopis, a taksama dopisy i ŭkładki profilu, jakija Threads chavaje ad hasciej, — kožnaje čytajecca z vašym akaŭntam tolki tady, kali vy heta adkryvajecie. Kali pieraklučalnik vyšej uklučany, z joj čytajucca taksama Hałoŭnaja i «Dla vas».</string>
     <string name="instance_intro">Nieabaviazkova. Asobnik RSSHub, jaki vy trymajecie sami, čytaje akaŭnty, na jakija vy padpisanyja; kali jon nie adkazvaje, ich čytajuć z publičnych staronak Threads. Pakińcie pustym, kab čytać tolki publičnyja staronki.</string>
     <string name="account_missing">Nie znojdzieny — pierajmienavany, vydaleny ci z pamyłkaj?</string>
     <string name="account_private">Pryvatny — hosciu Threads nie pakazvaje nivodnaha dopisu</string>
@@ -302,7 +302,7 @@
     <string name="account_active">Aktyŭny — vykarystoŭvajecca tolki tady, kali vy adkryvajecie toje, što jaho patrabuje</string>
     <string name="account_resting_until">Adpačyvaje da %1$s</string>
     <string name="account_usage">Čytanni z akaŭntam za apošnija 24 hadziny: %1$d z %2$d</string>
-    <string name="account_guard_detail">Čytačy, «Spadabałasia», aktyŭnasć i pošuk liudziej vykarystoŭvajuć vaš akaŭnt tolki tady, kali vy ich adkryvajecie, z paŭzaj u niekalki siekund, i spyniajucca raniej, čym Meta zaŭvažyć. Usio astatniaje čytajecca jak hosć.</string>
+    <string name="account_guard_detail">Vašy padpiski, upadabanaje i zachavanaje, aktyŭnasć, čytačy i «Spadabałasia» vykarystoŭvajuć vaš akaŭnt tolki tady, kali vy ich adkryvajecie, z paŭzaj u niekalki siekund, i spyniajucca raniej, čym Meta zaŭvažyć. Hetak ža — dopis abo ŭkładka profilu, jakija Threads nie pakazvaje hosciu. Usio astatniaje, u tym liku pošuk liudziej, spačatku čytajecca jak hosć.</string>
     <string name="suggested_for_you">Prapanavana dla vas</string>
     <string name="suggestion_follow">Sačyć za %1$s na hetaj pryladzie</string>
     <string name="suggestion_unfollow">Pierastać sačyć za %1$s na hetaj pryladzie</string>

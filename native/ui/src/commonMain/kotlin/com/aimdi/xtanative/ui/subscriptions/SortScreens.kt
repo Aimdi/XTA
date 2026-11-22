@@ -33,7 +33,6 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -145,7 +144,7 @@ fun SortUngroupedScreen(onBack: () -> Unit, onSortOneByOne: (List<String>) -> Un
         }
         Column(Modifier.fillMaxSize().padding(padding)) {
             if (state.aiReady) {
-                FilledTonalButton(onClick = { vm.plan(useAi = true) }, enabled = !state.applying, modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)) {
+                TextButton(onClick = { vm.plan(useAi = true) }, enabled = !state.applying, modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)) {
                     Icon(GroupIcons.AutoAwesome, contentDescription = null, modifier = Modifier.size(18.dp))
                     Text(stringResource(Res.string.groups_sort_ai), modifier = Modifier.padding(start = 8.dp))
                 }

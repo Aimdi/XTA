@@ -55,7 +55,10 @@ class SessionStore(private val file: File, private val initial: Session = Sessio
      * the next change writes it whole again.
      */
     suspend fun update(transform: (Session) -> Session) = mutex.withLock {
-        val next = transform(current.value ?: initial)
+        val before = current.value
+        val next = transform(before ?: initial)
+        // A change that changes nothing writes nothing, and wakes no one who reads the session.
+        if (next == before) return@withLock
         current.value = next
         try {
             withContext(Dispatchers.IO) { write(Session.encode(next)) }

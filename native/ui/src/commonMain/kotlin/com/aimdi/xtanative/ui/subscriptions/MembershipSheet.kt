@@ -1,8 +1,6 @@
 package com.aimdi.xtanative.ui.subscriptions
 
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
+import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -86,7 +84,7 @@ fun GroupMembershipSheet(
     val ordered = GroupPicker.ordered(groups, openOrder, view.createdIds)
     val chips = GroupPicker.chips(ordered, view, shown)
 
-    ModalBottomSheet(onDismissRequest = { onDone(GroupPicker.answer(selected, chosen)) }, containerColor = MaterialTheme.colorScheme.surface) {
+    ModalBottomSheet(onDismissRequest = { onDone(GroupPicker.answer(selected, chosen)) }, containerColor = MaterialTheme.colorScheme.background) {
         Column(Modifier.imePadding()) {
             Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.groups_add_to_group), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
@@ -134,7 +132,7 @@ fun GroupMembershipSheet(
                 }
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     chips.groups.forEach { group ->
-                        FilterChip(
+                        FlatFilterChip(
                             selected = group.id in chosen,
                             onClick = { chosen = GroupPicker.toggled(chosen, group.id) },
                             label = { Text(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
@@ -170,15 +168,11 @@ private fun CreateRow(label: String, onClick: () -> Unit) {
             .padding(bottom = 8.dp)
             .heightIn(min = 56.dp)
             .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .clickable(onClick = onClick)
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            Modifier.size(40.dp).border(1.5.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(10.dp)),
-            contentAlignment = Alignment.Center,
-        ) {
+        Box(Modifier.size(40.dp), contentAlignment = Alignment.Center) {
             Icon(Icons.Filled.Add, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
         }
         Spacer(Modifier.width(12.dp))

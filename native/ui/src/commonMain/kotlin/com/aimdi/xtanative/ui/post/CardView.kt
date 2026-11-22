@@ -45,7 +45,6 @@ import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.currentLocale
-import com.aimdi.xtanative.ui.common.rememberLoadsManually
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.card_from
 import com.aimdi.xtanative.ui.generated.resources.poll_ended_days
@@ -252,7 +251,7 @@ private class PollPictures(val load: Boolean, private val choices: List<XCard.Po
 
 @Composable
 private fun rememberPollPictures(poll: XCard.Poll, post: XPost?): PollPictures {
-    val load = !rememberLoadsManually()
+    val load = !loadsManually()
     val open = LocalGalleryOpener.current
     return remember(poll, post, load, open) {
         val choices = poll.choices.filter { it.imageUrl != null }

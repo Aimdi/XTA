@@ -28,6 +28,10 @@ internal object ThreadsJson {
         is JsonObject -> depth < MAX_DEPTH && element.values.all { wellFormed(it, depth + 1) }
         is JsonArray -> depth < MAX_DEPTH && element.all { wellFormed(it, depth + 1) }
         is JsonNull -> true
-        is JsonPrimitive -> element.isString || element.content == "true" || element.content == "false" || number.matches(element.content)
+        is JsonPrimitive -> element.isString || element.content == "true" || element.content == "false" || isNumber(element.content)
     }
+
+    /** Whether [word] is a JSON number: a page holds tens of thousands of plain integers, which need no pattern to tell. */
+    private fun isNumber(word: String): Boolean =
+        (word.isNotEmpty() && word.all { it in '0'..'9' } && (word.length == 1 || word[0] != '0')) || number.matches(word)
 }

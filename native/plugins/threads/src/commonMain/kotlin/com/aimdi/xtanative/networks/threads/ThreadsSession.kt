@@ -168,6 +168,8 @@ data class ThreadsRepairs(
     val repliesRefetchDocId: String = REPLIES_REFETCH_DOC_ID.shipped,
     val searchRefetchDocId: String = SEARCH_REFETCH_DOC_ID.shipped,
     val profileRefetchDocId: String = PROFILE_REFETCH_DOC_ID.shipped,
+    val repostsRefetchDocId: String = REPOSTS_REFETCH_DOC_ID.shipped,
+    val feedRefetchDocId: String = FEED_REFETCH_DOC_ID.shipped,
 ) {
     /**
      * The doc id [refetch]'s query is asked by; empty when that fallback is
@@ -178,6 +180,8 @@ data class ThreadsRepairs(
         ThreadsRefetch.REPLIES -> repliesRefetchDocId
         ThreadsRefetch.SEARCH -> searchRefetchDocId
         ThreadsRefetch.PROFILE_THREADS -> profileRefetchDocId
+        ThreadsRefetch.PROFILE_REPOSTS -> repostsRefetchDocId
+        ThreadsRefetch.FRONT_PAGE -> feedRefetchDocId
     }.takeIf { id -> id.any { it != '0' } }.orEmpty()
 
     companion object {
@@ -232,12 +236,18 @@ data class ThreadsRepairs(
         /** `BarcelonaProfileThreadsTabRefetchableDirectQuery`'s doc id: a profile's next threads where the page's own query gives none. */
         val PROFILE_REFETCH_DOC_ID = RepairSlot("threads.profile_refetch_doc_id", "29222947497321867", RepairKind.DIGITS)
 
+        /** `BarcelonaProfileRepostsTabRefetchableDirectQuery`'s doc id: a profile's next reposts where the page's own query gives none. */
+        val REPOSTS_REFETCH_DOC_ID = RepairSlot("threads.reposts_refetch_doc_id", "30054019074236536", RepairKind.DIGITS)
+
+        /** `BarcelonaLoggedOutFeedPaginationQuery`'s doc id: the front page's next threads where the page's own query gives none. */
+        val FEED_REFETCH_DOC_ID = RepairSlot("threads.feed_refetch_doc_id", "41291939227071792", RepairKind.DIGITS)
+
         /** Every Threads value `repairs.json` may replace. */
         val SLOTS = listOf(
             GUEST_DOC_ID, GUEST_QUERY_NAME, APP_ID, ASBD_ID, APP_USER_AGENT, WEB_USER_AGENT,
             INLINE_REPLIES_DOC_ID, INLINE_REPLIES_VARIABLE, ABOUT_PROFILE_DOC_ID, ABOUT_PROFILE_VARIABLE, TRENDING_TOPICS_DOC_ID,
             INLINE_REPLIES_EXPANSION, SEARCH_USERS_DOC_ID, SEARCH_USERS_VARIABLE, RECOMMENDED_USERS_DOC_ID,
-            REPLIES_REFETCH_DOC_ID, SEARCH_REFETCH_DOC_ID, PROFILE_REFETCH_DOC_ID,
+            REPLIES_REFETCH_DOC_ID, SEARCH_REFETCH_DOC_ID, PROFILE_REFETCH_DOC_ID, REPOSTS_REFETCH_DOC_ID, FEED_REFETCH_DOC_ID,
         )
 
         /**
@@ -270,6 +280,8 @@ data class ThreadsRepairs(
             repliesRefetchDocId = REPLIES_REFETCH_DOC_ID.valueIn(published),
             searchRefetchDocId = SEARCH_REFETCH_DOC_ID.valueIn(published),
             profileRefetchDocId = PROFILE_REFETCH_DOC_ID.valueIn(published),
+            repostsRefetchDocId = REPOSTS_REFETCH_DOC_ID.valueIn(published),
+            feedRefetchDocId = FEED_REFETCH_DOC_ID.valueIn(published),
         )
     }
 }

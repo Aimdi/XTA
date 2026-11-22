@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.ui.search
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,7 +33,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
+import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -318,7 +317,7 @@ private fun LanguageField(code: String, onPick: (String) -> Unit) {
 private fun <T> Choices(options: List<Pair<T, String>>, selected: T, onSelect: (T) -> Unit) {
     FlowRow(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         options.forEach { (value, label) ->
-            FilterChip(selected = value == selected, onClick = { onSelect(value) }, label = { Text(label) })
+            FlatFilterChip(selected = value == selected, onClick = { onSelect(value) }, label = { Text(label) })
         }
     }
 }
@@ -405,15 +404,12 @@ private fun DayPicker(value: LocalDate?, onPick: (LocalDate) -> Unit, onDismiss:
 /** The query the filters write, as X receives it. */
 @Composable
 private fun QueryPreview(query: String) {
-    val shape = RoundedCornerShape(12.dp)
     Column(
         Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, shape)
-            .padding(12.dp),
+            .padding(16.dp),
     ) {
-        Text(stringResource(Res.string.discover_search_term), style = MaterialTheme.typography.labelLarge)
+        Text(stringResource(Res.string.discover_search_term), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         SelectionContainer(Modifier.padding(top = 8.dp)) {
             Text(
                 query.ifEmpty { stringResource(Res.string.discover_not_set) },

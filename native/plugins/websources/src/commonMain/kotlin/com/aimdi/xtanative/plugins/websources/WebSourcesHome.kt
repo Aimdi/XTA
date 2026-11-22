@@ -15,11 +15,11 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -100,7 +100,7 @@ private fun SourceRow(app: WebSourcesApp, entry: InstalledWebSource) {
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        if (entry.waiting != null) FilledTonalButton(onClick = { reviewing = true }) { Text(pluginString(Strings.review_update)) }
+        if (entry.waiting != null) TextButton(onClick = { reviewing = true }) { Text(pluginString(Strings.review_update)) }
     }
     Hairline()
     val waiting = entry.waiting

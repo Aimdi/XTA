@@ -22,11 +22,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -46,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.stocks.CryptoMarket
@@ -54,6 +55,7 @@ import com.aimdi.xtanative.networks.stocks.StocksSearchResult
 import com.aimdi.xtanative.networks.stocks.TickerSearchHit
 import com.aimdi.xtanative.networks.stocks.Watchlist
 import com.aimdi.xtanative.ui.common.rememberCopyContract
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.pluginString
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -117,8 +119,8 @@ internal fun StocksAddSheet(app: StocksApp, onDismiss: () -> Unit, onPick: (Stri
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(Modifier.fillMaxWidth().fillMaxHeight(0.68f).imePadding()) {
             Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(selected = !state.crypto, onClick = { model.change(text, crypto = false) }, label = { Text(pluginString(Strings.plugin_name)) })
-                FilterChip(selected = state.crypto, onClick = { model.change(text, crypto = true) }, label = { Text(pluginString(Strings.crypto)) })
+                PluginFilterChip(pluginString(Strings.plugin_name), selected = !state.crypto, onClick = { model.change(text, crypto = false) })
+                PluginFilterChip(pluginString(Strings.crypto), selected = state.crypto, onClick = { model.change(text, crypto = true) })
             }
             OutlinedTextField(
                 value = text,
@@ -148,16 +150,16 @@ private fun AddResults(state: AddSearch, retry: () -> Unit, onPick: (String) -> 
     val typed = if (state.crypto) null else Watchlist.normaliseTicker(state.query)?.takeIf { symbol -> result?.stocks.orEmpty().none { it.symbol == symbol } }
     LazyColumn(Modifier.fillMaxWidth()) {
         if (state.failed) {
-            item { ListItem(headlineContent = { Text(pluginString(Strings.data_unavailable)) }, trailingContent = { TextButton(onClick = retry) { Text(pluginString(Strings.retry)) } }) }
+            item { ListItem(headlineContent = { Text(pluginString(Strings.data_unavailable)) }, trailingContent = { TextButton(onClick = retry) { Text(pluginString(Strings.retry)) } }, colors = ListItemDefaults.colors(containerColor = Color.Transparent)) }
         }
         if (result != null && state.crypto && result.tokens.isEmpty()) {
-            item { ListItem(headlineContent = { Text(pluginString(if (result.address == null) Strings.no_results else Strings.crypto_no_token)) }) }
+            item { ListItem(headlineContent = { Text(pluginString(if (result.address == null) Strings.no_results else Strings.crypto_no_token)) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent)) }
         }
         if (result != null && !state.crypto && Watchlist.normaliseTicker(state.query) == null && result.stocks.isEmpty()) {
-            item { ListItem(headlineContent = { Text(pluginString(Strings.error)) }) }
+            item { ListItem(headlineContent = { Text(pluginString(Strings.error)) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent)) }
         }
         if (typed != null) {
-            item { ListItem(headlineContent = { Text("$$typed") }, leadingContent = { Icon(Icons.Default.Add, null) }, modifier = Modifier.clickable { onPick(typed) }) }
+            item { ListItem(headlineContent = { Text("$$typed") }, leadingContent = { Icon(Icons.Default.Add, null) }, modifier = Modifier.clickable { onPick(typed) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent)) }
         }
         items(result?.stocks.orEmpty(), key = { "stock-" + it.symbol }) { hit -> StockHit(hit) { onPick(hit.symbol) } }
         items(result?.tokens.orEmpty(), key = { "token-" + it.asset.id }) { market -> TokenHit(market) { onPick(market.asset.encode()) } }
@@ -171,6 +173,7 @@ private fun StockHit(hit: TickerSearchHit, onTap: () -> Unit) {
         headlineContent = { Text("$" + hit.symbol) },
         supportingContent = if (about.isEmpty()) null else ({ Text(about) }),
         modifier = Modifier.clickable(onClick = onTap),
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 
@@ -195,7 +198,7 @@ internal fun StocksManageSheet(app: StocksApp, onDismiss: () -> Unit, onRemoved:
     ModalBottomSheet(onDismissRequest = onDismiss) {
         LazyColumn(Modifier.fillMaxWidth().navigationBarsPadding()) {
             item {
-                ListItem(headlineContent = { Text(pluginString(Strings.manage_watchlist)) }, supportingContent = { Text(pluginString(Strings.feed_hint)) })
+                ListItem(headlineContent = { Text(pluginString(Strings.manage_watchlist)) }, supportingContent = { Text(pluginString(Strings.feed_hint)) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
             }
             items(shown.ids, key = { it }) { symbol ->
                 val asset = shown.assets[symbol]
@@ -215,6 +218,7 @@ internal fun StocksManageSheet(app: StocksApp, onDismiss: () -> Unit, onRemoved:
                         },
                         onLongClick = asset?.let { { copy(it.address) } },
                     ),
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                 )
             }
         }

@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.booru
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
@@ -23,6 +24,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.booru.BooruQuery
 import com.aimdi.xtanative.networks.booru.BooruTagOperator
@@ -73,8 +76,9 @@ private fun RelatedTags(search: BooruSearch, results: BooruResults, query: List<
 private fun RelatedChip(tag: String, onAdd: () -> Unit, onExclude: () -> Unit) {
     Surface(
         shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        modifier = Modifier.combinedClickable(
+        color = Color.Transparent,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        modifier = Modifier.clip(RoundedCornerShape(8.dp)).combinedClickable(
             onClick = onAdd,
             onClickLabel = pluginString(Strings.add_to_search),
             onLongClick = onExclude,

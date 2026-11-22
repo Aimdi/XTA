@@ -171,7 +171,7 @@
     <string name="media_picture_of">Afbeelding %1$d van %2$d</string>
     <string name="media_covered">Threads heeft een waarschuwing over deze media gezet</string>
     <string name="add_accounts_hint">Meerdere tegelijk: scheid ze met spaties of komma’s</string>
-    <string name="session_unlocks">Wat een sessie toevoegt: volgers en gevolgden, wie een bericht leuk vond, je activiteit en mensen zoeken, elk alleen met je account gelezen als je het opent. Met de schakelaar hierboven aan worden ook Home en Voor jou ermee gelezen.</string>
+    <string name="session_unlocks">Wat een sessie toevoegt: je Volgend-feed, de berichten die je leuk vond en opsloeg, je activiteit, volgers en gevolgden, wie een bericht leuk vond, en berichten of profieltabbladen die Threads niet aan gasten toont, elk alleen met je account gelezen als je het opent. Met de schakelaar hierboven aan worden ook Home en Voor jou ermee gelezen.</string>
     <string name="instance_intro">Optioneel. Een eigen RSSHub-instantie leest de accounts die je volgt; als die faalt, nemen de openbare Threads-pagina’s het over. Laat leeg om alleen de openbare pagina’s te lezen.</string>
     <string name="account_missing">Niet gevonden — hernoemd, verwijderd of verkeerd getypt?</string>
     <string name="account_private">Privé — Threads toont een gast geen van de berichten</string>
@@ -288,7 +288,7 @@
     <string name="account_active">Actief — alleen gebruikt als je iets opent dat het nodig heeft</string>
     <string name="account_resting_until">Rust tot %1$s</string>
     <string name="account_usage">Leesacties met het account in de afgelopen 24 uur: %1$d van %2$d</string>
-    <string name="account_guard_detail">Volgers, Leuk gevonden door, Activiteit en mensen zoeken gebruiken je account alleen als je ze opent, een paar seconden na elkaar, en pauzeren voordat Meta het zou merken. Al het andere wordt als gast gelezen.</string>
+    <string name="account_guard_detail">Je lijsten Volgend, Geliket en Opgeslagen, Activiteit, Volgers en Leuk gevonden door gebruiken je account alleen als je ze opent, een paar seconden na elkaar, en pauzeren voordat Meta het zou merken. Dat geldt ook voor een bericht of profieltabblad dat Threads niet aan een gast toont. Al het andere, ook mensen zoeken, wordt eerst als gast gelezen.</string>
     <string name="suggested_for_you">Voorgesteld voor jou</string>
     <string name="suggestion_follow">%1$s volgen op dit apparaat</string>
     <string name="suggestion_unfollow">%1$s niet meer volgen op dit apparaat</string>

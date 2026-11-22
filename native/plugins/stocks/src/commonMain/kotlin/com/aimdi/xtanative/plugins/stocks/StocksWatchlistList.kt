@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.plugins.stocks
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
@@ -25,8 +24,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -136,23 +135,22 @@ private fun WatchlistRow(app: StocksApp, symbol: String, entries: WatchlistEntri
     )
 }
 
-/** Two outlined choices under a watchlist row, name over kind, the reading shown now outlined in the accent. */
+/** Two flat choices under a watchlist row, name over kind, the reading shown now bold in the accent. */
 @Composable
 private fun ReadingChoices(readings: List<StocksReading>, shown: TickerInstrument, onChoose: (TickerInstrument) -> Unit) {
     val accent = stocksAccent()
     Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         readings.forEach { reading ->
             val current = reading.instrument == shown
-            OutlinedButton(
+            TextButton(
                 onClick = { onChoose(reading.instrument) },
                 modifier = Modifier.weight(1f).heightIn(min = 48.dp).semantics { selected = current },
                 shape = RoundedCornerShape(10.dp),
-                border = BorderStroke(if (current) 1.5.dp else 1.dp, if (current) accent else MaterialTheme.colorScheme.outlineVariant),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
+                colors = ButtonDefaults.textButtonColors(contentColor = if (current) accent else MaterialTheme.colorScheme.onSurface),
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
             ) {
                 Column(Modifier.fillMaxWidth()) {
-                    Text(reading.name, style = MaterialTheme.typography.bodyMedium, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(reading.name, style = MaterialTheme.typography.bodyMedium, fontSize = 14.sp, fontWeight = if (current) FontWeight.Bold else FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     kindWord(reading.kind)?.let {
                         Text(pluginString(it), style = MaterialTheme.typography.bodySmall, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
@@ -166,11 +164,10 @@ private fun ReadingChoices(readings: List<StocksReading>, shown: TickerInstrumen
 @Composable
 private fun Footer(count: Int, onAdd: () -> Unit) {
     Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        OutlinedButton(
+        TextButton(
             onClick = onAdd,
             modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
             shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         ) {
             Icon(Icons.Default.Add, null, Modifier.size(20.dp))
             Spacer(Modifier.width(8.dp))

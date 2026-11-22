@@ -25,7 +25,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -66,6 +65,7 @@ import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -205,7 +205,7 @@ private fun SearchTabs(shown: ThreadsSearchTab, onChoose: (ThreadsSearchTab) -> 
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         ThreadsSearchTab.entries.zip(labels).forEach { (option, label) ->
-            FilterChip(selected = shown == option, onClick = { onChoose(option) }, label = { Text(pluginString(label)) })
+            PluginFilterChip(pluginString(label), selected = shown == option, onClick = { onChoose(option) })
         }
     }
 }

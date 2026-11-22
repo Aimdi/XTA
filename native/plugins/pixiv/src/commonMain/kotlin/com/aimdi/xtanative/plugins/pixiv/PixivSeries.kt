@@ -21,11 +21,11 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -133,7 +133,7 @@ private fun WatchlistButton(added: Boolean, novels: Boolean, write: suspend (wat
     val runtime = LocalPixiv.current
     val language = currentLanguage()
     var busy by remember { mutableStateOf(false) }
-    FilledTonalButton(
+    TextButton(
         onClick = {
             busy = true
             runtime.launch {
@@ -237,7 +237,7 @@ private fun NovelSeriesHeader(series: PixivNovelSeries, first: PixivNovel?, late
                 Spacer(Modifier.width(8.dp))
                 Text(pluginString(Strings.novel_series_start))
             }
-            FilledTonalButton(onClick = { latest?.let(runtime::openNovel) }, enabled = latest != null) {
+            TextButton(onClick = { latest?.let(runtime::openNovel) }, enabled = latest != null) {
                 Icon(PixivIcons.MenuBook, null, Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
                 Text(pluginString(Strings.watchlist_view_latest))

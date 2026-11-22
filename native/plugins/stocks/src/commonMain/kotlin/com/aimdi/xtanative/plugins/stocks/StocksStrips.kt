@@ -161,9 +161,18 @@ private fun ReelFigures(quote: TickerQuote?, state: StockRowState) {
 internal fun CashtagStrip(app: StocksApp, symbols: List<String>) {
     val shown = remember(symbols) { symbols.take(Cashtags.STRIP_LIMIT) }
     if (shown.isEmpty()) return
-    LaunchedEffect(shown) { app.launch { app.quotes.ensure(shown) } }
+    // A cashtag whose token the reader watches by its contract is priced as that token, not as whatever else shares its letters.
+    val watched by app.watchlist.state.collectAsState()
+    val tokens = remember(shown, watched) { shown.mapNotNull { symbol -> watched?.assetForCashtag(symbol)?.let { symbol to it } }.toMap() }
+    LaunchedEffect(shown, tokens) {
+        app.launch { app.quotes.ensure(shown.filterNot { it in tokens }) }
+        app.launch { app.crypto.ensure(tokens.values) }
+    }
     val quotes by app.quotes.quotes.collectAsState()
-    val entries = Cashtags.entries(shown, quotes.quotes, quotes.failed, Instant.now())
+    val markets by app.crypto.markets.collectAsState()
+    val priced = quotes.quotes - tokens.keys + tokens.mapNotNull { (symbol, asset) -> markets.markets[asset.id]?.let { symbol to it.quote } }
+    val failed = quotes.failed - tokens.keys + tokens.filterValues { it.id in markets.failed }.keys
+    val entries = Cashtags.entries(shown, priced, failed, Instant.now())
     val line = MaterialTheme.colorScheme.outlineVariant
     Column(Modifier.padding(start = 16.dp, top = 8.dp)) {
         Hairline()

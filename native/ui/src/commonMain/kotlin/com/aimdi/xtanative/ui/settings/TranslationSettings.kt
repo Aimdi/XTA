@@ -16,7 +16,6 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -164,7 +163,7 @@ private fun ServerFields(form: TranslationForm, onChange: (TranslationForm) -> U
             modifier = Modifier.fillMaxWidth(),
         )
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OutlinedButton(onClick = onTest, enabled = form.canTest) { Text(stringResource(Res.string.translation_test)) }
+            TextButton(onClick = onTest, enabled = form.canTest) { Text(stringResource(Res.string.translation_test)) }
             when (val test = form.test) {
                 TranslationTest.Testing -> {
                     CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)

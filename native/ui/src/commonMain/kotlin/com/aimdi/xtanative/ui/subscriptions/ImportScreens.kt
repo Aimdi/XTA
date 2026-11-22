@@ -13,7 +13,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -152,7 +152,7 @@ private fun Progress(run: ImportRun, onSortUngrouped: (() -> Unit)?) {
             is ImportRun.Done -> {
                 Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = Color(0xFF00BA7C), modifier = Modifier.padding(16.dp).size(36.dp))
                 Text(stringResource(Res.string.groups_finished_with, run.count.toString()))
-                if (onSortUngrouped != null) FilledTonalButton(onClick = onSortUngrouped) { Text(stringResource(Res.string.groups_import_sort)) }
+                if (onSortUngrouped != null) TextButton(onClick = onSortUngrouped) { Text(stringResource(Res.string.groups_import_sort)) }
             }
             is ImportRun.Failed -> {
                 Text(stringResource(Res.string.groups_unable_to_import), style = MaterialTheme.typography.titleMedium)

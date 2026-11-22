@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Warning
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -159,7 +158,7 @@ private fun ProblemMark(look: ProblemLook, emoji: String? = look.emoji) {
 
 @Composable
 private fun AddAccountButton(onClick: () -> Unit) {
-    ElevatedButton(onClick = onClick) {
+    TextButton(onClick = onClick) {
         Icon(DiscoverIcons.PersonAdd, contentDescription = null, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(8.dp))
         Text(stringResource(Res.string.signin_add_account))
@@ -183,7 +182,7 @@ private fun RetryButton(problem: Problem, onRetry: () -> Unit, raised: Boolean) 
     }
     val label = if (seconds > 0) stringResource(Res.string.problem_retry_in, RetryCountdown.format(seconds)) else stringResource(Res.string.retry)
     when {
-        raised -> ElevatedButton(onClick = onRetry) { Text(label) }
+        raised -> TextButton(onClick = onRetry) { Text(label) }
         problem.isRateLimit -> TextButton(onClick = onRetry, enabled = seconds == 0) {
             Icon(Icons.Outlined.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))

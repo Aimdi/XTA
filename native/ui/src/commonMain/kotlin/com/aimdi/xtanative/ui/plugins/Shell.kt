@@ -336,7 +336,7 @@ fun ShellSortOption(label: String, selected: Boolean, onClick: () -> Unit) {
     }
 }
 
-/** A [ShellSortSheet]'s choices as pills in rows ("Today", "Week"…), the [selected] one filled; [selected] null for none. */
+/** A [ShellSortSheet]'s choices as pills in rows ("Today", "Week"…), the [selected] one outlined and written in the accent, in bold; [selected] null for none. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ShellSortPills(labels: List<String>, selected: Int?, onSelect: (Int) -> Unit) {
@@ -349,7 +349,6 @@ fun ShellSortPills(labels: List<String>, selected: Int?, onSelect: (Int) -> Unit
                 Modifier
                     .heightIn(min = 36.dp)
                     .clip(shape)
-                    .background(if (on) accent.copy(alpha = 0.16f) else Color.Transparent)
                     .border(1.dp, if (on) accent else MaterialTheme.colorScheme.outlineVariant, shape)
                     .clickable { onSelect(index) }
                     .semantics {
@@ -359,7 +358,7 @@ fun ShellSortPills(labels: List<String>, selected: Int?, onSelect: (Int) -> Unit
                     .padding(horizontal = 14.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(label, style = MaterialTheme.typography.labelLarge, color = if (on) accent else MaterialTheme.colorScheme.onSurface)
+                Text(label, style = MaterialTheme.typography.labelLarge, fontWeight = if (on) FontWeight.Bold else null, color = if (on) accent else MaterialTheme.colorScheme.onSurface)
             }
         }
     }

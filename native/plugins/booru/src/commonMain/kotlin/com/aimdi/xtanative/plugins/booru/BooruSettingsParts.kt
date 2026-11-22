@@ -26,7 +26,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
@@ -154,7 +153,7 @@ private fun EnginePicker(engine: BooruEngine, onPick: (BooruEngine) -> Unit) {
     Column(Modifier.padding(top = 12.dp)) {
         Text(pluginString(Strings.engine), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Box {
-            OutlinedButton(onClick = { open = true }) { Text(engineLabel(engine)) }
+            TextButton(onClick = { open = true }) { Text(engineLabel(engine)) }
             DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
                 BooruEngine.entries.forEach { choice ->
                     DropdownMenuItem(text = { Text(engineLabel(choice)) }, onClick = { open = false; onPick(choice) })

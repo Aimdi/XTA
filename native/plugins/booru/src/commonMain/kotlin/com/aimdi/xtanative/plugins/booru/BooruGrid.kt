@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -140,7 +141,7 @@ internal fun PostTile(post: BooruPost, display: BooruDisplay, isNew: Boolean, on
     val ratio = post.aspectRatio.toFloat().coerceIn(0.45f, 1.6f)
     Surface(
         shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.35f),
+        color = Color.Transparent,
         modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable(onClick = onOpen),
     ) {
         Column {

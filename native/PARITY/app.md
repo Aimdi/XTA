@@ -12,8 +12,8 @@ covered | alt_microblogging_journey_test › real Home retains loaded readers an
 ## alt_microblogging_test.dart
 covered | alt_microblogging_test › grouping round trip preserves plugin preferences, credentials and ordered pins | ui/home/AltMicroblogging.kt, store AppPrefs (home.alt_microblogging.*) | grouping is one flag; AltMicrobloggingTest.theMembersGiveWay…, onlyAMemberIsRemembered…
 covered | alt_microblogging_test › disabled, unpinned and missing remembered sources cannot be reintroduced | AltMicroblogging.destination, core FeedStrip.tabs | AltMicrobloggingTest.theEntryOpensTheOneShown…; FeedStripTest (unusable pins dropped)
-untested → ported | alt_microblogging_test › one Home row retains unread state and opens a real reader, large RTL false/true | ui/home/SourcePickerSheet.kt (entriesOf, MicroblogsRow) | AltMicrobloggingTest.thePickerListsTheMicroblogsAsOneRow…; the row's dot is any member unread, it opens AltMicroblogging.destination
-untested → ported | alt_microblogging_test › Plugin Store switch immediately restores every original row without changing selection | SourcePickerSheet.kt entriesOf | AltMicrobloggingTest.thePickerLists… (ungrouped = every row)
+untested → n/a | alt_microblogging_test › one Home row retains unread state and opens a real reader, large RTL false/true | ui/home/PluginSwitcherSheet.kt | Home's sheet lists every network as a tile of its own, each with its dot; the grouped entry stays on the bar's Networks sheet (AltMicroblogging.sections, AltMicrobloggingTest)
+untested → n/a | alt_microblogging_test › Plugin Store switch immediately restores every original row without changing selection | ui/home/PluginSwitcherSheet.kt | the sheet's grid never groups them: every network is there with the switch on or off
 untested | alt_microblogging_test › all service chips remain reachable at 320dp with double text in de/ar | ui/home/HomeFeed.kt MicroblogSwitcher | Compose layout (scrolling row of 48dp chips); no Compose UI test harness here
 covered | alt_microblogging_test › Networks groups across recent and all sections and can still open Threads | AltMicroblogging.sections, HomeBottomBar.kt MicroblogsEntry | AltMicrobloggingTest.theNetworksSheetLists…
 
@@ -39,7 +39,7 @@ covered | feed_strip_test › persists the new pin order | StripPins.moved + Hom
 
 ## home_chrome_test.dart
 n/a | home_chrome_test › HomeSelectionStore only changes for a new selection | — | flutter_triple store notification mechanics; native state is a StateFlow (equal values never re-emit)
-untested | home_chrome_test › feed switcher marks and returns the selected feed | ui/home/SourcePickerSheet.kt PickerRow (tick on the shown timeline) | Compose; selection logic is SourcePickerSheet entriesOf/onSource (AltMicrobloggingTest)
+untested | home_chrome_test › feed switcher marks and returns the selected feed | ui/home/PluginSwitcherSheet.kt (the shown timeline in bold, a network over the accent's line) | Compose; what the sheet lists is PluginSwitcher (PluginSwitcherTest)
 untested | home_chrome_test › bottom navigation uses distinct selected icons and a hairline boundary | ui/home/HomeBottomBar.kt (Hairline over the bar, filled/outlined icons per selection, 64dp) | Compose drawing
 untested | home_chrome_test › long-press Home invokes the picker action without changing tabs | HomeBottomBar.kt BarItem onLongClick = onHoldHome for the Feed page | Compose gesture
 covered | home_chrome_test › selected navigation remains legible with a yellow accent | ui/theme XLook (accent corrected for contrast) | XLookTest.anAccentThatDoesNotReadOnThePageIsCorrected
@@ -75,7 +75,7 @@ covered | home_following_bar_test › Without room for one row the tabs sit unde
 untested | home_following_bar_test › The filter icon waits for the group; the rest is there at once | FollowingBarView.kt | Compose
 untested | home_following_bar_test › The selected tab carries the marker, and Media asks for media | FollowingBarView.kt | Compose; Media key = FollowingBar.MEDIA_KEY (FollowingBarTest)
 covered | home_following_bar_test › The chip opens Recent, Popular, Custom and Filters | FollowingBar.ORDERS, opensCustom | FollowingBarTest.theOrderMenuKeepsXtasOrder…
-untested | home_following_bar_test › The Feeds sheet offers the side menu, and the avatar on a long press | SourcePickerSheet.kt (menu row) | Compose
+untested | home_following_bar_test › The Feeds sheet offers the side menu, and the avatar on a long press | PluginSwitcherSheet.kt (menu row) | Compose
 
 ## home_group_filter_test.dart
 covered | home_group_filter_test › profileIdsExcludedByGroups unions members of disabled groups | core/session/Session.kt excludedFromFollowing | GroupSessionTest.theFollowingFeedLeavesOutGroupsSwitchedOff…
@@ -118,7 +118,7 @@ covered | home_source_groups_test › X is available without optional plugins an
 covered | home_source_groups_test › drawer prioritizes pins without mutating the chosen group order | ui/home/HomeGroups.kt DrawerGroups.matching | HomeMenuTest.theGroupSearchKeepsPinnedGroupsFirst
 
 ## home_source_picker_marks_test.dart
-untested | home_source_picker_marks_test › every Home source picker mark fills the same box at the same size (grouped false/true) | ui/home/SourcePickerSheet.kt (every mark 24 dp: TimelineMark, GroupMark, MicroblogMark) | Compose layout
+untested | home_source_picker_marks_test › every Home source picker mark fills the same box at the same size (grouped false/true) | ui/home/PluginSwitcherSheet.kt (every tile's mark 28 dp in a 36 dp box) | Compose layout
 
 ## home_strip_startup_test.dart
 covered | home_strip_startup_test › home strip chrome builds after a JSON-string strip pref | store settings Pref.kt lenientList | SettingsTest ("a JSON array in a string")
@@ -146,12 +146,12 @@ untested | home_swipe_navigation_test › actual tweet media does not hand its e
 ## home_timeline_layout_test.dart
 untested | home_timeline_layout_test › populated Home layout light/dark/black/large-rtl (4 variants) | ui/home/HomeScreen.kt, HomeFeed.kt | golden-style Compose layout; no Compose UI test harness
 untested | home_timeline_layout_test › Following keeps its one bar while the feed is read | FollowingBarView.kt (48 dp bar, controls) | Compose layout; FollowingBar.height in FollowingBarTest
-untested | home_timeline_layout_test › The Feeds sheet opens the side menu | SourcePickerSheet.kt (menu row → account menu) | Compose
+untested | home_timeline_layout_test › The Feeds sheet opens the side menu | PluginSwitcherSheet.kt (menu row → account menu) | Compose
 untested | home_timeline_layout_test › The last Home post scrolls fully above the floating bar | HomeFeed.kt (contentPadding bottom = bar height) | Compose layout
 covered | home_timeline_layout_test › On the desktop, where a mouse cannot pull it down, Following shows refresh | FollowingBar.actions(desktop) = 4 (refresh) | FollowingBarTest.twoRowsAreTwiceAsTall (actions(desktop))
 untested | home_timeline_layout_test › Home keeps nothing for the status bar under its header | HomeScreen.kt insets | Compose layout
 untested | home_timeline_layout_test › A short scrollable Home keeps its bar stable | HomeBottomBar.kt HomeBarsState (nothing to scroll → no leftover → bar stays) | Compose
-untested | home_timeline_layout_test › Source picker preserves a reading position and opens timeline management | SourcePickerSheet.kt, StripSheet.kt | Compose; pages keep their own LazyListState
+untested | home_timeline_layout_test › Source picker preserves a reading position and opens timeline management | PluginSwitcherSheet.kt, StripSheet.kt | Compose; pages keep their own LazyListState
 covered | home_timeline_layout_test › reading swipes switch source and return to cached posts and position | TimelineSwipeView.kt, GroupFeedViewModel (FeedSessionCache) | GroupFeedViewModelTest checks a reopened feed shows its kept posts
 untested | home_timeline_layout_test › Home media reuses cached posts and survives switching sources | GroupFeedBody.kt mediaOnly over the same run | Compose
 covered | home_timeline_layout_test › Home searches its loaded snapshot and returns to the same feed | ui/search/LoadedFeedSearch.kt LoadedFeed.Index | SearchLogicTest (LoadedFeed matching); the feed keeps its run while the search layer is open
@@ -168,7 +168,7 @@ untested | intro_screen_test › the account card names who is signed in and mov
 untested | intro_screen_test › without an account the card offers sign-in, Not now and a backup import | IntroScreen.kt (intro_not_now, settings_import_backup) | Compose
 
 ## navigation_swipe_test.dart
-untested | navigation_swipe_test › long-press Home switches sources and opens groups from another tab | HomeBottomBar.kt (onHoldHome → picker), SourcePickerSheet.kt onGroup | Compose gesture
+untested | navigation_swipe_test › long-press Home switches sources and opens groups from another tab | HomeBottomBar.kt (onHoldHome → picker), PluginSwitcherSheet.kt onGroup | Compose gesture
 untested → ported | navigation_swipe_test › a leftward swipe advances, a rightward one goes back | ui/home/HomeBar.kt swiped (ui/common TabSwipes) | HomeBarTest.theBarsSwipeRulesAreXtasPageAfterNavigationSwipe
 untested → ported | navigation_swipe_test › the ends clamp rather than wrapping around | HomeBar.swiped | HomeBarTest.theBarsSwipeRules…
 untested → ported | navigation_swipe_test › a mis-tap, going nowhere at no speed, cannot change tab | HomeBar.swiped | HomeBarTest.theBarsSwipeRules…
@@ -410,7 +410,7 @@ covered | home_feed_unread_test › Following hashes match the live -1 chunk and
 covered | home_feed_unread_test › Following last-read prefers following over the legacy -1 key | Unread.lastReadForFollowing | CatchUpTest.theFollowingFeedsLastReadPrefersItsKeyOverXtasOlderOne
 covered | home_feed_unread_test › Following is unread when its cached chunk is newer than last read | Unread.has, ui/home/HomeUnread.kt | CatchUpTest, HomeFilterTest.onlyFeedsThatKeepAPositionLightUp
 covered | home_feed_unread_test › For You newest-cached pref round-trips | store FeedPrefs forYouNewestCachedAt | XtaPrefsTest (declared prefs), SettingsTest
-untested | home_feed_unread_test › an unread strip tab exposes Unread in semantics | SourcePickerSheet.kt PickerRow (home_unread description) | Compose semantics
+untested | home_feed_unread_test › an unread strip tab exposes Unread in semantics | PluginSwitcherSheet.kt PickerRow (home_unread description) | Compose semantics
 
 ## profile_followed_by_line_test.dart
 covered | profile_followed_by_line_test › no known follower shows nothing | ui/profile FollowedBy.label (null) | ProfileRulesTest.followedByNamesWhoFollows…

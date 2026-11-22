@@ -6,6 +6,20 @@ data class WatchlistEntries(val ids: List<String>, val assets: Map<String, Crypt
     fun label(id: String): String = assets[id]?.label ?: "$$id"
 
     /**
+     * The token a `$SYMBOL` cashtag means to this reader: the first token
+     * watched whose symbol it is, unless the plain ticker is watched too.
+     * Unrelated tokens share symbols (several are `$POD`), and so do tokens
+     * and listed securities; a symbol alone asks the price hosts, which
+     * answer with whichever they list, so the one the reader follows by its
+     * contract is the better guess. Null when none is watched.
+     */
+    fun assetForCashtag(symbol: String): CryptoAsset? {
+        val bare = symbol.trim().removePrefix("$")
+        if (bare.isEmpty() || ids.any { it.equals(bare, ignoreCase = true) }) return null
+        return ids.mapNotNull(assets::get).firstOrNull { it.cashtag != null && it.symbol.equals(bare, ignoreCase = true) }
+    }
+
+    /**
      * The network of each token watched, by its contract, as an X post writes
      * it before such an address (rich_text.dart): where two share a contract,
      * the first in the list names it.

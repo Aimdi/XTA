@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -46,8 +47,8 @@ import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginString
-import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.plugins.rememberKept
+import com.aimdi.xtanative.ui.post.PostIcons
 
 /** Where a list of posts comes from: a community (Reddit's rails `popular` and `all` among them), or an account. */
 internal sealed interface Listing {
@@ -70,14 +71,24 @@ internal sealed interface Listing {
  */
 @Composable
 internal fun ListingBody(app: RedditApp, listing: Listing, frame: PluginFrame) = key(listing.key) {
-    val pages = rememberKept("reddit-listing:" + listing.key) { scope ->
-        PagedItems<RedditPost>(scope, key = { it.id }) { cursor -> read(app, listing, cursor) }
+    val kept = rememberKept("reddit-listing:" + listing.key) { scope ->
+        KeptListing(PagedItems(scope, key = { it.id }) { cursor -> read(app, listing, cursor) }, app.generation.value)
     }
+    val pages = kept.pages
     val generation by app.generation.collectAsState()
-    RefreshesOn(generation) { pages.refresh() }
+    // What it was read under is kept with the list: an order or a source changed while another feed was shown is read here on coming back.
+    LaunchedEffect(generation) {
+        if (kept.generation != generation) {
+            kept.generation = generation
+            pages.refresh()
+        }
+    }
     RefreshesOn(frame.refresh) { pages.refresh() }
     RedditPagedList(pages, key = { it.id }, frame = frame, empty = pluginString(Strings.no_results)) { post -> RedditPostCard(app, post) }
 }
+
+/** A listing's pages with the reader's choices ([RedditApp.generation]) they were read under. */
+private class KeptListing(val pages: PagedItems<RedditPost>, var generation: Int)
 
 private suspend fun read(app: RedditApp, listing: Listing, cursor: String?): Page<RedditPost> = when (listing) {
     is Listing.Subreddit -> app.listing(listing.name, cursor)

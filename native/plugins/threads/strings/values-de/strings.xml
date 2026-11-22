@@ -171,7 +171,7 @@
     <string name="media_picture_of">Bild %1$d von %2$d</string>
     <string name="media_covered">Threads hat diese Medien mit einer Warnung versehen</string>
     <string name="add_accounts_hint">Mehrere auf einmal: mit Leerzeichen oder Kommas trennen</string>
-    <string name="session_unlocks">Was eine Sitzung bringt: Follower und Gefolgte, wem ein Beitrag gefällt, deine Aktivität und die Personensuche, jeweils nur dann mit deinem Konto gelesen, wenn du sie öffnest. Mit dem Schalter oben werden auch Startseite und Für dich damit gelesen.</string>
+    <string name="session_unlocks">Was eine Sitzung bringt: deinen „Gefolgt“-Feed, Beiträge, die dir gefallen und die du gespeichert hast, deine Aktivität, Follower und Gefolgte, wem ein Beitrag gefällt, sowie Beiträge und Profil-Tabs, die Threads Gästen vorenthält, jeweils nur dann mit deinem Konto gelesen, wenn du sie öffnest. Mit dem Schalter oben werden auch Startseite und Für dich damit gelesen.</string>
     <string name="instance_intro">Optional. Eine eigene RSSHub-Instanz liest die Konten, denen du folgst; fällt sie aus, springen die öffentlichen Threads-Seiten ein. Leer lassen, um nur die öffentlichen Seiten zu lesen.</string>
     <string name="account_missing">Nicht gefunden – umbenannt, gelöscht oder vertippt?</string>
     <string name="account_private">Privat – Threads zeigt Gästen keinen seiner Beiträge</string>
@@ -288,7 +288,7 @@
     <string name="account_active">Aktiv — nur genutzt, wenn du etwas öffnest, das es braucht</string>
     <string name="account_resting_until">Pausiert bis %1$s</string>
     <string name="account_usage">Abrufe mit dem Konto in den letzten 24 Stunden: %1$d von %2$d</string>
-    <string name="account_guard_detail">Follower, „Gefällt“, Aktivität und Personensuche nutzen dein Konto nur, wenn du sie öffnest, mit einigen Sekunden Abstand, und pausieren, bevor Meta es bemerken würde. Alles andere wird als Gast gelesen.</string>
+    <string name="account_guard_detail">Deine Listen „Gefolgt“, „Gefällt mir“ und „Gespeichert“, Aktivität, Follower und „Gefällt“ nutzen dein Konto nur, wenn du sie öffnest, mit einigen Sekunden Abstand, und pausieren, bevor Meta es bemerken würde. Das gilt auch für einen Beitrag oder Profil-Tab, den Threads einem Gast nicht zeigt. Alles andere, auch die Personensuche, wird zuerst als Gast gelesen.</string>
     <string name="suggested_for_you">Für dich vorgeschlagen</string>
     <string name="suggestion_follow">%1$s auf diesem Gerät folgen</string>
     <string name="suggestion_unfollow">%1$s auf diesem Gerät nicht mehr folgen</string>

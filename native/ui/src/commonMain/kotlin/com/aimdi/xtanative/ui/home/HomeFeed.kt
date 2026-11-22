@@ -58,6 +58,7 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.ui.common.LocalParentTurnsPages
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.rememberLiveEdges
 import com.aimdi.xtanative.ui.common.rememberScreenReaderOn
 import com.aimdi.xtanative.ui.feed.MediaModes
 import com.aimdi.xtanative.ui.feed.ToTop
@@ -137,7 +138,7 @@ internal fun HomeFeedPage(
     val bar = if (ui.hideOnScroll && !reader) TopAppBarDefaults.enterAlwaysScrollBehavior() else TopAppBarDefaults.pinnedScrollBehavior()
     val current = tabs.getOrNull(timelines.index)
     val desktop = LocalDesktopActions.current != null
-    val anyUnread = SourcePicker.sources(tabs).any { it.key in timelines.unread }
+    val anyUnread = tabs.any { it !is HomeTab.Group &&  it.key in timelines.unread }
     val labels = tabs.map { tabLabel(it, ui) }
     val holder = rememberSaveableStateHolder()
     val client = remember(current?.key) { PluginClientBar() }
@@ -204,14 +205,16 @@ internal fun HomeFeedPage(
             }
         },
     ) { padding ->
-        SwipesTimelines(timelines.index, labels, onTurn = calls.onTab, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
+        // The bar's height changes at every frame of its slide: the page is measured with it, not composed again.
+        val (top, bottom) = rememberLiveEdges(padding)
+        SwipesTimelines(timelines.index, labels, onTurn = calls.onTab, modifier = Modifier.fillMaxSize().padding(top)) {
             if (current != null) {
                 holder.SaveableStateProvider(current.key) {
                     val toTop = if (timelines.toTop.page == timelines.index) timelines.toTop.count else 0
                     // Home turns its timelines with a sideways drag: the tabs of a network's page leave it to Home.
                     // A network hands its own sections and actions to Home's one bar (NetworkTopBar).
                     CompositionLocalProvider(LocalParentTurnsPages provides true, LocalPluginClientBar provides client.takeIf { current is HomeTab.Network }) {
-                        TimelinePage(current, toTop, following.mediaOnly, actions, networks, PaddingValues(bottom = padding.calculateBottomPadding()))
+                        TimelinePage(current, toTop, following.mediaOnly, actions, networks, bottom)
                     }
                 }
             }
@@ -357,9 +360,8 @@ private fun RowScope.TabActions(
 }
 
 /**
- * Network [id]'s plugin sheet ([PluginSwitcherSheet]): the plugin's own
- * entries ([shell]) and the app's for it, then Start, the networks on Home,
- * the plugin store and XTA's settings.
+ * Network [id]'s sheet ([PluginSwitcherSheet]): the plugin's own entries
+ * ([shell]) and the app's for it, then what the sheet offers every timeline.
  */
 @Composable
 private fun PluginSheet(
@@ -380,16 +382,28 @@ private fun PluginSheet(
     PluginSwitcherSheet(
         ui,
         networks,
-        current = id,
+        shown = HomeTab.Network(id),
         unread = unread,
         calls = SwitcherCalls(
-            onStart = {
+            onTimeline = { tab ->
                 onDismiss()
-                calls.onTab(tabs.indexOf(HomeTab.Following).coerceAtLeast(0))
+                tabs.indexOf(tab).takeIf { it >= 0 }?.let(calls.onTab)
+            },
+            onGroup = { group ->
+                onDismiss()
+                routes.openGroup(group.id)
             },
             onNetwork = { other ->
                 onDismiss()
                 tabs.indexOf(HomeTab.Network(other)).takeIf { it >= 0 }?.let(calls.onTab)
+            },
+            onAdd = {
+                onDismiss()
+                calls.openSheet(HomeSheet.STRIP)
+            },
+            onMenu = {
+                onDismiss()
+                calls.openMenu()
             },
             onManage = {
                 onDismiss()
@@ -400,6 +414,10 @@ private fun PluginSheet(
                 routes.openIfExists(HomeDestination.SETTINGS.route)
             },
             onDismiss = onDismiss,
+            onAvatar = {
+                onDismiss()
+                calls.openSheet(HomeSheet.AVATAR)
+            },
         ),
         plugin = SheetPlugin(
             id,

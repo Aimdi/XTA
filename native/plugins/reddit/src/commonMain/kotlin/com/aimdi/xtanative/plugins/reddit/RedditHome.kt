@@ -28,7 +28,6 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -381,7 +380,7 @@ private fun AddFirst(app: RedditApp) {
     var adding by remember { mutableStateOf(false) }
     RedditEmpty(RedditGlyphs.Forum, pluginString(Strings.empty)) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            FilledTonalButton(onClick = { adding = true }) {
+            TextButton(onClick = { adding = true }) {
                 Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                 Text(pluginString(Strings.add), modifier = Modifier.padding(start = 8.dp))
             }

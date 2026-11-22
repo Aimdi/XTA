@@ -15,19 +15,18 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -122,9 +121,9 @@ internal fun ThreadsTopicHeader(app: ThreadsApp, topic: ThreadsTopic) {
         }
         if (followed != null) {
             if (follows) {
-                OutlinedButton(onClick = { app.unfollowTopic(topic.name) }, modifier = Modifier.heightIn(min = 48.dp)) { Text(pluginString(Strings.following)) }
+                TextButton(onClick = { app.unfollowTopic(topic.name) }, modifier = Modifier.heightIn(min = 48.dp)) { Text(pluginString(Strings.following)) }
             } else {
-                FilledTonalButton(onClick = { app.followTopic(topic) }, modifier = Modifier.heightIn(min = 48.dp)) { Text(pluginString(Strings.follow)) }
+                TextButton(onClick = { app.followTopic(topic) }, modifier = Modifier.heightIn(min = 48.dp)) { Text(pluginString(Strings.follow)) }
             }
         }
     }
@@ -197,7 +196,10 @@ internal fun rememberSessionPeople(app: ThreadsApp, terms: ThreadsSearchTerms): 
     val fetch = rememberKept(ThreadsSearchRules.peopleKey(terms.query, session)) { scope ->
         Fetch(scope) {
             app.ready()
-            if (session) app.direct.searchUsers(terms.query).items else app.direct.guestPeople(terms.query).orEmpty()
+            ThreadsSearchRules.people(
+                guest = { app.direct.guestPeople(terms.query) },
+                account = if (session) ({ app.direct.searchUsers(terms.query).items }) else null,
+            )
         }
     }
     LaunchedEffect(fetch) { fetch.ensure() }

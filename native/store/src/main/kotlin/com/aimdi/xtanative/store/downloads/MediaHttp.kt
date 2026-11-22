@@ -45,7 +45,10 @@ fun interface MediaHttp {
 }
 
 /** [MediaHttp] over OkHttp. A long video may take minutes, so only connecting and each read are timed. */
-class OkHttpMediaHttp(private val client: OkHttpClient = defaultClient) : MediaHttp {
+class OkHttpMediaHttp(client: OkHttpClient? = null) : MediaHttp {
+    // Built when the first file is asked for, not as the app starts.
+    private val client by lazy { client ?: defaultClient }
+
     override suspend fun get(url: String, headers: Map<String, String>): MediaResponse = suspendCancellableCoroutine { continuation ->
         val request = Request.Builder().url(url).apply { headers.forEach { (name, value) -> header(name, value) } }.build()
         val call = client.newCall(request)

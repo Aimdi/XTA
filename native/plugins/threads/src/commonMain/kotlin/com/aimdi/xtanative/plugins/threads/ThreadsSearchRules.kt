@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.plugins.threads
 
+import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.networks.threads.ThreadsSession
+import kotlinx.coroutines.CancellationException
 
 /** What the search screens decide about people, apart from drawing them. */
 internal object ThreadsSearchRules {
@@ -13,6 +15,23 @@ internal object ThreadsSearchRules {
      * never shows what the guest read found, nor the other way round.
      */
     fun peopleKey(query: String, session: Boolean): String = if (session) "threads-people-$query" else "threads-guest-people-$query"
+
+    /**
+     * The accounts a people search finds: what a [guest] is shown, and the
+     * reader's [account] only when the guest read is off, refused, failed
+     * or found no one, so a search a guest can make never spends it.
+     */
+    suspend fun people(guest: suspend () -> List<ThreadsProfile>?, account: (suspend () -> List<ThreadsProfile>)?): List<ThreadsProfile> {
+        val shown = try {
+            guest()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            if (account == null) throw e
+            null
+        }
+        return shown?.ifEmpty { null } ?: account?.invoke() ?: shown.orEmpty()
+    }
 
     /**
      * Whether a search's words and handles list accounts before anything

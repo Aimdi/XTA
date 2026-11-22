@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.booru
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,8 +30,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.foundation.clickable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.booru.BooruEndpoints
@@ -66,7 +67,7 @@ internal fun TagActions(app: BooruApp, opened: OpenedTag, search: BooruSearch?, 
             ListItem(
                 headlineContent = { Text(tokenText(tag, opened.category), style = MaterialTheme.typography.titleMedium) },
                 supportingContent = opened.category?.let { { Text(kindLabel(it)) } },
-                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
             )
             Hairline()
             Action(Icons.Filled.Search, pluginString(Strings.search_tag)) { done { app.openSearch(tag) } }
@@ -94,7 +95,7 @@ private fun Action(icon: ImageVector, label: String, onClick: () -> Unit) {
         headlineContent = { Text(label) },
         leadingContent = { Icon(icon, contentDescription = null) },
         modifier = Modifier.clickable(onClick = onClick),
-        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 

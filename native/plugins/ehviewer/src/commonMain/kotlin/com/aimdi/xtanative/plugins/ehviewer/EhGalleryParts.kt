@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -179,7 +178,7 @@ internal fun ReadActions(continuePage: Int?, onRead: (Int) -> Unit) {
             return@BoxWithConstraints
         }
         val resume: @Composable (Modifier) -> Unit = { modifier ->
-            OutlinedButton(onClick = { onRead(continuePage) }, modifier = modifier.heightIn(min = 48.dp)) {
+            TextButton(onClick = { onRead(continuePage) }, modifier = modifier.heightIn(min = 48.dp)) {
                 Icon(Icons.Filled.PlayArrow, contentDescription = null)
                 Text(pluginString(Strings.gallery_continue_page, continuePage), Modifier.padding(start = 8.dp), textAlign = TextAlign.Center)
             }

@@ -65,6 +65,40 @@ class ThreadsSwitchedReadsLiveTest {
         val post = inlineReplies(client, http, probed)
         refetches(client, http, probed, post)
         people(client, http, prepared = repairs.searchUsersDocId.isEmpty(), preparedRecommended = repairs.recommendedUsersDocId.isEmpty())
+        unused(client, http)
+    }
+
+    /**
+     * Reads the plugin does not make yet, asked by the ids the bundles named
+     * (run 191), to see what each gives a guest before anything is built on
+     * it: the accounts beside a profile, who else a search's words lead
+     * to, the topics the search page suggests, the feeds it lists, and the
+     * next page of a profile's reposts and of the front page. All queries.
+     */
+    private suspend fun unused(client: ThreadsDirectClient, http: Recording) {
+        val user = attempt { client.userIdFor("zuck") }
+        fun query(name: String, id: String, variables: Map<String, JsonPrimitive>) =
+            GuestQuery(id, name, ThreadsRelayProviders.with(JsonObject(variables)), GuestQuery.relayForm(name))
+        val people: (List<JsonElement>) -> String = { roots -> "parsed: ${ThreadsGuestPeople.users(roots).size} accounts" }
+        val posts: (List<JsonElement>) -> String = { roots -> "parsed: ${ThreadsPages.chainsIn(roots).size} chains" }
+        if (user != null) {
+            asked("unused, beside a profile", client, http, query("BarcelonaRightPanelProfileSuggestedUsersQuery", "40935708889349387", mapOf("userID" to JsonPrimitive(user))), "/@zuck", people)
+            asked(
+                "unused, reposts refetch", client, http,
+                query("BarcelonaProfileRepostsTabRefetchableDirectQuery", "30054019074236536", mapOf("userID" to JsonPrimitive(user), "first" to JsonPrimitive(ThreadsNextPage.PAGE_SIZE))),
+                "/@zuck/reposts", posts,
+            )
+        }
+        asked("unused, also searched", client, http, query("BarcelonaSearchPeopleAlsoSearchedQuery", "29048286198156909", mapOf("query" to JsonPrimitive(WORDS))), "/search?q=$WORDS", people)
+        asked("unused, suggested topics", client, http, query("BarcelonaSearchSuggestedTopicsSectionQuery", "30068299989438204", emptyMap()), "/search") { roots ->
+            "parsed: ${ThreadsTrends.fromRoots(roots).size} trends"
+        }
+        asked("unused, feeds", client, http, query("BarcelonaCustomFeedPickerPageQuery", "27445118868519809", emptyMap()), "/", posts)
+        asked(
+            "unused, front page on", client, http,
+            query("BarcelonaLoggedOutFeedPaginationQuery", "41291939227071792", mapOf("first" to JsonPrimitive(ThreadsNextPage.PAGE_SIZE), "after" to JsonNull)),
+            "/", posts,
+        )
     }
 
     private suspend fun about(client: ThreadsDirectClient, http: Recording) = read("about profile", http) {
@@ -78,7 +112,7 @@ class ThreadsSwitchedReadsLiveTest {
         read("trending page", http) { "parsed: ${client.trends(force = true).size} trends (the page's, else the query's)" }
         val docId = values.trendingTopicsDocId
         if (docId.isEmpty()) return println("LIVE Threads switched trending query: off")
-        val variables = ThreadsRelayProviders.with(JsonObject(emptyMap()), only = ThreadsBundleReads.TRENDING_PROVIDED)
+        val variables = ThreadsRelayProviders.with(ThreadsBundleReads.TRENDING_VARIABLES, only = ThreadsBundleReads.TRENDING_PROVIDED)
         asked("trending query", client, http, GuestQuery(docId, ThreadsBundleReads.TRENDING_TOPICS, variables, GuestQuery.relayForm(ThreadsBundleReads.TRENDING_TOPICS)), "/search") { roots ->
             "parsed: ${ThreadsTrends.fromRoots(roots).size} trends"
         }

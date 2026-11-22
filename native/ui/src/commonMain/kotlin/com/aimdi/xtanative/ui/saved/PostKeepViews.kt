@@ -14,6 +14,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +42,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_save_here
 import com.aimdi.xtanative.ui.generated.resources.saved_unlike
 import com.aimdi.xtanative.ui.generated.resources.saved_unsave
 import com.aimdi.xtanative.ui.plugins.CountButton
+import com.aimdi.xtanative.ui.post.sharedPostPrefs
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -96,40 +99,61 @@ fun PostKeep.isLiked(postId: String): Boolean = likedHere(postId)
 @Composable
 internal fun SavedNoteEditor(item: Keepable, onDismiss: () -> Unit) {
     val keeper = LocalKeeper.current
-    val library by keeper.saved.state.collectAsStateWithLifecycle()
-    LaunchedEffect(keeper) { keeper.saved.library() }
+    val library by keeper.saved.index.collectAsStateWithLifecycle()
+    LaunchedEffect(keeper) { keeper.saved.index() }
     val loaded = library ?: return
     val note = remember(item.id) { loaded.post(item.id)?.note }
     NoteEditorDialog(NoteTarget.Text(note, NoteRules.savedNoteKey(item.id)), onDismiss, saveText = { text -> Keeping.writeNote(keeper, item, text) })
 }
 
+/**
+ * Whether [postId] is saved here, as that changes: read from the frame's
+ * [KeptNow], where a change redraws only the bookmarks it changes, else
+ * followed here.
+ */
 @Composable
 internal fun savedHere(postId: String): Boolean {
     val keeper = LocalKeeper.current
-    LaunchedEffect(keeper) { keeper.saved.library() }
-    val library by keeper.saved.state.collectAsStateWithLifecycle()
+    val kept = keptNow(keeper)
+    if (kept != null) {
+        SideEffect(kept::wantSaved)
+        return remember(kept, postId) { derivedStateOf { kept.isSaved(postId) } }.value
+    }
+    LaunchedEffect(keeper) { keeper.saved.index() }
+    val library by keeper.saved.index.collectAsStateWithLifecycle()
     return library?.isSaved(postId) == true
 }
 
+/** Whether [postId] is liked here, as that changes: read as [savedHere] reads. */
 @Composable
 internal fun likedHere(postId: String): Boolean {
     val keeper = LocalKeeper.current
+    val kept = keptNow(keeper)
+    if (kept != null) {
+        SideEffect(kept::wantLiked)
+        return remember(kept, postId) { derivedStateOf { kept.isLiked(postId) } }.value
+    }
     val liked by remember(keeper) { LikedIds.of(keeper).ids }.collectAsStateWithLifecycle()
     return postId in liked
 }
 
 @Composable
 internal fun DeviceSaveButton(post: XPost, modifier: Modifier, tint: Color) {
-    val item = remember(post) { Keepable.of(post) }
-    KeepableSaveButton(item, modifier, tint)
+    // The post is written out as it is kept only when the bookmark is pressed, not for every card scrolled past.
+    KeepableSaveButton(post.shown.id, modifier, tint) { Keepable.of(post) }
 }
 
 /** The bookmark of any network's kept post: a tap saves [item] where plain taps file or removes it, a long press opens the save sheet. */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun KeepableSaveButton(item: Keepable, modifier: Modifier, tint: Color) {
+internal fun KeepableSaveButton(item: Keepable, modifier: Modifier, tint: Color) = KeepableSaveButton(item.id, modifier, tint) { item }
+
+/** [KeepableSaveButton] of the post [id], made [item] only once it is pressed. */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+internal fun KeepableSaveButton(id: String, modifier: Modifier, tint: Color, item: () -> Keepable) {
     val keeper = LocalKeeper.current
-    val saved = savedHere(item.id)
+    val saved = savedHere(id)
     var sheetFor by remember { mutableStateOf<Keepable?>(null) }
     val label = stringResource(if (saved) Res.string.saved_unsave else Res.string.saved_save_here)
     Box(
@@ -139,8 +163,8 @@ internal fun KeepableSaveButton(item: Keepable, modifier: Modifier, tint: Color)
             .combinedClickable(
                 role = Role.Button,
                 onClickLabel = label,
-                onClick = { Keeping.toggleSave(keeper, item) },
-                onLongClick = { sheetFor = item },
+                onClick = { Keeping.toggleSave(keeper, item()) },
+                onLongClick = { sheetFor = item() },
             ),
         contentAlignment = Alignment.Center,
     ) {
@@ -198,6 +222,9 @@ internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, coun
 /** Calm or zen mode is on, which keep actions quiet (XTA's quietActions). */
 @Composable
 private fun quietActions(): Boolean {
-    val settings by LocalKeeper.current.settings.state.collectAsStateWithLifecycle()
+    val store = LocalKeeper.current.settings
+    // The post settings already read for every card say it, where they are this store's.
+    sharedPostPrefs(store)?.let { return it.hideCounts }
+    val settings by store.state.collectAsStateWithLifecycle()
     return settings?.let { it[PostsPrefs.calmMode] || it[PostsPrefs.zenMode] } ?: false
 }

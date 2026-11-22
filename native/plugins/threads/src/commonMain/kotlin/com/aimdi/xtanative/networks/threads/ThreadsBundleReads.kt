@@ -37,8 +37,11 @@ object ThreadsBundleReads {
     /** The search page's trending topics, when the page itself carries none ([ThreadsDirectClient.trends]). */
     const val TRENDING_TOPICS = "BarcelonaSearchTrendingTopicsSectionQuery"
 
-    /** The one variable Relay provides the trending topics' query, as its bundle says (CI's probe). */
-    val TRENDING_PROVIDED = setOf("BarcelonaDiscussionSummariesrelayprovider")
+    /** The variables Relay provides the trending topics' query, as its bundle says (CI's probe). */
+    val TRENDING_PROVIDED = setOf("BarcelonaDiscussionSummariesrelayprovider", "BarcelonaHasLocalTrendLabelInSearchrelayprovider")
+
+    /** What that query is asked with: how many topics, the one of its own variables (`first`, `serp_prefetch`, `surface_type`) a list needs. */
+    val TRENDING_VARIABLES = JsonObject(mapOf("first" to JsonPrimitive(PEOPLE_ASKED)))
 
     /** A guest's people search ([ThreadsDirectClient.guestPeople]). */
     const val SEARCH_USERS = "BarcelonaSearchUserResultsRefetchableQuery"

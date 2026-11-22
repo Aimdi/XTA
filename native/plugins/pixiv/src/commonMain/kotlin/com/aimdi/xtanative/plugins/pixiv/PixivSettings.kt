@@ -16,7 +16,6 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -135,7 +134,7 @@ private fun TokenField() {
         Row {
             TextButton(onClick = { revealed = !revealed }) { Text(pluginString(Strings.reveal)) }
             Spacer(Modifier.width(8.dp))
-            OutlinedButton(enabled = !testing && text.isNotBlank(), onClick = {
+            TextButton(enabled = !testing && text.isNotBlank(), onClick = {
                 PixivSession.useToken(runtime, text.trim())
                 testing = true
                 scope.launch {

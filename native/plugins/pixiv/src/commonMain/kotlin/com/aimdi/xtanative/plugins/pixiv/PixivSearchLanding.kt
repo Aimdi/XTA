@@ -32,6 +32,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -114,6 +115,7 @@ private fun SearchHistory(model: PixivSearchModel, view: PixivSearchView, onSear
 private fun HistoryChip(label: String, icon: ImageVector? = null, onClick: () -> Unit, onLongClick: (() -> Unit)? = null) {
     Surface(
         shape = RoundedCornerShape(8.dp),
+        color = Color.Transparent,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.clip(RoundedCornerShape(8.dp)).combinedClickable(onClick = onClick, onLongClick = onLongClick),
     ) {
@@ -211,5 +213,6 @@ internal fun TagSuggestion(tag: PixivTrendTag, onPick: () -> Unit, onCopy: () ->
         supportingContent = tag.translatedName?.let { { Text(it) } },
         leadingContent = { Icon(PixivIcons.Tag, null) },
         modifier = Modifier.combinedClickable(onClick = onPick, onLongClick = onCopy),
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }

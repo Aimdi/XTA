@@ -8,8 +8,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,7 +62,7 @@ internal fun LazyListScope.sessionMoreFoot(key: String, state: ThreadsPagingStat
 @Composable
 private fun LoadMore(onLoadMore: () -> Unit) {
     Box(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp), contentAlignment = Alignment.Center) {
-        OutlinedButton(onClick = onLoadMore) { Text(pluginString(Strings.load_more)) }
+        TextButton(onClick = onLoadMore) { Text(pluginString(Strings.load_more)) }
     }
 }
 

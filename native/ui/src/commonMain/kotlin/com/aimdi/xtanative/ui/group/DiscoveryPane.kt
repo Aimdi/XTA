@@ -37,7 +37,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -499,11 +498,11 @@ private fun AddButton(groupName: String, added: Boolean, adding: Boolean, onAdd:
         }
         return
     }
-    FilledTonalIconButton(onClick = onAdd, enabled = !adding) {
+    IconButton(onClick = onAdd, enabled = !adding) {
         if (adding) {
             CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
         } else {
-            Icon(DiscoveryIcons.GroupAddOutlined, stringResource(Res.string.groups_discovery_add_to_group, groupName))
+            Icon(DiscoveryIcons.GroupAddOutlined, stringResource(Res.string.groups_discovery_add_to_group, groupName), tint = MaterialTheme.colorScheme.primary)
         }
     }
 }

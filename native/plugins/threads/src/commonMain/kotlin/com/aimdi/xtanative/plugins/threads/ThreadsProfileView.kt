@@ -1,9 +1,12 @@
 package com.aimdi.xtanative.plugins.threads
 
+import com.aimdi.xtanative.networks.threads.ThreadsException
+import com.aimdi.xtanative.networks.threads.ThreadsFailure
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.networks.threads.ThreadsProfilePage
 import com.aimdi.xtanative.store.backup.ProfileSubscriptionRow
+import java.time.Instant
 
 /** What the follow button on a profile says: the account is not followed on this device yet, or it is. */
 internal enum class ThreadsFollowFace { FOLLOW, FOLLOWING }
@@ -112,4 +115,16 @@ internal object ThreadsProfileView {
 
     /** The words a search is made of, lower case, its # and @ kept since they are typed in the text too. */
     fun words(query: String): List<String> = query.lowercase().split(Regex("\\s+")).filter { it.isNotBlank() }
+
+    /**
+     * The Media tab's posts: Threads' own media page ([own]) with the media
+     * among what the other tabs read ([loaded]), each once, newest first, so
+     * a page Meta gave a guest nothing of still shows what is at hand.
+     */
+    fun media(own: List<ThreadsPost>, loaded: List<ThreadsPost>): List<ThreadsPost> =
+        (own + loaded).distinctBy { it.id }.sortedWith(compareByDescending { it.publishedAt ?: Instant.MIN })
+
+    /** Whether a tab's page failed only because Meta keeps it from guests: the tab then says it has nothing on the public page, not an error. */
+    fun keptFromGuests(error: Throwable): Boolean =
+        (error as? ThreadsException)?.failure.let { it == ThreadsFailure.SIGN_IN_REQUIRED || it == ThreadsFailure.NO_SUCH_FEED || it == ThreadsFailure.PRIVATE_ACCOUNT }
 }

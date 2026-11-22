@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -29,14 +30,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -63,6 +61,7 @@ import com.aimdi.xtanative.networks.substack.SubstackPublication
 import com.aimdi.xtanative.networks.substack.SubstackPublicationFilter
 import com.aimdi.xtanative.networks.substack.SubstackRecommendation
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -76,7 +75,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import androidx.compose.foundation.layout.PaddingValues
 
 /**
  * A publication's page as XTA's SubstackPublicationStore runs it: its archive
@@ -228,7 +226,7 @@ private fun Hero(app: SubstackApp, model: PublicationModel, state: PublicationMo
         FlowRow(Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             FollowButton(app, publication)
             GroupButton(app, publication)
-            OutlinedButton(onClick = onSimilar) {
+            TextButton(onClick = onSimilar) {
                 Icon(SubstackIcons.Similar, null, Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
                 Text(pluginString(Strings.similar))
@@ -270,7 +268,7 @@ private fun Identity(publication: SubstackPublication) {
 internal fun FollowButton(app: SubstackApp, publication: SubstackPublication) {
     val follows by app.publications.collectAsState()
     val followed = follows?.let { app.followOf(publication) } != null
-    FilledTonalButton(onClick = { if (followed) app.unfollow(publication) else app.follow(publication) }) {
+    TextButton(onClick = { if (followed) app.unfollow(publication) else app.follow(publication) }) {
         Icon(if (followed) Icons.Default.Check else Icons.Default.Add, null, Modifier.size(18.dp))
         Spacer(Modifier.width(8.dp))
         Text(pluginString(if (followed) Strings.unfollow else Strings.follow))
@@ -283,7 +281,7 @@ private fun PinButton(app: SubstackApp, publication: SubstackPublication) {
     val pins by app.pins.state.collectAsState()
     val follow = follows?.let { app.followOf(publication) } ?: return
     val pinned = follow.id in pins
-    OutlinedButton(onClick = { app.launch { app.pins.toggle(follow.id) } }) {
+    TextButton(onClick = { app.launch { app.pins.toggle(follow.id) } }) {
         Icon(if (pinned) SubstackIcons.PushPin else SubstackIcons.PushPinOutlined, null, Modifier.size(18.dp))
         Spacer(Modifier.width(8.dp))
         Text(pluginString(if (pinned) Strings.unpin else Strings.pin))
@@ -307,7 +305,7 @@ private fun PublicationControls(model: PublicationModel, state: PublicationModel
         )
         FlowRow(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SubstackPublicationFilter.entries.forEach { filter ->
-                FilterChip(selected = state.filter == filter, onClick = { model.filter(filter) }, label = { Text(pluginString(publicationFilterLabel(filter))) })
+                PluginFilterChip(pluginString(publicationFilterLabel(filter)), selected = state.filter == filter, onClick = { model.filter(filter) })
             }
         }
         Box {
@@ -355,7 +353,7 @@ private fun SimilarSheet(app: SubstackApp, publication: SubstackPublication, onD
             val error = state.error
             when {
                 state.loading -> LoadingRow()
-                error != null -> EmptyState(pluginString(Strings.load_error)) { FilledTonalButton(onClick = similar::load) { Text(pluginString(Strings.retry)) } }
+                error != null -> EmptyState(pluginString(Strings.load_error)) { TextButton(onClick = similar::load) { Text(pluginString(Strings.retry)) } }
                 state.recommendations.isEmpty() -> EmptyState(pluginString(Strings.similar_empty))
                 else -> LazyColumn(Modifier.fillMaxWidth(), contentPadding = PaddingValues(bottom = 24.dp)) {
                     items(state.recommendations, key = { it.publication.id + "\n" + it.publication.baseUrl }) { recommendation ->

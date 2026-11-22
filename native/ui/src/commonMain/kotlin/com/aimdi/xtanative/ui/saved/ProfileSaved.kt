@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,6 +36,7 @@ import com.aimdi.xtanative.store.saved.ArchiveFilter
 import com.aimdi.xtanative.store.saved.ArchiveItem
 import com.aimdi.xtanative.store.saved.SavedContent
 import com.aimdi.xtanative.store.saved.profileArchive
+import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.saved_bookmarks
@@ -73,7 +74,9 @@ fun rememberProfileSaved(userId: String?): ProfileSavedState {
     var filter by rememberSaveable { mutableStateOf(ArchiveFilter.ALL) }
     val loaded = library
     val liked = likes
-    val items = if (loaded == null || liked == null) null else userId?.let { profileArchive(loaded.posts, liked, it, filter) }.orEmpty()
+    val items = remember(loaded, liked, userId, filter) {
+        if (loaded == null || liked == null) null else userId?.let { profileArchive(loaded.posts, liked, it, filter) }.orEmpty()
+    }
     return ProfileSavedState(filter, items) { filter = it }
 }
 
@@ -105,7 +108,7 @@ fun LazyListScope.profileSaved(state: ProfileSavedState, user: XUser?, actions: 
         return
     }
     items(items, key = { "profile-saved-" + it.id }, contentType = { "kept" }) { item ->
-        KeptPost(SavedContent.of(item.content), actions)
+        KeptPost(remember(item) { SavedContent.of(item.content) }, actions)
         Hairline()
     }
 }
@@ -119,7 +122,7 @@ fun ProfileSavedFilter(selected: ArchiveFilter, onSelect: (ArchiveFilter) -> Uni
             Triple(ArchiveFilter.LIKES, Icons.Filled.FavoriteBorder, Res.string.saved_tab_likes),
             Triple(ArchiveFilter.BOOKMARKS, SavedIcons.BookmarkBorder, Res.string.saved_bookmarks),
         ).forEach { (filter, icon, label) ->
-            FilterChip(
+            FlatFilterChip(
                 selected = filter == selected,
                 onClick = { onSelect(filter) },
                 label = { Text(stringResource(label)) },

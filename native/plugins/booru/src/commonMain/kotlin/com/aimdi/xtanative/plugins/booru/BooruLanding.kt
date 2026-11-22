@@ -24,6 +24,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -38,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -201,7 +203,7 @@ private fun RecentSearches(app: BooruApp, settings: Settings, onRun: (String) ->
                 IconButton(onClick = { app.update { it.with(BooruPrefs.searchHistory, emptyList()) } }) { Icon(DiscoverIcons.DeleteSweep, pluginString(Strings.clear_history)) }
             }
         }
-        if (history.isEmpty()) ListItem(headlineContent = { Text(pluginString(Strings.search_history_empty)) })
+        if (history.isEmpty()) ListItem(headlineContent = { Text(pluginString(Strings.search_history_empty)) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
         history.forEach { query -> key(query) { HistoryRow(query, onRun, forget) } }
     }
 }
@@ -219,6 +221,7 @@ private fun HistoryRow(query: String, onRun: (String) -> Unit, onForget: (String
             leadingContent = { Icon(PostIcons.History, contentDescription = null) },
             trailingContent = { IconButton(onClick = { onForget(query) }) { Icon(Icons.Filled.Close, pluginString(Strings.delete)) } },
             modifier = Modifier.clickable { onRun(query) },
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         )
     }
 }

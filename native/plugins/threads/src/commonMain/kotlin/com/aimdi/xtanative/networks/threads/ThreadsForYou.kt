@@ -62,17 +62,21 @@ class ThreadsForYou(
      */
     val source: ThreadsForYouSource
         get() = direct.currentSession.let { session ->
-            if (session.hasBearer && session.useSessionApis && !direct.isSessionParked) ThreadsForYouSource.SESSION else ThreadsForYouSource.GUEST
+            if ((session.hasBearer || session.hasCookies) && session.useSessionApis && !direct.isSessionParked) ThreadsForYouSource.SESSION else ThreadsForYouSource.GUEST
         }
 
     /** The first page, or the one [cursor] names. */
     suspend fun page(cursor: String? = null): ThreadsForYouPage {
         if (cursor == null) synchronized(explored) { explored.clear() }
         if (cursor?.startsWith(EXPLORE_CURSOR) == true) return explorePage()
+        if (cursor?.startsWith(OWN_CURSOR) == true) return own(cursor.removePrefix(OWN_CURSOR))
         guestRead(cursor)?.let { return guest(it) }
         if (ThreadsNextPage.decode(cursor) != null) return guestMore(cursor!!)
         if (source == ThreadsForYouSource.GUEST) return guest(0)
         return try {
+            // A Bearer reads the app's timeline; cookies alone read the reader's own front page of threads.com.
+            // A page that gave the cookies nothing is no feed: the public one stands in, as when a session is refused.
+            if (cursor == null && !direct.currentSession.hasBearer) return own(null).takeIf { it.posts.isNotEmpty() } ?: guest(0)
             val page = direct.forYouTimeline(cursor)
             ThreadsForYouPage(ThreadsForYouSource.SESSION, page.items, page.next)
         } catch (e: ThreadsException) {
@@ -80,6 +84,12 @@ class ThreadsForYou(
             if (cursor != null || e.failure !in SESSION_REFUSALS) throw e
             guest(0).copy(sessionProblem = e.failure)
         }
+    }
+
+    /** The reader's own front page with their cookies, its cursor marked as theirs so its next page is asked with them too. */
+    private suspend fun own(cursor: String?): ThreadsForYouPage {
+        val page = direct.webForYou(cursor)
+        return ThreadsForYouPage(ThreadsForYouSource.SESSION, page.items, page.next?.let { OWN_CURSOR + it })
     }
 
     private suspend fun guest(read: Int): ThreadsForYouPage {
@@ -126,7 +136,11 @@ class ThreadsForYou(
         const val MAX_EXPLORED = 12
 
         private const val GUEST_CURSOR = "guest:"
+
+        /** Where a guest's selection kept from the last run goes on: the public page, read again. */
+        const val AFTER_RESTORE = GUEST_CURSOR + "1"
         private const val EXPLORE_CURSOR = "explore:"
+        private const val OWN_CURSOR = "own:"
 
         /** What Meta says to a session that the public page can stand in for. */
         private val SESSION_REFUSALS = setOf(ThreadsFailure.THROTTLED, ThreadsFailure.UNAUTHORIZED, ThreadsFailure.SESSION_SUSPENDED, ThreadsFailure.ACCOUNT_RESTING)
@@ -182,10 +196,19 @@ class ThreadsForYouFeed(
 
     private val reading = Mutex()
 
-    /** What the reader last saw, painted before anything is asked; nothing when posts are shown already. */
+    /**
+     * What the reader last saw, painted before anything is asked; nothing
+     * when posts are shown already. A guest's selection goes on where a
+     * guest's always can, by reading the public page again, so its end is
+     * no dead end; a session's is read on by a refresh. Restored posts are
+     * no answer from Meta: the feed is not yet loaded.
+     */
     fun restore(posts: List<ThreadsPost>, source: ThreadsForYouSource?, readAt: Instant?) {
         if (posts.isEmpty()) return
-        mutable.update { if (it.posts.isEmpty()) it.copy(posts = posts.distinctBy(ThreadsPost::id), source = source, readAt = readAt) else it }
+        val next = ThreadsForYou.AFTER_RESTORE.takeIf { source == ThreadsForYouSource.GUEST }
+        mutable.update {
+            if (it.posts.isEmpty()) it.copy(posts = posts.distinctBy(ThreadsPost::id), source = source, readAt = readAt, next = next) else it
+        }
     }
 
     /** Whether a read may leave now: not while one is under way, nor before a rate limit's end. */

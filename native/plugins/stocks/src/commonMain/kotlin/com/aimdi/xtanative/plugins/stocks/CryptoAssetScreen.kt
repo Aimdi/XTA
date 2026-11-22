@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.plugins.stocks
 
-import com.aimdi.xtanative.ui.post.PostIcons
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,12 +17,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -44,11 +42,13 @@ import com.aimdi.xtanative.networks.stocks.DexScreener
 import com.aimdi.xtanative.networks.stocks.StockNumbers
 import com.aimdi.xtanative.ui.common.rememberCopyContract
 import com.aimdi.xtanative.ui.plugins.NoticeHost
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginNotices
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
+import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -139,12 +139,12 @@ private fun CryptoHeader(asset: CryptoAsset, state: CryptoDetail, model: CryptoA
             CryptoPrice(state.market)
             StatGrid(cryptoStats(state.market), Modifier.padding(vertical = 8.dp))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick = { copy(asset.address) }) {
+                TextButton(onClick = { copy(asset.address) }) {
                     Icon(StocksIcons.ContentCopy, null, Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
                     Text(pluginString(Strings.crypto_copy_contract))
                 }
-                OutlinedButton(onClick = { if (pair != null) outside(DexScreener.pairPageUrl(asset, pair).toString()) }, enabled = pair != null) {
+                TextButton(onClick = { if (pair != null) outside(DexScreener.pairPageUrl(asset, pair).toString()) }, enabled = pair != null) {
                     Icon(PostIcons.OpenInNew, null, Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
                     Text(pluginString(Strings.open_in_browser))
@@ -220,7 +220,7 @@ private fun PostsChoice(asset: CryptoAsset, includeCashtag: Boolean, onInclude: 
     val cashtag = asset.cashtag
     Column {
         if (cashtag != null) {
-            FilterChip(selected = includeCashtag, onClick = { onInclude(!includeCashtag) }, label = { Text(pluginString(Strings.crypto_include_cashtag, cashtag)) })
+            PluginFilterChip(pluginString(Strings.crypto_include_cashtag, cashtag), selected = includeCashtag, onClick = { onInclude(!includeCashtag) })
         }
         val hint = if (includeCashtag && cashtag != null) pluginString(Strings.crypto_posts_hint_cashtag, cashtag) else pluginString(Strings.crypto_posts_hint)
         Text(hint, style = MaterialTheme.typography.bodySmall)

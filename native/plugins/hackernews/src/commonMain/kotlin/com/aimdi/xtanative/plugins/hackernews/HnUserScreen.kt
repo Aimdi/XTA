@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -73,7 +72,7 @@ private fun Lead(user: HnUser, following: Boolean, onFollow: () -> Unit, onGroup
             }
             TextButton(onClick = onFollow) { Text(pluginString(if (following) Strings.unfollow else Strings.follow)) }
         }
-        OutlinedButton(onClick = onGroup, modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)) {
+        TextButton(onClick = onGroup, modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)) {
             Icon(PostIcons.GroupAdd, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(addToGroupText(), modifier = Modifier.padding(start = 8.dp))
         }

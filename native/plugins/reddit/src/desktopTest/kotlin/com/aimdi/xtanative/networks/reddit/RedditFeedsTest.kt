@@ -167,6 +167,16 @@ class RedditFeedsTest {
     }
 
     @Test
+    fun oneCommunityThatFailsAddsNothingButAllOfThemFailingIsAFailure(): Unit = runBlocking {
+        val some = Communities(mapOf("dartlang" to listOf(post("dartlang", "a"))), failing = setOf("gone"))
+        assertEquals(listOf("a"), some.feed.posts(listOf("dartlang", "gone"), session = signedIn).map { it.id })
+
+        val none = Communities(emptyMap(), failing = setOf("gone", "private"))
+        val read = runCatching { none.feed.posts(listOf("gone", "private"), session = signedIn) }
+        assertTrue(read.isFailure, "nothing could be read: the feed says so, not that there is nothing new")
+    }
+
+    @Test
     fun aForcedReadReachesRedditAgain() = runBlocking {
         val reddit = Communities(mapOf("dartlang" to listOf(post("dartlang", "a"))))
         reddit.feed.posts(listOf("dartlang"), session = signedIn)

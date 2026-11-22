@@ -10,8 +10,10 @@ import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import java.time.Instant
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
@@ -40,7 +42,15 @@ internal class ThreadsSettingsMemory(
         }
 
     init {
-        scope.launch { local.filterNotNull().collect { value -> write { written(it, value) } } }
+        // A refresh changes this at every request (the guest token's time, the guard's counts), and a write is the
+        // whole settings file, heard by every screen: a burst is one write of the newest, a moment after it.
+        scope.launch {
+            local.filterNotNull().conflate().collect {
+                delay(WRITE_AFTER_MILLIS)
+                val newest = local.value ?: return@collect
+                write { written(it, newest) }
+            }
+        }
     }
 
     companion object {
@@ -49,6 +59,9 @@ internal class ThreadsSettingsMemory(
          * other Threads keys, as JSON. Times and headers only, nothing secret.
          */
         const val GUARD_KEY = "plugin.threads.direct.account_guard"
+
+        /** How long after a change it is written: long enough for a refresh's requests to be one write. */
+        const val WRITE_AFTER_MILLIS = 1_000L
 
         fun read(settings: Settings): ThreadsKept = ThreadsKept(
             deviceId = settings[ThreadsPrefs.directDeviceId].trim().ifEmpty { null },

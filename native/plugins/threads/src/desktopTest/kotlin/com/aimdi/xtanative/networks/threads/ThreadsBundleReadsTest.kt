@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.networks.threads
 
+import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.x.http.XResponse
 import java.time.Instant
 import kotlin.test.Test
@@ -130,7 +131,9 @@ class ThreadsBundleReadsTest {
         assertEquals(listOf("GET /@zuck", "POST /api/graphql"), asked(meta), "the card read a moment ago gives the id and the token")
         val form = meta.asked.last().form
         assertEquals("7000000000000002", form["doc_id"])
-        assertEquals("""{"userID":"$id"}""", form["variables"])
+        val sent = J.parse(form.getValue("variables"))
+        assertEquals(id, sent["userID"].string)
+        assertEquals(false, sent["__relay_internal__pv__BarcelonaIsLoggedInrelayprovider"].boolean, "with the variables Relay provides: without them Meta says one is missing")
         assertEquals("BarcelonaAboutThisProfileDialogQuery", form["fb_api_req_friendly_name"])
     }
 
@@ -159,7 +162,11 @@ class ThreadsBundleReadsTest {
         assertEquals(listOf("Kotlin"), client.trends().map { it.title })
         assertEquals(listOf("GET /search", "POST /api/graphql"), asked(meta))
         assertEquals("7000000000000003", meta.asked.last().form["doc_id"])
-        assertEquals("""{"__relay_internal__pv__BarcelonaDiscussionSummariesrelayprovider":false}""", meta.asked.last().form["variables"], "the one variable its bundle says Relay provides it")
+        assertEquals(
+            """{"__relay_internal__pv__BarcelonaDiscussionSummariesrelayprovider":false,"__relay_internal__pv__BarcelonaHasLocalTrendLabelInSearchrelayprovider":false,"first":20}""",
+            meta.asked.last().form["variables"],
+            "the two variables its bundle says Relay provides it, and how many topics",
+        )
         assertEquals(listOf("Kotlin"), client.trends().map { it.title })
         assertEquals(2, meta.asked.size, "remembered as the page's are")
 

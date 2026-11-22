@@ -39,6 +39,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
@@ -93,7 +94,7 @@ internal fun HomeFilterSheet(ui: HomeUi, onApply: (HomeFilterDraft) -> Unit, onD
                 Text(stringResource(Res.string.home_feed_accounts), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
                 IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) }
             }
-            TabRow(selectedTabIndex = if (groupsShown) 1 else 0, containerColor = MaterialTheme.colorScheme.surfaceContainerLow) {
+            TabRow(selectedTabIndex = if (groupsShown) 1 else 0, containerColor = Color.Transparent) {
                 Tab(selected = !groupsShown, onClick = { groupsShown = false }, text = { Text(stringResource(Res.string.home_filter_accounts)) })
                 Tab(selected = groupsShown, onClick = { groupsShown = true }, text = { Text(stringResource(Res.string.home_groups)) })
             }

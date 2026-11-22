@@ -291,13 +291,13 @@ internal fun UpvoteButton(app: RedditApp, id: String, score: Int?, filled: Boole
     }
 }
 
-/** A rounded touch target the thread's actions share: filled, a pill under the post; unfilled, a quiet button in a comment. */
+/** A rounded touch target the thread's actions share, flat on the page: [filled] is the roomier one under the post; unfilled, a quiet button in a comment. */
 @Composable
 internal fun Pill(filled: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Surface(
         onClick = onClick,
         shape = CircleShape,
-        color = if (filled) MaterialTheme.colorScheme.surfaceContainerHigh else Color.Transparent,
+        color = Color.Transparent,
         modifier = modifier.heightIn(min = Target).widthIn(min = Target),
     ) {
         Row(

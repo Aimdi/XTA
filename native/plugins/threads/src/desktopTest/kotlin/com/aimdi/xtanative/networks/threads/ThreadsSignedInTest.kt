@@ -66,17 +66,18 @@ class ThreadsSignedInTest {
     fun theFollowingFeedWithCookiesPassesOverAnAnswerThatIsForYouAndRemembersThePathThatServesIt(): Unit = runBlocking {
         val meta = FakeMeta { asked ->
             when (asked.path) {
+                "/following" -> XResponse(404, "")
                 ThreadsOwnFeeds.TIMELINE -> ok(timeline(followedBy("1", "a", false), followedBy("2", "b", false)))
                 else -> ok(timeline(followedBy("3", "c", true)))
             }
         }
         val client = direct(meta, ThreadsSession(COOKIES), time = time)
         assertEquals(listOf("3"), client.ownFeed(ThreadsOwnFeed.FOLLOWING).items.map { it.id })
-        assertEquals(ThreadsOwnFeeds.paths(ThreadsOwnFeed.FOLLOWING), meta.asked.map { it.path })
-        assertTrue(meta.asked.all { it.method == "GET" && it.url.host == "www.threads.com" && it.url.queryParameter("feed_type") == "following" })
+        assertEquals(listOf("/following") + ThreadsOwnFeeds.paths(ThreadsOwnFeed.FOLLOWING), meta.asked.map { it.path }, "its page first, then the app's timeline")
+        assertTrue(meta.asked.drop(1).all { it.method == "GET" && it.url.host == "www.threads.com" && it.url.queryParameter("feed_type") == "following" })
         client.ownFeed(ThreadsOwnFeed.FOLLOWING, cursor = "n")
         assertEquals("/api/v1/text_feed/following_timeline/", meta.asked.last().path, "the path that served it is asked first from then on")
-        assertEquals(3, meta.asked.size)
+        assertEquals(4, meta.asked.size)
     }
 
     @Test

@@ -392,14 +392,13 @@ private fun ContentChoices(options: List<ThreadsFeedContent>, selected: ThreadsF
             Modifier
                 .size(48.dp)
                 .clip(CircleShape)
-                .background(if (chosen) MaterialTheme.colorScheme.surfaceContainerHigh else Color.Transparent)
                 .selectable(selected = chosen, role = Role.RadioButton) { onSelect(option) },
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 contentIcon(option),
                 contentDescription = pluginString(contentLabel(option)),
-                tint = if (chosen) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = if (chosen) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp),
             )
         }

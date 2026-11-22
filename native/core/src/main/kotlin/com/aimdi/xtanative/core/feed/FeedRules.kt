@@ -94,8 +94,18 @@ object MutedKeywords {
         if (needle.isEmpty()) return false
         val haystack = text.lowercase()
         if (!wholeWord.matches(needle)) return haystack.contains(needle)
-        return Regex("(?<![\\p{L}\\p{N}])" + Regex.escape(needle) + "(?![\\p{L}\\p{N}])").containsMatchIn(haystack)
+        return wordPattern(needle).containsMatchIn(haystack)
     }
+
+    /** A word's pattern, compiled once: a feed asks for each muted word once a thread, every time it is shaped. */
+    private val patterns = java.util.concurrent.ConcurrentHashMap<String, Regex>()
+
+    private fun wordPattern(needle: String): Regex {
+        if (patterns.size > PATTERNS_KEPT) patterns.clear()
+        return patterns.getOrPut(needle) { Regex("(?<![\\p{L}\\p{N}])" + Regex.escape(needle) + "(?![\\p{L}\\p{N}])") }
+    }
+
+    private const val PATTERNS_KEPT = 500
 
     /** What was typed, split into terms at commas and line breaks. */
     fun parseTyped(raw: String?): List<String> =

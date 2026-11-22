@@ -32,7 +32,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -314,7 +313,7 @@ internal fun PreviewFooter(state: EhGalleryState, onMore: () -> Unit) {
         state.loadingMore -> Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
         }
-        state.hasMorePreviews -> OutlinedButton(onClick = onMore, modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp).heightIn(min = 48.dp)) {
+        state.hasMorePreviews -> TextButton(onClick = onMore, modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp).heightIn(min = 48.dp)) {
             Icon(if (state.moreFailed) Icons.Filled.Refresh else Icons.Filled.KeyboardArrowDown, contentDescription = null)
             Text(pluginString(Strings.load_more_previews), Modifier.padding(start = 8.dp))
         }

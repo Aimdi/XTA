@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.ui.post
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,7 +38,7 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * A run of reposts as one row, when "collapse reposts" is on
- * (boost_run_carousel.dart): compact cards side by side, each naming whose
+ * (boost_run_carousel.dart): compact entries side by side on the page, each naming whose
  * post it is; "Expand" lays the run out as full posts in place, "Collapse"
  * folds it again. A feed draws one per [BoostRuns.Item.Run].
  */
@@ -88,7 +87,6 @@ private fun BoostCard(thread: XThread, actions: PostActions) {
             .width(200.dp)
             .height(72.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
             .clickable { actions.openPost(shown.id) }
             .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically,

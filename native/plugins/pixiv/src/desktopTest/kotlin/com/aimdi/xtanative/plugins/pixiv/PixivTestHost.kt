@@ -18,11 +18,12 @@ import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.PluginSettings
 import java.nio.file.Files
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 /** The app as the Pixiv plugin's tests play it: settings in memory, a store in a fresh folder, Pixiv through [http]. */
 internal class PixivTestHost(
@@ -40,7 +41,10 @@ internal class PixivTestHost(
     var saves: (List<PluginDownload>) -> List<Boolean> = { files -> files.map { true } }
 
     override val store = StoreDir(Files.createTempDirectory("pixiv-test").toFile())
-    override val settings = PluginSettings("pixiv", appSettings) { change -> appSettings.value = change(appSettings.value ?: Settings()) }
+    override val settings = PluginSettings("pixiv", appSettings) { change ->
+        // One change at a time, as the app's settings take them: a late write must not bring back what another took away.
+        appSettings.update { change(it ?: Settings()) }
+    }
     override val language = "en"
     override val online: Flow<Boolean> = flowOf(true)
     override val x: XClient get() = error("not in tests")

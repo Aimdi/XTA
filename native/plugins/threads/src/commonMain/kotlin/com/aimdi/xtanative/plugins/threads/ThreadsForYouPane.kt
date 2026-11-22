@@ -29,6 +29,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsDiscovery
 import com.aimdi.xtanative.networks.threads.ThreadsFailure
@@ -149,13 +150,13 @@ private fun StartsAnewAtTheTop(list: LazyListState, readAt: Instant?) {
 private fun SessionNotice(app: ThreadsApp, problem: ThreadsFailure) {
     val words = if (problem == ThreadsFailure.UNAUTHORIZED) Strings.error_unauthorized else Strings.session_parked
     ListItem(
-        leadingContent = { Icon(ThreadsIcons.PauseCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onErrorContainer) },
-        headlineContent = { Text(pluginString(words), color = MaterialTheme.colorScheme.onErrorContainer, style = MaterialTheme.typography.bodyMedium) },
-        supportingContent = { Text(pluginString(Strings.for_you_public), color = MaterialTheme.colorScheme.onErrorContainer) },
+        leadingContent = { Icon(ThreadsIcons.PauseCircle, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
+        headlineContent = { Text(pluginString(words), style = MaterialTheme.typography.bodyMedium) },
+        supportingContent = { Text(pluginString(Strings.for_you_public)) },
         trailingContent = {
-            TextButton(onClick = { app.host.openSettings() }) { Text(pluginString(Strings.settings), color = MaterialTheme.colorScheme.onErrorContainer) }
+            TextButton(onClick = { app.host.openSettings() }) { Text(pluginString(Strings.settings)) }
         },
-        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.errorContainer),
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 

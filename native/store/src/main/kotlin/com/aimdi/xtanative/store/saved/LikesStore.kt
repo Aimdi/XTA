@@ -6,31 +6,47 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.json.JsonElement
 
 /**
- * Posts liked on this device, newest first, in `saved/likes.json`. A like is
- * the heart remembering: no network is ever told.
+ * Posts liked on this device, newest first, kept by [KeptPosts] under
+ * `saved/likes`: a like writes that one post, not every like. A like is the
+ * heart remembering: no network is ever told.
  */
 class LikesStore(dir: StoreDir, private val clock: () -> Long = System::currentTimeMillis) {
-    private val stored = StoredJson(dir, "saved/likes.json", emptyList(), SavedCodec::likes, SavedCodec::likes)
+    private val kept = KeptPosts(dir, "likes", LikesShape)
 
-    /** The likes once read, newest first; null before the first call reads them. */
-    val state: StateFlow<List<LikedPost>?> = stored.state
+    /** The likes with what was kept of each post, newest first; null before [likes] first reads them. */
+    val state: StateFlow<List<LikedPost>?> = kept.whole
 
-    suspend fun likes(): List<LikedPost> = stored.get()
+    /**
+     * The likes without their content, newest first: enough to say what is
+     * liked, by whom and when, at a fraction of the memory. Null before the
+     * first call of any kind reads them.
+     */
+    val index: StateFlow<List<LikedPost>?> = kept.bare
 
-    suspend fun isLiked(id: String): Boolean = likes().any { it.id == id }
+    /** Every like with its content, which reads each post kept the first time. */
+    suspend fun likes(): List<LikedPost> = kept.whole()
+
+    /** The likes as [index] holds them. */
+    suspend fun index(): List<LikedPost> = kept.bare()
+
+    /** What was kept of post [id] alone; null when it is not liked or nothing was kept. */
+    suspend fun contentOf(id: String): JsonElement? = kept.content(id)
+
+    suspend fun isLiked(id: String): Boolean = index().any { it.id == id }
 
     /**
      * Likes [id], newest first. The same post can show twice in a feed (a
      * pinned or reposted copy and its own), so liking it again only moves it to
      * the top with [content] as it is now, never a second entry.
      */
-    suspend fun like(id: String, authorId: String?, content: JsonElement?): LikedPost = stored.updateWith { likes ->
+    suspend fun like(id: String, authorId: String?, content: JsonElement?): LikedPost = kept.edit { likes ->
         val like = LikedPost(id, authorId, content, clock())
-        (listOf(like) + likes.filterNot { it.id == id }) to like
+        Edit(listOf(like) + likes.filterNot { it.id == id }, like, fresh = id)
     }
 
+    /** Takes the like back, and deletes what was kept of the post. */
     suspend fun unlike(id: String) {
-        stored.update { likes -> if (likes.none { it.id == id }) likes else likes.filterNot { it.id == id } }
+        kept.edit { likes -> Edit(if (likes.none { it.id == id }) likes else likes.filterNot { it.id == id }, Unit) }
     }
 
     /** Everything kept, for the backup. */
@@ -38,12 +54,12 @@ class LikesStore(dir: StoreDir, private val clock: () -> Long = System::currentT
 
     /** Replaces every like with [likes], newest first, as a restored backup does. */
     suspend fun replace(likes: List<LikedPost>) {
-        stored.update { likes.distinctBy { it.id } }
+        kept.rewrite { likes.distinctBy { it.id } }
     }
 
     /** A restore: [merge] gets the likes kept now and gives those to keep (null for no change), under the lock every like takes. */
     suspend fun restore(merge: (List<LikedPost>) -> List<LikedPost>?) {
-        stored.update { now -> merge(now)?.distinctBy { it.id } ?: now }
+        kept.rewrite { now -> merge(now)?.distinctBy { it.id } }
     }
 }
 

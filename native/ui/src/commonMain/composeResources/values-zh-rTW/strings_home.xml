@@ -77,8 +77,6 @@
     <string name="feed_strip_unavailable">此時間軸已無法使用</string>
     <string name="home_feed_accounts_empty">請新增帳號以載入「為你推薦」。</string>
     <string name="home_switcher_title">切換外掛程式</string>
-    <string name="home_switcher_start">開始</string>
-    <string name="home_switcher_start_hint">追蹤中與你的所有時間軸</string>
     <string name="home_switcher_recent">最近使用</string>
     <string name="home_manage_plugins">管理外掛程式</string>
     <string name="home_xta_settings">XTA 設定</string>

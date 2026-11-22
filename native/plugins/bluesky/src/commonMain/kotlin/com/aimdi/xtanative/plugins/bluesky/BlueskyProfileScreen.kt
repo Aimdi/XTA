@@ -31,16 +31,14 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -78,7 +76,6 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyProfile
 import com.aimdi.xtanative.networks.bluesky.BlueskyProfileTab
 import com.aimdi.xtanative.networks.bluesky.BlueskySearchKind
 import com.aimdi.xtanative.ui.common.Avatar
-import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
@@ -91,6 +88,7 @@ import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedState
+import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
@@ -244,16 +242,13 @@ private fun Header(app: BlueskyApp, profile: BlueskyProfile?, actor: String, fol
     }
 }
 
-/** Follow in the theme's strongest colour, Unfollow outlined, as XTA's profile draws them. */
+/** Follow as bold accent text, Unfollow as plain accent text, as XTA's profile draws them. */
 @Composable
 private fun FollowButton(followed: Boolean, onClick: () -> Unit) {
     if (followed) {
-        OutlinedButton(onClick = onClick) { Text(pluginString(Strings.unfollow)) }
+        TextButton(onClick = onClick) { Text(pluginString(Strings.unfollow)) }
     } else {
-        val colors = MaterialTheme.colorScheme
-        Button(onClick = onClick, colors = ButtonDefaults.buttonColors(containerColor = colors.onSurface, contentColor = colors.surface)) {
-            Text(pluginString(Strings.follow))
-        }
+        TextButton(onClick = onClick) { Text(pluginString(Strings.follow), fontWeight = FontWeight.Bold) }
     }
 }
 

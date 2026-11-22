@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,7 +29,6 @@ import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -58,10 +58,10 @@ import com.aimdi.xtanative.networks.substack.SubstackLoadedOptions
 import com.aimdi.xtanative.networks.substack.SubstackOrder
 import com.aimdi.xtanative.networks.substack.SubstackPost
 import com.aimdi.xtanative.networks.substack.SubstackPublication
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
-import androidx.compose.foundation.layout.PaddingValues
 
 /**
  * The row above a feed's posts, as XTA's SubstackReadingToolbar: the
@@ -130,12 +130,7 @@ internal fun ReadingOptions(state: HomeState, pane: HomePane, autofocus: Boolean
             if (pane == HomePane.HOME) {
                 FlowRow(Modifier.padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     SubstackFeedFilter.entries.forEach { filter ->
-                        FilterChip(
-                            selected = controls.filter == filter,
-                            onClick = { controls.filter = filter },
-                            label = { Text(pluginString(filterLabel(filter))) },
-                            leadingIcon = if (controls.filter == filter) ({ Icon(Icons.Default.Check, null, Modifier.size(18.dp)) }) else null,
-                        )
+                        PluginFilterChip(pluginString(filterLabel(filter)), selected = controls.filter == filter, onClick = { controls.filter = filter })
                     }
                 }
             }

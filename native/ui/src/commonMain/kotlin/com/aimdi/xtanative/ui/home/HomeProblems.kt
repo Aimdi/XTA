@@ -13,10 +13,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Warning
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +43,7 @@ internal fun MissingPage(onChoose: () -> Unit) {
         Text("🧨", fontSize = 36.sp, modifier = Modifier.padding(bottom = 16.dp))
         Text(stringResource(Res.string.home_missing_page), fontSize = 18.sp, textAlign = TextAlign.Center)
         Hint(stringResource(Res.string.home_two_pages_required))
-        ElevatedButton(onClick = onChoose, modifier = Modifier.padding(top = 12.dp)) { Text(stringResource(Res.string.home_choose_pages)) }
+        TextButton(onClick = onChoose, modifier = Modifier.padding(top = 12.dp)) { Text(stringResource(Res.string.home_choose_pages)) }
     }
 }
 
@@ -58,7 +58,7 @@ internal fun PagesFailed(error: Throwable, onReset: () -> Unit) {
         Text(stringResource(Res.string.problem_oops), fontSize = 18.sp, textAlign = TextAlign.Center)
         Hint(stringResource(Res.string.home_unable_to_load_pages))
         Hint(error.toString())
-        ElevatedButton(onClick = onReset, modifier = Modifier.padding(top = 12.dp)) { Text(stringResource(Res.string.settings_reset_home_pages)) }
+        TextButton(onClick = onReset, modifier = Modifier.padding(top = 12.dp)) { Text(stringResource(Res.string.settings_reset_home_pages)) }
     }
 }
 

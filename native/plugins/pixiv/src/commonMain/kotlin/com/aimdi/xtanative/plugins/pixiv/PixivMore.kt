@@ -36,6 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -118,6 +119,7 @@ private fun AccountHeader(account: PixivAccount?, name: String?, signedIn: Boole
             supportingContent = { Text(pluginString(Strings.not_configured)) },
             leadingContent = { Icon(Icons.Outlined.Person, null) },
             modifier = Modifier.clickable(onClick = onSignIn),
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         )
         return
     }
@@ -128,6 +130,7 @@ private fun AccountHeader(account: PixivAccount?, name: String?, signedIn: Boole
         leadingContent = { PixivAvatar(account?.avatarUrl, shown, size = 48.dp) },
         trailingContent = { IconButton(onClick = onSwitch) { Icon(GroupIcons.PeopleOutlined, pluginString(Strings.switch_account)) } },
         modifier = Modifier.clickable(onClick = onSwitch).padding(vertical = 4.dp),
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 
@@ -162,6 +165,7 @@ internal fun AccountSwitcher(onClose: () -> Unit, onAdd: () -> Unit) {
                 headlineContent = { Text(pluginString(Strings.add_account)) },
                 leadingContent = { Icon(GroupIcons.PersonAddOutlined, null) },
                 modifier = Modifier.clickable(onClick = onAdd),
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
             )
         }
     }
@@ -192,7 +196,7 @@ internal fun PixivAccountList(onChanged: () -> Unit = {}) {
                     }) { Icon(Icons.Outlined.Delete, pluginString(Strings.account_remove)) }
                 }
             },
-            colors = ListItemDefaults.colors(headlineColor = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface),
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent, headlineColor = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface),
             modifier = Modifier.clickable(enabled = !active) {
                 PixivSession.switchTo(runtime, account)
                 runtime.tell(Strings.signed_in.get(language, account.displayName))

@@ -80,8 +80,6 @@
     <string name="feed_strip_unavailable">Эта лента больше недоступна</string>
     <string name="home_feed_accounts_empty">Добавьте аккаунт, чтобы загрузить «Для вас».</string>
     <string name="home_switcher_title">Сменить плагин</string>
-    <string name="home_switcher_start">Начало</string>
-    <string name="home_switcher_start_hint">Подписки и все ваши ленты</string>
     <string name="home_switcher_recent">Недавние</string>
     <string name="home_manage_plugins">Управление плагинами</string>
     <string name="home_xta_settings">Настройки XTA</string>

@@ -59,7 +59,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun FeedSettingsSheet(state: GroupFeedUi, actions: GroupSettingsActions, onCustom: () -> Unit, onDismiss: () -> Unit, following: Boolean = false) {
     var orders by rememberSaveable { mutableStateOf(false) }
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surface) {
+    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
         Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 16.dp)) {
             Text(stringResource(Res.string.groups_filters), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
             Text(

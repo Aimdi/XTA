@@ -32,10 +32,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -109,7 +109,7 @@ private fun MutedProfile(scope: PixivProfileScope, onReveal: () -> Unit) {
         Spacer(Modifier.height(16.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)) {
             Button(onClick = onReveal) { Text(pluginString(Strings.profile_show_anyway)) }
-            OutlinedButton(onClick = { runtime.mutes.unmuteAuthor(scope.profile.id) }) { Text(pluginString(Strings.unmute)) }
+            TextButton(onClick = { runtime.mutes.unmuteAuthor(scope.profile.id) }) { Text(pluginString(Strings.unmute)) }
         }
     }
 }

@@ -167,7 +167,7 @@
     <string name="media_picture_of">第 %1$d 张图片，共 %2$d 张</string>
     <string name="media_covered">Threads 为此媒体加上了警告</string>
     <string name="add_accounts_hint">可一次添加多个：用空格或逗号分隔</string>
-    <string name="session_unlocks">会话能带来：关注者和关注中、谁赞了帖子、你的动态和找人，每项都只在你打开时才用账号读取。打开上面的开关后，首页和“为你”也会用它读取。</string>
+    <string name="session_unlocks">会话能带来：你的关注信息流、你赞过的帖子和书签、你的动态、关注者和关注中、谁赞了帖子，以及 Threads 不向访客显示的帖子或主页标签，每项都只在你打开时才用账号读取。打开上面的开关后，首页和“为你”也会用它读取。</string>
     <string name="instance_intro">可选。由你自己运行的 RSSHub 实例读取你关注的账号；它出错时改读 Threads 的公开页面。留空则只读公开页面。</string>
     <string name="account_missing">找不到 — 是否已改名、删除或拼写有误？</string>
     <string name="account_private">私密 — Threads 不向访客显示其任何帖子</string>
@@ -281,7 +281,7 @@
     <string name="account_active">可用 — 只在你打开需要它的内容时使用</string>
     <string name="account_resting_until">休息至 %1$s</string>
     <string name="account_usage">过去 24 小时用账号读取：%1$d / %2$d</string>
-    <string name="account_guard_detail">关注者、赞过的人、动态和找人只在你打开时才使用你的账号，每次间隔几秒，并在 Meta 察觉之前暂停。其余内容都以访客身份读取。</string>
+    <string name="account_guard_detail">你的关注、喜欢和书签列表，以及动态、关注者和赞过的人只在你打开时才使用你的账号，每次间隔几秒，并在 Meta 察觉之前暂停。Threads 不向访客显示的帖子或主页标签也是如此。其余内容（包括找人）都先以访客身份读取。</string>
     <string name="suggested_for_you">为你推荐</string>
     <string name="suggestion_follow">在此设备上关注 %1$s</string>
     <string name="suggestion_unfollow">在此设备上取消关注 %1$s</string>

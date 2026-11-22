@@ -16,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
@@ -44,6 +43,7 @@ import com.aimdi.xtanative.networks.booru.BooruRatingRules
 import com.aimdi.xtanative.store.settings.BooruPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.ShowTabSwitch
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -142,7 +142,7 @@ private fun LazyListScope.siteSection(app: BooruApp, settings: Settings, onAsk: 
         val selected = settings[BooruPrefs.preset]
         FlowRow(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             BooruPresets.ALL.forEach { preset ->
-                FilterChip(selected = selected == preset.id, onClick = { choose(app, preset)?.let(onAsk) }, label = { Text(preset.name) })
+                PluginFilterChip(preset.name, selected = selected == preset.id, onClick = { choose(app, preset)?.let(onAsk) })
             }
             BooruSites.custom(settings).forEach { site -> CustomSiteChip(app, site, selected == site.id, onAsk) }
             AssistChip(onClick = { onAsk(SettingsAsk.AddSite) }, label = { Text(pluginString(Strings.add_site)) }, leadingIcon = { Icon(Icons.Filled.Add, null, Modifier.size(18.dp)) })

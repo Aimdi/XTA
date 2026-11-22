@@ -78,8 +78,6 @@
     <string name="feed_strip_unavailable">Denne tidslinjen er ikke lenger tilgjengelig</string>
     <string name="home_feed_accounts_empty">Legg til en konto for å laste For deg.</string>
     <string name="home_switcher_title">Bytt programtillegg</string>
-    <string name="home_switcher_start">Start</string>
-    <string name="home_switcher_start_hint">Fulgte og alle tidslinjene dine</string>
     <string name="home_switcher_recent">Nylig brukt</string>
     <string name="home_manage_plugins">Administrer programtillegg</string>
     <string name="home_xta_settings">XTA-innstillinger</string>

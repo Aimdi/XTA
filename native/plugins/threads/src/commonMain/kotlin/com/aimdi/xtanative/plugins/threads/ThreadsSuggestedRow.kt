@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.threads
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,16 +14,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,9 +30,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -110,11 +111,7 @@ private fun SuggestedForYou(app: ThreadsApp, people: List<ThreadsSuggestedAccoun
 @Composable
 private fun SuggestedCard(app: ThreadsApp, person: ThreadsSuggestedAccount, follows: Boolean) {
     val handle = "@" + person.handle
-    Card(
-        onClick = { app.openProfile(person.handle) },
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        modifier = Modifier.width(CARD_WIDTH.dp),
-    ) {
+    Box(Modifier.width(CARD_WIDTH.dp).clip(RoundedCornerShape(12.dp)).clickable { app.openProfile(person.handle) }) {
         Box {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -124,6 +121,7 @@ private fun SuggestedCard(app: ThreadsApp, person: ThreadsSuggestedAccount, foll
                 Text(
                     person.name,
                     style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.Center,
@@ -150,19 +148,19 @@ private fun SuggestedCard(app: ThreadsApp, person: ThreadsSuggestedAccount, foll
     }
 }
 
-/** Follow on this device, filled; once followed, Following, which unfollows here again. Nothing is sent to Threads. */
+/** Follow on this device, in the accent; once followed, Following, which unfollows here again. Nothing is sent to Threads. */
 @Composable
 private fun FollowHere(app: ThreadsApp, person: ThreadsSuggestedAccount, follows: Boolean, handle: String) {
     val wide = Modifier.fillMaxWidth()
     if (follows) {
         val label = pluginString(Strings.suggestion_unfollow, handle)
-        OutlinedButton(onClick = { app.unfollow(person.handle) }, modifier = wide.semantics { contentDescription = label }) {
+        TextButton(onClick = { app.unfollow(person.handle) }, modifier = wide.semantics { contentDescription = label }) {
             Text(pluginString(Strings.following_state), maxLines = 1)
         }
     } else {
         val label = pluginString(Strings.suggestion_follow, handle)
-        Button(onClick = { app.followSuggested(person) }, modifier = wide.semantics { contentDescription = label }) {
-            Text(pluginString(Strings.follow), maxLines = 1)
+        TextButton(onClick = { app.followSuggested(person) }, modifier = wide.semantics { contentDescription = label }) {
+            Text(pluginString(Strings.follow), fontWeight = FontWeight.Bold, maxLines = 1)
         }
     }
 }

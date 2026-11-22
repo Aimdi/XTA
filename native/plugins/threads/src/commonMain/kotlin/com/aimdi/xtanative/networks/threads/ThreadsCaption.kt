@@ -11,7 +11,7 @@ object ThreadsCaption {
     /** One tappable run inside a caption: [start] and [end] index into the text in UTF-16 units. */
     data class Hit(val start: Int, val end: Int, val value: String, val kind: Kind)
 
-    private val mention = Regex("""(?<![A-Za-z0-9_])@([A-Za-z0-9._]{1,30})""")
+    private val mention = Regex("""(?<![A-Za-z0-9_])@([A-Za-z0-9._]{0,29}[A-Za-z0-9_])""")
     private val address = Regex("""https?://[^\s\p{Z}<>]+""", RegexOption.IGNORE_CASE)
     private val tag = Regex("""(?<![\p{L}\p{N}_&/#])#([\p{L}\p{N}_]{1,50})""")
     private const val trailingPunctuation = ".,);]!?\"'"

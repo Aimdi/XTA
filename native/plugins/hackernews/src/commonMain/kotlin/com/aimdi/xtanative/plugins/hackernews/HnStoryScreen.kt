@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,34 +28,34 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.collapse
+import androidx.compose.ui.semantics.expand
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.collapse
-import androidx.compose.ui.semantics.expand
-import androidx.compose.ui.semantics.semantics
 import com.aimdi.xtanative.networks.hackernews.HnComment
 import com.aimdi.xtanative.networks.hackernews.HnStory
 import com.aimdi.xtanative.networks.hackernews.HnTextLink
 import com.aimdi.xtanative.networks.hackernews.HnThreadReader
-import com.aimdi.xtanative.ui.plugins.LinkedText
-import com.aimdi.xtanative.ui.plugins.TextRun
-import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.FeedSkeleton
+import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.agoText
+import com.aimdi.xtanative.ui.plugins.LinkedText
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
+import com.aimdi.xtanative.ui.plugins.TextRun
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.problemOf
@@ -120,28 +122,24 @@ private fun Lead(app: HnApp, story: HnStory) {
 }
 
 /**
- * One comment in its own rounded bubble, as XTA's CommentBubble draws it: a
- * wash of its depth's hue, indented a step a level up to eight, the
+ * One comment, flat on the page: a line of its depth's hue down its left
+ * edge, indented a step a level up to eight, the
  * author set apart from when it was written and, folded, how many replies
- * it holds; deleted ones keep only the outline.
+ * it holds; deleted ones keep a grey line.
  */
 @Composable
 private fun CommentBubble(comment: HnComment, depth: Int, folded: Boolean, onToggle: () -> Unit) {
     val ground = MaterialTheme.colorScheme.background
     val dark = ground.luminance() < 0.5f
     val hue = Hues[depth % Hues.size]
-    val fill = if (comment.deleted) ground else hue.copy(alpha = if (dark) 0.17f else 0.09f).compositeOver(ground)
-    val border = hue.copy(alpha = if (dark) 0.42f else 0.28f).compositeOver(ground)
-    val shape = RoundedCornerShape(14.dp)
+    val line = if (comment.deleted) MaterialTheme.colorScheme.outlineVariant else hue.copy(alpha = if (dark) 0.6f else 0.5f).compositeOver(ground)
     Column(
         Modifier
             .padding(start = 12.dp + 12.dp * depth.coerceIn(0, 8), end = 12.dp, top = 3.dp, bottom = 3.dp)
             .fillMaxWidth()
             .heightIn(min = 48.dp)
-            .clip(shape)
-            .background(fill)
-            .border(1.dp, border, shape)
             .clickable(role = Role.Button, onClick = onToggle)
+            .drawBehind { drawRect(line, size = Size(2.dp.toPx(), size.height)) }
             .semantics { if (folded) expand { onToggle(); true } else collapse { onToggle(); true } }
             .padding(horizontal = 12.dp, vertical = 10.dp),
     ) {

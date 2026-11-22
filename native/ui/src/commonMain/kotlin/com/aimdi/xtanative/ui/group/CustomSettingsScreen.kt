@@ -215,12 +215,12 @@ private fun ChoicePill(label: String, selected: Boolean, onClick: () -> Unit) {
         Modifier
             .heightIn(min = 48.dp)
             .clip(shape)
-            .let { if (selected) it.background(accent, shape) else it.border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape) }
+            .border(1.dp, if (selected) accent else MaterialTheme.colorScheme.outlineVariant, shape)
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, fontSize = 13.sp, fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium, color = if (selected) Color.White else MaterialTheme.colorScheme.onSurface)
+        Text(label, fontSize = 13.sp, fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium, color = if (selected) accent else MaterialTheme.colorScheme.onSurface)
     }
 }
 
@@ -271,7 +271,7 @@ private fun MutedWords(keywords: List<MutedKeyword>, actions: GroupSettingsActio
         }
     }
     editing?.let { keyword ->
-        ModalBottomSheet(onDismissRequest = { editing = null }, containerColor = MaterialTheme.colorScheme.surface) {
+        ModalBottomSheet(onDismissRequest = { editing = null }, containerColor = MaterialTheme.colorScheme.background) {
             Column(Modifier.padding(bottom = 16.dp)) {
                 OptionRow(GroupIcons.VisibilityOffOutlined, stringResource(Res.string.groups_filter_hide)) {
                     editing = null

@@ -203,6 +203,107 @@ class ThreadsDirectClient(
      * followed, saved, liked or marked seen.
      */
     suspend fun ownFeed(feed: ThreadsOwnFeed, cursor: String? = null, fresh: Boolean = false): Page<ThreadsPost> {
+        ThreadsNextPage.decode(cursor)?.let { return ownMore(it) }
+        if (cursor == null && session().hasCookies) {
+            // The saved posts' API path is known to be there; the liked ones' and the Following feed's are not, their pages are.
+            // The liked posts' page is their one read: every API guess was a 404, and is not asked again.
+            if (feed == ThreadsOwnFeed.LIKED) return ownPage(ThreadsOwnFeeds.webPage(feed))
+            if (feed == ThreadsOwnFeed.FOLLOWING) attemptOwnPage(feed)?.let { return it }
+            try {
+                return ownApi(feed, null, fresh)
+            } catch (e: ThreadsException) {
+                if (e.failure != NO_SUCH_FEED || feed != ThreadsOwnFeed.SAVED) throw e
+                return attemptOwnPage(feed) ?: throw e
+            }
+        }
+        return ownApi(feed, cursor, fresh)
+    }
+
+    /** [feed]'s page on threads.com, read with the cookies; null when Meta has no such page, so that the API is asked. */
+    private suspend fun attemptOwnPage(feed: ThreadsOwnFeed): Page<ThreadsPost>? = try {
+        // A page with no post in it may be one that embeds none: the API is asked then.
+        ownPage(ThreadsOwnFeeds.webPage(feed)).takeIf { it.items.isNotEmpty() }
+    } catch (e: ThreadsException) {
+        if (e.failure != NO_SUCH_FEED) throw e
+        null
+    }
+
+    /**
+     * The posts a signed-in page of threads.com embeds, each thread's first,
+     * and the cursor after them when the page names one for its own list.
+     */
+    private suspend fun ownPage(path: String): Page<ThreadsPost> {
+        val body = sessionPage(ThreadsLinks.web(path))
+        return withContext(Dispatchers.Default) {
+            val posts = ThreadsPages.profileThreads(ThreadsPages.chains(body), "")
+            Page(posts, ThreadsNextPages.first(body) { ThreadsOwnFeeds.isOwnList(it.query) }?.encoded().takeIf { posts.isNotEmpty() })
+        }
+    }
+
+    /** The page after one a signed-in page named, asked as its client asks it: the page's own query, with the cookies. */
+    private suspend fun ownMore(asked: ThreadsNextPage): Page<ThreadsPost> {
+        val root = sessionQuery(asked.query, asked.docId, asked.requestVariables).raw ?: return Page(emptyList(), null)
+        return withContext(Dispatchers.Default) {
+            val posts = ThreadsPages.profileThreads(ThreadsPages.chainsIn(listOf(root)), "")
+            Page(posts, ThreadsNextPages.after(asked, root)?.encoded().takeIf { posts.isNotEmpty() })
+        }
+    }
+
+    /**
+     * The reader's own For you as threads.com's front page shows it to their
+     * cookies: for a session signed in with on the sign-in page, which has
+     * no Bearer for the app's timeline. A read only, through the guard; a
+     * page after the first is asked by the [cursor] the one before gave.
+     */
+    suspend fun webForYou(cursor: String? = null): Page<ThreadsPost> =
+        ThreadsNextPage.decode(cursor)?.let { ownMore(it) } ?: ownPage("/")
+
+    /**
+     * A public page the reader opened: as a guest is shown it, and, where
+     * Meta sends a guest to sign in, as the reader's own cookies are shown
+     * it, when there are any. Only for what a reader opens (a post, a
+     * profile's tab): a read made on its own in the background stays a
+     * guest's, and so does everything a guest is given.
+     */
+    private suspend fun openedPage(url: HttpUrl): String = try {
+        guestPage(url)
+    } catch (e: ThreadsException) {
+        if (e.failure != SIGN_IN_REQUIRED || !session().hasCookies || coroutineContext[ThreadsBackground.Key] != null) throw e
+        sessionPage(url)
+    }
+
+    /**
+     * A page of threads.com as the signed-in reader's browser is shown it:
+     * a session read, through the guard, sent as a browser opens a page
+     * (the cookies, no API header). A redirect to a challenge parks the
+     * session and one to sign-in signs it out; any other is a page Meta
+     * does not have for this account.
+     */
+    private suspend fun sessionPage(url: HttpUrl): String {
+        val current = requireCookies()
+        val headers = mapOf(
+            "User-Agent" to pinned().webUserAgent,
+            "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language" to ACCEPT_LANGUAGE,
+            "Cookie" to ThreadsSession.REQUIRED_COOKIES.joinToString("; ") { "$it=${current.cookies[it]}" },
+        )
+        val response = sendSession(url, paging = false) { http.get(url, headers, followRedirects = false) }
+        if (response.code in REDIRECTS) {
+            when (response.header("Location")?.let(url::resolve)?.let(ThreadsAccountSignals::ofRedirect)) {
+                ThreadsSignal.CHALLENGE -> throw parked(url, response)
+                ThreadsSignal.SIGNED_OUT -> throw signedOut(url, response.code)
+                else -> throw ThreadsException(NO_SUCH_FEED, "$url: sent elsewhere", response.code, manual = true)
+            }
+        }
+        return when (response.code) {
+            200 -> response.body
+            429 -> throw ThreadsException(THROTTLED, "$url: rate limited", 429, retryAt = guard.warned(retryAfter(response)))
+            404 -> throw ThreadsException(NO_SUCH_FEED, "$url: 404", 404, manual = true)
+            else -> throw ThreadsException(UNREACHABLE, "$url: ${response.code}", response.code, manual = true)
+        }
+    }
+
+    private suspend fun ownApi(feed: ThreadsOwnFeed, cursor: String?, fresh: Boolean): Page<ThreadsPost> {
         val accepts: (J) -> Boolean = if (feed == ThreadsOwnFeed.FOLLOWING) ThreadsOwnFeeds::isFollowing else { _ -> true }
         val body = sessionApi("own:$feed", ThreadsOwnFeeds.paths(feed), ThreadsOwnFeeds.params(feed, cursor, deviceId()), accepts = accepts, paging = cursor != null, fresh = fresh)
         return ThreadsOwnFeeds.page(body)
@@ -367,7 +468,10 @@ class ThreadsDirectClient(
      */
     fun sessionChanged() {
         synchronized(sessionPages) { sessionPages.clear() }
-        synchronized(keeping) { answeringPaths.clear() }
+        synchronized(keeping) {
+            answeringPaths.clear()
+            homeTimeline = null
+        }
         guard.sessionChanged()
     }
 
@@ -416,7 +520,7 @@ class ThreadsDirectClient(
         val key = handle.trim().lowercase()
         if (!force) rememberedCard(key)?.let { return it }
         val page = profilePage(key)
-        val profile = ThreadsProfileOwner.enrich(ThreadsPages.guestProfile(page, key), page, key)
+        val profile = withContext(Dispatchers.Default) { ThreadsProfileOwner.enrich(ThreadsPages.guestProfile(page, key), page, key) }
             ?: throw ThreadsException(NO_SUCH_FEED, "guest profile missing: @$key")
         if (profile.pk.isNotEmpty()) rememberUserId(key, profile.pk)
         rememberCard(key, profile)
@@ -447,8 +551,20 @@ class ThreadsDirectClient(
         return guestAccount(handle)
     }
 
-    /** The first page of the Bearer session's For you timeline, at most [limit] threads. */
-    suspend fun followingTimeline(limit: Int = 40): Page<ThreadsPost> = Page(forYouTimeline().items.take(limit), null)
+    /**
+     * The first page of the Bearer session's For you timeline, at most
+     * [limit] threads: the one read in the last [CARD_TTL_MILLIS] unless
+     * [fresh], as an account's threads are held, so coming back to Home
+     * spends the account nothing.
+     */
+    suspend fun followingTimeline(limit: Int = 40, fresh: Boolean = false): Page<ThreadsPost> {
+        if (!fresh) synchronized(keeping) { homeTimeline?.takeIf { (at, _) -> clock() - at < CARD_TTL_MILLIS }?.second }?.let { return Page(it.take(limit), null) }
+        val items = forYouTimeline().items
+        synchronized(keeping) { homeTimeline = clock() to items }
+        return Page(items.take(limit), null)
+    }
+
+    private var homeTimeline: Pair<Long, List<ThreadsPost>>? = null
 
     /**
      * One page of the Bearer session's For you timeline, as the Threads app
@@ -493,12 +609,14 @@ class ThreadsDirectClient(
             if (e.failure != SIGN_IN_REQUIRED) throw e
             return Page(emptyList(), null)
         }
-        return Page(ThreadsPages.recommended(page), ThreadsNextPages.first(page, wanted = ::isFeed)?.encoded())
+        return withContext(Dispatchers.Default) {
+            Page(ThreadsPages.recommended(page), ThreadsNextPages.first(page, refetchBy(ThreadsRefetch.FRONT_PAGE) { null }, wanted = ::isFeed)?.encoded())
+        }
     }
 
     /** The front page's threads after [cursor], as [guestForYou]'s list goes on. */
     suspend fun moreRecommended(cursor: String): ThreadsMore<ThreadsPost> =
-        more(cursor, ThreadsLinks.web("/")) { ThreadsPages.profileThreads(ThreadsPages.chainsIn(it), "") }
+        more(cursor, ThreadsLinks.web("/"), ThreadsRefetch.FRONT_PAGE) { ThreadsPages.profileThreads(ThreadsPages.chainsIn(it), "") }
 
     /** [handle]'s threads after [cursor], the cursor [profileNext] gave. */
     suspend fun moreThreads(handle: String, cursor: String): ThreadsMore<ThreadsPost> {
@@ -515,7 +633,13 @@ class ThreadsDirectClient(
     /** [handle]'s reposts after [cursor], the cursor [guestReposts] gave. */
     suspend fun moreReposts(handle: String, cursor: String): ThreadsMore<ThreadsPost> {
         val key = handle.trim().lowercase()
-        return more(cursor, profileUrl(key, "reposts")) { ThreadsPages.reposts(ThreadsPages.chainsIn(it), key) }
+        return more(cursor, profileUrl(key, "reposts"), ThreadsRefetch.PROFILE_REPOSTS) { ThreadsPages.reposts(ThreadsPages.chainsIn(it), key) }
+    }
+
+    /** [handle]'s media after [cursor], the cursor [guestMedia] gave. */
+    suspend fun moreMedia(handle: String, cursor: String): ThreadsMore<ThreadsPost> {
+        val key = handle.trim().lowercase()
+        return more(cursor, profileUrl(key, "media")) { ThreadsPages.media(ThreadsPages.chainsIn(it), key) }
     }
 
     /**
@@ -574,8 +698,8 @@ class ThreadsDirectClient(
             rememberUserId(key, userId)
             guestThreadsOrNull(key, userId, pageLsd)?.let { return Page(it, null) }
         }
-        val posts = ThreadsPages.profileThreads(page, key)
-        if (posts.isEmpty() && isPrivate(page, key)) throw ThreadsException(PRIVATE_ACCOUNT, "@$key is private")
+        val posts = withContext(Dispatchers.Default) { ThreadsPages.profileThreads(page, key) }
+        if (posts.isEmpty() && withContext(Dispatchers.Default) { isPrivate(page, key) }) throw ThreadsException(PRIVATE_ACCOUNT, "@$key is private")
         if (posts.isEmpty()) throw ThreadsException(NO_SUCH_FEED, "no posts for @$key (GraphQL+SSR empty)")
         return Page(posts, null)
     }
@@ -591,12 +715,15 @@ class ThreadsDirectClient(
         val key = ThreadsLinks.shortcode(url.toString()) ?: url.toString()
         if (!force) rememberedConversation(key)?.let { return it }
         return conversationReads.run(key) {
-            val body = guestPage(url)
-            val read = ThreadsPostPage.read(body)
-            val permalink = read.target?.let(ThreadsPeople::mediaId)
-            val next = ThreadsNextPages.first(body, refetchBy(ThreadsRefetch.REPLIES) { permalink }) { it.path.endsWith(REPLIES_PAGE_INFO) }?.encoded()
-            rememberReplyPlaces(read.replies, permalink)
-            read.copy(repliesNext = next).also { rememberConversation(key, it) }
+            val body = openedPage(url)
+            // A post's page is a megabyte of scripts: read off the caller's thread, which is a screen's.
+            withContext(Dispatchers.Default) {
+                val read = ThreadsPostPage.read(body)
+                val permalink = read.target?.let(ThreadsPeople::mediaId)
+                val next = ThreadsNextPages.first(body, refetchBy(ThreadsRefetch.REPLIES) { permalink }) { it.path.endsWith(REPLIES_PAGE_INFO) }?.encoded()
+                rememberReplyPlaces(read.replies, permalink)
+                read.copy(repliesNext = next).also { rememberConversation(key, it) }
+            }
         }
     }
 
@@ -609,8 +736,10 @@ class ThreadsDirectClient(
     /** [handle]'s replies, from the public `/@handle/replies` page; empty when Meta did not embed them for a guest. */
     suspend fun guestReplies(handle: String): Page<ThreadsPost> {
         val key = handle.trim().lowercase()
-        val page = guestPage(profileUrl(key, "replies"))
-        return Page(ThreadsPages.replies(page, key), ThreadsNextPages.first(page) { "RepliesTab" in it.query.orEmpty() }?.encoded())
+        val page = openedPage(profileUrl(key, "replies"))
+        return withContext(Dispatchers.Default) {
+            Page(ThreadsPages.replies(page, key), ThreadsNextPages.first(page) { "RepliesTab" in it.query.orEmpty() }?.encoded())
+        }
     }
 
     /**
@@ -620,9 +749,39 @@ class ThreadsDirectClient(
      */
     suspend fun guestReposts(handle: String): Page<ThreadsPost> {
         val key = handle.trim().lowercase()
-        val page = guestPage(profileUrl(key, "reposts"))
-        val posts = withContext(Dispatchers.Default) { ThreadsPages.reposts(ThreadsPages.chains(page), key) }
-        return Page(posts, ThreadsNextPages.first(page) { "RepostsTab" in it.query.orEmpty() }?.encoded())
+        val page = openedPage(profileUrl(key, "reposts"))
+        return withContext(Dispatchers.Default) {
+            val refetch = refetchBy(ThreadsRefetch.PROFILE_REPOSTS) { ThreadsPages.userId(page, key) }
+            Page(ThreadsPages.reposts(ThreadsPages.chains(page), key), ThreadsNextPages.first(page, refetch) { "RepostsTab" in it.query.orEmpty() }?.encoded())
+        }
+    }
+
+    /**
+     * [handle]'s posts with a picture or a video, from the public
+     * `/@handle/media` page (Threads' own Media tab): its threads and its
+     * replies alike, without the posts of others they are shown under.
+     * Empty when Meta embedded none for a guest; the cursor after them when
+     * the page named one.
+     */
+    suspend fun guestMedia(handle: String): Page<ThreadsPost> {
+        val key = handle.trim().lowercase()
+        val page = openedPage(profileUrl(key, "media"))
+        val posts = withContext(Dispatchers.Default) { ThreadsPages.media(ThreadsPages.chains(page), key) }
+        return Page(posts, ThreadsNextPages.first(page) { "MediaTab" in it.query.orEmpty() }?.encoded())
+    }
+
+    /**
+     * [handle]'s threads as the reader's own account is shown them, for a
+     * profile a guest is shown nothing of (a private account the reader
+     * follows on Threads): asked only when its profile is opened, whatever
+     * the switch for background reads says, through the guard as every
+     * session read. Empty when Meta gives the account none.
+     */
+    suspend fun sessionThreads(handle: String, count: Int = POSTS_PER_ACCOUNT): Page<ThreadsPost> {
+        val current = requireCookies()
+        val id = resolveUserId(handle)
+        val url = ThreadsLinks.web("/api/v1/text_feed/$id/profile/", listOf("count" to "$count"))
+        return Page(ThreadsParser.feed(sessionRead(url, cookieHeaders(current))), null)
     }
 
     /**
@@ -710,7 +869,8 @@ class ThreadsDirectClient(
         val key = ThreadsLinks.normaliseHandle(handle) ?: return null
         val id = guestProfile(key).pk.takeIf { it.isNotEmpty() && it.all(Char::isDigit) } ?: return null
         val variables = ThreadsBundleReads.variables(values.aboutProfileVariable, id)
-        val roots = bundleRead(values.aboutProfileDocId, ThreadsBundleReads.ABOUT_PROFILE, variables, profileUrl(key), provided = emptySet()) ?: return null
+        // Asked with no provided variable Meta said one was missing (run 195): every one seen goes with it.
+        val roots = bundleRead(values.aboutProfileDocId, ThreadsBundleReads.ABOUT_PROFILE, variables, profileUrl(key)) ?: return null
         return ThreadsBundleReads.about(roots)
     }
 
@@ -779,7 +939,7 @@ class ThreadsDirectClient(
     private suspend fun profilePage(handle: String): String {
         val key = handle.trim().lowercase()
         val lane = if (coroutineContext[ThreadsBackground.Key] != null) "background:" else "shown:"
-        return profilePages.run(lane + key) { guestPage(profileUrl(key)).also { rememberProfileNext(key, it) } }
+        return profilePages.run(lane + key) { guestPage(profileUrl(key)).also { page -> withContext(Dispatchers.Default) { rememberProfileNext(key, page) } } }
     }
 
     /**
@@ -797,8 +957,10 @@ class ThreadsDirectClient(
         val response = sendGuest("GET $url", url) { followed(url, headers) }
         return when (response.code) {
             200 -> response.body.also {
-                rememberGuestLsd(ThreadsPages.lsd(it))
-                rememberProviders(it)
+                withContext(Dispatchers.Default) {
+                    rememberGuestLsd(ThreadsPages.lsd(it))
+                    rememberProviders(it)
+                }
             }
             404 -> throw ThreadsException(NO_SUCH_FEED, "$url: 404", 404)
             429 -> throw guestThrottled(url)
@@ -975,7 +1137,7 @@ class ThreadsDirectClient(
 
     /** The trends guest GraphQL names when the search page carried none; none while the read is off, without a token, or refused. */
     private suspend fun askedTrends(): List<ThreadsTrend> = try {
-        bundleRead(repairs().trendingTopicsDocId, ThreadsBundleReads.TRENDING_TOPICS, JsonObject(emptyMap()), ThreadsLinks.web("/search"), readPage = false, provided = ThreadsBundleReads.TRENDING_PROVIDED)
+        bundleRead(repairs().trendingTopicsDocId, ThreadsBundleReads.TRENDING_TOPICS, ThreadsBundleReads.TRENDING_VARIABLES, ThreadsLinks.web("/search"), readPage = false, provided = ThreadsBundleReads.TRENDING_PROVIDED)
             ?.let(ThreadsTrends::fromRoots).orEmpty()
     } catch (e: Exception) {
         if (!e.isReadFailure()) throw e

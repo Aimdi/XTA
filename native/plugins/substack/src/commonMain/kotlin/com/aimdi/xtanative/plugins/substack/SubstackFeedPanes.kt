@@ -16,11 +16,9 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -152,12 +150,12 @@ private fun NoFollows(app: SubstackApp, frame: PluginFrame, discover: Boolean) {
                 description = if (discover) pluginString(Strings.empty_description) else null,
             ) {
                 if (discover) {
-                    FilledTonalButton(onClick = app::openDiscover, modifier = Modifier.padding(top = 16.dp)) {
+                    TextButton(onClick = app::openDiscover, modifier = Modifier.padding(top = 16.dp)) {
                         Icon(SubstackIcons.Explore, null, Modifier.padding(end = 8.dp))
                         Text(pluginString(Strings.discover))
                     }
                 }
-                OutlinedButton(onClick = app::openAdd, contentPadding = ButtonDefaults.ButtonWithIconContentPadding) {
+                TextButton(onClick = app::openAdd, contentPadding = ButtonDefaults.ButtonWithIconContentPadding) {
                     Icon(Icons.Default.Add, null, Modifier.padding(end = 8.dp))
                     Text(pluginString(Strings.add))
                 }

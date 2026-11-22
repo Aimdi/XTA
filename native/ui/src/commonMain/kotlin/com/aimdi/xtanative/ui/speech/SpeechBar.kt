@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -95,10 +96,13 @@ fun SpeechBarScaffold(content: @Composable () -> Unit) {
                 content()
             }
             AnimatedVisibility(visible = shown, enter = expandVertically(), exit = shrinkVertically()) {
-                Surface(color = MaterialTheme.colorScheme.surfaceContainerHighest) {
-                    Box(Modifier.navigationBarsPadding()) {
-                        val current = notice
-                        if (current != null) NoticeRow(current, speech) else ReadingRow(playback, speech)
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    Column {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        Box(Modifier.navigationBarsPadding()) {
+                            val current = notice
+                            if (current != null) NoticeRow(current, speech) else ReadingRow(playback, speech)
+                        }
                     }
                 }
             }

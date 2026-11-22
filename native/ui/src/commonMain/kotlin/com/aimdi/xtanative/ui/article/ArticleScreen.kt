@@ -16,11 +16,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -155,6 +155,6 @@ private fun NoArticle(post: XPost?, actions: PostActions) {
     val page = post?.let { ArticleLayout.linkOf(it) ?: PostView.url(it, prefs) } ?: return
     Column(Modifier.fillMaxWidth().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(stringResource(Res.string.posts_article_on_x), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-        OutlinedButton(onClick = { actions.openInBrowser(page) }) { Text(stringResource(Res.string.posts_open_in_browser)) }
+        TextButton(onClick = { actions.openInBrowser(page) }) { Text(stringResource(Res.string.posts_open_in_browser)) }
     }
 }

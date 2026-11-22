@@ -24,6 +24,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -35,6 +36,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -159,6 +161,7 @@ private fun SauceRow(match: PixivSauceMatch) {
         },
         leadingContent = { MatchThumb(illust) },
         modifier = Modifier.clickable { if (illust != null) runtime.openWork(illust) else runtime.open(PixivRoute.Work(match.illustId)) },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 

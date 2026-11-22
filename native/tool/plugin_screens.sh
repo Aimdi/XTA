@@ -68,6 +68,8 @@ fail() {
   echo "On screen:"
   adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
   adb exec-out cat /sdcard/ui.xml 2> /dev/null | tr '>' '\n' | sed -n 's/.* text="\([^"][^"]*\)".*/  \1/p' | head -40 || true
+  echo "Said on screen:"
+  adb exec-out cat /sdcard/ui.xml 2> /dev/null | tr '>' '\n' | sed -n 's/.* content-desc="\([^"][^"]*\)".*/  \1/p' | head -40 || true
   exit 1
 }
 
@@ -79,29 +81,22 @@ swipe_up() {
   sleep 1
 }
 
-# The account menu: no bar on Home has an avatar (as in XTA), so the timeline
-# picker's last row, under its timelines (the sheet is pulled up when that row
-# is below it). The picker is Following's button, or another timeline's mark.
+# The account menu: no bar on Home has an avatar (as in XTA), so it is a row
+# of Home's sheet, under the shown timeline's entries (the sheet is pulled up
+# when that row is below it).
 open_menu() {
   tap_node 'content-desc="Open navigation menu"' && return 0
-  open_picker || fail "No account menu or timeline picker on Home"
+  open_picker || fail "No account menu or sheet on Home"
   sleep 2
   tap_node 'text="Open navigation menu"' && return 0
   swipe_up
-  tap_node 'text="Open navigation menu"' || fail "No account menu in the timeline picker"
+  tap_node 'text="Open navigation menu"' || fail "No account menu in Home's sheet"
 }
 
-# Home's timeline picker: Following's button. On a network's timeline its
-# button ("Bluesky, Switch plugin") opens the plugin switcher, whose Start
-# leads back to Following first.
+# Home's sheet: Following's button, or a network's ("Bluesky, Switch plugin").
 open_picker() {
   tap_node 'content-desc="Following"' && return 0
-  tap_node ', Switch plugin"' || return 1
-  sleep 2
-  # The plugin's own entries come first; Start can be below them.
-  tap_node 'text="Start"' || { swipe_up; tap_node 'text="Start"'; } || return 1
-  sleep 2
-  tap_node 'content-desc="Following"'
+  tap_node ', Switch plugin"'
 }
 
 # The store, from Home's account menu.
@@ -145,18 +140,15 @@ installed=$(installed_plugin)
 tap_node "text=\"$installed\"" || fail "No box for $installed"
 shot plugin-home 15
 
-# Home, where its timeline is now one of Home's, picked in the timeline picker.
-# Mastodon, Bluesky and Threads share one timeline there while "Group
-# microblogging services" is on, as it is at first, as in XTA.
-timeline="text=\"$name\""
-case "$name" in
-  Mastodon | Bluesky | Threads) timeline='text="Mastodon &amp; Bluesky"' ;;
-esac
+# Home, where its timeline is now one of Home's, picked in Home's sheet: a
+# tile of its own among the networks, under the name on its box in the store
+# (the plugin installed is the catalogue's first, whichever was asked for).
+timeline="text=\"$installed\""
 back
 back
-open_picker || fail "No timeline picker on Home"
-wait_for "$timeline" 15 || { shot plugin-strip-missing 0; fail "$name is not among Home's timelines"; }
-tap_node "$timeline" || fail "No $name in Home's timeline picker"
+open_picker || fail "No sheet on Home"
+wait_for "$timeline" 15 || { shot plugin-strip-missing 0; fail "$installed is not among Home's timelines"; }
+tap_node "$timeline" || fail "No $installed in Home's sheet"
 shot plugin-strip 12
 
 # Uninstalled from the store, after its confirmation.

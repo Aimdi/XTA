@@ -127,7 +127,7 @@ private fun GalleryTile(app: EhApp, gallery: EhGallery, japanese: Boolean, onOpe
     val shape = RoundedCornerShape(8.dp)
     Surface(
         shape = shape,
-        color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.35f),
+        color = Color.Transparent,
         modifier = Modifier.fillMaxWidth().clip(shape).clickable(onClick = onOpen),
     ) {
         Column {

@@ -11,11 +11,11 @@ import com.aimdi.xtanative.ui.saved.SavedFiling
  * on the bookmark files it. The note never leaves the device.
  */
 class PluginNotes(private val saved: SavedStore, private val settings: SettingsStore) {
-    suspend fun noteOf(id: String): String? = saved.library().post(id)?.note
+    suspend fun noteOf(id: String): String? = saved.index().post(id)?.note
 
     /** Keeps [note] under [item]; a blank one removes it. */
     suspend fun keep(item: Keepable, note: String?) {
-        if (!saved.library().isSaved(item.id)) {
+        if (!saved.index().isSaved(item.id)) {
             saved.file(item.id, item.authorId, item.content, SavedFiling(saved, settings).rememberedFolder())
         }
         saved.setNote(item.id, note)

@@ -86,11 +86,15 @@ internal class StocksApp(val host: PluginHost) {
     /** The X accounts the reader follows, whose posts about one ticker go first. */
     fun follows(): List<FeedMember> = host.session.value?.following.orEmpty().map { it.member }
 
-    /** A ticker's page, or a token's when the watchlist holds it as one. */
+    /** A ticker's page, or a token's when the watchlist holds it as one, by its id or as what its cashtag means here. */
     fun open(symbol: String) {
-        val asset = watchlist.entries.assets[symbol]
+        val asset = watchlist.entries.assets[symbol] ?: watchlist.entries.assetForCashtag(symbol)
         if (asset != null) openAsset(asset) else StocksRoutes.ticker(symbol)?.let(host::open)
     }
+
+    /** Where a cashtag leads: the watched token of that symbol's page, else the ticker's. */
+    fun routeForCashtag(symbol: String): String? =
+        watchlist.entries.assetForCashtag(symbol)?.let(StocksRoutes::asset) ?: StocksRoutes.ticker(symbol)
 
     fun openAsset(asset: CryptoAsset) = host.open(StocksRoutes.asset(asset))
 

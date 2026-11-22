@@ -128,6 +128,10 @@ object ThreadsPages {
     fun reposts(chains: List<List<ThreadsPost>>, handle: String): List<ThreadsPost> =
         profileThreads(chains, handle).filter { it.isRepost && it.repostedByHandle == handle }
 
+    /** A profile's media page (`/@handle/media`): each of [handle]'s posts that carries a picture or a video, once. */
+    fun media(chains: List<List<ThreadsPost>>, handle: String): List<ThreadsPost> =
+        chains.flatten().filter { it.handle == handle && !it.isRepost && it.hasMedia }.distinctBy { it.id }
+
     /** Every post a post page embeds, root and replies, flattened. */
     fun thread(body: String): List<ThreadsPost> = chains(body).flatten()
 

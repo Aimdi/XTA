@@ -79,8 +79,6 @@
     <string name="feed_strip_unavailable">Această timeline nu mai este disponibilă</string>
     <string name="home_feed_accounts_empty">Adaugă un cont pentru a încărca Pentru tine.</string>
     <string name="home_switcher_title">Schimbă pluginul</string>
-    <string name="home_switcher_start">Început</string>
-    <string name="home_switcher_start_hint">Urmăriți și toate cronologiile tale</string>
     <string name="home_switcher_recent">Folosite recent</string>
     <string name="home_manage_plugins">Gestionează pluginurile</string>
     <string name="home_xta_settings">Setări XTA</string>

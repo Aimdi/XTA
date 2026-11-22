@@ -35,7 +35,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -361,7 +360,7 @@ private fun LazyListScope.available(offer: Map<PluginCategory, List<PluginState>
 private class InstalledPlugin(val state: PluginState, val running: RunningPlugin?, val marks: StoreMarks, val startProblem: String?)
 
 /**
- * A line of installed plugins as boxes, two side by side: each its mark, its
+ * A line of installed plugins, two side by side on the page: each its mark, its
  * name and its menu, opened by a tap. Its settings, version and what it keeps
  * are in the menu, so every plugin installed fits one screen.
  */
@@ -386,7 +385,6 @@ private fun InstalledBox(shown: InstalledPlugin, plugins: AppPlugins, locale: Lo
         modifier
             .height(52.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .clickable(enabled = onClick != null) { onClick?.invoke() }
             .padding(start = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -429,7 +427,7 @@ private fun InstalledRow(shown: InstalledPlugin, plugins: AppPlugins, locale: Lo
         ) {
             // An update that failed is offered again beside why, which ends "Try again".
             if (state.status is PluginStatus.UpdateAvailable || (state.status as? PluginStatus.Failed)?.update != null) {
-                FilledTonalButton(onClick = { actions.update(state.id) }) { Text(stringResource(Res.string.plugin_update)) }
+                TextButton(onClick = { actions.update(state.id) }) { Text(stringResource(Res.string.plugin_update)) }
             } else if (opens) {
                 TextButton(onClick = { actions.open(state.id) }) { Text(stringResource(Res.string.plugin_open)) }
             }
@@ -471,7 +469,7 @@ private fun AvailableRow(state: PluginState, locale: Locale, actions: StoreActio
             when (status) {
                 is PluginStatus.Downloading -> TextButton(onClick = { actions.cancel(state.id) }) { Text(stringResource(Res.string.cancel)) }
                 PluginStatus.Installing, is PluginStatus.NeedsNewerApp -> Unit
-                else -> FilledTonalButton(onClick = { actions.install(state.id) }) { Text(stringResource(Res.string.plugin_install)) }
+                else -> TextButton(onClick = { actions.install(state.id) }) { Text(stringResource(Res.string.plugin_install)) }
             }
         }
         Progress(status)

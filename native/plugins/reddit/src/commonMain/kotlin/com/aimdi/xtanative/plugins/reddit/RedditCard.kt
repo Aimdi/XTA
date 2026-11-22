@@ -64,7 +64,8 @@ internal fun RedditPostCard(app: RedditApp, post: RedditPost) {
                     Text(post.displayTitle, style = bodyStyle(), fontWeight = FontWeight.Medium, maxLines = 6, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp, end = 8.dp))
                 }
                 // On a discussion community the words are most of the post: a card with the title alone said almost nothing.
-                post.displaySelfText?.takeIf { post.isSelf && post.showsSelfText }?.let { words ->
+                // A spoiler's words, or an NSFW post's while those wait for a tap, are covered as its pictures are: the thread shows them.
+                post.displaySelfText?.takeIf { post.isSelf && post.showsSelfText && choices.gate(post) == null }?.let { words ->
                     // Two quieter lines: the title leads, and the list shows more posts.
                     RedditText(words, Modifier.padding(top = 4.dp, end = 8.dp), style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant), maxLines = 2)
                 }

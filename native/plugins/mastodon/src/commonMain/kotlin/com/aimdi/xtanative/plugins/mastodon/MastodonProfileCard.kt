@@ -22,10 +22,8 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -98,12 +96,12 @@ internal fun ProfileCard(app: MastodonApp, profile: MastodonProfile, following: 
             Modifier.padding(top = 14.dp),
         )
         FlowRow(Modifier.padding(top = 18.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilledTonalButton(onClick = onFollow) {
+            TextButton(onClick = onFollow) {
                 Icon(if (following) MastodonIcons.PersonRemove else MastodonIcons.PersonAdd, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
                 Text(pluginString(if (following) Strings.unfollow else Strings.follow))
             }
-            OutlinedButton(onClick = { app.addToGroup(MastodonFollow(profile.acct, profile.displayName.ifBlank { profile.acct }, profile.avatarUrl)) }) {
+            TextButton(onClick = { app.addToGroup(MastodonFollow(profile.acct, profile.displayName.ifBlank { profile.acct }, profile.avatarUrl)) }) {
                 Icon(PostIcons.People, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
                 Text(pluginString(Strings.add_to_group))
@@ -141,15 +139,13 @@ private fun FieldRow(field: MastodonField) {
     val url = field.url
     val verified = url != null && field.verifiedAt != null
     val shape = RoundedCornerShape(8.dp)
-    val ground = if (verified) MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f) else Color.Transparent
     Row(
         Modifier
             .fillMaxWidth()
             .padding(bottom = 6.dp)
             .clip(shape)
-            .background(ground)
             .let { if (url != null) it.clickable { openOutside(url) } else it }
-            .padding(10.dp),
+            .padding(vertical = 6.dp),
         verticalAlignment = Alignment.Top,
     ) {
         Column(Modifier.weight(1f)) {

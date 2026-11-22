@@ -98,7 +98,7 @@ class ThreadsReader(
         val current = direct.currentSession
         return when {
             // Home reads on its own, so the Bearer's timeline is spent only when the reader opted in to session reads.
-            current.hasBearer && current.useSessionApis -> direct.followingTimeline().items
+            current.hasBearer && current.useSessionApis -> direct.followingTimeline(fresh = force).items
             current.hasBearer -> emptyList()
             current.hasCookies || setup().rssHubInstance.isNotBlank() -> emptyList()
             else -> throw ThreadsException(ThreadsFailure.NOT_CONFIGURED, "no accounts or session")
@@ -238,11 +238,26 @@ class ThreadsReader(
             val card = async { resolveProfile(handle, force)?.also { onCard?.invoke(it) } }
             val read = async { readPosts(handle, force) }
             val profile = card.await()
-            val (posts, error) = read.await()
+            val (guest, error) = read.await()
+            val posts = guest.ifEmpty { followedPrivately(handle, error) }
+            // A card alone, its threads lost to a throttle or the network, is a read that failed: what was kept stays, and says why.
+            if (posts.isEmpty() && error != null && !ThreadsTrouble.settles(error)) throw error
             val resolved = profile ?: ThreadsProfile.fromPosts(handle, posts)
             if (resolved == null && posts.isEmpty()) throw error ?: ThreadsException(ThreadsFailure.NO_SUCH_FEED, "profile missing")
             ThreadsProfilePage(resolved, posts, next = direct.profileNext(handle))
         }
+    }
+
+    /**
+     * The threads of a private account as the reader's own account is shown
+     * them, when a guest was told it is private and there is a session: the
+     * one read a profile opened by the reader spends the account on. None
+     * without cookies, for any other failure, or when Meta gives none (the
+     * reader does not follow it there).
+     */
+    private suspend fun followedPrivately(handle: String, error: Exception?): List<ThreadsPost> {
+        if ((error as? ThreadsException)?.failure != ThreadsFailure.PRIVATE_ACCOUNT || !direct.currentSession.hasCookies) return emptyList()
+        return attempt { direct.sessionThreads(handle).items }.orEmpty()
     }
 
     /**

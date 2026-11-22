@@ -18,10 +18,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.aimdi.xtanative.ui.common.ReadFailureSheet
 import com.aimdi.xtanative.ui.common.ReadSource
+import com.aimdi.xtanative.ui.common.flatChipBorder
+import com.aimdi.xtanative.ui.common.flatChipColors
 
 /**
  * One chip of a plugin's filter row, as XTA draws its FilterChip
- * (showCheckmark): [label], and a check before it while it is [selected].
+ * (showCheckmark): [label] in a hairline outline on the page, never filled,
+ * and in the accent with a check before it while it is [selected].
  */
 @Composable
 fun PluginFilterChip(label: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -31,6 +34,8 @@ fun PluginFilterChip(label: String, selected: Boolean, onClick: () -> Unit, modi
         label = { Text(label) },
         leadingIcon = if (selected) ({ Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) }) else null,
         modifier = modifier,
+        colors = flatChipColors(),
+        border = flatChipBorder(selected),
     )
 }
 

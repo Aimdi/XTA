@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 object Keeping {
     /** The bookmark tapped: an unsaved post is saved where a plain tap files, a saved one is removed. */
     fun toggleSave(keeper: Keeper, item: Keepable) = keeper.keep {
-        if (keeper.saved.library().isSaved(item.id)) {
+        if (keeper.saved.index().isSaved(item.id)) {
             keeper.saved.remove(item.id)
         } else {
             val filing = SavedFiling(keeper.saved, keeper.settings)
@@ -50,7 +50,7 @@ object Keeping {
 
     /** The note on [item] in Saved, as its editor saves it: a post not saved yet is saved first, where a plain tap files. */
     suspend fun writeNote(keeper: Keeper, item: Keepable, note: String?) {
-        if (!keeper.saved.library().isSaved(item.id)) {
+        if (!keeper.saved.index().isSaved(item.id)) {
             val filing = SavedFiling(keeper.saved, keeper.settings)
             file(keeper, filing, item, filing.rememberedFolder())
         }
@@ -75,7 +75,7 @@ object Keeping {
             AutoDownload.NeedsFolder -> KeepNotices.show(KeepNotice.NeedsDownloadFolder)
             is AutoDownload.Start -> keeper.download(auto.requests)
         }
-        folderId?.let { keeper.saved.library().folder(it) }?.let { folder -> FolderFilings.filed(keeper, folder, item) }
+        folderId?.let { keeper.saved.index().folder(it) }?.let { folder -> FolderFilings.filed(keeper, folder, item) }
     }
 }
 
@@ -98,15 +98,15 @@ internal object FolderFilings {
     }
 }
 
-/** The ids liked here, as they change, read once for every heart on screen instead of once per heart. */
+/** The ids liked here, as they change, read once for every heart on screen instead of once per heart, and without what was kept of each post. */
 internal class LikedIds private constructor(keeper: Keeper) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     val ids: StateFlow<Set<String>> =
-        keeper.likes.state.map { likes -> likes?.mapTo(HashSet()) { it.id }.orEmpty() }.stateIn(scope, SharingStarted.Eagerly, emptySet())
+        keeper.likes.index.map { likes -> likes?.mapTo(HashSet()) { it.id }.orEmpty() }.stateIn(scope, SharingStarted.Eagerly, emptySet())
 
     init {
-        scope.launch { runCatching { keeper.likes.likes() } }
+        scope.launch { runCatching { keeper.likes.index() } }
     }
 
     companion object {

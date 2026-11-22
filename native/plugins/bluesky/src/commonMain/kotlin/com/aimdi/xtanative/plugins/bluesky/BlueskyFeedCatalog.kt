@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.plugins.bluesky
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -117,12 +116,12 @@ internal fun FeedCatalogScreen(app: BlueskyApp) {
 private fun FeedRow(feed: BlueskyFeedGenerator, selected: Boolean, pinned: Boolean, onPin: () -> Unit, onOpen: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     Row(
-        Modifier.fillMaxWidth().clickable(onClick = onOpen).let { if (selected) it.background(colors.secondaryContainer) else it }
+        Modifier.fillMaxWidth().clickable(onClick = onOpen)
             .padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            Text(feed.displayName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+            Text(feed.displayName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = if (selected) colors.primary else colors.onSurface)
             feed.creatorHandle?.let { NoteText("@$it") }
             if (feed.description.isNotEmpty()) Text(feed.description, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
         }

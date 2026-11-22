@@ -38,6 +38,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.networks.threads.ThreadsProfilePage
 import com.aimdi.xtanative.networks.threads.ThreadsProfileTab
+import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.Fetch
@@ -81,10 +82,13 @@ internal class ThreadsProfileModel(private val app: ThreadsApp, private val hand
         app.ready()
         app.reader.profile(handle, force) { card.value = it }.also { app.keepProfile(handle, it) }
     }
-    val replies = Fetch<Page<ThreadsPost>>(scope) { app.reader.repliesPage(handle) }
+    // Each tab's own page is asked of Meta as it is, so a read that fails says so and can be asked again.
+    val replies = Fetch<Page<ThreadsPost>>(scope) { app.ready(); app.direct.guestReplies(handle) }
+    val media = Fetch<Page<ThreadsPost>>(scope) { app.ready(); app.direct.guestMedia(handle) }
+    val moreMedia = ThreadsPaging(scope, ThreadsPost::id) { cursor -> app.nextPage { app.direct.moreMedia(handle, cursor) } }
     val morePosts = ThreadsPaging(scope, ThreadsPost::id) { cursor -> app.nextPage { app.direct.moreThreads(handle, cursor) } }
     val moreReplies = ThreadsPaging(scope, ThreadsPost::id) { cursor -> app.nextPage { app.direct.moreReplies(handle, cursor) } }
-    val reposts = Fetch<Page<ThreadsPost>>(scope) { app.reader.repostsPage(handle) }
+    val reposts = Fetch<Page<ThreadsPost>>(scope) { app.ready(); app.direct.guestReposts(handle) }
     val moreReposts = ThreadsPaging(scope, ThreadsPost::id) { cursor -> app.nextPage { app.direct.moreReposts(handle, cursor) } }
 
     init {
@@ -189,17 +193,22 @@ private fun ProfileBody(
     LaunchedEffect(read) { model.morePosts.start(read.posts, read.next) }
     LaunchedEffect(replies.value) { replies.value?.let { model.moreReplies.start(it.items, it.next) } }
     LaunchedEffect(reposts.value) { reposts.value?.let { model.moreReposts.start(it.items, it.next) } }
+    val media by model.media.state.collectAsState()
+    val moreMedia by model.moreMedia.state.collectAsState()
+    LaunchedEffect(media.value) { media.value?.let { model.moreMedia.start(it.items, it.next) } }
+    // Threads' own Media tab where its page gave posts; else the media among what the other tabs read.
+    val ownMedia = remember(media.value, moreMedia.items) { media.value?.items.orEmpty() + moreMedia.items }
     val shared = remember(reposts.value, moreReposts.items) { reposts.value?.items.orEmpty() + moreReposts.items }
     val page = remember(read, replies, morePosts.items, moreReplies.items) {
         read.copy(posts = read.posts + morePosts.items, replies = replies.value?.let { it.items + moreReplies.items })
     }
     val settings by app.prefs.collectAsState()
     val likedIds by app.likes.state.collectAsState()
-    val all = remember(page, tab, settings, likedIds, shared) {
+    val all = remember(page, tab, settings[ThreadsPrefs.likedPosts], likedIds, shared, ownMedia) {
         when (tab) {
             ProfileTab.POSTS -> ThreadsProfileHeader.threads(page)
             ProfileTab.REPLIES -> page.tab(ThreadsProfileTab.REPLIES)
-            ProfileTab.MEDIA -> page.tab(ThreadsProfileTab.MEDIA)
+            ProfileTab.MEDIA -> ThreadsProfileView.media(ownMedia, page.tab(ThreadsProfileTab.MEDIA))
             ProfileTab.REPOSTS -> ThreadsProfileHeader.reposts(page, shared)
             ProfileTab.SAVED -> ThreadsLikes.liked(settings, likedIds).filter { it.handle == profile.username.lowercase() }
         }.distinctBy { it.id }
@@ -208,16 +217,18 @@ private fun ProfileBody(
     val chosen = ThreadsProfileView.chosen(content, mediaTab)
     val posts = remember(all, chosen, query) { ThreadsProfileView.shown(all, chosen, query) }
     var grid by rememberSaveable { mutableStateOf(false) }
-    val paging = ThreadsProfilePaging.of(tab.paged, morePosts, moreReplies, moreReposts)
+    val paging = if (mediaTab && ownMedia.isNotEmpty()) moreMedia else ThreadsProfilePaging.of(tab.paged, morePosts, moreReplies, moreReposts)
     val pager = when {
         paging == null -> null
+        paging === moreMedia -> model.moreMedia
         paging === morePosts -> model.morePosts
         paging === moreReposts -> model.moreReposts
         else -> model.moreReplies
     }
     val waiting = all.isEmpty() && when (tab) {
         ProfileTab.REPLIES -> replies.loading
-        ProfileTab.REPOSTS -> reposts.loading || reposts.value == null
+        ProfileTab.MEDIA -> postsPending || media.loading
+        ProfileTab.REPOSTS -> reposts.loading || (reposts.value == null && reposts.problem == null)
         ProfileTab.SAVED -> false
         // The header came first; its threads are still on their way.
         else -> postsPending
@@ -228,19 +239,35 @@ private fun ProfileBody(
         // The tab already shown, tapped again, goes back to its top.
         if (option == tab) scope.launch { list.animateScrollToItem(0) }
         tab = option
-        if (option == ProfileTab.REPLIES) model.replies.ensure()
-        if (option == ProfileTab.REPOSTS) model.reposts.ensure()
     }
     LaunchedEffect(tab) {
         if (tab == ProfileTab.REPLIES) model.replies.ensure()
+        if (tab == ProfileTab.MEDIA) model.media.ensure()
         if (tab == ProfileTab.REPOSTS) model.reposts.ensure()
     }
+    val tabRead = when (tab) {
+        ProfileTab.REPLIES -> model.replies
+        ProfileTab.MEDIA -> model.media
+        ProfileTab.REPOSTS -> model.reposts
+        else -> null
+    }
+    // Why the tab's own page could not be read, said only when the tab has nothing else to show.
+    val tabProblem = when (tab) {
+        ProfileTab.REPLIES -> replies.problem
+        ProfileTab.MEDIA -> media.problem
+        ProfileTab.REPOSTS -> reposts.problem
+        else -> null
+    }?.takeIf { all.isEmpty() && !waiting && !ThreadsProfileView.keptFromGuests(it) }
     val refresh = {
         model.page.load(force = true)
-        if (tab == ProfileTab.REPLIES || tab == ProfileTab.MEDIA) model.replies.load(force = true)
-        if (tab == ProfileTab.REPOSTS) model.reposts.load(force = true)
+        tabRead?.load(force = true)
+        Unit
     }
-    val firstPage = if (tab == ProfileTab.REPOSTS) reposts.value?.items?.size ?: 0 else read.posts.size
+    val firstPage = when {
+        tab == ProfileTab.REPOSTS -> reposts.value?.items?.size ?: 0
+        mediaTab && ownMedia.isNotEmpty() -> media.value?.items?.size ?: 0
+        else -> read.posts.size
+    }
     ReadsMoreNear(list, pager, paging)
     BoxWithConstraints(Modifier.fillMaxSize()) {
         // As wide as the list: a wide window draws more squares a row rather than three huge ones.
@@ -255,6 +282,9 @@ private fun ProfileBody(
                 }
                 when {
                     waiting -> item(key = "waiting") { LoadingRow() }
+                    tabProblem != null -> item(key = "problem") {
+                        RetryMessage(ThreadsFailures.profile(tabProblem, currentLanguage()), onRetry = { tabRead?.load(force = true) })
+                    }
                     posts.isEmpty() -> item(key = "empty") { MessageText(pluginString(emptyLabel(tab, ThreadsProfileView.empty(all, chosen, query)))) }
                     mediaTab && grid && gridRows.isNotEmpty() -> items(gridRows, key = { "grid:" + it.first().key }, contentType = { "grid" }) { MediaGridRow(app, it, columns) }
                     else -> items(posts, key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }

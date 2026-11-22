@@ -339,7 +339,13 @@ class ThreadsAccountGuardTest {
 
         paging.loadMore()
         withTimeout(5_000) { paging.state.first { !it.loading && it.items.size == 5 } }
-        paging.more()
+        // Scrolled on after the tapped page: held again, however long the page took to settle on a slow runner.
+        withTimeout(5_000) {
+            while (!paging.state.value.held) {
+                paging.more()
+                delay(5)
+            }
+        }
         delay(50)
         assertEquals(listOf("c1", "c2", "c3", "c4", "c5"), asked, "one page a tap")
         assertTrue(paging.state.value.held)

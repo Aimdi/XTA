@@ -25,7 +25,6 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -51,6 +50,7 @@ import com.aimdi.xtanative.networks.mastodon.MastodonThreadReader
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.scrollToTop
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RetryRow
@@ -145,8 +145,8 @@ private fun AncestorsToggle(acct: String, open: Boolean, onToggle: () -> Unit) {
 @Composable
 private fun ThreadFilters(app: MastodonApp, state: MastodonThreadReader.State, reader: MastodonThreadReader) {
     FlowRow(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.Center) {
-        FilterChip(selected = !state.authorOnly, onClick = { reader.selectAuthor(false) }, label = { Text(pluginString(Strings.thread_all)) })
-        FilterChip(selected = state.authorOnly, onClick = { reader.selectAuthor(true) }, label = { Text(pluginString(Strings.thread_author)) })
+        PluginFilterChip(pluginString(Strings.thread_all), selected = !state.authorOnly, onClick = { reader.selectAuthor(false) })
+        PluginFilterChip(pluginString(Strings.thread_author), selected = state.authorOnly, onClick = { reader.selectAuthor(true) })
         OrderChoice(MastodonReplyOrder.entries, state.order, ::replyOrderText) { order ->
             app.replyOrder = order
             reader.selectOrder(order)

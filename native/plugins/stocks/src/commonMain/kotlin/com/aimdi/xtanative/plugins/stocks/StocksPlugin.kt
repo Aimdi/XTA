@@ -67,14 +67,16 @@ class StocksPlugin : XtaPlugin() {
 
     override val cashtagStrip: @Composable (List<String>) -> Unit = { symbols -> CashtagStrip(app, symbols) }
 
-    override fun routeForCashtag(symbol: String): String? = StocksRoutes.ticker(symbol)
+    override fun routeForCashtag(symbol: String): String? = app.routeForCashtag(symbol)
 
     /** Add to watchlist, or Remove from watchlist for one watched, as XTA's cashtag sheet offers while Stocks runs. */
     override fun cashtagActions(symbol: String): List<PluginCashtagAction> {
-        val watched = WatchlistRows.watches(app.watchlist.entries.ids, symbol)
+        // A token watched under this symbol is what the cashtag means here: it is the one to stop watching.
+        val token = app.watchlist.entries.assetForCashtag(symbol)
+        val watched = token != null || WatchlistRows.watches(app.watchlist.entries.ids, symbol)
         return listOf(
             PluginCashtagAction(if (watched) Icons.Filled.Star else Icons.Outlined.Star, { language -> (if (watched) Strings.unwatch else Strings.watch).get(language) }) {
-                if (watched) app.watchlist.remove(symbol) else app.watchlist.add(symbol)
+                if (watched) app.watchlist.remove(token?.id ?: symbol) else app.watchlist.add(symbol)
             },
         )
     }

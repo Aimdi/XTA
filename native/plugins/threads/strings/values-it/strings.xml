@@ -174,7 +174,7 @@
     <string name="media_picture_of">Immagine %1$d di %2$d</string>
     <string name="media_covered">Threads ha messo un avviso su questo contenuto multimediale</string>
     <string name="add_accounts_hint">Più di uno alla volta: separali con spazi o virgole</string>
-    <string name="session_unlocks">Cosa aggiunge una sessione: seguaci e seguiti, a chi piace un post, la tua attività e la ricerca di persone, ognuno letto con il tuo account solo quando lo apri. Con l’interruttore qui sopra attivo, anche Home e Per te vengono letti con essa.</string>
+    <string name="session_unlocks">Cosa aggiunge una sessione: il tuo feed dei Seguiti, i post che ti sono piaciuti e quelli salvati, la tua attività, seguaci e seguiti, a chi piace un post, e i post o le schede del profilo che Threads nasconde agli ospiti, ognuno letto con il tuo account solo quando lo apri. Con l’interruttore qui sopra attivo, anche Home e Per te vengono letti con essa.</string>
     <string name="instance_intro">Facoltativo. Un’istanza RSSHub tua legge gli account che segui; se non risponde, subentrano le pagine pubbliche di Threads. Lascia vuoto per leggere solo le pagine pubbliche.</string>
     <string name="account_missing">Non trovato: rinominato, eliminato o scritto male?</string>
     <string name="account_private">Privato: Threads non mostra nessuno dei suoi post a un ospite</string>
@@ -294,7 +294,7 @@
     <string name="account_active">Attivo — usato solo quando apri qualcosa che ne ha bisogno</string>
     <string name="account_resting_until">A riposo fino alle %1$s</string>
     <string name="account_usage">Letture con l’account nelle ultime 24 ore: %1$d su %2$d</string>
-    <string name="account_guard_detail">Seguaci, «Piace a», attività e ricerca di persone usano il tuo account solo quando li apri, a qualche secondo di distanza, e si fermano prima che Meta se ne accorga. Tutto il resto viene letto come ospite.</string>
+    <string name="account_guard_detail">I tuoi elenchi Seguiti, Piaciuti e Salvati, l’attività, i seguaci e «Piace a» usano il tuo account solo quando li apri, a qualche secondo di distanza, e si fermano prima che Meta se ne accorga. Lo stesso vale per un post o una scheda del profilo che Threads non mostra a un ospite. Tutto il resto, ricerca di persone compresa, viene letto prima come ospite.</string>
     <string name="suggested_for_you">Suggeriti per te</string>
     <string name="suggestion_follow">Segui %1$s su questo dispositivo</string>
     <string name="suggestion_unfollow">Non seguire più %1$s su questo dispositivo</string>

@@ -37,26 +37,6 @@ class FollowingBarTest {
     }
 
     @Test
-    fun thePickerSearchesOnlyWhenThereIsMuchToPickFrom() {
-        assertFalse(SourcePicker.hasSearch(8, ""))
-        assertTrue(SourcePicker.hasSearch(9, ""))
-        assertTrue(SourcePicker.hasSearch(2, "n"), "a search typed stays")
-    }
-
-    @Test
-    fun aSearchMatchesEveryWordAnywhereWhateverTheCase() {
-        assertTrue(SourcePicker.matches("Tech News Daily", "news tech"))
-        assertTrue(SourcePicker.matches("Tech News", "  "))
-        assertFalse(SourcePicker.matches("Tech News", "news sport"))
-    }
-
-    @Test
-    fun thePickerOffersTheTimelinesAndListsGroupsApart() {
-        val tabs = HomeStrip.tabs(listOf("reddit"), { true }, listOf(FollowGroup("g", "G", listOf("1"))))
-        assertEquals(listOf(HomeTab.Following, HomeTab.ForYou, HomeTab.Network("reddit")), SourcePicker.sources(tabs))
-    }
-
-    @Test
     fun aTimelineAskedForIsTakenOnce() {
         HomeRequests.show(HomeTab.ForYou.key)
         assertEquals(HomeTab.ForYou.key, HomeRequests.tab.value)

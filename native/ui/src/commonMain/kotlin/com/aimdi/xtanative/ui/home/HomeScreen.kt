@@ -54,6 +54,7 @@ import com.aimdi.xtanative.core.session.DeckGroups
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.rememberLiveEdges
 import com.aimdi.xtanative.ui.common.rememberScreenReaderOn
 import com.aimdi.xtanative.ui.feed.MediaModes
 import com.aimdi.xtanative.ui.feed.ToTop
@@ -284,7 +285,8 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
             )
         },
     ) { padding ->
-        val bottom = PaddingValues(bottom = padding.calculateBottomPadding())
+        // The bottom bar's height changes at every frame of its slide: the pages are measured with it, not composed again.
+        val bottom = rememberLiveEdges(padding).second
         CompositionLocalProvider(LocalNetworkBarTakeover provides takeover) {
         Box(Modifier.fillMaxSize().padding(bottom).consumeWindowInsets(bottom).nestedScroll(shell.bars.connection)) {
             BarPageHost(page, shell.retaps) { shown ->
@@ -392,9 +394,10 @@ private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: I
             }
         },
     ) { padding ->
-        Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
+        val (top, bottom) = rememberLiveEdges(padding)
+        Box(Modifier.fillMaxSize().padding(top)) {
             CompositionLocalProvider(LocalPluginClientBar provides client) {
-                networks.Page(id, PaddingValues(bottom = padding.calculateBottomPadding()), toTop)
+                networks.Page(id, bottom, toTop)
             }
         }
     }
@@ -408,7 +411,7 @@ private fun followingLook(following: FollowingSettingsViewModel, ui: HomeUi, unr
     return FollowingLook(
         feed = feed,
         mediaOnly = FollowingBar.MEDIA_KEY in media,
-        unread = SourcePicker.sources(ui.tabs).any { it.key in unread },
+        unread = ui.tabs.any { it !is HomeTab.Group &&  it.key in unread },
         accountsOff = HomeFilter.turnedOff(ui.filter, ui.session.accounts, ui.session.groups),
     )
 }
@@ -497,13 +500,13 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
             onMove = parts.vm::move,
             onDismiss = close,
         )
-        HomeSheet.PICKER -> SourcePickerSheet(
+        HomeSheet.PICKER -> PluginSwitcherSheet(
             ui,
             parts.networks,
-            shell.shownKey,
-            unread,
-            PickerCalls(
-                onSource = { tab ->
+            shown = ui.tabs.firstOrNull { it.key == shell.shownKey },
+            unread = unread,
+            calls = SwitcherCalls(
+                onTimeline = { tab ->
                     close()
                     showTimeline(shell, ui, tab.key)
                 },
@@ -511,13 +514,25 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
                     close()
                     openGroup(group, parts.routes, shell.drawer, scope)
                 },
+                onNetwork = { id ->
+                    close()
+                    showTimeline(shell, ui, HomeTab.Network(id).key)
+                },
                 onAdd = { shell.sheet = HomeSheet.STRIP },
                 onMenu = {
                     close()
                     scope.launch { shell.drawer.open() }
                 },
-                onAvatar = { shell.sheet = HomeSheet.AVATAR },
+                onManage = {
+                    close()
+                    parts.routes.openIfExists(HomeDestination.PLUGINS.route)
+                },
+                onSettings = {
+                    close()
+                    parts.routes.openIfExists(HomeDestination.SETTINGS.route)
+                },
                 onDismiss = close,
+                onAvatar = { shell.sheet = HomeSheet.AVATAR },
             ),
         )
         HomeSheet.NETWORKS -> NetworksSheet(

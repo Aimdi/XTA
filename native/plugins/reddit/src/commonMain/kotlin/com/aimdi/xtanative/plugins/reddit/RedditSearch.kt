@@ -17,23 +17,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -54,6 +54,7 @@ import com.aimdi.xtanative.networks.reddit.normaliseSubreddit
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PagedItems
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginSearch
@@ -116,7 +117,7 @@ private fun SortChips(subreddit: String?, sort: RedditSearchSort, onSort: (Reddi
             )
         }
         RedditSearchSort.entries.forEach { choice ->
-            FilterChip(selected = choice == sort, onClick = { onSort(choice) }, label = { Text(searchSortLabel(choice)) })
+            PluginFilterChip(searchSortLabel(choice), selected = choice == sort, onClick = { onSort(choice) })
         }
     }
 }
@@ -189,6 +190,7 @@ private fun CommunityRow(app: RedditApp, result: RedditSubredditResult) {
             }
         },
         modifier = Modifier.clickable { app.openSubreddit(result.name) },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 
@@ -199,6 +201,7 @@ private fun NameRow(icon: ImageVector, label: String, onClick: () -> Unit, trail
         headlineContent = { Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         trailingContent = trailing,
         modifier = Modifier.clickable(onClick = onClick),
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 

@@ -18,6 +18,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Slider
@@ -69,6 +70,7 @@ internal fun NovelMenu(novel: PixivNovel, content: PixivNovelContent?, onAppeara
                 leadingContent = { PixivAvatar(user.avatarUrl, user.name) },
                 trailingContent = { IconButton(onClick = { run { outside.share(pixivUserUrl(user.id)) } }, enabled = user.id != 0L) { Icon(Icons.Filled.Share, pluginString(Strings.novel_share_author)) } },
                 modifier = Modifier.clickable(enabled = user.id != 0L) { run { runtime.openUser(user.id, "novels") } },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
             )
             HorizontalDivider()
             content?.previous?.let { ChapterRow(it, Strings.novel_previous, Icons.AutoMirrored.Filled.KeyboardArrowLeft) { run { runtime.replace(PixivRoute.Novel(it.id)) } } }
@@ -90,6 +92,7 @@ private fun ChapterRow(chapter: PixivNovelNeighbour, label: PluginText, icon: Im
         supportingContent = name.takeIf { it.isNotEmpty() }?.let { { Text(it, maxLines = 2, overflow = TextOverflow.Ellipsis) } },
         leadingContent = { Icon(icon, null) },
         modifier = Modifier.clickable(enabled = chapter.viewable, onClick = onClick),
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 
@@ -100,6 +103,7 @@ private fun MenuRow(icon: ImageVector, label: PluginText, hint: PluginText? = nu
         supportingContent = hint?.let { { Text(pluginString(it)) } },
         leadingContent = { Icon(icon, null) },
         modifier = Modifier.clickable(onClick = onClick),
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 
@@ -109,7 +113,7 @@ private fun MenuRow(icon: ImageVector, label: PluginText, hint: PluginText? = nu
 internal fun NovelExportSheet(onPick: (PixivNovelExportFormat) -> Unit, onClose: () -> Unit) {
     ModalBottomSheet(onDismissRequest = onClose) {
         Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = 8.dp)) {
-            ListItem(headlineContent = { Text(pluginString(Strings.novel_export), style = MaterialTheme.typography.titleMedium) })
+            ListItem(headlineContent = { Text(pluginString(Strings.novel_export), style = MaterialTheme.typography.titleMedium) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
             MenuRow(PixivIcons.Notes, Strings.novel_export_plain, Strings.novel_export_plain_hint) { onPick(PixivNovelExportFormat.PLAIN) }
             MenuRow(PixivIcons.Code, Strings.novel_export_markup, Strings.novel_export_markup_hint) { onPick(PixivNovelExportFormat.MARKUP) }
         }

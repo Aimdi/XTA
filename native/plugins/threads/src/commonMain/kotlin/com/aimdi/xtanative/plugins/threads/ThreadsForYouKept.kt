@@ -68,8 +68,11 @@ internal data class ThreadsForYouKept(
          * The section the tab opens on: the one kept, or, the first time it is
          * opened with no one followed yet, For you, which a guest can read at once.
          */
-        fun openingSection(text: String?, follows: Boolean): ThreadsSection =
-            if (text.isNullOrBlank() && !follows) ThreadsSection.FOR_YOU else decode(text).section
+        fun openingSection(text: String?, follows: Boolean): ThreadsSection = openingSection(text, decode(text), follows)
+
+        /** [openingSection] of a text already read as [kept]. */
+        fun openingSection(text: String?, kept: ThreadsForYouKept, follows: Boolean): ThreadsSection =
+            if (text.isNullOrBlank() && !follows) ThreadsSection.FOR_YOU else kept.section
 
         /** What [text] keeps; anything unreadable is nothing kept. */
         fun decode(text: String?): ThreadsForYouKept {

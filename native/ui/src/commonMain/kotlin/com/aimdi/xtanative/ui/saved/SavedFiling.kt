@@ -34,13 +34,13 @@ class SavedFiling(private val saved: SavedStore, private val settings: SettingsS
     suspend fun rememberedFolder(): String? {
         val prefs = settings.load()
         val id = FolderPicker.rememberedFolder(prefs[SavedPrefs.stickyFolderEnabled], prefs[SavedPrefs.stickyFolderId]) ?: return null
-        return id.takeIf { saved.library().folder(it) != null }
+        return id.takeIf { saved.index().folder(it) != null }
     }
 
     /** Files the post in [folderId] (null for unfiled), saving it first, then says what that folder asks to download. */
     suspend fun file(id: String, authorId: String?, content: JsonElement?, folderId: String?): AutoDownload {
         saved.file(id, authorId, content, folderId)
-        val folder = folderId?.let { saved.library().folder(it) }
+        val folder = folderId?.let { saved.index().folder(it) }
         return autoDownload(folder, SavedContent.of(content), downloadDestination(settings.load()))
     }
 

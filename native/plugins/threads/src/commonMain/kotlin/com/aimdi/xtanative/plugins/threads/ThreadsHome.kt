@@ -22,7 +22,6 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,12 +42,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsDiscovery
 import com.aimdi.xtanative.networks.threads.ThreadsException
 import com.aimdi.xtanative.networks.threads.ThreadsFailure
 import com.aimdi.xtanative.networks.threads.ThreadsPost
+import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
@@ -235,12 +236,12 @@ private fun notConfigured(problem: Throwable) = (problem as? ThreadsException)?.
 @Composable
 private fun ParkedNotice(app: ThreadsApp) {
     ListItem(
-        leadingContent = { Icon(ThreadsIcons.PauseCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onErrorContainer) },
-        headlineContent = { Text(pluginString(Strings.session_parked), color = MaterialTheme.colorScheme.onErrorContainer) },
+        leadingContent = { Icon(ThreadsIcons.PauseCircle, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
+        headlineContent = { Text(pluginString(Strings.session_parked)) },
         trailingContent = {
-            TextButton(onClick = { app.host.openSettings() }) { Text(pluginString(Strings.settings), color = MaterialTheme.colorScheme.onErrorContainer) }
+            TextButton(onClick = { app.host.openSettings() }) { Text(pluginString(Strings.settings)) }
         },
-        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.errorContainer),
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 
@@ -253,7 +254,7 @@ private fun FeedOrFiltered(app: ThreadsApp, frame: PluginFrame, posts: List<Thre
             item(key = "filtered") {
                 EmptyPane(PostIcons.Tune, pluginString(Strings.empty_filter)) {
                     if (options.resettable) {
-                        FilledTonalButton(onClick = { app.setOptions(options.reset()) }) {
+                        TextButton(onClick = { app.setOptions(options.reset()) }) {
                             Icon(Icons.Filled.Clear, contentDescription = null, modifier = Modifier.size(18.dp))
                             Text(pluginString(Strings.reset_filters), modifier = Modifier.padding(start = 8.dp))
                         }
@@ -333,7 +334,7 @@ private fun NothingYet(app: ThreadsApp, onAdd: () -> Unit, onSearch: () -> Unit)
                 Icon(ThreadsIcons.PersonAdd, contentDescription = null, modifier = Modifier.size(18.dp))
                 Text(pluginString(Strings.add_account), modifier = Modifier.padding(start = 8.dp))
             }
-            FilledTonalButton(onClick = { app.show(ThreadsSection.FOR_YOU) }) {
+            TextButton(onClick = { app.show(ThreadsSection.FOR_YOU) }) {
                 Icon(PostIcons.Sparkle, contentDescription = null, modifier = Modifier.size(18.dp))
                 Text(pluginString(Strings.for_you), modifier = Modifier.padding(start = 8.dp))
             }
@@ -352,7 +353,8 @@ private fun NothingYet(app: ThreadsApp, onAdd: () -> Unit, onSearch: () -> Unit)
 private fun LikedPane(app: ThreadsApp, frame: PluginFrame) {
     val settings by app.prefs.collectAsState()
     val ids by app.likes.state.collectAsState()
-    val posts = remember(settings, ids) { ThreadsLikes.liked(settings, ids).distinctBy { it.id } }
+    // Read again only when the kept posts or the likes change, not at every setting written.
+    val posts = remember(settings[ThreadsPrefs.likedPosts], ids) { ThreadsLikes.liked(settings, ids).distinctBy { it.id } }
     val scope = rememberCoroutineScope()
     val list = rememberLazyListState()
     ScrollsToTop(list, frame.toTop)

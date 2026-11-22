@@ -80,8 +80,6 @@
     <string name="feed_strip_unavailable">Tato timeline už není dostupná</string>
     <string name="home_feed_accounts_empty">Přidejte účet pro načtení Pro vás.</string>
     <string name="home_switcher_title">Přepnout plugin</string>
-    <string name="home_switcher_start">Start</string>
-    <string name="home_switcher_start_hint">Sledované a všechny vaše časové osy</string>
     <string name="home_switcher_recent">Nedávno použité</string>
     <string name="home_manage_plugins">Spravovat pluginy</string>
     <string name="home_xta_settings">Nastavení XTA</string>
