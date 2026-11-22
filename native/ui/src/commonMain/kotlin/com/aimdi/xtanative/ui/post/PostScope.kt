@@ -3,17 +3,28 @@ package com.aimdi.xtanative.ui.post
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aimdi.xtanative.core.session.Session
+import com.aimdi.xtanative.data.SessionStore
+import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.PostsPrefs
+import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.SettingsStore
+import com.aimdi.xtanative.ui.common.LocalSessions
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.rememberLoadsManually
+import com.aimdi.xtanative.ui.saved.SharedKeep
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Whether the sensitive media of one screen is hidden, as XTA's
@@ -64,13 +75,84 @@ val LocalPostScope = compositionLocalOf<PostScope?> { null }
 private val LocalPostPrefs = compositionLocalOf<PostPrefs?> { null }
 
 /**
- * [content] with the reader's post settings read once for all of it, so a
- * card outside a [PostScopeProvider] (Home's feeds, search) reads them from
- * here rather than following the settings by itself.
+ * The settings and the session as [SharedPostPrefs] follows them, once for
+ * every card under it: a card reads the part it draws from these rather than
+ * following either by itself. Each is given only to who asks for the store
+ * followed here, so a part drawn over another store follows its own.
+ */
+@Stable
+internal class SharedReads(
+    private val settingsFlow: StateFlow<Settings?>,
+    private val settings: State<Settings?>,
+    private val sessionStore: SessionStore,
+    private val session: State<Session?>,
+) {
+    fun settingsOf(flow: StateFlow<Settings?>): State<Settings?>? = settings.takeIf { flow === settingsFlow }
+
+    fun sessionOf(store: SessionStore): State<Session?>? = session.takeIf { store === sessionStore }
+}
+
+/** What [SharedPostPrefs] follows for the cards under it; null outside it. */
+private val LocalSharedReads = staticCompositionLocalOf<SharedReads?> { null }
+
+/**
+ * [content] with what its post cards read of the app followed once for all
+ * of them, rather than by every card scrolled past: the reader's post
+ * settings (a card outside a [PostScopeProvider], as in Home's feeds and
+ * search, reads them from here), the settings and the session themselves
+ * ([sharedSettings], [sharedSession]) and what is saved and liked on the
+ * device ([SharedKeep]).
  */
 @Composable
 internal fun SharedPostPrefs(content: @Composable () -> Unit) {
-    CompositionLocalProvider(LocalPostPrefs provides rememberPostPrefs(), content = content)
+    val store = LocalSettingsStore.current
+    val settings = store.state.collectAsStateWithLifecycle()
+    LaunchedEffect(store) { store.load() }
+    val now = settings.value
+    val prefs = remember(now) { now?.let(PostPrefs::of) ?: PostPrefs() }
+    val sessions = LocalSessions.current
+    val session = sessions.state.collectAsStateWithLifecycle()
+    val reads = remember(store, settings, sessions, session) { SharedReads(store.state, settings, sessions, session) }
+    CompositionLocalProvider(LocalPostPrefs provides prefs, LocalSharedReads provides reads) { SharedKeep(content) }
+}
+
+/**
+ * [flow]'s settings as [SharedPostPrefs] follows them, or null where it does
+ * not (another store's settings, or a part drawn outside the app's frame):
+ * the caller then follows them itself, as it always did.
+ */
+@Composable
+@ReadOnlyComposable
+internal fun sharedSettings(flow: StateFlow<Settings?>): State<Settings?>? = LocalSharedReads.current?.settingsOf(flow)
+
+/** [store]'s session as [SharedPostPrefs] follows it, or null where the caller is to follow it itself. */
+@Composable
+@ReadOnlyComposable
+internal fun sharedSession(store: SessionStore): State<Session?>? = LocalSharedReads.current?.sessionOf(store)
+
+/** The post settings [SharedPostPrefs] made of [store]'s, or null where it follows another store or none. */
+@Composable
+@ReadOnlyComposable
+internal fun sharedPostPrefs(store: SettingsStore): PostPrefs? = LocalPostPrefs.current?.takeIf { sharedSettings(store.state) != null }
+
+/** [store]'s settings as they change: read from [SharedPostPrefs] where it follows them, else followed here. */
+@Composable
+internal fun settingsNow(store: SettingsStore): Settings? {
+    val shared = sharedSettings(store.state)
+    if (shared != null) return shared.value
+    val settings by store.state.collectAsStateWithLifecycle()
+    return settings
+}
+
+/**
+ * Whether media waits for a tap before it loads ([rememberLoadsManually]):
+ * read from the settings [SharedPostPrefs] follows where it does, so a tile
+ * follows nothing to learn so, else followed here.
+ */
+@Composable
+internal fun loadsManually(): Boolean {
+    val shared = sharedSettings(LocalSettingsStore.current.state)
+    return if (shared != null) shared.value?.get(MediaPrefs.loadManually) == true else rememberLoadsManually()
 }
 
 /** The reader's settings for the post screens, read and then followed as they change. */

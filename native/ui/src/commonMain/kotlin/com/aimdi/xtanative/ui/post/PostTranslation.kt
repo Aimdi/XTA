@@ -72,8 +72,9 @@ class PostTranslation internal constructor(private val post: XPost, private val 
 internal fun rememberPostTranslation(post: XPost, scope: PostScope): PostTranslation? {
     val locale = currentLocale()
     val translations = LocalTranslation.current
-    // The settings kept current by the store, so each post shown follows no flow of its own over them.
-    val now by translations.settingsNow.collectAsState()
+    // The settings as the app's frame follows them for every post; else as the store keeps them current, followed here.
+    val shared = sharedSettings(translations.settingsNow)
+    val now = if (shared != null) shared.value else translations.settingsNow.collectAsState().value
     val service = remember(now) { translations.configFor(now) }
     val appTarget = remember(scope.prefs.locale, locale) { scope.prefs.translationTarget(locale.toString()) }
     val target = if (service.enabled && service.target.isNotEmpty()) service.target.replace('_', '-') else appTarget

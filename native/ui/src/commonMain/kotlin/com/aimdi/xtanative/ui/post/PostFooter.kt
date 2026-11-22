@@ -33,6 +33,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.services.ai.TranslationStatus
 import com.aimdi.xtanative.ui.common.LocalSessions
 import com.aimdi.xtanative.ui.common.XIcons
@@ -312,8 +314,7 @@ private enum class BadgeSheet { NONE, CHOICES, GROUPS }
 @Composable
 internal fun FollowBadge(author: XUser, size: Dp, avatar: @Composable () -> Unit) {
     val sessions = LocalSessions.current
-    val session by sessions.state.collectAsStateWithLifecycle()
-    val followed = session?.isFollowed(author.id) == true
+    val badged = notFollowed(sessions, author.id)
     var sheet by rememberSaveable(author.id) { mutableStateOf(BadgeSheet.NONE) }
     val coroutines = rememberCoroutineScope()
     val follow = { coroutines.launch { sessions.update { it.follow(author, System.currentTimeMillis()) } } }
@@ -321,7 +322,7 @@ internal fun FollowBadge(author: XUser, size: Dp, avatar: @Composable () -> Unit
     val addToGroup = stringResource(Res.string.posts_add_to_group)
     Box(Modifier.size(size)) {
         avatar()
-        if (!followed && session != null) {
+        if (badged) {
             BadgeDisc(size, subscribe, addToGroup, onFollow = { follow() }, onMore = { sheet = BadgeSheet.CHOICES })
         }
     }
@@ -337,6 +338,19 @@ internal fun FollowBadge(author: XUser, size: Dp, avatar: @Composable () -> Unit
         BadgeSheet.GROUPS -> AuthorGroupsSheet(author, onDismiss = { sheet = BadgeSheet.NONE })
         BadgeSheet.NONE -> Unit
     }
+}
+
+/**
+ * Whether the session, once read, does not follow [authorId], as that
+ * changes: read from the session the app's frame follows for every card,
+ * where a change redraws only the badges it changes, else followed here.
+ */
+@Composable
+private fun notFollowed(sessions: SessionStore, authorId: String): Boolean {
+    val shared = sharedSession(sessions)
+    if (shared != null) return remember(shared, authorId) { derivedStateOf { shared.value?.isFollowed(authorId) == false } }.value
+    val session by sessions.state.collectAsStateWithLifecycle()
+    return session?.isFollowed(authorId) == false
 }
 
 /**

@@ -29,7 +29,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
@@ -41,6 +40,7 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_video
 import com.aimdi.xtanative.ui.generated.resources.reader_video_length
 import com.aimdi.xtanative.ui.generated.resources.reader_video_open_sound
+import com.aimdi.xtanative.ui.post.settingsNow
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
@@ -78,7 +78,7 @@ internal fun TileVideo(
     download: @Composable () -> ((VideoPlayer) -> Unit)?,
 ) {
     val tiles = rememberTilePlayer() ?: return Box(modifier) { TileCorner(VideoRules.cornerTimeMs(null, durationMs), play = true, Modifier.align(Alignment.BottomStart)) }
-    val settings by LocalSettingsStore.current.state.collectAsStateWithLifecycle()
+    val settings = settingsNow(LocalSettingsStore.current)
     val key = remember { Any() }
     var seen by remember { mutableStateOf(false) }
     var share by remember { mutableFloatStateOf(0f) }

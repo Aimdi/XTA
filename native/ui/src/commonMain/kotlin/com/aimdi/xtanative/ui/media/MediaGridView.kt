@@ -72,6 +72,8 @@ import com.aimdi.xtanative.ui.generated.resources.posts_spaces
 import com.aimdi.xtanative.ui.generated.resources.reader_media
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostIcons
+import com.aimdi.xtanative.ui.post.loadsManually
+import com.aimdi.xtanative.ui.post.sharedSettings
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -90,7 +92,9 @@ val LocalGalleryOpener = staticCompositionLocalOf<((MediaGallery, Int) -> Unit)?
 /** The size a post's photos are shown at, by Settings › Media's image quality (_media.dart). */
 @Composable
 fun rememberPhotoSize(): PhotoSize {
-    val settings by LocalSettingsStore.current.state.collectAsState()
+    val store = LocalSettingsStore.current
+    val shared = sharedSettings(store.state)
+    val settings = if (shared != null) shared.value else store.state.collectAsState().value
     return MediaFiles.viewerSize(settings?.get(MediaPrefs.imageQuality) ?: MediaQuality.MEDIUM)
 }
 
@@ -297,7 +301,7 @@ private fun GridTile(item: MediaGridItem, index: Int, grid: MediaGridRows, modif
     val type = typeLabel(item)
     val url = item.thumbnailUrl?.let { photoUrl(it, PhotoSize.MEDIUM) }
     val reveal = { grid.state.revealed[item.key] = true }
-    val shown = mediaShown(url, grid.state.revealed[item.key] == true, reveal)
+    val shown = !loadsManually() || mediaShown(url, grid.state.revealed[item.key] == true, reveal)
     val label = stringResource(Res.string.reader_media) + ": " + type + ", " + (index + 1) + "/" + grid.plan.items.size
     Box(
         modifier

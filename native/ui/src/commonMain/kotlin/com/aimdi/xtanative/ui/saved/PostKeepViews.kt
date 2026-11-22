@@ -14,6 +14,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +42,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_save_here
 import com.aimdi.xtanative.ui.generated.resources.saved_unlike
 import com.aimdi.xtanative.ui.generated.resources.saved_unsave
 import com.aimdi.xtanative.ui.plugins.CountButton
+import com.aimdi.xtanative.ui.post.sharedPostPrefs
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -103,17 +106,33 @@ internal fun SavedNoteEditor(item: Keepable, onDismiss: () -> Unit) {
     NoteEditorDialog(NoteTarget.Text(note, NoteRules.savedNoteKey(item.id)), onDismiss, saveText = { text -> Keeping.writeNote(keeper, item, text) })
 }
 
+/**
+ * Whether [postId] is saved here, as that changes: read from the frame's
+ * [KeptNow], where a change redraws only the bookmarks it changes, else
+ * followed here.
+ */
 @Composable
 internal fun savedHere(postId: String): Boolean {
     val keeper = LocalKeeper.current
+    val kept = keptNow(keeper)
+    if (kept != null) {
+        SideEffect(kept::wantSaved)
+        return remember(kept, postId) { derivedStateOf { kept.isSaved(postId) } }.value
+    }
     LaunchedEffect(keeper) { keeper.saved.index() }
     val library by keeper.saved.index.collectAsStateWithLifecycle()
     return library?.isSaved(postId) == true
 }
 
+/** Whether [postId] is liked here, as that changes: read as [savedHere] reads. */
 @Composable
 internal fun likedHere(postId: String): Boolean {
     val keeper = LocalKeeper.current
+    val kept = keptNow(keeper)
+    if (kept != null) {
+        SideEffect(kept::wantLiked)
+        return remember(kept, postId) { derivedStateOf { kept.isLiked(postId) } }.value
+    }
     val liked by remember(keeper) { LikedIds.of(keeper).ids }.collectAsStateWithLifecycle()
     return postId in liked
 }
@@ -203,6 +222,9 @@ internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, coun
 /** Calm or zen mode is on, which keep actions quiet (XTA's quietActions). */
 @Composable
 private fun quietActions(): Boolean {
-    val settings by LocalKeeper.current.settings.state.collectAsStateWithLifecycle()
+    val store = LocalKeeper.current.settings
+    // The post settings already read for every card say it, where they are this store's.
+    sharedPostPrefs(store)?.let { return it.hideCounts }
+    val settings by store.state.collectAsStateWithLifecycle()
     return settings?.let { it[PostsPrefs.calmMode] || it[PostsPrefs.zenMode] } ?: false
 }
