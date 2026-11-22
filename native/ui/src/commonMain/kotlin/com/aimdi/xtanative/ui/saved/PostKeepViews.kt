@@ -120,16 +120,21 @@ internal fun likedHere(postId: String): Boolean {
 
 @Composable
 internal fun DeviceSaveButton(post: XPost, modifier: Modifier, tint: Color) {
-    val item = remember(post) { Keepable.of(post) }
-    KeepableSaveButton(item, modifier, tint)
+    // The post is written out as it is kept only when the bookmark is pressed, not for every card scrolled past.
+    KeepableSaveButton(post.shown.id, modifier, tint) { Keepable.of(post) }
 }
 
 /** The bookmark of any network's kept post: a tap saves [item] where plain taps file or removes it, a long press opens the save sheet. */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun KeepableSaveButton(item: Keepable, modifier: Modifier, tint: Color) {
+internal fun KeepableSaveButton(item: Keepable, modifier: Modifier, tint: Color) = KeepableSaveButton(item.id, modifier, tint) { item }
+
+/** [KeepableSaveButton] of the post [id], made [item] only once it is pressed. */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+internal fun KeepableSaveButton(id: String, modifier: Modifier, tint: Color, item: () -> Keepable) {
     val keeper = LocalKeeper.current
-    val saved = savedHere(item.id)
+    val saved = savedHere(id)
     var sheetFor by remember { mutableStateOf<Keepable?>(null) }
     val label = stringResource(if (saved) Res.string.saved_unsave else Res.string.saved_save_here)
     Box(
@@ -139,8 +144,8 @@ internal fun KeepableSaveButton(item: Keepable, modifier: Modifier, tint: Color)
             .combinedClickable(
                 role = Role.Button,
                 onClickLabel = label,
-                onClick = { Keeping.toggleSave(keeper, item) },
-                onLongClick = { sheetFor = item },
+                onClick = { Keeping.toggleSave(keeper, item()) },
+                onLongClick = { sheetFor = item() },
             ),
         contentAlignment = Alignment.Center,
     ) {

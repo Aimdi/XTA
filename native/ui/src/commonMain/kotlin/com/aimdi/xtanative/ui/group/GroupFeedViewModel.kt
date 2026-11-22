@@ -7,8 +7,8 @@ import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.feed.ContentFilter
 import com.aimdi.xtanative.core.feed.FeedKeys
 import com.aimdi.xtanative.core.feed.FeedPage
-import com.aimdi.xtanative.core.feed.FeedReads
 import com.aimdi.xtanative.core.feed.FeedProgress
+import com.aimdi.xtanative.core.feed.FeedReads
 import com.aimdi.xtanative.core.feed.FeedSettings
 import com.aimdi.xtanative.core.feed.FirstPageAction
 import com.aimdi.xtanative.core.feed.GroupFeed
@@ -30,10 +30,10 @@ import com.aimdi.xtanative.store.settings.SubscriptionPrefs
 import com.aimdi.xtanative.ui.feed.FeedSources
 import com.aimdi.xtanative.ui.feed.HiddenPosts
 import com.aimdi.xtanative.ui.feed.MixedSources
-import com.aimdi.xtanative.ui.feed.StoredSnapshots
 import com.aimdi.xtanative.ui.feed.PluginFeeds
 import com.aimdi.xtanative.ui.feed.PluginPostsState
 import com.aimdi.xtanative.ui.feed.SourceAsk
+import com.aimdi.xtanative.ui.feed.StoredSnapshots
 import com.aimdi.xtanative.ui.feed.feedConcurrency
 import com.aimdi.xtanative.ui.plugins.FeedKinds
 import com.aimdi.xtanative.ui.plugins.PluginSettings
@@ -44,6 +44,7 @@ import com.aimdi.xtanative.ui.subscriptions.SubscriptionList
 import com.aimdi.xtanative.ui.subscriptions.SubscriptionRow
 import java.time.Instant
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -56,6 +57,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -196,13 +198,24 @@ class GroupFeedViewModel(
 
     private data class Inputs(val plan: GroupFeedPlan, val prefs: FeedPrefs)
 
-    val ui: StateFlow<GroupFeedUi> = combine(
+    /**
+     * What the screen shows of the session and the settings, worked out off
+     * the screen's thread and only when one of them changes: a load's every
+     * step ([run], its progress) is laid over it, and works nothing out again.
+     */
+    private val shownOfSession = combine(
         graph.sessions.state.filterNotNull(),
         graph.settings.settings,
         Combinations.state,
+        feeds.ids,
+    ) { session, settings, combined, plugins -> build(session, settings, combined, plugins) }
+        .flowOn(Dispatchers.Default)
+
+    val ui: StateFlow<GroupFeedUi> = combine(
+        shownOfSession,
         run,
-        combine(current.flatMapLatest { it?.progress ?: flowOf(FeedProgress()) }, feeds.ids, ::Pair),
-    ) { session, settings, combined, run, (progress, plugins) -> build(session, settings, combined, run, progress, plugins) }
+        current.flatMapLatest { it?.progress ?: flowOf(FeedProgress()) },
+    ) { shown, run, progress -> shown.copy(run = run, progress = progress) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GroupFeedUi())
 
     private val mixed = MixedSources(
@@ -249,17 +262,11 @@ class GroupFeedViewModel(
         return FeedSources.asks(ids, members, home = groupId == null, inHome = { PluginSettings.inHomeFeed(settings, it) }, kinds = kinds)
     }
 
-    private fun build(session: Session, settings: Settings, combined: CombinedGroups, run: FeedRun, progress: FeedProgress, plugins: Set<String>): GroupFeedUi {
+    private fun build(session: Session, settings: Settings, combined: CombinedGroups, plugins: Set<String>): GroupFeedUi {
         val feedSettings = session.settingsOf(key)
         val alsoRead = alsoReadOf(combined)
         val memberIds = (if (groupId == null) session.feedMembers else session.membersOf(groupId, alsoRead)).mapTo(HashSet()) { it.id }
         val pluginMembers = groupId?.let { PluginMembers.of(session, it, alsoRead, plugins).values.sumOf { members -> members.size } } ?: 0
-        val rows = SubscriptionList.ordered(
-            SubscriptionList.rows(session),
-            settings[SubscriptionPrefs.order],
-            settings[SubscriptionPrefs.ascending],
-            settings[SubscriptionPrefs.customOrder],
-        )
         return GroupFeedUi(
             loaded = true,
             group = session.groups.firstOrNull { it.id == groupId },
@@ -274,10 +281,7 @@ class GroupFeedViewModel(
             groups = GroupBoardModel.ordered(session.groups, settings[SubscriptionPrefs.groupsOrder], settings[SubscriptionPrefs.groupsAscending]),
             accounts = session.following.filter { it.id in memberIds },
             postCaps = session.postCaps,
-            people = rows,
             session = session,
-            run = run,
-            progress = progress,
         )
     }
 
@@ -551,17 +555,22 @@ class GroupFeedViewModel(
         }
     }
 
+    private var persisting: Job? = null
+
     /**
      * The feed (what was held back under a stop included) and where each of
      * its chunks' reading stands, for the next launch to read on from: the
      * reading only while every post shown is kept, so no hole opens below them.
      */
     private fun persist() {
-        val feed = current.value ?: return
-        val shown = run.value.shown
-        val threads = shown.threads + shown.stops.held
-        val readKey = feed.plan.readKey
-        viewModelScope.launch {
+        // A feed read page after page is written once, a moment after the last page, not whole after each.
+        persisting?.cancel()
+        persisting = viewModelScope.launch {
+            delay(PERSIST_AFTER_MILLIS)
+            val feed = current.value ?: return@launch
+            val shown = run.value.shown
+            val threads = shown.threads + shown.stops.held
+            val readKey = feed.plan.readKey
             val state = if (threads.size <= FeedCache.KEPT) feed.state() else null
             cache.write(SavedFeed(threads.take(FeedCache.KEPT), state, savedAt = System.currentTimeMillis(), key = readKey))
         }
@@ -642,5 +651,8 @@ class GroupFeedViewModel(
     private companion object {
         /** A burst of member or filter changes makes one refresh. */
         const val CHANGE_DEBOUNCE_MILLIS = 600L
+
+        /** How long after a page the feed is written for the next launch: the pages of one scroll are one write. */
+        const val PERSIST_AFTER_MILLIS = 1_500L
     }
 }
