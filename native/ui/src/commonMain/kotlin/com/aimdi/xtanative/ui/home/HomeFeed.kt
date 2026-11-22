@@ -2,15 +2,20 @@ package com.aimdi.xtanative.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -30,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -54,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.feed.FeedSort
 import com.aimdi.xtanative.core.feed.FeedStrip
+import com.aimdi.xtanative.core.session.DeckColumn
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.ui.common.LocalParentTurnsPages
@@ -118,9 +125,11 @@ internal class TimelinesState(val index: Int, val toTop: ToTop, val unread: Set<
  * networks pinned there) under Following's one bar while Following is shown,
  * else the timeline's own; both leave with the scroll when Theme says so. A
  * drag sideways turns to the next or the previous timeline, as their picker
- * lists them; the bar's mark opens that picker.
+ * lists them; the bar's mark opens that picker. Where the page is wide
+ * enough for two ([HomeWide]), the timelines after the one shown are read
+ * beside it, each a column of its own that reads on its own; a column's
+ * name makes it the one shown.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HomeFeedPage(
     ui: HomeUi,
@@ -132,6 +141,58 @@ internal fun HomeFeedPage(
     routes: HomeRoutes,
     refresh: () -> Unit,
     calls: FeedPageCalls,
+) {
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val count = HomeWide.columns(maxWidth.value, ui.tabs.size)
+        val beside = HomeWide.beside(ui.tabs, timelines.index, count)
+        if (beside.isEmpty()) {
+            ShownTimeline(ui, vm, timelines, following, networks, actions, routes, refresh, calls, Modifier.fillMaxSize())
+        } else {
+            val each = HomeWide.columnWidth(maxWidth.value, beside.size + 1).dp
+            Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center) {
+                ShownTimeline(ui, vm, timelines, following, networks, actions, routes, refresh, calls, Modifier.width(each).fillMaxHeight())
+                beside.forEach { tab ->
+                    VerticalDivider()
+                    key(tab.key) {
+                        DeckColumnView(
+                            columnOf(tab),
+                            tabLabel(tab, ui),
+                            ColumnPlace(first = false, last = false),
+                            ColumnCalls(onTitle = { calls.onTab(ui.tabs.indexOf(tab)) }, menu = false),
+                            toTop = 0,
+                            refreshedAll = 0,
+                            actions = actions,
+                            modifier = Modifier.width(each).fillMaxHeight(),
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** A timeline of Home as the column the deck draws it in. */
+private fun columnOf(tab: HomeTab): DeckColumn = when (tab) {
+    HomeTab.Following -> DeckColumn.Following
+    HomeTab.ForYou -> DeckColumn.ForYou
+    is HomeTab.Network -> DeckColumn.Network(tab.id)
+    is HomeTab.Group -> DeckColumn.Group(tab.id)
+}
+
+/** The timeline shown, under its bar: the whole page, or the first column of a wide one. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ShownTimeline(
+    ui: HomeUi,
+    vm: HomeViewModel,
+    timelines: TimelinesState,
+    following: FollowingLook,
+    networks: HomeNetworks,
+    actions: PostActions,
+    routes: HomeRoutes,
+    refresh: () -> Unit,
+    calls: FeedPageCalls,
+    modifier: Modifier,
 ) {
     val tabs = ui.tabs
     val reader = rememberScreenReaderOn()
@@ -171,7 +232,7 @@ internal fun HomeFeedPage(
     }
     CompositionLocalProvider(LocalHomeReading provides reading.takeIf { source != null }) {
     Scaffold(
-        modifier = Modifier.nestedScroll(reading.connection).nestedScroll(bar.nestedScrollConnection),
+        modifier = modifier.nestedScroll(reading.connection).nestedScroll(bar.nestedScrollConnection),
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             if (current == HomeTab.Following) {

@@ -207,7 +207,8 @@ private fun Modifier.hiding(state: HomeBarsState): Modifier = layout { measurabl
  * pages flat across the bottom in the page's colour with a hairline along
  * its top, the selected one's icon filled, with labels when Theme says so.
  * Networks beyond the first stand behind one Networks place. Holding Home
- * opens the timeline picker; a swipe across the bar turns its pages.
+ * opens the timeline picker; a swipe across the bar turns its pages. In a
+ * wide window ([beside]) the pages are in the navigation column instead.
  */
 @Composable
 internal fun HomeBottomBar(
@@ -220,8 +221,10 @@ internal fun HomeBottomBar(
     onHoldHome: () -> Unit,
     sections: NetworkBarSections? = null,
     hidden: Boolean = false,
+    beside: Boolean = false,
 ) {
-    if (hidden) return
+    // In a wide window the pages stand in the column beside Home; a network's sections still need the bar.
+    if (hidden || (beside && sections == null)) return
     val slots = remember(ui.bar, ui.recentNetworks) { HomeBar.slots(ui.bar, ui.recentNetworks) }
     if (sections != null) return NetworkSectionsBar(ui, state, sections) { onPage(ui.bar.indexOf(BarPage.Feed).coerceAtLeast(0)) }
     val selected = HomeBar.slotOf(slots, page)
@@ -361,7 +364,7 @@ private fun BarIcon(vector: ImageVector) {
 }
 
 @Composable
-private fun BarPageIcon(page: BarPage, selected: Boolean, ui: HomeUi, networks: HomeNetworks) {
+internal fun BarPageIcon(page: BarPage, selected: Boolean, ui: HomeUi, networks: HomeNetworks) {
     when (page) {
         BarPage.Feed -> BarIcon(if (selected) HomeBarIcons.HomeFilled else HomeBarIcons.Home)
         BarPage.Subscriptions -> BarIcon(if (selected) HomeBarIcons.SubscriptionsFilled else HomeBarIcons.Subscriptions)

@@ -44,6 +44,7 @@ import com.aimdi.xtanative.store.saved.SavedContent
 import com.aimdi.xtanative.store.saved.SavedEmptyKind
 import com.aimdi.xtanative.store.saved.SavedPost
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.feed.rememberLinkActions
 import com.aimdi.xtanative.ui.feed.rememberPostExtras
 import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
@@ -67,7 +68,7 @@ import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostCard
 import org.jetbrains.compose.resources.stringResource
 
-/** The open tab: its saved posts, likes or notes, the media grid, or why it is empty. */
+/** The open tab: its saved posts, likes or notes in the reading column, the media grid across the page, or why it is empty. */
 @Composable
 internal fun SavedBodyView(
     state: SavedUi,
@@ -82,18 +83,18 @@ internal fun SavedBodyView(
     when (val body = state.body) {
         is SavedBody.Empty -> EmptyPane(body.kind, onWriteNote)
         is SavedBody.Grid -> MediaGrid(body.tiles, actions, contentPadding, onRemove = vm::removeFromGrid)
-        is SavedBody.Posts -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), contentPadding) {
+        is SavedBody.Posts -> WithReadingColumn(contentPadding) { column -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), column) {
             items(body.posts, key = { it.id }, contentType = { "saved" }) { post ->
                 SavedRow(post, actions, state.view.selecting, post.id in state.view.selected, vm)
             }
-        }
-        is SavedBody.Likes -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), contentPadding) {
+        } }
+        is SavedBody.Likes -> WithReadingColumn(contentPadding) { column -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), column) {
             items(body.likes, key = { it.id }, contentType = { "like" }) { like ->
                 KeptPost(like.about, actions)
                 Hairline()
             }
-        }
-        is SavedBody.LikesByGroup -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), contentPadding) {
+        } }
+        is SavedBody.LikesByGroup -> WithReadingColumn(contentPadding) { column -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), column) {
             items(body.rows, key = { it.key }) { row ->
                 when (row) {
                     is LikesRow.Heading -> Text(
@@ -108,8 +109,8 @@ internal fun SavedBodyView(
                     }
                 }
             }
-        }
-        is SavedBody.Notes -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), contentPadding) {
+        } }
+        is SavedBody.Notes -> WithReadingColumn(contentPadding) { column -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), column) {
             items(body.notes, key = { it.note.id }, contentType = { "note" }) { row ->
                 NoteTile(
                     note = row.note,
@@ -122,7 +123,7 @@ internal fun SavedBodyView(
                     onOpen = { onOpenThread(row.threadRoot) },
                 )
             }
-        }
+        } }
     }
 }
 

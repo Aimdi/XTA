@@ -1,11 +1,11 @@
 [Desktop Entry]
 Type=Application
 Name=XTA Native
-GenericName=X reader
-Comment=XTA's X reader written in Kotlin, a prototype to compare with XTA
+GenericName=Feed reader
+Comment=Private, read-only reader for X and other networks
 Exec=xta-native
 Icon=com.aimdi.xtanative
 Terminal=false
 Categories=Network;News;
-Keywords=X;Twitter;Reader;
+Keywords=X;Twitter;Reader;Bluesky;Mastodon;Reddit;RSS;
 StartupWMClass=com-aimdi-xtanative-desktop-MainKt

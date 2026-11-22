@@ -3,7 +3,7 @@
 pkgname=xta-native
 pkgver=@PKGVER@
 pkgrel=1
-pkgdesc="XTA's X reader written in Kotlin, a prototype beside XTA (desktop build)"
+pkgdesc="Private, read-only reader for X and other networks (desktop build)"
 arch=('x86_64')
 url='https://github.com/@REPO@'
 license=('MIT')

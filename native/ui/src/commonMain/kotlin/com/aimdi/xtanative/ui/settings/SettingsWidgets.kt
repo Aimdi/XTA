@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
@@ -65,7 +66,7 @@ import com.aimdi.xtanative.ui.generated.resources.settings_cancel
 import com.aimdi.xtanative.ui.generated.resources.settings_save
 import org.jetbrains.compose.resources.stringResource
 
-/** A settings page: its title, Back, and what it holds, on the page's own background. */
+/** A settings page: its title, Back, and what it holds, on the page's own background, no wider than [SETTINGS_MAX_WIDTH]. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SettingsPage(
@@ -90,9 +91,16 @@ internal fun SettingsPage(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
-        content = content,
-    )
+    ) { padding ->
+        // A desktop window or a tablet: the rows stay a readable column, not a line across the screen.
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+            Box(Modifier.widthIn(max = SETTINGS_MAX_WIDTH).fillMaxSize()) { content(padding) }
+        }
+    }
 }
+
+/** The widest a settings page grows. */
+private val SETTINGS_MAX_WIDTH = 840.dp
 
 /** The rows of a page, scrolling. */
 @Composable

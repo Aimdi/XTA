@@ -190,14 +190,17 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
 }
 
 /** Where a column stands among the others: the first moves no further left, the last no further right. */
-private class ColumnPlace(val first: Boolean, val last: Boolean)
+internal class ColumnPlace(val first: Boolean, val last: Boolean)
 
-/** What a column's header does: its title back to the top, its menu moving it by a place or taking it off. */
-private class ColumnCalls(val onTitle: () -> Unit, val onMove: (by: Int) -> Unit, val onRemove: () -> Unit)
+/**
+ * What a column's header does: its title back to the top, its menu moving it by a place or taking it off.
+ * Home's own columns ([HomeWide]) follow its timelines and have no such [menu].
+ */
+internal class ColumnCalls(val onTitle: () -> Unit, val onMove: (by: Int) -> Unit = {}, val onRemove: () -> Unit = {}, val menu: Boolean = true)
 
 /** A column of the deck: its header over its timeline, read again on its own and with every column ([refreshedAll]). */
 @Composable
-private fun DeckColumnView(
+internal fun DeckColumnView(
     column: DeckColumn,
     label: String,
     place: ColumnPlace,
@@ -263,7 +266,7 @@ private fun ColumnHeader(label: String, place: ColumnPlace, calls: ColumnCalls, 
         )
         extra()
         IconButton(onClick = onRefresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
-        ColumnMenu(place, calls)
+        if (calls.menu) ColumnMenu(place, calls)
     }
     HorizontalDivider()
 }

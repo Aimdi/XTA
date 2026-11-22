@@ -76,6 +76,7 @@ import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemRow
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.clickableNoRipple
 import com.aimdi.xtanative.ui.common.countText
@@ -210,9 +211,11 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()),
             ) {
                 val tabbed = state.complete && user != null
+                // A wide window keeps the profile in the reading column, as the feeds are.
+                WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp)) { column ->
                 LazyColumn(
                     state = list,
-                    contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp),
+                    contentPadding = column,
                     modifier = Modifier.fillMaxSize().swipeTabs(if (tabbed) ProfileTab.entries else emptyList(), state.tab, vm::select),
                 ) {
                     item(key = "header", contentType = "header") {
@@ -240,6 +243,7 @@ fun ProfileScreen(
                             }
                         }
                     }
+                }
                 }
             }
         }
