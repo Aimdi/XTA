@@ -100,11 +100,11 @@ internal fun SettingsList(padding: PaddingValues, content: @Composable ColumnSco
     Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(bottom = 24.dp), content = content)
 }
 
-/** A group's heading, and what it is about. */
+/** A group's heading, a small grey label on the page, and what it is about. */
 @Composable
 internal fun SettingsHeader(title: String?, description: String? = null) {
     Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 4.dp)) {
-        if (title != null) Text(title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+        if (title != null) Text(title, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (description != null) {
             Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 2.dp))
         }

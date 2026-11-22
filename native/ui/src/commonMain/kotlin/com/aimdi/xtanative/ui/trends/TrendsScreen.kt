@@ -38,7 +38,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
+import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -279,7 +279,7 @@ private fun ScopeChips(plugins: List<SearchablePlugin>, scope: String, onSelect:
     ) {
         chips.forEach { id ->
             val label = plugins.firstOrNull { it.id == id }?.title(language) ?: x
-            FilterChip(selected = id == scope, onClick = { onSelect(id) }, label = { Text(label, maxLines = 1) })
+            FlatFilterChip(selected = id == scope, onClick = { onSelect(id) }, label = { Text(label, maxLines = 1) })
         }
     }
 }

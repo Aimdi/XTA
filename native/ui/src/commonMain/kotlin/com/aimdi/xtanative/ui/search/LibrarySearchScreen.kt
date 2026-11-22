@@ -19,7 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
+import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -139,9 +139,9 @@ private fun KindChips(picked: LibraryKind?, onPick: (LibraryKind?) -> Unit) {
         Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        FilterChip(selected = picked == null, onClick = { onPick(null) }, label = { Text(stringResource(Res.string.discover_all)) })
+        FlatFilterChip(selected = picked == null, onClick = { onPick(null) }, label = { Text(stringResource(Res.string.discover_all)) })
         LibraryKind.entries.forEach { kind ->
-            FilterChip(selected = picked == kind, onClick = { onPick(kind) }, label = { Text(kindLabel(kind)) })
+            FlatFilterChip(selected = picked == kind, onClick = { onPick(kind) }, label = { Text(kindLabel(kind)) })
         }
     }
 }

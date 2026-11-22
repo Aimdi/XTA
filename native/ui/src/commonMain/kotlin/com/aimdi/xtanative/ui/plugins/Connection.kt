@@ -18,7 +18,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -109,7 +108,7 @@ private fun ConnectionButtons(state: ConnectionState, test: String, save: String
             Spacer(Modifier.width(8.dp))
             Text(test)
         }
-        OutlinedButton(onClick = onSave, enabled = !state.running, modifier = Modifier.heightIn(min = 48.dp)) { Text(save) }
+        TextButton(onClick = onSave, enabled = !state.running, modifier = Modifier.heightIn(min = 48.dp)) { Text(save) }
     }
 }
 

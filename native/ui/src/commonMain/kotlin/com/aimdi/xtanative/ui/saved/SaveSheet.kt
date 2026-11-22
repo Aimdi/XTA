@@ -202,15 +202,11 @@ private fun CreateRow(label: String, onClick: () -> Unit) {
             .padding(bottom = 8.dp)
             .heightIn(min = 56.dp)
             .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .clickable(role = Role.Button, onClick = onClick)
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            Modifier.size(40.dp).border(1.5.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(10.dp)),
-            contentAlignment = Alignment.Center,
-        ) {
+        Box(Modifier.size(40.dp), contentAlignment = Alignment.Center) {
             Icon(Icons.Filled.Add, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
         }
         Spacer(Modifier.width(12.dp))
@@ -218,7 +214,7 @@ private fun CreateRow(label: String, onClick: () -> Unit) {
     }
 }
 
-/** A folder as a pill with its round mark, outlined in the accent with a check while the post is in it. */
+/** A folder as an outlined pill on the sheet with its round mark, outlined in the accent with a check while the post is in it. */
 @Composable
 private fun FolderChip(folder: SavedFolder, selected: Boolean, onClick: () -> Unit) {
     FilterChip(
@@ -242,10 +238,10 @@ private fun FolderChip(folder: SavedFolder, selected: Boolean, onClick: () -> Un
             }
         },
         colors = FilterChipDefaults.filterChipColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+            containerColor = Color.Transparent,
+            selectedContainerColor = Color.Transparent,
         ),
-        border = BorderStroke(1.5.dp, if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline),
+        border = BorderStroke(1.dp, if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant),
     )
 }
 

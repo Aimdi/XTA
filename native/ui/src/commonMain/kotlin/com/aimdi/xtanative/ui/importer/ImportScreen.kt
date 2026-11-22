@@ -13,8 +13,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -90,7 +90,7 @@ fun ImportScreen(onImported: () -> Unit, onSignIn: () -> Unit) {
         when (val now = state) {
             ImportUi.Idle, ImportUi.Done -> {
                 Button(onClick = choose, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.import_choose)) }
-                OutlinedButton(onClick = onSignIn, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.signin_add_account)) }
+                TextButton(onClick = onSignIn, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.signin_add_account)) }
             }
             ImportUi.Reading, ImportUi.Restoring -> LoadingRow()
             is ImportUi.Refused -> {
@@ -141,5 +141,5 @@ private fun Found(document: BackupDocument, onUse: (includeReadPositions: Boolea
         }
     }
     Button(onClick = { onUse(readPositions) }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.import_use)) }
-    OutlinedButton(onClick = onAnother, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.import_choose_another)) }
+    TextButton(onClick = onAnother, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.import_choose_another)) }
 }

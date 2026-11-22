@@ -27,11 +27,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -143,7 +143,7 @@ fun GroupEditSheet(
         onDismiss()
     }
 
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheet, containerColor = MaterialTheme.colorScheme.surface) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheet, containerColor = MaterialTheme.colorScheme.background) {
         Column(Modifier.fillMaxHeight(0.9f).imePadding().padding(horizontal = 16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 GroupMark(draft.name, draft.seedColor, draft.emoji, draft.icon, draft.markStyle, 40.dp)
@@ -177,7 +177,7 @@ fun GroupEditSheet(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalArrangement = Arrangement.Center,
             ) {
-                FilledTonalButton(onClick = { picker = EditPicker.ADD }) {
+                TextButton(onClick = { picker = EditPicker.ADD }) {
                     Icon(GroupIcons.PersonAdd, contentDescription = null, modifier = Modifier.size(18.dp))
                     Text(stringResource(Res.string.groups_add_to_group), maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 8.dp))
                 }
@@ -462,7 +462,7 @@ private fun IconDialog(onPick: (String) -> Unit, onDismiss: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupChoiceSheet(groups: List<FollowGroup>, current: String?, noneLabel: StringResource?, onPick: (String?) -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surface) {
+    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
         LazyColumn(Modifier.padding(bottom = 16.dp)) {
             if (noneLabel != null) {
                 item(key = "none") {
@@ -482,15 +482,18 @@ fun GroupChoiceSheet(groups: List<FollowGroup>, current: String?, noneLabel: Str
     }
 }
 
+/** One choice of the sheet, straight on it; the one [selected] ends in the accent's check. */
 @Composable
 private fun ChoiceRow(selected: Boolean, onClick: () -> Unit, content: @Composable () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp)
-            .background(if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surface)
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-    ) { content() }
+    ) {
+        Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) { content() }
+        if (selected) Icon(Icons.Filled.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 12.dp).size(20.dp))
+    }
 }

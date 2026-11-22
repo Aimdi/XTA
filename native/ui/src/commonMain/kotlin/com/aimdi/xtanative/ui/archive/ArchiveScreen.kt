@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.archive
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -18,10 +19,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -48,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.ArchiveNotesStore
+import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.downloads.rememberFilePicker
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.archive_extract
@@ -95,7 +96,7 @@ fun ArchiveScreen(id: String, onBack: () -> Unit) {
             Text(stringResource(Res.string.archive_tags), style = MaterialTheme.typography.titleMedium)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 state.tags.forEach { tag ->
-                    FilterChip(selected = tag in state.annotation.tags, onClick = { vm.toggleTag(tag) }, label = { Text(tag) })
+                    FlatFilterChip(selected = tag in state.annotation.tags, onClick = { vm.toggleTag(tag) }, label = { Text(tag) })
                 }
             }
             if (state.ai != null) {
@@ -107,16 +108,16 @@ fun ArchiveScreen(id: String, onBack: () -> Unit) {
                 }
             }
             state.annotation.highlights.forEach { (quote, note) ->
-                Card(onClick = { highlighting = quote }, modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                    ListItem(
-                        headlineContent = { Text(quote) },
-                        supportingContent = { Text(note) },
-                        trailingContent = {
-                            IconButton(onClick = { vm.removeHighlight(quote) }) { Icon(Icons.Filled.Close, stringResource(Res.string.saved_delete)) }
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    )
-                }
+                ListItem(
+                    headlineContent = { Text(quote) },
+                    supportingContent = { Text(note) },
+                    trailingContent = {
+                        IconButton(onClick = { vm.removeHighlight(quote) }) { Icon(Icons.Filled.Close, stringResource(Res.string.saved_delete)) }
+                    },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.fillMaxWidth().clickable { highlighting = quote },
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             }
             Spacer(Modifier.size(12.dp))
             // Read-only, so its text can be selected but not changed: the selection's menu copies it, or highlights it with a note.

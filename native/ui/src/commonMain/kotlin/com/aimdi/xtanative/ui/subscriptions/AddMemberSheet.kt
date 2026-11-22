@@ -92,7 +92,7 @@ fun AddMemberSheet(actions: GroupActions, onDone: (Set<String>) -> Unit) {
         }
     }
 
-    ModalBottomSheet(onDismissRequest = { onDone(state.added) }, sheetState = sheet, containerColor = MaterialTheme.colorScheme.surface) {
+    ModalBottomSheet(onDismissRequest = { onDone(state.added) }, sheetState = sheet, containerColor = MaterialTheme.colorScheme.background) {
         Column(Modifier.fillMaxHeight(0.85f).imePadding().padding(horizontal = 16.dp)) {
             OutlinedTextField(
                 value = state.query,

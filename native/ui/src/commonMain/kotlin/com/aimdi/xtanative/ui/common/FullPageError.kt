@@ -13,10 +13,10 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Warning
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,6 +49,6 @@ fun FullPageError(prefix: String, error: String, stack: String?, action: Pair<St
                 if (!stack.isNullOrBlank()) Text(stack, color = hint, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 12.dp))
             }
         }
-        if (action != null) ElevatedButton(onClick = action.second, modifier = Modifier.padding(top = 12.dp)) { Text(action.first) }
+        if (action != null) TextButton(onClick = action.second, modifier = Modifier.padding(top = 12.dp)) { Text(action.first) }
     }
 }

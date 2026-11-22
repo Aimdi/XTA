@@ -45,7 +45,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -112,9 +111,9 @@ private fun EmptyGroups(onCreate: () -> Unit, contentPadding: PaddingValues) {
     }
 }
 
-/** The tile's own fill: a small step off the page, so tiles read without shadows. */
+/** What a tile stands on: the page itself, as tiles have no box of their own. */
 @Composable
-private fun tileColor(): Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.055f).compositeOver(MaterialTheme.colorScheme.background)
+private fun tileColor(): Color = MaterialTheme.colorScheme.background
 
 @Composable
 private fun GroupsBoard(state: SubscriptionsUi, onOpen: (String) -> Unit, onEdit: (String) -> Unit, contentPadding: PaddingValues, onDiscover: ((String) -> Unit)?) {
@@ -152,10 +151,10 @@ private fun GroupsBoard(state: SubscriptionsUi, onOpen: (String) -> Unit, onEdit
 }
 
 /**
- * One group on the board (group_tile.dart): a flat card with a hairline
- * border, its members' faces or its mark, its name after the pinned and NSFW
- * marks, and its member count. A colour the reader chose tints its border
- * and washes over it faintly. With [onDiscover], its sparkle opens its
+ * One group on the board (group_tile.dart): straight on the page, its
+ * members' faces or its mark, its name after the pinned and NSFW marks, and
+ * its member count. A colour the reader chose draws a hairline of it around
+ * the tile; a group without one has no outline. With [onDiscover], its sparkle opens its
  * Discover ranked by the reader's AI.
  */
 @OptIn(ExperimentalFoundationApi::class)
@@ -172,8 +171,7 @@ private fun GroupTileView(tile: GroupTile, compact: Boolean, fixedHeight: Float?
             .fillMaxWidth()
             .let { if (fixedHeight != null) it.height(fixedHeight.dp) else it.aspectRatio(ratio) }
             .clip(shape)
-            .background(chosen?.copy(alpha = 0.07f)?.compositeOver(base) ?: base)
-            .border(1.dp, chosen?.copy(alpha = 0.55f) ?: MaterialTheme.colorScheme.outlineVariant, shape)
+            .let { if (chosen != null) it.border(1.dp, chosen.copy(alpha = 0.55f), shape) else it }
             .combinedClickable(onClick = onTap, onLongClick = onLongPress)
             .semantics(mergeDescendants = true) { contentDescription = label },
     ) {

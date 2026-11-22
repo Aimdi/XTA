@@ -32,7 +32,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -183,7 +182,7 @@ private fun Card(title: String, body: String, footnote: String? = null, label: S
     Text(title, style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold))
     Text(body, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
     Box(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainer)
+        Modifier.fillMaxWidth()
             .let { if (label != null) it.semantics { contentDescription = label } else it }
             .padding(16.dp),
         contentAlignment = Alignment.Center,
@@ -198,8 +197,7 @@ private fun FlowColumnOfAccounts(names: List<String>) {
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         names.forEach { name ->
             Row(
-                Modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surface)
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)).padding(horizontal = 12.dp, vertical = 6.dp),
+                Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(Icons.Outlined.AccountCircle, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
@@ -282,8 +280,7 @@ private fun Tile(
     val colors = MaterialTheme.colorScheme
     Box(
         Modifier.size(width = 100.dp, height = 72.dp).clip(shape)
-            .background(if (selected) colors.primaryContainer else colors.surface)
-            .border(if (selected && !fixed) 2.dp else 1.dp, if (selected && !fixed) colors.primary else colors.outlineVariant, shape)
+            .border(1.dp, if (selected && !fixed) colors.primary else colors.outlineVariant, shape)
             .clickable(enabled = !fixed && !busy, onClick = onClick)
             .padding(6.dp),
         contentAlignment = Alignment.Center,
@@ -315,7 +312,7 @@ private fun Footer(page: IntroPage, noAccount: Boolean, onNext: () -> Unit, onSi
             page == IntroPage.SOURCES -> Button(onClick = onFinish, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.intro_start_reading)) }
             page == IntroPage.ACCOUNT && noAccount -> {
                 Button(onClick = onSignIn, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.signin_add_account)) }
-                OutlinedButton(onClick = onNext, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.intro_not_now)) }
+                TextButton(onClick = onNext, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.intro_not_now)) }
                 TextButton(onClick = onImport, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.settings_import_backup)) }
             }
             else -> Button(onClick = onNext, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.intro_next)) }

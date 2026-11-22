@@ -13,7 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.FilterChip
+import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -119,7 +119,7 @@ fun ProfileSavedFilter(selected: ArchiveFilter, onSelect: (ArchiveFilter) -> Uni
             Triple(ArchiveFilter.LIKES, Icons.Filled.FavoriteBorder, Res.string.saved_tab_likes),
             Triple(ArchiveFilter.BOOKMARKS, SavedIcons.BookmarkBorder, Res.string.saved_bookmarks),
         ).forEach { (filter, icon, label) ->
-            FilterChip(
+            FlatFilterChip(
                 selected = filter == selected,
                 onClick = { onSelect(filter) },
                 label = { Text(stringResource(label)) },

@@ -395,7 +395,7 @@ internal fun NetworksSheet(ui: HomeUi, networks: HomeNetworks, current: String?,
     val onBar = HomeBar.networks(ui.bar)
     val (recent, rest) = AltMicroblogging.sections(onBar, ui.recentNetworks, ui.microblogsGrouped)
     val sheet = NetworkRows(ui, networks, current, AltMicroblogging.members(onBar), onPick)
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surface) {
+    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
         LazyColumn(Modifier.padding(bottom = 16.dp)) {
             item(key = "title") {
                 Text(stringResource(Res.string.home_networks), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp))

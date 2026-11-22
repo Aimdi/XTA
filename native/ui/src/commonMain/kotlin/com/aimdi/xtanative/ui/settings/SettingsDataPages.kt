@@ -34,7 +34,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -420,7 +419,7 @@ internal fun SyncSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
                             }
                         }
                     }, modifier = Modifier.weight(1f)) { Text(stringResource(Res.string.settings_sync_upload)) }
-                    OutlinedButton(onClick = {
+                    TextButton(onClick = {
                         act {
                             val result = sync.download(config)
                             if (result.isSuccess) {

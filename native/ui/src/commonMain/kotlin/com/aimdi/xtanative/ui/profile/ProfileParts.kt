@@ -23,7 +23,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
+import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -94,7 +94,7 @@ internal fun FeedSettingsSheet(state: ProfileUi, follow: FollowUi, vm: ProfileVi
                 )
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     QuietAccount.CHOICES.forEach { choice ->
-                        FilterChip(
+                        FlatFilterChip(
                             selected = choice == follow.maxPosts,
                             onClick = { vm.capPosts(choice) },
                             label = { Text(choice?.toString() ?: stringResource(Res.string.posts_quiet_account_off)) },

@@ -59,7 +59,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
@@ -472,12 +471,7 @@ private fun ChipRow(
         }
         item(key = "new") {
             IconButton(onClick = onNewFolder) {
-                Box(
-                    Modifier.size(32.dp).border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(8.dp)),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(Icons.Filled.Add, stringResource(Res.string.saved_new_folder), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
-                }
+                Icon(Icons.Filled.Add, stringResource(Res.string.saved_new_folder), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
             }
         }
     }
@@ -492,7 +486,7 @@ private fun chipLabel(chip: SavedChip): String = when (chip.token) {
     else -> chip.folder?.name.orEmpty()
 }
 
-/** A tab as a plain chip, the selected one filled with the accent at 18 % and outlined in it; a folder's opens its menu on a long press. */
+/** A tab as a plain outlined chip, the selected one written and outlined in the accent; a folder's opens its menu on a long press. */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TabChip(label: String, selected: Boolean, trailing: ImageVector?, onClick: () -> Unit, onLongClick: (() -> Unit)?) {
@@ -502,7 +496,6 @@ private fun TabChip(label: String, selected: Boolean, trailing: ImageVector?, on
         Modifier
             .heightIn(min = 32.dp)
             .clip(shape)
-            .background(if (selected) accent.copy(alpha = 0.18f) else Color.Transparent)
             .border(1.dp, if (selected) accent else MaterialTheme.colorScheme.outlineVariant, shape)
             .combinedClickable(role = Role.Tab, onClick = onClick, onLongClick = onLongClick)
             .semantics { this.selected = selected }
@@ -512,19 +505,20 @@ private fun TabChip(label: String, selected: Boolean, trailing: ImageVector?, on
         Text(
             label,
             fontSize = 13.sp,
-            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+            color = if (selected) accent else MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.widthIn(max = 180.dp),
         )
         if (trailing != null) {
             Spacer(Modifier.width(2.dp))
-            Icon(trailing, contentDescription = null, modifier = Modifier.size(16.dp))
+            Icon(trailing, contentDescription = null, tint = if (selected) accent else MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
         }
     }
 }
 
-/** The network picker: a filled chip with the network's mark, its name ("All networks" until one is chosen) and a chevron. */
+/** The network picker: an outlined chip with the network's mark, its name ("All networks" until one is chosen) and a chevron. */
 @Composable
 private fun SourcePicker(selected: SavedSource, onPick: (SavedSource) -> Unit) {
     var open by remember { mutableStateOf(false) }
@@ -533,7 +527,6 @@ private fun SourcePicker(selected: SavedSource, onPick: (SavedSource) -> Unit) {
         Row(
             Modifier
                 .clip(shape)
-                .background(MaterialTheme.colorScheme.surfaceContainer)
                 .border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape)
                 .clickable(role = Role.DropdownList, onClickLabel = stringResource(Res.string.saved_networks)) { open = true }
                 .padding(horizontal = 10.dp, vertical = 6.dp),

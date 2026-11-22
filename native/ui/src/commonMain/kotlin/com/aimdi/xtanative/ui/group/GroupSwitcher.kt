@@ -1,7 +1,6 @@
 package com.aimdi.xtanative.ui.group
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
@@ -32,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -115,7 +115,7 @@ fun GroupSwitcherSheet(
     onDismiss: () -> Unit,
 ) {
     val currentId = state.group?.id
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surface) {
+    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
         if (state.groups.isEmpty()) {
             Text(stringResource(Res.string.groups_none_yet), modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 32.dp))
             return@ModalBottomSheet
@@ -165,14 +165,13 @@ private fun SwitcherRow(group: FollowGroup, current: Boolean, combined: Boolean,
         Modifier
             .fillMaxWidth()
             .heightIn(min = 64.dp)
-            .background(if (current || combined) tint.copy(alpha = 0.10f) else MaterialTheme.colorScheme.surface)
             .combinedClickable(onClick = onClick, onLongClick = onLongClick)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         GroupMark(group, 36.dp)
         Column(Modifier.weight(1f).padding(horizontal = 16.dp)) {
-            Text(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis, color = tint)
+            Text(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis, color = tint, fontWeight = if (current || combined) FontWeight.Bold else null)
             Text(
                 pluralStringResource(Res.plurals.groups_member_count, group.memberIds.size, group.memberIds.size),
                 style = MaterialTheme.typography.bodySmall,

@@ -19,7 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
+import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -269,7 +269,7 @@ private fun ControlBar(
             DiscoverChip(selected = false) { onDiscover(true) }
             MediaChip(chips.mediaOnly, onMedia)
             state.contentChip?.let { filter ->
-                FilterChip(
+                FlatFilterChip(
                     selected = true,
                     onClick = onCustom,
                     label = { Text(contentFilterLabel(filter)) },
@@ -293,7 +293,7 @@ private fun OrderChips(state: GroupFeedUi, onSort: (FeedSort) -> Unit) {
 /** Discover's chip: a way into it, or, while it is open, its name with the way back to the feed. */
 @Composable
 private fun DiscoverChip(selected: Boolean, onClick: () -> Unit) {
-    FilterChip(
+    FlatFilterChip(
         selected = selected,
         onClick = onClick,
         label = { Text(stringResource(Res.string.groups_discover), fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium) },
@@ -309,7 +309,7 @@ private fun DiscoverChip(selected: Boolean, onClick: () -> Unit) {
 /** Media: the feed's photos and videos alone, as a grid. */
 @Composable
 private fun MediaChip(selected: Boolean, onClick: () -> Unit) {
-    FilterChip(
+    FlatFilterChip(
         selected = selected,
         onClick = onClick,
         label = { Text(stringResource(Res.string.groups_media), fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium) },
@@ -319,7 +319,7 @@ private fun MediaChip(selected: Boolean, onClick: () -> Unit) {
 
 @Composable
 private fun OrderChip(label: String, selected: Boolean, onClick: () -> Unit) {
-    FilterChip(
+    FlatFilterChip(
         selected = selected,
         onClick = onClick,
         label = { Text(label, fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium) },

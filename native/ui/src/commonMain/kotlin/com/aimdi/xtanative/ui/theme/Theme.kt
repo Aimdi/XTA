@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.ui.theme
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -8,6 +10,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 val XBlue = Color(0xFF1D9BF0)
@@ -26,6 +29,11 @@ internal val XtaTypography = Typography(
     labelMedium = TextStyle(fontSize = 13.sp, lineHeight = 16.sp),
 )
 
+
+private const val SCRIM_ON_DARK = 0xFF5B7083
+
+/** XTA's corners: a sheet's and a dialog's top is rounded as the app's own sheets are, not as wide as Material's. */
+internal val XtaShapes = Shapes(extraLarge = RoundedCornerShape(20.dp))
 
 /** [scheme] as Material 3 names its colours; nothing is washed with a tonal tint, as in X Look. */
 fun colorSchemeOf(scheme: XLookScheme): ColorScheme {
@@ -52,7 +60,8 @@ fun colorSchemeOf(scheme: XLookScheme): ColorScheme {
         surfaceBright = Color(scheme.floating),
         surfaceDim = Color(t.background),
         surfaceContainerLowest = Color(t.background),
-        surfaceContainerLow = Color(t.card),
+        // What a sheet is drawn on: the page's own colour, in every theme.
+        surfaceContainerLow = Color(t.background),
         surfaceContainer = Color(scheme.surfaceContainer),
         surfaceContainerHigh = Color(scheme.surfaceContainerHigh),
         surfaceContainerHighest = Color(scheme.surfaceContainerHighest),
@@ -61,6 +70,8 @@ fun colorSchemeOf(scheme: XLookScheme): ColorScheme {
         error = Color(scheme.error),
         onError = Color(scheme.onError),
         errorContainer = Color(scheme.errorContainer),
+        // Behind a sheet: a dark page is washed grey-blue, as X washes it, so a sheet of the page's own colour stands out without a box.
+        scrim = if (scheme.isLight) Color.Black else Color(SCRIM_ON_DARK),
         onErrorContainer = Color(scheme.onErrorContainer),
     )
 }

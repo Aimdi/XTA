@@ -1,6 +1,6 @@
 package com.aimdi.xtanative.ui.subscriptions
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -86,7 +85,7 @@ fun SubscriptionsMenuSheet(state: SubscriptionsUi, vm: SubscriptionsViewModel, a
         onDismiss()
         action()
     }
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surface) {
+    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
         Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 12.dp)) {
             Text(
                 stringResource(if (groups) Res.string.groups_groups else Res.string.groups_subscriptions),
@@ -152,7 +151,7 @@ private fun ModeButton(icon: ImageVector, label: StringResource, selected: Boole
         modifier
             .heightIn(min = 48.dp)
             .clip(CircleShape)
-            .background(if (selected) accent.copy(alpha = 0.16f) else MaterialTheme.colorScheme.surfaceContainerHigh)
+            .border(1.dp, if (selected) accent else MaterialTheme.colorScheme.outlineVariant, CircleShape)
             .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
             .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -190,12 +189,12 @@ private fun CountChip(label: String, selected: Boolean, modifier: Modifier = Mod
             .heightIn(min = 48.dp)
             .widthIn(min = 48.dp)
             .clip(CircleShape)
-            .background(if (selected) accent else MaterialTheme.colorScheme.surfaceContainerHigh)
+            .border(1.dp, if (selected) accent else MaterialTheme.colorScheme.outlineVariant, CircleShape)
             .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
             .padding(horizontal = if (label.length > 2) 16.dp else 0.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(label, color = if (selected) Color.White else MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+        Text(label, color = if (selected) accent else MaterialTheme.colorScheme.onSurface, fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium, fontSize = 15.sp)
     }
 }
 
