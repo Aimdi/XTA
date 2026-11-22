@@ -17,13 +17,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -176,7 +175,7 @@ private fun ProfileHeader(app: TikTokApp, profile: TikTokProfile) {
         if (profile.privateAccount) {
             Text(pluginString(Strings.profile_private), style = MaterialTheme.typography.bodySmall, color = muted, modifier = Modifier.padding(top = 16.dp))
         } else {
-            OutlinedButton(onClick = { app.addToGroup(profile) }, modifier = Modifier.padding(top = 16.dp)) {
+            TextButton(onClick = { app.addToGroup(profile) }, modifier = Modifier.padding(top = 16.dp)) {
                 Icon(PostIcons.GroupAdd, contentDescription = null)
                 Text(pluginString(Strings.add_to_group), Modifier.padding(start = 8.dp))
             }
@@ -198,7 +197,7 @@ private fun Stat(label: String, value: Long, modifier: Modifier) {
 private fun FollowButton(app: TikTokApp, profile: TikTokProfile) {
     val follows by app.follows.state.collectAsState()
     val following = follows.orEmpty().any { it.id == profile.uniqueId.lowercase() }
-    FilledTonalButton(
+    TextButton(
         onClick = { app.launch { if (following) app.unfollow(profile.uniqueId) else app.follows.follow(profile) } },
         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
     ) {

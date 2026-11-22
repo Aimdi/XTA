@@ -13,7 +13,6 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -84,12 +83,10 @@ internal fun DeepmarksSettingsBody(app: DeepmarksApp, frame: PluginFrame) {
 /** API access needs a lifetime membership: said before anything is asked for. */
 @Composable
 private fun LifetimeNotice(modifier: Modifier) {
-    Card(modifier) {
-        Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(10.dp))
-            Text(pluginString(Strings.lifetime_notice), style = MaterialTheme.typography.bodySmall)
-        }
+    Row(modifier.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+        Spacer(Modifier.width(10.dp))
+        Text(pluginString(Strings.lifetime_notice), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 

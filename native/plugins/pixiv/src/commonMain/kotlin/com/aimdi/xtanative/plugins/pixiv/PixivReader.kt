@@ -33,10 +33,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -355,7 +355,7 @@ private fun ReaderBar(pages: Int, surface: ReaderSurface, hd: Boolean, onHd: () 
             modifier = Modifier.weight(1f),
         )
         Spacer(Modifier.width(8.dp))
-        OutlinedButton(onClick = { surface.openOverview(false) }) {
+        TextButton(onClick = { surface.openOverview(false) }) {
             Icon(GroupIcons.GridView, null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(6.dp))
             Text(pluginString(Strings.page_of, shown + 1, pages))

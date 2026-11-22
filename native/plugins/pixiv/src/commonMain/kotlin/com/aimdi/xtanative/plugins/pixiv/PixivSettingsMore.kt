@@ -17,6 +17,7 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -28,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -143,6 +145,7 @@ private fun HostOption(value: PixivImageHostChoice, label: PluginText, detail: S
         supportingContent = detail?.let { { Text(it) } },
         leadingContent = { RadioButton(selected = value == choice, onClick = null) },
         modifier = Modifier.selectable(selected = value == choice) { onPick(value) },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 

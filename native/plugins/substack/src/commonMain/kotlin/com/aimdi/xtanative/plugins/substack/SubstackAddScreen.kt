@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -96,7 +95,7 @@ private fun Preview(app: SubstackApp, asked: String, retype: String, onAsk: (Str
         Text(found.baseUrl, modifier = Modifier.padding(top = 4.dp))
         found.description?.takeIf { it.isNotEmpty() }?.let { Text(it, modifier = Modifier.padding(vertical = 8.dp)) }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilledTonalButton(onClick = { app.follow(found) }, enabled = !state.loading && !followed) {
+            TextButton(onClick = { app.follow(found) }, enabled = !state.loading && !followed) {
                 Icon(if (followed) Icons.Default.CheckCircle else Icons.Default.Add, null, Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
                 Text(if (followed) pluginString(Strings.followed, found.displayName) else pluginString(Strings.follow))

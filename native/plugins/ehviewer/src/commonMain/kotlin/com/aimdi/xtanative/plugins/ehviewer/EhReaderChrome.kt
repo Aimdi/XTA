@@ -31,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -148,6 +149,7 @@ internal fun ModeSheet(current: EhReadingMode, onDismiss: () -> Unit, onPick: (E
                 leadingContent = { Icon(modeIcon(mode), contentDescription = null) },
                 trailingContent = if (mode == current) ({ Icon(Icons.Filled.Check, contentDescription = null) }) else null,
                 modifier = Modifier.clickable { onPick(mode) },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
             )
         }
     }
@@ -206,6 +208,7 @@ private fun ActionRow(icon: ImageVector, label: String, onClick: () -> Unit) {
         headlineContent = { Text(label) },
         leadingContent = { Icon(icon, contentDescription = null) },
         modifier = Modifier.clickable(onClick = onClick),
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 

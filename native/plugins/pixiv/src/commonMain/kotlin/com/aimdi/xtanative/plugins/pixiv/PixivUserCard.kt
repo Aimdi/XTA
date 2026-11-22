@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.plugins.pixiv
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,18 +23,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -91,19 +88,18 @@ internal fun ProfileButtons(user: PixivUser) {
     }
 }
 
-/** Add to group as the profile draws it, outlined with an edge: [label] beside its icon when [named], its icon alone otherwise. */
+/** Add to group as the profile draws it, flat on the page: [label] beside its icon when [named], its icon alone otherwise. */
 @Composable
 private fun ProfileGroupButton(label: String, named: Boolean, onClick: () -> Unit) {
     val shape = RoundedCornerShape(8.dp)
-    val border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
     if (named) {
-        OutlinedButton(onClick = onClick, shape = shape, border = border, modifier = Modifier.heightIn(min = 48.dp)) {
+        TextButton(onClick = onClick, shape = shape, modifier = Modifier.heightIn(min = 48.dp)) {
             Icon(PostIcons.People, null, Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
             Text(label, maxLines = 1)
         }
     } else {
-        OutlinedIconButton(onClick = onClick, shape = shape, border = border, modifier = Modifier.size(48.dp)) { Icon(PostIcons.People, label) }
+        IconButton(onClick = onClick, modifier = Modifier.size(48.dp)) { Icon(PostIcons.People, label) }
     }
 }
 
@@ -118,7 +114,7 @@ internal fun GroupIconButton(user: PixivUser) {
  * Follow or Unfollow on Pixiv (pixiv_user_card.dart's PixivFollowButton): a
  * tap follows publicly or unfollows, a long press opens the follow dialog to
  * follow privately; a ring while Pixiv answers. [prominent] is the profile's
- * full-width button, outlined once followed.
+ * full-width button; either way it is accent words on the page, bold until followed.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -130,17 +126,12 @@ internal fun FollowButton(user: PixivUser, modifier: Modifier = Modifier, promin
     val followed = marks.on(user.id, user.isFollowed)
     val busy = marks.isBusy(user.id)
     val scheme = MaterialTheme.colorScheme
-    val (background, content) = when {
-        !prominent -> scheme.secondaryContainer to scheme.onSecondaryContainer
-        followed -> Color.Transparent to scheme.primary
-        else -> scheme.primary to scheme.onPrimary
-    }
+    val content = scheme.primary
     val shape = if (prominent) RoundedCornerShape(8.dp) else CircleShape
     Surface(
         shape = shape,
-        color = background,
+        color = Color.Transparent,
         contentColor = content,
-        border = if (prominent && followed) BorderStroke(1.dp, scheme.outline) else null,
         modifier = modifier.heightIn(min = 48.dp).clip(shape).combinedClickable(
             enabled = !busy,
             role = Role.Button,
@@ -159,7 +150,7 @@ internal fun FollowButton(user: PixivUser, modifier: Modifier = Modifier, promin
                 Icon(if (followed) GroupIcons.PersonRemove else GroupIcons.PersonAddOutlined, null, Modifier.size(18.dp))
             }
             Spacer(Modifier.width(8.dp))
-            Text(pluginString(if (followed) Strings.unfollow else Strings.follow), style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(pluginString(if (followed) Strings.unfollow else Strings.follow), style = MaterialTheme.typography.labelLarge, fontWeight = if (followed) FontWeight.Medium else FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
 }
@@ -180,11 +171,12 @@ internal fun UserNames(name: String, account: String, modifier: Modifier = Modif
 internal fun UserPreviewCard(preview: PixivUserPreview, novels: Boolean = false, grouped: Boolean = false) {
     val runtime = LocalPixiv.current
     val user = preview.user
-    OutlinedCard(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable { runtime.openUser(user.id) }) {
-        Column(Modifier.padding(12.dp)) {
+    Column(Modifier.fillMaxWidth().clickable { runtime.openUser(user.id) }) {
+        Column(Modifier.padding(horizontal = 4.dp, vertical = 12.dp)) {
             UserHeader(user, grouped)
             PreviewRow(preview, novels)
         }
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 

@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -107,7 +108,7 @@ private fun PixivTagList(source: PixivFavoritesSource, query: String, selected: 
         when {
             state.waiting || state.loadingMore -> item(key = "loading") { LoadingRow() }
             state.error != null && state.items.isEmpty() -> item(key = "error") {
-                ListItem(headlineContent = { Text(pixivErrorText(state.error)) }, trailingContent = { TextButton(onClick = list::refresh) { Text(pluginString(Strings.retry)) } })
+                ListItem(headlineContent = { Text(pixivErrorText(state.error)) }, trailingContent = { TextButton(onClick = list::refresh) { Text(pluginString(Strings.retry)) } }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
             }
             state.loaded && state.items.isEmpty() -> item(key = "none") { NoTags() }
         }
@@ -147,6 +148,7 @@ private fun TagRows(query: String, tags: List<Pair<String, Long>>, selected: Str
                         headlineContent = { Text(pluginString(Strings.bookmark_tag_use, query)) },
                         leadingContent = { Icon(Icons.Filled.Search, null) },
                         modifier = Modifier.clickable { onPick(query) },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     )
                 }
             }
@@ -161,14 +163,14 @@ private fun TagRow(icon: ImageVector, tag: String?, count: Long?, selected: Stri
         headlineContent = { Text(tagLabel(tag)) },
         leadingContent = { Icon(icon, null) },
         trailingContent = count?.let { { Text(countText(it)) } },
-        colors = if (chosen) ListItemDefaults.colors(headlineColor = MaterialTheme.colorScheme.primary, leadingIconColor = MaterialTheme.colorScheme.primary) else ListItemDefaults.colors(),
+        colors = if (chosen) ListItemDefaults.colors(headlineColor = MaterialTheme.colorScheme.primary, leadingIconColor = MaterialTheme.colorScheme.primary) else ListItemDefaults.colors(containerColor = Color.Transparent),
         modifier = Modifier.clickable { onPick(tag) },
     )
 }
 
 @Composable
 private fun NoTags() {
-    ListItem(headlineContent = { Text(pluginString(Strings.bookmark_tags_none), color = MaterialTheme.colorScheme.onSurfaceVariant) })
+    ListItem(headlineContent = { Text(pluginString(Strings.bookmark_tags_none), color = MaterialTheme.colorScheme.onSurfaceVariant) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
 }
 
 /**

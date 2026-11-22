@@ -10,8 +10,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -184,7 +184,7 @@ internal fun extrasOf(app: BlueskyApp, post: BlueskyPost, above: (@Composable ()
  */
 @Composable
 private fun ContentCover(cover: PostCover) {
-    OutlinedButton(onClick = cover.toggle, modifier = Modifier.fillMaxWidth().padding(top = 6.dp)) {
+    TextButton(onClick = cover.toggle, modifier = Modifier.fillMaxWidth().padding(top = 6.dp)) {
         Icon(if (cover.revealed) PostIcons.VisibilityOff else BlueskyIcons.Visibility, contentDescription = null, modifier = Modifier.size(18.dp))
         Text(cover.warning + " · " + pluginString(if (cover.revealed) Strings.hide else Strings.show), modifier = Modifier.padding(start = 8.dp))
     }

@@ -25,7 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -165,7 +164,7 @@ internal fun BlockView(block: SubstackBlock, body: TextStyle, highlights: List<S
     when (block) {
         is SubstackTextBlock -> TextBlockView(block, body, highlights, taps)
         is SubstackImageBlock -> ImageBlockView(block, body, highlights, keptImages, taps)
-        is SubstackEmbedBlock -> OutlinedButton(onClick = { taps.onLink(block.src) }) {
+        is SubstackEmbedBlock -> TextButton(onClick = { taps.onLink(block.src) }) {
             Icon(SubstackIcons.OpenInNew, null, Modifier.padding(end = 8.dp))
             Text(listOf(pluginString(Strings.load_embed), block.host).filter { it.isNotEmpty() }.joinToString(" · "))
         }

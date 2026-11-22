@@ -24,8 +24,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,12 +50,13 @@ import com.aimdi.xtanative.networks.substack.SubstackPost
 import com.aimdi.xtanative.networks.substack.SubstackPublication
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.addToGroupText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
-import com.aimdi.xtanative.ui.plugins.PluginText
 
 /**
  * Library, as XTA's: the publications followed here (pinned first, each to
@@ -83,7 +82,7 @@ internal fun LibraryPane(app: SubstackApp, controls: HomeControls, frame: Plugin
         )
         Row(Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SubstackLibrarySection.entries.forEach { section ->
-                FilterChip(selected = controls.librarySection == section, onClick = { controls.librarySection = section }, label = { Text(pluginString(sectionLabel(section))) })
+                PluginFilterChip(pluginString(sectionLabel(section)), selected = controls.librarySection == section, onClick = { controls.librarySection = section })
             }
         }
         Box(Modifier.weight(1f)) {
@@ -115,7 +114,7 @@ private fun FollowingList(app: SubstackApp, query: String, frame: PluginFrame) {
             item(key = "empty") {
                 EmptyState(pluginString(if (query.isBlank()) Strings.empty else Strings.library_search_empty)) {
                     if (query.isBlank()) {
-                        FilledTonalButton(onClick = app::openAdd, modifier = Modifier.padding(top = 16.dp)) {
+                        TextButton(onClick = app::openAdd, modifier = Modifier.padding(top = 16.dp)) {
                             Icon(Icons.Default.Add, null, Modifier.padding(end = 8.dp))
                             Text(pluginString(Strings.add))
                         }

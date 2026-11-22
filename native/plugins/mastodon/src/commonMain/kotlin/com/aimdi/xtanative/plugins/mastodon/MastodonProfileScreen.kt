@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonProfileReader
 import com.aimdi.xtanative.networks.mastodon.MastodonProfileTab
@@ -102,7 +103,7 @@ internal fun MastodonProfileScreen(app: MastodonApp, acct: String) {
     }
 }
 
-/** A profile's tabs as XTA draws them (mastodon_profile_screen.dart's _ProfileTabs): pills side by side, the open one filled, scrolling sideways when they do not fit. */
+/** A profile's tabs as XTA draws them (mastodon_profile_screen.dart's _ProfileTabs): flat labels side by side, the open one bold in the accent, scrolling sideways when they do not fit. */
 @Composable
 private fun ProfileTabs(selected: MastodonProfileTab, onSelect: (MastodonProfileTab) -> Unit) {
     val labels = listOf(Strings.profile_posts, Strings.profile_replies, Strings.profile_media).map { pluginString(it) }
@@ -116,11 +117,11 @@ private fun ProfileTabs(selected: MastodonProfileTab, onSelect: (MastodonProfile
             TextButton(
                 onClick = { onSelect(tab) },
                 colors = ButtonDefaults.textButtonColors(
-                    containerColor = if (open) colors.primaryContainer else Color.Transparent,
-                    contentColor = if (open) colors.onPrimaryContainer else colors.onSurfaceVariant,
+                    containerColor = Color.Transparent,
+                    contentColor = if (open) colors.primary else colors.onSurfaceVariant,
                 ),
                 modifier = Modifier.heightIn(min = 48.dp).widthIn(min = 64.dp).semantics { this.selected = open },
-            ) { Text(labels[index], maxLines = 1) }
+            ) { Text(labels[index], fontWeight = if (open) FontWeight.Bold else FontWeight.Normal, maxLines = 1) }
         }
     }
 }

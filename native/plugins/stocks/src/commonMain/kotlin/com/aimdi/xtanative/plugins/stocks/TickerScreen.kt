@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +45,7 @@ import com.aimdi.xtanative.networks.stocks.TickerRange
 import com.aimdi.xtanative.networks.stocks.TickerSession
 import com.aimdi.xtanative.networks.stocks.Tickers
 import com.aimdi.xtanative.networks.stocks.WatchlistRows
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -201,8 +201,8 @@ private fun SessionLabel(session: TickerSession) {
 private fun InstrumentPicker(instrument: TickerInstrument, onSelect: (TickerInstrument) -> Unit) {
     val stock = instrument == TickerInstrument.STOCK
     Row(Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        FilterChip(selected = !stock, onClick = { if (stock) onSelect(TickerInstrument.CRYPTO) }, label = { Text(pluginString(Strings.crypto)) })
-        FilterChip(selected = stock, onClick = { onSelect(TickerInstrument.STOCK) }, label = { Text(pluginString(Strings.plugin_name)) })
+        PluginFilterChip(pluginString(Strings.crypto), selected = !stock, onClick = { if (stock) onSelect(TickerInstrument.CRYPTO) })
+        PluginFilterChip(pluginString(Strings.plugin_name), selected = stock, onClick = { onSelect(TickerInstrument.STOCK) })
     }
 }
 
@@ -210,7 +210,7 @@ private fun InstrumentPicker(instrument: TickerInstrument, onSelect: (TickerInst
 private fun RangePicker(selected: TickerRange, onSelect: (TickerRange) -> Unit) {
     Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         TickerRange.entries.forEach { range ->
-            FilterChip(selected = range == selected, onClick = { onSelect(range) }, label = { Text(rangeText(range)) })
+            PluginFilterChip(rangeText(range), selected = range == selected, onClick = { onSelect(range) })
         }
     }
 }

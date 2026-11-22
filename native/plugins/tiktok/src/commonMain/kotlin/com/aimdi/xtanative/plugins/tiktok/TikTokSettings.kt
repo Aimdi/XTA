@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -80,12 +80,11 @@ internal fun TikTokSettingsBody(app: TikTokApp, frame: PluginFrame) = WithSettin
 
 @Composable
 private fun GuestNote() {
-    Card(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)) {
-        Row(Modifier.padding(16.dp)) {
-            Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-            Text(pluginString(Strings.guest_note), Modifier.padding(start = 12.dp))
-        }
+    Row(Modifier.fillMaxWidth().padding(16.dp)) {
+        Icon(Icons.Outlined.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Text(pluginString(Strings.guest_note), Modifier.padding(start = 12.dp))
     }
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 }
 
 /** Opens the public @tiktok profile and says whose it is, or why it did not open. */

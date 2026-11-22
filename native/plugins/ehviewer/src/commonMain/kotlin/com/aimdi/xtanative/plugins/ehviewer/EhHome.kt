@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -42,13 +41,14 @@ import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginChipTabs
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.ReportsReadingScroll
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.WithSettings
-import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
-import com.aimdi.xtanative.ui.plugins.ReportsReadingScroll
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -124,12 +124,7 @@ private fun PeriodRow(lists: EhLists) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         EhToplistPeriod.entries.forEach { choice ->
-            FilterChip(
-                selected = period == choice,
-                onClick = { lists.choose(choice) },
-                label = { Text(pluginString(EhText.toplist(choice))) },
-                leadingIcon = chipCheck(period == choice),
-            )
+            PluginFilterChip(pluginString(EhText.toplist(choice)), selected = period == choice, onClick = { lists.choose(choice) })
         }
     }
 }

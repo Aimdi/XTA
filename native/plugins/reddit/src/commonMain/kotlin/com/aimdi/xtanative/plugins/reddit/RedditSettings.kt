@@ -32,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.reddit.RedditAuth
@@ -100,6 +101,7 @@ private fun AccountRow(app: RedditApp, signedIn: Boolean, onNeedsClientId: () ->
             null
         },
         modifier = if (signedIn) Modifier else Modifier.clickable { if (credentials[RedditPrefs.clientId].isBlank()) onNeedsClientId() else app.host.open(RedditRoutes.SIGN_IN) },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 
@@ -128,6 +130,7 @@ private fun SpoilerRow(app: RedditApp, on: Boolean) {
         supportingContent = { Text(pluginString(Strings.show_spoilers_description)) },
         trailingContent = { Switch(checked = on, onCheckedChange = { flip() }) },
         modifier = Modifier.clickable { flip() },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 
@@ -140,7 +143,7 @@ private fun SettingRow(icon: ImageVector, title: String, subtitle: String, selec
         headlineContent = { Text(title) },
         supportingContent = { Text(subtitle) },
         trailingContent = if (selected) { { Icon(Icons.Filled.Check, contentDescription = null) } } else null,
-        colors = if (selected) ListItemDefaults.colors(headlineColor = accent, leadingIconColor = accent, trailingIconColor = accent) else ListItemDefaults.colors(),
+        colors = if (selected) ListItemDefaults.colors(containerColor = Color.Transparent, headlineColor = accent, leadingIconColor = accent, trailingIconColor = accent) else ListItemDefaults.colors(containerColor = Color.Transparent),
         modifier = if (onClick != null && !selected) Modifier.clickable(onClick = onClick) else Modifier,
     )
 }

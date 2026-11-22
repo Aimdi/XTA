@@ -25,7 +25,6 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -61,6 +60,7 @@ import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -182,8 +182,8 @@ private fun Controls(app: BlueskyApp, authorOnly: Boolean, order: BlueskyReplySo
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FilterChip(selected = !authorOnly, onClick = { onAuthor(false) }, label = { Text(pluginString(Strings.all)) })
-        FilterChip(selected = authorOnly, onClick = { onAuthor(true) }, label = { Text(pluginString(Strings.author_thread)) })
+        PluginFilterChip(pluginString(Strings.all), selected = !authorOnly, onClick = { onAuthor(false) })
+        PluginFilterChip(pluginString(Strings.author_thread), selected = authorOnly, onClick = { onAuthor(true) })
         SortMenu(order, BlueskyReplySort.entries, { it.label to it.icon }) { app.replySort.value = it }
     }
 }

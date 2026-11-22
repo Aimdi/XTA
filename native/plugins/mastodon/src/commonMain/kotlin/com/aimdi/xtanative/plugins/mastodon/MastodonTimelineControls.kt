@@ -21,7 +21,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +43,7 @@ import com.aimdi.xtanative.networks.mastodon.MastodonTimeline
 import com.aimdi.xtanative.networks.mastodon.MastodonTimelineFilter
 import com.aimdi.xtanative.networks.mastodon.MastodonTimelineFilter.Content
 import com.aimdi.xtanative.networks.mastodon.MastodonTimelineFilter.Order
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginSwitchRow
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -107,7 +107,7 @@ private fun FilterSheet(filter: MastodonTimelineFilter, source: String?, onChang
             Text(pluginString(Strings.sort), style = MaterialTheme.typography.titleSmall)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Order.entries.forEach { order ->
-                    FilterChip(selected = filter.order == order, onClick = { onChange(filter.copy(order = order)) }, label = { Text(pluginString(orderText(order))) })
+                    PluginFilterChip(pluginString(orderText(order)), selected = filter.order == order, onClick = { onChange(filter.copy(order = order)) })
                 }
             }
             Spacer(Modifier.height(16.dp))
@@ -125,7 +125,7 @@ private fun FilterSheet(filter: MastodonTimelineFilter, source: String?, onChang
             Spacer(Modifier.height(12.dp))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Content.entries.forEach { content ->
-                    FilterChip(selected = filter.content == content, onClick = { onChange(filter.copy(content = content)) }, label = { Text(pluginString(contentText(content))) })
+                    PluginFilterChip(pluginString(contentText(content)), selected = filter.content == content, onClick = { onChange(filter.copy(content = content)) })
                 }
             }
             PluginSwitchRow(pluginString(Strings.hide_boosts), filter.hideBoosts, { onChange(filter.copy(hideBoosts = it)) })

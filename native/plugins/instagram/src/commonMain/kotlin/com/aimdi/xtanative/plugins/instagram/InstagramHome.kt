@@ -29,7 +29,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -221,18 +220,16 @@ private fun PeopleStrip(app: InstagramApp, people: List<InstagramAuthor>) {
 
 @Composable
 private fun PersonCard(app: InstagramApp, person: InstagramAuthor) {
-    val shape = RoundedCornerShape(12.dp)
-    Column(Modifier.width(240.dp).border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape)) {
+    Column(Modifier.width(240.dp)) {
         Row(Modifier.fillMaxWidth().clickable { app.openProfile(person.username) }.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Avatar(person.avatarUrl, 40.dp)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                Text(person.displayName, style = MaterialTheme.typography.labelLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                Text("@" + person.username, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(person.displayName, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text("@" + person.username, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
-        HorizontalDivider()
-        TextButton(onClick = { app.follow(person) }, modifier = Modifier.fillMaxWidth()) { Text(pluginString(Strings.follow)) }
+        TextButton(onClick = { app.follow(person) }, modifier = Modifier.fillMaxWidth()) { Text(pluginString(Strings.follow), fontWeight = FontWeight.Bold) }
     }
 }
 
@@ -339,7 +336,7 @@ internal fun UnfollowDialog(handle: String, onConfirm: () -> Unit, onDismiss: ()
     AlertDialog(
         onDismissRequest = onDismiss,
         text = { Text(pluginString(Strings.unfollow_confirm, handle)) },
-        confirmButton = { FilledTonalButton(onClick = { onDismiss(); onConfirm() }) { Text(pluginString(Strings.unfollow)) } },
+        confirmButton = { TextButton(onClick = { onDismiss(); onConfirm() }) { Text(pluginString(Strings.unfollow)) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(pluginString(Strings.cancel)) } },
     )
 }

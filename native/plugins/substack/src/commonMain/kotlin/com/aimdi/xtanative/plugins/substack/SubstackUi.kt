@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -63,7 +62,7 @@ internal fun GroupButton(app: SubstackApp, publication: SubstackPublication, out
         Text(addToGroupText())
     }
     if (outlined) {
-        OutlinedButton(onClick = { app.addToGroup(publication) }, enabled = enabled, content = content)
+        TextButton(onClick = { app.addToGroup(publication) }, enabled = enabled, content = content)
     } else {
         TextButton(onClick = { app.addToGroup(publication) }, enabled = enabled, content = content)
     }
@@ -164,7 +163,7 @@ internal fun LoadMoreRow(loading: Boolean, error: Throwable?, canLoadMore: Boole
         loading -> LoadingRow()
         error != null -> FailureRow(error, onLoadMore)
         canLoadMore -> Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
-            OutlinedButton(onClick = onLoadMore, enabled = enabled) { Text(pluginString(Strings.load_more)) }
+            TextButton(onClick = onLoadMore, enabled = enabled) { Text(pluginString(Strings.load_more)) }
         }
     }
 }

@@ -26,12 +26,10 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -63,6 +61,7 @@ import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedState
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginSearch
@@ -167,12 +166,7 @@ private fun SearchBody(
     Column(Modifier.fillMaxSize()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             BlueskySearchKind.entries.forEach { choice ->
-                FilterChip(
-                    selected = kind == choice,
-                    onClick = { kind = choice },
-                    label = { Text(pluginString(if (choice == BlueskySearchKind.PEOPLE) Strings.search_people else Strings.search_posts)) },
-                    modifier = Modifier.weight(1f),
-                )
+                PluginFilterChip(pluginString(if (choice == BlueskySearchKind.PEOPLE) Strings.search_people else Strings.search_posts), selected = kind == choice, onClick = { kind = choice }, modifier = Modifier.weight(1f))
             }
         }
         if (kind == BlueskySearchKind.POSTS) PostFiltersRow(filters) { filters = it }
@@ -195,8 +189,8 @@ private fun PostFiltersRow(filters: BlueskyPostFilters, onChange: (BlueskyPostFi
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FilterChip(selected = !filters.top, onClick = { onChange(filters.copy(top = false)) }, label = { Text(pluginString(Strings.search_latest)) })
-        FilterChip(selected = filters.top, onClick = { onChange(filters.copy(top = true)) }, label = { Text(pluginString(Strings.search_top)) })
+        PluginFilterChip(pluginString(Strings.search_latest), selected = !filters.top, onClick = { onChange(filters.copy(top = false)) })
+        PluginFilterChip(pluginString(Strings.search_top), selected = filters.top, onClick = { onChange(filters.copy(top = true)) })
         AssistChip(onClick = { dialog = true }, label = { Text(pluginString(Strings.filters)) }, leadingIcon = { Icon(PostIcons.Tune, contentDescription = null) })
         if (filters.author.isNotEmpty()) RemovableChip("@" + filters.author) { onChange(filters.copy(author = "")) }
         if (filters.tag.isNotEmpty()) RemovableChip("#" + filters.tag) { onChange(filters.copy(tag = "")) }
@@ -297,7 +291,7 @@ private fun <T : Any> ResultList(pages: PagedItems<T>, key: (T) -> String, empty
             pagedRows(paged, pages, key, empty, { pluginString(errorText(it)) }, row)
             when (SearchFoot.of(paged)) {
                 SearchFoot.MORE -> item(key = "search-more") {
-                    OutlinedButton(onClick = pages::more, modifier = Modifier.fillMaxWidth().padding(16.dp)) { Text(pluginString(Strings.search_more)) }
+                    TextButton(onClick = pages::more, modifier = Modifier.fillMaxWidth().padding(16.dp)) { Text(pluginString(Strings.search_more)) }
                 }
                 SearchFoot.END -> item(key = "search-end") { MessageText(pluginString(Strings.search_end)) }
                 SearchFoot.NONE -> Unit

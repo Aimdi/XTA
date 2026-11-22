@@ -20,8 +20,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Card
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,6 +41,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsSessionCheck
@@ -50,10 +49,11 @@ import com.aimdi.xtanative.networks.threads.ThreadsXy
 import com.aimdi.xtanative.networks.threads.ThreadsXyException
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
-import com.aimdi.xtanative.ui.plugins.PluginAvatar
+import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.NoticeHost
+import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.SecretField
@@ -103,14 +103,14 @@ internal fun ThreadsSettingsBody(app: ThreadsApp, frame: PluginFrame) {
 
 @Composable
 private fun GuestCard() {
-    Card(Modifier.fillMaxWidth().padding(16.dp)) {
-        ListItem(
-            leadingContent = { Icon(ThreadsIcons.Public, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
-            headlineContent = { Text(pluginString(Strings.guest_card)) },
-            supportingContent = { Text(pluginString(Strings.guest_card_body)) },
-            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-        )
-    }
+    ListItem(
+        leadingContent = { Icon(ThreadsIcons.Public, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+        headlineContent = { Text(pluginString(Strings.guest_card), fontWeight = FontWeight.Bold) },
+        supportingContent = { Text(pluginString(Strings.guest_card_body)) },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        modifier = Modifier.padding(vertical = 8.dp),
+    )
+    Hairline()
 }
 
 @Composable
@@ -135,6 +135,7 @@ private fun Toggle(title: PluginText, detail: PluginText, on: Boolean, onChange:
         headlineContent = { Text(pluginString(title)) },
         supportingContent = { Text(pluginString(detail)) },
         trailingContent = { Switch(checked = on, onCheckedChange = onChange) },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 
@@ -200,7 +201,7 @@ private fun Session(app: ThreadsApp) {
         val bearerProblem = Strings.bearer_invalid.get(language).takeIf { ThreadsSessionCheck.badBearer(bearer) }
         Secret(app, ThreadsPrefs.directBearer, bearer, Strings.direct_bearer, Strings.direct_bearer_hint, supporting = bearerProblem) { bearer = it }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilledTonalButton(enabled = !testing, onClick = {
+            TextButton(enabled = !testing, onClick = {
                 testing = true
                 scope.launch {
                     app.host.settings.update { it.with(ThreadsPrefs.directCookies, ThreadsSessionCheck.kept(cookies)).with(ThreadsPrefs.directBearer, bearer.trim()) }
@@ -221,7 +222,7 @@ private fun Session(app: ThreadsApp) {
 @Composable
 private fun WebSignIn(app: ThreadsApp) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        FilledTonalButton(onClick = { app.host.open(ThreadsRoutes.SIGN_IN) }) {
+        TextButton(onClick = { app.host.open(ThreadsRoutes.SIGN_IN) }) {
             Icon(ThreadsIcons.Mark, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(pluginString(Strings.sign_in_web), modifier = Modifier.padding(start = 8.dp))
         }
@@ -299,7 +300,7 @@ private fun RssHub(app: ThreadsApp) {
             instance = typed
             app.update { it.with(ThreadsPrefs.instance, typed.trim()) }
         }
-        FilledTonalButton(enabled = !testing, onClick = {
+        TextButton(enabled = !testing, onClick = {
             testing = true
             scope.launch {
                 app.notices.tell(tested(language) { app.rssHub.verify(instance.trim()); Strings.test_ok.get(language) })
@@ -324,7 +325,7 @@ private fun Xy(app: ThreadsApp) {
             app.update { it.with(ThreadsPrefs.apiBase, typed.trim()) }
         }
         Secret(app, ThreadsPrefs.apiToken, token, Strings.api_token, null) { token = it }
-        FilledTonalButton(enabled = !testing, onClick = {
+        TextButton(enabled = !testing, onClick = {
             testing = true
             scope.launch {
                 app.notices.tell(testedXy(language) { if (app.xy.health(base.trim())) Strings.api_test_ok.get(language) else Strings.error_unreachable.get(language) })

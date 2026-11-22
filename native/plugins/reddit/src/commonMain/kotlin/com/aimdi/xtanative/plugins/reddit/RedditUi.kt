@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -121,7 +120,7 @@ internal fun EndOfList() {
 @Composable
 internal fun LoadMoreButton(onClick: () -> Unit) {
     Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
-        OutlinedButton(onClick = onClick) { Text(pluginString(Strings.load_more)) }
+        TextButton(onClick = onClick) { Text(pluginString(Strings.load_more)) }
     }
 }
 

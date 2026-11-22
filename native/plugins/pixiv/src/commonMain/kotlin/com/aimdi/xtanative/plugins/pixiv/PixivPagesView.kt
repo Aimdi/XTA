@@ -31,8 +31,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -109,7 +107,7 @@ internal fun PageBar(page: Int, pages: Int, surface: WorkSurface) {
             Spacer(Modifier.width(8.dp))
             Text(pluginString(Strings.page_of, page + 1, pages))
         }
-        OutlinedButton(onClick = surface::changeDirection) {
+        TextButton(onClick = surface::changeDirection) {
             Icon(PixivIcons.ArrowDownward, null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
             Spacer(Modifier.width(8.dp))
             Text(pluginString(Strings.read_vertically))
@@ -228,16 +226,14 @@ private fun OverviewActions(illust: PixivIllust, surface: PixivOverviewSurface, 
     }
 }
 
-/** An icon in a soft accent well with its label under it. */
+/** An accent icon, flat on the page, with its label under it. */
 @Composable
 private fun OverviewAction(icon: ImageVector, label: String, onClick: () -> Unit) {
     Column(
         Modifier.width(88.dp).clip(RoundedCornerShape(12.dp)).combinedClickableCompat(onClick).padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Surface(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(20.dp), modifier = Modifier.size(56.dp, 40.dp)) {
-            Box(contentAlignment = Alignment.Center) { Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp)) }
-        }
+        Box(Modifier.size(56.dp, 40.dp), contentAlignment = Alignment.Center) { Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp)) }
         Spacer(Modifier.size(6.dp))
         Text(label, style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center, maxLines = 3)
     }
@@ -250,8 +246,8 @@ private fun Modifier.combinedClickableCompat(onClick: () -> Unit): Modifier = co
 @Composable
 private fun PickingBar(picked: Set<Int>, pages: Int, onCancel: () -> Unit, onAll: () -> Unit, onSave: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-        OutlinedButton(onClick = onCancel) { Text(pluginString(Strings.cancel)) }
-        OutlinedButton(onClick = onAll) { Text(pluginString(if (picked.size == pages) Strings.select_none else Strings.all)) }
+        TextButton(onClick = onCancel) { Text(pluginString(Strings.cancel)) }
+        TextButton(onClick = onAll) { Text(pluginString(if (picked.size == pages) Strings.select_none else Strings.all)) }
         Button(onClick = onSave, enabled = picked.isNotEmpty(), modifier = Modifier.weight(1f)) {
             Icon(SavedIcons.Download, null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))

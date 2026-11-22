@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -38,6 +37,7 @@ import com.aimdi.xtanative.store.settings.EhViewerPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginActionRow
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginIcons
 import com.aimdi.xtanative.ui.plugins.PluginSectionTitle
@@ -111,12 +111,7 @@ private fun CategoriesSection(app: EhApp, settings: Settings) {
     ) {
         EhCategory.entries.forEach { category ->
             val selected = category in chosen
-            FilterChip(
-                selected = selected,
-                onClick = { app.update { EhConfig.withCategory(it, category, !selected) } },
-                label = { Text(category.label) },
-                leadingIcon = chipCheck(selected),
-            )
+            PluginFilterChip(category.label, selected = selected, onClick = { app.update { EhConfig.withCategory(it, category, !selected) } })
         }
     }
 }

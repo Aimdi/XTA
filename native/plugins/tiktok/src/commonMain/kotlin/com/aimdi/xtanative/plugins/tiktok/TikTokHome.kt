@@ -26,7 +26,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -216,7 +215,7 @@ private fun AccountsTab(app: TikTokApp, follows: List<TikTokSubscriptionRow>?, p
 private fun AccountsTitle(app: TikTokApp) {
     Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)) {
         Text(pluginString(Strings.tab_accounts), style = MaterialTheme.typography.titleLarge)
-        OutlinedButton(onClick = { app.openSearch() }, modifier = Modifier.padding(top = 8.dp)) {
+        TextButton(onClick = { app.openSearch() }, modifier = Modifier.padding(top = 8.dp)) {
             Icon(DiscoverIcons.PersonSearch, contentDescription = null)
             Text(pluginString(Strings.search), Modifier.padding(start = 8.dp))
         }

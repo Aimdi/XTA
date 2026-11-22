@@ -15,13 +15,12 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -164,11 +163,11 @@ private fun Header(app: InstagramApp, profile: InstagramProfile) {
             Stat(profile.followingCount, Strings.stat_following)
             Stat(profile.mediaCount, Strings.stat_posts)
         }
-        OutlinedButton(onClick = { app.addToGroup(profile.username) }, modifier = Modifier.padding(top = 16.dp)) {
+        TextButton(onClick = { app.addToGroup(profile.username) }, modifier = Modifier.padding(top = 16.dp)) {
             Icon(PostIcons.GroupAdd, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(pluginString(Strings.add_to_group), modifier = Modifier.padding(start = 8.dp))
         }
-        FilledTonalButton(
+        TextButton(
             onClick = { if (following) app.unfollow(profile.username) else app.follow(profile) },
             modifier = Modifier.fillMaxWidth(),
         ) {

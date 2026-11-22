@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.plugins.reddit
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,9 +36,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -54,6 +53,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -140,14 +140,13 @@ internal fun PostSheet(app: RedditApp, post: RedditPost, onDismiss: () -> Unit) 
     }
 }
 
-/** One of the sheet's pills: outlined, full width, its icon before its words. */
+/** One of the sheet's actions: flat, full width, its icon before its words. */
 @Composable
 private fun SheetAction(icon: ImageVector, label: String, onClick: () -> Unit) {
-    OutlinedButton(
+    TextButton(
         onClick = onClick,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 5.dp).heightIn(min = 48.dp),
+        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp).heightIn(min = 48.dp),
     ) {
         Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(8.dp))
@@ -219,12 +218,12 @@ private fun ChoiceChip(icon: ImageVector?, label: String, selected: Boolean, onC
     val tint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
     AssistChip(
         onClick = onClick,
-        label = { Text(label) },
+        label = { Text(label, fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal) },
         leadingIcon = icon?.let { { Icon(it, contentDescription = null, modifier = Modifier.size(20.dp)) } },
         shape = CircleShape,
         border = null,
         colors = AssistChipDefaults.assistChipColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            containerColor = Color.Transparent,
             labelColor = tint,
             leadingIconContentColor = tint,
         ),
@@ -297,6 +296,7 @@ internal fun CommunitiesSheet(app: RedditApp, onDismiss: () -> Unit) {
             headlineContent = { Text(pluginString(Strings.add), color = MaterialTheme.colorScheme.primary) },
             leadingContent = { Icon(Icons.Filled.Add, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
             modifier = Modifier.clickable { adding = true }.padding(bottom = 8.dp),
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         )
     }
     if (adding) AddSubredditDialog(app) { adding = false }
@@ -314,6 +314,7 @@ private fun CommunityTile(app: RedditApp, name: String, onOpen: () -> Unit) {
             IconButton(onClick = { app.follow(name, follow = false) }) { Icon(Icons.Outlined.Delete, contentDescription = pluginString(Strings.delete)) }
         },
         modifier = Modifier.clickable(onClick = onOpen),
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }
 

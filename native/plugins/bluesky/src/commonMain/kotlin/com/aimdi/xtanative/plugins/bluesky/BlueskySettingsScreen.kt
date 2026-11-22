@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -109,7 +108,7 @@ private fun AppViewSetting(app: BlueskyApp) {
         OutlinedTextField(value = text, onValueChange = { text = it }, singleLine = true, placeholder = { Text(pluginString(Strings.instance_hint)) }, modifier = Modifier.fillMaxWidth())
         NoteText(pluginString(Strings.instance_default, Bluesky.DEFAULT_APP_VIEW))
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilledTonalButton(enabled = !testing, onClick = {
+            TextButton(enabled = !testing, onClick = {
                 scope.launch {
                     testing = true
                     save()

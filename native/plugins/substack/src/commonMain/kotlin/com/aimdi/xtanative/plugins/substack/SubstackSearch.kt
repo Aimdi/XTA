@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
@@ -48,6 +47,7 @@ import com.aimdi.xtanative.networks.substack.SubstackPublicationSearch
 import com.aimdi.xtanative.store.settings.SubstackPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.PluginSearchHistory
@@ -107,7 +107,7 @@ private fun SearchBody(app: SubstackApp, trimmed: String, frame: PluginFrame, se
 private fun SearchTabs(tab: Int, onTab: (Int) -> Unit) {
     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         listOf(Strings.search_publications, Strings.tab_posts).forEachIndexed { index, label ->
-            FilterChip(selected = tab == index, onClick = { onTab(index) }, label = { Text(pluginString(label)) }, modifier = Modifier.weight(1f))
+            PluginFilterChip(pluginString(label), selected = tab == index, onClick = { onTab(index) }, modifier = Modifier.weight(1f))
         }
     }
 }
@@ -217,7 +217,7 @@ private fun CategoryBrowser(app: SubstackApp, notices: Notices) {
         if (state.categories.isEmpty()) return
         val category = state.categories.firstOrNull { it.id == picked } ?: state.categories.first()
         Row(Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            state.categories.forEach { FilterChip(selected = it.id == category.id, onClick = { picked = it.id }, label = { Text(it.name) }) }
+            state.categories.forEach { PluginFilterChip(it.name, selected = it.id == category.id, onClick = { picked = it.id }) }
         }
         val leaderboard = rememberKept("substack-category-${category.id}") { scope ->
             val search = SubstackPublicationSearch.category(app.client, category.id)

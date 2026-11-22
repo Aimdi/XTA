@@ -71,6 +71,7 @@ import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.WithSettings
@@ -231,12 +232,7 @@ private fun SearchFilters(search: EhSearch, state: EhSearchState) {
                 )
             }
             EhSearchLanguage.entries.forEach { language ->
-                FilterChip(
-                    selected = filters.language == language,
-                    onClick = { search.setLanguage(language) },
-                    label = { Text(pluginString(EhText.language(language))) },
-                    leadingIcon = chipCheck(filters.language == language),
-                )
+                PluginFilterChip(pluginString(EhText.language(language)), selected = filters.language == language, onClick = { search.setLanguage(language) })
             }
         }
     }

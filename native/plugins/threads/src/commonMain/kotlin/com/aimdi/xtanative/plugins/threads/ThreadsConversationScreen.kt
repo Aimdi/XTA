@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,16 +43,19 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsBeside
 import com.aimdi.xtanative.networks.threads.ThreadsConversation
+import com.aimdi.xtanative.networks.threads.ThreadsPaging
+import com.aimdi.xtanative.networks.threads.ThreadsPagingState
 import com.aimdi.xtanative.networks.threads.ThreadsPost
-import com.aimdi.xtanative.networks.threads.ThreadsReplyRow
 import com.aimdi.xtanative.networks.threads.ThreadsReplyOrder
+import com.aimdi.xtanative.networks.threads.ThreadsReplyRow
+import com.aimdi.xtanative.networks.threads.ThreadsReplyThread
 import com.aimdi.xtanative.networks.threads.ThreadsThreadView
 import com.aimdi.xtanative.networks.threads.attempt
 import com.aimdi.xtanative.ui.common.LoadingRow
@@ -61,13 +63,11 @@ import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.Fetched
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.currentLanguage
-import com.aimdi.xtanative.networks.threads.ThreadsPaging
-import com.aimdi.xtanative.networks.threads.ThreadsPagingState
-import com.aimdi.xtanative.networks.threads.ThreadsReplyThread
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
@@ -379,7 +379,7 @@ private fun RepliesHeader(app: ThreadsApp, conversation: ThreadsConversation, vi
             modifier = Modifier.align(Alignment.CenterVertically),
         )
         if (conversation.authorReplies.isNotEmpty()) {
-            FilterChip(selected = view.authorOnly, onClick = onAuthorOnly, label = { Text(pluginString(Strings.author_replies)) })
+            PluginFilterChip(pluginString(Strings.author_replies), selected = view.authorOnly, onClick = onAuthorOnly)
         }
         OrderMenu(view.order) { app.replyOrder.value = it }
     }

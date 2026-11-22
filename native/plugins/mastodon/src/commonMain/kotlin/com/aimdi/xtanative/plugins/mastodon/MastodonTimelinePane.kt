@@ -20,7 +20,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -122,7 +121,7 @@ private fun FilteredEmpty(onReset: () -> Unit) {
 @Composable
 internal fun LoadMoreButton(onClick: () -> Unit) {
     Box(Modifier.fillMaxWidth().padding(12.dp), contentAlignment = Alignment.Center) {
-        OutlinedButton(onClick = onClick) { Text(pluginString(Strings.load_more)) }
+        TextButton(onClick = onClick) { Text(pluginString(Strings.load_more)) }
     }
 }
 

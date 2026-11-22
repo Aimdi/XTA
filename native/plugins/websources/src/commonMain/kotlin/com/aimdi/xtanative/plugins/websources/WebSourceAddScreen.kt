@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -141,7 +140,7 @@ internal fun WebSourceAddScreen(app: WebSourcesApp) {
                     modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
                 )
                 Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.End) {
-                    FilledTonalButton(onClick = { flow.fromLink(link) }) { Text(pluginString(Strings.add_link)) }
+                    TextButton(onClick = { flow.fromLink(link) }) { Text(pluginString(Strings.add_link)) }
                 }
                 HorizontalDivider(Modifier.padding(vertical = 16.dp))
                 Text(pluginString(Strings.published), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(horizontal = 16.dp))
@@ -175,7 +174,7 @@ private fun ListingRow(listing: WebSourceListing, installed: Boolean, onAdd: () 
             Text(listing.name, style = MaterialTheme.typography.bodyLarge)
             if (listing.description.isNotEmpty()) Text(listing.description, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        if (installed) Text(pluginString(Strings.installed), style = MaterialTheme.typography.labelLarge) else FilledTonalButton(onClick = onAdd) { Text(pluginString(Strings.install)) }
+        if (installed) Text(pluginString(Strings.installed), style = MaterialTheme.typography.labelLarge) else TextButton(onClick = onAdd) { Text(pluginString(Strings.install)) }
     }
 }
 

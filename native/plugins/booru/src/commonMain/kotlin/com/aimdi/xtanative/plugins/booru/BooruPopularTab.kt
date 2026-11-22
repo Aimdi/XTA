@@ -18,7 +18,6 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +39,7 @@ import com.aimdi.xtanative.networks.booru.BooruPopularQuery
 import com.aimdi.xtanative.networks.booru.BooruPopularScale
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.monthText
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -71,7 +71,7 @@ private fun PopularControls(query: BooruPopularQuery, onChange: (BooruPopularQue
         verticalAlignment = Alignment.CenterVertically,
     ) {
         BooruPopularScale.entries.forEach { scale ->
-            FilterChip(selected = query.scale == scale, onClick = { onChange(query.withScale(scale)) }, label = { Text(scaleLabel(scale)) })
+            PluginFilterChip(scaleLabel(scale), selected = query.scale == scale, onClick = { onChange(query.withScale(scale)) })
         }
         IconButton(onClick = { onChange(query.step(-1)) }) {
             Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, pluginString(Strings.popular_earlier))
