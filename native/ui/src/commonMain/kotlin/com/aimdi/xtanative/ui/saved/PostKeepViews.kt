@@ -96,8 +96,8 @@ fun PostKeep.isLiked(postId: String): Boolean = likedHere(postId)
 @Composable
 internal fun SavedNoteEditor(item: Keepable, onDismiss: () -> Unit) {
     val keeper = LocalKeeper.current
-    val library by keeper.saved.state.collectAsStateWithLifecycle()
-    LaunchedEffect(keeper) { keeper.saved.library() }
+    val library by keeper.saved.index.collectAsStateWithLifecycle()
+    LaunchedEffect(keeper) { keeper.saved.index() }
     val loaded = library ?: return
     val note = remember(item.id) { loaded.post(item.id)?.note }
     NoteEditorDialog(NoteTarget.Text(note, NoteRules.savedNoteKey(item.id)), onDismiss, saveText = { text -> Keeping.writeNote(keeper, item, text) })
@@ -106,8 +106,8 @@ internal fun SavedNoteEditor(item: Keepable, onDismiss: () -> Unit) {
 @Composable
 internal fun savedHere(postId: String): Boolean {
     val keeper = LocalKeeper.current
-    LaunchedEffect(keeper) { keeper.saved.library() }
-    val library by keeper.saved.state.collectAsStateWithLifecycle()
+    LaunchedEffect(keeper) { keeper.saved.index() }
+    val library by keeper.saved.index.collectAsStateWithLifecycle()
     return library?.isSaved(postId) == true
 }
 

@@ -3,6 +3,8 @@ package com.aimdi.xtanative.store.saved
 import com.aimdi.xtanative.core.json.J
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -98,7 +100,7 @@ internal object SavedCodec {
 
     fun likes(root: J): List<LikedPost>? = if (root["v"].int != VERSION) null else root["likes"].list.mapNotNull(::like).distinctBy { it.id }
 
-    private fun post(post: SavedPost) = buildJsonObject {
+    fun post(post: SavedPost) = buildJsonObject {
         put("id", post.id)
         post.authorId?.let { put("author", it) }
         post.content?.let { put("content", it) }
@@ -107,12 +109,12 @@ internal object SavedCodec {
         put("at", post.savedAt)
     }
 
-    private fun post(row: J): SavedPost? {
+    fun post(row: J): SavedPost? {
         val id = row["id"].string ?: return null
         return SavedPost(id, row["author"].string, row["content"].raw, row["folder"].string, row["note"].string, row["at"].long ?: 0)
     }
 
-    private fun folder(folder: SavedFolder) = buildJsonObject {
+    fun folder(folder: SavedFolder) = buildJsonObject {
         put("id", folder.id)
         put("name", folder.name)
         put("position", folder.position)
@@ -121,7 +123,7 @@ internal object SavedCodec {
         put("autoUpload", folder.autoUpload)
     }
 
-    private fun folder(row: J): SavedFolder? {
+    fun folder(row: J): SavedFolder? {
         val id = row["id"].string ?: return null
         return SavedFolder(
             id = id,
@@ -133,15 +135,49 @@ internal object SavedCodec {
         )
     }
 
-    private fun like(like: LikedPost) = buildJsonObject {
+    fun like(like: LikedPost) = buildJsonObject {
         put("id", like.id)
         like.authorId?.let { put("author", it) }
         like.content?.let { put("content", it) }
         put("at", like.likedAt)
     }
 
-    private fun like(row: J): LikedPost? {
+    fun like(row: J): LikedPost? {
         val id = row["id"].string ?: return null
         return LikedPost(id, row["author"].string, row["content"].raw, row["at"].long ?: 0)
     }
+}
+
+/** Saved as [KeptPosts] keeps it: the posts, with the folders beside them. */
+internal object SavedShape : KeptShape<SavedLibrary, SavedPost, List<SavedFolder>> {
+    override val empty = SavedLibrary()
+    override fun posts(value: SavedLibrary) = value.posts
+    override fun extra(value: SavedLibrary) = value.folders
+    override fun of(posts: List<SavedPost>, extra: List<SavedFolder>) = SavedLibrary(posts, extra)
+    override fun id(post: SavedPost) = post.id
+    override fun content(post: SavedPost) = post.content
+    override fun withContent(post: SavedPost, content: JsonElement?) = post.copy(content = content)
+    override fun row(post: SavedPost): JsonObject = SavedCodec.post(if (post.content == null) post else post.copy(content = null))
+    override fun post(row: J): SavedPost? = SavedCodec.post(row)?.let { if (it.content == null) it else it.copy(content = null) }
+    override fun extraJson(extra: List<SavedFolder>): JsonElement = JsonArray(extra.map(SavedCodec::folder))
+    override fun extraOf(json: J): List<SavedFolder> = json.list.mapNotNull(SavedCodec::folder).distinctBy { it.id }
+    override fun mergeExtra(first: List<SavedFolder>, second: List<SavedFolder>) = SavedLibrary.ordered((first + second).distinctBy { it.id })
+    override fun legacy(root: J): SavedLibrary? = SavedCodec.library(root)
+}
+
+/** The likes as [KeptPosts] keeps them: posts and nothing beside them. */
+internal object LikesShape : KeptShape<List<LikedPost>, LikedPost, Unit> {
+    override val empty = emptyList<LikedPost>()
+    override fun posts(value: List<LikedPost>) = value
+    override fun extra(value: List<LikedPost>) = Unit
+    override fun of(posts: List<LikedPost>, extra: Unit) = posts
+    override fun id(post: LikedPost) = post.id
+    override fun content(post: LikedPost) = post.content
+    override fun withContent(post: LikedPost, content: JsonElement?) = post.copy(content = content)
+    override fun row(post: LikedPost): JsonObject = SavedCodec.like(if (post.content == null) post else post.copy(content = null))
+    override fun post(row: J): LikedPost? = SavedCodec.like(row)?.let { if (it.content == null) it else it.copy(content = null) }
+    override fun extraJson(extra: Unit): JsonElement = JsonNull
+    override fun extraOf(json: J) = Unit
+    override fun mergeExtra(first: Unit, second: Unit) = Unit
+    override fun legacy(root: J): List<LikedPost>? = SavedCodec.likes(root)
 }

@@ -93,10 +93,10 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun SaveSheet(item: Keepable, onDismiss: () -> Unit) {
     val keeper = LocalKeeper.current
-    val library by keeper.saved.state.collectAsStateWithLifecycle()
+    val library by keeper.saved.index.collectAsStateWithLifecycle()
     val settings by keeper.settings.state.collectAsStateWithLifecycle()
     LaunchedEffect(keeper) {
-        keeper.saved.library()
+        keeper.saved.index()
         keeper.settings.load()
     }
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {

@@ -161,12 +161,13 @@ class AppPlugins(
     val media = MediaShelf()
 
     /** The ids filed in Saved, for the plugins' bookmarks. */
-    val savedIds: StateFlow<Set<String>> = graph.saved.state
+    val savedIds: StateFlow<Set<String>> = graph.saved.index
         .map { library -> library?.posts?.mapTo(HashSet()) { it.id }.orEmpty() }
         .stateIn(scope, SharingStarted.Eagerly, emptySet())
 
     /** Plugin [id]'s own posts in Saved, with their notes, while a screen of it lists them ([PluginHost.savedPosts]). */
     internal fun savedPostsOf(id: String): StateFlow<List<PluginSavedPost>?> = graph.saved.state
+        .onStart { scope.launch { guarded { graph.saved.library() } } }
         .map { library -> library?.let { PluginSaved.posts(it, id) } }
         .stateIn(scope, SharingStarted.WhileSubscribed(SAVED_LIST_LINGER_MILLIS), null)
 
@@ -249,7 +250,7 @@ class AppPlugins(
 
     /** Reads what is installed and starts it, then follows every install, update and uninstall. */
     fun start() {
-        scope.launch { guarded { graph.saved.library() } }
+        scope.launch { guarded { graph.saved.index() } }
         scope.launch {
             prefs.load()
             manager.showPrivate(prefs.state.value.showPrivate)

@@ -84,12 +84,12 @@ class SavedStoreTest {
 
     @Test
     fun anUnreadableLibraryIsKeptAsideNotWrittenOver() = runBlocking {
-        val file = File(dir.root, "saved/library.json").apply { parentFile.mkdirs(); writeText("{broken") }
+        File(dir.root, "saved/library.json").apply { parentFile.mkdirs(); writeText("{broken") }
         val saved = store()
         assertTrue(saved.library().posts.isEmpty())
         saved.file("1", null, null)
         assertEquals("{broken", File(dir.root, "saved/library.json.unreadable").readText())
-        assertTrue(file.readText().contains("\"1\""))
+        assertEquals(listOf("1"), store().library().posts.map { it.id }, "and what is saved after it is on the disk")
     }
 
     @Test
