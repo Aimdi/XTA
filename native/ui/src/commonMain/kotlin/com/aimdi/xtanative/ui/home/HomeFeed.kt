@@ -58,6 +58,7 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.ui.common.LocalParentTurnsPages
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.rememberLiveEdges
 import com.aimdi.xtanative.ui.common.rememberScreenReaderOn
 import com.aimdi.xtanative.ui.feed.MediaModes
 import com.aimdi.xtanative.ui.feed.ToTop
@@ -204,14 +205,16 @@ internal fun HomeFeedPage(
             }
         },
     ) { padding ->
-        SwipesTimelines(timelines.index, labels, onTurn = calls.onTab, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
+        // The bar's height changes at every frame of its slide: the page is measured with it, not composed again.
+        val (top, bottom) = rememberLiveEdges(padding)
+        SwipesTimelines(timelines.index, labels, onTurn = calls.onTab, modifier = Modifier.fillMaxSize().padding(top)) {
             if (current != null) {
                 holder.SaveableStateProvider(current.key) {
                     val toTop = if (timelines.toTop.page == timelines.index) timelines.toTop.count else 0
                     // Home turns its timelines with a sideways drag: the tabs of a network's page leave it to Home.
                     // A network hands its own sections and actions to Home's one bar (NetworkTopBar).
                     CompositionLocalProvider(LocalParentTurnsPages provides true, LocalPluginClientBar provides client.takeIf { current is HomeTab.Network }) {
-                        TimelinePage(current, toTop, following.mediaOnly, actions, networks, PaddingValues(bottom = padding.calculateBottomPadding()))
+                        TimelinePage(current, toTop, following.mediaOnly, actions, networks, bottom)
                     }
                 }
             }

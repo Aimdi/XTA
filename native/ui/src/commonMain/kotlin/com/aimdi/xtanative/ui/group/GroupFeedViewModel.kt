@@ -61,6 +61,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /** Where to put the reader, once: [token] tells two jumps to the same place apart. */
 data class FeedJump(val threadIndex: Int, val offset: Int, val token: Int)
@@ -389,7 +390,9 @@ class GroupFeedViewModel(
             resets++
             run.update { it.copy(refreshing = true, problem = null, moreProblem = null) }
             val page = try {
-                saved?.let { feed.reopen(it) } ?: feed.first(if (previewing) ::arrived else null)
+                // Merged and sorted off the screen's thread; what a chunk brought is shown from the screen's.
+                val preview: ((FeedPage) -> Unit)? = if (previewing) ({ page -> viewModelScope.launch { arrived(page) } }) else null
+                withContext(Dispatchers.Default) { saved?.let { feed.reopen(it) } ?: feed.first(preview) }
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Throwable) {
@@ -485,7 +488,7 @@ class GroupFeedViewModel(
         moreJob = viewModelScope.launch {
             run.update { it.copy(loadingMore = true, moreProblem = null) }
             val page = try {
-                feed.more()
+                withContext(Dispatchers.Default) { feed.more() }
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Throwable) {
@@ -515,7 +518,7 @@ class GroupFeedViewModel(
         val popular = plan?.popular == true
         viewModelScope.launch {
             val page = try {
-                feed.retryFailed()
+                withContext(Dispatchers.Default) { feed.retryFailed() }
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Throwable) {

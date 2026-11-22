@@ -54,6 +54,7 @@ import com.aimdi.xtanative.core.session.DeckGroups
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.rememberLiveEdges
 import com.aimdi.xtanative.ui.common.rememberScreenReaderOn
 import com.aimdi.xtanative.ui.feed.MediaModes
 import com.aimdi.xtanative.ui.feed.ToTop
@@ -284,7 +285,8 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
             )
         },
     ) { padding ->
-        val bottom = PaddingValues(bottom = padding.calculateBottomPadding())
+        // The bottom bar's height changes at every frame of its slide: the pages are measured with it, not composed again.
+        val bottom = rememberLiveEdges(padding).second
         CompositionLocalProvider(LocalNetworkBarTakeover provides takeover) {
         Box(Modifier.fillMaxSize().padding(bottom).consumeWindowInsets(bottom).nestedScroll(shell.bars.connection)) {
             BarPageHost(page, shell.retaps) { shown ->
@@ -392,9 +394,10 @@ private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: I
             }
         },
     ) { padding ->
-        Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
+        val (top, bottom) = rememberLiveEdges(padding)
+        Box(Modifier.fillMaxSize().padding(top)) {
             CompositionLocalProvider(LocalPluginClientBar provides client) {
-                networks.Page(id, PaddingValues(bottom = padding.calculateBottomPadding()), toTop)
+                networks.Page(id, bottom, toTop)
             }
         }
     }
