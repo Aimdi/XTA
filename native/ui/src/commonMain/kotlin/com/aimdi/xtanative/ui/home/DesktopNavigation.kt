@@ -90,6 +90,11 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
         refocus(holders.lastOrNull())
     }
 
+    /** Something drawn over the screens without keys of its own (a sheet) going: the keys back to the overlay under it, else the window's frame. */
+    internal fun handBack() {
+        refocus(holders.lastOrNull())
+    }
+
     /** The list the keys move: the one the pointer was last over, else the first on screen (the page's own, before any column beside it). */
     internal fun readList(): LazyListState? = pointed ?: lists.firstOrNull()
 }
@@ -157,6 +162,18 @@ internal fun DesktopShortcuts(refresh: () -> Unit, turn: (Int) -> Unit, isOpen: 
     }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.release(owner) }
     DisposableEffect(actions) { onDispose { actions.release(owner) } }
+}
+
+/**
+ * For something drawn over the screens that keeps no keys of its own (a
+ * sheet): when it goes, the keys go back to what it covered, the overlay
+ * under it (a video full screen) or the window's frame, so they never
+ * wait for a click. Nothing off the desktop.
+ */
+@Composable
+fun GivesKeysBack() {
+    val actions = LocalDesktopActions.current ?: LocalDesktopActionsHost.current.actions ?: return
+    DisposableEffect(actions) { onDispose { actions.handBack() } }
 }
 
 /**

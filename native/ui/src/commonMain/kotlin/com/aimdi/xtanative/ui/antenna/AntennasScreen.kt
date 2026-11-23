@@ -50,7 +50,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -76,6 +75,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_antenna_empty
@@ -238,7 +238,7 @@ private fun DeleteDialog(antenna: Antenna, onDelete: () -> Unit, onDismiss: () -
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AntennaEditor(draft: AntennaDraft, onChange: (AntennaDraft) -> Unit, onSave: () -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
         Column(
             // Above the keyboard, as XTA lifts its editor.
             Modifier.widthIn(max = ContentWidth).fillMaxWidth().align(Alignment.CenterHorizontally).imePadding()

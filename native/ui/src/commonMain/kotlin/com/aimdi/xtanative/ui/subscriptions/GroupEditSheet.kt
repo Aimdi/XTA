@@ -44,7 +44,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -136,7 +135,7 @@ fun GroupEditSheet(
     var message by remember { mutableStateOf<StringResource?>(null) }
     var nameTouched by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val sheet = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheet = rememberSheetState(alwaysFull = true)
 
     fun save() {
         nameTouched = true

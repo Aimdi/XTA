@@ -31,7 +31,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -53,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.longPressOver
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
 import com.aimdi.xtanative.ui.generated.resources.home_manage_plugins
@@ -134,7 +134,7 @@ internal fun PluginSwitcherSheet(ui: HomeUi, networks: HomeNetworks, shown: Home
     // Whole at once, and the page's own colour under a hairline, as the app's screens are flat.
     ModalBottomSheet(
         onDismissRequest = calls.onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        sheetState = rememberSheetState(alwaysFull = true),
         shape = shape,
         containerColor = MaterialTheme.colorScheme.background,
         tonalElevation = 0.dp,
