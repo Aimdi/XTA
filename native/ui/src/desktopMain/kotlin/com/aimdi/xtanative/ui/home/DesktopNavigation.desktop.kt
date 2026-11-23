@@ -96,11 +96,12 @@ actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> 
 
     fun onKey(event: KeyEvent): Boolean {
         if (event.type != KeyEventType.KeyDown) return false
-        // The media viewer's Esc closes it at once, rather than first taking the focus from it as from a field.
-        if (actions.overlayHoldsKeys()) return false
         val canGoBack = nav.previousBackStackEntry != null
         val key = deskKey(event.key)
-        return act(DesktopKeys.action(key, event.isAltPressed, event.isCtrlPressed, focusInside, canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed))
+        val action = DesktopKeys.action(key, event.isAltPressed, event.isCtrlPressed, focusInside, canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed)
+        // The media viewer's Esc closes it at once, rather than first taking the focus from it as from a field; Ctrl+Q still quits.
+        if (actions.overlayHoldsKeys() && action != DeskAction.LEAVE_APP) return false
+        return act(action)
     }
 
     CompositionLocalProvider(LocalDesktopActions provides actions) {
