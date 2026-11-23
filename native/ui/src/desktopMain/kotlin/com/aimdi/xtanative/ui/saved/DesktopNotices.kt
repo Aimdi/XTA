@@ -131,17 +131,18 @@ class DesktopNotifications(
  */
 @Composable
 fun DesktopNotices(appName: String, enabled: Boolean, windowActive: () -> Boolean) {
+    // Before the early return: a notification's "Show in folder" is clicked long after the window's own notice went.
+    val scope = rememberCoroutineScope()
+    DisposableEffect(Unit) {
+        DesktopNotifications.desktop.onShowInFolder = { saved -> scope.launch { FileManagerShow.show(saved) } }
+        onDispose { DesktopNotifications.desktop.onShowInFolder = null }
+    }
     val shown by KeepNotices.shown.collectAsState()
     val current = shown ?: return
     val text = noticeText(current.notice)
     val folderLabel = stringResource(Res.string.downloads_show_in_folder)
     val active by rememberUpdatedState(windowActive)
     val on by rememberUpdatedState(enabled)
-    val scope = rememberCoroutineScope()
-    DisposableEffect(Unit) {
-        DesktopNotifications.desktop.onShowInFolder = { saved -> scope.launch { FileManagerShow.show(saved) } }
-        onDispose { DesktopNotifications.desktop.onShowInFolder = null }
-    }
     LaunchedEffect(current.serial) {
         val folder = (current.notice as? KeepNotice.SavedTo)?.savedUri
         if (on && DesktopNotifications.tells(current.notice) && !active()) DesktopNotifications.desktop.notify(appName, text, folder, folderLabel)

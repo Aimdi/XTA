@@ -16,4 +16,11 @@ class FileManagerShowTest {
     fun aFileThatIsGoneIsNotShown() = runBlocking {
         assertFalse(FileManagerShow.show(File("/nowhere/gone.jpg").toURI().toString(), connect = { null }))
     }
+
+    @Test
+    fun aFileManagerStillStartingCountsAsShowing() {
+        kotlin.test.assertTrue(FileManagerShow.answered(com.aimdi.xtanative.ui.media.mpris.DBusType.METHOD_RETURN))
+        kotlin.test.assertTrue(FileManagerShow.answered(null))
+        assertFalse(FileManagerShow.answered(com.aimdi.xtanative.ui.media.mpris.DBusType.ERROR))
+    }
 }

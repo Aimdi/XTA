@@ -24,10 +24,18 @@ internal object FileManagerShow {
     /** ShowItems' arguments for [file]: its file:// address, and no startup id. */
     fun showItems(file: File): List<Any> = listOf(listOf(file.absoluteFile.toPath().toUri().toASCIIString()), "")
 
+    /**
+     * Whether the file manager took ShowItems, by its answer's [type]: an
+     * error says none could; no answer in time is one still starting (the
+     * bus starting it on demand), which shows the file once up, so the
+     * folder is not opened a second time.
+     */
+    fun answered(type: DBusType?): Boolean = type != DBusType.ERROR
+
     suspend fun show(savedUri: String, connect: () -> DBusConnection? = DBusConnection::session): Boolean = withContext(Dispatchers.IO) {
         val file = DesktopFolders.fileOf(savedUri)?.takeIf { it.exists() } ?: return@withContext false
         val shown = runCatching {
-            connect()?.use { bus -> bus.call(NAME, PATH, NAME, "ShowItems", "ass", showItems(file))?.type == DBusType.METHOD_RETURN }
+            connect()?.use { bus -> answered(bus.call(NAME, PATH, NAME, "ShowItems", "ass", showItems(file))?.type) }
         }.getOrNull() == true
         shown || runCatching { ProcessBuilder("xdg-open", file.parentFile.path).start(); true }.getOrDefault(false)
     }
