@@ -8,11 +8,12 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.common.rememberSheetState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal actual fun PostMenuSurface(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp), content = content)
     }
 }
