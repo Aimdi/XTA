@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -25,6 +26,8 @@ import com.aimdi.xtanative.ui.media.VideoCheck
 import java.awt.Dimension
 import java.awt.GraphicsEnvironment
 import java.io.File
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.FutureTask
 import kotlin.math.roundToInt
 import kotlin.system.exitProcess
 import kotlinx.coroutines.FlowPreview
@@ -49,12 +52,14 @@ fun main() {
     val windowFile = SavedWindowFile(File(files, "window.ini"))
     val saved = windowFile.read().let { kept -> screenArea()?.let { (width, height) -> kept.fitTo(width, height) } ?: kept }
     var kept = saved
-    val app = desktopApp(files)
-    val graph = app.graph
-    app.start()
+    // The app is made and started on a thread of its own while the window's toolkit starts on this one: neither waits for the other.
+    val starting = FutureTask { desktopApp(files).also { it.start() } }
+    Thread(starting, "app-start").start()
     SingletonImageLoader.setSafe { context -> appImageLoader(context) }
     // The process waits for the writes the closing window asked for (the reading place) before it ends.
     application(exitProcessOnExit = false) {
+        val app = remember { starting.started() }
+        val graph = app.graph
         val state = rememberWindowState(
             placement = if (saved.maximized) WindowPlacement.Maximized else WindowPlacement.Floating,
             size = DpSize(saved.width.dp, saved.height.dp),
@@ -92,9 +97,16 @@ fun main() {
             }
         }
     }
-    runBlocking { withTimeoutOrNull(2_000) { graph.awaitWrites() } }
+    runBlocking { withTimeoutOrNull(2_000) { starting.started().graph.awaitWrites() } }
     instance.close()
     exitProcess(0)
+}
+
+/** The app once made and started; what failed doing it fails here, as it did before it moved off this thread. */
+private fun FutureTask<DesktopApp>.started(): DesktopApp = try {
+    get()
+} catch (e: ExecutionException) {
+    throw e.cause ?: e
 }
 
 /** The primary screen's work area, in the window's units; null where there is no screen to ask. */
