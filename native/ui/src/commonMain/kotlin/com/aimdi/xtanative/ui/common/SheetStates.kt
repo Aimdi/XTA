@@ -4,6 +4,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.focus.FocusRequester
+import com.aimdi.xtanative.ui.home.HoldsKeys
 
 /**
  * Whether a sheet opens all the way at once: on the desktop, where the
@@ -13,7 +16,16 @@ import androidx.compose.runtime.Composable
  */
 internal expect val SheetsOpenFull: Boolean
 
-/** A sheet's state that opens it as the platform does ([SheetsOpenFull]). */
+/**
+ * A sheet's state that opens it as the platform does ([SheetsOpenFull]).
+ * On the desktop the sheet also holds the window's keys while it is open
+ * ([HoldsKeys]) and gives them back as it goes, so Esc, the reading keys
+ * and the rest work again at once after it closes, rather than only after
+ * a click.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun rememberSheetState(): SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = SheetsOpenFull)
+internal fun rememberSheetState(): SheetState {
+    HoldsKeys(remember { FocusRequester() })
+    return rememberModalBottomSheetState(skipPartiallyExpanded = SheetsOpenFull)
+}
