@@ -1,7 +1,7 @@
 package com.aimdi.xtanative.ui.home
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, OTHER }
 
 enum class DeskAction {
     /** Out of the text field being typed in, as XTA's first Esc does. */
@@ -22,6 +22,11 @@ enum class DeskAction {
 
     /** The page's own search field takes the keyboard, else the search opens ([DesktopActions.find]). */
     FIND,
+
+    /** The reader's text size a step up, a step down, or back to the system's ([DesktopKeys.textScaled]). */
+    TEXT_BIGGER,
+    TEXT_SMALLER,
+    TEXT_RESET,
 
     /** The list read moves a line, a screen, or to its top or end ([DesktopActions.scroll]). */
     LINE_UP,
@@ -54,6 +59,8 @@ object DesktopKeys {
      * where Tab and Shift+Tab then go on from one to the next. Ctrl+F, even
      * from a field, and / while nothing is being typed in, go to the search,
      * as a desktop app's do: the page's own field, else the app's search.
+     * Ctrl with + (or =), - and 0 make the text bigger, smaller, or its
+     * size again, as a browser's zoom does, from a field too.
      */
     fun action(
         key: DeskKey,
@@ -71,6 +78,7 @@ object DesktopKeys {
         key == DeskKey.Q && ctrl && !alt -> DeskAction.LEAVE_APP
         ctrl && !alt && key in TAB_KEYS -> if (somethingOpen) DeskAction.NONE else tabTurn(key, shift)
         key == DeskKey.TAB && !focusInside && !alt && !ctrl -> DeskAction.ENTER_PAGE
+        ctrl && !alt && key in TEXT_KEYS -> textSize(key)
         (key == DeskKey.F && ctrl && !alt && !shift) || (key == DeskKey.SLASH && !focusInside && !alt && !ctrl) ->
             if (somethingOpen) DeskAction.NONE else DeskAction.FIND
         focusInside || alt || ctrl -> DeskAction.NONE
@@ -83,6 +91,32 @@ object DesktopKeys {
     private val SCROLL_KEYS = setOf(DeskKey.UP, DeskKey.DOWN, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN, DeskKey.SPACE, DeskKey.HOME, DeskKey.END)
 
     private val TAB_KEYS = setOf(DeskKey.TAB, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN)
+
+    private val TEXT_KEYS = setOf(DeskKey.PLUS, DeskKey.MINUS, DeskKey.ZERO)
+
+    private fun textSize(key: DeskKey): DeskAction = when (key) {
+        DeskKey.PLUS -> DeskAction.TEXT_BIGGER
+        DeskKey.MINUS -> DeskAction.TEXT_SMALLER
+        else -> DeskAction.TEXT_RESET
+    }
+
+    /** A step of the text size: the Accessibility slider's own. */
+    const val TEXT_STEP = 0.05
+
+    /**
+     * The text size [scale] after [action], kept in [range] (the setting's)
+     * and on the slider's steps; [scale] itself for any other action. Reset
+     * is the size the range starts at, the system's.
+     */
+    fun textScaled(scale: Double, action: DeskAction, range: ClosedFloatingPointRange<Double>): Double = when (action) {
+        DeskAction.TEXT_BIGGER -> stepped(scale + TEXT_STEP).coerceIn(range)
+        DeskAction.TEXT_SMALLER -> stepped(scale - TEXT_STEP).coerceIn(range)
+        DeskAction.TEXT_RESET -> range.start
+        else -> scale
+    }
+
+    /** On a step, in hundredths as the slider keeps it (1.15, not 1.1500000000000001). */
+    private fun stepped(scale: Double): Double = kotlin.math.round(scale / TEXT_STEP) * (TEXT_STEP * 100).toInt() / 100.0
 
     private fun tabTurn(key: DeskKey, shift: Boolean): DeskAction = when {
         key == DeskKey.PAGE_UP || (key == DeskKey.TAB && shift) -> DeskAction.PREVIOUS_PAGE

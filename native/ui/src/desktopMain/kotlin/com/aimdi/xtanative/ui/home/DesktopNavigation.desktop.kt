@@ -40,7 +40,10 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.ui.chrome.AppClosing
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.settings.SettingsChoices
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -53,9 +56,12 @@ import kotlinx.coroutines.launch
 actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, content: @Composable () -> Unit) {
     val focus = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    val settingsStore = LocalSettingsStore.current
     val scope = rememberCoroutineScope()
     var hasFocus by remember { mutableStateOf(false) }
     var focusInside by remember { mutableStateOf(false) }
+    // Whether the window took the last key pressed, so the character it types goes nowhere.
+    var keyTaken by remember { mutableStateOf(false) }
     // A frame later: what gives the keys back is still leaving when it asks. The frame takes them only if
     // nothing in the page has since (a screen that focuses its field as it opens keeps it).
     // A sheet swapped for another in the same frame closes before the next opens: by the time the frame
@@ -102,6 +108,14 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, con
             if (!actions.find()) openSearch()
             true
         }
+        DeskAction.TEXT_BIGGER, DeskAction.TEXT_SMALLER, DeskAction.TEXT_RESET -> {
+            scope.launch {
+                settingsStore.update { settings ->
+                    settings.with(AccessibilityPrefs.textScale, DesktopKeys.textScaled(settings[AccessibilityPrefs.textScale], action, TEXT_SCALES))
+                }
+            }
+            true
+        }
         DeskAction.LINE_UP, DeskAction.LINE_DOWN, DeskAction.SCREEN_UP, DeskAction.SCREEN_DOWN, DeskAction.TO_TOP, DeskAction.TO_END ->
             actions.readList()?.let { list ->
                 scope.launch { list.moveFor(action, line) }
@@ -111,13 +125,14 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, con
     }
 
     fun onKey(event: KeyEvent): Boolean {
-        if (event.type != KeyEventType.KeyDown) return false
+        // The character a key the window took types (Ctrl+= types =) is not typed into a field as well.
+        if (event.type != KeyEventType.KeyDown) return event.type != KeyEventType.KeyUp && keyTaken
         val canGoBack = nav.previousBackStackEntry != null
         val key = deskKey(event.key)
         val action = DesktopKeys.action(key, event.isAltPressed, event.isCtrlPressed, focusInside, canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed)
         // The media viewer's Esc closes it at once, rather than first taking the focus from it as from a field; Ctrl+Q still quits.
-        if (actions.overlayHoldsKeys() && action != DeskAction.LEAVE_APP) return false
-        return act(action)
+        keyTaken = !(actions.overlayHoldsKeys() && action != DeskAction.LEAVE_APP) && act(action)
+        return keyTaken
     }
 
     // A / is the character typed, on any layout (Shift+7 on a German one), and only one no field has typed reaches here.
@@ -164,6 +179,9 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, con
     }
 }
 
+/** The text sizes the keys move between: the Accessibility slider's. */
+private val TEXT_SCALES = SettingsChoices.TEXT_SCALE_MIN.toDouble()..SettingsChoices.TEXT_SCALE_MAX.toDouble()
+
 /** Long enough for an overlay that gave the keys back to be gone. */
 private const val REFOCUS_AFTER_MS = 50L
 
@@ -207,5 +225,8 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.Tab -> DeskKey.TAB
     Key.Q -> DeskKey.Q
     Key.F -> DeskKey.F
+    Key.Plus, Key.Equals, Key.NumPadAdd -> DeskKey.PLUS
+    Key.Minus, Key.NumPadSubtract -> DeskKey.MINUS
+    Key.Zero, Key.NumPad0 -> DeskKey.ZERO
     else -> DeskKey.OTHER
 }

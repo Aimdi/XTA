@@ -208,4 +208,29 @@ class DesktopKeysTest {
         actions.removeFinder(page)
         assertFalse(actions.find(), "a screen resumed twice is listed once")
     }
+
+    @Test
+    fun ctrlPlusMinusAndZeroSizeTheTextAsABrowsersZoom() {
+        assertEquals(DeskAction.TEXT_BIGGER, action(DeskKey.PLUS, ctrl = true))
+        assertEquals(DeskAction.TEXT_BIGGER, action(DeskKey.PLUS, ctrl = true, shift = true), "Ctrl+Shift+= on a US keyboard")
+        assertEquals(DeskAction.TEXT_SMALLER, action(DeskKey.MINUS, ctrl = true, focusInside = true), "from a field too")
+        assertEquals(DeskAction.TEXT_RESET, action(DeskKey.ZERO, ctrl = true, canGoBack = false))
+        listOf(DeskKey.PLUS, DeskKey.MINUS, DeskKey.ZERO).forEach { key ->
+            assertEquals(DeskAction.NONE, action(key), "$key alone is typed")
+            assertEquals(DeskAction.NONE, action(key, ctrl = true, alt = true), "Ctrl+Alt+$key")
+        }
+    }
+
+    @Test
+    fun theTextSizeMovesOnTheSlidersStepsWithinItsRange() {
+        val range = 1.0..1.5
+        assertEquals(1.05, DesktopKeys.textScaled(1.0, DeskAction.TEXT_BIGGER, range))
+        assertEquals(1.15, DesktopKeys.textScaled(1.1, DeskAction.TEXT_BIGGER, range))
+        assertEquals(1.5, DesktopKeys.textScaled(1.5, DeskAction.TEXT_BIGGER, range), "never above the slider's end")
+        assertEquals(1.0, DesktopKeys.textScaled(1.0, DeskAction.TEXT_SMALLER, range), "never below the system's size")
+        assertEquals(1.25, DesktopKeys.textScaled(1.3, DeskAction.TEXT_SMALLER, range))
+        assertEquals(1.1, DesktopKeys.textScaled(1.07, DeskAction.TEXT_BIGGER, range), "a size between steps goes onto one")
+        assertEquals(1.0, DesktopKeys.textScaled(1.35, DeskAction.TEXT_RESET, range))
+        assertEquals(1.35, DesktopKeys.textScaled(1.35, DeskAction.REFRESH, range))
+    }
 }
