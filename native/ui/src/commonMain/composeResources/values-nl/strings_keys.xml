@@ -41,4 +41,5 @@
     <string name="keys_remove_selected">Opgeslagen: geselecteerde verwijderen</string>
     <string name="keys_leave_selection">Opgeslagen: selecteren stoppen</string>
     <string name="keys_delete">Del</string>
+    <string name="keys_move_row">Een rij omhoog of omlaag zetten in een lijst die je kunt herschikken (die met de focus of die onder de aanwijzer)</string>
 </resources>

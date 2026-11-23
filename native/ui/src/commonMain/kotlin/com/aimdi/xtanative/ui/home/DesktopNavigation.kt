@@ -131,6 +131,21 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}, privat
     /** The page stops selecting; false when it was not. */
     fun leaveSelection(): Boolean = selections.lastOrNull()?.second?.leave?.invoke() ?: false
 
+    /** The reorderable lists Alt+↑ and Alt+↓ move a row of, the last shown on top ([RowKeyMoves]). */
+    private val rowMovers = mutableListOf<Pair<Any, (up: Boolean) -> Boolean>>()
+
+    internal fun addRowMover(owner: Any, move: (up: Boolean) -> Boolean) {
+        rowMovers.removeAll { it.first === owner }
+        rowMovers += owner to move
+    }
+
+    internal fun removeRowMover(owner: Any) {
+        rowMovers.removeAll { it.first === owner }
+    }
+
+    /** The row the pointer rests on, in a list shown, a place up or down; false when no list has one there. */
+    fun moveRow(up: Boolean): Boolean = rowMovers.asReversed().any { it.second(up) }
+
     /** What a field being typed in drops at Esc before leaving it (a recent search it has highlighted), the last added on top. */
     private val fieldEscapes = mutableListOf<Pair<Any, () -> Boolean>>()
 

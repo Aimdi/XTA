@@ -41,4 +41,5 @@
     <string name="keys_remove_selected">Archiv: Ausgewählte entfernen</string>
     <string name="keys_leave_selection">Archiv: Auswahl beenden</string>
     <string name="keys_delete">Entf</string>
+    <string name="keys_move_row">Eine Zeile in einer sortierbaren Liste nach oben oder unten verschieben (die fokussierte oder die unter dem Mauszeiger)</string>
 </resources>

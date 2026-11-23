@@ -41,4 +41,5 @@
     <string name="keys_remove_selected">Избранное: удалить выбранное</string>
     <string name="keys_leave_selection">Избранное: завершить выбор</string>
     <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">Переместить строку выше или ниже в списке, который можно упорядочить (ту, что в фокусе, или под указателем)</string>
 </resources>

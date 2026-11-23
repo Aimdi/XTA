@@ -66,6 +66,10 @@ enum class DeskAction {
 
     /** The page stops selecting, as Esc does in a file manager ([DesktopActions.leaveSelection]). */
     LEAVE_SELECTION,
+
+    /** The row of a reorderable list the pointer rests on moves a place up or down, as its drag would move it ([DesktopActions.moveRow]). */
+    MOVE_ROW_UP,
+    MOVE_ROW_DOWN,
     NONE,
 }
 
@@ -111,6 +115,10 @@ object DesktopKeys {
      * ([openIsRead]: the Deck's detail, a post opened there): Esc and Ctrl+W
      * still close it first, but the reading keys, j and k and Ctrl+← and
      * Ctrl+→ go on working, as nothing covers the lists.
+     * Alt+↑ and Alt+↓, while nothing is being typed in and nothing is open
+     * over the page, move the row the pointer rests on in a list that is
+     * otherwise reordered by dragging (a row with the focus moves itself,
+     * [RowKeyMoves]).
      */
     fun action(
         key: DeskKey,
@@ -152,6 +160,11 @@ object DesktopKeys {
             // In a field, Ctrl+A selects its text; Delete deletes a character there.
             key == DeskKey.A && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.SELECT_ALL
             key == DeskKey.DELETE && selecting && !focusInside && !alt && !ctrl && !shift -> if (somethingOpen) DeskAction.NONE else DeskAction.REMOVE_SELECTED
+            alt && !ctrl && !shift && !focusInside && (key == DeskKey.UP || key == DeskKey.DOWN) -> when {
+                somethingOpen -> DeskAction.NONE
+                key == DeskKey.UP -> DeskAction.MOVE_ROW_UP
+                else -> DeskAction.MOVE_ROW_DOWN
+            }
             focusInside || alt || ctrl -> DeskAction.NONE
             key in SCROLL_KEYS -> if (covered) DeskAction.NONE else scroll(key, shift)
             (key == DeskKey.J || key == DeskKey.K) && !shift -> when {

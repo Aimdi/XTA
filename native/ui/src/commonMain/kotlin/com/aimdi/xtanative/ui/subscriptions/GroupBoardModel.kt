@@ -4,6 +4,7 @@ import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.GroupTree
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.store.settings.GroupsOrder
+import com.aimdi.xtanative.ui.home.RowSteps
 
 /** One group on the board or in the list: how deep it is nested, how many members it has and whose faces it shows. */
 data class GroupTile(
@@ -109,6 +110,21 @@ object GroupBoardModel {
             else -> to.coerceAtLeast(header + 1)
         }
         return SubscriptionList.moved(rows, from, target.coerceIn(0, rows.lastIndex)).filterNotNull()
+    }
+
+    /**
+     * Where Alt+↑ or Alt+↓ takes the row at [from] (an index as [reordered]
+     * takes it): a place up or down within its own part, never past the
+     * Censored header; null at the part's end, or for the header itself.
+     */
+    fun keyStep(sections: GroupSections, from: Int, up: Boolean): Int? {
+        val header = if (sections.nsfw.isEmpty()) -1 else sections.safe.size
+        val part = when {
+            header < 0 || from < header -> sections.safe.indices
+            from == header -> return null
+            else -> (header + 1)..(header + sections.nsfw.size)
+        }
+        return RowSteps.target(from, up, part)
     }
 
     /** [session] with each group's place its index in [ids], as XTA saves the reader's own order. */

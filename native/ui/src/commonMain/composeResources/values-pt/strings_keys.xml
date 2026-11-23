@@ -41,4 +41,5 @@
     <string name="keys_remove_selected">Salvo: remover os selecionados</string>
     <string name="keys_leave_selection">Salvo: deixar de selecionar</string>
     <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">Mover uma linha para cima ou para baixo numa lista reordenável (a que tem o foco ou a que está sob o ponteiro)</string>
 </resources>

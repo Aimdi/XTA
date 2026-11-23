@@ -42,4 +42,5 @@
     <string name="keys_remove_selected">Saved: remove the selected</string>
     <string name="keys_leave_selection">Saved: stop selecting</string>
     <string name="keys_delete">Del</string>
+    <string name="keys_move_row">Move a row up or down in a list you can reorder (the one with the focus or under the pointer)</string>
 </resources>

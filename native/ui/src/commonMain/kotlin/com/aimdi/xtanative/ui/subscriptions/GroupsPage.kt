@@ -69,6 +69,8 @@ import com.aimdi.xtanative.ui.generated.resources.groups_pin
 import com.aimdi.xtanative.ui.generated.resources.groups_unpin
 import com.aimdi.xtanative.ui.group.RankWithAiButton
 import com.aimdi.xtanative.ui.home.rememberRetappedList
+import com.aimdi.xtanative.ui.home.rememberRowKeyMoves
+import com.aimdi.xtanative.ui.home.rowMovedByKeys
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -277,6 +279,10 @@ private fun GroupsList(
     val drag = rememberRowDrag(list)
     val tiles = state.board.all.associateBy { it.id }
     val keys: List<Any> = state.board.safe.map { it.id } + (if (state.board.nsfw.isNotEmpty()) listOf(HEADER) else emptyList()) + state.board.nsfw.map { it.id }
+    val moves = rememberRowKeyMoves { key, up ->
+        val from = keys.indexOf(key)
+        state.canDragGroups && GroupBoardModel.keyStep(state.board, from, up)?.let { to -> onMove(from, to) } != null
+    }
     LazyColumn(
         state = list,
         contentPadding = PaddingValues(
@@ -293,7 +299,7 @@ private fun GroupsList(
                 CensoredHeader()
             } else {
                 val dragged = drag.key == key
-                Box(Modifier.graphicsLayer { translationY = if (dragged) drag.offset else 0f }.let { if (dragged) it.background(MaterialTheme.colorScheme.surfaceContainerHigh) else it }) {
+                Box(Modifier.rowMovedByKeys(moves, key).graphicsLayer { translationY = if (dragged) drag.offset else 0f }.let { if (dragged) it.background(MaterialTheme.colorScheme.surfaceContainerHigh) else it }) {
                     GroupListRow(
                         tile = tile,
                         onOpen = { onOpen(tile.id) },

@@ -41,4 +41,5 @@
     <string name="keys_remove_selected">Salvati: rimuovi i selezionati</string>
     <string name="keys_leave_selection">Salvati: esci dalla selezione</string>
     <string name="keys_delete">Canc</string>
+    <string name="keys_move_row">Sposta una riga su o giù in un elenco riordinabile (quella con il focus o quella sotto il puntatore)</string>
 </resources>

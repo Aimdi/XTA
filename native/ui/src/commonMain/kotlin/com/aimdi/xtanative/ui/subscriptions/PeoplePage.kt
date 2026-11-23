@@ -64,7 +64,10 @@ import com.aimdi.xtanative.ui.generated.resources.groups_quiet_account_off
 import com.aimdi.xtanative.ui.generated.resources.groups_search
 import com.aimdi.xtanative.ui.generated.resources.groups_show_in_main_feed
 import com.aimdi.xtanative.ui.generated.resources.groups_unsubscribe
+import com.aimdi.xtanative.ui.home.RowSteps
 import com.aimdi.xtanative.ui.home.rememberRetappedList
+import com.aimdi.xtanative.ui.home.rememberRowKeyMoves
+import com.aimdi.xtanative.ui.home.rowMovedByKeys
 import org.jetbrains.compose.resources.stringResource
 
 /** What a row of the people list can be asked. */
@@ -116,6 +119,10 @@ private fun PeopleList(state: SubscriptionsUi, actions: PeopleActions, contentPa
     val drag = rememberRowDrag(list)
     val rows = state.people.associateBy { it.key }
     val keys: List<Any> = state.people.map { it.key }
+    val moves = rememberRowKeyMoves { key, up ->
+        val from = keys.indexOf(key)
+        state.canDragPeople && RowSteps.target(from, up, keys.indices)?.let { to -> actions.move(from, to) } != null
+    }
     WithReadingColumn(PaddingValues(
             start = 8.dp,
             end = 8.dp,
@@ -142,6 +149,7 @@ private fun PeopleList(state: SubscriptionsUi, actions: PeopleActions, contentPa
             }
             Box(
                 Modifier
+                    .rowMovedByKeys(moves, key)
                     .graphicsLayer { translationY = if (dragged) drag.offset else 0f }
                     .let { if (dragged) it.background(MaterialTheme.colorScheme.surfaceContainerHigh, RoundedCornerShape(12.dp)) else it }
                     .then(reorder),

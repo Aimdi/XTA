@@ -25,6 +25,16 @@ class DesktopKeysTest {
     ) = DesktopKeys.action(key, alt, ctrl, focusInside, canGoBack, rtl, open, shift, selecting, openIsRead)
 
     @Test
+    fun altArrowsMoveTheRowUnderThePointer() {
+        assertEquals(DeskAction.MOVE_ROW_UP, action(DeskKey.UP, alt = true))
+        assertEquals(DeskAction.MOVE_ROW_DOWN, action(DeskKey.DOWN, alt = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.UP, alt = true, focusInside = true), "what has the focus answers first; a field keeps them")
+        assertEquals(DeskAction.NONE, action(DeskKey.DOWN, alt = true, open = true), "not under what is open over the page")
+        assertEquals(DeskAction.NONE, action(DeskKey.UP, alt = true, ctrl = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.DOWN, alt = true, shift = true))
+    }
+
+    @Test
     fun ctrlASelectsAllAsInAFileManagerButNotInAField() {
         assertEquals(DeskAction.SELECT_ALL, action(DeskKey.A, ctrl = true))
         assertEquals(DeskAction.SELECT_ALL, action(DeskKey.A, ctrl = true, selecting = true))
@@ -74,7 +84,8 @@ class DesktopKeysTest {
             assertEquals(DeskAction.NONE, action(key, open = true), "$key with a sheet open")
             if (key != DeskKey.PAGE_UP && key != DeskKey.PAGE_DOWN) assertEquals(DeskAction.NONE, action(key, ctrl = true), "Ctrl+$key")
             // Alt+Home is the window's: back to Home (altHomeGoesHome).
-            if (key != DeskKey.HOME) assertEquals(DeskAction.NONE, action(key, alt = true), "Alt+$key")
+            // Alt+↑ and Alt+↓ move a reorderable list's row (altArrowsMoveTheRowUnderThePointer).
+            if (key !in setOf(DeskKey.HOME, DeskKey.UP, DeskKey.DOWN)) assertEquals(DeskAction.NONE, action(key, alt = true), "Alt+$key")
         }
     }
 

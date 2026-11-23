@@ -34,6 +34,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_help
 import com.aimdi.xtanative.ui.generated.resources.keys_home
 import com.aimdi.xtanative.ui.generated.resources.keys_leave_selection
 import com.aimdi.xtanative.ui.generated.resources.keys_move
+import com.aimdi.xtanative.ui.generated.resources.keys_move_row
 import com.aimdi.xtanative.ui.generated.resources.keys_next_post
 import com.aimdi.xtanative.ui.generated.resources.keys_open_copied_link
 import com.aimdi.xtanative.ui.generated.resources.keys_page_down
@@ -118,6 +119,7 @@ object DesktopShortcuts {
         Shortcut(Res.string.keys_select_all, listOf(listOf(ctrl, sign("A")))),
         Shortcut(Res.string.keys_remove_selected, listOf(listOf(KeyCap.Named(Res.string.keys_delete)))),
         Shortcut(Res.string.keys_leave_selection, listOf(listOf(KeyCap.Named(Res.string.keys_esc)))),
+        Shortcut(Res.string.keys_move_row, listOf(listOf(alt, sign("↑")), listOf(alt, sign("↓")))),
         Shortcut(Res.string.keys_quit, listOf(listOf(ctrl, sign("Q")))),
     )
 }

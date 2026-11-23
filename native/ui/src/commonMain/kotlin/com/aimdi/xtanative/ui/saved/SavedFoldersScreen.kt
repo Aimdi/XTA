@@ -26,6 +26,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -59,6 +60,9 @@ import com.aimdi.xtanative.ui.generated.resources.saved_tab_all
 import com.aimdi.xtanative.ui.generated.resources.saved_tab_likes
 import com.aimdi.xtanative.ui.generated.resources.saved_tab_notes
 import com.aimdi.xtanative.ui.generated.resources.saved_tab_unfiled
+import com.aimdi.xtanative.ui.home.RowSteps
+import com.aimdi.xtanative.ui.home.rememberRowKeyMoves
+import com.aimdi.xtanative.ui.home.rowMovedByKeys
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -191,12 +195,17 @@ private fun ReorderableRows(
     var offset by remember { mutableFloatStateOf(0f) }
     val heightList = rows.map { heights[it.token] ?: 0 }
     val target = dragging?.let { dropIndex(it, offset, heightList) }
+    val moves = rememberRowKeyMoves { token, up ->
+        val from = current.indexOfFirst { it.token == token }
+        RowSteps.target(from, up, current.indices)?.let { to -> moved(from, to) } != null
+    }
     Column(modifier.verticalScroll(rememberScrollState())) {
-        rows.forEachIndexed { index, item ->
+        rows.forEachIndexed { index, item -> key(item.token) {
             val shift = shiftOf(index, dragging, target, heightList)
             Box(
                 Modifier
                     .fillMaxWidth()
+                    .rowMovedByKeys(moves, item.token)
                     .onSizeChanged { heights[item.token] = it.height }
                     .zIndex(if (index == dragging) 1f else 0f)
                     .graphicsLayer { translationY = if (index == dragging) offset else shift }
@@ -229,7 +238,7 @@ private fun ReorderableRows(
                     Hairline()
                 }
             }
-        }
+        } }
     }
 }
 

@@ -87,6 +87,23 @@ class GroupBoardModelTest {
     }
 
     @Test
+    fun altArrowsMoveAGroupAPlaceWithinItsPart() {
+        val sections = GroupBoardModel.sections(GroupBoardModel.tiles(session, GroupsOrder.POSITION, true, ""))
+        // Rows: news, tech, ai, [Censored], art.
+        assertEquals(0, GroupBoardModel.keyStep(sections, 1, up = true))
+        assertEquals(2, GroupBoardModel.keyStep(sections, 1, up = false))
+        assertNull(GroupBoardModel.keyStep(sections, 0, up = true), "the first goes no higher")
+        assertNull(GroupBoardModel.keyStep(sections, 2, up = false), "the last safe group stays above Censored")
+        assertNull(GroupBoardModel.keyStep(sections, 3, up = true), "the header does not move")
+        assertNull(GroupBoardModel.keyStep(sections, 4, up = true), "an NSFW group stays under it")
+        assertNull(GroupBoardModel.keyStep(sections, 4, up = false))
+        assertEquals(listOf("news", "ai", "tech", "art"), GroupBoardModel.reordered(sections, 1, GroupBoardModel.keyStep(sections, 1, up = false)!!))
+        val safeOnly = GroupSections(sections.safe, emptyList())
+        assertNull(GroupBoardModel.keyStep(safeOnly, 2, up = false), "no header: the end of the list")
+        assertEquals(1, GroupBoardModel.keyStep(safeOnly, 2, up = true))
+    }
+
+    @Test
     fun theReadersOrderIsKeptAsEachGroupsPlace() {
         val placed = GroupBoardModel.withPositions(session, listOf("news", "art", "tech"))
         assertEquals(mapOf("tech" to 2, "ai" to 0, "art" to 1, "news" to 0), placed.groups.associate { it.id to it.position })

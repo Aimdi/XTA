@@ -161,6 +161,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         DeskAction.SELECT_ALL -> actions.selectAll()
         DeskAction.REMOVE_SELECTED -> actions.removeSelected()
         DeskAction.LEAVE_SELECTION -> actions.leaveSelection()
+        DeskAction.MOVE_ROW_UP -> actions.moveRow(up = true)
+        DeskAction.MOVE_ROW_DOWN -> actions.moveRow(up = false)
         DeskAction.NONE -> false
     }
 

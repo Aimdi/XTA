@@ -41,4 +41,5 @@
     <string name="keys_remove_selected">Захаванае: выдаліць вылучанае</string>
     <string name="keys_leave_selection">Захаванае: скончыць вылучэнне</string>
     <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">Перамясціць радок вышэй або ніжэй у спісе, які можна пераўпарадкаваць (той, што ў фокусе або пад курсорам)</string>
 </resources>

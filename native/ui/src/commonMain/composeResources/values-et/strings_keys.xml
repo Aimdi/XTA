@@ -41,4 +41,5 @@
     <string name="keys_remove_selected">Salvestatud: eemalda valitud</string>
     <string name="keys_leave_selection">Salvestatud: lõpeta valimine</string>
     <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">Liiguta ümberjärjestatavas loendis rida üles või alla (fookuses olevat või kursori all olevat)</string>
 </resources>

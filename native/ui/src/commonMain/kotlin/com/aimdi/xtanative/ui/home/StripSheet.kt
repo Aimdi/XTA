@@ -76,8 +76,12 @@ internal fun StripSheet(
     val drag = rememberRowDrag(list)
     val byId = pinned.associateBy { it.id }
     val keys: List<Any> = pinned.map { it.id }
+    val moves = rememberRowKeyMoves { key, up ->
+        val from = keys.indexOf(key)
+        RowSteps.target(from, up, keys.indices)?.let { to -> onMove(from, to) } != null
+    }
     ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
-        LazyColumn(state = list, modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+        LazyColumn(state = list, modifier = Modifier.fillMaxWidth().hoveredRowMovedByKeys(moves).padding(bottom = 16.dp)) {
             item(key = "title") {
                 Column {
                     Text(stringResource(Res.string.home_strip_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 24.dp))
@@ -101,7 +105,7 @@ internal fun StripSheet(
             items(drag.shown(keys), key = { it }) { key ->
                 val network = byId[key] ?: return@items
                 val dragged = drag.key == key
-                Box(Modifier.graphicsLayer { translationY = if (dragged) drag.offset else 0f }.let { if (dragged) it.background(MaterialTheme.colorScheme.surfaceContainerHigh) else it }) {
+                Box(Modifier.rowMovedByKeys(moves, key).graphicsLayer { translationY = if (dragged) drag.offset else 0f }.let { if (dragged) it.background(MaterialTheme.colorScheme.surfaceContainerHigh) else it }) {
                     NetworkRow(network, networks, onClick = { onOpen(network.id) }) {
                         IconTip(stringResource(Res.string.home_strip_remove)) { IconButton(onClick = { onUnpin(network.id) }) { Icon(HomeIcons.RemoveCircle, stringResource(Res.string.home_strip_remove)) } }
                         DragHandle(

@@ -41,4 +41,5 @@
     <string name="keys_remove_selected">Desat: elimina els seleccionats</string>
     <string name="keys_leave_selection">Desat: deixa de seleccionar</string>
     <string name="keys_delete">Supr</string>
+    <string name="keys_move_row">Mou una fila amunt o avall en una llista que es pot reordenar (la que té el focus o la que és sota el punter)</string>
 </resources>

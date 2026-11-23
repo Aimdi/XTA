@@ -41,4 +41,5 @@
     <string name="keys_remove_selected">Salvat: elimină cele selectate</string>
     <string name="keys_leave_selection">Salvat: oprește selectarea</string>
     <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">Mută un rând în sus sau în jos într-o listă care se poate reordona (cel cu focus sau cel de sub cursor)</string>
 </resources>

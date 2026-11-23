@@ -41,4 +41,5 @@
     <string name="keys_remove_selected">保存ツイート: 選択したものを削除</string>
     <string name="keys_leave_selection">保存ツイート: 選択を終了</string>
     <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">並べ替えできるリストで行を上下に移動（フォーカスのある行、またはポインターの下の行）</string>
 </resources>

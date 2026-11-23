@@ -41,4 +41,5 @@
     <string name="keys_remove_selected">सहेजा गया: चुने हुए हटाएँ</string>
     <string name="keys_leave_selection">सहेजा गया: चुनना बंद करें</string>
     <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">क्रम बदली जा सकने वाली सूची में पंक्ति को ऊपर या नीचे ले जाएँ (फ़ोकस वाली या पॉइंटर के नीचे वाली)</string>
 </resources>

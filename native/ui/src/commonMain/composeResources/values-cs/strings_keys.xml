@@ -41,4 +41,5 @@
     <string name="keys_remove_selected">Uloženo: odebrat vybrané</string>
     <string name="keys_leave_selection">Uloženo: ukončit výběr</string>
     <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">Posunout řádek nahoru nebo dolů v seznamu, který jde přeskládat (ten se zaměřením nebo pod ukazatelem)</string>
 </resources>
