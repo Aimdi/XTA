@@ -86,12 +86,13 @@ fun GroupsPage(
     onCreate: () -> Unit,
     onPin: (String, Boolean) -> Unit,
     onMove: (Int, Int) -> Unit,
+    onStep: (id: String, up: Boolean) -> Unit,
     contentPadding: PaddingValues,
     onDiscover: ((String) -> Unit)? = null,
 ) {
     when {
         state.groupCount == 0 -> EmptyGroups(onCreate, contentPadding)
-        state.layout == GroupsLayout.LIST -> GroupsList(state, onOpen, onEdit, onPin, onMove, contentPadding, onDiscover)
+        state.layout == GroupsLayout.LIST -> GroupsList(state, onOpen, onEdit, onPin, onMove, onStep, contentPadding, onDiscover)
         else -> GroupsBoard(state, onOpen, onEdit, contentPadding, onDiscover)
     }
 }
@@ -272,6 +273,7 @@ private fun GroupsList(
     onEdit: (String) -> Unit,
     onPin: (String, Boolean) -> Unit,
     onMove: (Int, Int) -> Unit,
+    onStep: (id: String, up: Boolean) -> Unit,
     contentPadding: PaddingValues,
     onDiscover: ((String) -> Unit)?,
 ) {
@@ -280,8 +282,7 @@ private fun GroupsList(
     val tiles = state.board.all.associateBy { it.id }
     val keys: List<Any> = state.board.safe.map { it.id } + (if (state.board.nsfw.isNotEmpty()) listOf(HEADER) else emptyList()) + state.board.nsfw.map { it.id }
     val moves = rememberRowKeyMoves { key, up ->
-        val from = keys.indexOf(key)
-        state.canDragGroups && GroupBoardModel.keyStep(state.board, from, up)?.let { to -> onMove(from, to) } != null
+        (state.canDragGroups && key is String && GroupBoardModel.keyStep(state.board, keys.indexOf(key), up) != null).also { if (it) onStep(key as String, up) }
     }
     LazyColumn(
         state = list,

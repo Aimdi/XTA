@@ -560,6 +560,7 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
             onPin = parts.vm::pin,
             onUnpin = parts.vm::unpin,
             onMove = parts.vm::move,
+            onStep = parts.vm::step,
             onDismiss = close,
         )
         HomeSheet.PICKER -> PluginSwitcherSheet(

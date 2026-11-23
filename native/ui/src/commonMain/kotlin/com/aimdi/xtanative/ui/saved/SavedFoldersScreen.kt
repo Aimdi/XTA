@@ -108,6 +108,11 @@ fun SavedFoldersScreen(onBack: () -> Unit) {
                     val tokens = SavedTabs.moved(rows.map { it.token }, from, to)
                     graph.keep { graph.settings.set(SavedPrefs.tabOrder, tokens) }
                 },
+                onStep = { token, up ->
+                    graph.keep {
+                        graph.settings.update { now -> FolderRow.stepped(loaded, now[SavedPrefs.tabOrder], token, up)?.let { now.with(SavedPrefs.tabOrder, it) } ?: now }
+                    }
+                },
             ) { row, handle ->
                 when (row) {
                     is FolderRow.BuiltIn -> BuiltInRow(row, row.shown?.let { prefs[it] }, handle) { shown ->
@@ -186,6 +191,7 @@ private fun ReorderableRows(
     rows: List<FolderRow>,
     modifier: Modifier,
     onMoved: (from: Int, to: Int) -> Unit,
+    onStep: (token: String, up: Boolean) -> Unit,
     row: @Composable (FolderRow, handle: @Composable () -> Unit) -> Unit,
 ) {
     val heights = remember { mutableStateMapOf<String, Int>() }
@@ -195,9 +201,9 @@ private fun ReorderableRows(
     var offset by remember { mutableFloatStateOf(0f) }
     val heightList = rows.map { heights[it.token] ?: 0 }
     val target = dragging?.let { dropIndex(it, offset, heightList) }
+    val step by rememberUpdatedState(onStep)
     val moves = rememberRowKeyMoves { token, up ->
-        val from = current.indexOfFirst { it.token == token }
-        RowSteps.target(from, up, current.indices)?.let { to -> moved(from, to) } != null
+        (RowSteps.step(current.map { it.token }, token, up) != null).also { if (it) step(token as String, up) }
     }
     Column(modifier.verticalScroll(rememberScrollState())) {
         rows.forEachIndexed { index, item -> key(item.token) {

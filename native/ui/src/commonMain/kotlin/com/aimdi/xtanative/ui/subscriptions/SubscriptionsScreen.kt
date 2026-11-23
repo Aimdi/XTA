@@ -182,6 +182,7 @@ fun SubscriptionsScreen(navigation: SubscriptionsNavigation, onBack: (() -> Unit
                     onCreate = { editing = Editing(null) },
                     onPin = vm.groups::setPinned,
                     onMove = vm::moveGroup,
+                    onStep = vm::stepGroup,
                     contentPadding = content,
                     onDiscover = navigation.discoverGroup?.takeIf { state.aiReady },
                 )
@@ -200,6 +201,7 @@ fun SubscriptionsScreen(navigation: SubscriptionsNavigation, onBack: (() -> Unit
                         setInFeed = vm::setInFeed,
                         setPostCap = vm::setPostCap,
                         move = vm::movePerson,
+                        step = vm::stepPerson,
                     ),
                     onImport = navigation.importFollowing,
                     onSearch = { navigation.search("") },

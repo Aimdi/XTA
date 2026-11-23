@@ -78,6 +78,8 @@ class PeopleActions(
     val setInFeed: (SubscriptionRow, Boolean) -> Unit,
     val setPostCap: (SubscriptionRow, Int?) -> Unit,
     val move: (Int, Int) -> Unit,
+    /** The row of a key a place up or down (Alt+↑, Alt+↓). */
+    val step: (key: String, up: Boolean) -> Unit,
 )
 
 /** The people followed here (_list.dart): in the chosen order or the reader's own, which a long press drags rows into. */
@@ -120,8 +122,7 @@ private fun PeopleList(state: SubscriptionsUi, actions: PeopleActions, contentPa
     val rows = state.people.associateBy { it.key }
     val keys: List<Any> = state.people.map { it.key }
     val moves = rememberRowKeyMoves { key, up ->
-        val from = keys.indexOf(key)
-        state.canDragPeople && RowSteps.target(from, up, keys.indices)?.let { to -> actions.move(from, to) } != null
+        (state.canDragPeople && RowSteps.step(keys, key, up) != null).also { if (it) actions.step(key as String, up) }
     }
     WithReadingColumn(PaddingValues(
             start = 8.dp,

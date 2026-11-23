@@ -68,6 +68,7 @@ internal fun StripSheet(
     onPin: (String) -> Unit,
     onUnpin: (String) -> Unit,
     onMove: (Int, Int) -> Unit,
+    onStep: (id: String, up: Boolean) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val pinned = StripPins.pinned(ui.pins, ui.networks)
@@ -77,8 +78,7 @@ internal fun StripSheet(
     val byId = pinned.associateBy { it.id }
     val keys: List<Any> = pinned.map { it.id }
     val moves = rememberRowKeyMoves { key, up ->
-        val from = keys.indexOf(key)
-        RowSteps.target(from, up, keys.indices)?.let { to -> onMove(from, to) } != null
+        (RowSteps.step(keys, key, up) != null).also { if (it) onStep(key as String, up) }
     }
     ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         LazyColumn(state = list, modifier = Modifier.fillMaxWidth().hoveredRowMovedByKeys(moves).padding(bottom = 16.dp)) {

@@ -142,6 +142,11 @@ class HomeViewModel(
     /** The pinned network at [from] to [to], both places among the networks the strip shows. */
     fun move(from: Int, to: Int) = editPins { pins, available -> StripPins.moved(pins, available, from, to) }
 
+    /** The pinned network [id] a place up or down (Alt+↑, Alt+↓), found where it is in the pins as they are saved by then. */
+    fun step(id: String, up: Boolean) = editPins { pins, available ->
+        RowSteps.step(StripPins.pinned(pins, available).map { it.id }, id, up)?.let { (from, to) -> StripPins.moved(pins, available, from, to) } ?: pins
+    }
+
     private fun editPins(change: (List<String>, List<StripNetwork>) -> List<String>) {
         val available = ui.value?.networks ?: return
         viewModelScope.launch {

@@ -127,6 +127,20 @@ object GroupBoardModel {
         return RowSteps.target(from, up, part)
     }
 
+    /**
+     * [session] with group [id] a place up or down in the list in the
+     * reader's own order (Alt+↑, Alt+↓), found where it is in [session] as it
+     * is saved by then, within its own part as [keyStep] keeps it; null when
+     * it is gone or at the part's end.
+     */
+    fun stepped(session: Session, field: GroupsOrder, ascending: Boolean, id: String, up: Boolean): Session? {
+        val board = sections(tiles(session, field, ascending, query = ""))
+        val rows: List<String?> = board.safe.map { it.id } + (if (board.nsfw.isEmpty()) emptyList() else listOf(null)) + board.nsfw.map { it.id }
+        val from = rows.indexOf(id).takeIf { it >= 0 } ?: return null
+        val to = keyStep(board, from, up) ?: return null
+        return reordered(board, from, to)?.let { withPositions(session, it) }
+    }
+
     /** [session] with each group's place its index in [ids], as XTA saves the reader's own order. */
     fun withPositions(session: Session, ids: List<String>): Session {
         val places = ids.withIndex().associate { (index, id) -> id to index }
