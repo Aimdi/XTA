@@ -87,6 +87,30 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
     /** The search field shown on top takes the keyboard; false when the page has none. */
     fun find(): Boolean = finders.lastOrNull()?.second?.let { it(); true } ?: false
 
+    /** The selections Ctrl+A, Delete and Esc work on, the last shown on top ([SelectsWithKeys]). */
+    private val selections = mutableListOf<Pair<Any, KeySelection>>()
+
+    internal fun addSelection(owner: Any, selection: KeySelection) {
+        selections.removeAll { it.first === owner }
+        selections += owner to selection
+    }
+
+    internal fun removeSelection(owner: Any) {
+        selections.removeAll { it.first === owner }
+    }
+
+    /** Whether the page shown is selecting now. */
+    fun selecting(): Boolean = selections.lastOrNull()?.second?.selecting?.invoke() ?: false
+
+    /** Every item the page shows selected; false when it has nothing to select. */
+    fun selectAll(): Boolean = selections.lastOrNull()?.second?.selectAll?.invoke() ?: false
+
+    /** What is selected removed, the page asking first; false when nothing is. */
+    fun removeSelected(): Boolean = selections.lastOrNull()?.second?.remove?.invoke() ?: false
+
+    /** The page stops selecting; false when it was not. */
+    fun leaveSelection(): Boolean = selections.lastOrNull()?.second?.leave?.invoke() ?: false
+
     /** What a field being typed in drops at Esc before leaving it (a recent search it has highlighted), the last added on top. */
     private val fieldEscapes = mutableListOf<Pair<Any, () -> Boolean>>()
 
@@ -343,6 +367,39 @@ fun FindsWithKeys(find: () -> Unit) {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.addFinder(owner) { latest() } }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.removeFinder(owner) }
     DisposableEffect(actions) { onDispose { actions.removeFinder(owner) } }
+}
+
+/**
+ * A page's selection as the desktop's keys reach it ([SelectsWithKeys]):
+ * whether it is [selecting], and Ctrl+A ([selectAll]), Delete ([remove])
+ * and Esc ([leave]) on it, each answering false when it did nothing.
+ */
+class KeySelection(
+    val selecting: () -> Boolean,
+    val selectAll: () -> Boolean,
+    val remove: () -> Boolean,
+    val leave: () -> Boolean,
+)
+
+/**
+ * Lets Ctrl+A, Delete and Esc ([DesktopKeys]) work on the screen's selection
+ * while it is the one shown, as in a file manager: [selectAll] selects every
+ * item shown (starting a selection where the page does), [remove] asks to
+ * remove what is selected, [leave] stops selecting; each answers false when
+ * it did nothing, and the key goes on. Nothing off the desktop.
+ */
+@Composable
+fun SelectsWithKeys(selecting: Boolean, selectAll: () -> Boolean, remove: () -> Boolean, leave: () -> Boolean) {
+    val actions = LocalDesktopActions.current ?: return
+    val latestSelecting by rememberUpdatedState(selecting)
+    val latestSelectAll by rememberUpdatedState(selectAll)
+    val latestRemove by rememberUpdatedState(remove)
+    val latestLeave by rememberUpdatedState(leave)
+    val owner = remember { Any() }
+    val selection = remember { KeySelection({ latestSelecting }, { latestSelectAll() }, { latestRemove() }, { latestLeave() }) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.addSelection(owner, selection) }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.removeSelection(owner) }
+    DisposableEffect(actions) { onDispose { actions.removeSelection(owner) } }
 }
 
 /** A search field that Ctrl+F and / put the keyboard in while it is shown ([FindsWithKeys]). Nothing off the desktop. */

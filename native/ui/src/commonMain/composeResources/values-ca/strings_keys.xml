@@ -35,4 +35,8 @@
     <string name="keys_page_down">AvPàg</string>
     <string name="keys_home">Inici</string>
     <string name="keys_end">Fi</string>
+    <string name="keys_select_all">Desat: selecciona tot el que es mostra</string>
+    <string name="keys_remove_selected">Desat: elimina els seleccionats</string>
+    <string name="keys_leave_selection">Desat: deixa de seleccionar</string>
+    <string name="keys_delete">Supr</string>
 </resources>

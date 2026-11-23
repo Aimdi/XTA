@@ -130,4 +130,24 @@ class SavedRulesTest {
         assertEquals(listOf("root", "alone"), body.notes.map { it.threadRoot })
         assertNull((body as? SavedBody.Posts))
     }
+
+    @Test
+    fun ctrlASelectsEveryPostShownWhereSelectIsOffered() {
+        val shown = listOf("a", "b")
+        val all = SavedView().selectedAllByKeys(shown)
+        assertEquals(SavedView(selecting = true, selected = setOf("a", "b")), all)
+        assertEquals(all, all!!.selectedAllByKeys(shown), "pressed again, all stay selected")
+        assertEquals(setOf("a", "b"), SavedView(selecting = true, selected = setOf("a")).selectedAllByKeys(shown)?.selected)
+        assertNull(SavedView().selectedAllByKeys(emptyList()), "nothing to select")
+        assertNull(SavedView(tab = SavedTabs.FAVORITES).selectedAllByKeys(shown), "likes have no Select")
+        assertNull(SavedView(tab = SavedTabs.NOTES).selectedAllByKeys(shown), "notes have no Select")
+        assertNull(SavedView(mediaOnly = true).selectedAllByKeys(shown), "the media grid gives way only to Select")
+    }
+
+    @Test
+    fun deleteAsksOnlyWithSomethingSelected() {
+        assertTrue(SavedView(selecting = true, selected = setOf("a")).removableByKeys)
+        assertFalse(SavedView(selecting = true).removableByKeys)
+        assertFalse(SavedView().removableByKeys)
+    }
 }

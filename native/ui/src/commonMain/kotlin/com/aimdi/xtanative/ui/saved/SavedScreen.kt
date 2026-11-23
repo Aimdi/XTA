@@ -122,6 +122,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_title
 import com.aimdi.xtanative.ui.generated.resources.saved_write_note
 import com.aimdi.xtanative.ui.generated.resources.settings
 import com.aimdi.xtanative.ui.home.FindsWithKeys
+import com.aimdi.xtanative.ui.home.SelectsWithKeys
 import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.post.PostActions
 import org.jetbrains.compose.resources.pluralStringResource
@@ -177,6 +178,13 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
     val view = state.view
     // While selecting, the search is put away with the rest of the bar: Ctrl+F and / leave the selection be, rather than leave Saved.
     if (view.selecting) FindsWithKeys {}
+    // Ctrl+A, Delete and Esc on the selection, as in a file manager; Delete asks first, as the bar's button does.
+    SelectsWithKeys(
+        selecting = view.selecting,
+        selectAll = { dialog == null && vm.selectAllByKeys() },
+        remove = { (dialog == null && view.removableByKeys).also { if (it) dialog = SavedDialog.RemoveSelected } },
+        leave = { (dialog == null && view.selecting).also { if (it) vm.finishSelection() } },
+    )
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,

@@ -25,12 +25,14 @@ import com.aimdi.xtanative.ui.generated.resources.keys_alt
 import com.aimdi.xtanative.ui.generated.resources.keys_back
 import com.aimdi.xtanative.ui.generated.resources.keys_columns
 import com.aimdi.xtanative.ui.generated.resources.keys_ctrl
+import com.aimdi.xtanative.ui.generated.resources.keys_delete
 import com.aimdi.xtanative.ui.generated.resources.keys_end
 import com.aimdi.xtanative.ui.generated.resources.keys_esc
 import com.aimdi.xtanative.ui.generated.resources.keys_full_screen
 import com.aimdi.xtanative.ui.generated.resources.keys_go_home
 import com.aimdi.xtanative.ui.generated.resources.keys_help
 import com.aimdi.xtanative.ui.generated.resources.keys_home
+import com.aimdi.xtanative.ui.generated.resources.keys_leave_selection
 import com.aimdi.xtanative.ui.generated.resources.keys_move
 import com.aimdi.xtanative.ui.generated.resources.keys_next_post
 import com.aimdi.xtanative.ui.generated.resources.keys_open_copied_link
@@ -42,10 +44,12 @@ import com.aimdi.xtanative.ui.generated.resources.keys_photo_zoom
 import com.aimdi.xtanative.ui.generated.resources.keys_quit
 import com.aimdi.xtanative.ui.generated.resources.keys_recent_searches
 import com.aimdi.xtanative.ui.generated.resources.keys_refresh
+import com.aimdi.xtanative.ui.generated.resources.keys_remove_selected
 import com.aimdi.xtanative.ui.generated.resources.keys_scroll_ends
 import com.aimdi.xtanative.ui.generated.resources.keys_scroll_line
 import com.aimdi.xtanative.ui.generated.resources.keys_scroll_screen
 import com.aimdi.xtanative.ui.generated.resources.keys_search
+import com.aimdi.xtanative.ui.generated.resources.keys_select_all
 import com.aimdi.xtanative.ui.generated.resources.keys_shift
 import com.aimdi.xtanative.ui.generated.resources.keys_space
 import com.aimdi.xtanative.ui.generated.resources.keys_tab
@@ -107,6 +111,9 @@ object DesktopShortcuts {
         Shortcut(Res.string.keys_video_more, listOf(listOf(sign("M")), listOf(KeyCap.Named(Res.string.keys_home)), listOf(sign("F")))),
         Shortcut(Res.string.keys_photo_zoom, listOf(listOf(sign("+")), listOf(sign("−")), listOf(sign("0")))),
         Shortcut(Res.string.keys_photo_move, listOf(listOf(sign("←")), listOf(sign("↑")), listOf(sign("→")), listOf(sign("↓")))),
+        Shortcut(Res.string.keys_select_all, listOf(listOf(ctrl, sign("A")))),
+        Shortcut(Res.string.keys_remove_selected, listOf(listOf(KeyCap.Named(Res.string.keys_delete)))),
+        Shortcut(Res.string.keys_leave_selection, listOf(listOf(KeyCap.Named(Res.string.keys_esc)))),
         Shortcut(Res.string.keys_quit, listOf(listOf(ctrl, sign("Q")))),
     )
 }

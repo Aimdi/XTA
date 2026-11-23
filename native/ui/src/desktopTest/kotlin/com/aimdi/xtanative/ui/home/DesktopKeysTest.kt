@@ -20,7 +20,39 @@ class DesktopKeysTest {
         rtl: Boolean = false,
         open: Boolean = false,
         shift: Boolean = false,
-    ) = DesktopKeys.action(key, alt, ctrl, focusInside, canGoBack, rtl, open, shift)
+        selecting: Boolean = false,
+    ) = DesktopKeys.action(key, alt, ctrl, focusInside, canGoBack, rtl, open, shift, selecting)
+
+    @Test
+    fun ctrlASelectsAllAsInAFileManagerButNotInAField() {
+        assertEquals(DeskAction.SELECT_ALL, action(DeskKey.A, ctrl = true))
+        assertEquals(DeskAction.SELECT_ALL, action(DeskKey.A, ctrl = true, selecting = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.A, ctrl = true, focusInside = true), "a field selects its own text")
+        assertEquals(DeskAction.NONE, action(DeskKey.A, ctrl = true, open = true), "not under what is open over the page")
+        assertEquals(DeskAction.NONE, action(DeskKey.A, ctrl = true, shift = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.A, ctrl = true, alt = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.A))
+    }
+
+    @Test
+    fun deleteRemovesTheSelectionOnlyWhileSelecting() {
+        assertEquals(DeskAction.REMOVE_SELECTED, action(DeskKey.DELETE, selecting = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.DELETE))
+        assertEquals(DeskAction.NONE, action(DeskKey.DELETE, selecting = true, focusInside = true), "a field deletes a character")
+        assertEquals(DeskAction.NONE, action(DeskKey.DELETE, selecting = true, open = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.DELETE, selecting = true, ctrl = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.DELETE, selecting = true, shift = true))
+    }
+
+    @Test
+    fun escStopsSelectingBeforeGoingBack() {
+        assertEquals(DeskAction.LEAVE_SELECTION, action(DeskKey.ESCAPE, selecting = true))
+        assertEquals(DeskAction.LEAVE_SELECTION, action(DeskKey.ESCAPE, selecting = true, canGoBack = false))
+        assertEquals(DeskAction.LEAVE_FIELD, action(DeskKey.ESCAPE, selecting = true, focusInside = true), "the field is left first")
+        assertEquals(DeskAction.CLOSE, action(DeskKey.ESCAPE, selecting = true, open = true), "what is open over the page closes first")
+        assertEquals(DeskAction.BACK, action(DeskKey.ESCAPE))
+        assertEquals(DeskAction.BACK, action(DeskKey.LEFT, alt = true, selecting = true), "Alt+← still goes back")
+    }
 
     @Test
     fun theReadingKeysMoveTheListAsInABrowser() {

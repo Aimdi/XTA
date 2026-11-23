@@ -35,4 +35,8 @@
     <string name="keys_page_down">Page Down</string>
     <string name="keys_home">Home</string>
     <string name="keys_end">End</string>
+    <string name="keys_select_all">Đã lưu: chọn tất cả mục đang hiện</string>
+    <string name="keys_remove_selected">Đã lưu: xóa các mục đã chọn</string>
+    <string name="keys_leave_selection">Đã lưu: thôi chọn</string>
+    <string name="keys_delete">Delete</string>
 </resources>

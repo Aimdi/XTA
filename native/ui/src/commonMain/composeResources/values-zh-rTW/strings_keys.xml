@@ -35,4 +35,8 @@
     <string name="keys_page_down">Page Down</string>
     <string name="keys_home">Home</string>
     <string name="keys_end">End</string>
+    <string name="keys_select_all">已儲存：全選顯示的內容</string>
+    <string name="keys_remove_selected">已儲存：移除所選內容</string>
+    <string name="keys_leave_selection">已儲存：結束選取</string>
+    <string name="keys_delete">Delete</string>
 </resources>

@@ -35,4 +35,8 @@
     <string name="keys_page_down">Page Down</string>
     <string name="keys_home">Home</string>
     <string name="keys_end">End</string>
+    <string name="keys_select_all">المحفوظ: تحديد كل ما يظهر</string>
+    <string name="keys_remove_selected">المحفوظ: إزالة المحدد</string>
+    <string name="keys_leave_selection">المحفوظ: إنهاء التحديد</string>
+    <string name="keys_delete">Delete</string>
 </resources>

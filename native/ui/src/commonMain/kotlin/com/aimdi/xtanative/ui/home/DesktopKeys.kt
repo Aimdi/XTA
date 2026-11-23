@@ -3,7 +3,7 @@ package com.aimdi.xtanative.ui.home
 import androidx.compose.ui.geometry.Offset
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, OTHER }
 
 enum class DeskAction {
     /** Out of the text field being typed in, as XTA's first Esc does. */
@@ -57,6 +57,15 @@ enum class DeskAction {
 
     /** Settings open, as Ctrl+, opens a desktop app's preferences. */
     OPEN_SETTINGS,
+
+    /** The page's selection takes every item shown, as a file manager's Ctrl+A does ([DesktopActions.selectAll]). */
+    SELECT_ALL,
+
+    /** What the page's selection holds is removed, asking first as its own button does ([DesktopActions.removeSelected]). */
+    REMOVE_SELECTED,
+
+    /** The page stops selecting, as Esc does in a file manager ([DesktopActions.leaveSelection]). */
+    LEAVE_SELECTION,
     NONE,
 }
 
@@ -94,6 +103,10 @@ object DesktopKeys {
      * word at a time) and nothing is open over the page, give the reading
      * keys the column before or the next, in the reading direction, on a
      * page of columns side by side (the Deck).
+     * On a page that selects (the Archive), Ctrl+A, while nothing is being
+     * typed in and nothing is open over the page, selects every item shown;
+     * while it is [selecting], Delete removes what is selected and Esc stops
+     * selecting before it goes back, as in a file manager.
      */
     fun action(
         key: DeskKey,
@@ -104,8 +117,10 @@ object DesktopKeys {
         rtl: Boolean = false,
         somethingOpen: Boolean = false,
         shift: Boolean = false,
+        selecting: Boolean = false,
     ): DeskAction = when {
         key == DeskKey.ESCAPE && focusInside -> DeskAction.LEAVE_FIELD
+        key == DeskKey.ESCAPE && selecting && !somethingOpen -> DeskAction.LEAVE_SELECTION
         key == DeskKey.ESCAPE || key == DeskKey.BACK || (key == DeskKey.LEFT && alt) -> back(canGoBack, somethingOpen)
         key == DeskKey.F5 || (key == DeskKey.R && ctrl) -> DeskAction.REFRESH
         key == DeskKey.Q && ctrl && !alt -> DeskAction.LEAVE_APP
@@ -126,6 +141,9 @@ object DesktopKeys {
             (key == DeskKey.RIGHT) != rtl -> DeskAction.NEXT_COLUMN
             else -> DeskAction.PREVIOUS_COLUMN
         }
+        // In a field, Ctrl+A selects its text; Delete deletes a character there.
+        key == DeskKey.A && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.SELECT_ALL
+        key == DeskKey.DELETE && selecting && !focusInside && !alt && !ctrl && !shift -> if (somethingOpen) DeskAction.NONE else DeskAction.REMOVE_SELECTED
         focusInside || alt || ctrl -> DeskAction.NONE
         key in SCROLL_KEYS -> if (somethingOpen) DeskAction.NONE else scroll(key, shift)
         (key == DeskKey.J || key == DeskKey.K) && !shift -> when {

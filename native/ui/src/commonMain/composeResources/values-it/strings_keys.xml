@@ -35,4 +35,8 @@
     <string name="keys_page_down">Pag ↓</string>
     <string name="keys_home">Home</string>
     <string name="keys_end">Fine</string>
+    <string name="keys_select_all">Salvati: seleziona tutto ciò che è mostrato</string>
+    <string name="keys_remove_selected">Salvati: rimuovi i selezionati</string>
+    <string name="keys_leave_selection">Salvati: esci dalla selezione</string>
+    <string name="keys_delete">Canc</string>
 </resources>

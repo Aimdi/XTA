@@ -35,4 +35,8 @@
     <string name="keys_page_down">Page Down</string>
     <string name="keys_home">Home</string>
     <string name="keys_end">End</string>
+    <string name="keys_select_all">Uloženo: vybrat vše zobrazené</string>
+    <string name="keys_remove_selected">Uloženo: odebrat vybrané</string>
+    <string name="keys_leave_selection">Uloženo: ukončit výběr</string>
+    <string name="keys_delete">Delete</string>
 </resources>

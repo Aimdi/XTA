@@ -35,4 +35,8 @@
     <string name="keys_page_down">Page Down</string>
     <string name="keys_home">Home</string>
     <string name="keys_end">End</string>
+    <string name="keys_select_all">Zapisane: zaznacz wszystko, co widać</string>
+    <string name="keys_remove_selected">Zapisane: usuń zaznaczone</string>
+    <string name="keys_leave_selection">Zapisane: zakończ zaznaczanie</string>
+    <string name="keys_delete">Delete</string>
 </resources>

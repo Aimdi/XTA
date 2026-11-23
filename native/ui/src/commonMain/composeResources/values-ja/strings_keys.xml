@@ -35,4 +35,8 @@
     <string name="keys_page_down">PageDown</string>
     <string name="keys_home">Home</string>
     <string name="keys_end">End</string>
+    <string name="keys_select_all">保存ツイート: 表示中をすべて選択</string>
+    <string name="keys_remove_selected">保存ツイート: 選択したものを削除</string>
+    <string name="keys_leave_selection">保存ツイート: 選択を終了</string>
+    <string name="keys_delete">Delete</string>
 </resources>

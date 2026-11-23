@@ -35,4 +35,8 @@
     <string name="keys_page_down">Pg suiv</string>
     <string name="keys_home">Début</string>
     <string name="keys_end">Fin</string>
+    <string name="keys_select_all">Enregistré : tout sélectionner</string>
+    <string name="keys_remove_selected">Enregistré : retirer la sélection</string>
+    <string name="keys_leave_selection">Enregistré : quitter la sélection</string>
+    <string name="keys_delete">Suppr</string>
 </resources>

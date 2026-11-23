@@ -35,4 +35,8 @@
     <string name="keys_page_down">Page Down</string>
     <string name="keys_home">Home</string>
     <string name="keys_end">End</string>
+    <string name="keys_select_all">Zachavanaje: vyłučyć usio pakazanaje</string>
+    <string name="keys_remove_selected">Zachavanaje: vydalić vyłučanaje</string>
+    <string name="keys_leave_selection">Zachavanaje: skončyć vyłučennie</string>
+    <string name="keys_delete">Delete</string>
 </resources>

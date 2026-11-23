@@ -151,6 +151,9 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             showKeys = true
             true
         }
+        DeskAction.SELECT_ALL -> actions.selectAll()
+        DeskAction.REMOVE_SELECTED -> actions.removeSelected()
+        DeskAction.LEAVE_SELECTION -> actions.leaveSelection()
         DeskAction.NONE -> false
     }
 
@@ -166,7 +169,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         }
         val canGoBack = nav.previousBackStackEntry != null
         val key = deskKey(event.key)
-        val action = DesktopKeys.action(key, event.isAltPressed, event.isCtrlPressed, focusInside, canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed)
+        val action = DesktopKeys.action(key, event.isAltPressed, event.isCtrlPressed, focusInside, canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed, actions.selecting())
         // A search field's first Esc drops the recent search it highlighted; the next leaves the field.
         if (action == DeskAction.LEAVE_FIELD && actions.escapeInField()) {
             keyTaken = true
@@ -329,6 +332,8 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.J -> DeskKey.J
     Key.V -> DeskKey.V
     Key.K -> DeskKey.K
+    Key.A -> DeskKey.A
+    Key.Delete -> DeskKey.DELETE
     Key.Plus, Key.Equals, Key.NumPadAdd -> DeskKey.PLUS
     Key.Minus, Key.NumPadSubtract -> DeskKey.MINUS
     Key.Zero, Key.NumPad0 -> DeskKey.ZERO

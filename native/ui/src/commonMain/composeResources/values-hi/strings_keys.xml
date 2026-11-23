@@ -35,4 +35,8 @@
     <string name="keys_page_down">Page Down</string>
     <string name="keys_home">Home</string>
     <string name="keys_end">End</string>
+    <string name="keys_select_all">सहेजा गया: दिखाए गए सभी चुनें</string>
+    <string name="keys_remove_selected">सहेजा गया: चुने हुए हटाएँ</string>
+    <string name="keys_leave_selection">सहेजा गया: चुनना बंद करें</string>
+    <string name="keys_delete">Delete</string>
 </resources>

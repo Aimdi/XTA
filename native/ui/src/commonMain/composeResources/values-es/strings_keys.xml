@@ -35,4 +35,8 @@
     <string name="keys_page_down">AvPág</string>
     <string name="keys_home">Inicio</string>
     <string name="keys_end">Fin</string>
+    <string name="keys_select_all">Guardado: seleccionar todo lo mostrado</string>
+    <string name="keys_remove_selected">Guardado: quitar lo seleccionado</string>
+    <string name="keys_leave_selection">Guardado: dejar de seleccionar</string>
+    <string name="keys_delete">Supr</string>
 </resources>

@@ -35,4 +35,8 @@
     <string name="keys_page_down">Page Down</string>
     <string name="keys_home">Home</string>
     <string name="keys_end">End</string>
+    <string name="keys_select_all">Избранное: выбрать всё показанное</string>
+    <string name="keys_remove_selected">Избранное: удалить выбранное</string>
+    <string name="keys_leave_selection">Избранное: завершить выбор</string>
+    <string name="keys_delete">Delete</string>
 </resources>

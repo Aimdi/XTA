@@ -35,4 +35,8 @@
     <string name="keys_page_down">Page Down</string>
     <string name="keys_home">Home</string>
     <string name="keys_end">End</string>
+    <string name="keys_select_all">저장됨: 표시된 항목 모두 선택</string>
+    <string name="keys_remove_selected">저장됨: 선택한 항목 삭제</string>
+    <string name="keys_leave_selection">저장됨: 선택 끝내기</string>
+    <string name="keys_delete">Delete</string>
 </resources>

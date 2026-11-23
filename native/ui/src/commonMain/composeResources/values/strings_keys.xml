@@ -36,4 +36,8 @@
     <string name="keys_page_down">Page Down</string>
     <string name="keys_home">Home</string>
     <string name="keys_end">End</string>
+    <string name="keys_select_all">Saved: select everything shown</string>
+    <string name="keys_remove_selected">Saved: remove the selected</string>
+    <string name="keys_leave_selection">Saved: stop selecting</string>
+    <string name="keys_delete">Del</string>
 </resources>

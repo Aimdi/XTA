@@ -35,4 +35,8 @@
     <string name="keys_page_down">Bild ↓</string>
     <string name="keys_home">Pos1</string>
     <string name="keys_end">Ende</string>
+    <string name="keys_select_all">Archiv: alles Gezeigte auswählen</string>
+    <string name="keys_remove_selected">Archiv: Ausgewählte entfernen</string>
+    <string name="keys_leave_selection">Archiv: Auswahl beenden</string>
+    <string name="keys_delete">Entf</string>
 </resources>
