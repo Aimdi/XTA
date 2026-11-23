@@ -48,7 +48,8 @@ import kotlinx.serialization.json.JsonElement
  * switcher ([ShellAccounts]), the sort sheet ([ShellSortSheet]) and the plugin's own
  * entries ([ShellMenuButton]), in the plugin sheet on Home; 15 adds
  * [onContextClick], a right-click that opens what a card's long press
- * opens on the desktop.
+ * opens on the desktop, and [PluginReadingColumn], a plugin's list in the
+ * reading column.
  */
 const val PLUGIN_API_VERSION: Int = 15
 

@@ -97,8 +97,10 @@ in the plugin sheet on Home and a ⋮ menu elsewhere. A plugin built before
 keeps its own chrome under the shell's header. 15 adds
 `Modifier.onContextClick`: a right-click opens what a card's long press
 opens on the desktop (its post's menu), since a mouse's long press does
-not reach a long click there; a plugin that uses it says 15, and an app of
-14 (native-1.0.14) offers it as "needs a newer XTA Native".
+not reach a long click there, and `PluginReadingColumn`, which keeps a
+plugin's list in the app's reading column in a wide window, with the
+desktop's scrollbar and reading keys; a plugin that uses either says 15,
+and an app of 14 (native-1.0.14) offers it as "needs a newer XTA Native".
 
 On Home every plugin is one shell (option A of the "Unified Plugin Shell"
 canvas), two rows that hide together as the posts scroll:
