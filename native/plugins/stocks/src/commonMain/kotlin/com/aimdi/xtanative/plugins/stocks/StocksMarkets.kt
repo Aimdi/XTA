@@ -38,6 +38,7 @@ import com.aimdi.xtanative.networks.stocks.StocksSection
 import com.aimdi.xtanative.networks.stocks.StocksSectionKind
 import com.aimdi.xtanative.networks.stocks.TickerQuote
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -101,10 +102,10 @@ internal fun StocksMarketsList(
     val list = rememberLazyListState()
     ScrollsToTop(list, toTop)
     PullToRefreshBox(isRefreshing = refreshing, onRefresh = onRefresh, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             if (MarketGroup.INDICES in groups) marketSection("indices", QuoteRows.INDICES, quotes, failed, now, onOpen, onRetry) { pluginString(Strings.section_indices) }
             if (MarketGroup.COINS in groups) marketSection("coins", QuoteRows.COINS, quotes, failed, now, onOpen, onRetry) { pluginString(Strings.type_crypto) }
-        }
+        } }
     }
 }
 

@@ -51,6 +51,7 @@ import com.aimdi.xtanative.store.reading.ReadingAppearanceStore
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginPlural
@@ -117,7 +118,7 @@ private fun NovelText(model: PixivNovelModel, reading: PixivNovelReading, novel:
     ResumesAt(scroll, reading.resumeAt, offset = HEADER_ITEMS)
     KeepsPlace(model, scroll, reading.blocks.size)
     val jump: (Int) -> Unit = { page -> reading.pageStarts[page]?.let { at -> scope.launch { scroll.animateScrollToItem(at + HEADER_ITEMS) } } }
-    LazyColumn(state = scroll, contentPadding = PaddingValues(horizontal = 20.dp), modifier = Modifier.fillMaxSize()) {
+    PluginReadingColumn(PaddingValues(horizontal = 20.dp), scroll) { column -> LazyColumn(state = scroll, modifier = Modifier.fillMaxSize(), contentPadding = column) {
         item(key = "header") { NovelHeader(novel) }
         when {
             content == null && reading.error != null -> item(key = "error") { PixivProblem(reading.error, model::load) }
@@ -125,7 +126,7 @@ private fun NovelText(model: PixivNovelModel, reading: PixivNovelReading, novel:
             else -> itemsIndexed(reading.blocks, key = { index, _ -> "block-$index" }) { _, block -> NovelBlockView(block, content, look, jump) }
         }
         if (content != null) item(key = "footer") { NovelFooter(novel, content) }
-    }
+    } }
 }
 
 /** How many items come before the first block. */

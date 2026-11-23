@@ -64,6 +64,7 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ReportsReadingScroll
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 
@@ -193,6 +194,7 @@ internal fun WorkTile(illust: PixivIllust, onOpen: () -> Unit, onLongPress: (() 
     Column(
         Modifier.clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.background)
+            .onContextClick(onLongPress ?: { sheets.show(PixivSheet.WorkActions(illust)) })
             .combinedClickable(onClick = onOpen, onLongClick = onLongPress ?: { sheets.show(PixivSheet.WorkActions(illust)) }),
     ) {
         Box(Modifier.fillMaxWidth().aspectRatio(illust.aspectRatio.toFloat().coerceIn(0.45f, 1.6f))) {

@@ -47,6 +47,7 @@ import com.aimdi.xtanative.networks.stocks.TickerQuotes
 import com.aimdi.xtanative.networks.stocks.WatchlistEntries
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -79,7 +80,7 @@ internal fun StocksWatchlistList(
     val keys: List<Any> = symbols
     ScrollsToTop(list, frame.toTop)
     PullToRefreshBox(isRefreshing = refreshing, onRefresh = onRefresh, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             item(key = "watchlist-header") { SectionHeader(pluginString(Strings.my_watchlist), pluginPlural(Strings.ticker_count, symbols.size, symbols.size)) }
             items(drag.shown(keys), key = { it }) { key ->
                 val symbol = key as String
@@ -105,7 +106,7 @@ internal fun StocksWatchlistList(
                 }
             }
             item(key = "watchlist-footer") { Footer(symbols.size, onAdd) }
-        }
+        } }
     }
 }
 
