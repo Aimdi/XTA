@@ -26,6 +26,7 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import com.aimdi.xtanative.ui.common.BackHandling
+import com.aimdi.xtanative.ui.home.HoldsKeys
 
 /** A video full screen: its player, its shape, its Download, and what is done once it closes. */
 internal class FullscreenVideo(val player: VideoPlayer, val aspectRatio: Float, val onDownload: (() -> Unit)?, val onClosed: () -> Unit)
@@ -82,6 +83,8 @@ private fun FullscreenLayer(video: FullscreenVideo, onClose: () -> Unit) {
     var fill by remember { mutableStateOf(false) }
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
+    // Left, it hands the keys back to the viewer or the page under it.
+    HoldsKeys(focus)
     Box(
         Modifier
             .fillMaxSize()

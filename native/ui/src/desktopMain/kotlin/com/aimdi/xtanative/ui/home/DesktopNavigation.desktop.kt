@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,12 +47,26 @@ import kotlinx.coroutines.launch
  */
 @Composable
 actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> Unit) {
-    val actions = remember { DesktopActions() }
     val focus = remember { FocusRequester() }
+    val scope = rememberCoroutineScope()
+    // A frame later: what gives the keys back is still leaving when it asks.
+    val actions = remember {
+        DesktopActions(refocus = { under ->
+            scope.launch {
+                delay(REFOCUS_AFTER_MS)
+                runCatching { (under ?: focus).requestFocus() }
+            }
+        })
+    }
+    // What is drawn above this frame (a video full screen) reaches the actions through the root's host.
+    val host = LocalDesktopActionsHost.current
+    DisposableEffect(host, actions) {
+        host.actions = actions
+        onDispose { if (host.actions === actions) host.actions = null }
+    }
     var hasFocus by remember { mutableStateOf(false) }
     var focusInside by remember { mutableStateOf(false) }
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
-    val scope = rememberCoroutineScope()
     val line = with(LocalDensity.current) { LINE.toPx() }
 
     fun act(action: DeskAction): Boolean = when (action) {
@@ -81,6 +96,8 @@ actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> 
 
     fun onKey(event: KeyEvent): Boolean {
         if (event.type != KeyEventType.KeyDown) return false
+        // The media viewer's Esc closes it at once, rather than first taking the focus from it as from a field.
+        if (actions.overlayHoldsKeys()) return false
         val canGoBack = nav.previousBackStackEntry != null
         val key = deskKey(event.key)
         return act(DesktopKeys.action(key, event.isAltPressed, event.isCtrlPressed, focusInside, canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed))
@@ -120,6 +137,9 @@ actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> 
         }
     }
 }
+
+/** Long enough for an overlay that gave the keys back to be gone. */
+private const val REFOCUS_AFTER_MS = 50L
 
 /** How far ↑ and ↓ move a list: about a line of a post and a half. */
 private val LINE = 64.dp

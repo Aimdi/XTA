@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
@@ -21,7 +22,7 @@ import androidx.navigation.NavHostController
  * going back first closes what it has open. One screen holds them at a time,
  * the one resumed; see [DesktopShortcuts].
  */
-class DesktopActions {
+class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
     private var owner: Any? = null
     private var refreshing: (() -> Unit)? = null
     private var turning: ((Int) -> Unit)? = null
@@ -73,6 +74,22 @@ class DesktopActions {
         pointed = list
     }
 
+    /** What is drawn over the screens and holds the keys for its own (the media viewer, a video full screen), the last on top. */
+    private val holders = mutableListOf<FocusRequester>()
+
+    internal fun holdKeys(holder: FocusRequester) {
+        holders += holder
+    }
+
+    /** Whether an overlay holds the keys: its own Esc and arrows then come before the window's. */
+    fun overlayHoldsKeys(): Boolean = holders.isNotEmpty()
+
+    /** [holder] going: the keys to the one under it, else back to the window's frame, so they always have a taker. */
+    internal fun releaseKeys(holder: FocusRequester) {
+        holders -= holder
+        refocus(holders.lastOrNull())
+    }
+
     /** The list the keys move: the one the pointer was last over, else the first on screen (the page's own, before any column beside it). */
     internal fun readList(): LazyListState? = pointed ?: lists.firstOrNull()
 }
@@ -103,6 +120,17 @@ fun Modifier.movedByKeys(list: LazyListState): Modifier {
 val LocalDesktopActions = staticCompositionLocalOf<DesktopActions?> { null }
 
 /**
+ * Where the window's [DesktopActions] are, for what is drawn above the frame
+ * that provides them (a video full screen, over every screen). The app's
+ * root provides one; [DesktopNavigation] fills it in on the desktop.
+ */
+class DesktopActionsHost {
+    var actions: DesktopActions? = null
+}
+
+val LocalDesktopActionsHost = staticCompositionLocalOf { DesktopActionsHost() }
+
+/**
  * Going back the way a PC does it (XTA's DesktopNavigation): the mouse's back
  * button, Alt+← and Esc go back as Android's back gesture does, the first Esc
  * leaving a text field being typed in, and the screen on top answers
@@ -129,4 +157,20 @@ internal fun DesktopShortcuts(refresh: () -> Unit, turn: (Int) -> Unit, isOpen: 
     }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.release(owner) }
     DisposableEffect(actions) { onDispose { actions.release(owner) } }
+}
+
+/**
+ * For something drawn over the screens that takes the keys with [focus] (the
+ * media viewer, a video full screen): when it goes, the keys go back to what
+ * it covered, the overlay under it or the window's frame. Without that its
+ * going leaves nothing with the focus and every desktop key without a
+ * taker. Nothing off the desktop.
+ */
+@Composable
+fun HoldsKeys(focus: FocusRequester) {
+    val actions = LocalDesktopActions.current ?: LocalDesktopActionsHost.current.actions ?: return
+    DisposableEffect(actions, focus) {
+        actions.holdKeys(focus)
+        onDispose { actions.releaseKeys(focus) }
+    }
 }

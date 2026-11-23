@@ -152,4 +152,13 @@ class MediaRulesTest {
         assertEquals(0.5f, SlideToClose.backdrop(300f, 1000f))
         assertEquals(0.2f, SlideToClose.backdrop(5000f, 1000f))
     }
+
+    @Test
+    fun theMouseWheelZoomsInAndOutWithinTheEnds() {
+        assertEquals(1.2f, ViewerZoom.wheeled(1f, -1f), 0.001f, "a notch away from the reader zooms in")
+        assertEquals(1f, ViewerZoom.wheeled(1.2f, 1f), 0.001f, "a notch towards the reader zooms out")
+        assertEquals(ViewerZoom.MIN, ViewerZoom.wheeled(1f, 3f), "never below the fitted size")
+        assertEquals(ViewerZoom.MAX, ViewerZoom.wheeled(3.9f, -5f), "never past the most")
+        assertEquals(2f, ViewerZoom.wheeled(2f, 0f))
+    }
 }

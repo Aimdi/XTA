@@ -89,6 +89,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_download
 import com.aimdi.xtanative.ui.generated.resources.reader_link_copied
 import com.aimdi.xtanative.ui.generated.resources.reader_link_share
 import com.aimdi.xtanative.ui.generated.resources.reader_media
+import com.aimdi.xtanative.ui.home.HoldsKeys
 import com.aimdi.xtanative.ui.media.GifCorner
 import com.aimdi.xtanative.ui.media.MediaIcons
 import com.aimdi.xtanative.ui.media.ReaderIcons
@@ -268,6 +269,8 @@ fun MediaPager(
             return@Box
         }
         LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
+        // Closed, it leaves the keys to what it covered, which would otherwise have none.
+        HoldsKeys(focus)
         HorizontalPager(state = pager, modifier = Modifier.fillMaxSize(), key = { it }) { page ->
             val item = items[page]
             when (item.kind) {

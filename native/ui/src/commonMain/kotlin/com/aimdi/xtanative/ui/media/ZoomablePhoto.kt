@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.input.pointer.positionChanged
@@ -47,7 +48,8 @@ private enum class PhotoGesture { UNDECIDED, TRANSFORM, SLIDE, PAGE }
 /**
  * A photo in the viewer (_photo.dart, double_tap_zoom.dart): at full size,
  * pinched between one and four times, panned once zoomed in, and a double
- * tap toggles between the two around the point tapped. At its fitted size a
+ * tap toggles between the two around the point tapped; the mouse wheel zooms
+ * about the pointer. At its fitted size a
  * drag up or down slides it away and, far or fast enough, closes the viewer
  * ([onBackdrop] hears how dark the backdrop stays meanwhile); a sideways drag
  * turns the page. [motion] off makes every change at once.
@@ -84,6 +86,24 @@ internal fun ZoomablePhoto(url: String, alt: String?, motion: Boolean, onBackdro
     Box(
         Modifier
             .fillMaxSize()
+            // The mouse wheel zooms about the pointer, as a desktop's photo viewers do.
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        if (event.type != PointerEventType.Scroll) continue
+                        val change = event.changes.firstOrNull() ?: continue
+                        val to = ViewerZoom.wheeled(scale, change.scrollDelta.y)
+                        if (to != scale) {
+                            animation[0]?.cancel()
+                            val focus = Shift(change.position.x - size.width / 2f, change.position.y - size.height / 2f)
+                            shift = ViewerZoom.shiftFor(focus, scale, shift, to, size.width.toFloat(), size.height.toFloat())
+                            scale = to
+                        }
+                        change.consume()
+                    }
+                }
+            }
             .pointerInput(Unit) {
                 detectTapGestures(
                     onDoubleTap = { tap ->

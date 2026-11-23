@@ -75,6 +75,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_media_next
 import com.aimdi.xtanative.ui.generated.resources.reader_media_previous
 import com.aimdi.xtanative.ui.generated.resources.reader_media_unknown
 import com.aimdi.xtanative.ui.generated.resources.reader_share_image
+import com.aimdi.xtanative.ui.home.HoldsKeys
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.launch
@@ -165,6 +166,8 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     }
 
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
+    // Closed, it leaves the keys to what it covered, which would otherwise have none.
+    HoldsKeys(focus)
     if (onNearEnd != null) {
         LaunchedEffect(pager.currentPage, items.size) { if (MediaGallery.nearEnd(pager.currentPage, items.size)) onNearEnd() }
     }
