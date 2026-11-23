@@ -9,6 +9,7 @@
     <string name="keys_tabs">Next or previous tab</string>
     <string name="keys_pages">Previous or next page</string>
     <string name="keys_scroll_line">Scroll a little</string>
+    <string name="keys_next_post">Next or previous post</string>
     <string name="keys_scroll_screen">Scroll a screen</string>
     <string name="keys_scroll_ends">Go to the top or the end</string>
     <string name="keys_move">Move between buttons and fields</string>

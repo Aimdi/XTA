@@ -8,6 +8,7 @@
     <string name="keys_tabs">Hurrengo edo aurreko fitxa</string>
     <string name="keys_pages">Aurreko edo hurrengo orria</string>
     <string name="keys_scroll_line">Korritu pixka bat</string>
+    <string name="keys_next_post">Hurrengo edo aurreko argitalpena</string>
     <string name="keys_scroll_screen">Korritu pantaila bat</string>
     <string name="keys_scroll_ends">Joan hasierara edo amaierara</string>
     <string name="keys_move">Mugitu botoi eta eremuen artean</string>

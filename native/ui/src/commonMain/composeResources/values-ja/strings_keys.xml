@@ -8,6 +8,7 @@
     <string name="keys_tabs">次または前のタブ</string>
     <string name="keys_pages">前または次のページ</string>
     <string name="keys_scroll_line">少しスクロール</string>
+    <string name="keys_next_post">次または前の投稿</string>
     <string name="keys_scroll_screen">1画面分スクロール</string>
     <string name="keys_scroll_ends">先頭または末尾へ移動</string>
     <string name="keys_move">ボタンや入力欄の間を移動</string>

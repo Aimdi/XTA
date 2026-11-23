@@ -1,7 +1,7 @@
 package com.aimdi.xtanative.ui.home
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, OTHER }
 
 enum class DeskAction {
     /** Out of the text field being typed in, as XTA's first Esc does. */
@@ -31,6 +31,10 @@ enum class DeskAction {
     /** The list read moves a line, a screen, or to its top or end ([DesktopActions.scroll]). */
     LINE_UP,
     LINE_DOWN,
+
+    /** The list read moves to the start of its next item, or of the one before ([DesktopKeys.itemStep]), as j and k do on X's site. */
+    NEXT_ITEM,
+    PREVIOUS_ITEM,
     SCREEN_UP,
     SCREEN_DOWN,
     TO_TOP,
@@ -70,6 +74,8 @@ object DesktopKeys {
      * while nothing is being typed in, list these keys. Ctrl+, opens the
      * settings, and Ctrl+W closes what is open over the page (a sheet, a
      * menu), as a desktop app closes a document; it never goes back further.
+     * j and k move the list read to its next post or the one before, as on
+     * X's site, while nothing is being typed in.
      */
     fun action(
         key: DeskKey,
@@ -96,6 +102,11 @@ object DesktopKeys {
             if (somethingOpen) DeskAction.NONE else DeskAction.FIND
         focusInside || alt || ctrl -> DeskAction.NONE
         key in SCROLL_KEYS -> if (somethingOpen) DeskAction.NONE else scroll(key, shift)
+        (key == DeskKey.J || key == DeskKey.K) && !shift -> when {
+            somethingOpen -> DeskAction.NONE
+            key == DeskKey.J -> DeskAction.NEXT_ITEM
+            else -> DeskAction.PREVIOUS_ITEM
+        }
         key == DeskKey.LEFT -> if (rtl) DeskAction.NEXT_PAGE else DeskAction.PREVIOUS_PAGE
         key == DeskKey.RIGHT -> if (rtl) DeskAction.PREVIOUS_PAGE else DeskAction.NEXT_PAGE
         else -> DeskAction.NONE
@@ -153,7 +164,6 @@ object DesktopKeys {
         else -> DeskAction.NONE
     }
 
-    /** The mouse's back button: as the keys, but on the first screen it closes the app, as XTA's goes back from Home. */
     /**
      * Ctrl and the wheel: the wheel's travel [pending] so far plus [delta]
      * (up is negative), and the text-size step a whole notch of it makes:
@@ -170,6 +180,38 @@ object DesktopKeys {
         }
     }
 
+    /** An item of a list in view: its [index], where it starts ([offset], from the list's start) and its [size]. */
+    data class ShownItem(val index: Int, val offset: Int, val size: Int)
+
+    /**
+     * Where j ([forward]) or k takes a list of [count] items whose items in
+     * view are [shown]: the item to bring up and the offset to leave above it.
+     * A header pinned over the list (the items after it in view are not the
+     * next ones, or it overlaps them) stays, so
+     * the item goes just under it. Forward is the next item starting below
+     * that line; back is the start of the item partly read there, else the
+     * one before. Null where there is nowhere to go.
+     */
+    fun itemStep(shown: List<ShownItem>, count: Int, forward: Boolean): Pair<Int, Int>? {
+        if (count <= 0 || shown.isEmpty()) return null
+        val items = shown.sortedBy { it.index }
+        val pinned = items.getOrNull(1)?.takeIf { second -> second.index != items[0].index + 1 || second.offset < items[0].offset + items[0].size }?.let { items[0] }
+        val line = pinned?.let { it.offset + it.size } ?: 0
+        val flowing = items.filter { it !== pinned }
+        val reading = flowing.firstOrNull { it.offset + it.size > line } ?: return null
+        val target = if (forward) {
+            flowing.firstOrNull { it.offset > line + SLACK }?.index ?: (reading.index + 1)
+        } else {
+            if (reading.offset < line - SLACK) reading.index else reading.index - 1
+        }
+        if (target !in 0 until count || target == pinned?.index) return null
+        return target to -line
+    }
+
+    /** Pixels an item may sit off the line and still count as on it. */
+    private const val SLACK = 1
+
+    /** The mouse's back button: as the keys, but on the first screen it closes the app, as XTA's goes back from Home. */
     fun mouseBack(canGoBack: Boolean, somethingOpen: Boolean): DeskAction =
         back(canGoBack, somethingOpen).takeIf { it != DeskAction.NONE } ?: DeskAction.LEAVE_APP
 

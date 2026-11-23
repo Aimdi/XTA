@@ -8,6 +8,7 @@
     <string name="keys_tabs">Pestaña siguiente o anterior</string>
     <string name="keys_pages">Página anterior o siguiente</string>
     <string name="keys_scroll_line">Desplazarse un poco</string>
+    <string name="keys_next_post">Publicación siguiente o anterior</string>
     <string name="keys_scroll_screen">Desplazarse una pantalla</string>
     <string name="keys_scroll_ends">Ir al principio o al final</string>
     <string name="keys_move">Moverse entre botones y campos</string>

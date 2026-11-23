@@ -8,6 +8,7 @@
     <string name="keys_tabs">Thẻ tiếp theo hoặc trước đó</string>
     <string name="keys_pages">Trang trước hoặc trang sau</string>
     <string name="keys_scroll_line">Cuộn một chút</string>
+    <string name="keys_next_post">Bài đăng tiếp theo hoặc trước đó</string>
     <string name="keys_scroll_screen">Cuộn một màn hình</string>
     <string name="keys_scroll_ends">Lên đầu hoặc xuống cuối</string>
     <string name="keys_move">Di chuyển giữa các nút và ô nhập</string>

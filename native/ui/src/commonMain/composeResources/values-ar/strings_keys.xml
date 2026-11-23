@@ -8,6 +8,7 @@
     <string name="keys_tabs">علامة التبويب التالية أو السابقة</string>
     <string name="keys_pages">الصفحة السابقة أو التالية</string>
     <string name="keys_scroll_line">التمرير قليلًا</string>
+    <string name="keys_next_post">المنشور التالي أو السابق</string>
     <string name="keys_scroll_screen">التمرير بمقدار شاشة</string>
     <string name="keys_scroll_ends">الانتقال إلى الأعلى أو إلى النهاية</string>
     <string name="keys_move">التنقل بين الأزرار والحقول</string>

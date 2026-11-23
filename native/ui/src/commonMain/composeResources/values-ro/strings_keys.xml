@@ -8,6 +8,7 @@
     <string name="keys_tabs">Fila următoare sau anterioară</string>
     <string name="keys_pages">Pagina anterioară sau următoare</string>
     <string name="keys_scroll_line">Derulează puțin</string>
+    <string name="keys_next_post">Postarea următoare sau anterioară</string>
     <string name="keys_scroll_screen">Derulează un ecran</string>
     <string name="keys_scroll_ends">Mergi la început sau la sfârșit</string>
     <string name="keys_move">Treci de la un buton sau câmp la altul</string>

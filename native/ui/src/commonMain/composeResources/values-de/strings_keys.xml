@@ -8,6 +8,7 @@
     <string name="keys_tabs">Nächster oder vorheriger Tab</string>
     <string name="keys_pages">Vorherige oder nächste Seite</string>
     <string name="keys_scroll_line">Ein Stück scrollen</string>
+    <string name="keys_next_post">Nächster oder vorheriger Beitrag</string>
     <string name="keys_scroll_screen">Eine Bildschirmseite scrollen</string>
     <string name="keys_scroll_ends">Zum Anfang oder zum Ende</string>
     <string name="keys_move">Zwischen Schaltflächen und Feldern wechseln</string>

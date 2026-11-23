@@ -122,7 +122,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             }
             true
         }
-        DeskAction.LINE_UP, DeskAction.LINE_DOWN, DeskAction.SCREEN_UP, DeskAction.SCREEN_DOWN, DeskAction.TO_TOP, DeskAction.TO_END ->
+        DeskAction.LINE_UP, DeskAction.LINE_DOWN, DeskAction.SCREEN_UP, DeskAction.SCREEN_DOWN, DeskAction.TO_TOP, DeskAction.TO_END,
+        DeskAction.NEXT_ITEM, DeskAction.PREVIOUS_ITEM ->
             actions.readList()?.let { list ->
                 scope.launch { list.moveFor(action, line) }
                 true
@@ -240,6 +241,12 @@ private suspend fun LazyListState.moveFor(action: DeskAction, line: Float) {
         DeskAction.SCREEN_DOWN -> animateScrollBy(screen)
         DeskAction.TO_TOP -> scrollToItem(0)
         DeskAction.TO_END -> layoutInfo.totalItemsCount.takeIf { it > 0 }?.let { scrollToItem(it - 1) }
+        DeskAction.NEXT_ITEM, DeskAction.PREVIOUS_ITEM ->
+            DesktopKeys.itemStep(
+                layoutInfo.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) },
+                layoutInfo.totalItemsCount,
+                action == DeskAction.NEXT_ITEM,
+            )?.let { (index, offset) -> animateScrollToItem(index, offset) }
         else -> Unit
     }
 }
@@ -267,6 +274,8 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.F1 -> DeskKey.F1
     Key.Comma -> DeskKey.COMMA
     Key.W -> DeskKey.W
+    Key.J -> DeskKey.J
+    Key.K -> DeskKey.K
     Key.Plus, Key.Equals, Key.NumPadAdd -> DeskKey.PLUS
     Key.Minus, Key.NumPadSubtract -> DeskKey.MINUS
     Key.Zero, Key.NumPad0 -> DeskKey.ZERO

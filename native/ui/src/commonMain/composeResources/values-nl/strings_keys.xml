@@ -8,6 +8,7 @@
     <string name="keys_tabs">Volgend of vorig tabblad</string>
     <string name="keys_pages">Vorige of volgende pagina</string>
     <string name="keys_scroll_line">Een stukje scrollen</string>
+    <string name="keys_next_post">Volgende of vorige post</string>
     <string name="keys_scroll_screen">Een scherm scrollen</string>
     <string name="keys_scroll_ends">Naar het begin of het einde</string>
     <string name="keys_move">Tussen knoppen en velden bewegen</string>

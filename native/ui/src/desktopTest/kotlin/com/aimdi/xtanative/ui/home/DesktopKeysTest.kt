@@ -285,4 +285,43 @@ class DesktopKeysTest {
         // Turning back starts afresh.
         assertEquals(0.4f to DeskAction.NONE, DesktopKeys.wheelText(-0.8f, 0.4f))
     }
+
+    @Test
+    fun jAndKMovePostByPostWhileNothingIsTyped() {
+        assertEquals(DeskAction.NEXT_ITEM, DesktopKeys.action(DeskKey.J, alt = false, ctrl = false, focusInside = false, canGoBack = false))
+        assertEquals(DeskAction.PREVIOUS_ITEM, DesktopKeys.action(DeskKey.K, alt = false, ctrl = false, focusInside = false, canGoBack = false))
+        // Typed into a field, with a modifier, or under something open: the key is not the list's.
+        assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.J, alt = false, ctrl = false, focusInside = true, canGoBack = false))
+        assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.J, alt = false, ctrl = true, focusInside = false, canGoBack = false))
+        assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.K, alt = false, ctrl = false, focusInside = false, canGoBack = false, shift = true))
+        assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.J, alt = false, ctrl = false, focusInside = false, canGoBack = false, somethingOpen = true))
+    }
+
+    @Test
+    fun anItemStepLandsOnAPostsStart() {
+        fun item(index: Int, offset: Int, size: Int = 300) = DesktopKeys.ShownItem(index, offset, size)
+        // At the top: j brings the second item up, k has nowhere to go.
+        assertEquals(1 to 0, DesktopKeys.itemStep(listOf(item(0, 0), item(1, 300), item(2, 600)), 5, forward = true))
+        assertNull(DesktopKeys.itemStep(listOf(item(0, 0), item(1, 300)), 5, forward = false))
+        // Item 2 partly read: k goes to its start, j to item 3.
+        assertEquals(2 to 0, DesktopKeys.itemStep(listOf(item(2, -40), item(3, 260)), 5, forward = false))
+        assertEquals(3 to 0, DesktopKeys.itemStep(listOf(item(2, -40), item(3, 260)), 5, forward = true))
+        // Item 2 at its start: k goes to the one before.
+        assertEquals(1 to 0, DesktopKeys.itemStep(listOf(item(2, 0), item(3, 300)), 5, forward = false))
+        assertNull(DesktopKeys.itemStep(listOf(item(4, 0)), 5, forward = true))
+        assertNull(DesktopKeys.itemStep(emptyList(), 5, forward = true))
+    }
+
+    @Test
+    fun aPinnedHeaderStaysAndThePostGoesUnderIt() {
+        fun item(index: Int, offset: Int, size: Int = 300) = DesktopKeys.ShownItem(index, offset, size)
+        // Tabs (item 1, 48 px) pinned over item 4, which is read from 48 px.
+        val shown = listOf(item(1, 0, 48), item(4, 48), item(5, 348))
+        assertEquals(5 to -48, DesktopKeys.itemStep(shown, 9, forward = true))
+        assertEquals(3 to -48, DesktopKeys.itemStep(shown, 9, forward = false))
+        // Item 4 partly under the tabs: k brings its start back under them.
+        assertEquals(4 to -48, DesktopKeys.itemStep(listOf(item(1, 0, 48), item(4, -100), item(5, 200)), 9, forward = false))
+        // A header in its own place (the next item follows it) is no pinned one: k goes on up the list.
+        assertEquals(0 to 0, DesktopKeys.itemStep(listOf(item(1, 0, 48), item(2, 48)), 9, forward = false))
+    }
 }

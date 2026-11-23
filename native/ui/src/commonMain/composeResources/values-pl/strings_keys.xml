@@ -8,6 +8,7 @@
     <string name="keys_tabs">Następna lub poprzednia karta</string>
     <string name="keys_pages">Poprzednia lub następna strona</string>
     <string name="keys_scroll_line">Przewiń trochę</string>
+    <string name="keys_next_post">Następny lub poprzedni wpis</string>
     <string name="keys_scroll_screen">Przewiń o ekran</string>
     <string name="keys_scroll_ends">Na początek lub na koniec</string>
     <string name="keys_move">Przechodź między przyciskami i polami</string>

@@ -8,6 +8,7 @@
     <string name="keys_tabs">Следующая или предыдущая вкладка</string>
     <string name="keys_pages">Предыдущая или следующая страница</string>
     <string name="keys_scroll_line">Прокрутить немного</string>
+    <string name="keys_next_post">Следующий или предыдущий пост</string>
     <string name="keys_scroll_screen">Прокрутить на экран</string>
     <string name="keys_scroll_ends">В начало или в конец</string>
     <string name="keys_move">Переходить между кнопками и полями</string>

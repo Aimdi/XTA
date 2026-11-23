@@ -8,6 +8,7 @@
     <string name="keys_tabs">Järgmine või eelmine vahekaart</string>
     <string name="keys_pages">Eelmine või järgmine leht</string>
     <string name="keys_scroll_line">Keri veidi</string>
+    <string name="keys_next_post">Järgmine või eelmine postitus</string>
     <string name="keys_scroll_screen">Keri ekraani võrra</string>
     <string name="keys_scroll_ends">Algusesse või lõppu</string>
     <string name="keys_move">Liigu nuppude ja väljade vahel</string>

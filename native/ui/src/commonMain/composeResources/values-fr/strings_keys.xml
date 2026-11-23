@@ -8,6 +8,7 @@
     <string name="keys_tabs">Onglet suivant ou précédent</string>
     <string name="keys_pages">Page précédente ou suivante</string>
     <string name="keys_scroll_line">Défiler un peu</string>
+    <string name="keys_next_post">Publication suivante ou précédente</string>
     <string name="keys_scroll_screen">Défiler d’un écran</string>
     <string name="keys_scroll_ends">Aller en haut ou à la fin</string>
     <string name="keys_move">Passer d’un bouton ou d’un champ à l’autre</string>

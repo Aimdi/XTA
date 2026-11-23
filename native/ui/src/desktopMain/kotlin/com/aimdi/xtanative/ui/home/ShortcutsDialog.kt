@@ -30,6 +30,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_full_screen
 import com.aimdi.xtanative.ui.generated.resources.keys_help
 import com.aimdi.xtanative.ui.generated.resources.keys_home
 import com.aimdi.xtanative.ui.generated.resources.keys_move
+import com.aimdi.xtanative.ui.generated.resources.keys_next_post
 import com.aimdi.xtanative.ui.generated.resources.keys_page_down
 import com.aimdi.xtanative.ui.generated.resources.keys_page_up
 import com.aimdi.xtanative.ui.generated.resources.keys_pages
@@ -44,9 +45,9 @@ import com.aimdi.xtanative.ui.generated.resources.keys_space
 import com.aimdi.xtanative.ui.generated.resources.keys_tab
 import com.aimdi.xtanative.ui.generated.resources.keys_tabs
 import com.aimdi.xtanative.ui.generated.resources.keys_text_size
-import com.aimdi.xtanative.ui.generated.resources.keys_wheel
 import com.aimdi.xtanative.ui.generated.resources.keys_title
 import com.aimdi.xtanative.ui.generated.resources.keys_video
+import com.aimdi.xtanative.ui.generated.resources.keys_wheel
 import com.aimdi.xtanative.ui.generated.resources.settings_title
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -79,6 +80,7 @@ object DesktopShortcuts {
         Shortcut(Res.string.keys_tabs, listOf(listOf(ctrl, tab), listOf(ctrl, shift, tab))),
         Shortcut(Res.string.keys_pages, listOf(listOf(sign("←")), listOf(sign("→")))),
         Shortcut(Res.string.keys_scroll_line, listOf(listOf(sign("↑")), listOf(sign("↓")))),
+        Shortcut(Res.string.keys_next_post, listOf(listOf(sign("J")), listOf(sign("K")))),
         Shortcut(
             Res.string.keys_scroll_screen,
             listOf(listOf(KeyCap.Named(Res.string.keys_page_up)), listOf(KeyCap.Named(Res.string.keys_page_down)), listOf(space), listOf(shift, space)),
