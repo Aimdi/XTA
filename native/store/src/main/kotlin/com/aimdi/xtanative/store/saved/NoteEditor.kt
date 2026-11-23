@@ -136,6 +136,31 @@ class NoteEditor(
         }
     }
 
+    /**
+     * Adds the files [picks] give, one after another, as one attaching: a
+     * pick that fails leaves the others to attach and says the attaching
+     * failed once all are done (a drop of several files).
+     */
+    suspend fun attachAll(picks: List<suspend () -> NoteMedia?>) {
+        if (current.value.busy || picks.isEmpty()) return
+        current.update { it.copy(attaching = true, attachFailed = false) }
+        var failed = false
+        for (pick in picks) {
+            val picked = try {
+                pick()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                failed = true
+                null
+            }
+            if (closed) return
+            if (picked != null) current.update { state -> state.copy(media = state.media + picked) }
+        }
+        current.update { it.copy(attaching = false, attachFailed = failed) }
+        persistDraft()
+    }
+
     /** Runs [write], which stores the note; true once it is stored and its draft dropped. A second save while one runs is refused. */
     suspend fun save(write: suspend () -> Unit): Boolean {
         if (current.value.busy) return false

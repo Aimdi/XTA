@@ -104,6 +104,7 @@ import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
@@ -183,9 +184,10 @@ fun NoteEditorDialog(
         // Ctrl+S and Ctrl+Enter save, as a desktop editor's do, while Save itself would.
         val canSave = NoteRules.canSave(target, state, editor.dirty)
         val pastedPicture = rememberClipboardPicture()
+        var pasting by remember { mutableStateOf(false) }
         // Files dropped from the file manager attach as the button's picks do, one after another (a note's, not a text note's).
         val dropped: (List<suspend () -> PickedFile?>) -> Unit = { reads ->
-            scope.launch { reads.forEach { read -> editor.attach { attachPicked(keeper, editor.postId ?: newId, read) } } }
+            scope.launch { editor.attachAll(reads.map { read -> suspend { attachPicked(keeper, editor.postId ?: newId, read) } }) }
         }
         Surface(
             Modifier.fillMaxSize().takesDroppedFiles(enabled = note != null && !state.busy, onDropped = dropped).onPreviewKeyEvent { event ->
@@ -193,11 +195,18 @@ fun NoteEditorDialog(
                 val saves = down && NoteKeys.saves(event.key == Key.S, event.key == Key.Enter || event.key == Key.NumPadEnter, event.isCtrlPressed, event.isAltPressed || event.isShiftPressed)
                 if (saves && canSave && !state.busy) save()
                 // Ctrl+V with a picture on the clipboard (a screenshot) attaches it to a note; text still pastes into the field.
-                if (down && note != null && pastedPicture != null && !state.busy && event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && event.key == Key.V) {
-                    // Read first: only a picture starts attaching, which would keep the field from taking pasted text meanwhile.
+                if (down && note != null && pastedPicture != null && !pasting && event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && event.key == Key.V) {
+                    // One read at a time, however long Ctrl+V is held. Read first: only a picture starts attaching, which would keep
+                    // the field from taking pasted text meanwhile; it waits for an attaching under way (a drop) rather than being lost.
+                    pasting = true
                     scope.launch {
-                        val picture = pastedPicture() ?: return@launch
-                        editor.attach { attachPicked(keeper, editor.postId ?: newId) { picture } }
+                        try {
+                            val picture = pastedPicture() ?: return@launch
+                            editor.state.first { !it.busy }
+                            editor.attach { attachPicked(keeper, editor.postId ?: newId) { picture } }
+                        } finally {
+                            pasting = false
+                        }
                     }
                 }
                 saves
