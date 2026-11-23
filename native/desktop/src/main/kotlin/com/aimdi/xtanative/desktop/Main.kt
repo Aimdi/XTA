@@ -34,6 +34,8 @@ import com.aimdi.xtanative.ui.chrome.SingleInstance
 import com.aimdi.xtanative.ui.chrome.WindowFullscreen
 import com.aimdi.xtanative.ui.links.DesktopIncomingLinks
 import com.aimdi.xtanative.ui.media.mpris.MprisSessions
+import com.aimdi.xtanative.ui.saved.DesktopNotices
+import com.aimdi.xtanative.ui.saved.DesktopNotifications
 import com.aimdi.xtanative.ui.theme.DesktopColorScheme
 import com.aimdi.xtanative.ui.media.VideoCheck
 import java.awt.Dimension
@@ -67,6 +69,7 @@ fun main(args: Array<String>) {
     // The desktop's dark or light is asked while the window starts, so "System" opens in it.
     DesktopColorScheme.desktop.start()
     MprisSessions.service.onRaise = { raises.tryEmit(Unit) }
+    DesktopNotifications.desktop.onActivate = { raises.tryEmit(Unit) }
     instance.listen { message ->
         if (message is InstanceMessage.Open) DesktopIncomingLinks.hand(message.url)
         raises.tryEmit(Unit)
@@ -127,6 +130,8 @@ fun main(args: Array<String>) {
             CompositionLocalProvider(LocalUriHandler provides SystemBrowser) {
                 Box(Modifier.fillMaxSize()) {
                     XtaNativeContent(graph, app.plugins)
+                    // A download or offline save that ends while another window is in use is told by the desktop too.
+                    DesktopNotices(name) { window.isActive }
                     VideoCheck.Shown()
                 }
             }
