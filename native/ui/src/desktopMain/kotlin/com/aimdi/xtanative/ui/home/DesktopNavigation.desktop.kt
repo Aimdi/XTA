@@ -163,6 +163,9 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, con
                 .onPreviewKeyEvent(::onKey)
                 .onKeyEvent(::onTyped)
                 .onFocusChanged { state ->
+                    // What had the keys inside the page went away with them (a button that closed what it was on):
+                    // the frame takes them back, so they never wait for a click.
+                    if (hasFocus && !state.hasFocus) actions.keysToFrame()
                     hasFocus = state.hasFocus
                     focusInside = state.hasFocus && !state.isFocused
                 }
