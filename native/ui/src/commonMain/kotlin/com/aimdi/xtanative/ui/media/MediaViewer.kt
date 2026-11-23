@@ -35,6 +35,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -58,6 +59,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XMedia
+import com.aimdi.xtanative.core.x.model.photoUrl
+import com.aimdi.xtanative.core.x.model.PhotoSize
 import com.aimdi.xtanative.data.LocalPostCache
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
@@ -149,6 +152,7 @@ fun GalleryViewer(key: String, start: Int, fallbackPostId: String?, fallbackInde
 @Composable
 private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onOpenPost: ((ViewerPage) -> Unit)? = null, onNearEnd: (() -> Unit)? = null) {
     val files = LocalPlatformFiles.current
+    val posts = LocalPostCache.current
     val items = viewed.items
     val size = rememberPhotoSize()
     val reduced = LocalReducedMotion.current
@@ -243,7 +247,10 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
                             XMedia.Kind.PHOTO -> ZoomablePhoto(viewed.shownUrl(item, size), item.alt, motion = !reduced, onBackdrop = { backdrop = it }, onClose = onClose)
                             XMedia.Kind.VIDEO, XMedia.Kind.GIF -> {
                                 val download: ((String) -> Unit)? = if (saver == null) null else { url -> viewed.save(viewed.pages[page], url)?.let(saver::save) }
-                                VideoPage(item, active = pager.currentPage == page, onPlaying = { url -> playing[page] = url }, onDownload = download)
+                                val credit = remember(page, viewed) { viewed.pages.getOrNull(page)?.let { VideoCredit.of(posts.post(it.postId), photoUrl(item.url, PhotoSize.LARGE)) } }
+                                CompositionLocalProvider(LocalVideoCredit provides credit) {
+                                    VideoPage(item, active = pager.currentPage == page, onPlaying = { url -> playing[page] = url }, onDownload = download)
+                                }
                             }
                         }
                     }

@@ -43,11 +43,11 @@ class MprisService(
     override fun bind(title: String, artist: String?, binding: AudioSessionBinding) = bind(null, title, artist, binding)
 
     /** Binds [binding] for [owner], whose later [update] and [clear] reach it while nothing else was bound since. */
-    fun bind(owner: Any?, title: String, artist: String?, binding: AudioSessionBinding) {
+    fun bind(owner: Any?, title: String, artist: String?, binding: AudioSessionBinding, artUrl: String? = null) {
         synchronized(lock) {
             this.owner = owner
             this.binding = binding
-            now = Mpris.offered(MprisNow(track = ++tracks, title = title, artist = artist), binding)
+            now = Mpris.offered(MprisNow(track = ++tracks, title = title, artist = artist, artUrl = artUrl), binding)
         }
         schedule()
     }
@@ -158,6 +158,21 @@ class MprisService(
         const val DO_NOT_QUEUE = 4L
         const val PRIMARY_OWNER = 1L
         const val ALREADY_OWNER = 4L
+    }
+}
+
+/**
+ * The picture at [url] as a file, where the app's image cache has it on
+ * disk already (a video's poster its tile showed): a media widget reads
+ * files, and nothing is fetched for it.
+ */
+internal object CachedArt {
+    fun fileUrl(url: String?): String? {
+        url ?: return null
+        return runCatching {
+            val cache = coil3.SingletonImageLoader.get(coil3.PlatformContext.INSTANCE).diskCache ?: return null
+            cache.openSnapshot(url)?.use { snapshot -> snapshot.data.toFile().takeIf { it.isFile }?.toURI()?.toString() }
+        }.getOrNull()
     }
 }
 

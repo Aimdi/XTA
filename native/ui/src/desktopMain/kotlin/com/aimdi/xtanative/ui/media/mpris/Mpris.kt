@@ -13,6 +13,8 @@ data class MprisNow(
     val canPlay: Boolean = false,
     val canPause: Boolean = false,
     val canSeek: Boolean = false,
+    /** A picture of it on disk (file://), for the controls' artwork. */
+    val artUrl: String? = null,
 ) {
     val status: String get() = if (playing) "Playing" else "Paused"
 }
@@ -66,6 +68,7 @@ object Mpris {
         if (now.title.isNotEmpty()) put("xesam:title", Variant("s", now.title))
         now.artist?.takeIf { it.isNotEmpty() }?.let { put("xesam:artist", Variant("as", listOf(it))) }
         now.durationMs?.takeIf { it > 0 }?.let { put("mpris:length", Variant("x", it * 1000)) }
+        now.artUrl?.let { put("mpris:artUrl", Variant("s", it)) }
     }
 
     fun rootProperties(identity: String): Map<String, Variant> = mapOf(

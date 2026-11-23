@@ -59,7 +59,7 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 internal fun TileVideo(media: XMedia, poster: Any?, post: XPost?, modifier: Modifier = Modifier) =
-    TileVideo({ VideoSource.of(media, it) }, media.alt, media.aspectRatio, media.durationMs, poster, modifier) { rememberTileDownload(media, post) }
+    TileVideo({ VideoSource.of(media, it)?.copy(credit = VideoCredit.of(post, poster)) }, media.alt, media.aspectRatio, media.durationMs, poster, modifier) { rememberTileDownload(media, post) }
 
 /**
  * [TileVideo] for any video: [source] what it plays as the settings given

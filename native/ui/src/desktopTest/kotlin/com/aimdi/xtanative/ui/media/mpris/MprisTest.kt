@@ -166,4 +166,13 @@ class MprisTest {
         service.clear(reading)
         assertEquals(false, service.holds(reading))
     }
+
+    @Test
+    fun aVideosArtworkIsAFileOnDisk() {
+        val art = MprisNow(track = 3, title = "Async validation", artist = "Kamil", artUrl = "file:/tmp/a.jpg")
+        assertEquals(Variant("s", "file:/tmp/a.jpg"), Mpris.metadata(art)["mpris:artUrl"])
+        assertEquals(Variant("as", listOf("Kamil")), Mpris.metadata(art)["xesam:artist"])
+        assertNull(Mpris.metadata(reading)["mpris:artUrl"])
+        assertNull(CachedArt.fileUrl(null))
+    }
 }

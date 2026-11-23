@@ -18,6 +18,9 @@ import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.photoUrl
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 
+/** What the viewer's page shown names its video by ([VideoCredit]): its post's, where the viewer knows it. */
+internal val LocalVideoCredit = androidx.compose.runtime.staticCompositionLocalOf<VideoCredit?> { null }
+
 /**
  * A video or GIF on the viewer's page in a player of [players], playing
  * while it is the page shown (_media.dart's TweetVideo in TweetMediaView): a
@@ -29,7 +32,8 @@ import com.aimdi.xtanative.ui.common.LocalSettingsStore
 @Composable
 internal fun PlayerVideoPage(media: XMedia, active: Boolean, players: VideoPlayers, onPlaying: (String) -> Unit, onDownload: ((playingUrl: String) -> Unit)?) {
     val settingsStore = LocalSettingsStore.current
-    val source = remember(media) { VideoSource.of(media, settingsStore.state.value) }
+    val credit = LocalVideoCredit.current
+    val source = remember(media, credit) { VideoSource.of(media, settingsStore.state.value)?.copy(credit = credit) }
     SourceVideoPage(source, media.aspectRatio, active, players, onPlaying, onDownload) {
         AsyncImage(model = photoUrl(media.url, PhotoSize.LARGE), contentDescription = media.alt, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize())
     }

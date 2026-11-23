@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.media
 
+import com.aimdi.xtanative.ui.media.mpris.CachedArt
 import com.aimdi.xtanative.ui.media.mpris.MprisSessions
 import javax.swing.SwingUtilities
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -253,7 +254,8 @@ internal class MpvVideoCore<P : MpvPictures>(
             !heard -> sessions.clear(this)
             sessions.holds(this) -> sessions.update(this, now.playing, now.positionMs, durationMs)
             startedPlaying -> {
-                sessions.bind(this, title = "", artist = null, binding = controls)
+                val credit = synchronized(lock) { source?.credit }
+                sessions.bind(this, title = credit?.title.orEmpty(), artist = credit?.artist, binding = controls, artUrl = CachedArt.fileUrl(credit?.art))
                 sessions.update(this, playing = true, positionMs = now.positionMs, durationMs = durationMs)
             }
         }
