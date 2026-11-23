@@ -42,6 +42,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.fullTimeText
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_community
 import com.aimdi.xtanative.ui.generated.resources.posts_more
@@ -130,7 +131,7 @@ private val MediaBleed = 16.dp
  * reply line, the text and what the post carries, and the counts.
  * [continues] and [midThread] join it to the posts of its thread by a line
  * through the avatars. A tap opens it; with "Double-tap to like" on, a
- * double-tap likes it on this device.
+ * double-tap likes it on this device. A right-click opens its ⋯ menu.
  */
 @Composable
 fun PostCard(
@@ -148,9 +149,11 @@ fun PostCard(
     val drawn = translation?.shown ?: shown
     val railColor = MaterialTheme.colorScheme.outlineVariant
     val picture = rememberPostPicture()
+    var menu by rememberSaveable(shown.id) { mutableStateOf(false) }
     Column(
         modifier
             .fillMaxWidth()
+            .onSecondaryClick { menu = true }
             .recordedIn(picture)
             .opening(rememberDoubleTapLike(shown, scope.prefs, actions)) { actions.openPost(shown.id) }
             .drawBehind {
@@ -179,7 +182,6 @@ fun PostCard(
                 contentAlignment = Alignment.Center,
             ) { PostAvatar(shown, scope, actions, AvatarSize) }
             Spacer(Modifier.width((PostGeometry.COLUMN_START - PostGeometry.AVATAR_START - PostGeometry.TOUCH_TARGET).dp))
-            var menu by rememberSaveable(shown.id) { mutableStateOf(false) }
             val buttons = if (translation != null) 2 else 1
             Box(Modifier.weight(1f)) {
                 Column(Modifier.padding(end = PostGeometry.END_PADDING.dp)) {

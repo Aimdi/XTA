@@ -14,6 +14,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 
 /** A tap target for a line of text, without the ripple a row would show. */
@@ -53,4 +55,21 @@ private suspend fun AwaitPointerEventScope.consumeUntilUp() {
         val event = awaitPointerEvent(PointerEventPass.Initial)
         event.changes.forEach { it.consume() }
     } while (event.changes.any { it.pressed })
+}
+
+/**
+ * [action] at a press of the mouse's secondary (right) button, as a desktop
+ * opens a thing's menu; nothing on a touch screen, which has no such button.
+ * The primary button's tap is left to the modifiers after it.
+ */
+fun Modifier.onSecondaryClick(action: () -> Unit): Modifier = composed {
+    val latest by rememberUpdatedState(action)
+    pointerInput(Unit) {
+        awaitPointerEventScope {
+            while (true) {
+                val event = awaitPointerEvent(PointerEventPass.Initial)
+                if (event.type == PointerEventType.Press && event.buttons.isSecondaryPressed) latest()
+            }
+        }
+    }
 }
