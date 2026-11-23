@@ -46,6 +46,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -342,22 +343,31 @@ private fun Results(vm: SearchViewModel, tab: SearchTab, actions: PostActions, s
     // A tab picked (a click, Ctrl+Tab) slides the pager there; a tab picked on the way, before it arrives, slides it on
     // from where it is. Only where the pager comes to rest by itself (a swipe) does it pick the tab ([PagerTurns]).
     val turns = remember(pager) { PagerTurns() }
+    var slidesEnded by remember(pager) { mutableIntStateOf(0) }
     LaunchedEffect(tab) {
-        if (pager.currentPage == tab.ordinal && !pager.isScrollInProgress) {
+        if (pager.currentPage == tab.ordinal && pager.currentPageOffsetFraction == 0f && !pager.isScrollInProgress) {
             // Already there (a slide away cut short by picking this tab again): nothing slides.
             turns.ended()
             return@LaunchedEffect
         }
         turns.started(tab.ordinal)
+        var arrived = false
         try {
             pager.animateScrollToPage(tab.ordinal)
+            arrived = true
         } finally {
-            // Arrived, or stopped by a drag: the pager's own rest counts again. Not when a newer tab took over.
-            if (isActive) turns.ended()
+            // Arrived, or stopped by a drag: the pager's own rest counts again, even a rest on the page it
+            // already rested on before (the flow below says it again). Not when a newer tab took over.
+            if (isActive) {
+                turns.ended()
+                // Only a slide a drag stopped: an arrival's rest comes through the flow by itself, and the pager may
+                // not have laid out its last page yet to say it at once.
+                if (!arrived) slidesEnded++
+            }
         }
     }
     LaunchedEffect(pager) {
-        snapshotFlow { pager.settledPage }.collect { page -> if (turns.picks(page)) vm.select(SearchTab.entries[page]) }
+        snapshotFlow { pager.settledPage to slidesEnded }.collect { (page, _) -> if (turns.picks(page)) vm.select(SearchTab.entries[page]) }
     }
     HorizontalPager(state = pager, key = { SearchTab.entries[it].name }, modifier = Modifier.fillMaxSize()) { page ->
         val shown = SearchTab.entries[page]

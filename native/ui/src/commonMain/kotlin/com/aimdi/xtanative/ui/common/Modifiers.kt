@@ -15,6 +15,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 
@@ -73,7 +74,8 @@ fun Modifier.onSecondaryClick(action: () -> Unit): Modifier = composed {
                 // the like below see it as before; the press is only marked as one a menu took.
                 val event = awaitPointerEvent(PointerEventPass.Main)
                 val press = event.changes.firstOrNull() ?: continue
-                if (event.type == PointerEventType.Press && event.buttons.isSecondaryPressed && SecondaryPresses.take(press.uptimeMillis)) latest()
+                // A mouse only: a stylus's barrel button counts as a secondary button on Android.
+                if (event.type == PointerEventType.Press && press.type == PointerType.Mouse && event.buttons.isSecondaryPressed && SecondaryPresses.take(press.uptimeMillis)) latest()
             }
         }
     }
