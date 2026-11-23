@@ -4,6 +4,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -171,7 +172,17 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
     }
 
     /** The chosen column while the page still shows it; one removed since (its menu's Remove) counts as none, so the keys never go dead. */
-    private fun chosen(): Any? = chosenColumn?.takeIf { it in columnOrder() }
+    internal fun chosen(): Any? = chosenColumn?.takeIf { it in columnOrder() }
+
+    /** A chosen column no longer on the page is forgotten, so one coming back (added again, turned back to) is not chosen by itself. */
+    internal fun forgetGoneColumn() {
+        if (chosenColumn != null && chosen() == null) chosenColumn = null
+    }
+
+    /** The page scrolled under the pointer (the wheel, a touchpad): the next list it rests over is pointed at, as after a move. */
+    internal fun scrolled() {
+        pointer = null
+    }
 
     /**
      * Where the pointer is in the window, from any of its moves, not only over
@@ -285,6 +296,7 @@ fun ReadColumns(order: List<Any>) {
     val actions = LocalDesktopActions.current ?: return
     val latest by rememberUpdatedState(order)
     val owner = remember { Any() }
+    LaunchedEffect(actions, order) { actions.forgetGoneColumn() }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.takeColumns(owner) { latest } }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.releaseColumns(owner) }
     DisposableEffect(actions) { onDispose { actions.releaseColumns(owner) } }
@@ -292,7 +304,7 @@ fun ReadColumns(order: List<Any>) {
 
 /** The column Ctrl+← and Ctrl+→ chose ([ReadColumn]'s key), for the page to mark; null while none is, and off the desktop. */
 @Composable
-fun chosenReadColumn(): Any? = LocalDesktopActions.current?.chosenColumn
+fun chosenReadColumn(): Any? = LocalDesktopActions.current?.chosen()
 
 /** The desktop's actions; null off the desktop, where only touch and Android's back exist. */
 val LocalDesktopActions = staticCompositionLocalOf<DesktopActions?> { null }

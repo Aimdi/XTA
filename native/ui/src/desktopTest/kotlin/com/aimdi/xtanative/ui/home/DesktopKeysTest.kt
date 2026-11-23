@@ -520,4 +520,36 @@ class DesktopKeysTest {
         assertEquals("b", actions.chosenColumn)
         assertSame(second, actions.readList())
     }
+
+    @Test
+    fun aChosenColumnGoneFromThePageIsForgotten() {
+        val actions = DesktopActions()
+        actions.addList(LazyListState(), "a")
+        actions.addList(LazyListState(), "b")
+        var order = listOf("a", "b")
+        actions.takeColumns(Any()) { order }
+        actions.stepColumn(1)
+        actions.stepColumn(1)
+        order = listOf("a")
+        actions.forgetGoneColumn()
+        // Added again: not chosen by itself.
+        order = listOf("a", "b")
+        assertNull(actions.chosen())
+    }
+
+    @Test
+    fun aListScrolledUnderAStillPointerIsPointedAt() {
+        val actions = DesktopActions()
+        val first = LazyListState()
+        val second = LazyListState()
+        actions.addList(first, "a")
+        actions.addList(second, "b")
+        actions.pointerAt(Offset(900f, 300f))
+        actions.point(first, Offset(900f, 300f))
+        assertSame(first, actions.readList())
+        // The window's own move after a sideways scroll: not a move of the pointer, but the scroll counts as one.
+        actions.scrolled()
+        actions.point(second, Offset(900f, 300f))
+        assertSame(second, actions.readList())
+    }
 }

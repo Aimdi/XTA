@@ -201,6 +201,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                     awaitPointerEventScope {
                         while (true) {
                             val event = awaitPointerEvent(PointerEventPass.Final)
+                            if (event.type == PointerEventType.Scroll) actions.scrolled()
                             if (event.type == PointerEventType.Move || event.type == PointerEventType.Enter) {
                                 event.changes.firstOrNull()?.let { actions.pointerAt(frameOrigin[0] + it.position) }
                             }
