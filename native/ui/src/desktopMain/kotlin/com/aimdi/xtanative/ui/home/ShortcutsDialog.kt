@@ -49,6 +49,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_tabs
 import com.aimdi.xtanative.ui.generated.resources.keys_text_size
 import com.aimdi.xtanative.ui.generated.resources.keys_title
 import com.aimdi.xtanative.ui.generated.resources.keys_video
+import com.aimdi.xtanative.ui.generated.resources.keys_video_more
 import com.aimdi.xtanative.ui.generated.resources.keys_wheel
 import com.aimdi.xtanative.ui.generated.resources.settings_title
 import org.jetbrains.compose.resources.StringResource
@@ -92,7 +93,8 @@ object DesktopShortcuts {
         Shortcut(Res.string.keys_text_size, listOf(listOf(ctrl, sign("+")), listOf(ctrl, sign("−")), listOf(ctrl, sign("0")), listOf(ctrl, KeyCap.Named(Res.string.keys_wheel)))),
         Shortcut(Res.string.keys_full_screen, listOf(listOf(sign("F11")))),
         Shortcut(Res.string.settings_title, listOf(listOf(ctrl, sign(",")))),
-        Shortcut(Res.string.keys_video, listOf(listOf(space), listOf(sign("←")), listOf(sign("→")))),
+        Shortcut(Res.string.keys_video, listOf(listOf(space), listOf(sign("K")), listOf(sign("←")), listOf(sign("→")), listOf(sign("J")), listOf(sign("L")))),
+        Shortcut(Res.string.keys_video_more, listOf(listOf(sign("M")), listOf(KeyCap.Named(Res.string.keys_home)), listOf(sign("F")))),
         Shortcut(Res.string.keys_photo_zoom, listOf(listOf(sign("+")), listOf(sign("−")), listOf(sign("0")))),
         Shortcut(Res.string.keys_photo_move, listOf(listOf(sign("←")), listOf(sign("↑")), listOf(sign("→")), listOf(sign("↓")))),
         Shortcut(Res.string.keys_quit, listOf(listOf(ctrl, sign("Q")))),

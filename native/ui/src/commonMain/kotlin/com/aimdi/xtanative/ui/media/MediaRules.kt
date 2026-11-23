@@ -11,22 +11,36 @@ import java.util.Locale
 data class VideoQuality(val url: String, val label: String)
 
 /** What a key does to a video full screen on the desktop ([VideoKeys]). */
-enum class VideoKey { LEAVE, PLAY_PAUSE, BACK, FORWARD, NONE }
+enum class VideoKey { LEAVE, PLAY_PAUSE, BACK, FORWARD, MUTE, RESTART, NONE }
 
 /**
  * A video full screen's keys, as a desktop's players have them: Esc
  * leaves, Space plays or pauses, ← and → skip back and on
- * [VideoRules.SEEK_SECONDS], as a double tap on either half does. With
- * Ctrl or Alt held they are the window's, not the video's.
+ * [VideoRules.SEEK_SECONDS], as a double tap on either half does. The
+ * letters of the web's video players do the same ([letter]): k plays or
+ * pauses, j and l skip, m mutes or unmutes, f leaves full screen; Home
+ * starts it over. With Ctrl or Alt held they are the window's, not the video's.
  */
 object VideoKeys {
     /** [back] is going back the desktop's way, Alt+← or the Back key, which leaves the video as Esc does. */
-    fun of(escape: Boolean, space: Boolean, left: Boolean, right: Boolean, modified: Boolean, back: Boolean = false): VideoKey = when {
+    fun of(
+        escape: Boolean,
+        space: Boolean,
+        left: Boolean,
+        right: Boolean,
+        modified: Boolean,
+        back: Boolean = false,
+        letter: Char? = null,
+        home: Boolean = false,
+    ): VideoKey = when {
         escape || back -> VideoKey.LEAVE
         modified -> VideoKey.NONE
-        space -> VideoKey.PLAY_PAUSE
-        left -> VideoKey.BACK
-        right -> VideoKey.FORWARD
+        letter == 'f' -> VideoKey.LEAVE
+        space || letter == 'k' -> VideoKey.PLAY_PAUSE
+        left || letter == 'j' -> VideoKey.BACK
+        right || letter == 'l' -> VideoKey.FORWARD
+        letter == 'm' -> VideoKey.MUTE
+        home -> VideoKey.RESTART
         else -> VideoKey.NONE
     }
 }

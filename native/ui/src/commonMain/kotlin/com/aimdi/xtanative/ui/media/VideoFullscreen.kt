@@ -147,6 +147,8 @@ private fun fullscreenKey(event: KeyEvent, playback: VideoPlayback, onClose: () 
         right = event.key == Key.DirectionRight,
         modified = event.isCtrlPressed || event.isAltPressed,
         back = event.key == Key.Back || (event.isAltPressed && event.key == Key.DirectionLeft),
+        letter = PLAYER_LETTERS[event.key],
+        home = event.key == Key.MoveHome,
     )
     val now = playback.state.value
     val skip = VideoRules.SEEK_SECONDS * 1000L
@@ -155,7 +157,12 @@ private fun fullscreenKey(event: KeyEvent, playback: VideoPlayback, onClose: () 
         VideoKey.PLAY_PAUSE -> playback.playOrPause()
         VideoKey.BACK -> playback.seekTo(VideoRules.seekTarget(now.positionMs, -skip, now.durationMs))
         VideoKey.FORWARD -> playback.seekTo(VideoRules.seekTarget(now.positionMs, skip, now.durationMs))
+        VideoKey.MUTE -> toggleMute(playback, now.muted)
+        VideoKey.RESTART -> playback.seekTo(0)
         VideoKey.NONE -> return false
     }
     return true
 }
+
+/** The letter keys the web's video players answer to, by where they sit ([VideoKeys]'s `letter`). */
+private val PLAYER_LETTERS = mapOf(Key.F to 'f', Key.K to 'k', Key.J to 'j', Key.L to 'l', Key.M to 'm')

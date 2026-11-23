@@ -15,6 +15,7 @@
     <string name="keys_text_size">نص أكبر أو أصغر أو عادي</string>
     <string name="keys_full_screen">ملء الشاشة</string>
     <string name="keys_video">فيديو بملء الشاشة: تشغيل أو إيقاف مؤقت، والتخطي 10 ثوانٍ</string>
+    <string name="keys_video_more">فيديو بملء الشاشة: كتم الصوت، البدء من جديد، الخروج من ملء الشاشة</string>
     <string name="keys_photo_zoom">تكبير الصورة أو تصغيرها أو عرضها كاملة</string>
     <string name="keys_photo_move">التنقّل في صورة مكبّرة</string>
     <string name="keys_quit">إنهاء XTA</string>

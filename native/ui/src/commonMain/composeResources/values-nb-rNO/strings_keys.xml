@@ -15,6 +15,7 @@
     <string name="keys_text_size">Større, mindre eller normal tekst</string>
     <string name="keys_full_screen">Fullskjerm</string>
     <string name="keys_video">Video i fullskjerm: spill av eller sett på pause, hopp 10 sekunder</string>
+    <string name="keys_video_more">Video i fullskjerm: demp, start på nytt, gå ut</string>
     <string name="keys_photo_zoom">Zoom et bilde inn, ut eller vis hele</string>
     <string name="keys_photo_move">Flytt rundt i et forstørret bilde</string>
     <string name="keys_quit">Avslutt XTA</string>

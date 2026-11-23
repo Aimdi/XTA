@@ -231,4 +231,19 @@ class MediaRulesTest {
         assertEquals(Shift(-500f, 0f), ViewerZoom.panned(Shift(-450f, 0f), 2f, ViewerKey.PAN_RIGHT, 1000f, 800f))
         assertEquals(Shift.ZERO, ViewerZoom.panned(Shift.ZERO, 1f, ViewerKey.PAN_LEFT, 1000f, 800f))
     }
+
+    @Test
+    fun theWebPlayersLettersWorkFullScreen() {
+        fun key(letter: Char? = null, home: Boolean = false, modified: Boolean = false) =
+            VideoKeys.of(escape = false, space = false, left = false, right = false, modified = modified, letter = letter, home = home)
+        assertEquals(VideoKey.PLAY_PAUSE, key('k'))
+        assertEquals(VideoKey.BACK, key('j'))
+        assertEquals(VideoKey.FORWARD, key('l'))
+        assertEquals(VideoKey.MUTE, key('m'))
+        assertEquals(VideoKey.LEAVE, key('f'))
+        assertEquals(VideoKey.RESTART, key(home = true))
+        // With Ctrl or Alt they are the window's.
+        assertEquals(VideoKey.NONE, key('m', modified = true))
+        assertEquals(VideoKey.NONE, key('x'))
+    }
 }
