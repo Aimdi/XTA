@@ -11,6 +11,7 @@
     <string name="keys_tabs">下一個或上一個分頁</string>
     <string name="keys_tab_number">前往某個分頁（9：最後一個）</string>
     <string name="keys_pages">上一頁或下一頁</string>
+    <string name="keys_columns">上一欄或下一欄用於捲動（多欄）</string>
     <string name="keys_scroll_line">捲動一點</string>
     <string name="keys_next_post">下一則或上一則貼文</string>
     <string name="keys_scroll_screen">捲動一個畫面</string>

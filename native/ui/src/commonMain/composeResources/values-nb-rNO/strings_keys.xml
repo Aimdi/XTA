@@ -11,6 +11,7 @@
     <string name="keys_tabs">Neste eller forrige fane</string>
     <string name="keys_tab_number">Gå til en fane (9: den siste)</string>
     <string name="keys_pages">Forrige eller neste side</string>
+    <string name="keys_columns">Forrige eller neste kolonne å rulle (Kolonner)</string>
     <string name="keys_scroll_line">Rull litt</string>
     <string name="keys_next_post">Neste eller forrige innlegg</string>
     <string name="keys_scroll_screen">Rull en skjerm</string>

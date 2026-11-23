@@ -1,9 +1,12 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.ui.geometry.Offset
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 /** XTA's desktop shortcuts (lib/ui/desktop_navigation.dart, desktop_pager.dart) and the avatar's monogram (fallback_avatar.dart). */
@@ -85,7 +88,8 @@ class DesktopKeysTest {
         assertEquals(DeskAction.NEXT_PAGE, action(DeskKey.RIGHT))
         assertEquals(DeskAction.NEXT_PAGE, action(DeskKey.LEFT, rtl = true))
         assertEquals(DeskAction.NONE, action(DeskKey.RIGHT, focusInside = true))
-        assertEquals(DeskAction.NONE, action(DeskKey.RIGHT, ctrl = true))
+        // Ctrl+→ is the Deck's: the next column (ctrlArrowsChooseTheColumnTheReadingKeysMove).
+        assertEquals(DeskAction.NEXT_COLUMN, action(DeskKey.RIGHT, ctrl = true))
         assertEquals(DeskAction.NONE, action(DeskKey.OTHER))
     }
 
@@ -380,5 +384,102 @@ class DesktopKeysTest {
         assertEquals(DeskAction.GO_HOME, DesktopKeys.action(DeskKey.HOME, alt = true, ctrl = false, focusInside = false, canGoBack = true, somethingOpen = true))
         // Home alone still goes to the list's top.
         assertEquals(DeskAction.TO_TOP, DesktopKeys.action(DeskKey.HOME, alt = false, ctrl = false, focusInside = false, canGoBack = true))
+    }
+
+    @Test
+    fun ctrlArrowsChooseTheColumnTheReadingKeysMove() {
+        assertEquals(DeskAction.NEXT_COLUMN, action(DeskKey.RIGHT, ctrl = true))
+        assertEquals(DeskAction.PREVIOUS_COLUMN, action(DeskKey.LEFT, ctrl = true))
+        // In the reading direction, as ← and → turn the pages.
+        assertEquals(DeskAction.NEXT_COLUMN, action(DeskKey.LEFT, ctrl = true, rtl = true))
+        assertEquals(DeskAction.PREVIOUS_COLUMN, action(DeskKey.RIGHT, ctrl = true, rtl = true))
+        // A field keeps them (a word at a time); nothing under what is open; Shift (selecting) and Alt+← (Back) are not theirs.
+        assertEquals(DeskAction.NONE, action(DeskKey.RIGHT, ctrl = true, focusInside = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.RIGHT, ctrl = true, open = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.RIGHT, ctrl = true, shift = true))
+        assertEquals(DeskAction.BACK, action(DeskKey.LEFT, ctrl = true, alt = true))
+    }
+
+    @Test
+    fun aColumnStepStopsAtEitherEnd() {
+        assertEquals(1, DesktopKeys.columnStep(3, 0, 1))
+        assertEquals(2, DesktopKeys.columnStep(3, 2, 1))
+        assertEquals(0, DesktopKeys.columnStep(3, 0, -1))
+        assertEquals(1, DesktopKeys.columnStep(3, 2, -1))
+        // From none (no list read yet, or one outside the columns): the first going on, the last going back.
+        assertEquals(0, DesktopKeys.columnStep(3, null, 1))
+        assertEquals(2, DesktopKeys.columnStep(3, null, -1))
+        assertEquals(0, DesktopKeys.columnStep(3, 7, 1))
+        assertNull(DesktopKeys.columnStep(0, null, 1))
+    }
+
+    @Test
+    fun theChosenColumnsListIsTheOneTheKeysMoveUntilThePointerPointsElsewhere() {
+        val actions = DesktopActions()
+        val first = LazyListState()
+        val second = LazyListState()
+        val third = LazyListState()
+        assertFalse(actions.stepColumn(1), "no page of columns: the key is not taken")
+        actions.addList(first, "a")
+        actions.addList(second, "b")
+        actions.addList(third, "c")
+        val owner = Any()
+        actions.takeColumns(owner) { listOf("a", "b", "c") }
+        assertSame(first, actions.readList())
+        // From the column read now (the first, nothing pointed) to the next.
+        assertTrue(actions.stepColumn(1))
+        assertEquals("b", actions.chosenColumn)
+        assertSame(second, actions.readList())
+        // The pointer over the column chosen keeps it; over another, that one is read and none is chosen.
+        actions.point(second)
+        assertEquals("b", actions.chosenColumn)
+        actions.point(third)
+        assertNull(actions.chosenColumn)
+        assertSame(third, actions.readList())
+        // From the pointed column on: the end holds.
+        actions.stepColumn(1)
+        assertEquals("c", actions.chosenColumn)
+        actions.stepColumn(-1)
+        actions.stepColumn(-1)
+        actions.stepColumn(-1)
+        assertSame(first, actions.readList())
+        // A column's list replaced (another tab in it) is still the column's; meanwhile, with none, the keys move nothing.
+        actions.removeList(first)
+        assertNull(actions.readList())
+        val again = LazyListState()
+        actions.addList(again, "a")
+        assertSame(again, actions.readList())
+        // The page gone, nothing is chosen.
+        actions.releaseColumns(owner)
+        assertNull(actions.chosenColumn)
+        assertFalse(actions.stepColumn(1))
+    }
+
+    @Test
+    fun aStillPointerPointsAtNothing() {
+        assertTrue(DesktopKeys.pointerMoved(null, Offset(10f, 10f)), "the first place")
+        assertTrue(DesktopKeys.pointerMoved(Offset(10f, 10f), Offset(12f, 10f)))
+        assertFalse(DesktopKeys.pointerMoved(Offset(10f, 10f), Offset(10.2f, 10f)), "rounding is no move")
+        assertTrue(DesktopKeys.pointerMoved(Offset(10f, 10f), null), "a place unknown counts")
+    }
+
+    @Test
+    fun theDeckScrollingUnderAStillPointerKeepsTheChosenColumn() {
+        val actions = DesktopActions()
+        val first = LazyListState()
+        val second = LazyListState()
+        actions.addList(first, "a")
+        actions.addList(second, "b")
+        actions.takeColumns(Any()) { listOf("a", "b") }
+        actions.point(second, Offset(600f, 300f))
+        actions.stepColumn(-1)
+        // The deck slid under the pointer: the window says the pointer entered the list there again.
+        actions.point(second, Offset(600f, 300f))
+        assertEquals("a", actions.chosenColumn)
+        assertSame(first, actions.readList())
+        // The reader moves the mouse: it takes the keys back.
+        actions.point(second, Offset(640f, 300f))
+        assertNull(actions.chosenColumn)
+        assertSame(second, actions.readList())
     }
 }

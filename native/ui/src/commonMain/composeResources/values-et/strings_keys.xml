@@ -11,6 +11,7 @@
     <string name="keys_tabs">Järgmine või eelmine vahekaart</string>
     <string name="keys_tab_number">Mine vahelehele (9: viimane)</string>
     <string name="keys_pages">Eelmine või järgmine leht</string>
+    <string name="keys_columns">Eelmine või järgmine keritav veerg (Veerud)</string>
     <string name="keys_scroll_line">Keri veidi</string>
     <string name="keys_next_post">Järgmine või eelmine postitus</string>
     <string name="keys_scroll_screen">Keri ekraani võrra</string>

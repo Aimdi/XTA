@@ -11,6 +11,7 @@
     <string name="keys_tabs">다음 또는 이전 탭</string>
     <string name="keys_tab_number">탭으로 이동 (9: 마지막)</string>
     <string name="keys_pages">이전 또는 다음 페이지</string>
+    <string name="keys_columns">스크롤할 이전 또는 다음 열 (덱)</string>
     <string name="keys_scroll_line">조금 스크롤</string>
     <string name="keys_next_post">다음 또는 이전 게시물</string>
     <string name="keys_scroll_screen">한 화면 스크롤</string>

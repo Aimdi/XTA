@@ -11,6 +11,7 @@
     <string name="keys_tabs">Thẻ tiếp theo hoặc trước đó</string>
     <string name="keys_tab_number">Chuyển đến một tab (9: tab cuối)</string>
     <string name="keys_pages">Trang trước hoặc trang sau</string>
+    <string name="keys_columns">Cột trước hoặc cột sau để cuộn (Cột)</string>
     <string name="keys_scroll_line">Cuộn một chút</string>
     <string name="keys_next_post">Bài đăng tiếp theo hoặc trước đó</string>
     <string name="keys_scroll_screen">Cuộn một màn hình</string>

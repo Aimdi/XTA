@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -43,6 +45,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -56,6 +59,8 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -136,6 +141,8 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     var refreshedAll by remember { mutableIntStateOf(0) }
     var adding by remember { mutableStateOf(false) }
     DesktopShortcuts(refresh = { refreshedAll++ }, turn = {}, isOpen = { detail.open }, close = { detail.back() })
+    ReadColumns(columns.map { it.id })
+    val chosen = chosenReadColumn()
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -168,10 +175,12 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
                                     onMove = { by -> edit { DeckColumns.moved(it, index, by) } },
                                     onRemove = { edit { ids -> ids - column.id } },
                                 )
-                                DeckColumnView(
-                                    column, labelOf(column, groups, available), place, calls, toTop[column.id] ?: 0, refreshedAll,
-                                    columnActions, Modifier.width(each).fillMaxHeight(),
-                                )
+                                ReadColumn(column.id) {
+                                    DeckColumnView(
+                                        column, labelOf(column, groups, available), place, calls, toTop[column.id] ?: 0, refreshedAll,
+                                        columnActions, Modifier.width(each).fillMaxHeight().chosenMark(chosen == column.id),
+                                    )
+                                }
                             }
                         }
                     }
@@ -190,6 +199,25 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
         }
     }
 }
+
+/**
+ * The column the reading keys move once Ctrl+← or Ctrl+→ chose it
+ * ([ReadColumn]): a line in the accent colour across its top, and the deck
+ * scrolled sideways to bring it into view.
+ */
+@Composable
+private fun Modifier.chosenMark(chosen: Boolean): Modifier {
+    val view = remember { BringIntoViewRequester() }
+    LaunchedEffect(chosen) { if (chosen) view.bringIntoView() }
+    val color = MaterialTheme.colorScheme.primary
+    return bringIntoViewRequester(view).drawWithContent {
+        drawContent()
+        if (chosen) drawRect(color, size = Size(size.width, CHOSEN_MARK.toPx()))
+    }
+}
+
+/** How thick the chosen column's line is. */
+private val CHOSEN_MARK = 3.dp
 
 /** Where a column stands among the others: the first moves no further left, the last no further right. */
 internal class ColumnPlace(val first: Boolean, val last: Boolean)

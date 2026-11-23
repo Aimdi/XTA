@@ -11,6 +11,7 @@
     <string name="keys_tabs">Nächster oder vorheriger Tab</string>
     <string name="keys_tab_number">Zu einem Tab wechseln (9: der letzte)</string>
     <string name="keys_pages">Vorherige oder nächste Seite</string>
+    <string name="keys_columns">Vorherige oder nächste Spalte zum Scrollen (Deck)</string>
     <string name="keys_scroll_line">Ein Stück scrollen</string>
     <string name="keys_next_post">Nächster oder vorheriger Beitrag</string>
     <string name="keys_scroll_screen">Eine Bildschirmseite scrollen</string>

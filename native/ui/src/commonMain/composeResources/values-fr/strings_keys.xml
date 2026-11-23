@@ -11,6 +11,7 @@
     <string name="keys_tabs">Onglet suivant ou précédent</string>
     <string name="keys_tab_number">Aller à un onglet (9 : le dernier)</string>
     <string name="keys_pages">Page précédente ou suivante</string>
+    <string name="keys_columns">Colonne précédente ou suivante à faire défiler (Deck)</string>
     <string name="keys_scroll_line">Défiler un peu</string>
     <string name="keys_next_post">Publication suivante ou précédente</string>
     <string name="keys_scroll_screen">Défiler d’un écran</string>

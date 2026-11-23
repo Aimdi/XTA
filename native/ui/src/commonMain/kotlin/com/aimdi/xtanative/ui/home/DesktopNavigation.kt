@@ -2,17 +2,23 @@ package com.aimdi.xtanative.ui.home
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -95,21 +101,73 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
     /** Esc in a field: true when the field dropped something of its own, and keeps the keyboard for now. */
     internal fun escapeInField(): Boolean = fieldEscapes.asReversed().any { it.second() }
 
-    /** The lists on screen, in the order they came, and the one the pointer was last over. */
+    /** The lists on screen, in the order they came, the one the pointer was last over, and the column each is in ([ReadColumn]). */
     private val lists = mutableListOf<LazyListState>()
     private var pointed: LazyListState? = null
+    private val listColumns = mutableMapOf<LazyListState, Any>()
 
-    internal fun addList(list: LazyListState) {
+    internal fun addList(list: LazyListState, column: Any? = null) {
         lists += list
+        if (column != null) listColumns[list] = column
     }
 
     internal fun removeList(list: LazyListState) {
         lists -= list
+        listColumns -= list
         if (pointed === list) pointed = null
     }
 
-    internal fun point(list: LazyListState) {
+    /** Where in the window the pointer last pointed at a list. */
+    private var pointer: Offset? = null
+
+    /**
+     * The pointer over [list], [at] that place in the window: the keys move
+     * it, and a column chosen from the keyboard elsewhere is chosen no more.
+     * A pointer that has not moved ([DesktopKeys.pointerMoved]) points at
+     * nothing: the event is the window's own, sent as what is under the
+     * pointer moved (the Deck scrolled sideways to a chosen column).
+     */
+    internal fun point(list: LazyListState, at: Offset? = null) {
+        if (!DesktopKeys.pointerMoved(pointer, at)) return
+        pointer = at
         pointed = list
+        if (listColumns[list] != chosenColumn) chosenColumn = null
+    }
+
+    /** The page's columns side by side ([ReadColumns]), in their order on screen, and the page that shows them. */
+    private var columnsOwner: Any? = null
+    private var columnOrder: () -> List<Any> = { emptyList() }
+
+    /**
+     * The column Ctrl+← and Ctrl+→ chose ([stepColumn]), whose list the
+     * reading keys move until the pointer points at another; null while
+     * none is. Read in composition, so the column can be marked.
+     */
+    var chosenColumn: Any? by mutableStateOf(null)
+        private set
+
+    internal fun takeColumns(owner: Any, order: () -> List<Any>) {
+        columnsOwner = owner
+        columnOrder = order
+    }
+
+    internal fun releaseColumns(owner: Any) {
+        if (columnsOwner !== owner) return
+        columnsOwner = null
+        columnOrder = { emptyList() }
+        chosenColumn = null
+    }
+
+    /**
+     * The reading keys to the column [by] away ([DesktopKeys.columnStep])
+     * from the one they move now; false when the page shown has no columns.
+     */
+    fun stepColumn(by: Int): Boolean {
+        val order = columnOrder()
+        val current = chosenColumn ?: readList()?.let { listColumns[it] }
+        val index = DesktopKeys.columnStep(order.size, order.indexOf(current).takeIf { it >= 0 }, by) ?: return false
+        chosenColumn = order[index]
+        return true
     }
 
     /** What is drawn over the screens and holds the keys for its own (the media viewer, a video full screen), the last on top. */
@@ -151,31 +209,77 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
     /** The keys back to the window's frame (or the overlay holding them), once a field has let go of them ([rememberLeaveField]). */
     internal fun keysToFrame() = refocus(holders.lastOrNull())
 
-    /** The list the keys move: the one the pointer was last over, else the first on screen (the page's own, before any column beside it). */
-    internal fun readList(): LazyListState? = pointed ?: lists.firstOrNull()
+    /**
+     * The list the keys move: the chosen column's ([chosenColumn]; none while
+     * it shows no list, such as its error), else the one the pointer was last
+     * over, else the first on screen (the page's own, before any column
+     * beside it).
+     */
+    internal fun readList(): LazyListState? = when (val column = chosenColumn) {
+        null -> pointed ?: lists.firstOrNull()
+        else -> lists.lastOrNull { listColumns[it] == column }
+    }
 }
 
 /**
  * Lets the desktop's keys move [list] (DesktopKeys: ↑ ↓, Page Up and Down,
  * Space, Home, End) while it is on screen, and makes it the one they move
- * while the pointer is over it. Nothing off the desktop.
+ * while the pointer is over it. In a [ReadColumn], Ctrl+← and Ctrl+→ choose
+ * it with its column. Nothing off the desktop.
  */
 @Composable
 fun Modifier.movedByKeys(list: LazyListState): Modifier {
     val actions = LocalDesktopActions.current ?: return this
-    DisposableEffect(actions, list) {
-        actions.addList(list)
+    val column = LocalReadColumn.current
+    DisposableEffect(actions, list, column) {
+        actions.addList(list, column)
         onDispose { actions.removeList(list) }
     }
-    return pointerInput(actions, list) {
+    // Where the list stands in the window, so the pointer's place is known there and not only in the list.
+    val origin = remember { arrayOf(Offset.Zero) }
+    return onGloballyPositioned { origin[0] = it.positionInWindow() }.pointerInput(actions, list) {
         awaitPointerEventScope {
             while (true) {
                 val event = awaitPointerEvent(PointerEventPass.Initial)
-                if (event.type == PointerEventType.Enter || event.type == PointerEventType.Move) actions.point(list)
+                if (event.type == PointerEventType.Enter || event.type == PointerEventType.Move) {
+                    actions.point(list, event.changes.firstOrNull()?.let { origin[0] + it.position })
+                }
             }
         }
     }
 }
+
+/** The column of a page of columns ([ReadColumn]) that what is drawn here is in; null outside one. */
+private val LocalReadColumn = staticCompositionLocalOf<Any?> { null }
+
+/**
+ * [content] as the column [key] of a page of columns side by side
+ * ([ReadColumns]): the list it shows is the one the reading keys move once
+ * Ctrl+← or Ctrl+→ chooses the column.
+ */
+@Composable
+fun ReadColumn(key: Any, content: @Composable () -> Unit) {
+    CompositionLocalProvider(LocalReadColumn provides key, content = content)
+}
+
+/**
+ * Lets Ctrl+← and Ctrl+→ choose among the page's columns, [order] being
+ * their keys ([ReadColumn]) in their order on screen, while the page is the
+ * one shown. Nothing off the desktop.
+ */
+@Composable
+fun ReadColumns(order: List<Any>) {
+    val actions = LocalDesktopActions.current ?: return
+    val latest by rememberUpdatedState(order)
+    val owner = remember { Any() }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.takeColumns(owner) { latest } }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.releaseColumns(owner) }
+    DisposableEffect(actions) { onDispose { actions.releaseColumns(owner) } }
+}
+
+/** The column Ctrl+← and Ctrl+→ chose ([ReadColumn]'s key), for the page to mark; null while none is, and off the desktop. */
+@Composable
+fun chosenReadColumn(): Any? = LocalDesktopActions.current?.chosenColumn
 
 /** The desktop's actions; null off the desktop, where only touch and Android's back exist. */
 val LocalDesktopActions = staticCompositionLocalOf<DesktopActions?> { null }

@@ -11,6 +11,7 @@
     <string name="keys_tabs">Próxima aba ou aba anterior</string>
     <string name="keys_tab_number">Ir para uma aba (9: a última)</string>
     <string name="keys_pages">Página anterior ou próxima</string>
+    <string name="keys_columns">Coluna anterior ou próxima para rolar (Deck)</string>
     <string name="keys_scroll_line">Rolar um pouco</string>
     <string name="keys_next_post">Post seguinte ou anterior</string>
     <string name="keys_scroll_screen">Rolar uma tela</string>

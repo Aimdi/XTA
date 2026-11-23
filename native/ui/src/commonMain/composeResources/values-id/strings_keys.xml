@@ -11,6 +11,7 @@
     <string name="keys_tabs">Tab berikutnya atau sebelumnya</string>
     <string name="keys_tab_number">Buka tab (9: yang terakhir)</string>
     <string name="keys_pages">Halaman sebelumnya atau berikutnya</string>
+    <string name="keys_columns">Kolom sebelumnya atau berikutnya untuk digulir (Kolom)</string>
     <string name="keys_scroll_line">Gulir sedikit</string>
     <string name="keys_next_post">Postingan berikutnya atau sebelumnya</string>
     <string name="keys_scroll_screen">Gulir satu layar</string>

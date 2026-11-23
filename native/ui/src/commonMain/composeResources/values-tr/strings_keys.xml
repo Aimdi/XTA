@@ -11,6 +11,7 @@
     <string name="keys_tabs">Sonraki veya önceki sekme</string>
     <string name="keys_tab_number">Bir sekmeye git (9: sonuncusu)</string>
     <string name="keys_pages">Önceki veya sonraki sayfa</string>
+    <string name="keys_columns">Kaydırılacak önceki veya sonraki sütun (Sütunlar)</string>
     <string name="keys_scroll_line">Biraz kaydır</string>
     <string name="keys_next_post">Sonraki veya önceki gönderi</string>
     <string name="keys_scroll_screen">Bir ekran kaydır</string>

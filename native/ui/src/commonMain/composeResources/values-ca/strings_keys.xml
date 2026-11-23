@@ -11,6 +11,7 @@
     <string name="keys_tabs">Pestanya següent o anterior</string>
     <string name="keys_tab_number">Ves a una pestanya (9: l’última)</string>
     <string name="keys_pages">Pàgina anterior o següent</string>
+    <string name="keys_columns">Columna anterior o següent per desplaçar (Deck)</string>
     <string name="keys_scroll_line">Desplaça’t una mica</string>
     <string name="keys_next_post">Publicació següent o anterior</string>
     <string name="keys_scroll_screen">Desplaça’t una pantalla</string>

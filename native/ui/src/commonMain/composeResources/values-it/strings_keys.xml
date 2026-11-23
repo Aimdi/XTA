@@ -11,6 +11,7 @@
     <string name="keys_tabs">Scheda successiva o precedente</string>
     <string name="keys_tab_number">Vai a una scheda (9: l’ultima)</string>
     <string name="keys_pages">Pagina precedente o successiva</string>
+    <string name="keys_columns">Colonna precedente o successiva da scorrere (Deck)</string>
     <string name="keys_scroll_line">Scorri un poco</string>
     <string name="keys_next_post">Post successivo o precedente</string>
     <string name="keys_scroll_screen">Scorri di una schermata</string>

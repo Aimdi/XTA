@@ -11,6 +11,7 @@
     <string name="keys_tabs">次または前のタブ</string>
     <string name="keys_tab_number">タブへ移動（9: 最後）</string>
     <string name="keys_pages">前または次のページ</string>
+    <string name="keys_columns">スクロールする前または次の列（デッキ）</string>
     <string name="keys_scroll_line">少しスクロール</string>
     <string name="keys_next_post">次または前の投稿</string>
     <string name="keys_scroll_screen">1画面分スクロール</string>

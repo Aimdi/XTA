@@ -11,6 +11,7 @@
     <string name="keys_tabs">अगला या पिछला टैब</string>
     <string name="keys_tab_number">किसी टैब पर जाएँ (9: आख़िरी)</string>
     <string name="keys_pages">पिछला या अगला पेज</string>
+    <string name="keys_columns">स्क्रॉल करने के लिए पिछला या अगला कॉलम (कॉलम)</string>
     <string name="keys_scroll_line">थोड़ा स्क्रॉल करें</string>
     <string name="keys_next_post">अगली या पिछली पोस्ट</string>
     <string name="keys_scroll_screen">एक स्क्रीन स्क्रॉल करें</string>

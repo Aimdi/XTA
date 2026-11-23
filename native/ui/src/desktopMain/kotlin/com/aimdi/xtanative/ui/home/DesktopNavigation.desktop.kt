@@ -138,6 +138,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             openHome()
             true
         }
+        DeskAction.NEXT_COLUMN -> actions.stepColumn(1)
+        DeskAction.PREVIOUS_COLUMN -> actions.stepColumn(-1)
         DeskAction.OPEN_SETTINGS -> {
             openSettings()
             true

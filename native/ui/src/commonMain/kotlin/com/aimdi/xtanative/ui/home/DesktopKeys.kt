@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.ui.geometry.Offset
+
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
 enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, OTHER }
 
@@ -38,6 +40,10 @@ enum class DeskAction {
 
     /** Back to Home, as a browser's Alt+Home goes to its home page. */
     GO_HOME,
+
+    /** The reading keys go to the next column of the page's, or the one before ([DesktopActions.stepColumn]): the Deck's. */
+    NEXT_COLUMN,
+    PREVIOUS_COLUMN,
 
     /** A web address on the clipboard opens, as one dropped on the window does (Ctrl+V while nothing is being typed in). */
     OPEN_PASTED_LINK,
@@ -84,6 +90,10 @@ object DesktopKeys {
      * X's site, while nothing is being typed in. Ctrl+V, while nothing is
      * being typed in, opens a link copied elsewhere, as dropping it does.
      * Alt+Home goes back to Home, as a browser's goes to its home page.
+     * Ctrl+← and Ctrl+→, while nothing is being typed in (where they go a
+     * word at a time) and nothing is open over the page, give the reading
+     * keys the column before or the next, in the reading direction, on a
+     * page of columns side by side (the Deck).
      */
     fun action(
         key: DeskKey,
@@ -111,6 +121,11 @@ object DesktopKeys {
         key == DeskKey.V && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.OPEN_PASTED_LINK
         (key == DeskKey.F && ctrl && !alt && !shift) || (key == DeskKey.SLASH && !focusInside && !alt && !ctrl) ->
             if (somethingOpen) DeskAction.NONE else DeskAction.FIND
+        ctrl && !alt && !shift && !focusInside && (key == DeskKey.LEFT || key == DeskKey.RIGHT) -> when {
+            somethingOpen -> DeskAction.NONE
+            (key == DeskKey.RIGHT) != rtl -> DeskAction.NEXT_COLUMN
+            else -> DeskAction.PREVIOUS_COLUMN
+        }
         focusInside || alt || ctrl -> DeskAction.NONE
         key in SCROLL_KEYS -> if (somethingOpen) DeskAction.NONE else scroll(key, shift)
         (key == DeskKey.J || key == DeskKey.K) && !shift -> when {
@@ -252,6 +267,32 @@ object DesktopKeys {
     /** The mouse's back button: as the keys, but on the first screen it closes the app, as XTA's goes back from Home. */
     fun mouseBack(canGoBack: Boolean, somethingOpen: Boolean): DeskAction =
         back(canGoBack, somethingOpen).takeIf { it != DeskAction.NONE } ?: DeskAction.LEAVE_APP
+
+    /**
+     * The column of [count] that Ctrl+← or Ctrl+→ ([by] -1 or 1) gives the
+     * reading keys, from the one they move now ([current]; null when none of
+     * the columns, such as before any list was read): the next or the one
+     * before, no further than either end, as the pager does not wrap; from
+     * none, the first going on, the last going back. Null when there are no
+     * columns.
+     */
+    fun columnStep(count: Int, current: Int?, by: Int): Int? = when {
+        count <= 0 -> null
+        current == null || current !in 0 until count -> if (by > 0) 0 else count - 1
+        else -> (current + by).coerceIn(0, count - 1)
+    }
+
+    /**
+     * Whether the pointer, now at [at] in the window, has moved since it was
+     * last at [last]: an event at the same place (within half a pixel) is the
+     * window's own, sent as what lies under a still pointer moved. Unknown
+     * places count as moves.
+     */
+    fun pointerMoved(last: Offset?, at: Offset?): Boolean =
+        last == null || at == null || (at - last).getDistance() >= POINTER_STILL
+
+    /** How far, in pixels, a pointer may seem to move while it stands still: the rounding of the places it is measured from. */
+    private const val POINTER_STILL = 0.5f
 
     /** The page [by] away from [page] of [count], or null at either end (XTA's pager does not wrap). */
     fun turned(page: Int, count: Int, by: Int): Int? = (page + by).takeIf { it in 0 until count }

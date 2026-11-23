@@ -11,6 +11,7 @@
     <string name="keys_tabs">下一个或上一个标签页</string>
     <string name="keys_tab_number">转到某个标签页（9：最后一个）</string>
     <string name="keys_pages">上一页或下一页</string>
+    <string name="keys_columns">上一栏或下一栏用于滚动（多栏）</string>
     <string name="keys_scroll_line">滚动一点</string>
     <string name="keys_next_post">下一条或上一条帖子</string>
     <string name="keys_scroll_screen">滚动一屏</string>

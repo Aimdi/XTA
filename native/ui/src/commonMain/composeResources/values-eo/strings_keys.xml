@@ -11,6 +11,7 @@
     <string name="keys_tabs">Sekva aŭ antaŭa langeto</string>
     <string name="keys_tab_number">Iri al langeto (9: la lasta)</string>
     <string name="keys_pages">Antaŭa aŭ sekva paĝo</string>
+    <string name="keys_columns">Antaŭa aŭ sekva kolumno por rulumi (Kolumnaro)</string>
     <string name="keys_scroll_line">Rulumi iomete</string>
     <string name="keys_next_post">Sekva aŭ antaŭa afiŝo</string>
     <string name="keys_scroll_screen">Rulumi je ekrano</string>
