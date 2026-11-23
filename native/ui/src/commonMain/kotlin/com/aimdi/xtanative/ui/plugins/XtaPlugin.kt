@@ -46,9 +46,11 @@ import kotlinx.serialization.json.JsonElement
  * feed row ([ShellFeeds], [ShellFilter]), the subtitle ([ShellSubtitle],
  * [ShellStatus]), its avatar's count ([ShellUnread]), its account
  * switcher ([ShellAccounts]), the sort sheet ([ShellSortSheet]) and the plugin's own
- * entries ([ShellMenuButton]), in the plugin sheet on Home.
+ * entries ([ShellMenuButton]), in the plugin sheet on Home; 15 adds
+ * [onContextClick], a right-click that opens what a card's long press
+ * opens on the desktop.
  */
-const val PLUGIN_API_VERSION: Int = 14
+const val PLUGIN_API_VERSION: Int = 15
 
 /**
  * The oldest plugin API whose plugins this app still loads: what they use of
