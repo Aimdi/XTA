@@ -16,6 +16,7 @@
     <string name="keys_full_screen">Plein écran</string>
     <string name="keys_video">Vidéo en plein écran : lecture ou pause, sauter 10 secondes</string>
     <string name="keys_photo_zoom">Agrandir, réduire ou afficher une photo en entier</string>
+    <string name="keys_photo_move">Se déplacer dans une photo agrandie</string>
     <string name="keys_quit">Quitter XTA</string>
     <string name="keys_ctrl">Ctrl</string>
     <string name="keys_shift">Maj</string>

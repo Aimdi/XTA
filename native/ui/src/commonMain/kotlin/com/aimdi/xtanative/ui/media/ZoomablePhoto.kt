@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -59,7 +60,15 @@ private enum class PhotoGesture { UNDECIDED, TRANSFORM, SLIDE, PAGE }
  * turns the page. [motion] off makes every change at once.
  */
 @Composable
-internal fun ZoomablePhoto(url: String, alt: String?, motion: Boolean, onBackdrop: (Float) -> Unit, onClose: () -> Unit, zoomKeys: Flow<ViewerKey>? = null) {
+internal fun ZoomablePhoto(
+    url: String,
+    alt: String?,
+    motion: Boolean,
+    onBackdrop: (Float) -> Unit,
+    onClose: () -> Unit,
+    zoomKeys: Flow<ViewerKey>? = null,
+    onZoomed: (Boolean) -> Unit = {},
+) {
     var scale by remember { mutableFloatStateOf(1f) }
     var area by remember { mutableStateOf(IntSize.Zero) }
     var shift by remember { mutableStateOf(Shift.ZERO) }
@@ -88,13 +97,21 @@ internal fun ZoomablePhoto(url: String, alt: String?, motion: Boolean, onBackdro
         }
     }
 
-    // The keys' zoom goes about the middle, eased as a double tap's.
+    // The keys' zoom goes about the middle, eased as a double tap's; the arrows move a zoomed photo about.
     LaunchedEffect(zoomKeys) {
         zoomKeys?.collect { key ->
+            val width = area.width.toFloat()
+            val height = area.height.toFloat()
             val to = ViewerZoom.keyed(scale, key)
-            if (to != scale) animateTo(to, if (ViewerZoom.zoomed(to)) ViewerZoom.shiftFor(Shift.ZERO, scale, shift, to, area.width.toFloat(), area.height.toFloat()) else Shift.ZERO)
+            when {
+                to != scale -> animateTo(to, if (ViewerZoom.zoomed(to)) ViewerZoom.shiftFor(Shift.ZERO, scale, shift, to, width, height) else Shift.ZERO)
+                ViewerZoom.zoomed(scale) -> animateTo(scale, ViewerZoom.panned(shift, scale, key, width, height))
+            }
         }
     }
+    // The viewer reads the arrows as moving about the photo while it is zoomed in.
+    val zoomedNow by rememberUpdatedState(onZoomed)
+    LaunchedEffect(Unit) { snapshotFlow { ViewerZoom.zoomed(scale) }.collect { zoomedNow(it) } }
 
     Box(
         Modifier

@@ -16,6 +16,7 @@
     <string name="keys_full_screen">Toàn màn hình</string>
     <string name="keys_video">Video toàn màn hình: phát hoặc tạm dừng, tua 10 giây</string>
     <string name="keys_photo_zoom">Phóng to, thu nhỏ hoặc xem toàn bộ ảnh</string>
+    <string name="keys_photo_move">Di chuyển trong ảnh đã phóng to</string>
     <string name="keys_quit">Thoát XTA</string>
     <string name="keys_ctrl">Ctrl</string>
     <string name="keys_shift">Shift</string>

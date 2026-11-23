@@ -16,6 +16,7 @@
     <string name="keys_full_screen">전체 화면</string>
     <string name="keys_video">전체 화면 동영상: 재생 또는 일시정지, 10초 건너뛰기</string>
     <string name="keys_photo_zoom">사진 확대, 축소 또는 전체 보기</string>
+    <string name="keys_photo_move">확대한 사진 안에서 이동</string>
     <string name="keys_quit">XTA 종료</string>
     <string name="keys_ctrl">Ctrl</string>
     <string name="keys_shift">Shift</string>

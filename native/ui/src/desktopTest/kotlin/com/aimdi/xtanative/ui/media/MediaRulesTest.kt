@@ -211,4 +211,24 @@ class MediaRulesTest {
         assertEquals(ViewerZoom.MIN, ViewerZoom.keyed(ViewerZoom.MIN, ViewerKey.ZOOM_OUT))
         assertEquals(2f, ViewerZoom.keyed(2f, ViewerKey.NEXT))
     }
+
+    @Test
+    fun theArrowsMoveAboutAZoomedPhotoAndHomeAndEndGoToTheEnds() {
+        fun key(left: Boolean = false, right: Boolean = false, up: Boolean = false, down: Boolean = false, home: Boolean = false, end: Boolean = false, zoomed: Boolean = false) =
+            ViewerKeys.of(escape = false, left = left, right = right, back = false, modified = false, up = up, down = down, home = home, end = end, zoomed = zoomed)
+        assertEquals(ViewerKey.PREVIOUS, key(left = true))
+        assertEquals(ViewerKey.NEXT, key(right = true))
+        assertEquals(ViewerKey.NONE, key(up = true))
+        assertEquals(ViewerKey.PAN_LEFT, key(left = true, zoomed = true))
+        assertEquals(ViewerKey.PAN_RIGHT, key(right = true, zoomed = true))
+        assertEquals(ViewerKey.PAN_UP, key(up = true, zoomed = true))
+        assertEquals(ViewerKey.PAN_DOWN, key(down = true, zoomed = true))
+        assertEquals(ViewerKey.FIRST, key(home = true))
+        assertEquals(ViewerKey.LAST, key(end = true, zoomed = true))
+        // Zoomed twice over on a 1000 x 800 page: the view moves 150 px and stops at the photo's edge (500 px).
+        assertEquals(Shift(150f, 0f), ViewerZoom.panned(Shift.ZERO, 2f, ViewerKey.PAN_LEFT, 1000f, 800f))
+        assertEquals(Shift(0f, -150f), ViewerZoom.panned(Shift.ZERO, 2f, ViewerKey.PAN_DOWN, 1000f, 1000f))
+        assertEquals(Shift(-500f, 0f), ViewerZoom.panned(Shift(-450f, 0f), 2f, ViewerKey.PAN_RIGHT, 1000f, 800f))
+        assertEquals(Shift.ZERO, ViewerZoom.panned(Shift.ZERO, 1f, ViewerKey.PAN_LEFT, 1000f, 800f))
+    }
 }

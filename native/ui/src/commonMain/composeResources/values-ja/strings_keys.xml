@@ -16,6 +16,7 @@
     <string name="keys_full_screen">全画面表示</string>
     <string name="keys_video">全画面の動画：再生または一時停止、10秒スキップ</string>
     <string name="keys_photo_zoom">写真を拡大・縮小・全体表示</string>
+    <string name="keys_photo_move">拡大した写真の中を移動</string>
     <string name="keys_quit">XTAを終了</string>
     <string name="keys_ctrl">Ctrl</string>
     <string name="keys_shift">Shift</string>

@@ -264,10 +264,12 @@ fun MediaPager(
                 when (val key = viewerKeyOf(event)) {
                     ViewerKey.PREVIOUS -> true.also { turn(-1) }
                     ViewerKey.NEXT -> true.also { turn(1) }
+                    ViewerKey.FIRST -> true.also { turn(-pager.currentPage) }
+                    ViewerKey.LAST -> true.also { turn(items.size - 1 - pager.currentPage) }
                     ViewerKey.CLOSE -> true.also { onClose() }
                     ViewerKey.COPY, ViewerKey.SAVE_AS -> fileMenu?.key(key) ?: false
                     // Plugins' pictures zoom with the wheel and pinch only (ZoomableImage is plugin API).
-                    ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET, ViewerKey.NONE -> false
+                    ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET, ViewerKey.PAN_LEFT, ViewerKey.PAN_RIGHT, ViewerKey.PAN_UP, ViewerKey.PAN_DOWN, ViewerKey.NONE -> false
                 }
             }
             .focusRequester(focus)

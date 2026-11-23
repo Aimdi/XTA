@@ -186,8 +186,9 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     if (onNearEnd != null) {
         LaunchedEffect(pager.currentPage, items.size) { if (MediaGallery.nearEnd(pager.currentPage, items.size)) onNearEnd() }
     }
-    // The zoom keys, for the photo shown.
+    // The zoom and pan keys, for the photo shown, and which pages' photos are zoomed in.
     val zoomKeys = remember { MutableSharedFlow<ViewerKey>(extraBufferCapacity = 8) }
+    val zoomedPages = remember { mutableStateMapOf<Int, Boolean>() }
     Box(
         Modifier
             .fillMaxSize()
@@ -195,13 +196,15 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
             // Before the focus target: key events reach the nodes above the focused one.
             .onKeyEvent { event ->
                 if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
-                when (val key = viewerKeyOf(event)) {
+                when (val key = viewerKeyOf(event, zoomed = zoomedPages[pager.currentPage] == true)) {
                     ViewerKey.PREVIOUS -> true.also { turn(-1) }
                     ViewerKey.NEXT -> true.also { turn(1) }
+                    ViewerKey.FIRST -> true.also { turn(-pager.currentPage) }
+                    ViewerKey.LAST -> true.also { turn(items.size - 1 - pager.currentPage) }
                     ViewerKey.CLOSE -> true.also { onClose() }
                     ViewerKey.COPY, ViewerKey.SAVE_AS -> fileMenu?.key(key) ?: false
-                    // The photo shown zooms; a video's page leaves the keys alone.
-                    ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET ->
+                    // The photo shown zooms and moves about; a video's page leaves the keys alone.
+                    ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET, ViewerKey.PAN_LEFT, ViewerKey.PAN_RIGHT, ViewerKey.PAN_UP, ViewerKey.PAN_DOWN ->
                         (items.getOrNull(pager.currentPage)?.kind == XMedia.Kind.PHOTO).also { if (it) zoomKeys.tryEmit(key) }
                     ViewerKey.NONE -> false
                 }
@@ -244,6 +247,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
                                 onBackdrop = { backdrop = it },
                                 onClose = onClose,
                                 zoomKeys = zoomKeys.takeIf { pager.currentPage == page },
+                                onZoomed = { zoomedPages[page] = it },
                             )
                             XMedia.Kind.VIDEO, XMedia.Kind.GIF -> {
                                 val download: ((String) -> Unit)? = if (saver == null) null else { url -> viewed.save(viewed.pages[page], url)?.let(saver::save) }

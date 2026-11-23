@@ -17,6 +17,7 @@
     <string name="keys_full_screen">Full screen</string>
     <string name="keys_video">Full-screen video: play or pause, skip 10 seconds</string>
     <string name="keys_photo_zoom">Zoom a photo in, out, or whole</string>
+    <string name="keys_photo_move">Move about a zoomed photo</string>
     <string name="keys_quit">Quit XTA</string>
     <string name="keys_ctrl">Ctrl</string>
     <string name="keys_shift">Shift</string>

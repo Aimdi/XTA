@@ -16,6 +16,7 @@
     <string name="keys_full_screen">Ecran complet</string>
     <string name="keys_video">Video pe ecran complet: redă sau pune pauză, sari 10 secunde</string>
     <string name="keys_photo_zoom">Mărește, micșorează sau arată fotografia întreagă</string>
+    <string name="keys_photo_move">Deplasează-te într-o fotografie mărită</string>
     <string name="keys_quit">Închide XTA</string>
     <string name="keys_ctrl">Ctrl</string>
     <string name="keys_shift">Shift</string>

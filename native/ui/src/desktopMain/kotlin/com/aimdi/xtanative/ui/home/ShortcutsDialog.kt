@@ -34,6 +34,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_next_post
 import com.aimdi.xtanative.ui.generated.resources.keys_page_down
 import com.aimdi.xtanative.ui.generated.resources.keys_page_up
 import com.aimdi.xtanative.ui.generated.resources.keys_pages
+import com.aimdi.xtanative.ui.generated.resources.keys_photo_move
 import com.aimdi.xtanative.ui.generated.resources.keys_photo_zoom
 import com.aimdi.xtanative.ui.generated.resources.keys_quit
 import com.aimdi.xtanative.ui.generated.resources.keys_refresh
@@ -93,6 +94,7 @@ object DesktopShortcuts {
         Shortcut(Res.string.settings_title, listOf(listOf(ctrl, sign(",")))),
         Shortcut(Res.string.keys_video, listOf(listOf(space), listOf(sign("←")), listOf(sign("→")))),
         Shortcut(Res.string.keys_photo_zoom, listOf(listOf(sign("+")), listOf(sign("−")), listOf(sign("0")))),
+        Shortcut(Res.string.keys_photo_move, listOf(listOf(sign("←")), listOf(sign("↑")), listOf(sign("→")), listOf(sign("↓")))),
         Shortcut(Res.string.keys_quit, listOf(listOf(ctrl, sign("Q")))),
     )
 }

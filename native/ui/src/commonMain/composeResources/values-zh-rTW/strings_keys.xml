@@ -16,6 +16,7 @@
     <string name="keys_full_screen">全螢幕</string>
     <string name="keys_video">全螢幕影片：播放或暫停，跳過 10 秒</string>
     <string name="keys_photo_zoom">放大、縮小或完整顯示相片</string>
+    <string name="keys_photo_move">在放大的相片中移動</string>
     <string name="keys_quit">結束 XTA</string>
     <string name="keys_ctrl">Ctrl</string>
     <string name="keys_shift">Shift</string>
