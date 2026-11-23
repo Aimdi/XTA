@@ -35,6 +35,7 @@ import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.NetworkPersonRow
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
@@ -184,10 +185,10 @@ private fun PeoplePane(app: MastodonApp, frame: PluginFrame, onAdd: () -> Unit) 
     val list = rememberLazyListState()
     LaunchedEffect(Unit) { app.follows.load() }
     ScrollsToTop(list, frame.toTop)
-    LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+    PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
         if (follows?.isEmpty() == true) item(key = "none") { EmptyTimeline(MastodonIcons.Public, pluginString(Strings.empty_following), pluginString(Strings.add_account), MastodonIcons.PersonAdd, onAdd) }
         items(follows.orEmpty(), key = MastodonFollow::acct) { follow ->
             NetworkPersonRow(follow.name, follow.acct, follow.avatarUrl, { app.openProfile(follow.acct) }) { AddToGroupButton(app.host, follow.acct) }
         }
-    }
+    } }
 }

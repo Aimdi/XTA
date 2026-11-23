@@ -21,6 +21,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyQuoteSort
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedList
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
 import com.aimdi.xtanative.ui.plugins.pagedRows
@@ -100,12 +101,12 @@ private fun QuoteList(app: BlueskyApp, uri: String, modifier: Modifier, contentP
     val empty = pluginString(Strings.no_results)
     ReadsMoreNearEnd(list, paged) { pages.more() }
     PullToRefreshBox(isRefreshing = paged.loading && paged.loaded, onRefresh = pages::refresh, modifier = modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = contentPadding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(contentPadding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             if (BlueskyQuoteSort.offered(paged.items)) {
                 item(key = "sort") { SortMenu(order, BlueskyQuoteSort.entries, { it.label to it.icon }, onChoose = { app.quoteSort.value = it }) }
             }
             pagedRows(sorted, pages, key = { it.uri }, problemText = { pluginString(errorText(it)) }, empty = empty) { post -> PostRow(app, post) }
-        }
+        } }
     }
 }
 

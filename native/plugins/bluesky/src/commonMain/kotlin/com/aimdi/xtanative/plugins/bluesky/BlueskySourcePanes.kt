@@ -44,6 +44,7 @@ import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedList
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.saved.SavedIcons
@@ -145,10 +146,10 @@ internal fun ListsPane(app: BlueskyApp, frame: PluginFrame) {
         }
     }
     if (selected == null) {
-        LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = column) {
             header()
             item(key = "none") { MessageText(pluginString(Strings.lists_empty)) }
-        }
+        } }
     } else {
         val pages = remember(server, selected.uri) { lists.pages(server, selected.uri) }
         RefreshesOn(frame.refresh) { pages.refresh() }

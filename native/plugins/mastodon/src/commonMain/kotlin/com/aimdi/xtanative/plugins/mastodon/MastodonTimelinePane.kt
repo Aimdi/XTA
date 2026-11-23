@@ -47,6 +47,7 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.RetryRow
@@ -84,11 +85,11 @@ internal fun TimelinePane(app: MastodonApp, timeline: MastodonTimeline, slot: St
     ScrollsToTop(list, frame.toTop)
     RefreshesOn(frame.refresh) { refresh(reader) }
     PullToRefreshBox(isRefreshing = state.loading && !state.isEmpty, onRefresh = { refresh(reader) }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             items(rows, key = { it.key }, contentType = { if (it is TimelineRow.Post) TimelineRow.POST else it.key }) { row ->
                 TimelineRowView(app, reader, row, state.tags, empty) { app.setFilter(timeline, MastodonTimelineFilter()) }
             }
-        }
+        } }
     }
 }
 

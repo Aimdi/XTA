@@ -64,6 +64,7 @@ import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.RetryRow
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
@@ -110,14 +111,14 @@ internal fun FollowingPane(app: BlueskyApp, frame: PluginFrame, onHome: Boolean,
     KeepsPlace(app, list, shown, state.posts, stripAfter)
     RefreshesOn(frame.refresh) { timeline.refresh(force = true) }
     PullToRefreshBox(isRefreshing = state.loading && state.loaded, onRefresh = { timeline.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             if (strip != null && stripAfter == null) item(key = "people") { strip() }
             followingStatus(app, state)
             filteredRows(app, state.posts, shown, strip.takeIf { stripAfter != null }) { setFilter(BlueskyReaderFilter()) }
             if (state.pending > 0 && state.posts.isNotEmpty()) {
                 item(key = "more-accounts") { LoadMoreAccounts { timeline.refresh(force = false) } }
             }
-        }
+        } }
     }
 }
 
@@ -307,13 +308,13 @@ internal fun LikedPane(app: BlueskyApp, frame: PluginFrame, filters: ReaderFilte
     }
     RefreshesOn(frame.refresh) { reload() }
     PullToRefreshBox(isRefreshing = reading, onRefresh = reload, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             if (library.isEmpty()) {
                 item(key = "empty") { LikedEmpty() }
             } else {
                 filteredRows(app, library, shown) { setFilter(BlueskyReaderFilter()) }
             }
-        }
+        } }
     }
 }
 

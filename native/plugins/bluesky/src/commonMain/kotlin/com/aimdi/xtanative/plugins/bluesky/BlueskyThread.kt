@@ -61,6 +61,7 @@ import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -111,14 +112,14 @@ internal fun BlueskyThreadScreen(app: BlueskyApp, target: PostTarget) {
         },
     ) { padding ->
         PullToRefreshBox(isRefreshing = state.loading && state.thread != null, onRefresh = thread::load, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            LazyColumn(state = list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp), modifier = Modifier.fillMaxSize()) {
+            PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp), list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
                 threadHead(app, thread, state, seed)
                 if (state.thread?.replies.orEmpty().isNotEmpty()) item(key = "controls") { Controls(app, state.authorOnly, order, thread::selectAuthor) }
                 if (!state.loading && state.problem == null && state.thread != null && rows.isEmpty()) {
                     item(key = "no-replies") { EmptyReplies(if (state.authorOnly) Strings.no_author_replies else Strings.no_replies) }
                 }
                 items(rows, key = { "reply-" + it.branch.post.uri }, contentType = { "reply" }) { row -> ReplyRow(app, row, thread::toggle) }
-            }
+            } }
         }
     }
 }
