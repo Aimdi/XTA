@@ -84,6 +84,16 @@ class MockX(private val routes: Map<String, MockRoute> = ROUTES, private val rea
                 key = "screen_name",
                 missing = """{"data":{}}""",
             ),
+            // The same accounts by id, as a profile opened from a post (or a follow known by id) reads them.
+            "UserByRestId" to MockRoute(
+                linkedMapOf(
+                    "2095909295913103360" to "UserByScreenName/modern.json",
+                    "2095914123905118211" to "UserByScreenName/quax_tests_2.json",
+                    "783214" to "UserByScreenName/ok.json",
+                ),
+                key = "userId",
+                missing = """{"data":{}}""",
+            ),
             "UserOriginalsTimeline" to MockRoute(mapOf("*" to "UserOriginalsTimeline/page.json")),
             "UserTweetsAndReplies" to MockRoute(mapOf("*" to "UserOriginalsTimeline/page.json")),
             // The Posts tab reads reposts beside the posts; the recorded accounts repost nothing.

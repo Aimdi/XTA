@@ -32,6 +32,7 @@ class MockXTest {
         val known = mock.answer("GET", graphql("UserByScreenName", """{"screen_name":"Quax_Tests_2"}"""))
         assertEquals("UserByScreenName/quax_tests_2.json", known.fixture)
         assertEquals(200, known.status)
+        assertEquals("UserByScreenName/quax_tests_2.json", mock.answer("GET", graphql("UserByRestId", """{"userId":"2095914123905118211"}""")).fixture)
         val unknown = mock.answer("GET", graphql("UserByScreenName", """{"screen_name":"nobody_by_this_name"}"""))
         assertEquals(MockAnswer(200, """{"data":{}}"""), unknown)
         assertEquals(
@@ -76,7 +77,7 @@ class MockXTest {
         assertTrue(other.body.startsWith("The stand-in for X has no answer for GET https://x.com/i/api/graphql/someId/HomeTimeline?variables="))
         assertTrue(
             other.body.endsWith(
-                "It answers UserByScreenName, UserOriginalsTimeline, UserTweetsAndReplies, UserRepostsTimeline, TweetDetail, " +
+                "It answers UserByScreenName, UserByRestId, UserOriginalsTimeline, UserTweetsAndReplies, UserRepostsTimeline, TweetDetail, " +
                     "CommunityQuery, CommunityTweetsTimeline, membersSliceTimeline_Query, CommunitiesSearchQuery, the guest token.",
             ),
         )
