@@ -34,6 +34,7 @@ import coil3.compose.AsyncImage
 import com.aimdi.xtanative.networks.RssItem
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.agoText
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /**
@@ -50,7 +51,7 @@ internal fun RssItemCard(item: RssItem, unread: Boolean, onOpen: () -> Unit, sho
     val largeText = LocalDensity.current.fontScale * 14 > 20
     val unreadLabel = pluginString(Strings.unread)
     Column(
-        Modifier.fillMaxWidth().combinedClickable(onClick = onOpen, onLongClick = onLongPress).semantics { if (unread) stateDescription = unreadLabel }.padding(16.dp),
+        Modifier.fillMaxWidth().then(onLongPress?.let { Modifier.onContextClick(it) } ?: Modifier).combinedClickable(onClick = onOpen, onLongClick = onLongPress).semantics { if (unread) stateDescription = unreadLabel }.padding(16.dp),
     ) {
         SourceLine(item, unread, showSource)
         Spacer(Modifier.height(8.dp))

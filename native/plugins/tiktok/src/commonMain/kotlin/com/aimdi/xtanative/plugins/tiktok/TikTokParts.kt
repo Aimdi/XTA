@@ -51,6 +51,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.plugins.rememberShareText
@@ -85,7 +86,7 @@ internal fun VerifiedMark(size: Dp) {
 @Composable
 internal fun TikTokPostCard(app: TikTokApp, post: TikTokPost, liked: Boolean, openAuthor: Boolean = true) {
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
-    Column(Modifier.fillMaxWidth().pointerInput(post.id) { detectTapGestures(onLongPress = { app.openPostMenu(post) }) }) {
+    Column(Modifier.fillMaxWidth().onContextClick { app.openPostMenu(post) }.pointerInput(post.id) { detectTapGestures(onLongPress = { app.openPostMenu(post) }) }) {
         Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             val author = post.author
             TikTokAvatar(author.avatarUrl, author.displayName, author.uniqueId, 48.dp, onClick = if (openAuthor) ({ app.openProfile(author.uniqueId) }) else null)
