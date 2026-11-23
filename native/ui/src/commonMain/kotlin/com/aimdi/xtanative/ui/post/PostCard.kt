@@ -255,9 +255,11 @@ internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, siz
 /** "Name ✓ @handle · 3h", or the time alone when the author is not shown. */
 @Composable
 internal fun PostAuthor(post: XPost, scope: PostScope, modifier: Modifier = Modifier) {
-    val time = if (scope.prefs.absoluteTimestamps) fullTimeText(post.createdAt) else agoText(post.createdAt)
+    val full = fullTimeText(post.createdAt)
+    val time = if (scope.prefs.absoluteTimestamps) full else agoText(post.createdAt)
     if (PostView.showsAuthor(post, scope.prefs, scope.profileScreenName)) {
-        AuthorLine(post.author.name, post.author.screenName, time, post.author.verified, modifier)
+        // The full date and time where the pointer rests on a short one, as on X's site (a tooltip on the desktop; nothing on Android).
+        AuthorLine(post.author.name, post.author.screenName, time, post.author.verified, modifier, timeTip = full)
     } else {
         Text(time, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = modifier)
     }

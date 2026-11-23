@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import kotlin.math.max
 import kotlin.math.min
@@ -72,7 +73,11 @@ object AuthorLineLayout {
  * left; with large text the handle and time go to a second line.
  */
 @Composable
-fun AuthorLine(name: String, handle: String, time: String, verified: Boolean, modifier: Modifier = Modifier) {
+fun AuthorLine(name: String, handle: String, time: String, verified: Boolean, modifier: Modifier = Modifier) = AuthorLine(name, handle, time, verified, modifier, timeTip = null)
+
+/** [AuthorLine] whose time names [timeTip] (the full date and time) where the pointer rests on it, as X's site does; plugin API keeps the one above. */
+@Composable
+internal fun AuthorLine(name: String, handle: String, time: String, verified: Boolean, modifier: Modifier, timeTip: String?) {
     val grey = MaterialTheme.colorScheme.onSurfaceVariant
     val style = MaterialTheme.typography.bodyMedium
     val fontScale = LocalDensity.current.fontScale
@@ -87,7 +92,8 @@ fun AuthorLine(name: String, handle: String, time: String, verified: Boolean, mo
                 Spacer(Modifier)
             }
             Text(remember(handle, grey) { handleText(handle, grey) }, style = style, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(if (time.isEmpty()) "" else " · $time", style = style, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            val timeText = @Composable { Text(if (time.isEmpty()) "" else " · $time", style = style, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+            if (timeTip.isNullOrEmpty() || timeTip == time) timeText() else IconTip(timeTip, timeText)
         },
     ) { measurables, constraints ->
         val loose = constraints.copy(minWidth = 0, minHeight = 0)
