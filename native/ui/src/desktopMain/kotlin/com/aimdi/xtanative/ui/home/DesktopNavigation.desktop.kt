@@ -56,13 +56,17 @@ actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> 
     var focusInside by remember { mutableStateOf(false) }
     // A frame later: what gives the keys back is still leaving when it asks. The frame takes them only if
     // nothing in the page has since (a screen that focuses its field as it opens keeps it).
+    // A sheet swapped for another in the same frame closes before the next opens: by the time the frame
+    // would take the keys, the new sheet holds them, so it does not.
+    val created = remember { arrayOfNulls<DesktopActions>(1) }
     val actions = remember {
         DesktopActions(refocus = { under ->
             scope.launch {
                 delay(REFOCUS_AFTER_MS)
-                if (under != null || !focusInside) runCatching { (under ?: focus).requestFocus() }
+                val sheetOpen = created[0]?.sheetOpen() == true
+                if (under != null || (!focusInside && !sheetOpen)) runCatching { (under ?: focus).requestFocus() }
             }
-        })
+        }).also { created[0] = it }
     }
     // What is drawn above this frame (a video full screen) reaches the actions through the root's host.
     val host = LocalDesktopActionsHost.current

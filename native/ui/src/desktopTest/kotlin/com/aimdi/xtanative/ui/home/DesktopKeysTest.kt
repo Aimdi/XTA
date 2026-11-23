@@ -2,7 +2,9 @@ package com.aimdi.xtanative.ui.home
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /** XTA's desktop shortcuts (lib/ui/desktop_navigation.dart, desktop_pager.dart) and the avatar's monogram (fallback_avatar.dart). */
 class DesktopKeysTest {
@@ -155,5 +157,15 @@ class DesktopKeysTest {
         assertEquals(1, refocused)
         actions.sheetClosed()
         assertEquals(2, refocused, "never below none")
+    }
+
+    @Test
+    fun aSheetSwappedForAnotherIsStillOpenWhenTheFrameWouldTakeTheKeys() {
+        val actions = DesktopActions()
+        actions.sheetOpened()
+        actions.sheetClosed()
+        assertFalse(actions.sheetOpen())
+        actions.sheetOpened()
+        assertTrue(actions.sheetOpen(), "the delayed refocus sees the new sheet and leaves the keys with it")
     }
 }

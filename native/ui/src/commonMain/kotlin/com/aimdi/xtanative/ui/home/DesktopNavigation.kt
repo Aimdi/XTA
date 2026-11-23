@@ -102,6 +102,9 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
      * it, else the window's frame. One still open (a sheet that opened
      * another) keeps its own field's focus.
      */
+    /** Whether a sheet is open now: one opened in place of another as it closed takes back the keys it handed back. */
+    internal fun sheetOpen(): Boolean = sheets > 0
+
     internal fun sheetClosed() {
         sheets = (sheets - 1).coerceAtLeast(0)
         if (sheets == 0) refocus(holders.lastOrNull())
