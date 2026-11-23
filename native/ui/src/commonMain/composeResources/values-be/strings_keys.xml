@@ -6,6 +6,7 @@
     <string name="keys_go_home">Назад на галоўную</string>
     <string name="keys_refresh">Абнавіць</string>
     <string name="keys_search">Пошук</string>
+    <string name="keys_recent_searches">Выбраць нядаўні пошук з поля пошуку</string>
     <string name="keys_open_copied_link">Адкрыць скапіяваную спасылку</string>
     <string name="keys_tabs">Наступная або папярэдняя ўкладка</string>
     <string name="keys_tab_number">Перайсці да ўкладкі (9: апошняя)</string>

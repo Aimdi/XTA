@@ -80,6 +80,21 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
     /** The search field shown on top takes the keyboard; false when the page has none. */
     fun find(): Boolean = finders.lastOrNull()?.second?.let { it(); true } ?: false
 
+    /** What a field being typed in drops at Esc before leaving it (a recent search it has highlighted), the last added on top. */
+    private val fieldEscapes = mutableListOf<Pair<Any, () -> Boolean>>()
+
+    internal fun addFieldEscape(owner: Any, drop: () -> Boolean) {
+        fieldEscapes.removeAll { it.first === owner }
+        fieldEscapes += owner to drop
+    }
+
+    internal fun removeFieldEscape(owner: Any) {
+        fieldEscapes.removeAll { it.first === owner }
+    }
+
+    /** Esc in a field: true when the field dropped something of its own, and keeps the keyboard for now. */
+    internal fun escapeInField(): Boolean = fieldEscapes.asReversed().any { it.second() }
+
     /** The lists on screen, in the order they came, and the one the pointer was last over. */
     private val lists = mutableListOf<LazyListState>()
     private var pointed: LazyListState? = null

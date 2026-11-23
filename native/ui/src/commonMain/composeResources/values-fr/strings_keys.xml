@@ -6,6 +6,7 @@
     <string name="keys_go_home">Retour à l’accueil</string>
     <string name="keys_refresh">Actualiser</string>
     <string name="keys_search">Rechercher</string>
+    <string name="keys_recent_searches">Choisir une recherche récente depuis le champ de recherche</string>
     <string name="keys_open_copied_link">Ouvrir un lien copié</string>
     <string name="keys_tabs">Onglet suivant ou précédent</string>
     <string name="keys_tab_number">Aller à un onglet (9 : le dernier)</string>

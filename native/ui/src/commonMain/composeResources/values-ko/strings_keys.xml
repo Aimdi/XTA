@@ -6,6 +6,7 @@
     <string name="keys_go_home">홈으로 돌아가기</string>
     <string name="keys_refresh">새로고침</string>
     <string name="keys_search">검색</string>
+    <string name="keys_recent_searches">검색창에서 최근 검색어 고르기</string>
     <string name="keys_open_copied_link">복사한 링크 열기</string>
     <string name="keys_tabs">다음 또는 이전 탭</string>
     <string name="keys_tab_number">탭으로 이동 (9: 마지막)</string>

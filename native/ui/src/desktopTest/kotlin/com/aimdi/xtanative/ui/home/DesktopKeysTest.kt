@@ -171,6 +171,20 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun aFieldsEscapeDropsItsOwnFirstAndOneGoneTakesNone() {
+        val actions = DesktopActions()
+        assertFalse(actions.escapeInField(), "no field: Esc leaves it")
+        var highlighted = true
+        val field = Any()
+        actions.addFieldEscape(field) { highlighted.also { highlighted = false } }
+        assertTrue(actions.escapeInField(), "the first Esc drops the highlight")
+        assertFalse(actions.escapeInField(), "the next leaves the field")
+        highlighted = true
+        actions.removeFieldEscape(field)
+        assertFalse(actions.escapeInField())
+    }
+
+    @Test
     fun ctrlFAndSlashGoToTheSearch() {
         assertEquals(DeskAction.FIND, action(DeskKey.F, ctrl = true))
         assertEquals(DeskAction.FIND, action(DeskKey.F, ctrl = true, focusInside = true), "Ctrl+F from another field")

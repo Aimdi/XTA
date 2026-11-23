@@ -39,6 +39,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_pages
 import com.aimdi.xtanative.ui.generated.resources.keys_photo_move
 import com.aimdi.xtanative.ui.generated.resources.keys_photo_zoom
 import com.aimdi.xtanative.ui.generated.resources.keys_quit
+import com.aimdi.xtanative.ui.generated.resources.keys_recent_searches
 import com.aimdi.xtanative.ui.generated.resources.keys_refresh
 import com.aimdi.xtanative.ui.generated.resources.keys_scroll_ends
 import com.aimdi.xtanative.ui.generated.resources.keys_scroll_line
@@ -84,6 +85,7 @@ object DesktopShortcuts {
         Shortcut(Res.string.keys_go_home, listOf(listOf(alt, KeyCap.Named(Res.string.keys_home)))),
         Shortcut(Res.string.keys_refresh, listOf(listOf(sign("F5")), listOf(ctrl, sign("R")))),
         Shortcut(Res.string.keys_search, listOf(listOf(ctrl, sign("F")), listOf(sign("/")))),
+        Shortcut(Res.string.keys_recent_searches, listOf(listOf(sign("↓")), listOf(sign("↑")))),
         Shortcut(Res.string.keys_open_copied_link, listOf(listOf(ctrl, sign("V")))),
         Shortcut(Res.string.keys_tabs, listOf(listOf(ctrl, tab), listOf(ctrl, shift, tab))),
         Shortcut(Res.string.keys_tab_number, listOf(listOf(ctrl, sign("1…9")))),

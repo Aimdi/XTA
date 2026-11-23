@@ -129,6 +129,13 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
     }
     val focus = remember { FocusRequester() }
     val leaveField = rememberLeaveField()
+    // The recent searches under the field, which the desktop's ↓ and ↑ highlight from it.
+    val shownRecent = if (state.view.hasQuery) emptyList() else recent
+    val pick = rememberRecentPick()
+    val searchRecent = { query: String ->
+        vm.searchAgain(query)
+        leaveField()
+    }
     // The field takes the keyboard as the screen opens, not again when the reader comes back to it from a result.
     var opened by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -160,7 +167,7 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
                 focus.requestFocus()
             },
             onAdvanced = vm::openAdvanced,
-            modifier = modifier.focusRequester(focus).foundWithKeys(),
+            modifier = modifier.focusRequester(focus).foundWithKeys().pickedFromRecent(pick, shownRecent, field.text, searchRecent),
         )
     }
 
@@ -183,12 +190,10 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
             if (!state.view.hasQuery) {
                 RecentSearchesBar(
                     recent,
-                    onSelect = { query ->
-                        vm.searchAgain(query)
-                        leaveField()
-                    },
+                    onSelect = searchRecent,
                     onRemove = vm::removeRecent,
                     onClear = vm::clearRecent,
+                    highlighted = pick.of(recent),
                 )
                 StartState()
             } else {

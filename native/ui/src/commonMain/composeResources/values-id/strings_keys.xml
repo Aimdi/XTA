@@ -6,6 +6,7 @@
     <string name="keys_go_home">Kembali ke Beranda</string>
     <string name="keys_refresh">Segarkan</string>
     <string name="keys_search">Cari</string>
+    <string name="keys_recent_searches">Pilih pencarian terbaru dari kolom pencarian</string>
     <string name="keys_open_copied_link">Buka tautan yang disalin</string>
     <string name="keys_tabs">Tab berikutnya atau sebelumnya</string>
     <string name="keys_tab_number">Buka tab (9: yang terakhir)</string>

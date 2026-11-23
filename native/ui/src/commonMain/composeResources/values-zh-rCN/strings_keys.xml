@@ -6,6 +6,7 @@
     <string name="keys_go_home">返回首页</string>
     <string name="keys_refresh">刷新</string>
     <string name="keys_search">搜索</string>
+    <string name="keys_recent_searches">在搜索框中选择最近的搜索</string>
     <string name="keys_open_copied_link">打开复制的链接</string>
     <string name="keys_tabs">下一个或上一个标签页</string>
     <string name="keys_tab_number">转到某个标签页（9：最后一个）</string>

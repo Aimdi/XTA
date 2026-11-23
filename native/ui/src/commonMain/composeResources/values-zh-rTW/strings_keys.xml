@@ -6,6 +6,7 @@
     <string name="keys_go_home">返回首頁</string>
     <string name="keys_refresh">重新整理</string>
     <string name="keys_search">搜尋</string>
+    <string name="keys_recent_searches">在搜尋欄中選擇最近的搜尋</string>
     <string name="keys_open_copied_link">開啟複製的連結</string>
     <string name="keys_tabs">下一個或上一個分頁</string>
     <string name="keys_tab_number">前往某個分頁（9：最後一個）</string>

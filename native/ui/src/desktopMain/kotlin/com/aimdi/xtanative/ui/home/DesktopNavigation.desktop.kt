@@ -162,6 +162,11 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         val canGoBack = nav.previousBackStackEntry != null
         val key = deskKey(event.key)
         val action = DesktopKeys.action(key, event.isAltPressed, event.isCtrlPressed, focusInside, canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed)
+        // A search field's first Esc drops the recent search it highlighted; the next leaves the field.
+        if (action == DeskAction.LEAVE_FIELD && actions.escapeInField()) {
+            keyTaken = true
+            return true
+        }
         // The media viewer's Esc closes it at once, rather than first taking the focus from it as from a field; Ctrl+Q still quits.
         keyTaken = !(actions.overlayHoldsKeys() && action != DeskAction.LEAVE_APP) && act(action)
         return keyTaken

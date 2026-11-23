@@ -7,6 +7,7 @@
     <string name="keys_go_home">Back to Home</string>
     <string name="keys_refresh">Refresh</string>
     <string name="keys_search">Search</string>
+    <string name="keys_recent_searches">Pick a recent search from the search field</string>
     <string name="keys_open_copied_link">Open a copied link</string>
     <string name="keys_tabs">Next or previous tab</string>
     <string name="keys_tab_number">Go to a tab (9: the last)</string>

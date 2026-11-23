@@ -6,6 +6,7 @@
     <string name="keys_go_home">Înapoi la Acasă</string>
     <string name="keys_refresh">Reîmprospătează</string>
     <string name="keys_search">Caută</string>
+    <string name="keys_recent_searches">Alege o căutare recentă din câmpul de căutare</string>
     <string name="keys_open_copied_link">Deschide un link copiat</string>
     <string name="keys_tabs">Fila următoare sau anterioară</string>
     <string name="keys_tab_number">Mergi la o filă (9: ultima)</string>

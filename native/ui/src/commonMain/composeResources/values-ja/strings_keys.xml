@@ -6,6 +6,7 @@
     <string name="keys_go_home">ホームに戻る</string>
     <string name="keys_refresh">更新</string>
     <string name="keys_search">検索</string>
+    <string name="keys_recent_searches">検索欄から最近の検索を選ぶ</string>
     <string name="keys_open_copied_link">コピーしたリンクを開く</string>
     <string name="keys_tabs">次または前のタブ</string>
     <string name="keys_tab_number">タブへ移動（9: 最後）</string>

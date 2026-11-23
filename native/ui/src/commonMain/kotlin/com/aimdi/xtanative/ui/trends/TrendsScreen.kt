@@ -112,6 +112,8 @@ import com.aimdi.xtanative.ui.search.DiscoverIcons
 import com.aimdi.xtanative.ui.search.EmptyNote
 import com.aimdi.xtanative.ui.search.RecentSearchesBar
 import com.aimdi.xtanative.ui.search.SearchablePlugin
+import com.aimdi.xtanative.ui.search.pickedFromRecent
+import com.aimdi.xtanative.ui.search.rememberRecentPick
 import com.aimdi.xtanative.ui.search.searchablePlugins
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -172,6 +174,10 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
             if (DiscoverScopes.opensXSearch(scope)) actions.openSearch(query)
         }
     }
+    // The recent searches under the bar, which the desktop's ↓ and ↑ highlight from it.
+    val shownRecent = if (state.committed.isEmpty()) recent else emptyList()
+    val pick = rememberRecentPick()
+    val searchRecent: (String) -> Unit = { query -> searched(vm.searchAgain(query)) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -197,7 +203,8 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
                                 focus.requestFocus()
                             },
                             onLibrary = { actions.openLibrary(field.text) },
-                            modifier = Modifier.fillMaxWidth().padding(end = 12.dp).focusRequester(focus).foundWithKeys(),
+                            modifier = Modifier.fillMaxWidth().padding(end = 12.dp).focusRequester(focus).foundWithKeys()
+                                .pickedFromRecent(pick, shownRecent, field.text, searchRecent),
                         )
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -219,9 +226,10 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
             if (state.committed.isEmpty()) {
                 RecentSearchesBar(
                     recent,
-                    onSelect = { query -> searched(vm.searchAgain(query)) },
+                    onSelect = searchRecent,
                     onRemove = vm::removeRecent,
                     onClear = vm::clearRecent,
+                    highlighted = pick.of(recent),
                 )
             }
             if (plugin == null) {

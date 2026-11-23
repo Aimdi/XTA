@@ -6,6 +6,7 @@
     <string name="keys_go_home">Volver al inicio</string>
     <string name="keys_refresh">Actualizar</string>
     <string name="keys_search">Buscar</string>
+    <string name="keys_recent_searches">Elegir una búsqueda reciente desde el campo de búsqueda</string>
     <string name="keys_open_copied_link">Abrir un enlace copiado</string>
     <string name="keys_tabs">Pestaña siguiente o anterior</string>
     <string name="keys_tab_number">Ir a una pestaña (9: la última)</string>
