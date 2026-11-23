@@ -246,7 +246,12 @@ private suspend fun LazyListState.moveFor(action: DeskAction, line: Float) {
                 layoutInfo.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) },
                 layoutInfo.totalItemsCount,
                 action == DeskAction.NEXT_ITEM,
-            )?.let { (index, offset) -> animateScrollToItem(index, offset) }
+            )?.let { (index, offset) ->
+                animateScrollToItem(index, offset)
+                // Tabs in their own place before the step stick on the way, over the post's start: it comes out from under them.
+                val covered = DesktopKeys.coveredAfterStep(layoutInfo.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) }, index)
+                if (covered > 0) animateScrollBy(-covered.toFloat())
+            }
         else -> Unit
     }
 }

@@ -27,6 +27,8 @@ class AutostartEntryTest {
             // An entry the desktop's own settings switched off counts as off.
             File(folder, AutostartEntry.FILE_NAME).writeText(AutostartEntry.text("xta-native") + "Hidden=true\n")
             assertFalse(entry.isOn())
+            File(folder, AutostartEntry.FILE_NAME).writeText(AutostartEntry.text("xta-native").replace("X-GNOME-Autostart-enabled=true", "X-GNOME-Autostart-enabled=false"))
+            assertFalse(entry.isOn())
         } finally {
             dir.deleteRecursively()
         }
@@ -41,7 +43,9 @@ class AutostartEntryTest {
             // Not on PATH, or a copy in the home folder: its own path, quoted.
             assertEquals("\"/opt/xta-native/bin/xta-native\"", AutostartEntry.execFor("/opt/xta-native/bin/xta-native", "/nowhere", "/home/me"))
             assertEquals("\"/home/me/My Apps/xta-native/bin/xta-native\"", AutostartEntry.execFor("/home/me/My Apps/xta-native/bin/xta-native", dir.path, "/home/me"))
-            assertEquals("\"/home/me/a\\\$b\\\"c/xta\"", AutostartEntry.execFor("/home/me/a\$b\"c/xta", "/nowhere", "/home/me"))
+            // The Desktop Entry spec's two levels: a backslash inside the quotes, then every backslash doubled; % as %%.
+            val odd = "/home/me/a\$b\"c/100%/x\\y/xta"
+            assertEquals(""""/home/me/a\\${'$'}b\\"c/100%%/x\\\\y/xta"""", AutostartEntry.execFor(odd, "/nowhere", "/home/me"))
             assertNull(AutostartEntry.execFor(null, dir.path, "/home/me"))
             bin.delete()
         } finally {

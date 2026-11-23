@@ -75,7 +75,8 @@ internal object DraggedPictures {
     private const val KEEP_MS = 24L * 60 * 60 * 1000
 
     private val folder: File by lazy {
-        val cache = System.getenv("XDG_CACHE_HOME")?.takeIf { it.isNotBlank() }?.let(::File) ?: File(System.getProperty("user.home"), ".cache")
+        // The XDG spec has a relative $XDG_CACHE_HOME ignored.
+        val cache = System.getenv("XDG_CACHE_HOME")?.let(::File)?.takeIf { it.isAbsolute } ?: File(System.getProperty("user.home"), ".cache")
         File(File(cache, "xta-native"), "dragged-pictures").also { folder ->
             folder.mkdirs()
             val old = System.currentTimeMillis() - KEEP_MS

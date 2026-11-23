@@ -324,4 +324,14 @@ class DesktopKeysTest {
         // A header in its own place (the next item follows it) is no pinned one: k goes on up the list.
         assertEquals(0 to 0, DesktopKeys.itemStep(listOf(item(1, 0, 48), item(2, 48)), 9, forward = false))
     }
+
+    @Test
+    fun aPostCoveredByTabsThatStuckComesOutFromUnderThem() {
+        fun item(index: Int, offset: Int, size: Int = 300) = DesktopKeys.ShownItem(index, offset, size)
+        // The tabs (1) stuck over post 2, which the step brought to 0.
+        assertEquals(48, DesktopKeys.coveredAfterStep(listOf(item(1, 0, 48), item(2, 0), item(3, 300)), 2))
+        // Already under them, or no pinned header: nothing to do.
+        assertEquals(0, DesktopKeys.coveredAfterStep(listOf(item(1, 0, 48), item(2, 48)), 2))
+        assertEquals(0, DesktopKeys.coveredAfterStep(listOf(item(2, 0), item(3, 300)), 2))
+    }
 }

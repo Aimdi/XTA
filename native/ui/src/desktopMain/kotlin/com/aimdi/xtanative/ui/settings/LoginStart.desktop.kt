@@ -18,7 +18,8 @@ internal actual fun rememberLoginStart(): LoginStart? = remember { AutostartEntr
 internal class AutostartEntry(private val folder: File, private val exec: String) : LoginStart {
     private val file = File(folder, FILE_NAME)
 
-    override fun isOn(): Boolean = file.isFile && runCatching { file.readLines().none { it.trim().equals("Hidden=true", ignoreCase = true) } }.getOrDefault(false)
+    // An entry the desktop's own settings switched off (Hidden, or GNOME's own key) counts as off.
+    override fun isOn(): Boolean = file.isFile && runCatching { file.readLines().map { it.trim().lowercase() }.none { it in OFF_LINES } }.getOrDefault(false)
 
     override fun set(on: Boolean): Boolean = runCatching {
         if (on) {
@@ -61,12 +62,30 @@ internal class AutostartEntry(private val folder: File, private val exec: String
             val onPath = path.orEmpty().split(File.pathSeparatorChar).filter { it.isNotBlank() }.any { File(it, "xta-native").let { bin -> bin.isFile && bin.canExecute() } }
             val system = home.isNullOrBlank() || !File(app).absolutePath.startsWith(File(home).absolutePath + File.separator)
             if (onPath && system) return "xta-native"
-            return "\"" + app.replace("\\", "\\\\").replace("\"", "\\\"").replace("`", "\\`").replace("$", "\\$") + "\""
+            return quoted(app)
+        }
+
+        private val OFF_LINES = setOf("hidden=true", "x-gnome-autostart-enabled=false")
+
+        /** The characters that take a backslash inside a quoted Exec argument. */
+        private const val QUOTED_ESCAPES = "\"`$\\"
+
+        /**
+         * [arg] as one quoted argument of an Exec value, by the Desktop Entry
+         * spec's two levels: inside the quotes `"`, `` ` ``, `$` and `\` take a
+         * backslash; then the value's own string escaping doubles every
+         * backslash (a literal `\` ends up as four), and `%` is `%%`, so it
+         * reads as no field code.
+         */
+        fun quoted(arg: String): String {
+            val inQuotes = buildString { arg.forEach { c -> if (c in QUOTED_ESCAPES) append('\\'); append(c) } }
+            return "\"$inQuotes\"".replace("\\", "\\\\").replace("%", "%%")
         }
 
         fun forThisApp(): AutostartEntry? {
             val exec = execFor(System.getProperty("jpackage.app-path"), System.getenv("PATH"), System.getProperty("user.home")) ?: return null
-            val config = System.getenv("XDG_CONFIG_HOME")?.takeIf { it.isNotBlank() }?.let(::File) ?: File(System.getProperty("user.home"), ".config")
+            // The XDG spec has a relative $XDG_CONFIG_HOME ignored.
+            val config = System.getenv("XDG_CONFIG_HOME")?.let(::File)?.takeIf { it.isAbsolute } ?: File(System.getProperty("user.home"), ".config")
             return AutostartEntry(File(config, "autostart"), exec)
         }
     }

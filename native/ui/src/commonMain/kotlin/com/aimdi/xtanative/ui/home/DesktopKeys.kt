@@ -195,7 +195,7 @@ object DesktopKeys {
     fun itemStep(shown: List<ShownItem>, count: Int, forward: Boolean): Pair<Int, Int>? {
         if (count <= 0 || shown.isEmpty()) return null
         val items = shown.sortedBy { it.index }
-        val pinned = items.getOrNull(1)?.takeIf { second -> second.index != items[0].index + 1 || second.offset < items[0].offset + items[0].size }?.let { items[0] }
+        val pinned = pinnedOf(items)
         val line = pinned?.let { it.offset + it.size } ?: 0
         val flowing = items.filter { it !== pinned }
         val reading = flowing.firstOrNull { it.offset + it.size > line } ?: return null
@@ -207,6 +207,22 @@ object DesktopKeys {
         if (target !in 0 until count || target == pinned?.index) return null
         return target to -line
     }
+
+    /**
+     * How far the start of item [index] sits under a header pinned over the
+     * list in [shown], after a step: a header in its own place before the
+     * step may have stuck on the way and covered it. 0 when nothing covers it.
+     */
+    fun coveredAfterStep(shown: List<ShownItem>, index: Int): Int {
+        val items = shown.sortedBy { it.index }
+        val pinned = pinnedOf(items) ?: return 0
+        val item = items.firstOrNull { it.index == index && it !== pinned } ?: return 0
+        return (pinned.offset + pinned.size - item.offset).coerceAtLeast(0)
+    }
+
+    /** The first item in view when it is pinned over the list: the items after it are not the next ones, or they overlap it. */
+    private fun pinnedOf(items: List<ShownItem>): ShownItem? =
+        items.getOrNull(1)?.takeIf { second -> second.index != items[0].index + 1 || second.offset < items[0].offset + items[0].size }?.let { items[0] }
 
     /** Pixels an item may sit off the line and still count as on it. */
     private const val SLACK = 1
