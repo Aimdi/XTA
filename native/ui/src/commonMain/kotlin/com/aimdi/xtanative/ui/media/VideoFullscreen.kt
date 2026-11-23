@@ -149,10 +149,14 @@ internal fun playbackKey(key: VideoKey, playback: VideoPlayback): Boolean {
         VideoKey.FORWARD -> playback.seekTo(VideoRules.seekTarget(now.positionMs, skip, now.durationMs))
         VideoKey.MUTE -> toggleMute(playback, now.muted)
         VideoKey.RESTART -> playback.seekTo(0)
-        VideoKey.END -> playback.seekTo(now.durationMs.coerceAtLeast(0))
+        // Not while the length is unknown (still loading): every place would be the start.
+        VideoKey.END -> if (now.durationMs > 0) playback.seekTo(now.durationMs)
         VideoKey.SLOWER -> playback.setSpeed(VideoRules.slower(now.speed))
         VideoKey.FASTER -> playback.setSpeed(VideoRules.faster(now.speed))
-        else -> if (key.tenths >= 0) playback.seekTo(VideoRules.jumpTarget(key.tenths, now.durationMs)) else return false
+        else -> when {
+            key.tenths < 0 -> return false
+            now.durationMs > 0 -> playback.seekTo(VideoRules.jumpTarget(key.tenths, now.durationMs))
+        }
     }
     return true
 }

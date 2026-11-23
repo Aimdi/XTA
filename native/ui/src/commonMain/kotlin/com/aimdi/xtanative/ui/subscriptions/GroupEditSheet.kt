@@ -168,9 +168,6 @@ fun GroupEditSheet(
                     placeholder = { Text(stringResource(Res.string.groups_name)) },
                     isError = nameTouched && !draft.canSave,
                     supportingText = if (nameTouched && !draft.canSave) ({ Text(stringResource(Res.string.groups_please_enter_a_name)) }) else null,
-                    // Enter (or the keyboard's Done) is OK: a blank name is only marked, nothing saved.
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = { save() }),
                     modifier = Modifier.weight(1f).focusRequester(nameFocus),
                 )
                 IconTip(stringResource(Res.string.groups_pick_color)) { IconButton(onClick = { picker = EditPicker.COLOR }) {
