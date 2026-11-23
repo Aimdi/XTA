@@ -5,5 +5,6 @@
     <string name="media_tap_to_show">Appuyer pour afficher %1$s</string>
     <string name="media_copy_image">Copier l’image</string>
     <string name="media_save_as">Enregistrer sous…</string>
+    <string name="media_drag_out">Faire glisser l’image vers une autre app</string>
     <string name="media_copy_failed">Impossible de copier l’image</string>
 </resources>

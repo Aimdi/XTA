@@ -209,6 +209,9 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
                     IconTip(stringResource(Res.string.posts_open_post)) { IconButton(onClick = { onOpenPost(current) }) { Icon(PostIcons.OpenInNew, stringResource(Res.string.posts_open_post), tint = Color.White) } }
                 }
                 val save = current?.let { viewed.save(it, playing[pager.currentPage]) }
+                if (save != null && save.kind == XMedia.Kind.PHOTO) {
+                    items.getOrNull(pager.currentPage)?.let { PictureDragHandle(save, viewed.shownUrl(it, size)) }
+                }
                 if (saver != null && save != null) {
                     IconTip(stringResource(Res.string.reader_download)) { IconButton(onClick = { saver.save(save) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) } }
                 }

@@ -5,5 +5,6 @@
     <string name="media_tap_to_show">輕觸以顯示 %1$s</string>
     <string name="media_copy_image">複製圖片</string>
     <string name="media_save_as">另存新檔…</string>
+    <string name="media_drag_out">將圖片拖曳到其他應用程式</string>
     <string name="media_copy_failed">無法複製圖片</string>
 </resources>

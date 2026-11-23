@@ -5,5 +5,6 @@
     <string name="media_tap_to_show">Ketuk untuk menampilkan %1$s</string>
     <string name="media_copy_image">Salin gambar</string>
     <string name="media_save_as">Simpan sebagai…</string>
+    <string name="media_drag_out">Seret gambar ke aplikasi lain</string>
     <string name="media_copy_failed">Gambar tidak dapat disalin</string>
 </resources>

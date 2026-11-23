@@ -5,5 +5,6 @@
     <string name="media_tap_to_show">Atingeți pentru a afișa %1$s</string>
     <string name="media_copy_image">Copiază imaginea</string>
     <string name="media_save_as">Salvează ca…</string>
+    <string name="media_drag_out">Trage imaginea în altă aplicație</string>
     <string name="media_copy_failed">Imaginea nu a putut fi copiată</string>
 </resources>

@@ -5,5 +5,6 @@
     <string name="media_tap_to_show">Нажмите, чтобы показать %1$s</string>
     <string name="media_copy_image">Копировать изображение</string>
     <string name="media_save_as">Сохранить как…</string>
+    <string name="media_drag_out">Перетащите изображение в другое приложение</string>
     <string name="media_copy_failed">Не удалось скопировать изображение</string>
 </resources>

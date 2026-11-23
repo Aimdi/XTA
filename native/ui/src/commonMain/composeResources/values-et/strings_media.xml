@@ -5,5 +5,6 @@
     <string name="media_tap_to_show">%1$s kuvamiseks klõpsi</string>
     <string name="media_copy_image">Kopeeri pilt</string>
     <string name="media_save_as">Salvesta kui…</string>
+    <string name="media_drag_out">Lohista pilt teise rakendusse</string>
     <string name="media_copy_failed">Pilti ei õnnestunud kopeerida</string>
 </resources>

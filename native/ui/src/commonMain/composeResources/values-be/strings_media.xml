@@ -5,5 +5,6 @@
     <string name="media_tap_to_show">Націсніце, каб паказаць %1$s</string>
     <string name="media_copy_image">Капіяваць выяву</string>
     <string name="media_save_as">Захаваць як…</string>
+    <string name="media_drag_out">Перацягніце выяву ў іншую праграму</string>
     <string name="media_copy_failed">Не ўдалося скапіяваць выяву</string>
 </resources>

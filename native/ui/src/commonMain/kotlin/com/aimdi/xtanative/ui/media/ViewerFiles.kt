@@ -37,6 +37,15 @@ internal interface ViewerFileActions {
     fun saveAs(save: MediaSave)
 }
 
+/**
+ * A handle in the viewer's bar to drag the picture [save] out into another
+ * app (a file manager, a chat, an editor) as a file, where the platform
+ * drags files (the desktop); nothing on Android. [shownUrl] is the address
+ * the page shows it at, whose copy the image cache holds.
+ */
+@Composable
+internal expect fun PictureDragHandle(save: MediaSave, shownUrl: String)
+
 /** The desktop's [ViewerFileActions]; null on Android, whose viewer shares and saves through its bar. */
 @Composable
 internal expect fun rememberViewerFileActions(): ViewerFileActions?
