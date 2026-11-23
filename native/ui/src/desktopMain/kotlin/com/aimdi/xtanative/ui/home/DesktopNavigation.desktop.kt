@@ -178,5 +178,6 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.Spacebar -> DeskKey.SPACE
     Key.MoveHome -> DeskKey.HOME
     Key.MoveEnd -> DeskKey.END
+    Key.Tab -> DeskKey.TAB
     else -> DeskKey.OTHER
 }

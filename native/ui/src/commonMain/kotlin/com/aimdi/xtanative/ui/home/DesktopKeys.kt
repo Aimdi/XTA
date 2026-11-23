@@ -1,7 +1,7 @@
 package com.aimdi.xtanative.ui.home
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, OTHER }
 
 enum class DeskAction {
     /** Out of the text field being typed in, as XTA's first Esc does. */
@@ -39,7 +39,9 @@ object DesktopKeys {
      * nothing in it takes the arrows, in the reading direction ([rtl]).
      * ↑ ↓, Page Up and Down, Space (with Shift, up), Home and End move the
      * list being read, as in a browser, unless a field is being typed in or
-     * something is open over the page.
+     * something is open over the page. Ctrl+Tab and Ctrl+Page Down turn to
+     * the next page, Ctrl+Shift+Tab and Ctrl+Page Up to the one before, as a
+     * browser turns its tabs, even from a field.
      */
     fun action(
         key: DeskKey,
@@ -54,6 +56,7 @@ object DesktopKeys {
         key == DeskKey.ESCAPE && focusInside -> DeskAction.LEAVE_FIELD
         key == DeskKey.ESCAPE || key == DeskKey.BACK || (key == DeskKey.LEFT && alt) -> back(canGoBack, somethingOpen)
         key == DeskKey.F5 || (key == DeskKey.R && ctrl) -> DeskAction.REFRESH
+        ctrl && !alt && key in TAB_KEYS -> if (somethingOpen) DeskAction.NONE else tabTurn(key, shift)
         focusInside || alt || ctrl -> DeskAction.NONE
         key in SCROLL_KEYS -> if (somethingOpen) DeskAction.NONE else scroll(key, shift)
         key == DeskKey.LEFT -> if (rtl) DeskAction.NEXT_PAGE else DeskAction.PREVIOUS_PAGE
@@ -62,6 +65,13 @@ object DesktopKeys {
     }
 
     private val SCROLL_KEYS = setOf(DeskKey.UP, DeskKey.DOWN, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN, DeskKey.SPACE, DeskKey.HOME, DeskKey.END)
+
+    private val TAB_KEYS = setOf(DeskKey.TAB, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN)
+
+    private fun tabTurn(key: DeskKey, shift: Boolean): DeskAction = when {
+        key == DeskKey.PAGE_UP || (key == DeskKey.TAB && shift) -> DeskAction.PREVIOUS_PAGE
+        else -> DeskAction.NEXT_PAGE
+    }
 
     private fun scroll(key: DeskKey, shift: Boolean): DeskAction = when (key) {
         DeskKey.UP -> DeskAction.LINE_UP

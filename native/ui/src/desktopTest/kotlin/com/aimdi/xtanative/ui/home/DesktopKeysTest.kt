@@ -34,7 +34,7 @@ class DesktopKeysTest {
         DeskKey.entries.filter { it in setOf(DeskKey.UP, DeskKey.DOWN, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN, DeskKey.SPACE, DeskKey.HOME, DeskKey.END) }.forEach { key ->
             assertEquals(DeskAction.NONE, action(key, focusInside = true), "$key while typing")
             assertEquals(DeskAction.NONE, action(key, open = true), "$key with a sheet open")
-            assertEquals(DeskAction.NONE, action(key, ctrl = true), "Ctrl+$key")
+            if (key != DeskKey.PAGE_UP && key != DeskKey.PAGE_DOWN) assertEquals(DeskAction.NONE, action(key, ctrl = true), "Ctrl+$key")
             assertEquals(DeskAction.NONE, action(key, alt = true), "Alt+$key")
         }
     }
@@ -84,6 +84,19 @@ class DesktopKeysTest {
         assertEquals(DeskAction.NONE, action(DeskKey.RIGHT, focusInside = true))
         assertEquals(DeskAction.NONE, action(DeskKey.RIGHT, ctrl = true))
         assertEquals(DeskAction.NONE, action(DeskKey.OTHER))
+    }
+
+    @Test
+    fun ctrlTabAndCtrlPageKeysTurnPagesAsABrowserTurnsTabs() {
+        assertEquals(DeskAction.NEXT_PAGE, action(DeskKey.TAB, ctrl = true))
+        assertEquals(DeskAction.PREVIOUS_PAGE, action(DeskKey.TAB, ctrl = true, shift = true))
+        assertEquals(DeskAction.NEXT_PAGE, action(DeskKey.PAGE_DOWN, ctrl = true))
+        assertEquals(DeskAction.PREVIOUS_PAGE, action(DeskKey.PAGE_UP, ctrl = true))
+        assertEquals(DeskAction.NEXT_PAGE, action(DeskKey.TAB, ctrl = true, focusInside = true), "from a field too")
+        assertEquals(DeskAction.NEXT_PAGE, action(DeskKey.TAB, ctrl = true, rtl = true), "tabs keep their order whichever way text reads")
+        assertEquals(DeskAction.NONE, action(DeskKey.TAB, ctrl = true, open = true), "not under a sheet")
+        assertEquals(DeskAction.NONE, action(DeskKey.TAB), "plain Tab moves the focus")
+        assertEquals(DeskAction.NONE, action(DeskKey.TAB, ctrl = true, alt = true))
     }
 
     @Test
