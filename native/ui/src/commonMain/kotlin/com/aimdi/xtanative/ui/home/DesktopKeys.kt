@@ -107,6 +107,10 @@ object DesktopKeys {
      * typed in and nothing is open over the page, selects every item shown;
      * while it is [selecting], Delete removes what is selected and Esc stops
      * selecting before it goes back, as in a file manager.
+     * What is open may be a column read beside the page rather than over it
+     * ([openIsRead]: the Deck's detail, a post opened there): Esc and Ctrl+W
+     * still close it first, but the reading keys, j and k and Ctrl+← and
+     * Ctrl+→ go on working, as nothing covers the lists.
      */
     fun action(
         key: DeskKey,
@@ -118,42 +122,47 @@ object DesktopKeys {
         somethingOpen: Boolean = false,
         shift: Boolean = false,
         selecting: Boolean = false,
-    ): DeskAction = when {
-        key == DeskKey.ESCAPE && focusInside -> DeskAction.LEAVE_FIELD
-        key == DeskKey.ESCAPE && selecting && !somethingOpen -> DeskAction.LEAVE_SELECTION
-        key == DeskKey.ESCAPE || key == DeskKey.BACK || (key == DeskKey.LEFT && alt) -> back(canGoBack, somethingOpen)
-        key == DeskKey.F5 || (key == DeskKey.R && ctrl) -> DeskAction.REFRESH
-        key == DeskKey.Q && ctrl && !alt -> DeskAction.LEAVE_APP
-        key == DeskKey.W && ctrl && !alt && !shift -> if (somethingOpen) DeskAction.CLOSE else DeskAction.NONE
-        key == DeskKey.COMMA && ctrl && !alt && !shift -> if (somethingOpen) DeskAction.NONE else DeskAction.OPEN_SETTINGS
-        ctrl && !alt && key in TAB_KEYS -> if (somethingOpen) DeskAction.NONE else tabTurn(key, shift)
-        key == DeskKey.TAB && !focusInside && !alt && !ctrl -> DeskAction.ENTER_PAGE
-        ctrl && !alt && key in TEXT_KEYS -> textSize(key)
-        (key == DeskKey.F1 && !alt && !ctrl) || (key == DeskKey.QUESTION && !focusInside && !alt && !ctrl) ->
-            if (somethingOpen) DeskAction.NONE else DeskAction.SHOW_KEYS
-        // Over an opened post (a card the page counts as open) too: going home leaves it with the rest.
-        key == DeskKey.HOME && alt && !ctrl && !shift -> DeskAction.GO_HOME
-        key == DeskKey.V && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.OPEN_PASTED_LINK
-        (key == DeskKey.F && ctrl && !alt && !shift) || (key == DeskKey.SLASH && !focusInside && !alt && !ctrl) ->
-            if (somethingOpen) DeskAction.NONE else DeskAction.FIND
-        ctrl && !alt && !shift && !focusInside && (key == DeskKey.LEFT || key == DeskKey.RIGHT) -> when {
-            somethingOpen -> DeskAction.NONE
-            (key == DeskKey.RIGHT) != rtl -> DeskAction.NEXT_COLUMN
-            else -> DeskAction.PREVIOUS_COLUMN
+        openIsRead: Boolean = false,
+    ): DeskAction {
+        // Only what is open over the page stops the reading keys; a column opened beside it is read with them.
+        val covered = somethingOpen && !openIsRead
+        return when {
+            key == DeskKey.ESCAPE && focusInside -> DeskAction.LEAVE_FIELD
+            key == DeskKey.ESCAPE && selecting && !somethingOpen -> DeskAction.LEAVE_SELECTION
+            key == DeskKey.ESCAPE || key == DeskKey.BACK || (key == DeskKey.LEFT && alt) -> back(canGoBack, somethingOpen)
+            key == DeskKey.F5 || (key == DeskKey.R && ctrl) -> DeskAction.REFRESH
+            key == DeskKey.Q && ctrl && !alt -> DeskAction.LEAVE_APP
+            key == DeskKey.W && ctrl && !alt && !shift -> if (somethingOpen) DeskAction.CLOSE else DeskAction.NONE
+            key == DeskKey.COMMA && ctrl && !alt && !shift -> if (somethingOpen) DeskAction.NONE else DeskAction.OPEN_SETTINGS
+            ctrl && !alt && key in TAB_KEYS -> if (somethingOpen) DeskAction.NONE else tabTurn(key, shift)
+            key == DeskKey.TAB && !focusInside && !alt && !ctrl -> DeskAction.ENTER_PAGE
+            ctrl && !alt && key in TEXT_KEYS -> textSize(key)
+            (key == DeskKey.F1 && !alt && !ctrl) || (key == DeskKey.QUESTION && !focusInside && !alt && !ctrl) ->
+                if (somethingOpen) DeskAction.NONE else DeskAction.SHOW_KEYS
+            // Over an opened post (a card the page counts as open) too: going home leaves it with the rest.
+            key == DeskKey.HOME && alt && !ctrl && !shift -> DeskAction.GO_HOME
+            key == DeskKey.V && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.OPEN_PASTED_LINK
+            (key == DeskKey.F && ctrl && !alt && !shift) || (key == DeskKey.SLASH && !focusInside && !alt && !ctrl) ->
+                if (somethingOpen) DeskAction.NONE else DeskAction.FIND
+            ctrl && !alt && !shift && !focusInside && (key == DeskKey.LEFT || key == DeskKey.RIGHT) -> when {
+                covered -> DeskAction.NONE
+                (key == DeskKey.RIGHT) != rtl -> DeskAction.NEXT_COLUMN
+                else -> DeskAction.PREVIOUS_COLUMN
+            }
+            // In a field, Ctrl+A selects its text; Delete deletes a character there.
+            key == DeskKey.A && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.SELECT_ALL
+            key == DeskKey.DELETE && selecting && !focusInside && !alt && !ctrl && !shift -> if (somethingOpen) DeskAction.NONE else DeskAction.REMOVE_SELECTED
+            focusInside || alt || ctrl -> DeskAction.NONE
+            key in SCROLL_KEYS -> if (covered) DeskAction.NONE else scroll(key, shift)
+            (key == DeskKey.J || key == DeskKey.K) && !shift -> when {
+                covered -> DeskAction.NONE
+                key == DeskKey.J -> DeskAction.NEXT_ITEM
+                else -> DeskAction.PREVIOUS_ITEM
+            }
+            key == DeskKey.LEFT -> if (rtl) DeskAction.NEXT_PAGE else DeskAction.PREVIOUS_PAGE
+            key == DeskKey.RIGHT -> if (rtl) DeskAction.PREVIOUS_PAGE else DeskAction.NEXT_PAGE
+            else -> DeskAction.NONE
         }
-        // In a field, Ctrl+A selects its text; Delete deletes a character there.
-        key == DeskKey.A && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.SELECT_ALL
-        key == DeskKey.DELETE && selecting && !focusInside && !alt && !ctrl && !shift -> if (somethingOpen) DeskAction.NONE else DeskAction.REMOVE_SELECTED
-        focusInside || alt || ctrl -> DeskAction.NONE
-        key in SCROLL_KEYS -> if (somethingOpen) DeskAction.NONE else scroll(key, shift)
-        (key == DeskKey.J || key == DeskKey.K) && !shift -> when {
-            somethingOpen -> DeskAction.NONE
-            key == DeskKey.J -> DeskAction.NEXT_ITEM
-            else -> DeskAction.PREVIOUS_ITEM
-        }
-        key == DeskKey.LEFT -> if (rtl) DeskAction.NEXT_PAGE else DeskAction.PREVIOUS_PAGE
-        key == DeskKey.RIGHT -> if (rtl) DeskAction.PREVIOUS_PAGE else DeskAction.NEXT_PAGE
-        else -> DeskAction.NONE
     }
 
     private val SCROLL_KEYS = setOf(DeskKey.UP, DeskKey.DOWN, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN, DeskKey.SPACE, DeskKey.HOME, DeskKey.END)

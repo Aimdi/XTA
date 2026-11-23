@@ -81,6 +81,13 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                 val sheetOpen = created[0]?.sheetOpen() == true
                 if (under != null || (!focusInside && !sheetOpen)) runCatching { (under ?: focus).requestFocus() }
             }
+        }, takeKeys = {
+            // From the page only: a sheet or an overlay keeps what it holds.
+            scope.launch {
+                delay(REFOCUS_AFTER_MS)
+                val held = created[0]?.let { it.sheetOpen() || it.overlayHoldsKeys() } == true
+                if (!held) runCatching { focus.requestFocus() }
+            }
         }).also { created[0] = it }
     }
     // What is drawn above this frame (a video full screen) reaches the actions through the root's host.
@@ -169,7 +176,10 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         }
         val canGoBack = nav.previousBackStackEntry != null
         val key = deskKey(event.key)
-        val action = DesktopKeys.action(key, event.isAltPressed, event.isCtrlPressed, focusInside, canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed, actions.selecting())
+        val action = DesktopKeys.action(
+            key, event.isAltPressed, event.isCtrlPressed, focusInside, canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed,
+            selecting = actions.selecting(), openIsRead = actions.openIsRead(),
+        )
         // A search field's first Esc drops the recent search it highlighted; the next leaves the field.
         if (action == DeskAction.LEAVE_FIELD && actions.escapeInField()) {
             keyTaken = true

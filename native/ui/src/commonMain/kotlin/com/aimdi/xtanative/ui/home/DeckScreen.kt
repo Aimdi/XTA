@@ -120,7 +120,9 @@ private const val DETAIL_MIN_WIDTH = 420
  * column offers what is not on the deck yet. A post or a profile opened from
  * a column opens beside them ([DeckDetail]), the columns staying as they
  * were. The desktop's F5 and Ctrl+R read every column again; Escape closes
- * what the detail column shows, one page at a time.
+ * what the detail column shows, one page at a time, and meanwhile the
+ * reading keys move the page it shows, Ctrl+← and Ctrl+→ choosing it or a
+ * column.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -140,9 +142,14 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     val toTop = remember { mutableStateMapOf<String, Int>() }
     var refreshedAll by remember { mutableIntStateOf(0) }
     var adding by remember { mutableStateOf(false) }
-    DesktopShortcuts(refresh = { refreshedAll++ }, turn = {}, isOpen = { detail.open }, close = { detail.back() })
-    ReadColumns(columns.map { it.id })
+    // The detail beside the columns closes first at Esc, but covers nothing: the reading keys move it, and Ctrl+→ reaches it.
+    DesktopShortcuts(refresh = { refreshedAll++ }, turn = {}, isOpen = { detail.open }, close = { detail.back() }, readsOpen = { detail.open })
+    ReadColumns(columns.map { it.id } + listOfNotNull(DetailColumn.takeIf { detail.open }))
     val chosen = chosenReadColumn()
+    // What the detail has just opened (a post, a profile, one back) is what the reading keys move next.
+    val desk = LocalDesktopActions.current
+    val shown = detail.pages.lastOrNull()
+    LaunchedEffect(desk, shown, detail.pages.size) { if (shown != null) desk?.readOpened(DetailColumn) }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -188,7 +195,9 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
             }
             if (detail.open) {
                 VerticalDivider()
-                Box(Modifier.width(maxOf(width.dp, DETAIL_MIN_WIDTH).dp).fillMaxHeight()) { DetailView(detail, columnActions) }
+                Box(Modifier.width(maxOf(width.dp, DETAIL_MIN_WIDTH).dp).fillMaxHeight().chosenMark(chosen == DetailColumn)) {
+                    ReadColumn(DetailColumn) { DetailView(detail, columnActions) }
+                }
             }
         }
     }
@@ -419,6 +428,9 @@ private fun AddColumnSheet(choices: List<DeckColumn>, networks: HomeNetworks, on
         }
     }
 }
+
+/** The detail column's key among the deck's columns ([ReadColumn]), apart from every column's id. */
+private object DetailColumn
 
 /** What the detail column shows: a post's conversation or a profile. */
 internal sealed interface DeckPage {

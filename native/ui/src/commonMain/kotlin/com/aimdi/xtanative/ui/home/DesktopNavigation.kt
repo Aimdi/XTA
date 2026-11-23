@@ -29,22 +29,34 @@ import androidx.navigation.NavHostController
  * What the screen on top lets the desktop's keys do (XTA's DesktopRefreshKeys
  * and DesktopPager): F5 and Ctrl+R refresh it, ← and → turn its pages, and
  * going back first closes what it has open. One screen holds them at a time,
- * the one resumed; see [DesktopShortcuts].
+ * the one resumed; see [DesktopShortcuts]. [refocus] gives the keys back
+ * to the frame unless something in the page holds them; [takeKeys] takes
+ * them from whatever in the page holds them.
  */
-class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
+class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}, private val takeKeys: () -> Unit = {}) {
     private var owner: Any? = null
     private var refreshing: (() -> Unit)? = null
     private var turning: ((Int) -> Unit)? = null
     private var jumping: ((Int) -> Unit)? = null
     private var open: (() -> Boolean)? = null
+    private var openRead: (() -> Boolean)? = null
     private var closing: (() -> Unit)? = null
 
-    internal fun take(owner: Any, refresh: () -> Unit, turn: (Int) -> Unit, isOpen: () -> Boolean, close: () -> Unit, jump: (Int) -> Unit = {}) {
+    internal fun take(
+        owner: Any,
+        refresh: () -> Unit,
+        turn: (Int) -> Unit,
+        isOpen: () -> Boolean,
+        close: () -> Unit,
+        jump: (Int) -> Unit = {},
+        readsOpen: () -> Boolean = { false },
+    ) {
         this.owner = owner
         refreshing = refresh
         turning = turn
         jumping = jump
         open = isOpen
+        openRead = readsOpen
         closing = close
     }
 
@@ -55,6 +67,7 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
         turning = null
         jumping = null
         open = null
+        openRead = null
         closing = null
     }
 
@@ -67,6 +80,13 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
     fun jump(digit: Int): Boolean = jumping?.let { it(digit); true } ?: false
 
     fun somethingOpen(): Boolean = open?.invoke() ?: false
+
+    /**
+     * Whether what is open is read with the reading keys ([DesktopKeys.action]'s
+     * openIsRead): a column opened beside the page (the Deck's detail), while
+     * no sheet is open over it.
+     */
+    fun openIsRead(): Boolean = openRead?.invoke() == true && !sheetOpen()
 
     fun close() {
         closing?.invoke()
@@ -157,6 +177,7 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
         pointer = at
         pointed = list
         if (listColumns[list] != chosenColumn) chosenColumn = null
+        if (listColumns[list] != opened) opened = null
     }
 
     /** The page's columns side by side ([ReadColumns]), in their order on screen, and the page that shows them. */
@@ -181,6 +202,24 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
         columnsOwner = null
         columnOrder = { emptyList() }
         chosenColumn = null
+        opened = null
+    }
+
+    /** The column just opened beside the others ([readOpened]); null once the pointer or Ctrl+← and Ctrl+→ go elsewhere. */
+    private var opened: Any? = null
+
+    /**
+     * [column] just opened (the Deck's detail showing a post): the reading
+     * keys move its list, unmarked, until the pointer moves over another list
+     * or Ctrl+← and Ctrl+→ choose a column; a column chosen before is chosen
+     * no more. The frame takes the keys from the post or button clicked to
+     * open it, which would otherwise keep them: the reading keys would do
+     * nothing and the first Esc only let go of it.
+     */
+    internal fun readOpened(column: Any) {
+        opened = column
+        chosenColumn = null
+        takeKeys()
     }
 
     /**
@@ -192,6 +231,7 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
         val current = chosen() ?: readList()?.let { listColumns[it] }
         val index = DesktopKeys.columnStep(order.size, order.indexOf(current).takeIf { it >= 0 }, by) ?: return false
         chosenColumn = order[index]
+        opened = null
         return true
     }
 
@@ -259,13 +299,16 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
 
     /**
      * The list the keys move: the chosen column's ([chosenColumn]; none while
-     * it shows no list, such as its error), else the one the pointer was last
-     * over, else the first on screen (the page's own, before any column
-     * beside it).
+     * it shows no list, such as its error), else the column's just opened
+     * ([readOpened]) once its list is shown, else the one the pointer was
+     * last over, else the first on screen (the page's own, before any column
+     * beside it). A column gone from the page (the Deck's detail closed)
+     * counts as none chosen or opened.
      */
-    internal fun readList(): LazyListState? = when (val column = chosen()) {
-        null -> pointed ?: lists.firstOrNull()
-        else -> lists.lastOrNull { listColumns[it] == column }
+    internal fun readList(): LazyListState? {
+        chosen()?.let { column -> return lists.lastOrNull { listColumns[it] == column } }
+        opened?.takeIf { it in columnOrder() }?.let { column -> lists.lastOrNull { listColumns[it] == column }?.let { return it } }
+        return pointed ?: lists.firstOrNull()
     }
 }
 
@@ -414,19 +457,29 @@ fun Modifier.foundWithKeys(): Modifier {
 /**
  * Lets the screen answer the desktop's keys while it is the one shown: [refresh]
  * for F5 and Ctrl+R, [turn] for ← and →, and [isOpen] with [close] for what
- * going back closes first. Nothing off the desktop.
+ * going back closes first; [readsOpen] when what is open is a column beside
+ * the page that the reading keys move rather than something over it (the
+ * Deck's detail). Nothing off the desktop.
  */
 @Composable
-internal fun DesktopShortcuts(refresh: () -> Unit, turn: (Int) -> Unit, isOpen: () -> Boolean, close: () -> Unit, jump: (Int) -> Unit = {}) {
+internal fun DesktopShortcuts(
+    refresh: () -> Unit,
+    turn: (Int) -> Unit,
+    isOpen: () -> Boolean,
+    close: () -> Unit,
+    jump: (Int) -> Unit = {},
+    readsOpen: () -> Boolean = { false },
+) {
     val actions = LocalDesktopActions.current ?: return
     val latestRefresh by rememberUpdatedState(refresh)
     val latestTurn by rememberUpdatedState(turn)
     val latestJump by rememberUpdatedState(jump)
     val latestIsOpen by rememberUpdatedState(isOpen)
     val latestClose by rememberUpdatedState(close)
+    val latestReadsOpen by rememberUpdatedState(readsOpen)
     val owner = remember { Any() }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        actions.take(owner, { latestRefresh() }, { latestTurn(it) }, { latestIsOpen() }, { latestClose() }, { latestJump(it) })
+        actions.take(owner, { latestRefresh() }, { latestTurn(it) }, { latestIsOpen() }, { latestClose() }, { latestJump(it) }, { latestReadsOpen() })
     }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.release(owner) }
     DisposableEffect(actions) { onDispose { actions.release(owner) } }

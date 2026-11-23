@@ -21,7 +21,8 @@ class DesktopKeysTest {
         open: Boolean = false,
         shift: Boolean = false,
         selecting: Boolean = false,
-    ) = DesktopKeys.action(key, alt, ctrl, focusInside, canGoBack, rtl, open, shift, selecting)
+        openIsRead: Boolean = false,
+    ) = DesktopKeys.action(key, alt, ctrl, focusInside, canGoBack, rtl, open, shift, selecting, openIsRead)
 
     @Test
     fun ctrlASelectsAllAsInAFileManagerButNotInAField() {
@@ -583,5 +584,87 @@ class DesktopKeysTest {
         actions.scrolled()
         actions.point(second, Offset(900f, 300f))
         assertSame(second, actions.readList())
+    }
+
+    @Test
+    fun aColumnOpenedBesideThePageIsReadWithTheKeys() {
+        // The Deck's detail open: the reading keys, j and k, and Ctrl+← and Ctrl+→ go on working.
+        assertEquals(DeskAction.LINE_DOWN, action(DeskKey.DOWN, open = true, openIsRead = true))
+        assertEquals(DeskAction.SCREEN_DOWN, action(DeskKey.PAGE_DOWN, open = true, openIsRead = true))
+        assertEquals(DeskAction.SCREEN_UP, action(DeskKey.SPACE, shift = true, open = true, openIsRead = true))
+        assertEquals(DeskAction.TO_END, action(DeskKey.END, open = true, openIsRead = true))
+        assertEquals(DeskAction.NEXT_ITEM, action(DeskKey.J, open = true, openIsRead = true))
+        assertEquals(DeskAction.PREVIOUS_ITEM, action(DeskKey.K, open = true, openIsRead = true))
+        assertEquals(DeskAction.NEXT_COLUMN, action(DeskKey.RIGHT, ctrl = true, open = true, openIsRead = true))
+        // Esc, Alt+← and Ctrl+W still close it first.
+        assertEquals(DeskAction.CLOSE, action(DeskKey.ESCAPE, open = true, openIsRead = true))
+        assertEquals(DeskAction.CLOSE, action(DeskKey.LEFT, alt = true, open = true, openIsRead = true))
+        assertEquals(DeskAction.CLOSE, action(DeskKey.W, ctrl = true, open = true, openIsRead = true))
+        // A field still keeps its keys.
+        assertEquals(DeskAction.NONE, action(DeskKey.DOWN, focusInside = true, open = true, openIsRead = true))
+        // Something open over the page still stops them all.
+        assertEquals(DeskAction.NONE, action(DeskKey.DOWN, open = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.J, open = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.RIGHT, ctrl = true, open = true))
+        // With nothing open, the flag changes nothing.
+        assertEquals(DeskAction.LINE_DOWN, action(DeskKey.DOWN, openIsRead = true))
+    }
+
+    @Test
+    fun whatIsOpenIsReadOnlyWhileTheScreenSaysSoAndNoSheetIsOver() {
+        val actions = DesktopActions()
+        assertFalse(actions.openIsRead(), "no screen answers")
+        var detail = true
+        actions.take(Any(), refresh = {}, turn = {}, isOpen = { detail }, close = {}, readsOpen = { detail })
+        assertTrue(actions.openIsRead())
+        actions.sheetOpened()
+        assertFalse(actions.openIsRead(), "a sheet over the detail covers it")
+        actions.sheetClosed()
+        assertTrue(actions.openIsRead())
+        detail = false
+        assertFalse(actions.openIsRead())
+    }
+
+    @Test
+    fun aColumnJustOpenedIsReadUntilThePointerOrTheKeysGoElsewhere() {
+        var taken = 0
+        val actions = DesktopActions(takeKeys = { taken++ })
+        val first = LazyListState()
+        val second = LazyListState()
+        actions.addList(first, "a")
+        actions.addList(second, "b")
+        var detailOpen = false
+        actions.takeColumns(Any()) { listOf("a", "b") + listOfNotNull("detail".takeIf { detailOpen }) }
+        actions.point(first, Offset(100f, 300f))
+        // A post opened from the first column: the keys move the detail, once its list is shown.
+        detailOpen = true
+        actions.readOpened("detail")
+        assertEquals(1, taken, "the frame takes the keys from the post clicked to open it")
+        assertSame(first, actions.readList(), "the detail's list not shown yet")
+        val post = LazyListState()
+        actions.addList(post, "detail")
+        assertSame(post, actions.readList())
+        assertNull(actions.chosenColumn, "opened, not marked as chosen")
+        // Ctrl+← goes from the detail to the column before it; Ctrl+→ back to the detail.
+        assertTrue(actions.stepColumn(-1))
+        assertEquals("b", actions.chosenColumn)
+        assertSame(second, actions.readList())
+        assertTrue(actions.stepColumn(1))
+        assertEquals("detail", actions.chosenColumn)
+        assertSame(post, actions.readList())
+        // Opened again (another post), then the pointer moved over a column: that column is read.
+        actions.readOpened("detail")
+        assertNull(actions.chosenColumn)
+        assertSame(post, actions.readList())
+        actions.point(second, Offset(600f, 300f))
+        assertSame(second, actions.readList())
+        // The detail chosen, then closed: the keys go back to the list the pointer was over, not nowhere.
+        actions.stepColumn(1)
+        assertEquals("detail", actions.chosenColumn)
+        actions.removeList(post)
+        detailOpen = false
+        assertSame(second, actions.readList())
+        assertTrue(actions.stepColumn(-1))
+        assertEquals("a", actions.chosenColumn)
     }
 }
