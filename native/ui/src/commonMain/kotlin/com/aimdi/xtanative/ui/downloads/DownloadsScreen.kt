@@ -65,6 +65,7 @@ import com.aimdi.xtanative.ui.generated.resources.downloads_progress
 import com.aimdi.xtanative.ui.generated.resources.downloads_queued
 import com.aimdi.xtanative.ui.generated.resources.downloads_retry_hint
 import com.aimdi.xtanative.ui.generated.resources.downloads_saving
+import com.aimdi.xtanative.ui.generated.resources.downloads_show_in_folder
 import com.aimdi.xtanative.ui.generated.resources.downloads_title
 import com.aimdi.xtanative.ui.generated.resources.retry
 import com.aimdi.xtanative.ui.saved.KeepNotice
@@ -86,6 +87,7 @@ fun DownloadsScreen(onBack: () -> Unit) {
     val queue = graph.downloads
     val state by queue.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val showInFolder = rememberShowInFolder()
     LaunchedEffect(queue) {
         queue.initialize()
         queue.setConcurrency(graph.settings.load()[MediaPrefs.downloadConcurrency])
@@ -136,6 +138,15 @@ fun DownloadsScreen(onBack: () -> Unit) {
                                         if (!graph.platformFiles.open(saved, entry.fileName)) KeepNotices.show(KeepNotice.OpenFailed)
                                     }
                                 },
+                                // The desktop's file manager, the file picked out in its folder.
+                                onShowInFolder = showInFolder?.let { show ->
+                                    {
+                                        scope.launch {
+                                            val saved = entry.savedUri ?: return@launch
+                                            if (!show(saved)) KeepNotices.show(KeepNotice.OpenFailed)
+                                        }
+                                    }
+                                },
                             )
                             Hairline()
                         }
@@ -147,7 +158,7 @@ fun DownloadsScreen(onBack: () -> Unit) {
 }
 
 @Composable
-private fun DownloadRowView(entry: DownloadEntry, onCancel: () -> Unit, onRetry: () -> Unit, onOpen: () -> Unit) {
+private fun DownloadRowView(entry: DownloadEntry, onCancel: () -> Unit, onRetry: () -> Unit, onOpen: () -> Unit, onShowInFolder: (() -> Unit)? = null) {
     val row = DownloadRow.of(entry)
     Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 10.dp, bottom = 10.dp)) {
         Icon(
@@ -179,6 +190,9 @@ private fun DownloadRowView(entry: DownloadEntry, onCancel: () -> Unit, onRetry:
         }
         if (row.canCancel) IconTip(stringResource(Res.string.cancel)) { IconButton(onClick = onCancel) { Icon(Icons.Filled.Close, stringResource(Res.string.cancel)) } }
         if (row.canRetry) IconTip(stringResource(Res.string.retry)) { IconButton(onClick = onRetry) { Icon(Icons.Filled.Refresh, stringResource(Res.string.retry)) } }
+        if (row.canOpen && onShowInFolder != null) {
+            IconTip(stringResource(Res.string.downloads_show_in_folder)) { IconButton(onClick = onShowInFolder) { Icon(SavedIcons.FolderOpen, stringResource(Res.string.downloads_show_in_folder)) } }
+        }
         if (row.canOpen) IconTip(stringResource(Res.string.downloads_open_file)) { IconButton(onClick = onOpen) { Icon(SavedIcons.OpenInNew, stringResource(Res.string.downloads_open_file)) } }
         Spacer(Modifier.width(0.dp))
     }

@@ -153,6 +153,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">接続とダウンロード先のフォルダーを確認して、もう一度お試しください。</string>
     <string name="downloads_open_file">ファイルを開く</string>
+    <string name="downloads_show_in_folder">フォルダーに表示</string>
     <string name="downloads_open_failed">このファイルを開けませんでした。移動または削除された可能性があります。</string>
     <string name="downloads_queued">待機中</string>
     <string name="downloads_downloading">メディアをダウンロード中...</string>

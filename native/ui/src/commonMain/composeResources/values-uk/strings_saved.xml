@@ -162,6 +162,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Перевірте з’єднання та папку завантажень, а потім повторіть спробу.</string>
     <string name="downloads_open_file">Відкрити файл</string>
+    <string name="downloads_show_in_folder">Показати в теці</string>
     <string name="downloads_open_failed">Не вдалося відкрити цей файл. Можливо, його переміщено або видалено.</string>
     <string name="downloads_queued">Очікування</string>
     <string name="downloads_downloading">Завантаження медіа...</string>

@@ -156,6 +156,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">अपना कनेक्शन और डाउनलोड फ़ोल्डर जाँचें, फिर कोशिश करें।</string>
     <string name="downloads_open_file">फ़ाइल खोलें</string>
+    <string name="downloads_show_in_folder">फ़ोल्डर में दिखाएँ</string>
     <string name="downloads_open_failed">यह फ़ाइल खोली नहीं जा सकी। हो सकता है कि इसे कहीं और ले जाया गया हो या मिटा दिया गया हो।</string>
     <string name="downloads_queued">इंतज़ार में</string>
     <string name="downloads_downloading">मीडिया डाउनलोड हो रहा है...</string>

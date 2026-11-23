@@ -156,6 +156,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Controleer je verbinding en de downloadmap en probeer het opnieuw.</string>
     <string name="downloads_open_file">Bestand openen</string>
+    <string name="downloads_show_in_folder">Tonen in map</string>
     <string name="downloads_open_failed">Dit bestand kon niet worden geopend. Het is mogelijk verplaatst of verwijderd.</string>
     <string name="downloads_queued">In de wachtrij</string>
     <string name="downloads_downloading">Media downloaden...</string>

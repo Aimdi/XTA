@@ -162,6 +162,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Praviercie złučennie i papku spampovak, zatym paŭtarycie sprobu.</string>
     <string name="downloads_open_file">Adkryć fajł</string>
+    <string name="downloads_show_in_folder">Pakazać u papcy</string>
     <string name="downloads_open_failed">Nie ŭdałosia adkryć hety fajł. Mahčyma, jon byŭ pieramieščany abo vydaleny.</string>
     <string name="downloads_queued">U čakańni</string>
     <string name="downloads_downloading">Zahruzka medyja...</string>
