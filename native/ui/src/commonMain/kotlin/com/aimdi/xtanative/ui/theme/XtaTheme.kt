@@ -38,7 +38,9 @@ fun XtaTheme(content: @Composable () -> Unit) {
     ) {
         // Inside the reader's text size: the desktop marks the density with the language.
         ProvideAppLanguage(language) {
-            MaterialTheme(colorScheme = colorSchemeOf(scheme), shapes = XtaShapes, typography = XtaTypography, content = content)
+            MaterialTheme(colorScheme = colorSchemeOf(scheme), shapes = XtaShapes, typography = XtaTypography) {
+                ProvidePlatformLook(content)
+            }
         }
     }
 }

@@ -1,0 +1,24 @@
+package com.aimdi.xtanative.ui.theme
+
+import androidx.compose.foundation.DefaultContextMenuRepresentation
+import androidx.compose.foundation.LocalContextMenuRepresentation
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+
+/** How strongly an entry under the pointer is lit, as Material's hovered state lights it. */
+private const val HOVER_ALPHA = 0.08f
+
+@Composable
+internal actual fun ProvidePlatformLook(content: @Composable () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val menus = remember(colors.surfaceContainer, colors.onSurface) {
+        DefaultContextMenuRepresentation(
+            backgroundColor = colors.surfaceContainer,
+            textColor = colors.onSurface,
+            itemHoverColor = colors.onSurface.copy(alpha = HOVER_ALPHA),
+        )
+    }
+    CompositionLocalProvider(LocalContextMenuRepresentation provides menus, content = content)
+}
