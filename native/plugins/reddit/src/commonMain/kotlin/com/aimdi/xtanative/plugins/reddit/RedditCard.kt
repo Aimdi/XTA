@@ -38,6 +38,7 @@ import com.aimdi.xtanative.networks.reddit.RedditPost
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
@@ -54,7 +55,7 @@ import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 internal fun RedditPostCard(app: RedditApp, post: RedditPost) {
     var sheet by rememberSaveable(post.id) { mutableStateOf(false) }
     val choices by app.choices.collectAsState()
-    Column(Modifier.fillMaxWidth().combinedClickable(onClick = { app.openThread(post) }, onLongClick = { sheet = true })) {
+    Column(Modifier.fillMaxWidth().onContextClick { sheet = true }.combinedClickable(onClick = { app.openThread(post) }, onLongClick = { sheet = true })) {
         Row(Modifier.padding(start = 16.dp, end = 8.dp, top = 12.dp)) {
             SubredditAvatar(app, post.subreddit, 40.dp, onClick = { app.openSubreddit(post.subreddit) })
             Spacer(Modifier.width(12.dp))

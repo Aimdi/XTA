@@ -42,6 +42,7 @@ import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedState
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
@@ -118,12 +119,12 @@ internal fun <T : Any> RedditPagedList(
     ScrollsToTop(list, frame.toTop)
     ReadsMoreNearEnd(list, paged) { pages.more() }
     PullToRefreshBox(isRefreshing = paged.loading && paged.loaded, onRefresh = pages::refresh, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             header()
             pagedState(paged, pages::refresh, empty, posts)
             items(paged.items, key = { "row:" + key(it) }, contentType = { "row" }) { row(it) }
             if (paged.items.isNotEmpty()) item(key = "footer") { PagedFooter(paged, pages) }
-        }
+        } }
     }
 }
 
@@ -207,10 +208,10 @@ internal fun SavedScreen(app: RedditApp) {
     val saved by app.saved.collectAsState()
     val list = rememberLazyListState()
     PluginScaffold(title = pluginString(Strings.saved), onBack = app.host::back) { padding ->
-        LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             if (saved.isEmpty()) item(key = "none") { RedditEmpty(RedditGlyphs.BookmarkBorder, pluginString(Strings.saved_empty)) }
             items(saved, key = { "post:" + it.id }) { post -> RedditPostCard(app, post) }
-        }
+        } }
     }
 }
 

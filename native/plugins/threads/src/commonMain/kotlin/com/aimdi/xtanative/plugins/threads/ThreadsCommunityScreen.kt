@@ -2,6 +2,7 @@ package com.aimdi.xtanative.plugins.threads
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -40,6 +41,7 @@ import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -166,7 +168,7 @@ internal fun ThreadsCommunityScreen(app: ThreadsApp, start: ThreadsTopic) {
     PluginScaffold(title = topic.name, onBack = app.host::back, actions = { CommunityActions(app, web) }) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             PullToRefreshBox(isRefreshing = state.loading && found != null, onRefresh = { model.page.load(force = true) }, modifier = Modifier.fillMaxSize()) {
-                LazyColumn(state = list, modifier = Modifier.fillMaxSize()) {
+                PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
                     item(key = "header") { ThreadsTopicHeader(app, topic) }
                     if (usedAccount) item(key = "account") { AccountInUse(app) }
                     val posts = found?.posts.orEmpty() + paged.items
@@ -178,7 +180,7 @@ internal fun ThreadsCommunityScreen(app: ThreadsApp, start: ThreadsTopic) {
                         else -> items(posts.distinctBy { it.id }, key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
                     }
                     sessionMoreFoot("community", paged, pager::loadMore.takeIf { usedAccount }, pager::retry)
-                }
+                } }
             }
             NoticeHost(app.notices)
         }
