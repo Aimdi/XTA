@@ -32,6 +32,8 @@ install_entry() {
   mkdir -p "$data/applications"
   while IFS= read -r line; do
     case "$line" in
+      # The app's own name becomes its path here, the rest of the line (%U, an action's link) kept.
+      Exec=xta-native*) printf 'Exec="%s"%s\n' "$here/bin/xta-native" "${line#Exec=xta-native}" ;;
       Exec=*) printf 'Exec="%s" %%U\n' "$here/bin/xta-native" ;;
       *) printf '%s\n' "$line" ;;
     esac

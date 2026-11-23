@@ -97,4 +97,15 @@ class IncomingLinksTest {
     fun aPixivPageNoNetworkOpenedGoesToTheWeb() {
         assertEquals(IncomingStep.Outside("https://www.pixiv.net/en/artworks/1"), step("https://www.pixiv.net/en/artworks/1"))
     }
+
+    @Test
+    fun xsSearchPageAndAHashtagOpenTheAppsSearch() {
+        assertEquals(IncomingStep.Search(""), step("https://x.com/search"))
+        assertEquals(IncomingStep.Search("kotlin compose"), step("https://twitter.com/search?q=kotlin+compose&src=typed_query"))
+        assertEquals(IncomingStep.Search("#flutter"), step("https://x.com/hashtag/flutter?src=hashtag_click"))
+        val opened = Opened()
+        opened.open(step("https://x.com/search"))
+        opened.open(step("https://x.com/search?q=a%20b"))
+        assertEquals(listOf("search ", "search a b"), opened.seen)
+    }
 }

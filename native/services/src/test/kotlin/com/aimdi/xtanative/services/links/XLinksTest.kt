@@ -210,4 +210,15 @@ class XLinksTest {
         assertNull(XLinks.waybackUrl("not a handle", "20"))
         assertNull(XLinks.waybackUrl("jack", "20x"))
     }
+
+    @Test
+    fun aSearchLinkSaysItsWords() {
+        assertEquals("", XLinks.searchQuery("https://x.com/search"))
+        assertEquals("a b", XLinks.searchQuery(" https://mobile.twitter.com/search?q=a+b "))
+        assertEquals("#tag", XLinks.searchQuery("https://x.com/hashtag/tag"))
+        assertEquals(null, XLinks.searchQuery("https://x.com/search/advanced"))
+        assertEquals(null, XLinks.searchQuery("https://x.com/maya"))
+        assertEquals(null, XLinks.searchQuery("https://example.com/search?q=a"))
+        assertEquals(null, XLinks.searchQuery(""))
+    }
 }

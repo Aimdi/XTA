@@ -12,3 +12,37 @@ Terminal=false
 Categories=Network;News;
 Keywords=X;Twitter;Reader;Bluesky;Mastodon;Reddit;RSS;
 StartupWMClass=com-aimdi-xtanative-desktop-MainKt
+Actions=new-search;
+
+# X's search page, which the app opens as its own search with the field ready to type in.
+[Desktop Action new-search]
+Name=New search
+Name[ar]=بحث جديد
+Name[be]=Новы пошук
+Name[be@latin]=Novy pošuk
+Name[ca]=Cerca nova
+Name[cs]=Nové hledání
+Name[de]=Neue Suche
+Name[eo]=Nova serĉo
+Name[es]=Nueva búsqueda
+Name[et]=Uus otsing
+Name[eu]=Bilaketa berria
+Name[fr]=Nouvelle recherche
+Name[hi]=नई खोज
+Name[id]=Pencarian baru
+Name[it]=Nuova ricerca
+Name[ja]=新しい検索
+Name[ko]=새 검색
+Name[nb]=Nytt søk
+Name[nl]=Nieuwe zoekopdracht
+Name[pl]=Nowe wyszukiwanie
+Name[pt]=Nova pesquisa
+Name[pt_BR]=Nova pesquisa
+Name[ro]=Căutare nouă
+Name[ru]=Новый поиск
+Name[tr]=Yeni arama
+Name[uk]=Новий пошук
+Name[vi]=Tìm kiếm mới
+Name[zh_CN]=新搜索
+Name[zh_TW]=新搜尋
+Exec=xta-native https://x.com/search

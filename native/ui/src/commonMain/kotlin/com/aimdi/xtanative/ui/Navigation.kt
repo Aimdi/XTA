@@ -305,7 +305,8 @@ fun XtaNativeRoot() {
             openPost = { id -> backs.open(opening) { nav.navigate(Routes.post(id)) } },
             openProfile = { name -> nav.navigate(Routes.profile(name)) },
             openMedia = { postId, index -> nav.navigate(Routes.media(postId, index)) },
-            search = { query -> nav.navigate(Routes.search(query)) },
+            // A search with no words yet (the desktop entry's "New search") opens with its field ready to type in.
+            search = { query -> nav.navigate(Routes.search(query, null, focus = query.isBlank())) },
             openQuotes = { id -> nav.navigate(Routes.quotes(id)) },
             openReposters = { id -> nav.navigate(Routes.reposters(id)) },
             openArticle = { postId -> nav.navigate(Routes.article(postId)) },
