@@ -372,7 +372,9 @@ fun XtaNativeRoot() {
         val openSettings = remember(nav) {
             { if (!nav.popBackStack(Routes.SETTINGS, inclusive = false) && SearchKeys.opensSettingsOver(nav.currentDestination?.route)) nav.navigate(Routes.SETTINGS) }
         }
-        DesktopNavigation(nav, openSearch, openSettings) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) }
+        // Alt+Home goes back to Home, as a browser's goes to its home page; nothing where Home is not below.
+        val openHome = remember(nav) { { nav.popBackStack(Routes.HOME, inclusive = false); Unit } }
+        DesktopNavigation(nav, openSearch, openSettings, openHome) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) }
     }
     if (askSignIn) {
         NotLoggedInDialog(onImportBackup = { nav.navigate(Routes.IMPORT) }, onLogin = { nav.navigate(Routes.SIGN_IN) }, onDismiss = { askSignIn = false })

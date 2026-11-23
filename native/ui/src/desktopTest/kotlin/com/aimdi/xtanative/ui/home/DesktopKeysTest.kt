@@ -37,7 +37,8 @@ class DesktopKeysTest {
             assertEquals(DeskAction.NONE, action(key, focusInside = true), "$key while typing")
             assertEquals(DeskAction.NONE, action(key, open = true), "$key with a sheet open")
             if (key != DeskKey.PAGE_UP && key != DeskKey.PAGE_DOWN) assertEquals(DeskAction.NONE, action(key, ctrl = true), "Ctrl+$key")
-            assertEquals(DeskAction.NONE, action(key, alt = true), "Alt+$key")
+            // Alt+Home is the window's: back to Home (altHomeGoesHome).
+            if (key != DeskKey.HOME) assertEquals(DeskAction.NONE, action(key, alt = true), "Alt+$key")
         }
     }
 
@@ -355,5 +356,14 @@ class DesktopKeysTest {
         assertEquals(0, DesktopKeys.pageAt(9, 1))
         assertNull(DesktopKeys.pageAt(1, 0))
         assertNull(DesktopKeys.pageAt(0, 5))
+    }
+
+    @Test
+    fun altHomeGoesHome() {
+        assertEquals(DeskAction.GO_HOME, DesktopKeys.action(DeskKey.HOME, alt = true, ctrl = false, focusInside = false, canGoBack = true))
+        assertEquals(DeskAction.GO_HOME, DesktopKeys.action(DeskKey.HOME, alt = true, ctrl = false, focusInside = true, canGoBack = true))
+        assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.HOME, alt = true, ctrl = false, focusInside = false, canGoBack = true, somethingOpen = true))
+        // Home alone still goes to the list's top.
+        assertEquals(DeskAction.TO_TOP, DesktopKeys.action(DeskKey.HOME, alt = false, ctrl = false, focusInside = false, canGoBack = true))
     }
 }

@@ -3,6 +3,7 @@
     <string name="keys_title">キーボードショートカット</string>
     <string name="keys_help">このショートカット一覧を表示</string>
     <string name="keys_back">戻る、または開いているものを閉じる</string>
+    <string name="keys_go_home">ホームに戻る</string>
     <string name="keys_refresh">更新</string>
     <string name="keys_search">検索</string>
     <string name="keys_open_copied_link">コピーしたリンクを開く</string>

@@ -36,6 +36,9 @@ enum class DeskAction {
     NEXT_ITEM,
     PREVIOUS_ITEM,
 
+    /** Back to Home, as a browser's Alt+Home goes to its home page. */
+    GO_HOME,
+
     /** A web address on the clipboard opens, as one dropped on the window does (Ctrl+V while nothing is being typed in). */
     OPEN_PASTED_LINK,
     SCREEN_UP,
@@ -80,6 +83,7 @@ object DesktopKeys {
      * j and k move the list read to its next post or the one before, as on
      * X's site, while nothing is being typed in. Ctrl+V, while nothing is
      * being typed in, opens a link copied elsewhere, as dropping it does.
+     * Alt+Home goes back to Home, as a browser's goes to its home page.
      */
     fun action(
         key: DeskKey,
@@ -102,6 +106,7 @@ object DesktopKeys {
         ctrl && !alt && key in TEXT_KEYS -> textSize(key)
         (key == DeskKey.F1 && !alt && !ctrl) || (key == DeskKey.QUESTION && !focusInside && !alt && !ctrl) ->
             if (somethingOpen) DeskAction.NONE else DeskAction.SHOW_KEYS
+        key == DeskKey.HOME && alt && !ctrl && !shift -> if (somethingOpen) DeskAction.NONE else DeskAction.GO_HOME
         key == DeskKey.V && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.OPEN_PASTED_LINK
         (key == DeskKey.F && ctrl && !alt && !shift) || (key == DeskKey.SLASH && !focusInside && !alt && !ctrl) ->
             if (somethingOpen) DeskAction.NONE else DeskAction.FIND

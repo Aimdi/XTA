@@ -56,7 +56,7 @@ import kotlinx.coroutines.launch
  * arrive here first.
  */
 @Composable
-actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, content: @Composable () -> Unit) {
+actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, openHome: () -> Unit, content: @Composable () -> Unit) {
     val focus = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val settingsStore = LocalSettingsStore.current
@@ -132,6 +132,10 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         // Read off the window's thread; Ctrl+V outside a field has nothing else to do, so the key is taken either way.
         DeskAction.OPEN_PASTED_LINK -> {
             scope.launch { PastedLinks.open() }
+            true
+        }
+        DeskAction.GO_HOME -> {
+            openHome()
             true
         }
         DeskAction.OPEN_SETTINGS -> {

@@ -3,6 +3,7 @@
     <string name="keys_title">Klavye kısayolları</string>
     <string name="keys_help">Bu kısayolları göster</string>
     <string name="keys_back">Geri dön veya açık olanı kapat</string>
+    <string name="keys_go_home">Ana sayfaya dön</string>
     <string name="keys_refresh">Yenile</string>
     <string name="keys_search">Ara</string>
     <string name="keys_open_copied_link">Kopyalanan bağlantıyı aç</string>

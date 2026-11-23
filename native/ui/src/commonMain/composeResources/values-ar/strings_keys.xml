@@ -3,6 +3,7 @@
     <string name="keys_title">اختصارات لوحة المفاتيح</string>
     <string name="keys_help">عرض هذه الاختصارات</string>
     <string name="keys_back">الرجوع، أو إغلاق ما هو مفتوح</string>
+    <string name="keys_go_home">العودة إلى الرئيسية</string>
     <string name="keys_refresh">تحديث</string>
     <string name="keys_search">بحث</string>
     <string name="keys_open_copied_link">فتح رابط منسوخ</string>

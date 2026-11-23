@@ -3,6 +3,7 @@
     <string name="keys_title">Kiirklahvid</string>
     <string name="keys_help">Näita neid kiirklahve</string>
     <string name="keys_back">Tagasi või sulge avatu</string>
+    <string name="keys_go_home">Tagasi avalehele</string>
     <string name="keys_refresh">Värskenda</string>
     <string name="keys_search">Otsi</string>
     <string name="keys_open_copied_link">Ava kopeeritud link</string>

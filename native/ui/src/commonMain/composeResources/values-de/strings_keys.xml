@@ -3,6 +3,7 @@
     <string name="keys_title">Tastenkürzel</string>
     <string name="keys_help">Diese Tastenkürzel zeigen</string>
     <string name="keys_back">Zurück, oder Geöffnetes schließen</string>
+    <string name="keys_go_home">Zurück zum Start</string>
     <string name="keys_refresh">Aktualisieren</string>
     <string name="keys_search">Suchen</string>
     <string name="keys_open_copied_link">Kopierten Link öffnen</string>

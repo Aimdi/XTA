@@ -3,6 +3,7 @@
     <string name="keys_title">키보드 단축키</string>
     <string name="keys_help">이 단축키 보기</string>
     <string name="keys_back">뒤로 가기 또는 열린 항목 닫기</string>
+    <string name="keys_go_home">홈으로 돌아가기</string>
     <string name="keys_refresh">새로고침</string>
     <string name="keys_search">검색</string>
     <string name="keys_open_copied_link">복사한 링크 열기</string>

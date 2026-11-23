@@ -3,6 +3,7 @@
     <string name="keys_title">कीबोर्ड शॉर्टकट</string>
     <string name="keys_help">ये शॉर्टकट दिखाएँ</string>
     <string name="keys_back">वापस जाएँ, या जो खुला है उसे बंद करें</string>
+    <string name="keys_go_home">होम पर वापस जाएँ</string>
     <string name="keys_refresh">रीफ़्रेश करें</string>
     <string name="keys_search">खोजें</string>
     <string name="keys_open_copied_link">कॉपी किया गया लिंक खोलें</string>
