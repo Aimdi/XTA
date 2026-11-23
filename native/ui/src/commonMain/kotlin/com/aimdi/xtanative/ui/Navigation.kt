@@ -410,6 +410,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
     val searchActions = all.search
     val trendsActions = all.trends
     val homeRoutes = all.home
+    WindowTitleFollows(nav)
     NavHost(
         navController = nav,
         startDestination = start,

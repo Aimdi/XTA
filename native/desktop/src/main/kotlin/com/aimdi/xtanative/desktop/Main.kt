@@ -26,6 +26,8 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import coil3.SingletonImageLoader
 import com.aimdi.xtanative.store.settings.DesktopPrefs
+import com.aimdi.xtanative.ui.DesktopWindowTitle
+import com.aimdi.xtanative.ui.WindowTitles
 import com.aimdi.xtanative.ui.XtaNativeContent
 import com.aimdi.xtanative.ui.appImageLoader
 import com.aimdi.xtanative.ui.appName
@@ -38,8 +40,6 @@ import com.aimdi.xtanative.ui.chrome.WindowFullscreen
 import com.aimdi.xtanative.ui.chrome.tray.TrayAction
 import com.aimdi.xtanative.ui.chrome.tray.TrayService
 import com.aimdi.xtanative.ui.chrome.tray.trayWords
-import com.aimdi.xtanative.ui.home.DesktopWindowTitle
-import com.aimdi.xtanative.ui.home.WindowTitles
 import com.aimdi.xtanative.ui.links.DesktopIncomingLinks
 import com.aimdi.xtanative.ui.media.VideoCheck
 import com.aimdi.xtanative.ui.media.mpris.MprisSessions

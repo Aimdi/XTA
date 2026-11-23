@@ -1,4 +1,4 @@
-package com.aimdi.xtanative.ui.home
+package com.aimdi.xtanative.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.savedstate.read
-import com.aimdi.xtanative.ui.Routes
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_antennas
 import com.aimdi.xtanative.ui.generated.resources.home_deck
@@ -95,7 +94,7 @@ object DesktopWindowTitle {
 
 /** Keeps [DesktopWindowTitle] naming the screen [nav] shows. */
 @Composable
-internal fun WindowTitleFollows(nav: NavHostController) {
+internal actual fun WindowTitleFollows(nav: NavHostController) {
     val entry by nav.currentBackStackEntryAsState()
     val part = WindowTitles.of(entry?.destination?.route) { name -> entry?.arguments?.read { getStringOrNull(name) } }
     val text = when (part) {

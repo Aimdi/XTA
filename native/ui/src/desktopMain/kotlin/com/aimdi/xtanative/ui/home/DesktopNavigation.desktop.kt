@@ -163,7 +163,6 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         return act(action)
     }
 
-    WindowTitleFollows(nav)
     CompositionLocalProvider(LocalDesktopActions provides actions) {
         Box(
             Modifier

@@ -1,6 +1,5 @@
-package com.aimdi.xtanative.ui.home
+package com.aimdi.xtanative.ui
 
-import com.aimdi.xtanative.ui.Routes
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_downloads
 import com.aimdi.xtanative.ui.generated.resources.settings_title
