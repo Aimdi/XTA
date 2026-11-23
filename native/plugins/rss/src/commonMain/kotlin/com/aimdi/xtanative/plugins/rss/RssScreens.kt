@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -45,6 +46,7 @@ import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.AddToGroupIcon
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.networkProblemText
@@ -102,9 +104,9 @@ internal fun RssFeedScreen(app: RssApp, feed: RssFeed) {
                     if (shown.isEmpty()) {
                         PullableEmpty(RssIcons.Feed, pluginString(Strings.empty), PluginFrame(PaddingValues()))
                     } else {
-                        LazyColumn(Modifier.fillMaxSize()) {
+                        PluginReadingColumn(PaddingValues()) { column -> LazyColumn(Modifier.fillMaxSize(), contentPadding = column) {
                             items(shown, key = { it.id }) { item -> RssItemCard(item, unread = item.id !in read, onOpen = { app.openItem(item) }, showSource = false) }
-                        }
+                        } }
                     }
                 }
             }
@@ -123,26 +125,29 @@ internal fun RssAddScreen(app: RssApp) {
     val lookup = rememberKept("rss-add") { scope -> AddLookup(app, scope) }
     val state by lookup.state.collectAsState()
     PluginScaffold(title = pluginString(Strings.add), onBack = app.host::back) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
-            Text(pluginString(Strings.add_hint))
-            OutlinedTextField(
-                value = address,
-                onValueChange = { address = it },
-                placeholder = { Text(pluginString(Strings.add_placeholder)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Done, autoCorrectEnabled = false),
-                keyboardActions = KeyboardActions(onDone = { lookup.follow(address) }),
-                modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-            )
-            Button(onClick = { lookup.follow(address) }, enabled = !state.loading, modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
-                Text(pluginString(Strings.follow))
-            }
-            Spacer(Modifier.height(16.dp))
-            val error = state.error
-            when {
-                state.loading -> Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-                error != null -> RetryMessage(pluginString(Strings.add_error) + "\n" + (RssAddFailures.reasonOf(error)?.let { pluginString(it) } ?: networkProblemText(problemOf(error), NETWORK)), { lookup.follow(address) })
-                else -> state.value?.let { feed -> FoundFeed(feed) { app.addToGroup(feed) } }
+        // A form a wide window keeps to a readable width, centred, as the app's own.
+        Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
+            Column(Modifier.widthIn(max = 720.dp).fillMaxSize().padding(16.dp)) {
+                Text(pluginString(Strings.add_hint))
+                OutlinedTextField(
+                    value = address,
+                    onValueChange = { address = it },
+                    placeholder = { Text(pluginString(Strings.add_placeholder)) },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Done, autoCorrectEnabled = false),
+                    keyboardActions = KeyboardActions(onDone = { lookup.follow(address) }),
+                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                )
+                Button(onClick = { lookup.follow(address) }, enabled = !state.loading, modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
+                    Text(pluginString(Strings.follow))
+                }
+                Spacer(Modifier.height(16.dp))
+                val error = state.error
+                when {
+                    state.loading -> Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+                    error != null -> RetryMessage(pluginString(Strings.add_error) + "\n" + (RssAddFailures.reasonOf(error)?.let { pluginString(it) } ?: networkProblemText(problemOf(error), NETWORK)), { lookup.follow(address) })
+                    else -> state.value?.let { feed -> FoundFeed(feed) { app.addToGroup(feed) } }
+                }
             }
         }
     }

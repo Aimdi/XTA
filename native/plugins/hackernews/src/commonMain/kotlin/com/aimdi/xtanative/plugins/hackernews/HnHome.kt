@@ -44,6 +44,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.PullToReload
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
@@ -150,10 +151,10 @@ private fun SavedPane(app: HnApp, frame: PluginFrame) {
     val list = rememberLazyListState()
     ScrollsToTop(list, frame.toTop)
     PullToReload(reload = { app.host.settings.loaded() }) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             if (kept.saved.isEmpty()) item(key = "empty") { EmptyPane(SavedIcons.BookmarkBorder, pluginString(Strings.saved_empty)) }
             items(kept.saved, key = { "${it.id}" }) { story -> HnStoryRow(app, story) }
-        }
+        } }
     }
 }
 
@@ -171,7 +172,7 @@ private fun FollowingPane(app: HnApp, frame: PluginFrame) {
     val stories = state.value.orEmpty()
     val error = state.error
     PullToRefreshBox(isRefreshing = state.loading && stories.isNotEmpty(), onRefresh = reader::refresh, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             when {
                 stories.isEmpty() && state.loading -> item(key = "loading") { FeedSkeleton() }
                 stories.isEmpty() && error != null -> item(key = "problem") { NetworkProblemView(problemOf(error), app.network, reader::refresh) }
@@ -185,7 +186,7 @@ private fun FollowingPane(app: HnApp, frame: PluginFrame) {
                 }
             }
             items(stories, key = { "${it.id}" }) { story -> HnStoryRow(app, story) }
-        }
+        } }
     }
 }
 

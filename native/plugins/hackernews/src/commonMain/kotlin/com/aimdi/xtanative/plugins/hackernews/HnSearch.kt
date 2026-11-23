@@ -20,6 +20,7 @@ import com.aimdi.xtanative.networks.hackernews.HnStory
 import com.aimdi.xtanative.store.settings.HackerNewsPrefs
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginRecentSearchRow
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -45,9 +46,9 @@ internal class HnSearch(private val app: HnApp) : PluginSearch() {
     override fun Landing(frame: PluginFrame, send: (String) -> Unit) {
         val settings by app.host.settings.state.collectAsState()
         val history = settings?.get(HackerNewsPrefs.searchHistory).orEmpty()
-        LazyColumn(Modifier.fillMaxSize(), contentPadding = frame.padding) {
+        PluginReadingColumn(frame.padding) { column -> LazyColumn(Modifier.fillMaxSize(), contentPadding = column) {
             items(history, key = { it }) { query -> PluginRecentSearchRow(query, onClick = { send(query) }) }
-        }
+        } }
     }
 
     override fun sent(query: String) = app.rememberSearch(query)
@@ -56,12 +57,12 @@ internal class HnSearch(private val app: HnApp) : PluginSearch() {
 /** XTA's Hacker News settings (hn_settings.dart): its mark, and that nothing reaches Hacker News but reading. */
 @Composable
 internal fun HnSettingsBody(frame: PluginFrame) {
-    LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+    PluginReadingColumn(frame.padding) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = column) {
         item(key = "blurb") {
             Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 32.dp), verticalArrangement = Arrangement.spacedBy(16.dp), horizontalAlignment = Alignment.Start) {
                 Icon(PostIcons.Forum, contentDescription = null, tint = HnBrand, modifier = Modifier.size(40.dp))
                 Text(pluginString(Strings.settings_blurb), style = MaterialTheme.typography.bodyLarge)
             }
         }
-    }
+    } }
 }

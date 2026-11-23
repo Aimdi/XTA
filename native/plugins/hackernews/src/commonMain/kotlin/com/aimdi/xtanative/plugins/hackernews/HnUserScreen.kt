@@ -27,6 +27,7 @@ import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.addToGroupText
 import com.aimdi.xtanative.ui.plugins.pluginPlural
@@ -45,7 +46,7 @@ internal fun HnUserScreen(app: HnApp, id: String) {
     val page = state.value
     PluginScaffold(title = id, onBack = app.host::back) { padding ->
         PullToRefreshBox(isRefreshing = state.loading && page != null, onRefresh = reader::refresh, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            LazyColumn(contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp), modifier = Modifier.fillMaxSize()) {
+            PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp)) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = column) {
                 val error = state.error
                 when {
                     page == null && error != null -> item(key = "problem") { NetworkProblemView(problemOf(error), app.network, reader::refresh) }
@@ -56,7 +57,7 @@ internal fun HnUserScreen(app: HnApp, id: String) {
                         items(page.stories, key = { "${it.id}" }) { story -> HnStoryRow(app, story) }
                     }
                 }
-            }
+            } }
         }
     }
 }

@@ -58,6 +58,7 @@ import com.aimdi.xtanative.ui.plugins.PartialFailureButton
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.networkProblemText
@@ -109,9 +110,9 @@ private fun Timeline(app: RssApp, timeline: RssTimelineState, frame: PluginFrame
                 }
             }
         } else {
-            LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+            PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
                 items(shown, key = { it.id }) { item -> RssItemCard(item, unread = item.id !in read, onOpen = { app.openItem(item) }) }
-            }
+            } }
         }
     }
 }
@@ -135,12 +136,12 @@ internal fun RssFeedsPane(app: RssApp, feeds: List<RssFeed>, frame: PluginFrame)
     val list = rememberLazyListState()
     ScrollsToTop(list, frame.toTop)
     var tagging by remember { mutableStateOf<RssFeed?>(null) }
-    LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+    PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
         items(feeds, key = { it.id }) { feed ->
             FeedRow(feed, tags[feed.id].orEmpty(), onOpen = { app.openFeed(feed) }, onTag = { tagging = feed }, onGroup = { app.addToGroup(feed) }, onUnfollow = { app.launch { app.unfollow(feed.id) } })
             Hairline()
         }
-    }
+    } }
     tagging?.let { feed ->
         TagDialog(RssTags.field(tags, feed.id), onDismiss = { tagging = null }) { typed ->
             tagging = null
@@ -216,9 +217,9 @@ internal fun PullableEmpty(icon: ImageVector, message: String, frame: PluginFram
 /** [content] in a list of its own, so that a pull over it reads again. */
 @Composable
 internal fun Pullable(frame: PluginFrame, content: @Composable () -> Unit) {
-    LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+    PluginReadingColumn(frame.padding) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = column) {
         item { content() }
-    }
+    } }
 }
 
 /** How the network names itself where a read failed. */

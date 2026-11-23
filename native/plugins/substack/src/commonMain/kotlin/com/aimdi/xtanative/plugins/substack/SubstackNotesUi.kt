@@ -46,6 +46,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.NetworkPostCard
 import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.TextRun
@@ -65,7 +66,7 @@ internal fun NotesPane(app: SubstackApp, notes: SubstackNotesFeed, frame: Plugin
     val actions = rememberNoteActions(app)
     val error = state.refreshError
     PullToRefreshBox(isRefreshing = state.refreshing && state.loaded, onRefresh = { notes.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             when {
                 state.notes.isEmpty() && error != null -> item(key = "problem") { FailurePane(error, onRetry = { notes.refresh(force = true) }) }
                 state.notes.isEmpty() && !state.loaded -> item(key = "loading") { LoadingRow() }
@@ -79,7 +80,7 @@ internal fun NotesPane(app: SubstackApp, notes: SubstackNotesFeed, frame: Plugin
                     item(key = "end") { LoadMoreRow(state.loadingMore, state.loadMoreError, state.canLoadMore, notes::loadMore, enabled = !state.refreshing) }
                 }
             }
-        }
+        } }
     }
 }
 

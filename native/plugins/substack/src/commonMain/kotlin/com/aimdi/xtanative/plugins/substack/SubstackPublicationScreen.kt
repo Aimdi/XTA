@@ -62,6 +62,7 @@ import com.aimdi.xtanative.networks.substack.SubstackPublicationFilter
 import com.aimdi.xtanative.networks.substack.SubstackRecommendation
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -178,7 +179,7 @@ internal fun SubstackPublicationScreen(app: SubstackApp, opened: SubstackPublica
     val error = page.error
     PluginScaffold(title = state.publication.displayName, onBack = app.host::back) { padding ->
         PullToRefreshBox(isRefreshing = page.loading && page.posts.isNotEmpty(), onRefresh = model::refresh, modifier = Modifier.fillMaxSize().padding(padding)) {
-            LazyColumn(Modifier.fillMaxSize()) {
+            PluginReadingColumn(PaddingValues()) { column -> LazyColumn(Modifier.fillMaxSize(), contentPadding = column) {
                 item(key = "hero") { Hero(app, model, state) { similar = true } }
                 item(key = "controls") { PublicationControls(model, state) }
                 when {
@@ -197,7 +198,7 @@ internal fun SubstackPublicationScreen(app: SubstackApp, opened: SubstackPublica
                     }
                     Spacer(Modifier.padding(bottom = 32.dp))
                 }
-            }
+            } }
         }
     }
     if (similar) SimilarSheet(app, state.publication) { similar = false }
