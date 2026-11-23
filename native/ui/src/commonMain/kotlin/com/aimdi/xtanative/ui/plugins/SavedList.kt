@@ -46,7 +46,7 @@ fun <T : Any> PluginSavedScreen(host: PluginHost, read: (PluginPostArchive) -> T
     val saved by host.savedPosts.collectAsState()
     val rows = remember(saved) { saved?.mapNotNull { kept -> ListedSave.of(kept, read) } }
     PluginScaffold(title = stringResource(Res.string.saved_title), onBack = host::back) { padding ->
-        rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp), readList) { column -> LazyColumn(state = readList, contentPadding = column, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
+        rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 32.dp), readList) { column -> LazyColumn(state = readList, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             item(key = "notice") { SavedNotice(empty = rows?.isEmpty() == true) }
             if (rows == null) item(key = "loading") { FeedSkeleton(count = 3) }
             items(rows.orEmpty(), key = { it.kept.post.id }, contentType = { "saved" }) { listed ->

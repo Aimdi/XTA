@@ -223,6 +223,8 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean, wide: Boolean) {
             scope.launch { shell.drawer.close() }
         },
     )
+    // A window widened past the sidebar's breakpoint shows the menu beside Home: a drawer open then closes.
+    LaunchedEffect(wide) { if (wide && shell.drawer.isOpen) shell.drawer.snapTo(DrawerValue.Closed) }
     val feedCalls = FeedPageCalls(
         // In a wide window the menu stands open beside Home.
         openMenu = { if (!wide) scope.launch { shell.drawer.open() } },
