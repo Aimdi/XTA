@@ -113,7 +113,7 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: (
         val scroll = rememberScrollState()
         Box(Modifier.fillMaxSize().padding(padding)) {
         ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd))
-        Column(Modifier.verticalScroll(scroll).padding(bottom = 24.dp)) {
+        Column(Modifier.settingsRows().verticalScroll(scroll).padding(bottom = 24.dp)) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
