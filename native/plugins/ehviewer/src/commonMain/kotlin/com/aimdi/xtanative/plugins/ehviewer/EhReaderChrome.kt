@@ -68,6 +68,7 @@ import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import kotlin.math.roundToInt
@@ -141,7 +142,7 @@ private fun PageSlider(state: EhReaderState, model: EhReaderModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ModeSheet(current: EhReadingMode, onDismiss: () -> Unit, onPick: (EhReadingMode) -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         SheetTitle(pluginString(Strings.reader_mode))
         EhReadingMode.entries.forEach { mode ->
             ListItem(
@@ -169,7 +170,7 @@ internal fun PageActions(app: EhApp, open: EhOpenReader, page: Int, onDismiss: (
     val copyText = rememberCopyText()
     val openOutside = rememberOpenOutside()
     val copied = pluginString(Strings.link_copied)
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         SheetTitle(pluginString(Strings.page_of, page, open.model.total))
         ActionRow(Icons.Filled.Refresh, pluginString(Strings.reload_image)) {
             onDismiss()
