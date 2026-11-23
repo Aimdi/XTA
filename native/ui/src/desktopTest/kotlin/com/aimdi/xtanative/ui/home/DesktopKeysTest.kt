@@ -273,4 +273,16 @@ class DesktopKeysTest {
         assertFalse(com.aimdi.xtanative.ui.SearchKeys.opensSettingsOver(com.aimdi.xtanative.ui.settings.SettingsRoutes.PLUGINS), "the intro's plugin store")
         assertEquals(com.aimdi.xtanative.ui.media.ViewerKey.CLOSE, com.aimdi.xtanative.ui.media.ViewerKeys.of(escape = false, left = false, right = false, back = false, modified = true, closeKey = true))
     }
+
+    @Test
+    fun ctrlAndTheWheelSizeTheTextANotchAtATime() {
+        assertEquals(0f to DeskAction.TEXT_BIGGER, DesktopKeys.wheelText(0f, -1f))
+        assertEquals(0f to DeskAction.TEXT_SMALLER, DesktopKeys.wheelText(0f, 1f))
+        // A touchpad's small moves add up first.
+        val (half, none) = DesktopKeys.wheelText(0f, -0.5f)
+        assertEquals(DeskAction.NONE, none)
+        assertEquals(DeskAction.TEXT_BIGGER, DesktopKeys.wheelText(half, -0.6f).second)
+        // Turning back starts afresh.
+        assertEquals(0.4f to DeskAction.NONE, DesktopKeys.wheelText(-0.8f, 0.4f))
+    }
 }

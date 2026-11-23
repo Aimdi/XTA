@@ -44,6 +44,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_space
 import com.aimdi.xtanative.ui.generated.resources.keys_tab
 import com.aimdi.xtanative.ui.generated.resources.keys_tabs
 import com.aimdi.xtanative.ui.generated.resources.keys_text_size
+import com.aimdi.xtanative.ui.generated.resources.keys_wheel
 import com.aimdi.xtanative.ui.generated.resources.keys_title
 import com.aimdi.xtanative.ui.generated.resources.keys_video
 import com.aimdi.xtanative.ui.generated.resources.settings_title
@@ -84,7 +85,7 @@ object DesktopShortcuts {
         ),
         Shortcut(Res.string.keys_scroll_ends, listOf(listOf(KeyCap.Named(Res.string.keys_home)), listOf(KeyCap.Named(Res.string.keys_end)))),
         Shortcut(Res.string.keys_move, listOf(listOf(tab), listOf(shift, tab))),
-        Shortcut(Res.string.keys_text_size, listOf(listOf(ctrl, sign("+")), listOf(ctrl, sign("−")), listOf(ctrl, sign("0")))),
+        Shortcut(Res.string.keys_text_size, listOf(listOf(ctrl, sign("+")), listOf(ctrl, sign("−")), listOf(ctrl, sign("0")), listOf(ctrl, KeyCap.Named(Res.string.keys_wheel)))),
         Shortcut(Res.string.keys_full_screen, listOf(listOf(sign("F11")))),
         Shortcut(Res.string.settings_title, listOf(listOf(ctrl, sign(",")))),
         Shortcut(Res.string.keys_video, listOf(listOf(space), listOf(sign("←")), listOf(sign("→")))),

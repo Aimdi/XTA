@@ -21,6 +21,7 @@
     <string name="keys_esc">Esc</string>
     <string name="keys_tab">Tab</string>
     <string name="keys_space">Leertaste</string>
+    <string name="keys_wheel">Mausrad</string>
     <string name="keys_page_up">Bild ↑</string>
     <string name="keys_page_down">Bild ↓</string>
     <string name="keys_home">Pos1</string>

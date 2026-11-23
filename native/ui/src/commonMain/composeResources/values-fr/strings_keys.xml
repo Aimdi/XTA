@@ -21,6 +21,7 @@
     <string name="keys_esc">Échap</string>
     <string name="keys_tab">Tab</string>
     <string name="keys_space">Espace</string>
+    <string name="keys_wheel">Molette</string>
     <string name="keys_page_up">Pg préc</string>
     <string name="keys_page_down">Pg suiv</string>
     <string name="keys_home">Début</string>

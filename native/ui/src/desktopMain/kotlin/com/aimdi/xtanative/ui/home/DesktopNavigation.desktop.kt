@@ -33,6 +33,7 @@ import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isBackPressed
+import androidx.compose.ui.input.pointer.isCtrlPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -43,6 +44,7 @@ import androidx.navigation.NavHostController
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.ui.chrome.AppClosing
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.links.takesDroppedLinks
 import com.aimdi.xtanative.ui.settings.SettingsChoices
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -165,15 +167,26 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             Modifier
                 .fillMaxSize()
                 .pointerInput(nav) {
+                    var wheeled = 0f
                     awaitPointerEventScope {
                         while (true) {
                             val event = awaitPointerEvent(PointerEventPass.Initial)
                             if (event.type == PointerEventType.Press && event.buttons.isBackPressed) {
                                 act(DesktopKeys.mouseBack(nav.previousBackStackEntry != null, actions.somethingOpen()))
                             }
+                            // Ctrl and the wheel size the text, as Ctrl and +/- do; the page under it does not scroll meanwhile.
+                            // Over the media viewer the wheel is its own (zoom).
+                            if (event.type == PointerEventType.Scroll && event.keyboardModifiers.isCtrlPressed && !actions.overlayHoldsKeys()) {
+                                val delta = event.changes.fold(0f) { sum, change -> sum + change.scrollDelta.y }
+                                val (left, action) = DesktopKeys.wheelText(wheeled, delta)
+                                wheeled = left
+                                if (action != DeskAction.NONE) act(action)
+                                event.changes.forEach { it.consume() }
+                            }
                         }
                     }
                 }
+                .takesDroppedLinks()
                 .onPreviewKeyEvent(::onKey)
                 .onKeyEvent(::onTyped)
                 .onFocusChanged { state ->

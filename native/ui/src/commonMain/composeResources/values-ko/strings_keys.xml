@@ -21,6 +21,7 @@
     <string name="keys_esc">Esc</string>
     <string name="keys_tab">Tab</string>
     <string name="keys_space">스페이스</string>
+    <string name="keys_wheel">휠</string>
     <string name="keys_page_up">Page Up</string>
     <string name="keys_page_down">Page Down</string>
     <string name="keys_home">Home</string>

@@ -21,6 +21,7 @@
     <string name="keys_esc">Esc</string>
     <string name="keys_tab">Tab</string>
     <string name="keys_space">Espacio</string>
+    <string name="keys_wheel">Rueda</string>
     <string name="keys_page_up">RePág</string>
     <string name="keys_page_down">AvPág</string>
     <string name="keys_home">Inicio</string>

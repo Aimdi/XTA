@@ -154,6 +154,22 @@ object DesktopKeys {
     }
 
     /** The mouse's back button: as the keys, but on the first screen it closes the app, as XTA's goes back from Home. */
+    /**
+     * Ctrl and the wheel: the wheel's travel [pending] so far plus [delta]
+     * (up is negative), and the text-size step a whole notch of it makes:
+     * up is bigger, down smaller, as in a browser. A touchpad's small moves
+     * add up to a notch first, so one swipe does not jump the size.
+     */
+    fun wheelText(pending: Float, delta: Float): Pair<Float, DeskAction> {
+        // A turn the other way starts afresh rather than first paying back what was left.
+        val travel = if (pending != 0f && (pending < 0f) != (delta < 0f)) delta else pending + delta
+        return when {
+            travel <= -1f -> 0f to DeskAction.TEXT_BIGGER
+            travel >= 1f -> 0f to DeskAction.TEXT_SMALLER
+            else -> travel to DeskAction.NONE
+        }
+    }
+
     fun mouseBack(canGoBack: Boolean, somethingOpen: Boolean): DeskAction =
         back(canGoBack, somethingOpen).takeIf { it != DeskAction.NONE } ?: DeskAction.LEAVE_APP
 
