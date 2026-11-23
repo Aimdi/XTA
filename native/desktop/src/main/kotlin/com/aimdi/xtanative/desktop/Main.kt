@@ -4,9 +4,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isAltPressed
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -22,6 +31,7 @@ import com.aimdi.xtanative.ui.chrome.InstanceMessage
 import com.aimdi.xtanative.ui.chrome.SavedWindow
 import com.aimdi.xtanative.ui.chrome.SavedWindowFile
 import com.aimdi.xtanative.ui.chrome.SingleInstance
+import com.aimdi.xtanative.ui.chrome.WindowFullscreen
 import com.aimdi.xtanative.ui.media.VideoCheck
 import java.awt.Dimension
 import java.awt.GraphicsEnvironment
@@ -59,6 +69,7 @@ fun main() {
     // The process waits for the writes the closing window asked for (the reading place) before it ends.
     application(exitProcessOnExit = false) {
         val app = remember { starting.started() }
+        var beforeFullscreen by remember { mutableStateOf<WindowPlacement?>(null) }
         val graph = app.graph
         val state = rememberWindowState(
             placement = if (saved.maximized) WindowPlacement.Maximized else WindowPlacement.Floating,
@@ -72,6 +83,16 @@ fun main() {
             title = appName(),
             icon = appIcon(),
             state = state,
+            // F11 fills the screen and gives it back, over every screen and viewer.
+            onPreviewKeyEvent = { event ->
+                val f11 = event.type == KeyEventType.KeyDown && event.key == Key.F11 && !event.isAltPressed && !event.isCtrlPressed
+                if (f11) {
+                    val (placement, back) = WindowFullscreen.toggled(state.placement, beforeFullscreen)
+                    beforeFullscreen = back
+                    state.placement = placement
+                }
+                f11
+            },
         ) {
             LaunchedEffect(Unit) { window.minimumSize = Dimension(SavedWindow.MIN_WIDTH, SavedWindow.MIN_HEIGHT) }
             // Each change once it has rested half a second, and the last one when the window closes, as XTA's window_state.cc.
