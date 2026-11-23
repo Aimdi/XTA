@@ -81,6 +81,7 @@ import com.aimdi.xtanative.store.saved.SavedSource
 import com.aimdi.xtanative.store.saved.SavedTabs
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.ReadingColumn
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -504,6 +505,8 @@ private fun TabChip(label: String, selected: Boolean, trailing: ImageVector?, on
             .heightIn(min = 32.dp)
             .clip(shape)
             .border(1.dp, if (selected) accent else MaterialTheme.colorScheme.outlineVariant, shape)
+            // A right-click opens what a long press does, as a desktop opens a thing's menu.
+            .then(onLongClick?.let { Modifier.onSecondaryClick(it) } ?: Modifier)
             .combinedClickable(role = Role.Tab, onClick = onClick, onLongClick = onLongClick)
             .semantics { this.selected = selected }
             .padding(horizontal = 10.dp, vertical = 6.dp),

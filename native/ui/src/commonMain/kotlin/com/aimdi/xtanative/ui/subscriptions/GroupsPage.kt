@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.session.GroupBoard
 import com.aimdi.xtanative.store.settings.GroupsLayout
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_censored
 import com.aimdi.xtanative.ui.generated.resources.groups_create
@@ -173,6 +174,8 @@ private fun GroupTileView(tile: GroupTile, compact: Boolean, fixedHeight: Float?
             .let { if (fixedHeight != null) it.height(fixedHeight.dp) else it.aspectRatio(ratio) }
             .clip(shape)
             .let { if (chosen != null) it.border(1.dp, chosen.copy(alpha = 0.55f), shape) else it }
+            // A right-click opens what a long press does, as a desktop opens a thing's menu.
+            .onSecondaryClick(onLongPress)
             .combinedClickable(onClick = onTap, onLongClick = onLongPress)
             .semantics(mergeDescendants = true) { contentDescription = label },
     ) {
@@ -330,6 +333,8 @@ private fun GroupListRow(tile: GroupTile, onOpen: () -> Unit, onEdit: () -> Unit
             .fillMaxWidth()
             .heightIn(min = 64.dp)
             .clip(RoundedCornerShape(12.dp))
+            // A right-click opens what a long press does, as a desktop opens a thing's menu.
+            .onSecondaryClick(onEdit)
             .combinedClickable(onClick = onOpen, onLongClick = onEdit)
             .padding(start = 16.dp + NEST_INDENT * tile.depth, end = 8.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,

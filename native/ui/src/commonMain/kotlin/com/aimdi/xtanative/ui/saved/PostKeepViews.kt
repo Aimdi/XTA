@@ -36,6 +36,7 @@ import com.aimdi.xtanative.ui.common.HEART_BURST_MILLIS
 import com.aimdi.xtanative.ui.common.HeartBurst
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.saved_like
 import com.aimdi.xtanative.ui.generated.resources.saved_save_here
@@ -160,6 +161,8 @@ internal fun KeepableSaveButton(id: String, modifier: Modifier, tint: Color, ite
         modifier
             .size(40.dp)
             .clip(CircleShape)
+            // A right-click picks the folder, as a long press does.
+            .onSecondaryClick { sheetFor = item() }
             .combinedClickable(
                 role = Role.Button,
                 onClickLabel = label,

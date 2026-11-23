@@ -85,6 +85,7 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_add_location
@@ -326,6 +327,8 @@ private fun PlaceTab(place: XTrendPlace, selected: Boolean, onShow: (XTrendPlace
         Modifier
             .heightIn(min = 48.dp)
             .semantics { this.selected = selected }
+            // A right-click opens what a long press does, as a desktop opens a thing's menu.
+            .then(if (removable) Modifier.onSecondaryClick { menu = true } else Modifier)
             .combinedClickable(role = Role.Tab, onLongClick = if (removable) ({ menu = true }) else null) { onShow(place) }
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.Center,
