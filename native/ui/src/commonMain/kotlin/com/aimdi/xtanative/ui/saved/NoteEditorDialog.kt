@@ -78,6 +78,7 @@ import com.aimdi.xtanative.store.saved.SavedContent
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.downloads.PickedFile
 import com.aimdi.xtanative.ui.downloads.rememberFilePicker
+import com.aimdi.xtanative.ui.downloads.takesDroppedFiles
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -180,8 +181,12 @@ fun NoteEditorDialog(
     Dialog(onDismissRequest = close, properties = DialogProperties(usePlatformDefaultWidth = false, dismissOnClickOutside = false)) {
         // Ctrl+S and Ctrl+Enter save, as a desktop editor's do, while Save itself would.
         val canSave = NoteRules.canSave(target, state, editor.dirty)
+        // Files dropped from the file manager attach as the button's picks do, one after another (a note's, not a text note's).
+        val dropped: (List<suspend () -> PickedFile?>) -> Unit = { reads ->
+            scope.launch { reads.forEach { read -> editor.attach { attachPicked(keeper, editor.postId ?: newId, read) } } }
+        }
         Surface(
-            Modifier.fillMaxSize().onPreviewKeyEvent { event ->
+            Modifier.fillMaxSize().takesDroppedFiles(enabled = note != null && !state.busy, onDropped = dropped).onPreviewKeyEvent { event ->
                 val saves = event.type == KeyEventType.KeyDown && NoteKeys.saves(event.key == Key.S, event.key == Key.Enter || event.key == Key.NumPadEnter, event.isCtrlPressed, event.isAltPressed || event.isShiftPressed)
                 if (saves && canSave && !state.busy) save()
                 saves

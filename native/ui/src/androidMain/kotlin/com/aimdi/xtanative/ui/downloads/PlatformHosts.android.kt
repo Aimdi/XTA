@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.aimdi.xtanative.store.saved.LocalPosts
 import java.io.IOException
@@ -90,3 +91,6 @@ private fun read(resolver: ContentResolver, uri: Uri): PickedFile {
     } ?: throw IOException("Could not read $uri")
     return PickedFile(name, LocalPosts.inferMime(name, resolver.getType(uri)), bytes)
 }
+
+@Composable
+internal actual fun Modifier.takesDroppedFiles(enabled: Boolean, onDropped: (List<suspend () -> PickedFile?>) -> Unit): Modifier = this
