@@ -52,6 +52,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isAltPressed
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.isShiftPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -170,7 +178,16 @@ fun NoteEditorDialog(
     }
 
     Dialog(onDismissRequest = close, properties = DialogProperties(usePlatformDefaultWidth = false, dismissOnClickOutside = false)) {
-        Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        // Ctrl+S and Ctrl+Enter save, as a desktop editor's do, while Save itself would.
+        val canSave = NoteRules.canSave(target, state, editor.dirty)
+        Surface(
+            Modifier.fillMaxSize().onPreviewKeyEvent { event ->
+                val saves = event.type == KeyEventType.KeyDown && NoteKeys.saves(event.key == Key.S, event.key == Key.Enter || event.key == Key.NumPadEnter, event.isCtrlPressed, event.isAltPressed || event.isShiftPressed)
+                if (saves && canSave && !state.busy) save()
+                saves
+            },
+            color = MaterialTheme.colorScheme.background,
+        ) {
             Box(Modifier.fillMaxSize().systemBarsPadding().imePadding(), contentAlignment = Alignment.TopCenter) {
                 Column(Modifier.widthIn(max = 720.dp).fillMaxSize()) {
                     EditorBar(title(target), state.busy, state.saving, NoteRules.canSave(target, state, editor.dirty), close, save)
@@ -360,4 +377,9 @@ private fun QuotedPreview(content: SavedContent) {
         Text("@" + post.author.screenName, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(post.text, maxLines = 6, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 4.dp))
     }
+}
+
+/** The note editor's keys: Ctrl+S and Ctrl+Enter save ([s], [enter]), as a desktop editor's do; with Alt or Shift too ([other]) they are not the editor's. */
+internal object NoteKeys {
+    fun saves(s: Boolean, enter: Boolean, ctrl: Boolean, other: Boolean): Boolean = ctrl && !other && (s || enter)
 }
