@@ -10,3 +10,7 @@ import androidx.compose.runtime.Composable
  */
 @Composable
 internal expect fun ProvidePlatformLook(content: @Composable () -> Unit)
+
+/** Whether the system prefers dark, for the "System" background: Android's night mode, the desktop's settings portal. */
+@Composable
+internal expect fun systemPrefersDark(): Boolean

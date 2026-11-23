@@ -34,6 +34,7 @@ import com.aimdi.xtanative.ui.chrome.SingleInstance
 import com.aimdi.xtanative.ui.chrome.WindowFullscreen
 import com.aimdi.xtanative.ui.links.DesktopIncomingLinks
 import com.aimdi.xtanative.ui.media.mpris.MprisSessions
+import com.aimdi.xtanative.ui.theme.DesktopColorScheme
 import com.aimdi.xtanative.ui.media.VideoCheck
 import java.awt.Dimension
 import java.awt.GraphicsEnvironment
@@ -63,6 +64,8 @@ fun main(args: Array<String>) {
     val instance = SingleInstance.claim(files, link?.let(InstanceMessage::Open) ?: InstanceMessage.Raise) ?: exitProcess(0)
     link?.let(DesktopIncomingLinks::hand)
     val raises = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    // The desktop's dark or light is asked while the window starts, so "System" opens in it.
+    DesktopColorScheme.desktop.start()
     MprisSessions.service.onRaise = { raises.tryEmit(Unit) }
     instance.listen { message ->
         if (message is InstanceMessage.Open) DesktopIncomingLinks.hand(message.url)

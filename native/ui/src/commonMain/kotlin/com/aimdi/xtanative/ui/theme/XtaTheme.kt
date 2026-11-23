@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -24,7 +23,7 @@ import com.aimdi.xtanative.ui.common.LocalSettingsStore
 fun XtaTheme(content: @Composable () -> Unit) {
     val stored by LocalSettingsStore.current.state.collectAsStateWithLifecycle()
     val settings = stored ?: Settings()
-    val systemDark = isSystemInDarkTheme()
+    val systemDark = systemPrefersDark()
     val tokens = XLook.tokens(settings, systemDark)
     val scheme = remember(tokens) { XLook.scheme(tokens) }
     val density = LocalDensity.current

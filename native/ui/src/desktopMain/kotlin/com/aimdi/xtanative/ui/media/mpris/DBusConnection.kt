@@ -29,6 +29,10 @@ class DBusConnection private constructor(private val channel: SocketChannel) : A
     @Volatile
     var onCall: ((DBusMessage) -> Unit)? = null
 
+    /** The signals this connection's match rules ([DBusConnection.call] AddMatch) bring, on the connection's thread. */
+    @Volatile
+    var onSignal: ((DBusMessage) -> Unit)? = null
+
     /** The name the bus gave this connection (":1.42"), once it said Hello. */
     var uniqueName: String? = null
         private set
@@ -112,7 +116,7 @@ class DBusConnection private constructor(private val channel: SocketChannel) : A
                 when (message.type) {
                     DBusType.METHOD_RETURN, DBusType.ERROR -> message.replySerial?.let { waiting.remove(it)?.complete(message) }
                     DBusType.METHOD_CALL -> runCatching { onCall?.invoke(message) ?: fail(message, UNKNOWN_METHOD, "Nothing answers here") }
-                    DBusType.SIGNAL -> Unit
+                    DBusType.SIGNAL -> runCatching { onSignal?.invoke(message) }
                 }
             }
         } catch (_: Exception) {
