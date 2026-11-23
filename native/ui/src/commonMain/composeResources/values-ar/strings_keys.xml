@@ -7,6 +7,7 @@
     <string name="keys_search">بحث</string>
     <string name="keys_open_copied_link">فتح رابط منسوخ</string>
     <string name="keys_tabs">علامة التبويب التالية أو السابقة</string>
+    <string name="keys_tab_number">الانتقال إلى علامة تبويب (9: الأخيرة)</string>
     <string name="keys_pages">الصفحة السابقة أو التالية</string>
     <string name="keys_scroll_line">التمرير قليلًا</string>
     <string name="keys_next_post">المنشور التالي أو السابق</string>

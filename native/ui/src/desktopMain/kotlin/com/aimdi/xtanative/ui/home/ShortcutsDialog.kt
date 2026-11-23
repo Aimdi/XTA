@@ -46,6 +46,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_search
 import com.aimdi.xtanative.ui.generated.resources.keys_shift
 import com.aimdi.xtanative.ui.generated.resources.keys_space
 import com.aimdi.xtanative.ui.generated.resources.keys_tab
+import com.aimdi.xtanative.ui.generated.resources.keys_tab_number
 import com.aimdi.xtanative.ui.generated.resources.keys_tabs
 import com.aimdi.xtanative.ui.generated.resources.keys_text_size
 import com.aimdi.xtanative.ui.generated.resources.keys_title
@@ -83,6 +84,7 @@ object DesktopShortcuts {
         Shortcut(Res.string.keys_search, listOf(listOf(ctrl, sign("F")), listOf(sign("/")))),
         Shortcut(Res.string.keys_open_copied_link, listOf(listOf(ctrl, sign("V")))),
         Shortcut(Res.string.keys_tabs, listOf(listOf(ctrl, tab), listOf(ctrl, shift, tab))),
+        Shortcut(Res.string.keys_tab_number, listOf(listOf(ctrl, sign("1…9")))),
         Shortcut(Res.string.keys_pages, listOf(listOf(sign("←")), listOf(sign("→")))),
         Shortcut(Res.string.keys_scroll_line, listOf(listOf(sign("↑")), listOf(sign("↓")))),
         Shortcut(Res.string.keys_next_post, listOf(listOf(sign("J")), listOf(sign("K")))),

@@ -232,6 +232,17 @@ object DesktopKeys {
     /** Pixels an item may sit off the line and still count as on it. */
     private const val SLACK = 1
 
+    /**
+     * The tab Ctrl and [digit] go to of [count], as a browser's Ctrl+1…9 go
+     * to its tabs: 1 to 8 that tab, where there is one; 9 the last.
+     */
+    fun pageAt(digit: Int, count: Int): Int? = when {
+        count <= 0 -> null
+        digit == 9 -> count - 1
+        digit in 1..8 -> (digit - 1).takeIf { it < count }
+        else -> null
+    }
+
     /** The mouse's back button: as the keys, but on the first screen it closes the app, as XTA's goes back from Home. */
     fun mouseBack(canGoBack: Boolean, somethingOpen: Boolean): DeskAction =
         back(canGoBack, somethingOpen).takeIf { it != DeskAction.NONE } ?: DeskAction.LEAVE_APP

@@ -219,6 +219,7 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean, wide: Boolean) {
     DesktopShortcuts(
         refresh = refresh,
         turn = { by -> if (page == BarPage.Feed) DesktopKeys.turned(index, ui.tabs.size, by)?.let { shell.turnTo(ui, it) } },
+        jump = { digit -> if (page == BarPage.Feed) DesktopKeys.pageAt(digit, ui.tabs.size)?.let { shell.turnTo(ui, it) } },
         isOpen = { shell.drawer.isOpen || shell.sheet != null || shell.layer != null },
         close = {
             shell.sheet = null

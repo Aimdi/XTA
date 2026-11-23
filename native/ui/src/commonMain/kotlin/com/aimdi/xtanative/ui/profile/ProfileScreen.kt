@@ -187,6 +187,7 @@ fun ProfileScreen(
     if (ownKeys) DesktopShortcuts(
         refresh = vm::refresh,
         turn = { by -> if (state.complete && user != null) DesktopKeys.turned(state.tab.ordinal, ProfileTab.entries.size, by)?.let { vm.select(ProfileTab.entries[it]) } },
+        jump = { digit -> if (state.complete && user != null) DesktopKeys.pageAt(digit, ProfileTab.entries.size)?.let { vm.select(ProfileTab.entries[it]) } },
         isOpen = { sheet != ProfileSheet.NONE },
         close = { sheet = ProfileSheet.NONE },
     )

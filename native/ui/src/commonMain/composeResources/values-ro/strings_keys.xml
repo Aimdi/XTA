@@ -7,6 +7,7 @@
     <string name="keys_search">Caută</string>
     <string name="keys_open_copied_link">Deschide un link copiat</string>
     <string name="keys_tabs">Fila următoare sau anterioară</string>
+    <string name="keys_tab_number">Mergi la o filă (9: ultima)</string>
     <string name="keys_pages">Pagina anterioară sau următoare</string>
     <string name="keys_scroll_line">Derulează puțin</string>
     <string name="keys_next_post">Postarea următoare sau anterioară</string>

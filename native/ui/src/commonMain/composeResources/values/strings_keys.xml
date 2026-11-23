@@ -8,6 +8,7 @@
     <string name="keys_search">Search</string>
     <string name="keys_open_copied_link">Open a copied link</string>
     <string name="keys_tabs">Next or previous tab</string>
+    <string name="keys_tab_number">Go to a tab (9: the last)</string>
     <string name="keys_pages">Previous or next page</string>
     <string name="keys_scroll_line">Scroll a little</string>
     <string name="keys_next_post">Next or previous post</string>

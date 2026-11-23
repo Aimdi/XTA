@@ -100,6 +100,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
     DesktopShortcuts(
         refresh = { if (state.community != null) vm.retryPosts() else if (state.problem != null) vm.load() },
         turn = { by -> if (state.community != null) DesktopKeys.turned(state.tab.ordinal, CommunityTab.entries.size, by)?.let { vm.select(CommunityTab.entries[it]) } },
+        jump = { digit -> if (state.community != null) DesktopKeys.pageAt(digit, CommunityTab.entries.size)?.let { vm.select(CommunityTab.entries[it]) } },
         isOpen = { false },
         close = {},
     )

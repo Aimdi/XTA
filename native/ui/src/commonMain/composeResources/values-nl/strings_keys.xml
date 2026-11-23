@@ -7,6 +7,7 @@
     <string name="keys_search">Zoeken</string>
     <string name="keys_open_copied_link">Gekopieerde link openen</string>
     <string name="keys_tabs">Volgend of vorig tabblad</string>
+    <string name="keys_tab_number">Naar een tabblad (9: het laatste)</string>
     <string name="keys_pages">Vorige of volgende pagina</string>
     <string name="keys_scroll_line">Een stukje scrollen</string>
     <string name="keys_next_post">Volgende of vorige post</string>

@@ -7,6 +7,7 @@
     <string name="keys_search">Pesquisar</string>
     <string name="keys_open_copied_link">Abrir um link copiado</string>
     <string name="keys_tabs">Próxima aba ou aba anterior</string>
+    <string name="keys_tab_number">Ir para uma aba (9: a última)</string>
     <string name="keys_pages">Página anterior ou próxima</string>
     <string name="keys_scroll_line">Rolar um pouco</string>
     <string name="keys_next_post">Post seguinte ou anterior</string>

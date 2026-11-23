@@ -139,6 +139,7 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
     DesktopShortcuts(
         refresh = { if (state.view.hasQuery) vm.retry(state.tab) },
         turn = { by -> DesktopKeys.turned(state.tab.ordinal, SearchTab.entries.size, by)?.let { vm.select(SearchTab.entries[it]) } },
+        jump = { digit -> DesktopKeys.pageAt(digit, SearchTab.entries.size)?.let { vm.select(SearchTab.entries[it]) } },
         isOpen = { state.editing != null },
         close = vm::closeAdvanced,
     )

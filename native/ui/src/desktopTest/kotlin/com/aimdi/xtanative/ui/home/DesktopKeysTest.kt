@@ -344,4 +344,16 @@ class DesktopKeysTest {
         assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.V, alt = false, ctrl = true, focusInside = false, canGoBack = false, shift = true))
         assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.V, alt = false, ctrl = false, focusInside = false, canGoBack = false))
     }
+
+    @Test
+    fun ctrlAndADigitGoToThatTab() {
+        assertEquals(0, DesktopKeys.pageAt(1, 5))
+        assertEquals(4, DesktopKeys.pageAt(5, 5))
+        assertNull(DesktopKeys.pageAt(6, 5))
+        // 9 is the last, as in a browser.
+        assertEquals(4, DesktopKeys.pageAt(9, 5))
+        assertEquals(0, DesktopKeys.pageAt(9, 1))
+        assertNull(DesktopKeys.pageAt(1, 0))
+        assertNull(DesktopKeys.pageAt(0, 5))
+    }
 }

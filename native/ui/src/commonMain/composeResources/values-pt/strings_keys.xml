@@ -7,6 +7,7 @@
     <string name="keys_search">Pesquisar</string>
     <string name="keys_open_copied_link">Abrir um link copiado</string>
     <string name="keys_tabs">Separador seguinte ou anterior</string>
+    <string name="keys_tab_number">Ir para um separador (9: o último)</string>
     <string name="keys_pages">Página anterior ou seguinte</string>
     <string name="keys_scroll_line">Deslocar um pouco</string>
     <string name="keys_next_post">Publicação seguinte ou anterior</string>

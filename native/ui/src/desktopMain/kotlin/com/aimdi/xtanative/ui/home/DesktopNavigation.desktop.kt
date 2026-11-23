@@ -148,6 +148,13 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     fun onKey(event: KeyEvent): Boolean {
         // The character a key the window took types (Ctrl+= types =) is not typed into a field as well.
         if (event.type != KeyEventType.KeyDown) return event.type != KeyEventType.KeyUp && keyTaken
+        // Ctrl and a digit go to that tab, as a browser's do, from a field too; not under something open over the page.
+        TAB_DIGITS[event.key]?.let { digit ->
+            if (event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && !actions.overlayHoldsKeys() && !actions.somethingOpen()) {
+                keyTaken = actions.jump(digit)
+                return keyTaken
+            }
+        }
         val canGoBack = nav.previousBackStackEntry != null
         val key = deskKey(event.key)
         val action = DesktopKeys.action(key, event.isAltPressed, event.isCtrlPressed, focusInside, canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed)
@@ -264,6 +271,12 @@ private suspend fun LazyListState.moveFor(action: DeskAction, line: Float) {
 
 /** Longer than a screen's slide, by which time a screen that focuses a field has done so. */
 private const val FOCUS_SETTLE_MS = 400L
+
+/** The digit keys Ctrl takes to a tab ([DesktopKeys.pageAt]), on the main keys and the number pad. */
+private val TAB_DIGITS: Map<Key, Int> = mapOf(
+    Key.One to 1, Key.Two to 2, Key.Three to 3, Key.Four to 4, Key.Five to 5, Key.Six to 6, Key.Seven to 7, Key.Eight to 8, Key.Nine to 9,
+    Key.NumPad1 to 1, Key.NumPad2 to 2, Key.NumPad3 to 3, Key.NumPad4 to 4, Key.NumPad5 to 5, Key.NumPad6 to 6, Key.NumPad7 to 7, Key.NumPad8 to 8, Key.NumPad9 to 9,
+)
 
 private fun deskKey(key: Key): DeskKey = when (key) {
     Key.Escape -> DeskKey.ESCAPE

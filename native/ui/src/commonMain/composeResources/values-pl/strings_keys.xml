@@ -7,6 +7,7 @@
     <string name="keys_search">Szukaj</string>
     <string name="keys_open_copied_link">Otwórz skopiowany link</string>
     <string name="keys_tabs">Następna lub poprzednia karta</string>
+    <string name="keys_tab_number">Przejdź do karty (9: ostatnia)</string>
     <string name="keys_pages">Poprzednia lub następna strona</string>
     <string name="keys_scroll_line">Przewiń trochę</string>
     <string name="keys_next_post">Następny lub poprzedni wpis</string>

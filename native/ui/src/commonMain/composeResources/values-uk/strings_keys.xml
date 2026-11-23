@@ -7,6 +7,7 @@
     <string name="keys_search">Пошук</string>
     <string name="keys_open_copied_link">Відкрити скопійоване посилання</string>
     <string name="keys_tabs">Наступна або попередня вкладка</string>
+    <string name="keys_tab_number">Перейти до вкладки (9: остання)</string>
     <string name="keys_pages">Попередня або наступна сторінка</string>
     <string name="keys_scroll_line">Прокрутити трохи</string>
     <string name="keys_next_post">Наступний або попередній допис</string>

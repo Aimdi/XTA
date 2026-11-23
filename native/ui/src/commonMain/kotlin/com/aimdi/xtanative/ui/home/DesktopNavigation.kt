@@ -28,13 +28,15 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
     private var owner: Any? = null
     private var refreshing: (() -> Unit)? = null
     private var turning: ((Int) -> Unit)? = null
+    private var jumping: ((Int) -> Unit)? = null
     private var open: (() -> Boolean)? = null
     private var closing: (() -> Unit)? = null
 
-    internal fun take(owner: Any, refresh: () -> Unit, turn: (Int) -> Unit, isOpen: () -> Boolean, close: () -> Unit) {
+    internal fun take(owner: Any, refresh: () -> Unit, turn: (Int) -> Unit, isOpen: () -> Boolean, close: () -> Unit, jump: (Int) -> Unit = {}) {
         this.owner = owner
         refreshing = refresh
         turning = turn
+        jumping = jump
         open = isOpen
         closing = close
     }
@@ -44,6 +46,7 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
         this.owner = null
         refreshing = null
         turning = null
+        jumping = null
         open = null
         closing = null
     }
@@ -52,6 +55,9 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
     fun refresh(): Boolean = refreshing?.let { it(); true } ?: false
 
     fun turn(by: Int): Boolean = turning?.let { it(by); true } ?: false
+
+    /** Ctrl and a digit: the screen's tab [digit] ([DesktopKeys.pageAt]); false when no screen answers. */
+    fun jump(digit: Int): Boolean = jumping?.let { it(digit); true } ?: false
 
     fun somethingOpen(): Boolean = open?.invoke() ?: false
 
@@ -210,15 +216,16 @@ fun Modifier.foundWithKeys(): Modifier {
  * going back closes first. Nothing off the desktop.
  */
 @Composable
-internal fun DesktopShortcuts(refresh: () -> Unit, turn: (Int) -> Unit, isOpen: () -> Boolean, close: () -> Unit) {
+internal fun DesktopShortcuts(refresh: () -> Unit, turn: (Int) -> Unit, isOpen: () -> Boolean, close: () -> Unit, jump: (Int) -> Unit = {}) {
     val actions = LocalDesktopActions.current ?: return
     val latestRefresh by rememberUpdatedState(refresh)
     val latestTurn by rememberUpdatedState(turn)
+    val latestJump by rememberUpdatedState(jump)
     val latestIsOpen by rememberUpdatedState(isOpen)
     val latestClose by rememberUpdatedState(close)
     val owner = remember { Any() }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        actions.take(owner, { latestRefresh() }, { latestTurn(it) }, { latestIsOpen() }, { latestClose() })
+        actions.take(owner, { latestRefresh() }, { latestTurn(it) }, { latestIsOpen() }, { latestClose() }, { latestJump(it) })
     }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.release(owner) }
     DisposableEffect(actions) { onDispose { actions.release(owner) } }
