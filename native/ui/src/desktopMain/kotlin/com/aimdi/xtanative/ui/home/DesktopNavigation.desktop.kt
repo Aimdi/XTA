@@ -52,12 +52,15 @@ actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> 
     val focus = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
-    // A frame later: what gives the keys back is still leaving when it asks.
+    var hasFocus by remember { mutableStateOf(false) }
+    var focusInside by remember { mutableStateOf(false) }
+    // A frame later: what gives the keys back is still leaving when it asks. The frame takes them only if
+    // nothing in the page has since (a screen that focuses its field as it opens keeps it).
     val actions = remember {
         DesktopActions(refocus = { under ->
             scope.launch {
                 delay(REFOCUS_AFTER_MS)
-                runCatching { (under ?: focus).requestFocus() }
+                if (under != null || !focusInside) runCatching { (under ?: focus).requestFocus() }
             }
         })
     }
@@ -67,8 +70,6 @@ actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> 
         host.actions = actions
         onDispose { if (host.actions === actions) host.actions = null }
     }
-    var hasFocus by remember { mutableStateOf(false) }
-    var focusInside by remember { mutableStateOf(false) }
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val line = with(LocalDensity.current) { LINE.toPx() }
 

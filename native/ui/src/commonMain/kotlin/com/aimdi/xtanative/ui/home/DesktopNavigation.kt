@@ -90,9 +90,21 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
         refocus(holders.lastOrNull())
     }
 
-    /** Something drawn over the screens without keys of its own (a sheet) going: the keys back to the overlay under it, else the window's frame. */
-    internal fun handBack() {
-        refocus(holders.lastOrNull())
+    /** The sheets open now ([GivesKeysBack]); one over another hands nothing back as it goes. */
+    private var sheets = 0
+
+    internal fun sheetOpened() {
+        sheets++
+    }
+
+    /**
+     * A sheet going: once the last is gone, the keys back to the overlay under
+     * it, else the window's frame. One still open (a sheet that opened
+     * another) keeps its own field's focus.
+     */
+    internal fun sheetClosed() {
+        sheets = (sheets - 1).coerceAtLeast(0)
+        if (sheets == 0) refocus(holders.lastOrNull())
     }
 
     /** The list the keys move: the one the pointer was last over, else the first on screen (the page's own, before any column beside it). */
@@ -173,7 +185,10 @@ internal fun DesktopShortcuts(refresh: () -> Unit, turn: (Int) -> Unit, isOpen: 
 @Composable
 fun GivesKeysBack() {
     val actions = LocalDesktopActions.current ?: LocalDesktopActionsHost.current.actions ?: return
-    DisposableEffect(actions) { onDispose { actions.handBack() } }
+    DisposableEffect(actions) {
+        actions.sheetOpened()
+        onDispose { actions.sheetClosed() }
+    }
 }
 
 /**

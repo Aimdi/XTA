@@ -142,4 +142,18 @@ class DesktopKeysTest {
         // A long seed overflows 64 bits as Dart's ints do and still lands in the palette.
         assertEquals(Monogram.index("x".repeat(500), 16), Monogram.index("x".repeat(500), 16).coerceIn(0, 15))
     }
+
+    @Test
+    fun aSheetOverAnotherHandsTheKeysBackOnlyWhenTheLastGoes() {
+        var refocused = 0
+        val actions = DesktopActions(refocus = { refocused++ })
+        actions.sheetOpened()
+        actions.sheetOpened()
+        actions.sheetClosed()
+        assertEquals(0, refocused, "the sheet under it keeps its field's focus")
+        actions.sheetClosed()
+        assertEquals(1, refocused)
+        actions.sheetClosed()
+        assertEquals(2, refocused, "never below none")
+    }
 }
