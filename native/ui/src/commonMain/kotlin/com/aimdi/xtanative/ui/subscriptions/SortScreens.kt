@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -63,6 +64,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.cancel
@@ -291,7 +293,7 @@ fun UngroupedSorterScreen(accountIds: List<String>, openProfile: (String) -> Uni
         } else if (sorter.finished || account == null) {
             SorterEnd(sorter, vm::sortSkipped, onDone, Modifier.padding(padding))
         } else {
-            LazyColumn(Modifier.fillMaxSize().padding(padding), contentPadding = PaddingValues(16.dp)) {
+            rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(16.dp), readList) { column -> LazyColumn(state = readList, contentPadding = column, modifier = Modifier.fillMaxSize().padding(padding)) {
                 item(key = "card") {
                     AnimatedContent(
                         targetState = sorter.position,
@@ -307,7 +309,7 @@ fun UngroupedSorterScreen(accountIds: List<String>, openProfile: (String) -> Uni
                 item(key = "groups") {
                     GroupChips(state, onGroup = { vm.put(listOf(it)) }, onSeveral = { several = true }, onCreate = { naming = true })
                 }
-            }
+            } } }
         }
     }
     val current = sorter.current

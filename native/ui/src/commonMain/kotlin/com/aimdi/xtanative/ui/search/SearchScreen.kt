@@ -363,23 +363,23 @@ private fun MediaResults(vm: SearchViewModel, list: LazyListState, actions: Post
     val grid = rememberMediaGridRows(paged.items, actions, updates, onMore)
     LoadMoreNearEnd(list, paged, onMore)
     LaunchedEffect(paged.loading) { if (paged.loading) list.scrollToItem(0) }
-    LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+    WithReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         mediaGrid(grid)
         pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets)
-    }
+    } }
 }
 
 @Composable
 private fun PeopleResults(vm: SearchViewModel, list: LazyListState, actions: PostActions, onRetry: () -> Unit, onMore: () -> Unit, padding: PaddingValues) {
     val paged by vm.people.state.collectAsStateWithLifecycle()
     LaunchedEffect(paged.loading) { if (paged.loading) list.scrollToItem(0) }
-    LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+    WithReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         itemsIndexed(paged.items, key = { _, user -> user.id }, contentType = { _, _ -> "person" }) { index, user ->
             PersonRow(user, onOpen = { actions.openUser(user.screenName, user.id) })
             if (index < paged.items.lastIndex) PersonDivider()
         }
         pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, icon = DiscoverIcons.PersonSearch)
-    }
+    } }
 }
 
 @Composable
@@ -387,12 +387,12 @@ private fun CommunityResults(vm: SearchViewModel, list: LazyListState, searchAct
     val paged by vm.communities.state.collectAsStateWithLifecycle()
     LoadMoreNearEnd(list, paged, onMore)
     LaunchedEffect(paged.loading) { if (paged.loading) list.scrollToItem(0) }
-    LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+    WithReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         items(paged.items, key = { it.id }, contentType = { "community" }) { community ->
             CommunityRow(community) { searchActions.openCommunity(community.id) }
         }
         pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, icon = DiscoverIcons.Groups)
-    }
+    } }
 }
 
 /** The filters set, as chips above the results: a tap takes one away and searches again without it. */

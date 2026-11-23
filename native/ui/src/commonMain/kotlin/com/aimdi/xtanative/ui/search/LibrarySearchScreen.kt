@@ -5,6 +5,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -19,7 +21,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -52,6 +53,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.plugins.Destination
+import com.aimdi.xtanative.ui.common.FlatFilterChip
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_all
@@ -116,14 +119,14 @@ fun LibrarySearchScreen(initialQuery: String?, open: (LibraryTarget) -> Unit, on
                 if (state.saysNoResults(results)) {
                     EmptyNote(stringResource(Res.string.discover_no_results))
                 } else {
-                    LazyColumn(Modifier.fillMaxSize()) {
+                    rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(), readList) { column -> LazyColumn(state = readList, modifier = Modifier.fillMaxSize(), contentPadding = column) {
                         items(results, key = { it.id }, contentType = { "result" }) { result ->
                             ResultRow(result) {
                                 vm.opening(result)
                                 open(result.target)
                             }
                         }
-                    }
+                    } } }
                 }
                 if (state.loading) LinearProgressIndicator(Modifier.fillMaxWidth().align(Alignment.TopCenter))
                 if (state.failed) RetryPill(vm::load, Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))

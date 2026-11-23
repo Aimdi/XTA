@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import com.aimdi.xtanative.ui.home.rememberRetappedList
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,6 +48,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
@@ -63,6 +63,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_quiet_account_off
 import com.aimdi.xtanative.ui.generated.resources.groups_search
 import com.aimdi.xtanative.ui.generated.resources.groups_show_in_main_feed
 import com.aimdi.xtanative.ui.generated.resources.groups_unsubscribe
+import com.aimdi.xtanative.ui.home.rememberRetappedList
 import org.jetbrains.compose.resources.stringResource
 
 /** What a row of the people list can be asked. */
@@ -114,16 +115,12 @@ private fun PeopleList(state: SubscriptionsUi, actions: PeopleActions, contentPa
     val drag = rememberRowDrag(list)
     val rows = state.people.associateBy { it.key }
     val keys: List<Any> = state.people.map { it.key }
-    LazyColumn(
-        state = list,
-        contentPadding = PaddingValues(
+    WithReadingColumn(PaddingValues(
             start = 8.dp,
             end = 8.dp,
             top = contentPadding.calculateTopPadding() + 4.dp,
             bottom = contentPadding.calculateBottomPadding() + 16.dp,
-        ),
-        modifier = Modifier.fillMaxSize(),
-    ) {
+        ), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         items(drag.shown(keys), key = { it }) { key ->
             val row = rows[key] ?: return@items
             val dragged = drag.key == key
@@ -151,7 +148,7 @@ private fun PeopleList(state: SubscriptionsUi, actions: PeopleActions, contentPa
                 SubscriptionRowView(row, actions)
             }
         }
-    }
+    } }
 }
 
 /**

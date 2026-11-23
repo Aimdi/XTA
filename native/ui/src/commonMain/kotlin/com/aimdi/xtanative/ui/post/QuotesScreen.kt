@@ -254,7 +254,7 @@ private fun RepostersList(state: QuotesUi, vm: QuotesViewModel, actions: PostAct
     val options = Sorts.reposterSorts(reposters.items)
     val sort = Sorts.effective(state.reposterSort, options)
     val people = remember(reposters.items, sort) { Sorts.sortReposters(reposters.items, sort) }
-    LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+    WithReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         if (options.size > 1) {
             item(key = "sort") { SortChip(sort, options, { reposterSortLabel(it) }, ::reposterSortIcon, vm::selectReposters, Modifier.padding(start = 4.dp)) }
         }
@@ -268,7 +268,7 @@ private fun RepostersList(state: QuotesUi, vm: QuotesViewModel, actions: PostAct
         ) {
             items(people, key = { "user-" + it.id }) { user -> UserRow(user, actions) }
         }
-    }
+    } }
 }
 
 /** A list's first load, its failure, its emptiness, its rows and the page under way below them. */

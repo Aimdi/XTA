@@ -1,7 +1,7 @@
 package com.aimdi.xtanative.ui.home
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, OTHER }
 
 enum class DeskAction {
     /** Out of the text field being typed in, as XTA's first Esc does. */
@@ -16,6 +16,14 @@ enum class DeskAction {
 
     /** The app closes, asking first as XTA's back from Home does. */
     LEAVE_APP,
+
+    /** The list read moves a line, a screen, or to its top or end ([DesktopActions.scroll]). */
+    LINE_UP,
+    LINE_DOWN,
+    SCREEN_UP,
+    SCREEN_DOWN,
+    TO_TOP,
+    TO_END,
     NONE,
 }
 
@@ -29,6 +37,9 @@ object DesktopKeys {
      * back; Alt+←, the Back key and the mouse's back button close or go back
      * from anywhere; F5 and Ctrl+R refresh; ← and → turn the page only when
      * nothing in it takes the arrows, in the reading direction ([rtl]).
+     * ↑ ↓, Page Up and Down, Space (with Shift, up), Home and End move the
+     * list being read, as in a browser, unless a field is being typed in or
+     * something is open over the page.
      */
     fun action(
         key: DeskKey,
@@ -38,14 +49,28 @@ object DesktopKeys {
         canGoBack: Boolean,
         rtl: Boolean = false,
         somethingOpen: Boolean = false,
+        shift: Boolean = false,
     ): DeskAction = when {
         key == DeskKey.ESCAPE && focusInside -> DeskAction.LEAVE_FIELD
         key == DeskKey.ESCAPE || key == DeskKey.BACK || (key == DeskKey.LEFT && alt) -> back(canGoBack, somethingOpen)
         key == DeskKey.F5 || (key == DeskKey.R && ctrl) -> DeskAction.REFRESH
         focusInside || alt || ctrl -> DeskAction.NONE
+        key in SCROLL_KEYS -> if (somethingOpen) DeskAction.NONE else scroll(key, shift)
         key == DeskKey.LEFT -> if (rtl) DeskAction.NEXT_PAGE else DeskAction.PREVIOUS_PAGE
         key == DeskKey.RIGHT -> if (rtl) DeskAction.PREVIOUS_PAGE else DeskAction.NEXT_PAGE
         else -> DeskAction.NONE
+    }
+
+    private val SCROLL_KEYS = setOf(DeskKey.UP, DeskKey.DOWN, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN, DeskKey.SPACE, DeskKey.HOME, DeskKey.END)
+
+    private fun scroll(key: DeskKey, shift: Boolean): DeskAction = when (key) {
+        DeskKey.UP -> DeskAction.LINE_UP
+        DeskKey.DOWN -> DeskAction.LINE_DOWN
+        DeskKey.PAGE_UP -> DeskAction.SCREEN_UP
+        DeskKey.SPACE -> if (shift) DeskAction.SCREEN_UP else DeskAction.SCREEN_DOWN
+        DeskKey.HOME -> DeskAction.TO_TOP
+        DeskKey.END -> DeskAction.TO_END
+        else -> DeskAction.SCREEN_DOWN
     }
 
     /** Going back: what is open closes first; the keys never leave the first screen. */

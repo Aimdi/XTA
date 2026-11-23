@@ -1,14 +1,17 @@
 package com.aimdi.xtanative.ui.home
 
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -19,6 +22,7 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isAltPressed
 import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
@@ -26,11 +30,14 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isBackPressed
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.aimdi.xtanative.ui.chrome.AppClosing
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * The window's keys and mouse on the way to the screens: the content's frame
@@ -44,6 +51,8 @@ actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> 
     var hasFocus by remember { mutableStateOf(false) }
     var focusInside by remember { mutableStateOf(false) }
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    val scope = rememberCoroutineScope()
+    val line = with(LocalDensity.current) { LINE.toPx() }
 
     fun act(action: DeskAction): Boolean = when (action) {
         DeskAction.LEAVE_FIELD -> {
@@ -62,13 +71,19 @@ actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> 
             AppClosing.ask()
             true
         }
+        DeskAction.LINE_UP, DeskAction.LINE_DOWN, DeskAction.SCREEN_UP, DeskAction.SCREEN_DOWN, DeskAction.TO_TOP, DeskAction.TO_END ->
+            actions.readList()?.let { list ->
+                scope.launch { list.moveFor(action, line) }
+                true
+            } ?: false
         DeskAction.NONE -> false
     }
 
     fun onKey(event: KeyEvent): Boolean {
         if (event.type != KeyEventType.KeyDown) return false
         val canGoBack = nav.previousBackStackEntry != null
-        return act(DesktopKeys.action(deskKey(event.key), event.isAltPressed, event.isCtrlPressed, focusInside, canGoBack, rtl, actions.somethingOpen()))
+        val key = deskKey(event.key)
+        return act(DesktopKeys.action(key, event.isAltPressed, event.isCtrlPressed, focusInside, canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed))
     }
 
     CompositionLocalProvider(LocalDesktopActions provides actions) {
@@ -106,6 +121,26 @@ actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> 
     }
 }
 
+/** How far ↑ and ↓ move a list: about a line of a post and a half. */
+private val LINE = 64.dp
+
+/** A screen's move leaves this much of what was read in view, as a browser's Page Down does. */
+private const val SCREEN_KEPT = 0.12f
+
+/** [action] done to the list, eased as the wheel's own moves are. */
+private suspend fun LazyListState.moveFor(action: DeskAction, line: Float) {
+    val screen = layoutInfo.viewportSize.height * (1 - SCREEN_KEPT)
+    when (action) {
+        DeskAction.LINE_UP -> animateScrollBy(-line)
+        DeskAction.LINE_DOWN -> animateScrollBy(line)
+        DeskAction.SCREEN_UP -> animateScrollBy(-screen)
+        DeskAction.SCREEN_DOWN -> animateScrollBy(screen)
+        DeskAction.TO_TOP -> scrollToItem(0)
+        DeskAction.TO_END -> layoutInfo.totalItemsCount.takeIf { it > 0 }?.let { scrollToItem(it - 1) }
+        else -> Unit
+    }
+}
+
 /** Longer than a screen's slide, by which time a screen that focuses a field has done so. */
 private const val FOCUS_SETTLE_MS = 400L
 
@@ -116,5 +151,12 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.F5 -> DeskKey.F5
     Key.R -> DeskKey.R
     Key.Back -> DeskKey.BACK
+    Key.DirectionUp -> DeskKey.UP
+    Key.DirectionDown -> DeskKey.DOWN
+    Key.PageUp -> DeskKey.PAGE_UP
+    Key.PageDown -> DeskKey.PAGE_DOWN
+    Key.Spacebar -> DeskKey.SPACE
+    Key.MoveHome -> DeskKey.HOME
+    Key.MoveEnd -> DeskKey.END
     else -> DeskKey.OTHER
 }

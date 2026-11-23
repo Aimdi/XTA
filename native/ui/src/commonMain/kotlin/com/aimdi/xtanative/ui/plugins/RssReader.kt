@@ -1,9 +1,8 @@
 package com.aimdi.xtanative.ui.plugins
 
-import com.aimdi.xtanative.ui.post.PostIcons
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -30,11 +29,13 @@ import com.aimdi.xtanative.networks.RssItem
 import com.aimdi.xtanative.store.reading.ArticleReading
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.plugin_rss_no_article
 import com.aimdi.xtanative.ui.generated.resources.reader_link_open_in_browser
 import com.aimdi.xtanative.ui.offline.OfflineArticleAction
+import com.aimdi.xtanative.ui.post.PostIcons
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -100,7 +101,7 @@ private fun ReaderArticle(host: PluginHost, state: RssReaderModel.State, reading
     if (blocks == null) return LoadingRow()
     val images = blocks.filterIsInstance<ReaderBlock.Image>()
     KeepsReaderPlace(reading, list, before = 1, blocks = blocks.size)
-    LazyColumn(state = list, contentPadding = PaddingValues(bottom = 48.dp), modifier = Modifier.fillMaxSize()) {
+    WithReadingColumn(PaddingValues(bottom = 48.dp), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         item(key = "title") {
             Text(
                 state.item.title,
@@ -116,14 +117,14 @@ private fun ReaderArticle(host: PluginHost, state: RssReaderModel.State, reading
             onImage = { index -> host.openMedia(images.map { MediaItem(imageUrl = it.src, alt = it.alt) }, index) },
             kept = state.keptImages,
         )
-    }
+    } }
 }
 
 /** An item that only linked its page: its title, who and when, its excerpt, and the page. */
 @Composable
 private fun ReaderFallback(item: RssItem, reading: ArticleReading, open: (String) -> Unit) {
     ArticleReaderControls(reading, supportsAppearance = false, canComplete = true) {}
-    LazyColumn(contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 48.dp), modifier = Modifier.fillMaxSize()) {
+    rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 48.dp), readList) { column -> LazyColumn(state = readList, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         item {
             Text(item.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
             val byline = listOfNotNull(item.author, item.publishedAt?.let { agoText(it) }).joinToString(" · ")
@@ -141,7 +142,7 @@ private fun ReaderFallback(item: RssItem, reading: ArticleReading, open: (String
                 }
             }
         }
-    }
+    } } }
 }
 
 /**

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.LocalPost
 import com.aimdi.xtanative.store.saved.LocalPosts
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.saved_are_you_sure
@@ -67,7 +69,7 @@ fun NoteThreadScreen(rootId: String, actions: PostActions, onBack: () -> Unit) {
             when {
                 thread == null -> Unit
                 thread.isEmpty() -> Message(stringResource(Res.string.saved_empty_notes))
-                else -> LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 16.dp)) {
+                else -> rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 16.dp), readList) { column -> LazyColumn(state = readList, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                     items(thread, key = { it.post.id }) { (post, depth) ->
                         Box(Modifier.padding(start = NoteRules.indent(depth).dp)) {
                             NoteTile(
@@ -80,7 +82,7 @@ fun NoteThreadScreen(rootId: String, actions: PostActions, onBack: () -> Unit) {
                             )
                         }
                     }
-                }
+                } } }
             }
         }
     }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -45,6 +46,7 @@ import com.aimdi.xtanative.store.downloads.DownloadEntry
 import com.aimdi.xtanative.store.downloads.DownloadStatus
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.cancel
@@ -110,7 +112,7 @@ fun DownloadsScreen(onBack: () -> Unit) {
                 }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             }
-            Box(Modifier.weight(1f)) {
+            Box(Modifier.weight(1f).fillMaxWidth()) {
                 when {
                     !state.ready -> CircularProgressIndicator(Modifier.align(Alignment.Center))
                     state.entries.isEmpty() -> Column(
@@ -121,7 +123,7 @@ fun DownloadsScreen(onBack: () -> Unit) {
                         Icon(SavedIcons.Download, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(40.dp))
                         Text(stringResource(Res.string.downloads_empty), textAlign = TextAlign.Center)
                     }
-                    else -> LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 16.dp)) {
+                    else -> rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 16.dp), readList) { column -> LazyColumn(state = readList, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                         items(state.shown, key = { it.id }) { entry ->
                             DownloadRowView(
                                 entry,
@@ -136,7 +138,7 @@ fun DownloadsScreen(onBack: () -> Unit) {
                             )
                             Hairline()
                         }
-                    }
+                    } } }
                 }
             }
         }

@@ -87,6 +87,7 @@ import com.aimdi.xtanative.pluginhost.PluginStatus
 import com.aimdi.xtanative.pluginhost.PluginStoreState
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.SearchPillShape
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.searchPillColors
 import com.aimdi.xtanative.ui.feed.ProvenanceColors
@@ -213,7 +214,7 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
             },
             modifier = Modifier.padding(top = padding.calculateTopPadding()),
         ) {
-            LazyColumn(state = list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 24.dp), modifier = Modifier.fillMaxSize()) {
+            WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 24.dp), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                 item(key = "search") { StoreSearchField(query) { query = it } }
                 if (store.catalogue.refreshing) item(key = "refreshing") { LinearProgressIndicator(Modifier.fillMaxWidth()) }
                 if (store.catalogue.unreachable && !store.catalogue.refreshing) {
@@ -238,7 +239,7 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
                 if (store.installed.isEmpty() && store.onOffer.isEmpty() && !store.catalogue.refreshing && !store.catalogue.unreachable) {
                     item(key = "empty") { MessageText(stringResource(Res.string.plugin_store_empty)) }
                 }
-            }
+            } }
         }
     }
 

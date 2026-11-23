@@ -1,11 +1,11 @@
 package com.aimdi.xtanative.ui.group
 
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -64,6 +65,7 @@ import com.aimdi.xtanative.core.feed.KeywordAction
 import com.aimdi.xtanative.core.feed.LanguageAction
 import com.aimdi.xtanative.core.feed.MutedKeyword
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.groups_content_filter
@@ -119,7 +121,7 @@ fun CustomSettingsScreen(state: GroupFeedUi, actions: GroupSettingsActions, onBa
             )
         },
     ) { padding ->
-        LazyColumn(Modifier.fillMaxSize().padding(padding)) {
+        rememberLazyListState().let { readList -> WithReadingColumn(padding, readList) { column -> LazyColumn(state = readList, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             item(key = "content") {
                 Section(GroupIcons.FilterAltOutlined, Res.string.groups_content_filter, Res.string.groups_content_filter_description) {
                     ContentFilterRow(state.settings.rules.contentFilter, actions::setContentFilter)
@@ -153,7 +155,7 @@ fun CustomSettingsScreen(state: GroupFeedUi, actions: GroupSettingsActions, onBa
                 }
             }
             item(key = "end") { Spacer(Modifier.size(32.dp)) }
-        }
+        } } }
     }
     capping?.let { account ->
         PostCapDialog(account.screenName, SubscriptionList.capChoice(state.postCaps[account.id]), onPick = { actions.setPostCap(account.id, it) }, onDismiss = { capping = null })

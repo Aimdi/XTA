@@ -38,7 +38,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -80,9 +79,11 @@ import com.aimdi.xtanative.core.x.model.XTrend
 import com.aimdi.xtanative.core.x.model.XTrendPlace
 import com.aimdi.xtanative.core.x.model.XTrendPlaces
 import com.aimdi.xtanative.data.LocalGraph
+import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -379,11 +380,11 @@ private fun TrendsBody(state: TrendsUi, list: LazyListState, onRefresh: () -> Un
             !state.loaded -> Whole { LoadingRow() }
             state.trends.isEmpty() -> Whole { EmptyTrends(onAddLocation) }
             // Room under the last trend for the button over it.
-            else -> LazyColumn(state = list, contentPadding = PaddingValues(bottom = bottom + 88.dp), modifier = Modifier.fillMaxSize()) {
+            else -> WithReadingColumn(PaddingValues(bottom = bottom + 88.dp), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                 itemsIndexed(state.trends, key = { index, trend -> "$index-${trend.name}" }, contentType = { _, _ -> "trend" }) { index, trend ->
                     TrendRow(index + 1, trend) { onTrend(trend) }
                 }
-            }
+            } }
         }
     }
 }

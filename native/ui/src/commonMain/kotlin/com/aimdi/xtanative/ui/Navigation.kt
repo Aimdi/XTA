@@ -42,6 +42,7 @@ import com.aimdi.xtanative.ui.chrome.CloseOnBack
 import com.aimdi.xtanative.ui.chrome.ConfirmClose
 import com.aimdi.xtanative.ui.chrome.SwipeBackCard
 import com.aimdi.xtanative.ui.chrome.UpdateCheck
+import com.aimdi.xtanative.ui.common.CenteredPage
 import com.aimdi.xtanative.ui.common.LocalProblemActions
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemActions
@@ -515,7 +516,8 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
                 navArgument("focus") { type = NavType.StringType; nullable = true; defaultValue = null },
             ),
         ) { entry ->
-            SearchScreen(entry.text("q"), SearchTab.of(entry.text("tab")), actions, searchActions, onBack = { nav.popBackStack() }, focusOnOpen = entry.text("focus") == "1")
+            // Its search field, tabs and rows in one column in a wide window, as Discover.
+            CenteredPage { SearchScreen(entry.text("q"), SearchTab.of(entry.text("tab")), actions, searchActions, onBack = { nav.popBackStack() }, focusOnOpen = entry.text("focus") == "1") }
         }
         composable(Routes.TRENDS) {
             TrendsScreen(trendsActions, onBack = { nav.popBackStack() })
@@ -574,11 +576,13 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             SavedScreen(actions, savedLinks(nav), onBack = { nav.popBackStack() })
         }
         composable(Routes.LIBRARY, arguments = listOf(navArgument("q") { type = NavType.StringType; nullable = true; defaultValue = null })) { entry ->
-            LibrarySearchScreen(
-                entry.text("q"),
-                open = { target -> if (target is LibraryTarget.XPost) actions.openPost(target.id) else nav.navigate(Routes.of(target)) },
-                onBack = { nav.popBackStack() },
-            )
+            CenteredPage {
+                LibrarySearchScreen(
+                    entry.text("q"),
+                    open = { target -> if (target is LibraryTarget.XPost) actions.openPost(target.id) else nav.navigate(Routes.of(target)) },
+                    onBack = { nav.popBackStack() },
+                )
+            }
         }
         composable(Routes.SUBSCRIPTIONS) {
             SubscriptionsScreen(subscriptionsNavigation(nav, actions), onBack = { nav.popBackStack() })

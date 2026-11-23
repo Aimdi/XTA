@@ -50,6 +50,7 @@ import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.datePattern
 import com.aimdi.xtanative.ui.common.swipeTabs
@@ -112,11 +113,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
             community == null && problem != null -> ProblemView(problem, vm::load, below, context = stringResource(Res.string.problem_unable_to_load_the_community))
             community == null -> LoadingRow(below)
             // Padding, not content padding: the tabs stick below the bar, not under it.
-            else -> LazyColumn(
-                state = list,
-                contentPadding = PaddingValues(bottom = padding.calculateBottomPadding()),
-                modifier = Modifier.fillMaxSize().then(below).swipeTabs(CommunityTab.entries, state.tab, vm::select),
-            ) {
+            else -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding()), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize().then(below).swipeTabs(CommunityTab.entries, state.tab, vm::select)) {
                 item(key = "header", contentType = "header") { CommunityHeader(community) { openMembers(community.id) } }
                 stickyHeader(key = "tabs", contentType = "tabs") { CommunityTabs(state.tab, vm::select) }
                 when (state.tab) {
@@ -126,7 +123,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
                     }
                     CommunityTab.ABOUT -> item(key = "about", contentType = "about") { CommunityAbout(community) }
                 }
-            }
+            } }
         }
     }
 }
@@ -152,7 +149,7 @@ fun CommunityMembersScreen(id: String, actions: PostActions, onBack: () -> Unit)
             )
         },
     ) { padding ->
-        LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+        WithReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             itemsIndexed(members.items, key = { _, user -> user.id }, contentType = { _, _ -> "person" }) { index, user ->
                 PersonRow(user, onOpen = { actions.openUser(user.screenName, user.id) })
                 if (index < members.items.lastIndex) PersonDivider()
@@ -166,7 +163,7 @@ fun CommunityMembersScreen(id: String, actions: PostActions, onBack: () -> Unit)
                 firstFailed = Res.string.problem_unable_to_load_the_members,
                 moreFailed = Res.string.problem_unable_to_load_the_members,
             )
-        }
+        } }
     }
 }
 

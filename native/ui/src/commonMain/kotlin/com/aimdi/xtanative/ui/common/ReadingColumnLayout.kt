@@ -15,18 +15,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.home.movedByKeys
 
 /**
  * [content] given [padding] with the room on either side that keeps a list
  * of posts in a centred column of [ReadingColumn.MAX_WIDTH] dp in a wide
  * window (reading_column.dart's ReadingColumn). The list itself still fills
  * the width, so the wheel and the scrollbar work across all of it. Given
- * the [list], the desktop's scrollbar stands at the window's end edge.
+ * the [list], the desktop's scrollbar stands at the window's end edge,
+ * and the desktop's keys move it (Page Down, Space, Home …).
  */
 @Composable
 fun WithReadingColumn(padding: PaddingValues, list: LazyListState? = null, content: @Composable (PaddingValues) -> Unit) {
     val direction = LocalLayoutDirection.current
-    BoxWithConstraints {
+    BoxWithConstraints(if (list != null) Modifier.movedByKeys(list) else Modifier) {
         val inset = ReadingColumn.inset(maxWidth.value).dp
         content(
             PaddingValues(
@@ -51,7 +53,7 @@ fun WithReadingColumn(padding: PaddingValues, list: LazyListState? = null, conte
  * Discover, whose search and rows would otherwise run across the screen.
  */
 @Composable
-fun CenteredPage(extra: Dp = 120.dp, content: @Composable () -> Unit) {
+fun CenteredPage(extra: Dp = 0.dp, content: @Composable () -> Unit) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         Box(Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp + extra).fillMaxSize()) { content() }
     }

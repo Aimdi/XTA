@@ -1,11 +1,16 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation.NavHostController
@@ -49,6 +54,48 @@ class DesktopActions {
 
     fun close() {
         closing?.invoke()
+    }
+
+    /** The lists on screen, in the order they came, and the one the pointer was last over. */
+    private val lists = mutableListOf<LazyListState>()
+    private var pointed: LazyListState? = null
+
+    internal fun addList(list: LazyListState) {
+        lists += list
+    }
+
+    internal fun removeList(list: LazyListState) {
+        lists -= list
+        if (pointed === list) pointed = null
+    }
+
+    internal fun point(list: LazyListState) {
+        pointed = list
+    }
+
+    /** The list the keys move: the one the pointer was last over, else the first on screen (the page's own, before any column beside it). */
+    internal fun readList(): LazyListState? = pointed ?: lists.firstOrNull()
+}
+
+/**
+ * Lets the desktop's keys move [list] (DesktopKeys: ↑ ↓, Page Up and Down,
+ * Space, Home, End) while it is on screen, and makes it the one they move
+ * while the pointer is over it. Nothing off the desktop.
+ */
+@Composable
+fun Modifier.movedByKeys(list: LazyListState): Modifier {
+    val actions = LocalDesktopActions.current ?: return this
+    DisposableEffect(actions, list) {
+        actions.addList(list)
+        onDispose { actions.removeList(list) }
+    }
+    return pointerInput(actions, list) {
+        awaitPointerEventScope {
+            while (true) {
+                val event = awaitPointerEvent(PointerEventPass.Initial)
+                if (event.type == PointerEventType.Enter || event.type == PointerEventType.Move) actions.point(list)
+            }
+        }
     }
 }
 

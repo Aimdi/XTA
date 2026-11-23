@@ -14,7 +14,30 @@ class DesktopKeysTest {
         canGoBack: Boolean = true,
         rtl: Boolean = false,
         open: Boolean = false,
-    ) = DesktopKeys.action(key, alt, ctrl, focusInside, canGoBack, rtl, open)
+        shift: Boolean = false,
+    ) = DesktopKeys.action(key, alt, ctrl, focusInside, canGoBack, rtl, open, shift)
+
+    @Test
+    fun theReadingKeysMoveTheListAsInABrowser() {
+        assertEquals(DeskAction.LINE_DOWN, action(DeskKey.DOWN))
+        assertEquals(DeskAction.LINE_UP, action(DeskKey.UP))
+        assertEquals(DeskAction.SCREEN_DOWN, action(DeskKey.PAGE_DOWN))
+        assertEquals(DeskAction.SCREEN_UP, action(DeskKey.PAGE_UP))
+        assertEquals(DeskAction.SCREEN_DOWN, action(DeskKey.SPACE))
+        assertEquals(DeskAction.SCREEN_UP, action(DeskKey.SPACE, shift = true))
+        assertEquals(DeskAction.TO_TOP, action(DeskKey.HOME))
+        assertEquals(DeskAction.TO_END, action(DeskKey.END))
+    }
+
+    @Test
+    fun theReadingKeysLeaveFieldsAndWhatIsOpenAlone() {
+        DeskKey.entries.filter { it in setOf(DeskKey.UP, DeskKey.DOWN, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN, DeskKey.SPACE, DeskKey.HOME, DeskKey.END) }.forEach { key ->
+            assertEquals(DeskAction.NONE, action(key, focusInside = true), "$key while typing")
+            assertEquals(DeskAction.NONE, action(key, open = true), "$key with a sheet open")
+            assertEquals(DeskAction.NONE, action(key, ctrl = true), "Ctrl+$key")
+            assertEquals(DeskAction.NONE, action(key, alt = true), "Alt+$key")
+        }
+    }
 
     @Test
     fun escLeavesTheFieldFirstThenClosesThenGoesBack() {

@@ -4,10 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
@@ -41,15 +41,16 @@ import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ReadFailureSheet
 import com.aimdi.xtanative.ui.common.ReadSource
-import com.aimdi.xtanative.ui.subscriptions.GroupIcons
-import com.aimdi.xtanative.ui.generated.resources.problem_more_info
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.plugin_problem_no_account
 import com.aimdi.xtanative.ui.generated.resources.plugin_problem_offline
 import com.aimdi.xtanative.ui.generated.resources.plugin_problem_other
 import com.aimdi.xtanative.ui.generated.resources.plugin_problem_rate_limited
 import com.aimdi.xtanative.ui.generated.resources.plugin_problem_refused
+import com.aimdi.xtanative.ui.generated.resources.problem_more_info
 import com.aimdi.xtanative.ui.generated.resources.retry
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -292,11 +293,11 @@ fun <T : Any> PagedList(
     ScrollsToTop(state, toTop)
     ReadsMoreNearEnd(state, paged) { pages.more() }
     PullToRefreshBox(isRefreshing = paged.loading && paged.loaded, onRefresh = pages::refresh, modifier = modifier.fillMaxSize()) {
-        LazyColumn(state = state, contentPadding = contentPadding, modifier = Modifier.fillMaxSize()) {
+        WithReadingColumn(contentPadding, state) { column -> LazyColumn(state = state, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             header()
             pagedRows(paged, pages, key, empty, problemText, row)
             footer()
-        }
+        } }
     }
 }
 

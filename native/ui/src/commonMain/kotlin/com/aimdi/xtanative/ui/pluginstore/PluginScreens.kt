@@ -218,7 +218,7 @@ fun PluginSearchScreen(id: String, initial: String?, onBack: () -> Unit) {
                 sent.isNotEmpty() -> SavesMediaOf(id) { search.Results(sent, frame) }
                 else -> Column(Modifier.fillMaxSize()) {
                     recents.Bar(send)
-                    Box(Modifier.weight(1f)) { SavesMediaOf(id) { search.Landing(frame, send) } }
+                    Box(Modifier.weight(1f).fillMaxWidth()) { SavesMediaOf(id) { search.Landing(frame, send) } }
                 }
             }
         }

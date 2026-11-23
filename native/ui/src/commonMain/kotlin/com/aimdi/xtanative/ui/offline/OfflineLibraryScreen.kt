@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
@@ -50,6 +51,7 @@ import com.aimdi.xtanative.store.offline.OfflineArticle
 import com.aimdi.xtanative.store.offline.OfflineEntry
 import com.aimdi.xtanative.store.offline.OfflineStore
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -133,7 +135,7 @@ fun OfflineLibraryScreen(onBack: () -> Unit, openMedia: (id: String) -> Unit, op
                 Text(stringResource(Res.string.offline_storage_error), color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(horizontal = 16.dp))
             }
             if (state.busy.isNotEmpty()) LinearProgressIndicator(Modifier.fillMaxWidth())
-            Box(Modifier.weight(1f)) {
+            Box(Modifier.weight(1f).fillMaxWidth()) {
                 when {
                     state.loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
                     state.entries.isEmpty() -> Text(
@@ -141,12 +143,12 @@ fun OfflineLibraryScreen(onBack: () -> Unit, openMedia: (id: String) -> Unit, op
                         textAlign = TextAlign.Center,
                         modifier = Modifier.align(Alignment.Center).padding(24.dp),
                     )
-                    else -> LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 16.dp)) {
+                    else -> rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 16.dp), readList) { column -> LazyColumn(state = readList, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                         items(state.entries, key = { it.id }) { entry ->
                             EntryRow(entry, onOpen = { open(entry) }, onRemove = { scope.launch { store.remove(entry.id) } })
                             Hairline()
                         }
-                    }
+                    } } }
                 }
             }
         }

@@ -32,6 +32,7 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemRow
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.posts_followers
@@ -121,11 +122,7 @@ fun FollowsScreen(screenName: String, followers: Boolean, actions: PostActions, 
             )
         },
     ) { padding ->
-        LazyColumn(
-            state = list,
-            contentPadding = PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 48.dp),
-            modifier = Modifier.fillMaxSize(),
-        ) {
+        WithReadingColumn(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 48.dp), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             val problem = state.problem
             when {
                 state.loading -> item(key = "loading") { LoadingRow() }
@@ -147,6 +144,6 @@ fun FollowsScreen(screenName: String, followers: Boolean, actions: PostActions, 
                     more != null -> ProblemRow(more, { state.cursor?.let(vm::load) }, context = stringResource(Res.string.problem_unable_to_load_the_next_page_of_follows))
                 }
             }
-        }
+        } }
     }
 }

@@ -226,7 +226,7 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
                     onNewFolder = { dialog = SavedDialog.EditFolder(null) },
                 )
             }
-            Box(Modifier.weight(1f)) {
+            Box(Modifier.weight(1f).fillMaxWidth()) {
                 if (state.loaded) {
                     SavedBodyView(
                         state = state,
