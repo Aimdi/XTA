@@ -365,4 +365,6 @@
     <string name="intro_illustration_phone">Innlegg, likes og lagrede elementer inne i en telefon</string>
     <string name="intro_illustration_flow">Innlegg går fra X til telefonen din, aldri tilbake</string>
     <string name="intro_page_of">Side %1$d av %2$d</string>
+    <string name="settings_desktop_notifications">Skrivebordsvarsler</string>
+    <string name="settings_desktop_notifications_description">Si fra når en nedlasting er ferdig mens du er i et annet vindu</string>
 </resources>

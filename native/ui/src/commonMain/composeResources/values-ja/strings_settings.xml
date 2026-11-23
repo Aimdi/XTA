@@ -363,4 +363,6 @@
     <string name="intro_illustration_phone">端末の中にある投稿、いいね、保存した項目</string>
     <string name="intro_illustration_flow">投稿は X から端末へ流れ、戻ることはありません</string>
     <string name="intro_page_of">%2$d ページ中 %1$d ページ目</string>
+    <string name="settings_desktop_notifications">デスクトップ通知</string>
+    <string name="settings_desktop_notifications_description">別のウィンドウを使っている間にダウンロードが終わったら知らせる</string>
 </resources>

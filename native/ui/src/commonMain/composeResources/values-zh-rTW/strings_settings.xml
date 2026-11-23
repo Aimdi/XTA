@@ -363,4 +363,6 @@
     <string name="intro_illustration_phone">手機裡的貼文、按讚和已儲存項目</string>
     <string name="intro_illustration_flow">貼文從 X 流向你的手機，從不回傳</string>
     <string name="intro_page_of">第 %1$d 頁，共 %2$d 頁</string>
+    <string name="settings_desktop_notifications">桌面通知</string>
+    <string name="settings_desktop_notifications_description">在其他視窗中時，下載完成後發出通知</string>
 </resources>

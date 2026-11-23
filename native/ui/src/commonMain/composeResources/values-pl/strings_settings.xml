@@ -369,4 +369,6 @@
     <string name="intro_illustration_phone">Wpisy, polubienia i zapisane elementy wewnątrz telefonu</string>
     <string name="intro_illustration_flow">Wpisy płyną z X do twojego telefonu, nigdy z powrotem</string>
     <string name="intro_page_of">Strona %1$d z %2$d</string>
+    <string name="settings_desktop_notifications">Powiadomienia pulpitu</string>
+    <string name="settings_desktop_notifications_description">Informuj o zakończonym pobieraniu, gdy jesteś w innym oknie</string>
 </resources>

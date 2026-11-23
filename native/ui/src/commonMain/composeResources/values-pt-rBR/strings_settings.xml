@@ -367,4 +367,6 @@
     <string name="intro_illustration_phone">Publicações, curtidas e itens salvos dentro de um celular</string>
     <string name="intro_illustration_flow">As publicações vão do X para o seu celular, nunca o contrário</string>
     <string name="intro_page_of">Página %1$d de %2$d</string>
+    <string name="settings_desktop_notifications">Notificações da área de trabalho</string>
+    <string name="settings_desktop_notifications_description">Avisar quando um download terminar enquanto você estiver em outra janela</string>
 </resources>

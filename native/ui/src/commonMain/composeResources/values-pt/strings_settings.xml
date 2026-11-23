@@ -367,4 +367,6 @@
     <string name="intro_illustration_phone">Publicações, gostos e itens guardados dentro de um telemóvel</string>
     <string name="intro_illustration_flow">As publicações vão do X para o teu telemóvel, nunca ao contrário</string>
     <string name="intro_page_of">Página %1$d de %2$d</string>
+    <string name="settings_desktop_notifications">Notificações do ambiente de trabalho</string>
+    <string name="settings_desktop_notifications_description">Avisar quando uma transferência terminar enquanto está noutra janela</string>
 </resources>

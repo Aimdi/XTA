@@ -365,4 +365,6 @@
     <string name="intro_illustration_phone">Posts, likes and saved items inside a phone</string>
     <string name="intro_illustration_flow">Posts flow from X to your phone, never back</string>
     <string name="intro_page_of">Page %1$d of %2$d</string>
+    <string name="settings_desktop_notifications">Desktop notifications</string>
+    <string name="settings_desktop_notifications_description">Say when a download finishes while you are in another window</string>
 </resources>

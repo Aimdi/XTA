@@ -365,4 +365,6 @@
     <string name="intro_illustration_phone">Bir telefonun içindeki gönderiler, beğeniler ve kaydedilenler</string>
     <string name="intro_illustration_flow">Gönderiler X'ten telefonunuza akar, asla geri gitmez</string>
     <string name="intro_page_of">Sayfa %1$d / %2$d</string>
+    <string name="settings_desktop_notifications">Masaüstü bildirimleri</string>
+    <string name="settings_desktop_notifications_description">Başka bir penceredeyken bir indirme bittiğinde haber ver</string>
 </resources>

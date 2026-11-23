@@ -365,4 +365,6 @@
     <string name="intro_illustration_phone">Argitalpenak, atsegin dut-ak eta gordetako elementuak telefono baten barruan</string>
     <string name="intro_illustration_flow">Argitalpenak X-etik zure telefonora doaz, inoiz ez atzera</string>
     <string name="intro_page_of">Orria %1$d / %2$d</string>
+    <string name="settings_desktop_notifications">Mahaigaineko jakinarazpenak</string>
+    <string name="settings_desktop_notifications_description">Jakinarazi deskarga bat amaitzen denean beste leiho batean zaudenean</string>
 </resources>

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,6 +25,7 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import coil3.SingletonImageLoader
+import com.aimdi.xtanative.store.settings.DesktopPrefs
 import com.aimdi.xtanative.ui.XtaNativeContent
 import com.aimdi.xtanative.ui.appImageLoader
 import com.aimdi.xtanative.ui.appName
@@ -131,7 +133,8 @@ fun main(args: Array<String>) {
                 Box(Modifier.fillMaxSize()) {
                     XtaNativeContent(graph, app.plugins)
                     // A download or offline save that ends while another window is in use is told by the desktop too.
-                    DesktopNotices(name) { window.isActive }
+                    val notifies by graph.settings.observe(DesktopPrefs.notifications).collectAsState(initial = true)
+                    DesktopNotices(name, notifies) { window.isActive }
                     VideoCheck.Shown()
                 }
             }

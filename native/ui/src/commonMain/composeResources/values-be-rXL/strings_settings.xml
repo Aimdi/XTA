@@ -369,4 +369,6 @@
     <string name="intro_illustration_phone">Dopisy, lajki i zachavanaje ŭnutry telefona</string>
     <string name="intro_illustration_flow">Dopisy iduć z X na vaš telefon i nikoli nazad</string>
     <string name="intro_page_of">Staronka %1$d z %2$d</string>
+    <string name="settings_desktop_notifications">Apaviaščenni na pracoŭnym stale</string>
+    <string name="settings_desktop_notifications_description">Paviedamlać pra kaniec spampoŭki, pakul vy ŭ inšym aknie</string>
 </resources>

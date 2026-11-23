@@ -365,4 +365,6 @@
     <string name="intro_illustration_phone">Afiŝoj, ŝatoj kaj konservitaĵoj en telefono</string>
     <string name="intro_illustration_flow">Afiŝoj fluas de X al via telefono, neniam reen</string>
     <string name="intro_page_of">Paĝo %1$d el %2$d</string>
+    <string name="settings_desktop_notifications">Labortablaj sciigoj</string>
+    <string name="settings_desktop_notifications_description">Sciigi, kiam elŝuto finiĝas dum vi estas en alia fenestro</string>
 </resources>

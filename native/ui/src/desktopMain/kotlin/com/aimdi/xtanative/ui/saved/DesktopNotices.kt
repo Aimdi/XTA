@@ -95,16 +95,18 @@ class DesktopNotifications(
 
 /**
  * Tells the desktop of each notice [DesktopNotifications.tells] of while
- * the window is not the active one ([windowActive]); the window's own foot
- * says it as ever. [appName] heads it.
+ * the window is not the active one ([windowActive]) and Settings › General
+ * › Desktop notifications is on ([enabled]); the window's own foot says it
+ * as ever. [appName] heads it.
  */
 @Composable
-fun DesktopNotices(appName: String, windowActive: () -> Boolean) {
+fun DesktopNotices(appName: String, enabled: Boolean, windowActive: () -> Boolean) {
     val shown by KeepNotices.shown.collectAsState()
     val current = shown ?: return
     val text = noticeText(current.notice)
     val active by rememberUpdatedState(windowActive)
+    val on by rememberUpdatedState(enabled)
     LaunchedEffect(current.serial) {
-        if (DesktopNotifications.tells(current.notice) && !active()) DesktopNotifications.desktop.notify(appName, text)
+        if (on && DesktopNotifications.tells(current.notice) && !active()) DesktopNotifications.desktop.notify(appName, text)
     }
 }

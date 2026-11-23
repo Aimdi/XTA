@@ -369,4 +369,6 @@
     <string name="intro_illustration_phone">Дописи, вподобання та збережене всередині телефона</string>
     <string name="intro_illustration_flow">Дописи йдуть з X на ваш телефон і ніколи назад</string>
     <string name="intro_page_of">Сторінка %1$d з %2$d</string>
+    <string name="settings_desktop_notifications">Сповіщення на робочому столі</string>
+    <string name="settings_desktop_notifications_description">Повідомляти про завершення завантаження, поки ви в іншому вікні</string>
 </resources>

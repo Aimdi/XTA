@@ -365,4 +365,6 @@
     <string name="intro_illustration_phone">Berichten, likes en opgeslagen items in een telefoon</string>
     <string name="intro_illustration_flow">Berichten gaan van X naar je telefoon, nooit terug</string>
     <string name="intro_page_of">Pagina %1$d van %2$d</string>
+    <string name="settings_desktop_notifications">Bureaubladmeldingen</string>
+    <string name="settings_desktop_notifications_description">Melden wanneer een download klaar is terwijl je in een ander venster bent</string>
 </resources>

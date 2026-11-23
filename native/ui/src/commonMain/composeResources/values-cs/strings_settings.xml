@@ -369,4 +369,6 @@
     <string name="intro_illustration_phone">Příspěvky, lajky a uložené položky v telefonu</string>
     <string name="intro_illustration_flow">Příspěvky proudí z X do vašeho telefonu, nikdy zpět</string>
     <string name="intro_page_of">Stránka %1$d z %2$d</string>
+    <string name="settings_desktop_notifications">Oznámení na ploše</string>
+    <string name="settings_desktop_notifications_description">Upozornit na dokončené stahování, když jste v jiném okně</string>
 </resources>

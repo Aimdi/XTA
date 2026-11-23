@@ -369,4 +369,6 @@
     <string name="intro_illustration_phone">Допісы, лайкі і захаванае ўнутры тэлефона</string>
     <string name="intro_illustration_flow">Допісы ідуць з X на ваш тэлефон і ніколі назад</string>
     <string name="intro_page_of">Старонка %1$d з %2$d</string>
+    <string name="settings_desktop_notifications">Апавяшчэнні на працоўным стале</string>
+    <string name="settings_desktop_notifications_description">Паведамляць пра канец спампоўкі, пакуль вы ў іншым акне</string>
 </resources>

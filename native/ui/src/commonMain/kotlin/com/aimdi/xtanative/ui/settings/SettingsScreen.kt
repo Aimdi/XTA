@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
+import com.aimdi.xtanative.store.settings.DesktopPrefs
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.PostsPrefs
@@ -251,6 +252,7 @@ private class Indexed(val section: SettingsSection, val key: String, val title: 
 private val INDEX = listOf(
     Indexed(SettingsSection.GENERAL, GeneralPrefs.checkForUpdates.key, Res.string.settings_update_check, Res.string.settings_update_check_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.confirmClose.key, Res.string.settings_confirm_close, Res.string.settings_confirm_close_description),
+    Indexed(SettingsSection.GENERAL, DesktopPrefs.notifications.key, Res.string.settings_desktop_notifications, Res.string.settings_desktop_notifications_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.cleanLinks.key, Res.string.settings_clean_links, Res.string.settings_clean_links_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.disableScreenshots.key, Res.string.settings_disable_screenshots, Res.string.settings_disable_screenshots_hint),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.initialTab.key, Res.string.settings_default_tab, Res.string.settings_default_tab_description),
@@ -306,8 +308,11 @@ private val INDEX = listOf(
 /** The controls only Android has: the desktop's window takes no screenshot block, gives no haptics and has no status bar. */
 private val ANDROID_ONLY = setOf(GeneralPrefs.disableScreenshots.key, AccessibilityPrefs.haptics.key, ThemePrefs.hideStatusBar.key)
 
-/** Every control the search can find, in this platform's settings: the desktop has none of [ANDROID_ONLY]. */
+/** The controls only the desktop has: its notifications. */
+private val DESKTOP_ONLY = setOf(DesktopPrefs.notifications.key)
+
+/** Every control the search can find, in this platform's settings: the desktop has none of [ANDROID_ONLY], Android none of [DESKTOP_ONLY]. */
 @Composable
 private fun searchableControls(): List<SettingsControl> = INDEX
-    .filter { !isDesktop || it.key !in ANDROID_ONLY }
+    .filter { if (isDesktop) it.key !in ANDROID_ONLY else it.key !in DESKTOP_ONLY }
     .map { SettingsControl(it.section, it.key, stringResource(it.title), it.description?.let { res -> stringResource(res) }.orEmpty()) }
