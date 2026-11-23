@@ -75,3 +75,30 @@ internal actual fun Modifier.takesDroppedFiles(enabled: Boolean, onDropped: (Lis
     }
     return dragAndDropTarget(shouldStartDragAndDrop = { event -> event.awtTransferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor) }, target = target)
 }
+
+@Composable
+internal actual fun rememberClipboardPicture(): (suspend () -> PickedFile?)? = remember { { ClipboardPicture.read() } }
+
+/** The clipboard's picture as a PNG a note attaches (a screenshot copied); none while it holds text or nothing of the kind. */
+internal object ClipboardPicture {
+    /** The name a pasted picture gets, as a screenshot's would. */
+    const val NAME = "pasted.png"
+
+    suspend fun read(): PickedFile? = withContext(Dispatchers.IO) {
+        runCatching {
+            val clipboard = java.awt.Toolkit.getDefaultToolkit().systemClipboard
+            pictureOf(clipboard.getContents(null))
+        }.getOrNull()
+    }
+
+    /** [transfer]'s picture, PNG-encoded; null when it offers text (a paste's for the field) or no picture. */
+    fun pictureOf(transfer: Transferable?): PickedFile? {
+        transfer ?: return null
+        if (transfer.isDataFlavorSupported(DataFlavor.stringFlavor) || !transfer.isDataFlavorSupported(DataFlavor.imageFlavor)) return null
+        val image = transfer.getTransferData(DataFlavor.imageFlavor) as? java.awt.Image ?: return null
+        val pixels = java.awt.image.BufferedImage(image.getWidth(null).coerceAtLeast(1), image.getHeight(null).coerceAtLeast(1), java.awt.image.BufferedImage.TYPE_INT_ARGB)
+        pixels.createGraphics().apply { drawImage(image, 0, 0, null); dispose() }
+        val bytes = java.io.ByteArrayOutputStream().also { javax.imageio.ImageIO.write(pixels, "png", it) }.toByteArray()
+        return bytes.takeIf { it.isNotEmpty() && it.size <= PickedFile.MAX_BYTES }?.let { PickedFile(NAME, "image/png", it) }
+    }
+}

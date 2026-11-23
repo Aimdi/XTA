@@ -94,3 +94,6 @@ private fun read(resolver: ContentResolver, uri: Uri): PickedFile {
 
 @Composable
 internal actual fun Modifier.takesDroppedFiles(enabled: Boolean, onDropped: (List<suspend () -> PickedFile?>) -> Unit): Modifier = this
+
+@Composable
+internal actual fun rememberClipboardPicture(): (suspend () -> PickedFile?)? = null
