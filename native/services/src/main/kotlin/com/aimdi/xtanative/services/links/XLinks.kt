@@ -68,6 +68,12 @@ object XLinks {
         }
     }
 
+    /** The `f` of an X search page's link (`live`, `media`, `user`…): the tab X's page opens on; null for none or another link. */
+    fun searchFilter(url: String?): String? {
+        val link = xLink(url?.trim()?.ifEmpty { null }) ?: return null
+        return link.query("f")?.trim()?.ifEmpty { null }?.takeIf { link.segments == listOf("search") }
+    }
+
     /** The article id in an `x.com/i/article/…` link, or null if it is not one. */
     fun articleId(url: String?): String? {
         val segments = xLink(url?.ifEmpty { null })?.segments ?: return null

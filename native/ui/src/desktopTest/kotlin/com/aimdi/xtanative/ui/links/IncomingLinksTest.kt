@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.links
 
+import com.aimdi.xtanative.ui.search.SearchTab
 import com.aimdi.xtanative.services.links.XLink
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -16,6 +17,7 @@ class IncomingLinksTest {
             post = { seen += "post $it" },
             profile = { name, _ -> seen += "profile $name" },
             search = { seen += "search $it" },
+            searchOn = { query, tab -> seen += "search $query on $tab" },
             browser = { url, _ -> seen += "browser $url" },
             live = { link -> liveScreen.also { if (it) seen += "live ${link.url}" } },
             community = { id, about -> hasScreens.also { if (it) seen += "community $id $about" } },
@@ -103,9 +105,15 @@ class IncomingLinksTest {
         assertEquals(IncomingStep.Search(""), step("https://x.com/search"))
         assertEquals(IncomingStep.Search("kotlin compose"), step("https://twitter.com/search?q=kotlin+compose&src=typed_query"))
         assertEquals(IncomingStep.Search("#flutter"), step("https://x.com/hashtag/flutter?src=hashtag_click"))
+        assertEquals(IncomingStep.Search("kotlin", SearchTab.LATEST), step("https://x.com/search?q=kotlin&f=live"))
+        assertEquals(IncomingStep.Search("kotlin", SearchTab.MEDIA), step("https://x.com/search?q=kotlin&f=media"))
+        assertEquals(IncomingStep.Search("kotlin", SearchTab.PEOPLE), step("https://x.com/search?q=kotlin&f=user"))
+        assertEquals(IncomingStep.Search("kotlin"), step("https://x.com/search?q=kotlin&f=top"))
+        assertEquals(IncomingStep.Search("#a"), step("https://x.com/hashtag/a?f=live"))
         val opened = Opened()
         opened.open(step("https://x.com/search"))
         opened.open(step("https://x.com/search?q=a%20b"))
-        assertEquals(listOf("search ", "search a b"), opened.seen)
+        opened.open(step("https://x.com/search?q=a&f=live"))
+        assertEquals(listOf("search ", "search a b", "search a on LATEST"), opened.seen)
     }
 }

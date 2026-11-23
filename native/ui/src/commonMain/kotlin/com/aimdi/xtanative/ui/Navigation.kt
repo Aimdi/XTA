@@ -340,6 +340,7 @@ fun XtaNativeRoot() {
             post = actions.openPost,
             profile = { name, tab -> nav.navigate(Routes.profile(name, tab = ProfileTab.of(tab))) },
             search = actions.search,
+            searchOn = { query, tab -> nav.navigate(Routes.search(query, tab.routeName, focus = query.isBlank())) },
             browser = { url, from -> nav.navigate(Routes.browser(url, from)) },
             community = { id, about -> true.also { nav.navigate(if (about) Routes.communityAbout(id) else Routes.community(id)) } },
             list = { id -> true.also { nav.navigate(Routes.list(id)) } },

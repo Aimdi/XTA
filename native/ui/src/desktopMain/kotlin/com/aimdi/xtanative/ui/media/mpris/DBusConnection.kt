@@ -33,6 +33,10 @@ class DBusConnection private constructor(private val channel: SocketChannel) : A
     @Volatile
     var onSignal: ((DBusMessage) -> Unit)? = null
 
+    /** Told once, on the connection's thread, when the bus went away or sent what is no message. */
+    @Volatile
+    var onClosed: (() -> Unit)? = null
+
     /** The name the bus gave this connection (":1.42"), once it said Hello. */
     var uniqueName: String? = null
         private set
@@ -123,6 +127,7 @@ class DBusConnection private constructor(private val channel: SocketChannel) : A
             // The bus went away or sent what is no message: the connection ends.
         } finally {
             close()
+            runCatching { onClosed?.invoke() }
         }
     }
 

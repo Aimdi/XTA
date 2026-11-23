@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.links
 
+import com.aimdi.xtanative.ui.search.SearchTab
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.services.links.BrowserPicker
 import com.aimdi.xtanative.services.links.InstalledBrowser
@@ -41,6 +42,8 @@ class LinkScreens(
     /** An X profile, on the tab its link named (`/media`, `/with_replies`) when it named one. */
     val profile: (screenName: String, tab: XProfileTab?) -> Unit,
     val search: (query: String) -> Unit,
+    /** The search of [query] on a given tab, where the link named one; without it, [search]. */
+    val searchOn: ((query: String, tab: SearchTab) -> Unit)? = null,
     /** XTA's browser screen at [url]; [from] finds the post it was opened from, see [LinkOpener.opening]. */
     val browser: (url: String, from: String?) -> Unit,
     val network: (NetworkLink) -> Boolean = { false },

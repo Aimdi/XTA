@@ -35,12 +35,14 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 internal actual fun PictureDragHandle(save: MediaSave, shownUrl: String) {
-    // The picture as a file once the image cache holds it: the page may still be loading it.
+    // The picture as a file once the image cache holds it: the page may still be loading it (a large original on a slow line), so it is looked for until it comes or the page goes.
     val file by produceState<File?>(null, shownUrl, save.fileName) {
         value = null
-        repeat(DraggedPictures.TRIES) {
+        var wait = DraggedPictures.RETRY_MS
+        while (true) {
             withContext(Dispatchers.IO) { DraggedPictures.file(shownUrl, save.fileName) }?.let { value = it; return@produceState }
-            delay(DraggedPictures.RETRY_MS)
+            delay(wait)
+            wait = (wait * 2).coerceAtMost(DraggedPictures.RETRY_MAX_MS)
         }
     }
     val label = stringResource(Res.string.media_drag_out)
@@ -66,8 +68,8 @@ internal actual fun PictureDragHandle(save: MediaSave, shownUrl: String) {
  * name a download saves it by, in the app's cache folder.
  */
 internal object DraggedPictures {
-    const val TRIES = 20
     const val RETRY_MS = 500L
+    const val RETRY_MAX_MS = 4_000L
 
     /** Older drags than this are cleared away the first time a picture is put out. */
     private const val KEEP_MS = 24L * 60 * 60 * 1000
@@ -84,8 +86,8 @@ internal object DraggedPictures {
     /** [url]'s cached picture as a file named [name] (its last path part only); null while the cache has none. */
     fun file(url: String, name: String): File? = runCatching {
         val cache = coil3.SingletonImageLoader.get(coil3.PlatformContext.INSTANCE).diskCache ?: return null
-        val cached = cache.openSnapshot(url)?.use { snapshot -> snapshot.data.toFile().takeIf { it.isFile } } ?: return null
-        put(cached, folder, name)
+        // Copied while the snapshot is open, so the cache does not drop or rewrite the file meanwhile.
+        cache.openSnapshot(url)?.use { snapshot -> snapshot.data.toFile().takeIf { it.isFile }?.let { put(it, folder, name) } }
     }.getOrNull()
 
     /** [source] copied into [folder] as [name], made safe as one file's name. */

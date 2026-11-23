@@ -98,6 +98,8 @@ class TrayService(
         connection = bus
         bus.onCall = ::answer
         bus.onSignal = { signal -> runCatching { this.bus.execute { signalled(signal) } } }
+        // With the connection gone, no icon is left to bring a hidden window back: the window shows again.
+        bus.onClosed = { _shown.value = false }
         bus.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "RequestName", "su", listOf(StatusNotifier.busName(pid), DO_NOT_QUEUE))
         listOf(WATCHER_APPEARS, WATCHER_SAYS).forEach { rule -> bus.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "AddMatch", "s", listOf(rule)) }
         register()

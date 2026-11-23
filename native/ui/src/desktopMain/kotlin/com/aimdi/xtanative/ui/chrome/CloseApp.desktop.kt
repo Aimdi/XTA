@@ -25,7 +25,8 @@ object AppQuit {
 }
 
 private fun closeWindow() {
-    AppQuit.ask()
     val window = Frame.getFrames().filter { it.isShowing }.let { shown -> shown.firstOrNull { it.isActive } ?: shown.firstOrNull() } ?: return
+    // Asked only with a window to close, so no later plain close takes it for a quit.
+    AppQuit.ask()
     window.dispatchEvent(WindowEvent(window, WindowEvent.WINDOW_CLOSING))
 }
