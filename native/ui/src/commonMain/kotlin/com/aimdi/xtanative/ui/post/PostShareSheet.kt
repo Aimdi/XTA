@@ -1,12 +1,9 @@
 package com.aimdi.xtanative.ui.post
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -34,9 +31,9 @@ import org.jetbrains.compose.resources.stringResource
  * none without it), then what the running plugins offer (Save to Deepmarks,
  * Save to Karakeep), and Cancel. An article shares its link and its
  * picture. Where the platform has no share sheet (the desktop), the words
- * and the link are copied instead, as the notice says.
+ * and the link are copied instead, as the notice says. On the desktop it
+ * is a menu at the pointer ([PostMenuSurface]).
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PostShareSheet(post: XPost, onPicture: (() -> Unit)?, onDismiss: () -> Unit) {
     val shown = post.shown
@@ -49,24 +46,22 @@ internal fun PostShareSheet(post: XPost, onPicture: (() -> Unit)?, onDismiss: ()
         onDismiss()
         if (!share(text)) KeepNotices.say(copied)
     }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.padding(bottom = 16.dp)) {
-            PostShare.entries(article, picture = onPicture != null).forEach { entry ->
-                when (entry) {
-                    ShareEntry.CONTENT -> MenuRow(PostIcons.TextSnippet, stringResource(Res.string.posts_share_content)) { send(PostShare.text(shown, prefs.cleanLinks)) }
-                    ShareEntry.LINK -> MenuRow(XIcons.Link, stringResource(if (article) Res.string.posts_share_article_link else Res.string.reader_link_share_post)) { send(url) }
-                    ShareEntry.CONTENT_AND_LINK -> MenuRow(PostIcons.AddLink, stringResource(Res.string.posts_share_content_and_link)) {
-                        send(PostShare.textAndLink(shown, url, prefs.cleanLinks))
-                    }
-                    ShareEntry.IMAGE -> MenuRow(PostIcons.Screenshot, stringResource(if (article) Res.string.posts_share_article_image else Res.string.posts_share_image)) {
-                        onDismiss()
-                        onPicture?.invoke()
-                    }
+    PostMenuSurface(onDismiss) {
+        PostShare.entries(article, picture = onPicture != null).forEach { entry ->
+            when (entry) {
+                ShareEntry.CONTENT -> MenuRow(PostIcons.TextSnippet, stringResource(Res.string.posts_share_content)) { send(PostShare.text(shown, prefs.cleanLinks)) }
+                ShareEntry.LINK -> MenuRow(XIcons.Link, stringResource(if (article) Res.string.posts_share_article_link else Res.string.reader_link_share_post)) { send(url) }
+                ShareEntry.CONTENT_AND_LINK -> MenuRow(PostIcons.AddLink, stringResource(Res.string.posts_share_content_and_link)) {
+                    send(PostShare.textAndLink(shown, url, prefs.cleanLinks))
+                }
+                ShareEntry.IMAGE -> MenuRow(PostIcons.Screenshot, stringResource(if (article) Res.string.posts_share_article_image else Res.string.posts_share_image)) {
+                    onDismiss()
+                    onPicture?.invoke()
                 }
             }
-            PluginSheetEntries(remember(post, url) { PluginSaves.shared(post, url) }, onDismiss)
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
-            MenuRow(Icons.Filled.Close, stringResource(Res.string.cancel), onDismiss)
         }
+        PluginSheetEntries(remember(post, url) { PluginSaves.shared(post, url) }, onDismiss)
+        HorizontalDivider(Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+        MenuRow(Icons.Filled.Close, stringResource(Res.string.cancel), onDismiss)
     }
 }
