@@ -80,6 +80,7 @@ import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.post
@@ -348,7 +349,8 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
     val article = remember(shown) { ArticleLayout.fullArticle(shown) }
     val picture = rememberPostPicture()
     Column(Modifier.fillMaxWidth().recordedIn(picture).padding(horizontal = 16.dp, vertical = 12.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        // A right-click on the author line opens the ⋯ menu; the text under it keeps the desktop's own copy menu.
+        Row(Modifier.onSecondaryClick { menu = true }, verticalAlignment = Alignment.CenterVertically) {
             PostAvatar(shown, scope, actions, 44.dp)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
