@@ -168,4 +168,44 @@ class DesktopKeysTest {
         actions.sheetOpened()
         assertTrue(actions.sheetOpen(), "the delayed refocus sees the new sheet and leaves the keys with it")
     }
+
+    @Test
+    fun ctrlFAndSlashGoToTheSearch() {
+        assertEquals(DeskAction.FIND, action(DeskKey.F, ctrl = true))
+        assertEquals(DeskAction.FIND, action(DeskKey.F, ctrl = true, focusInside = true), "Ctrl+F from another field")
+        assertEquals(DeskAction.FIND, action(DeskKey.F, ctrl = true, canGoBack = false), "on the first screen too")
+        assertEquals(DeskAction.FIND, action(DeskKey.SLASH))
+        assertEquals(DeskAction.FIND, action(DeskKey.SLASH, shift = true), "Shift+7 on a German keyboard")
+    }
+
+    @Test
+    fun slashIsTypedInAFieldAndNeitherKeyReachesUnderWhatIsOpen() {
+        assertEquals(DeskAction.NONE, action(DeskKey.SLASH, focusInside = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.SLASH, ctrl = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.SLASH, alt = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.F))
+        assertEquals(DeskAction.NONE, action(DeskKey.F, ctrl = true, alt = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.F, ctrl = true, shift = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.F, ctrl = true, open = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.SLASH, open = true))
+    }
+
+    @Test
+    fun theSearchShownLastTakesTheKeysAndOneGoneHandsThemToTheOneUnder() {
+        val actions = DesktopActions()
+        val found = mutableListOf<String>()
+        assertFalse(actions.find(), "no field: the app's search opens instead")
+        val page = Any()
+        val layer = Any()
+        actions.addFinder(page) { found += "page" }
+        actions.addFinder(layer) { found += "layer" }
+        assertTrue(actions.find())
+        actions.removeFinder(layer)
+        actions.find()
+        actions.addFinder(page) { found += "page again" }
+        actions.find()
+        assertEquals(listOf("layer", "page", "page again"), found)
+        actions.removeFinder(page)
+        assertFalse(actions.find(), "a screen resumed twice is listed once")
+    }
 }

@@ -361,7 +361,9 @@ fun XtaNativeRoot() {
         ProblemActions(addAccount = { nav.navigate(Routes.SIGN_IN) }, diagnostics = { nav.navigate(SettingsRoutes.of(SettingsSection.DIAGNOSTICS)) })
     }
     CompositionLocalProvider(LocalGalleryOpener provides galleries, LocalProblemActions provides problems, LocalLivePlayer provides livePlayer) {
-        DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) }
+        // Ctrl+F and / on a screen with no search of its own open the search, its field ready (not over the intro).
+        val openSearch = remember(nav) { { if (nav.currentDestination?.route != Routes.INTRO) nav.navigate(Routes.search(null)) } }
+        DesktopNavigation(nav, openSearch) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) }
     }
     if (askSignIn) {
         NotLoggedInDialog(onImportBackup = { nav.navigate(Routes.IMPORT) }, onLogin = { nav.navigate(Routes.SIGN_IN) }, onDismiss = { askSignIn = false })

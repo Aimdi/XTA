@@ -120,6 +120,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_tab_unfiled
 import com.aimdi.xtanative.ui.generated.resources.saved_title
 import com.aimdi.xtanative.ui.generated.resources.saved_write_note
 import com.aimdi.xtanative.ui.generated.resources.settings
+import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.post.PostActions
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -392,7 +393,7 @@ private fun SearchRow(query: String, onQuery: (String) -> Unit, menu: SavedFilte
                 textStyle = TextStyle(fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface),
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().foundWithKeys(),
             )
         }
         if (query.isNotEmpty()) {

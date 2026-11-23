@@ -92,6 +92,7 @@ import com.aimdi.xtanative.ui.generated.resources.discover_search
 import com.aimdi.xtanative.ui.generated.resources.discover_search_x
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.saved_search_library
+import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.media.mediaGrid
 import com.aimdi.xtanative.ui.media.rememberMediaGridRows
 import com.aimdi.xtanative.ui.post.PostActions
@@ -141,7 +142,7 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
                 focus.requestFocus()
             },
             onAdvanced = vm::openAdvanced,
-            modifier = modifier.focusRequester(focus),
+            modifier = modifier.focusRequester(focus).foundWithKeys(),
         )
     }
 

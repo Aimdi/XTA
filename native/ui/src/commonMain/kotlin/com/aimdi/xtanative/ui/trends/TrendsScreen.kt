@@ -102,6 +102,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_search_library
 import com.aimdi.xtanative.ui.generated.resources.saved_source_x
 import com.aimdi.xtanative.ui.home.HomeRequests
 import com.aimdi.xtanative.ui.home.RetapsToTop
+import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.pluginstore.SavesMediaOf
@@ -195,7 +196,7 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
                                 focus.requestFocus()
                             },
                             onLibrary = { actions.openLibrary(field.text) },
-                            modifier = Modifier.fillMaxWidth().padding(end = 12.dp).focusRequester(focus),
+                            modifier = Modifier.fillMaxWidth().padding(end = 12.dp).focusRequester(focus).foundWithKeys(),
                         )
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),

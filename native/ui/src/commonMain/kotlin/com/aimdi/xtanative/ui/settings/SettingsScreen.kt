@@ -63,6 +63,7 @@ import com.aimdi.xtanative.ui.common.ColumnScrollbar
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.intro.IntroFlow
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.launch
@@ -122,7 +123,7 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: (
                 },
                 singleLine = true,
                 shape = MaterialTheme.shapes.extraLarge,
-                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp),
+                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp).foundWithKeys(),
             )
             if (query.isBlank()) {
                 SettingsHome(onOpen, onIntroAgain, snackbar, vm)

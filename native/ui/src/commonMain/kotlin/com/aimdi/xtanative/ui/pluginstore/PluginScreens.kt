@@ -52,6 +52,7 @@ import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.plugin_not_running
 import com.aimdi.xtanative.ui.generated.resources.search
 import com.aimdi.xtanative.ui.generated.resources.settings
+import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.plugins.LocalMediaSave
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.LocalPluginSurface
@@ -248,7 +249,7 @@ private fun SearchBar(text: String, search: PluginSearch?, onText: (String) -> U
                 keyboardActions = KeyboardActions(onSearch = { onSend() }),
                 shape = SearchPillShape,
                 colors = searchPillColors(),
-                modifier = Modifier.fillMaxWidth().padding(end = 12.dp).focusRequester(focus),
+                modifier = Modifier.fillMaxWidth().padding(end = 12.dp).focusRequester(focus).foundWithKeys(),
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),

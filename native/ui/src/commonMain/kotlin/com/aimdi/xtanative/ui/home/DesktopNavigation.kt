@@ -9,6 +9,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
@@ -56,6 +57,21 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
     fun close() {
         closing?.invoke()
     }
+
+    /** The search fields that Ctrl+F and / go to, the last shown on top ([FindsWithKeys]). */
+    private val finders = mutableListOf<Pair<Any, () -> Unit>>()
+
+    internal fun addFinder(owner: Any, find: () -> Unit) {
+        finders.removeAll { it.first === owner }
+        finders += owner to find
+    }
+
+    internal fun removeFinder(owner: Any) {
+        finders.removeAll { it.first === owner }
+    }
+
+    /** The search field shown on top takes the keyboard; false when the page has none. */
+    fun find(): Boolean = finders.lastOrNull()?.second?.let { it(); true } ?: false
 
     /** The lists on screen, in the order they came, and the one the pointer was last over. */
     private val lists = mutableListOf<LazyListState>()
@@ -157,7 +173,32 @@ val LocalDesktopActionsHost = staticCompositionLocalOf { DesktopActionsHost() }
  * [DesktopActions]. Off the desktop it is [content] alone.
  */
 @Composable
-expect fun DesktopNavigation(nav: NavHostController, content: @Composable () -> Unit)
+expect fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, content: @Composable () -> Unit)
+
+/**
+ * Lets Ctrl+F and / ([DesktopKeys]) go to the screen's own search while it is
+ * the one shown: [find] puts the keyboard in its field (or opens its search
+ * first). Where no screen shown has one, they open the app's search. Nothing
+ * off the desktop.
+ */
+@Composable
+fun FindsWithKeys(find: () -> Unit) {
+    val actions = LocalDesktopActions.current ?: return
+    val latest by rememberUpdatedState(find)
+    val owner = remember { Any() }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.addFinder(owner) { latest() } }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.removeFinder(owner) }
+    DisposableEffect(actions) { onDispose { actions.removeFinder(owner) } }
+}
+
+/** A search field that Ctrl+F and / put the keyboard in while it is shown ([FindsWithKeys]). Nothing off the desktop. */
+@Composable
+fun Modifier.foundWithKeys(): Modifier {
+    if (LocalDesktopActions.current == null) return this
+    val focus = remember { FocusRequester() }
+    FindsWithKeys { runCatching { focus.requestFocus() } }
+    return focusRequester(focus)
+}
 
 /**
  * Lets the screen answer the desktop's keys while it is the one shown: [refresh]

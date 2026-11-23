@@ -1,7 +1,7 @@
 package com.aimdi.xtanative.ui.home
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, OTHER }
 
 enum class DeskAction {
     /** Out of the text field being typed in, as XTA's first Esc does. */
@@ -19,6 +19,9 @@ enum class DeskAction {
 
     /** The focus goes into the page, to its first control: Tab while the window's frame holds it. */
     ENTER_PAGE,
+
+    /** The page's own search field takes the keyboard, else the search opens ([DesktopActions.find]). */
+    FIND,
 
     /** The list read moves a line, a screen, or to its top or end ([DesktopActions.scroll]). */
     LINE_UP,
@@ -48,7 +51,9 @@ object DesktopKeys {
      * Linux apps quit, asking first as the mouse's back button on the first
      * screen does. Tab while the window's frame holds the focus (at launch,
      * after a screen changes) moves it into the page, to its first control,
-     * where Tab and Shift+Tab then go on from one to the next.
+     * where Tab and Shift+Tab then go on from one to the next. Ctrl+F, even
+     * from a field, and / while nothing is being typed in, go to the search,
+     * as a desktop app's do: the page's own field, else the app's search.
      */
     fun action(
         key: DeskKey,
@@ -66,6 +71,8 @@ object DesktopKeys {
         key == DeskKey.Q && ctrl && !alt -> DeskAction.LEAVE_APP
         ctrl && !alt && key in TAB_KEYS -> if (somethingOpen) DeskAction.NONE else tabTurn(key, shift)
         key == DeskKey.TAB && !focusInside && !alt && !ctrl -> DeskAction.ENTER_PAGE
+        (key == DeskKey.F && ctrl && !alt && !shift) || (key == DeskKey.SLASH && !focusInside && !alt && !ctrl) ->
+            if (somethingOpen) DeskAction.NONE else DeskAction.FIND
         focusInside || alt || ctrl -> DeskAction.NONE
         key in SCROLL_KEYS -> if (somethingOpen) DeskAction.NONE else scroll(key, shift)
         key == DeskKey.LEFT -> if (rtl) DeskAction.NEXT_PAGE else DeskAction.PREVIOUS_PAGE

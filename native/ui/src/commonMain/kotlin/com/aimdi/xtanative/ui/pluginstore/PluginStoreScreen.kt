@@ -53,10 +53,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
@@ -144,6 +147,7 @@ import com.aimdi.xtanative.ui.generated.resources.plugin_version
 import com.aimdi.xtanative.ui.generated.resources.retry
 import com.aimdi.xtanative.ui.generated.resources.settings
 import com.aimdi.xtanative.ui.generated.resources.settings_show_as_tab
+import com.aimdi.xtanative.ui.home.FindsWithKeys
 import com.aimdi.xtanative.ui.home.MicroblogGroupingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
@@ -183,6 +187,15 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
     if (!store.catalogue.refreshing) pulled = false
     LaunchedEffect(Unit) { plugins.manager.refresh() }
     FollowInstalls(list, store, slots)
+    // Ctrl+F and / go to the search pill at the list's top, scrolled back into view.
+    val searchFocus = remember { FocusRequester() }
+    FindsWithKeys {
+        scope.launch {
+            list.scrollToItem(0)
+            withFrameNanos {}
+            runCatching { searchFocus.requestFocus() }
+        }
+    }
 
     PluginScaffold(
         title = stringResource(Res.string.plugin_store),
@@ -216,7 +229,7 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
             modifier = Modifier.padding(top = padding.calculateTopPadding()),
         ) {
             WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 24.dp), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
-                item(key = "search") { StoreSearchField(query) { query = it } }
+                item(key = "search") { StoreSearchField(query, Modifier.focusRequester(searchFocus)) { query = it } }
                 if (store.catalogue.refreshing) item(key = "refreshing") { LinearProgressIndicator(Modifier.fillMaxWidth()) }
                 if (store.catalogue.unreachable && !store.catalogue.refreshing) {
                     item(key = "unreachable") { Unreachable(store.catalogue.fetchedAt != null) { scope.launch { plugins.manager.refresh() } } }
@@ -305,7 +318,7 @@ private fun storeMatching(query: String, running: List<RunningPlugin>, locale: L
 
 /** XTA's "Search plugins": a pill above the list, filtering it as it is typed in. */
 @Composable
-private fun StoreSearchField(query: String, onQuery: (String) -> Unit) {
+private fun StoreSearchField(query: String, modifier: Modifier, onQuery: (String) -> Unit) {
     val focus = LocalFocusManager.current
     TextField(
         value = query,
@@ -317,7 +330,7 @@ private fun StoreSearchField(query: String, onQuery: (String) -> Unit) {
         keyboardActions = KeyboardActions(onSearch = { focus.clearFocus() }),
         shape = SearchPillShape,
         colors = searchPillColors(),
-        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
+        modifier = modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
     )
 }
 

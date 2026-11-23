@@ -26,8 +26,10 @@ import androidx.compose.ui.input.key.isAltPressed
 import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isBackPressed
@@ -48,7 +50,7 @@ import kotlinx.coroutines.launch
  * arrive here first.
  */
 @Composable
-actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> Unit) {
+actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, content: @Composable () -> Unit) {
     val focus = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
@@ -96,6 +98,10 @@ actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> 
             AppClosing.ask()
             true
         }
+        DeskAction.FIND -> {
+            if (!actions.find()) openSearch()
+            true
+        }
         DeskAction.LINE_UP, DeskAction.LINE_DOWN, DeskAction.SCREEN_UP, DeskAction.SCREEN_DOWN, DeskAction.TO_TOP, DeskAction.TO_END ->
             actions.readList()?.let { list ->
                 scope.launch { list.moveFor(action, line) }
@@ -114,6 +120,14 @@ actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> 
         return act(action)
     }
 
+    // A / is the character typed, on any layout (Shift+7 on a German one), and only one no field has typed reaches here.
+    fun onTyped(event: KeyEvent): Boolean {
+        if (event.type == KeyEventType.KeyDown || event.type == KeyEventType.KeyUp || event.utf16CodePoint != '/'.code) return false
+        val action = DesktopKeys.action(DeskKey.SLASH, event.isAltPressed, event.isCtrlPressed, focusInside = false, nav.previousBackStackEntry != null, rtl, actions.somethingOpen(), event.isShiftPressed)
+        if (actions.overlayHoldsKeys()) return false
+        return act(action)
+    }
+
     CompositionLocalProvider(LocalDesktopActions provides actions) {
         Box(
             Modifier
@@ -129,6 +143,7 @@ actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> 
                     }
                 }
                 .onPreviewKeyEvent(::onKey)
+                .onKeyEvent(::onTyped)
                 .onFocusChanged { state ->
                     hasFocus = state.hasFocus
                     focusInside = state.hasFocus && !state.isFocused
@@ -191,5 +206,6 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.MoveEnd -> DeskKey.END
     Key.Tab -> DeskKey.TAB
     Key.Q -> DeskKey.Q
+    Key.F -> DeskKey.F
     else -> DeskKey.OTHER
 }

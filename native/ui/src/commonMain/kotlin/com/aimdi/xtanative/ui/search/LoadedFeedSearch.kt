@@ -44,6 +44,7 @@ import com.aimdi.xtanative.ui.generated.resources.discover_loaded_hint
 import com.aimdi.xtanative.ui.generated.resources.discover_loaded_title
 import com.aimdi.xtanative.ui.generated.resources.discover_no_results
 import com.aimdi.xtanative.ui.generated.resources.discover_search
+import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -93,7 +94,7 @@ fun LoadedFeedSearchScreen(threads: List<XThread>, actions: PostActions, onBack:
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 label = { Text(stringResource(Res.string.discover_search)) },
                 supportingText = { Text(stringResource(Res.string.discover_loaded_hint)) },
-                modifier = Modifier.fillMaxWidth().padding(12.dp).focusRequester(focus),
+                modifier = Modifier.fillMaxWidth().padding(12.dp).focusRequester(focus).foundWithKeys(),
             )
             if (matches.isEmpty() && matchingPosts.isEmpty()) {
                 EmptyNote(stringResource(Res.string.discover_no_results))

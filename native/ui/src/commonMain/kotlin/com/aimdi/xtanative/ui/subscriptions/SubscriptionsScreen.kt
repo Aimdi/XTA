@@ -75,6 +75,8 @@ import com.aimdi.xtanative.ui.generated.resources.groups_sort_applied
 import com.aimdi.xtanative.ui.generated.resources.groups_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.unable_to_load_the_group
 import com.aimdi.xtanative.ui.generated.resources.unable_to_refresh_the_subscriptions
+import com.aimdi.xtanative.ui.home.FindsWithKeys
+import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getPluralString
@@ -144,6 +146,8 @@ fun SubscriptionsScreen(navigation: SubscriptionsNavigation, onBack: (() -> Unit
         }
     }
     BackHandling(enabled = state.searching) { vm.closeSearch() }
+    // Ctrl+F and / open the search; once open, its field takes them.
+    if (!state.searching) FindsWithKeys(vm::openSearch)
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -321,7 +325,7 @@ private fun SearchBar(state: SubscriptionsUi, vm: SubscriptionsViewModel) {
                     focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                     unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                 ),
-                modifier = Modifier.fillMaxWidth().padding(end = 12.dp).focusRequester(focus),
+                modifier = Modifier.fillMaxWidth().padding(end = 12.dp).focusRequester(focus).foundWithKeys(),
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),

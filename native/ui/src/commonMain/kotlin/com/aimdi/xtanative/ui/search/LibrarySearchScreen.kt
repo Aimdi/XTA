@@ -68,6 +68,7 @@ import com.aimdi.xtanative.ui.generated.resources.retry
 import com.aimdi.xtanative.ui.generated.resources.saved_note_author
 import com.aimdi.xtanative.ui.generated.resources.saved_search_library
 import com.aimdi.xtanative.ui.generated.resources.saved_title
+import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import org.jetbrains.compose.resources.stringResource
@@ -112,7 +113,7 @@ fun LibrarySearchScreen(initialQuery: String?, open: (LibraryTarget) -> Unit, on
                 singleLine = true,
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 placeholder = { Text(title) },
-                modifier = Modifier.fillMaxWidth().padding(12.dp).focusRequester(focus),
+                modifier = Modifier.fillMaxWidth().padding(12.dp).focusRequester(focus).foundWithKeys(),
             )
             KindChips(state.kind, vm::pick)
             if (state.query.isNotBlank()) ElsewhereChips(state.query.trim(), open)
