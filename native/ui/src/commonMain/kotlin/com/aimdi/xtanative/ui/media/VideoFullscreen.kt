@@ -146,6 +146,7 @@ private fun fullscreenKey(event: KeyEvent, playback: VideoPlayback, onClose: () 
         left = event.key == Key.DirectionLeft,
         right = event.key == Key.DirectionRight,
         modified = event.isCtrlPressed || event.isAltPressed,
+        back = event.key == Key.Back || (event.isAltPressed && event.key == Key.DirectionLeft),
     )
     val now = playback.state.value
     val skip = VideoRules.SEEK_SECONDS * 1000L

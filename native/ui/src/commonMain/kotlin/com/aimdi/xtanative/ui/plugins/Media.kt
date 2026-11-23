@@ -101,7 +101,9 @@ import com.aimdi.xtanative.ui.media.TileVideo
 import com.aimdi.xtanative.ui.media.VideoQuality
 import com.aimdi.xtanative.ui.media.VideoRules
 import com.aimdi.xtanative.ui.media.VideoSource
+import com.aimdi.xtanative.ui.media.ViewerKey
 import com.aimdi.xtanative.ui.media.rememberVideoPlayers
+import com.aimdi.xtanative.ui.media.viewerKeyOf
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -255,11 +257,11 @@ fun MediaPager(
             .background(Color.Black)
             .onKeyEvent { event ->
                 if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
-                when (event.key) {
-                    Key.DirectionLeft -> true.also { turn(-1) }
-                    Key.DirectionRight -> true.also { turn(1) }
-                    Key.Escape -> true.also { onClose() }
-                    else -> false
+                when (viewerKeyOf(event)) {
+                    ViewerKey.PREVIOUS -> true.also { turn(-1) }
+                    ViewerKey.NEXT -> true.also { turn(1) }
+                    ViewerKey.CLOSE -> true.also { onClose() }
+                    ViewerKey.NONE -> false
                 }
             }
             .focusRequester(focus)

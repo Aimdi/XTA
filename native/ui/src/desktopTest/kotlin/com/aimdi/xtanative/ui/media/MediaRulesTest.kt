@@ -175,4 +175,23 @@ class MediaRulesTest {
         assertEquals(VideoKey.NONE, key(left = true, modified = true), "Alt+← goes back, not ten seconds")
         assertEquals(VideoKey.LEAVE, key(escape = true, modified = true))
     }
+
+    @Test
+    fun theViewerTurnsWithTheArrowsAndGoesBackWithAltLeft() {
+        fun key(escape: Boolean = false, left: Boolean = false, right: Boolean = false, back: Boolean = false, modified: Boolean = false) =
+            ViewerKeys.of(escape, left, right, back, modified)
+        assertEquals(ViewerKey.PREVIOUS, key(left = true))
+        assertEquals(ViewerKey.NEXT, key(right = true))
+        assertEquals(ViewerKey.CLOSE, key(escape = true))
+        assertEquals(ViewerKey.CLOSE, key(left = true, back = true, modified = true), "Alt+← goes back, not to the photo before")
+        assertEquals(ViewerKey.CLOSE, key(back = true), "the Back key")
+        assertEquals(ViewerKey.NONE, key(right = true, modified = true), "Ctrl+→ is not the viewer's")
+        assertEquals(ViewerKey.NONE, key())
+    }
+
+    @Test
+    fun goingBackLeavesAVideoFullScreen() {
+        assertEquals(VideoKey.LEAVE, VideoKeys.of(escape = false, space = false, left = true, right = false, modified = true, back = true))
+        assertEquals(VideoKey.LEAVE, VideoKeys.of(escape = false, space = false, left = false, right = false, modified = false, back = true))
+    }
 }

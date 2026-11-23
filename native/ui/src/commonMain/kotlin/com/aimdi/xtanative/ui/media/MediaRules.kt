@@ -20,13 +20,33 @@ enum class VideoKey { LEAVE, PLAY_PAUSE, BACK, FORWARD, NONE }
  * Ctrl or Alt held they are the window's, not the video's.
  */
 object VideoKeys {
-    fun of(escape: Boolean, space: Boolean, left: Boolean, right: Boolean, modified: Boolean): VideoKey = when {
-        escape -> VideoKey.LEAVE
+    /** [back] is going back the desktop's way, Alt+← or the Back key, which leaves the video as Esc does. */
+    fun of(escape: Boolean, space: Boolean, left: Boolean, right: Boolean, modified: Boolean, back: Boolean = false): VideoKey = when {
+        escape || back -> VideoKey.LEAVE
         modified -> VideoKey.NONE
         space -> VideoKey.PLAY_PAUSE
         left -> VideoKey.BACK
         right -> VideoKey.FORWARD
         else -> VideoKey.NONE
+    }
+}
+
+/** What a key does to the media viewer on the desktop ([ViewerKeys]). */
+enum class ViewerKey { PREVIOUS, NEXT, CLOSE, NONE }
+
+/**
+ * The media viewer's keys: ← and → turn its pages, Esc closes it, and going
+ * back the desktop's way ([back]: Alt+← or the Back key) closes it too, as it
+ * goes back from any screen; with Ctrl or Alt held the arrows are not the
+ * viewer's.
+ */
+object ViewerKeys {
+    fun of(escape: Boolean, left: Boolean, right: Boolean, back: Boolean, modified: Boolean): ViewerKey = when {
+        escape || back -> ViewerKey.CLOSE
+        modified -> ViewerKey.NONE
+        left -> ViewerKey.PREVIOUS
+        right -> ViewerKey.NEXT
+        else -> ViewerKey.NONE
     }
 }
 
