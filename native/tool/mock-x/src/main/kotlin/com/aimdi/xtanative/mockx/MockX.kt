@@ -70,6 +70,8 @@ class MockX(private val routes: Map<String, MockRoute> = ROUTES, private val rea
     companion object {
         private val GRAPHQL = Regex("""^(?:/i/api)?/graphql/[\w-]+/(\w+)$""")
         private const val FLUTTER_COMMUNITY = "1472249315724771329"
+        /** The made-up list the stand-in answers for (fixtures/List). */
+        const val MOCK_LIST = "1500000000000000001"
         private const val EMPTY_USER_TIMELINE =
             """{"data":{"user":{"result":{"__typename":"User","timeline":{"timeline":{"instructions":[]}}}}}}"""
 
@@ -98,6 +100,11 @@ class MockX(private val routes: Map<String, MockRoute> = ROUTES, private val rea
             "UserTweetsAndReplies" to MockRoute(mapOf("*" to "UserOriginalsTimeline/page.json")),
             // The Posts tab reads reposts beside the posts; the recorded accounts repost nothing.
             "UserRepostsTimeline" to MockRoute(emptyMap(), missing = EMPTY_USER_TIMELINE),
+            // Made up from the recorded ones: the three recorded accounts as anyone's follows, and
+            // the Flutter community's posts as anyone's media, so those screens open offline.
+            "UserMedia" to MockRoute(mapOf("*" to "UserMedia/page.json")),
+            "Following" to MockRoute(mapOf("*" to "Follows/page.json")),
+            "Followers" to MockRoute(mapOf("*" to "Follows/page.json")),
             "TweetDetail" to MockRoute(
                 mapOf("2105589900078641579" to "TweetDetail/subscriber_preview.json"),
                 key = "focalTweetId",
@@ -111,6 +118,9 @@ class MockX(private val routes: Map<String, MockRoute> = ROUTES, private val rea
             "CommunityTweetsTimeline" to MockRoute(mapOf(FLUTTER_COMMUNITY to "Community/timeline.json"), key = "communityId"),
             "membersSliceTimeline_Query" to MockRoute(mapOf(FLUTTER_COMMUNITY to "Community/members.json"), key = "communityId"),
             "CommunitiesSearchQuery" to MockRoute(mapOf("*" to "Community/search.json")),
+            // A made-up list of the recorded accounts, opened by its link (x.com/i/lists/<MOCK_LIST>).
+            "ListByRestId" to MockRoute(mapOf(MOCK_LIST to "List/list.json"), key = "listId", missing = """{"data":{}}"""),
+            "ListMembers" to MockRoute(mapOf(MOCK_LIST to "List/members.json"), key = "listId"),
         )
 
         /** The lists a later page of a timeline fills; the page after the last recorded one comes back with them empty, which ends the list. */

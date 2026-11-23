@@ -28,6 +28,17 @@ class MockXTest {
     }
 
     @Test
+    fun answersFollowsMediaAndItsListFromMadeUpFixtures() {
+        assertEquals("Follows/page.json", mock.answer("GET", graphql("Following", """{"userId":"1"}""")).fixture)
+        assertEquals("Follows/page.json", mock.answer("GET", graphql("Followers", """{"userId":"1"}""")).fixture)
+        assertEquals("UserMedia/page.json", mock.answer("GET", graphql("UserMedia", """{"userId":"1"}""")).fixture)
+        assertEquals("List/list.json", mock.answer("GET", graphql("ListByRestId", """{"listId":"${MockX.MOCK_LIST}"}""")).fixture)
+        assertEquals("List/members.json", mock.answer("GET", graphql("ListMembers", """{"listId":"${MockX.MOCK_LIST}"}""")).fixture)
+        assertEquals(MockAnswer(200, """{"data":{}}"""), mock.answer("GET", graphql("ListByRestId", """{"listId":"2"}""")))
+        assertEquals(501, mock.answer("GET", graphql("ListMembers", """{"listId":"2"}""")).status)
+    }
+
+    @Test
     fun answersWhatItHoldsAndWhatXSaysAboutTheRest() {
         val known = mock.answer("GET", graphql("UserByScreenName", """{"screen_name":"Quax_Tests_2"}"""))
         assertEquals("UserByScreenName/quax_tests_2.json", known.fixture)
@@ -77,8 +88,9 @@ class MockXTest {
         assertTrue(other.body.startsWith("The stand-in for X has no answer for GET https://x.com/i/api/graphql/someId/HomeTimeline?variables="))
         assertTrue(
             other.body.endsWith(
-                "It answers UserByScreenName, UserByRestId, UserOriginalsTimeline, UserTweetsAndReplies, UserRepostsTimeline, TweetDetail, " +
-                    "CommunityQuery, CommunityTweetsTimeline, membersSliceTimeline_Query, CommunitiesSearchQuery, the guest token.",
+                "It answers UserByScreenName, UserByRestId, UserOriginalsTimeline, UserTweetsAndReplies, UserRepostsTimeline, UserMedia, " +
+                    "Following, Followers, TweetDetail, CommunityQuery, CommunityTweetsTimeline, membersSliceTimeline_Query, " +
+                    "CommunitiesSearchQuery, ListByRestId, ListMembers, the guest token.",
             ),
         )
         val elsewhere = mock.answer("GET", graphql("CommunityTweetsTimeline", """{"communityId":"2"}"""))
