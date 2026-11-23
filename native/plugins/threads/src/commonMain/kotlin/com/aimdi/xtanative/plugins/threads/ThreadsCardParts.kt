@@ -67,6 +67,7 @@ import com.aimdi.xtanative.ui.plugins.PluginCounts
 import com.aimdi.xtanative.ui.plugins.PluginMenuRow
 import com.aimdi.xtanative.ui.plugins.PluginPostMenuRows
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.post.CardView
 import com.aimdi.xtanative.ui.post.PostIcons
 import java.time.Instant
@@ -231,7 +232,7 @@ internal fun ReplyAudienceLine(post: ThreadsPost) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ThreadsPostSheet(app: ThreadsApp, post: ThreadsPost, onPicture: (() -> Unit)? = null, onDone: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDone) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDone) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) {
             ThreadsPostSheetRows(app, post, onPicture, onDone)
         }

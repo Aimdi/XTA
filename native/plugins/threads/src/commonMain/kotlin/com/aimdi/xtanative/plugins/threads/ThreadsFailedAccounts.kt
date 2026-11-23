@@ -36,6 +36,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsAccountFailure
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import java.time.Instant
 
 /**
@@ -64,7 +65,7 @@ internal fun FailedAccountsRow(app: ThreadsApp) {
 @Composable
 private fun FailedAccountsSheet(app: ThreadsApp, failures: List<ThreadsAccountFailure>, onDismiss: () -> Unit) {
     var unfollowing by remember { mutableStateOf<String?>(null) }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         LazyColumn(Modifier.navigationBarsPadding().padding(horizontal = 8.dp)) {
             item(key = "title") {
                 Text(pluginPlural(Strings.accounts_failed, failures.size, failures.size), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(16.dp))
