@@ -16,15 +16,54 @@ import java.nio.file.StandardOpenOption
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
-/** What a later start of the app asks of the copy already running, one line over its socket. */
-enum class InstanceMessage(val line: String) {
+/**
+ * What a later start of the app asks of the copy already running, one line
+ * over its socket. A copy that does not know a line ignores it and gives no
+ * answer, so a later start can fall back to [Raise].
+ */
+sealed interface InstanceMessage {
+    /** The line this message travels as. */
+    val line: String
+
     /** Bring the window forward: XTA's second start presents the running window. */
-    RAISE("raise"),
-    ;
+    data object Raise : InstanceMessage {
+        override val line: String = "raise"
+    }
+
+    /** Open [url] (an X link, or any page a plugin reads), as a link another app opens here, and bring the window forward. */
+    data class Open(val url: String) : InstanceMessage {
+        override val line: String = "$OPEN$url"
+    }
 
     companion object {
+        private const val OPEN = "open "
+
+        /** The longest link a later start hands over; anything longer is no link a reader typed or clicked. */
+        const val MAX_URL = 4_096
+
         /** The message [line] carries; null for anything else, which the running copy ignores. */
-        fun parse(line: String?): InstanceMessage? = line?.trim()?.let { text -> entries.firstOrNull { it.line == text } }
+        fun parse(line: String?): InstanceMessage? {
+            val text = line?.trim() ?: return null
+            return when {
+                text == Raise.line -> Raise
+                text.startsWith(OPEN) -> link(text.removePrefix(OPEN))?.let(::Open)
+                else -> null
+            }
+        }
+
+        /**
+         * The web link among a start's [args] (`xta-native <url>`, as a
+         * desktop entry's %U passes it): the first http or https one, null
+         * when there is none, so a start without one only raises the window.
+         */
+        fun linkIn(args: Array<String>): String? = args.firstNotNullOfOrNull(::link)
+
+        /** [text] as a link to hand over: one http(s) address of no spaces, else null. */
+        private fun link(text: String): String? = text.trim().takeIf { url ->
+            url.length <= MAX_URL &&
+                (url.startsWith("https://") || url.startsWith("http://")) &&
+                url.none { it.isWhitespace() || it.isISOControl() }
+        }
     }
 }
 
@@ -87,19 +126,22 @@ class SingleInstance private constructor(
         /** How long one try waits for the running copy's answer. */
         private const val ANSWER_MILLIS = 2_000L
 
-        /** The running copy's answer once it has raised its window. */
+        /** The running copy's answer once it has done what it was asked (raised its window). */
         private const val HEARD = "raised"
 
         /**
          * This start's claim on [folder]: the running copy's when it is the
-         * first, else null once the copy already running has been asked to
-         * raise its window, and this start should end.
+         * first, else null once the copy already running has been handed
+         * [message] (raise its window, or open a link and raise it), and this
+         * start should end. A running copy too old to open links is asked to
+         * raise its window instead.
          */
-        fun claim(folder: File): SingleInstance? {
+        fun claim(folder: File, message: InstanceMessage = InstanceMessage.Raise): SingleInstance? {
             val socket = File(folder, SOCKET_FILE)
             val first = take(folder, socket)
             if (first != null) return first
-            if (tell(socket, InstanceMessage.RAISE)) return null
+            if (tell(socket, message)) return null
+            if (message != InstanceMessage.Raise && tell(socket, InstanceMessage.Raise)) return null
             // Nobody answered: the copy holding the lock is ending. This start runs once it has.
             val until = System.currentTimeMillis() + TAKE_OVER_MILLIS
             while (System.currentTimeMillis() < until) {

@@ -32,6 +32,7 @@ import com.aimdi.xtanative.ui.chrome.SavedWindow
 import com.aimdi.xtanative.ui.chrome.SavedWindowFile
 import com.aimdi.xtanative.ui.chrome.SingleInstance
 import com.aimdi.xtanative.ui.chrome.WindowFullscreen
+import com.aimdi.xtanative.ui.links.DesktopIncomingLinks
 import com.aimdi.xtanative.ui.media.VideoCheck
 import java.awt.Dimension
 import java.awt.GraphicsEnvironment
@@ -50,15 +51,21 @@ import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * XTA Native on the Linux desktop: the Android app's screens in one window.
- * A second start raises the window already open and ends (SingleInstance);
+ * A second start raises the window already open and ends (SingleInstance),
+ * handing it the link it was started with (`xta-native <url>`);
  * the window opens as large as it was left, as XTA's does.
  */
 @OptIn(FlowPreview::class)
-fun main() {
+fun main(args: Array<String>) {
     val files = dataFolder()
-    val instance = SingleInstance.claim(files) ?: exitProcess(0)
+    val link = InstanceMessage.linkIn(args)
+    val instance = SingleInstance.claim(files, link?.let(InstanceMessage::Open) ?: InstanceMessage.Raise) ?: exitProcess(0)
+    link?.let(DesktopIncomingLinks::hand)
     val raises = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-    instance.listen { message -> if (message == InstanceMessage.RAISE) raises.tryEmit(Unit) }
+    instance.listen { message ->
+        if (message is InstanceMessage.Open) DesktopIncomingLinks.hand(message.url)
+        raises.tryEmit(Unit)
+    }
     val windowFile = SavedWindowFile(File(files, "window.ini"))
     val saved = windowFile.read().let { kept -> screenArea()?.let { (width, height) -> kept.fitTo(width, height) } ?: kept }
     var kept = saved
