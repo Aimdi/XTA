@@ -11,6 +11,8 @@ import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.draganddrop.awtTransferable
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * A link dropped on the window (from a browser's address bar, a chat, a
@@ -58,7 +60,7 @@ internal fun Modifier.takesDroppedLinks(): Modifier {
         object : DragAndDropTarget {
             override fun onDrop(event: DragAndDropEvent): Boolean {
                 val link = DroppedLinks.linkIn(DraggedText.read(event.awtTransferable)) ?: return false
-                DesktopIncomingLinks.hand(link)
+                DesktopIncomingLinks.hand(link, byReader = true)
                 return true
             }
         }
@@ -69,16 +71,27 @@ internal fun Modifier.takesDroppedLinks(): Modifier {
     )
 }
 
-/** A link copied elsewhere, opened with Ctrl+V as one dropped on the window is ([DroppedLinks]). */
+/**
+ * A link copied elsewhere, opened with Ctrl+V as one dropped on the window
+ * is: only when the clipboard holds that one address and nothing more
+ * ([linkIn]), so copied text that starts with a link is no link.
+ */
 internal object PastedLinks {
-    /** Opens the web address on the system clipboard; false when it holds none. */
-    fun open(): Boolean {
-        val text = runCatching {
-            val clipboard = java.awt.Toolkit.getDefaultToolkit().systemClipboard
-            if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) clipboard.getData(DataFlavor.stringFlavor) as? String else null
-        }.getOrNull()
-        val link = DroppedLinks.linkIn(text) ?: return false
-        DesktopIncomingLinks.hand(link)
-        return true
+    /** The web address [text] is when it is nothing but one; else null. */
+    fun linkIn(text: String?): String? = text?.trim()?.takeIf { it.lines().size == 1 }?.let(DroppedLinks::linkIn)
+
+    /**
+     * Opens the web address on the system clipboard, read off the window's
+     * thread: an app that holds the clipboard and does not answer would
+     * otherwise freeze the window until the transfer times out.
+     */
+    suspend fun open() {
+        val text = withContext(Dispatchers.IO) {
+            runCatching {
+                val clipboard = java.awt.Toolkit.getDefaultToolkit().systemClipboard
+                if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) clipboard.getData(DataFlavor.stringFlavor) as? String else null
+            }.getOrNull()
+        }
+        linkIn(text)?.let { DesktopIncomingLinks.hand(it, byReader = true) }
     }
 }

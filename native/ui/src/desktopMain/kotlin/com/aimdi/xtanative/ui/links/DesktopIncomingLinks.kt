@@ -17,9 +17,14 @@ object DesktopIncomingLinks {
 
     private val waiting = Channel<String>(WAITING, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
-    /** Opens [url] in the app as soon as its screens are up; one the app has just sent to the browser is not taken back. */
-    fun hand(url: String) {
-        if (SentOutside.cameBack(url)) return
+    /**
+     * Opens [url] in the app as soon as its screens are up; one the app has
+     * just sent to the browser is not taken back, unless the reader handed
+     * it here themselves ([byReader]: dropped or pasted), which no link
+     * router does.
+     */
+    fun hand(url: String, byReader: Boolean = false) {
+        if (!byReader && SentOutside.cameBack(url)) return
         waiting.trySend(url)
     }
 

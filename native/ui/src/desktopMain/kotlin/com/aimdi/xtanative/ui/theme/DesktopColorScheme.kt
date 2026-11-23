@@ -58,9 +58,13 @@ class DesktopColorScheme(
             // Portals before version 2 have only Read, whose value comes wrapped once more.
             ?: bus.call(PortalColors.PORTAL, PortalColors.PATH, PortalColors.SETTINGS, "Read", "ss", listOf(PortalColors.NAMESPACE, PortalColors.KEY))
         answer?.takeIf { it.type == DBusType.METHOD_RETURN }?.let { reply -> PortalColors.dark(reply.body.firstOrNull())?.let { mutable.value = it } }
-        bus.call(PortalColors.PORTAL, PortalColors.PATH, PortalColors.SETTINGS, "ReadOne", "ss", listOf(PortalMotion.NAMESPACE, PortalMotion.KEY))
-            ?.takeIf { it.type == DBusType.METHOD_RETURN }
-            ?.let { reply -> PortalMotion.off(reply.body.firstOrNull())?.let { stillness.value = it } }
+        (
+            bus.call(PortalColors.PORTAL, PortalColors.PATH, PortalColors.SETTINGS, "ReadOne", "ss", listOf(PortalMotion.NAMESPACE, PortalMotion.KEY))
+                ?.takeIf { it.type == DBusType.METHOD_RETURN }
+                // Portals before version 2 have only Read (its value wrapped once more, which PortalMotion unwraps).
+                ?: bus.call(PortalColors.PORTAL, PortalColors.PATH, PortalColors.SETTINGS, "Read", "ss", listOf(PortalMotion.NAMESPACE, PortalMotion.KEY))
+                    ?.takeIf { it.type == DBusType.METHOD_RETURN }
+            )?.let { reply -> PortalMotion.off(reply.body.firstOrNull())?.let { stillness.value = it } }
     }
 
     /** Stops following (tests). */

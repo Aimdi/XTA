@@ -39,4 +39,13 @@ class DroppedLinksTest {
         }
         kotlin.test.assertFalse(DraggedText.offered(files))
     }
+
+    @Test
+    fun aPasteIsALinkOnlyWhenItIsNothingElse() {
+        assertEquals("https://x.com/a", PastedLinks.linkIn("  https://x.com/a\n"))
+        assertNull(PastedLinks.linkIn("https://x.com/a\nand what I thought of it"))
+        assertNull(PastedLinks.linkIn("#hashtag line\nhttps://x.com/a"))
+        assertNull(PastedLinks.linkIn("just words"))
+        assertNull(PastedLinks.linkIn(null))
+    }
 }

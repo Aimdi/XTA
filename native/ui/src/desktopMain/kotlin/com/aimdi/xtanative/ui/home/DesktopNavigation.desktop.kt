@@ -129,8 +129,11 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                 scope.launch { list.moveFor(action, line) }
                 true
             } ?: false
-        // Only a web address alone; other text on the clipboard leaves the key to the page.
-        DeskAction.OPEN_PASTED_LINK -> PastedLinks.open()
+        // Read off the window's thread; Ctrl+V outside a field has nothing else to do, so the key is taken either way.
+        DeskAction.OPEN_PASTED_LINK -> {
+            scope.launch { PastedLinks.open() }
+            true
+        }
         DeskAction.OPEN_SETTINGS -> {
             openSettings()
             true
