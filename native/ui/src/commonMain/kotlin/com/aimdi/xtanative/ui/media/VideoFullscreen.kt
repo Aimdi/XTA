@@ -27,6 +27,7 @@ import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.input.pointer.pointerInput
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.home.HoldsKeys
@@ -94,7 +95,7 @@ private fun FullscreenLayer(video: FullscreenVideo, onClose: () -> Unit) {
             .background(Color.Black)
             // Nothing under it is touched while it is up, picture-in-picture included.
             .pointerInput(Unit) { awaitPointerEventScope { while (true) awaitPointerEvent().changes.forEach { it.consume() } } }
-            .onKeyEvent { event -> event.type == KeyEventType.KeyDown && fullscreenKey(event, player, onClose) }
+            .onKeyEvent { event -> (event.type == KeyEventType.KeyDown || typedChar(event) != null) && fullscreenKey(event, player, onClose) }
             .focusRequester(focus)
             .focusable(),
     ) {
@@ -138,7 +139,7 @@ internal expect val FullscreenTurns: Boolean
 @Composable
 internal expect fun rememberPictureInPicture(onDismissed: () -> Unit): PictureInPicture?
 
-/** [key] done to [playback] ([VideoKeys]): play, pause, skip, mute or start over; false for a key it does not take. */
+/** [key] done to [playback] ([VideoKeys]): play, pause, skip, mute, start over, go to the end, a tenth or a speed; false for a key it does not take. */
 internal fun playbackKey(key: VideoKey, playback: VideoPlayback): Boolean {
     val now = playback.state.value
     val skip = VideoRules.SEEK_SECONDS * 1000L
@@ -148,14 +149,20 @@ internal fun playbackKey(key: VideoKey, playback: VideoPlayback): Boolean {
         VideoKey.FORWARD -> playback.seekTo(VideoRules.seekTarget(now.positionMs, skip, now.durationMs))
         VideoKey.MUTE -> toggleMute(playback, now.muted)
         VideoKey.RESTART -> playback.seekTo(0)
-        else -> return false
+        VideoKey.END -> playback.seekTo(now.durationMs.coerceAtLeast(0))
+        VideoKey.SLOWER -> playback.setSpeed(VideoRules.slower(now.speed))
+        VideoKey.FASTER -> playback.setSpeed(VideoRules.faster(now.speed))
+        else -> if (key.tenths >= 0) playback.seekTo(VideoRules.jumpTarget(key.tenths, now.durationMs)) else return false
     }
     return true
 }
 
 /** [event] done to the video full screen ([VideoKeys]); false when it is not the video's. */
 private fun fullscreenKey(event: KeyEvent, playback: VideoPlayback, onClose: () -> Unit): Boolean {
-    val key = VideoKeys.of(
+    val typed = typedChar(event)
+    val key = if (typed != null) {
+        VideoKeys.of(escape = false, space = false, left = false, right = false, modified = event.isCtrlPressed || event.isAltPressed, typed = typed)
+    } else VideoKeys.of(
         escape = event.key == Key.Escape,
         space = event.key == Key.Spacebar,
         left = event.key == Key.DirectionLeft,
@@ -164,6 +171,7 @@ private fun fullscreenKey(event: KeyEvent, playback: VideoPlayback, onClose: () 
         back = event.key == Key.Back || (event.isAltPressed && event.key == Key.DirectionLeft),
         letter = PLAYER_LETTERS[event.key],
         home = event.key == Key.MoveHome,
+        end = event.key == Key.MoveEnd,
     )
     if (key == VideoKey.LEAVE) return true.also { onClose() }
     return playbackKey(key, playback)
@@ -171,3 +179,11 @@ private fun fullscreenKey(event: KeyEvent, playback: VideoPlayback, onClose: () 
 
 /** The letter keys the web's video players answer to, by where they sit ([VideoKeys]'s `letter`). */
 internal val PLAYER_LETTERS = mapOf(Key.F to 'f', Key.K to 'k', Key.J to 'j', Key.L to 'l', Key.M to 'm')
+
+/**
+ * The character a typed key event carries (the desktop's, after its key went
+ * down), so < > and the digits are found on any keyboard layout; null for
+ * other events.
+ */
+internal fun typedChar(event: KeyEvent): Char? =
+    if (event.type == KeyEventType.Unknown) event.utf16CodePoint.takeIf { it in 1..0xFFFF }?.toChar() else null

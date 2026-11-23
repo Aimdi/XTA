@@ -153,6 +153,16 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
             skipped = 0
         }
     }
+    // A change of speed (< and > on the desktop, or the menu) is said for a moment, as the web's players do.
+    var speedSeen by remember { mutableStateOf(state.speed) }
+    var speedShown by remember { mutableStateOf<Double?>(null) }
+    LaunchedEffect(state.speed) {
+        if (kotlin.math.abs(state.speed - speedSeen) < 0.001) return@LaunchedEffect
+        speedSeen = state.speed
+        speedShown = state.speed
+        delay(SPEED_SHOWN_MS)
+        speedShown = null
+    }
     Box(
         modifier
             .fillMaxSize()
@@ -191,6 +201,7 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
             }
         }
         if (skipped != 0) SkipBadge(skipped, Modifier.align(if (skipped < 0) Alignment.CenterStart else Alignment.CenterEnd))
+        speedShown?.let { SpeedBadge(it, Modifier.align(Alignment.TopCenter)) }
         if (state.qualityFailed) QualityFailed(playback, Modifier.align(Alignment.TopCenter))
         if (state.failed) FailedOverlay(playback)
     }
@@ -415,6 +426,19 @@ private fun SkipBadge(seconds: Int, modifier: Modifier) {
         Icon(if (seconds < 0) ReaderIcons.FastRewind else ReaderIcons.FastForward, contentDescription = null, tint = Color.White)
         Text(stringResource(Res.string.reader_video_seconds, kotlin.math.abs(seconds)), color = Color.White, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp))
     }
+}
+
+/** How long a new speed is said over the video ([SpeedBadge]). */
+private const val SPEED_SHOWN_MS = 1_000L
+
+/** The speed the video now plays at, "1.5x", for a moment after it changed. */
+@Composable
+private fun SpeedBadge(speed: Double, modifier: Modifier) {
+    Text(
+        stringResource(Res.string.reader_video_speed_value, VideoRules.speedText(speed)),
+        color = Color.White,
+        modifier = modifier.padding(16.dp).clip(RoundedCornerShape(8.dp)).background(Color.Black.copy(alpha = 0.7f)).padding(horizontal = 12.dp, vertical = 8.dp),
+    )
 }
 
 /** A change of quality that would not play, said for a moment over the variant that plays on (_video_controls.dart's snack bar). */

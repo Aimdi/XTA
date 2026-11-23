@@ -21,6 +21,8 @@
     <string name="keys_full_screen">Tutekrane</string>
     <string name="keys_video">Tutekrana video: ludi aŭ paŭzi, salti 10 sekundojn</string>
     <string name="keys_video_more">Plenekrana video: silentigi, rekomenci, eliri</string>
+    <string name="keys_video_speed">Plenekrana video: pli malrapide aŭ pli rapide</string>
+    <string name="keys_video_jump">Plenekrana video: salti al 0 ĝis 90 procentoj, aŭ al la fino</string>
     <string name="keys_photo_zoom">Zomi foton en, el aŭ tutan</string>
     <string name="keys_photo_move">Moviĝi en zomita foto</string>
     <string name="keys_quit">Ĉesigi XTA</string>

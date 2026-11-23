@@ -21,6 +21,8 @@
     <string name="keys_full_screen">全屏</string>
     <string name="keys_video">全屏视频：播放或暂停，跳过 10 秒</string>
     <string name="keys_video_more">全屏视频：静音、从头播放、退出全屏</string>
+    <string name="keys_video_speed">全屏视频：减速或加速</string>
+    <string name="keys_video_jump">全屏视频：跳到百分之 0 至 90 处，或跳到结尾</string>
     <string name="keys_photo_zoom">放大、缩小或完整显示照片</string>
     <string name="keys_photo_move">在放大的照片中移动</string>
     <string name="keys_quit">退出 XTA</string>

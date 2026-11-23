@@ -21,6 +21,8 @@
     <string name="keys_full_screen">Pantalla completa</string>
     <string name="keys_video">Vídeo a pantalla completa: reprodueix o posa en pausa, salta 10 segons</string>
     <string name="keys_video_more">Vídeo a pantalla completa: silencia, torna a començar, surt</string>
+    <string name="keys_video_speed">Vídeo a pantalla completa: més lent o més ràpid</string>
+    <string name="keys_video_jump">Vídeo a pantalla completa: salta del 0 al 90 per cent, o al final</string>
     <string name="keys_photo_zoom">Amplia, redueix o mostra sencera una foto</string>
     <string name="keys_photo_move">Desplaça’t per una foto ampliada</string>
     <string name="keys_quit">Surt de l’XTA</string>

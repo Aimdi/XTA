@@ -21,6 +21,8 @@
     <string name="keys_full_screen">Poŭnaekranny režym</string>
     <string name="keys_video">Videa na ŭvieś ekran: prajhrać abo prypynić, pieramiascicca na 10 siekund</string>
     <string name="keys_video_more">Videa na ŭvieś ekran: adkliučyć huk, pačać spačatku, vyjsci</string>
+    <string name="keys_video_speed">Videa na ŭvieś ekran: pavolniej abo chutčej</string>
+    <string name="keys_video_jump">Videa na ŭvieś ekran: pierajsci na 0–90 pracentaŭ abo ŭ kaniec</string>
     <string name="keys_photo_zoom">Pavialičyć, pamienšyć abo pakazać fota całkam</string>
     <string name="keys_photo_move">Pieramiaščacca pa pavialičanym fota</string>
     <string name="keys_quit">Vyjsci z XTA</string>

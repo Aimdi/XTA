@@ -21,6 +21,8 @@
     <string name="keys_full_screen">Pantaila osoa</string>
     <string name="keys_video">Pantaila osoko bideoa: erreproduzitu edo pausatu, jauzi 10 segundo</string>
     <string name="keys_video_more">Pantaila osoko bideoa: isilarazi, hasi berriro, irten</string>
+    <string name="keys_video_speed">Pantaila osoko bideoa: motelago edo azkarrago</string>
+    <string name="keys_video_jump">Pantaila osoko bideoa: joan ehuneko 0tik 90era, edo amaierara</string>
     <string name="keys_photo_zoom">Handitu, txikitu edo osorik erakutsi argazkia</string>
     <string name="keys_photo_move">Mugitu handitutako argazkian</string>
     <string name="keys_quit">Irten XTAtik</string>

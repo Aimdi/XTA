@@ -21,6 +21,8 @@
     <string name="keys_full_screen">Tela cheia</string>
     <string name="keys_video">Vídeo em tela cheia: reproduzir ou pausar, pular 10 segundos</string>
     <string name="keys_video_more">Vídeo em tela cheia: silenciar, recomeçar, sair</string>
+    <string name="keys_video_speed">Vídeo em tela cheia: mais lento ou mais rápido</string>
+    <string name="keys_video_jump">Vídeo em tela cheia: pular para 0 a 90 por cento, ou para o fim</string>
     <string name="keys_photo_zoom">Ampliar, reduzir ou mostrar a foto inteira</string>
     <string name="keys_photo_move">Mover-se em uma foto ampliada</string>
     <string name="keys_quit">Sair do XTA</string>

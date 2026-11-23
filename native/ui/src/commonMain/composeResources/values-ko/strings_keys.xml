@@ -21,6 +21,8 @@
     <string name="keys_full_screen">전체 화면</string>
     <string name="keys_video">전체 화면 동영상: 재생 또는 일시정지, 10초 건너뛰기</string>
     <string name="keys_video_more">전체 화면 동영상: 음소거, 처음부터, 전체 화면 종료</string>
+    <string name="keys_video_speed">전체 화면 동영상: 느리게 또는 빠르게</string>
+    <string name="keys_video_jump">전체 화면 동영상: 0~90퍼센트 위치나 끝으로 이동</string>
     <string name="keys_photo_zoom">사진 확대, 축소 또는 전체 보기</string>
     <string name="keys_photo_move">확대한 사진 안에서 이동</string>
     <string name="keys_quit">XTA 종료</string>

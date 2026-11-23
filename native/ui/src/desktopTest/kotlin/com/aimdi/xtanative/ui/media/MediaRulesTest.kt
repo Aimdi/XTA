@@ -258,4 +258,40 @@ class MediaRulesTest {
         assertEquals(VideoKey.NONE, VideoKeys.onViewerPage(space = false, letter = 'm', modified = true))
         assertEquals(VideoKey.NONE, VideoKeys.onViewerPage(space = false, letter = null, modified = false))
     }
+
+    @Test
+    fun lessAndMoreThanChangeTheSpeedAndDigitsJump() {
+        fun typed(c: Char, modified: Boolean = false) =
+            VideoKeys.of(escape = false, space = false, left = false, right = false, modified = modified, typed = c)
+        assertEquals(VideoKey.SLOWER, typed('<'))
+        assertEquals(VideoKey.FASTER, typed('>'))
+        assertEquals(VideoKey.JUMP_0, typed('0'))
+        assertEquals(5, typed('5').tenths)
+        assertEquals(VideoKey.JUMP_9, typed('9'))
+        assertEquals(VideoKey.END, VideoKeys.of(escape = false, space = false, left = false, right = false, modified = false, end = true))
+        // With Ctrl or Alt they are the window's (Ctrl+1 picks a tab).
+        assertEquals(VideoKey.NONE, typed('1', modified = true))
+        assertEquals(VideoKey.NONE, typed('>', modified = true))
+        assertEquals(VideoKey.NONE, typed('x'))
+        assertEquals(-1, VideoKey.NONE.tenths)
+        // On the viewer's page too; End stays the viewer's (its last page).
+        assertEquals(VideoKey.FASTER, VideoKeys.onViewerPage(space = false, letter = null, modified = false, typed = '>'))
+        assertEquals(VideoKey.JUMP_3, VideoKeys.onViewerPage(space = false, letter = null, modified = false, typed = '3'))
+        assertEquals(VideoKey.NONE, VideoKeys.onViewerPage(space = false, letter = null, modified = true, typed = '3'))
+    }
+
+    @Test
+    fun speedsStepThroughTheSheetsListAndStopAtItsEnds() {
+        assertEquals(1.25, VideoRules.faster(1.0))
+        assertEquals(0.75, VideoRules.slower(1.0))
+        assertEquals(2.0, VideoRules.faster(2.0))
+        assertEquals(0.25, VideoRules.slower(0.25))
+        // A speed between the steps goes to the next one either way.
+        assertEquals(1.5, VideoRules.faster(1.3))
+        assertEquals(1.25, VideoRules.slower(1.3))
+        assertEquals(0L, VideoRules.jumpTarget(0, 60_000))
+        assertEquals(30_000L, VideoRules.jumpTarget(5, 60_000))
+        assertEquals(54_000L, VideoRules.jumpTarget(9, 60_000))
+        assertEquals(0L, VideoRules.jumpTarget(5, 0))
+    }
 }

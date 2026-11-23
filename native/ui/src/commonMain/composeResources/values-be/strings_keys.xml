@@ -21,6 +21,8 @@
     <string name="keys_full_screen">Поўнаэкранны рэжым</string>
     <string name="keys_video">Відэа на ўвесь экран: прайграць або прыпыніць, перамясціцца на 10 секунд</string>
     <string name="keys_video_more">Відэа на ўвесь экран: адключыць гук, пачаць спачатку, выйсці</string>
+    <string name="keys_video_speed">Відэа на ўвесь экран: павольней або хутчэй</string>
+    <string name="keys_video_jump">Відэа на ўвесь экран: перайсці на 0–90 працэнтаў або ў канец</string>
     <string name="keys_photo_zoom">Павялічыць, паменшыць або паказаць фота цалкам</string>
     <string name="keys_photo_move">Перамяшчацца па павялічаным фота</string>
     <string name="keys_quit">Выйсці з XTA</string>

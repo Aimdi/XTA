@@ -10,8 +10,15 @@ import java.util.Locale
 /** One MP4 a video can play at, as the quality sheet lists it: `720p`. */
 data class VideoQuality(val url: String, val label: String)
 
-/** What a key does to a video full screen on the desktop ([VideoKeys]). */
-enum class VideoKey { LEAVE, PLAY_PAUSE, BACK, FORWARD, MUTE, RESTART, FULLSCREEN, NONE }
+/**
+ * What a key does to a video full screen on the desktop ([VideoKeys]). The
+ * JUMP keys go to [tenths] tenths of the way through it (0 to 9).
+ */
+enum class VideoKey(val tenths: Int = -1) {
+    LEAVE, PLAY_PAUSE, BACK, FORWARD, MUTE, RESTART, FULLSCREEN, SLOWER, FASTER, END,
+    JUMP_0(0), JUMP_1(1), JUMP_2(2), JUMP_3(3), JUMP_4(4), JUMP_5(5), JUMP_6(6), JUMP_7(7), JUMP_8(8), JUMP_9(9),
+    NONE,
+}
 
 /**
  * A video full screen's keys, as a desktop's players have them: Esc
@@ -19,7 +26,10 @@ enum class VideoKey { LEAVE, PLAY_PAUSE, BACK, FORWARD, MUTE, RESTART, FULLSCREE
  * [VideoRules.SEEK_SECONDS], as a double tap on either half does. The
  * letters of the web's video players do the same ([letter]): k plays or
  * pauses, j and l skip, m mutes or unmutes, f leaves full screen; Home
- * starts it over. With Ctrl or Alt held they are the window's, not the video's.
+ * starts it over and End goes to its end. The characters typed ([typed], so
+ * on any layout): < and > play it slower or faster, a step of
+ * [VideoRules.SPEEDS] at a time, and 0 to 9 jump to 0 % to 90 % of it. With
+ * Ctrl or Alt held they are the window's, not the video's.
  */
 object VideoKeys {
     /** [back] is going back the desktop's way, Alt+← or the Back key, which leaves the video as Esc does. */
@@ -32,6 +42,8 @@ object VideoKeys {
         back: Boolean = false,
         letter: Char? = null,
         home: Boolean = false,
+        end: Boolean = false,
+        typed: Char? = null,
     ): VideoKey = when {
         escape || back -> VideoKey.LEAVE
         modified -> VideoKey.NONE
@@ -41,19 +53,24 @@ object VideoKeys {
         right || letter == 'l' -> VideoKey.FORWARD
         letter == 'm' -> VideoKey.MUTE
         home -> VideoKey.RESTART
+        end -> VideoKey.END
+        typed == '<' -> VideoKey.SLOWER
+        typed == '>' -> VideoKey.FASTER
+        typed != null && typed in '0'..'9' -> VideoKey.entries.first { it.tenths == typed - '0' }
         else -> VideoKey.NONE
     }
 
     /**
-     * A video's keys on the media viewer's page, where ← → and Home are the
-     * viewer's (its pages): Space and k play or pause, j and l skip, m mutes,
-     * and f goes full screen ([VideoKey.FULLSCREEN]); with Ctrl or Alt held
-     * none is the video's.
+     * A video's keys on the media viewer's page, where ← → and Home and End
+     * are the viewer's (its pages): Space and k play or pause, j and l skip,
+     * m mutes, f goes full screen ([VideoKey.FULLSCREEN]), < and > change
+     * the speed and 0 to 9 jump ([typed]); with Ctrl or Alt held none is the
+     * video's.
      */
-    fun onViewerPage(space: Boolean, letter: Char?, modified: Boolean): VideoKey = when {
+    fun onViewerPage(space: Boolean, letter: Char?, modified: Boolean, typed: Char? = null): VideoKey = when {
         modified -> VideoKey.NONE
         letter == 'f' -> VideoKey.FULLSCREEN
-        else -> of(escape = false, space = space, left = false, right = false, modified = false, letter = letter)
+        else -> of(escape = false, space = space, left = false, right = false, modified = false, letter = letter, typed = typed)
     }
 }
 
@@ -117,6 +134,15 @@ object VideoRules {
 
     /** The playback speeds offered, slowest first; the sheet lists them fastest first. */
     val SPEEDS = listOf(0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0)
+
+    /** The speed a step slower than [speed] among [SPEEDS] (< on the desktop); the slowest stays. */
+    fun slower(speed: Double): Double = SPEEDS.lastOrNull { it < speed - 0.01 } ?: SPEEDS.first()
+
+    /** The speed a step faster than [speed] among [SPEEDS] (> on the desktop); the fastest stays. */
+    fun faster(speed: Double): Double = SPEEDS.firstOrNull { it > speed + 0.01 } ?: SPEEDS.last()
+
+    /** The place [tenths] tenths of the way through a video of [durationMs] (0 to 9 on the desktop). */
+    fun jumpTarget(tenths: Int, durationMs: Long): Long = durationMs.coerceAtLeast(0) * tenths.coerceIn(0, 10) / 10
 
     /** How long the controls stay after the last touch. */
     const val CONTROLS_SHOWN_MS = 3_000L

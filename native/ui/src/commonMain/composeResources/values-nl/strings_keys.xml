@@ -21,6 +21,8 @@
     <string name="keys_full_screen">Volledig scherm</string>
     <string name="keys_video">Video op volledig scherm: afspelen of pauzeren, 10 seconden verspringen</string>
     <string name="keys_video_more">Video op volledig scherm: dempen, opnieuw beginnen, verlaten</string>
+    <string name="keys_video_speed">Video op volledig scherm: langzamer of sneller</string>
+    <string name="keys_video_jump">Video op volledig scherm: naar 0 tot 90 procent springen, of naar het einde</string>
     <string name="keys_photo_zoom">Foto in- of uitzoomen of helemaal tonen</string>
     <string name="keys_photo_move">Door een ingezoomde foto bewegen</string>
     <string name="keys_quit">XTA afsluiten</string>

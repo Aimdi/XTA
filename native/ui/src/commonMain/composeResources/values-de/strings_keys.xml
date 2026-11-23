@@ -21,6 +21,8 @@
     <string name="keys_full_screen">Vollbild</string>
     <string name="keys_video">Video im Vollbild: abspielen oder pausieren, 10 Sekunden springen</string>
     <string name="keys_video_more">Video im Vollbild: stummschalten, von vorn, Vollbild verlassen</string>
+    <string name="keys_video_speed">Video im Vollbild: langsamer oder schneller</string>
+    <string name="keys_video_jump">Video im Vollbild: zu 0 bis 90 Prozent springen, oder ans Ende</string>
     <string name="keys_photo_zoom">Foto vergrößern, verkleinern oder ganz zeigen</string>
     <string name="keys_photo_move">In einem vergrößerten Foto bewegen</string>
     <string name="keys_quit">XTA beenden</string>

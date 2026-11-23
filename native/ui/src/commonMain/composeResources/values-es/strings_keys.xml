@@ -21,6 +21,8 @@
     <string name="keys_full_screen">Pantalla completa</string>
     <string name="keys_video">Vídeo a pantalla completa: reproducir o pausar, saltar 10 segundos</string>
     <string name="keys_video_more">Vídeo a pantalla completa: silenciar, empezar de nuevo, salir</string>
+    <string name="keys_video_speed">Vídeo a pantalla completa: más lento o más rápido</string>
+    <string name="keys_video_jump">Vídeo a pantalla completa: saltar del 0 al 90 por ciento, o al final</string>
     <string name="keys_photo_zoom">Ampliar, reducir o ver entera una foto</string>
     <string name="keys_photo_move">Moverse por una foto ampliada</string>
     <string name="keys_quit">Salir de XTA</string>

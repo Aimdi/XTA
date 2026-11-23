@@ -191,7 +191,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     // The zoom and pan keys, for the photo shown, and which pages' photos are zoomed in.
     val zoomKeys = remember { MutableSharedFlow<ViewerKey>(extraBufferCapacity = 8) }
     val zoomedPages = remember { mutableStateMapOf<Int, Boolean>() }
-    // A video page's keys: Space, k, j, l, m and f, for the page shown.
+    // A video page's keys: Space, k, j, l, m, f, < > and 0 to 9, for the page shown.
     val videoKeys = remember { MutableSharedFlow<VideoKey>(extraBufferCapacity = 8) }
     Box(
         Modifier
@@ -199,9 +199,16 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
             .background(Color.Black.copy(alpha = backdrop))
             // Before the focus target: key events reach the nodes above the focused one.
             .onKeyEvent { event ->
-                if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
                 val shownKind = items.getOrNull(pager.currentPage)?.kind
-                if (shownKind == XMedia.Kind.VIDEO || shownKind == XMedia.Kind.GIF) {
+                val onVideo = shownKind == XMedia.Kind.VIDEO || shownKind == XMedia.Kind.GIF
+                // < > and the digits as typed, on any layout: the video's speed and its tenths.
+                val typed = typedChar(event)
+                if (typed != null) {
+                    val videoKey = if (onVideo) VideoKeys.onViewerPage(space = false, letter = null, modified = event.isCtrlPressed || event.isAltPressed, typed = typed) else VideoKey.NONE
+                    return@onKeyEvent (videoKey != VideoKey.NONE).also { if (it) videoKeys.tryEmit(videoKey) }
+                }
+                if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
+                if (onVideo) {
                     val videoKey = VideoKeys.onViewerPage(event.key == Key.Spacebar, PLAYER_LETTERS[event.key], event.isCtrlPressed || event.isAltPressed)
                     if (videoKey != VideoKey.NONE) return@onKeyEvent true.also { videoKeys.tryEmit(videoKey) }
                 }
