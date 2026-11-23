@@ -120,7 +120,7 @@ import com.aimdi.xtanative.ui.trends.TrendsActions
 import com.aimdi.xtanative.ui.trends.TrendsScreen
 import java.net.URLEncoder
 
-private object Routes {
+internal object Routes {
     const val ROOT = "root"
     const val IMPORT = "import"
     const val SIGN_IN = SettingsRoutes.SIGN_IN

@@ -38,12 +38,14 @@ import com.aimdi.xtanative.ui.chrome.WindowFullscreen
 import com.aimdi.xtanative.ui.chrome.tray.TrayAction
 import com.aimdi.xtanative.ui.chrome.tray.TrayService
 import com.aimdi.xtanative.ui.chrome.tray.trayWords
+import com.aimdi.xtanative.ui.home.DesktopWindowTitle
+import com.aimdi.xtanative.ui.home.WindowTitles
 import com.aimdi.xtanative.ui.links.DesktopIncomingLinks
+import com.aimdi.xtanative.ui.media.VideoCheck
 import com.aimdi.xtanative.ui.media.mpris.MprisSessions
 import com.aimdi.xtanative.ui.saved.DesktopNotices
 import com.aimdi.xtanative.ui.saved.DesktopNotifications
 import com.aimdi.xtanative.ui.theme.DesktopColorScheme
-import com.aimdi.xtanative.ui.media.VideoCheck
 import java.awt.Dimension
 import java.awt.GraphicsEnvironment
 import java.io.File
@@ -150,6 +152,7 @@ fun main(args: Array<String>) {
         }
         // A tray that goes away while the window is hidden in it gives the window back.
         LaunchedEffect(inTray, deciding) { if (!inTray && !visible && !deciding) visible = true }
+        val titlePart by DesktopWindowTitle.part.collectAsState()
         val state = rememberWindowState(
             placement = if (saved.maximized) WindowPlacement.Maximized else WindowPlacement.Floating,
             size = DpSize(saved.width.dp, saved.height.dp),
@@ -158,7 +161,8 @@ fun main(args: Array<String>) {
             // Closed to the tray only while a tray shows the icon, so the window is never lost; a quit asked (Ctrl+Q) quits.
             onCloseRequest = { if (!AppQuit.taken() && toTray && tray.shown.value) visible = false else quit() },
             visible = visible,
-            title = name,
+            // Names the screen shown, as a desktop app's title does ("flutter – Search – XTA Native").
+            title = WindowTitles.title(titlePart, name),
             icon = appIcon(),
             state = state,
             // F11 fills the screen and gives it back, over every screen and viewer.
