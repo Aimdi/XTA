@@ -68,6 +68,8 @@ import com.aimdi.xtanative.ui.plugins.PluginSurface
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.search.RecentSearchesBar
+import com.aimdi.xtanative.ui.search.pickedFromRecent
+import com.aimdi.xtanative.ui.search.rememberRecentPick
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -208,10 +210,14 @@ fun PluginSearchScreen(id: String, initial: String?, onBack: () -> Unit) {
         if (initial.isNullOrBlank()) runCatching { focus.requestFocus() } else if (!told) recents.sent(sent)
         told = true
     }
+    // The recent searches under the field, which the desktop's ↓ and ↑ highlight from it.
+    val recent = recents.queries()
+    val shownRecent = if (search != null && sent.isEmpty()) recent else emptyList()
+    val pick = rememberRecentPick()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        topBar = { SearchBar(text, search, { text = it }, { send(text) }, focus, onBack) },
+        topBar = { SearchBar(text, search, { text = it }, { send(text) }, focus, onBack, Modifier.pickedFromRecent(pick, shownRecent, text, send)) },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             val frame = PluginFrame(PaddingValues(bottom = padding.calculateBottomPadding()))
@@ -219,7 +225,7 @@ fun PluginSearchScreen(id: String, initial: String?, onBack: () -> Unit) {
                 search == null -> NotRunning()
                 sent.isNotEmpty() -> SavesMediaOf(id) { search.Results(sent, frame) }
                 else -> Column(Modifier.fillMaxSize()) {
-                    recents.Bar(send)
+                    recents.Bar(recent, send, highlighted = pick.of(recent))
                     Box(Modifier.weight(1f).fillMaxWidth()) { SavesMediaOf(id) { search.Landing(frame, send) } }
                 }
             }
@@ -231,10 +237,22 @@ fun PluginSearchScreen(id: String, initial: String?, onBack: () -> Unit) {
 internal fun ownSearchScreen(search: PluginSearch, initial: String?): String? =
     runCatching { search.ownScreen(initial?.trim()?.ifEmpty { null }) }.getOrNull()?.ifBlank { null }
 
-/** The search screen's bar: back, and the field with the plugin's placeholder, sending [onSend] from the keyboard. */
+/**
+ * The search screen's bar: back, and the field with the plugin's placeholder,
+ * sending [onSend] from the keyboard; [field] adds to the field (the
+ * desktop's keys through the recent searches).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchBar(text: String, search: PluginSearch?, onText: (String) -> Unit, onSend: () -> Unit, focus: FocusRequester, onBack: () -> Unit) {
+private fun SearchBar(
+    text: String,
+    search: PluginSearch?,
+    onText: (String) -> Unit,
+    onSend: () -> Unit,
+    focus: FocusRequester,
+    onBack: () -> Unit,
+    field: Modifier = Modifier,
+) {
     val language = currentLanguage()
     TopAppBar(
         navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
@@ -249,7 +267,7 @@ private fun SearchBar(text: String, search: PluginSearch?, onText: (String) -> U
                 keyboardActions = KeyboardActions(onSearch = { onSend() }),
                 shape = SearchPillShape,
                 colors = searchPillColors(),
-                modifier = Modifier.fillMaxWidth().padding(end = 12.dp).focusRequester(focus).foundWithKeys(),
+                modifier = Modifier.fillMaxWidth().padding(end = 12.dp).focusRequester(focus).foundWithKeys().then(field),
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -260,7 +278,7 @@ private fun SearchBar(text: String, search: PluginSearch?, onText: (String) -> U
  * Where a plugin's search screen keeps what is sent: the plugin's own
  * history ([PluginSearch.sent]), or the app's recent searches under its id
  * where they are the app's ([PluginSearch.sharesRecentSearches]), listed in
- * [Bar] while nothing is sent.
+ * [Bar] while nothing is sent ([queries]; none where they are the plugin's).
  */
 private class SearchRecents(
     private val id: String,
@@ -276,11 +294,25 @@ private class SearchRecents(
         if (shared) scope.launch { recents.remember(id, query) }
     }
 
+    /** The app's recent searches of the plugin, newest first; none where the plugin keeps its own. */
     @Composable
-    fun Bar(send: (String) -> Unit) {
-        if (!shared) return
+    fun queries(): List<String> {
+        if (!shared) return emptyList()
         val recent by remember(this) { recents.of(id) }.collectAsStateWithLifecycle(emptyList())
-        RecentSearchesBar(recent, onSelect = send, onRemove = { scope.launch { recents.remove(id, it) } }, onClear = { scope.launch { recents.clear(id) } })
+        return recent
+    }
+
+    /** [recent] ([queries]) as chips searched again with [send], the one [highlighted] from the field's keys selected. */
+    @Composable
+    fun Bar(recent: List<String>, send: (String) -> Unit, highlighted: Int?) {
+        if (!shared) return
+        RecentSearchesBar(
+            recent,
+            onSelect = send,
+            onRemove = { scope.launch { recents.remove(id, it) } },
+            onClear = { scope.launch { recents.clear(id) } },
+            highlighted = highlighted,
+        )
     }
 }
 
