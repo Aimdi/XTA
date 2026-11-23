@@ -115,6 +115,8 @@ import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_nex
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
 import com.aimdi.xtanative.ui.generated.resources.reader_link_share
 import com.aimdi.xtanative.ui.generated.resources.search
+import com.aimdi.xtanative.ui.home.DesktopKeys
+import com.aimdi.xtanative.ui.home.DesktopShortcuts
 import com.aimdi.xtanative.ui.media.MediaGridLook
 import com.aimdi.xtanative.ui.media.MediaGridRows
 import com.aimdi.xtanative.ui.media.mediaGrid
@@ -144,7 +146,9 @@ import org.jetbrains.compose.resources.stringResource
  * filter. A protected account's posts and a sensitive profile wait behind
  * their gates. Its bar's Search opens [searchPosts] on "from:@name", its
  * Share hands the profile's link on. [userId], when known, is what it is
- * read by; [openingTab] is the tab a link named.
+ * read by; [openingTab] is the tab a link named. On the desktop it answers
+ * F5 and turns its tabs with the keys unless [ownKeys] is false (shown
+ * inside a screen that keeps the keys, the Deck).
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -154,6 +158,7 @@ fun ProfileScreen(
     onBack: () -> Unit,
     userId: String? = null,
     openingTab: ProfileTab? = null,
+    ownKeys: Boolean = true,
     searchPosts: (query: String) -> Unit = actions.search,
 ) {
     val graph = LocalGraph.current
@@ -177,6 +182,14 @@ fun ProfileScreen(
     val scrolled by remember(list) { derivedStateOf { list.firstVisibleItemIndex > 3 } }
     val user = state.user
     val shownName = user?.screenName ?: screenName
+    // F5 and Ctrl+R read the profile again; ← → and Ctrl+Tab turn its tabs, as on Home; going back closes its sheet first.
+    // Not where the screen it is shown in keeps the keys ([ownKeys] false: the Deck's detail).
+    if (ownKeys) DesktopShortcuts(
+        refresh = vm::refresh,
+        turn = { by -> if (state.complete && user != null) DesktopKeys.turned(state.tab.ordinal, ProfileTab.entries.size, by)?.let { vm.select(ProfileTab.entries[it]) } },
+        isOpen = { sheet != ProfileSheet.NONE },
+        close = { sheet = ProfileSheet.NONE },
+    )
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,

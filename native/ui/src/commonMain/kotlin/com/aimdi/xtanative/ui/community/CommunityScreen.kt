@@ -70,6 +70,8 @@ import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_com
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_members
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
+import com.aimdi.xtanative.ui.home.DesktopKeys
+import com.aimdi.xtanative.ui.home.DesktopShortcuts
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.search.DiscoverIcons
@@ -94,6 +96,13 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
     val list = rememberLazyListState()
     if (state.tab == CommunityTab.TOP) LoadMoreNearEnd(list, posts, vm::morePosts)
     val layout = rememberFeedLayout(posts.items)
+    // F5 and Ctrl+R read the community (or its posts) again; ← → and Ctrl+Tab turn its tabs, as on Home.
+    DesktopShortcuts(
+        refresh = { if (state.community == null) vm.load() else vm.retryPosts() },
+        turn = { by -> if (state.community != null) DesktopKeys.turned(state.tab.ordinal, CommunityTab.entries.size, by)?.let { vm.select(CommunityTab.entries[it]) } },
+        isOpen = { false },
+        close = {},
+    )
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,

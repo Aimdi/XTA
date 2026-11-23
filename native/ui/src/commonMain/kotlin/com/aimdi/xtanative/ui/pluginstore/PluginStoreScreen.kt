@@ -65,7 +65,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
@@ -149,6 +148,7 @@ import com.aimdi.xtanative.ui.generated.resources.settings
 import com.aimdi.xtanative.ui.generated.resources.settings_show_as_tab
 import com.aimdi.xtanative.ui.home.FindsWithKeys
 import com.aimdi.xtanative.ui.home.MicroblogGroupingRow
+import com.aimdi.xtanative.ui.home.rememberLeaveField
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -319,7 +319,7 @@ private fun storeMatching(query: String, running: List<RunningPlugin>, locale: L
 /** XTA's "Search plugins": a pill above the list, filtering it as it is typed in. */
 @Composable
 private fun StoreSearchField(query: String, modifier: Modifier, onQuery: (String) -> Unit) {
-    val focus = LocalFocusManager.current
+    val leaveField = rememberLeaveField()
     TextField(
         value = query,
         onValueChange = onQuery,
@@ -327,7 +327,7 @@ private fun StoreSearchField(query: String, modifier: Modifier, onQuery: (String
         placeholder = { Text(stringResource(Res.string.plugin_store_search)) },
         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = { focus.clearFocus() }),
+        keyboardActions = KeyboardActions(onSearch = { leaveField() }),
         shape = SearchPillShape,
         colors = searchPillColors(),
         modifier = modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),

@@ -48,6 +48,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -56,7 +57,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
@@ -92,7 +92,10 @@ import com.aimdi.xtanative.ui.generated.resources.discover_search
 import com.aimdi.xtanative.ui.generated.resources.discover_search_x
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.saved_search_library
+import com.aimdi.xtanative.ui.home.DesktopKeys
+import com.aimdi.xtanative.ui.home.DesktopShortcuts
 import com.aimdi.xtanative.ui.home.foundWithKeys
+import com.aimdi.xtanative.ui.home.rememberLeaveField
 import com.aimdi.xtanative.ui.media.mediaGrid
 import com.aimdi.xtanative.ui.media.rememberMediaGridRows
 import com.aimdi.xtanative.ui.post.PostActions
@@ -123,8 +126,20 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
         if (field.text != state.text) field = TextFieldValue(state.text, TextRange(state.text.length))
     }
     val focus = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-    LaunchedEffect(Unit) { if (initial.isNullOrBlank() || focusOnOpen) focus.requestFocus() }
+    val leaveField = rememberLeaveField()
+    // The field takes the keyboard as the screen opens, not again when the reader comes back to it from a result.
+    var opened by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        if (!opened && (initial.isNullOrBlank() || focusOnOpen)) focus.requestFocus()
+        opened = true
+    }
+    // F5 and Ctrl+R read the shown tab again; ← → and Ctrl+Tab turn the tabs, as on Home.
+    DesktopShortcuts(
+        refresh = { if (state.view.hasQuery) vm.retry(state.tab) },
+        turn = { by -> DesktopKeys.turned(state.tab.ordinal, SearchTab.entries.size, by)?.let { vm.select(SearchTab.entries[it]) } },
+        isOpen = { state.editing != null },
+        close = vm::closeAdvanced,
+    )
     val searchField = @Composable { modifier: Modifier ->
         SearchField(
             value = field,
@@ -135,7 +150,7 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
             filters = state.view.advanced.activeFilters.size,
             onSearch = {
                 vm.submit()
-                focusManager.clearFocus()
+                leaveField()
             },
             onClear = {
                 vm.clear()
@@ -167,7 +182,7 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
                     recent,
                     onSelect = { query ->
                         vm.searchAgain(query)
-                        focusManager.clearFocus()
+                        leaveField()
                     },
                     onRemove = vm::removeRecent,
                     onClear = vm::clearRecent,
@@ -176,7 +191,7 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
             } else {
                 FilterStrip(SearchFilters.chips(state.view.advanced)) { filter ->
                     vm.clearFilter(filter)
-                    focusManager.clearFocus()
+                    leaveField()
                 }
                 Results(vm, state.tab, actions, searchActions, PaddingValues(bottom = padding.calculateBottomPadding()))
             }
@@ -188,7 +203,7 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
             onChange = vm::edit,
             onApply = {
                 vm.applyAdvanced()
-                focusManager.clearFocus()
+                leaveField()
             },
             onDismiss = vm::closeAdvanced,
         )

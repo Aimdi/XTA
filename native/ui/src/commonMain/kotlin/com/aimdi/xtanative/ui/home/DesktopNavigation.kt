@@ -13,6 +13,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation.NavHostController
@@ -125,6 +126,9 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
         sheets = (sheets - 1).coerceAtLeast(0)
         if (sheets == 0) refocus(holders.lastOrNull())
     }
+
+    /** The keys back to the window's frame (or the overlay holding them), once a field has let go of them ([rememberLeaveField]). */
+    internal fun keysToFrame() = refocus(holders.lastOrNull())
 
     /** The list the keys move: the one the pointer was last over, else the first on screen (the page's own, before any column beside it). */
     internal fun readList(): LazyListState? = pointed ?: lists.firstOrNull()
@@ -248,5 +252,22 @@ fun HoldsKeys(focus: FocusRequester) {
     DisposableEffect(actions, focus) {
         actions.holdKeys(focus)
         onDispose { actions.releaseKeys(focus) }
+    }
+}
+
+/**
+ * Out of the field being typed in, as a search sent leaves it: the keyboard
+ * hides, and on the desktop the window's frame takes the keys back, so ←, →
+ * and the reading keys work at once rather than after a click.
+ */
+@Composable
+fun rememberLeaveField(): () -> Unit {
+    val focusManager = LocalFocusManager.current
+    val actions = LocalDesktopActions.current
+    return remember(focusManager, actions) {
+        {
+            focusManager.clearFocus()
+            actions?.keysToFrame()
+        }
     }
 }

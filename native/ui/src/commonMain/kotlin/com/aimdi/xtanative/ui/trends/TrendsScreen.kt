@@ -62,7 +62,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -103,6 +102,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_source_x
 import com.aimdi.xtanative.ui.home.HomeRequests
 import com.aimdi.xtanative.ui.home.RetapsToTop
 import com.aimdi.xtanative.ui.home.foundWithKeys
+import com.aimdi.xtanative.ui.home.rememberLeaveField
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.pluginstore.SavesMediaOf
@@ -150,7 +150,7 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
     LaunchedEffect(scope) { if (scope != state.scope) vm.select(scope) }
     val plugin = plugins.firstOrNull { it.id == scope }
     val focus = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
+    val leaveField = rememberLeaveField()
     val list = rememberLazyListState()
     // Home's bar tapped again here: the trends to the top, and from there the cursor into the search.
     RetapsToTop(list) { focus.requestFocus() }
@@ -167,7 +167,7 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
         if (query == null) {
             focus.requestFocus()
         } else {
-            focusManager.clearFocus()
+            leaveField()
             if (DiscoverScopes.opensXSearch(scope)) actions.openSearch(query)
         }
     }

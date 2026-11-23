@@ -443,7 +443,7 @@ private fun DetailView(detail: DeckDetail, actions: PostActions) {
     holder.SaveableStateProvider("${detail.pages.size}:$page") {
         when (page) {
             is DeckPage.Post -> PostScreen(page.id, actions, onBack = detail::back)
-            is DeckPage.Profile -> ProfileScreen(page.screenName, actions, onBack = detail::back, userId = page.userId)
+            is DeckPage.Profile -> ProfileScreen(page.screenName, actions, onBack = detail::back, userId = page.userId, ownKeys = false)
         }
     }
 }
