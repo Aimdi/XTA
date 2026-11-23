@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -32,6 +33,7 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isBackPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -48,6 +50,7 @@ import kotlinx.coroutines.launch
 @Composable
 actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> Unit) {
     val focus = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
     // A frame later: what gives the keys back is still leaving when it asks.
     val actions = remember {
@@ -82,6 +85,8 @@ actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> 
         DeskAction.REFRESH -> actions.refresh()
         DeskAction.PREVIOUS_PAGE -> actions.turn(-1)
         DeskAction.NEXT_PAGE -> actions.turn(1)
+        // The frame holds the focus as a whole; Tab's own traversal does not go into it.
+        DeskAction.ENTER_PAGE -> focusManager.moveFocus(FocusDirection.Enter)
         DeskAction.LEAVE_APP -> {
             AppClosing.ask()
             true

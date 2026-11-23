@@ -95,8 +95,16 @@ class DesktopKeysTest {
         assertEquals(DeskAction.NEXT_PAGE, action(DeskKey.TAB, ctrl = true, focusInside = true), "from a field too")
         assertEquals(DeskAction.NEXT_PAGE, action(DeskKey.TAB, ctrl = true, rtl = true), "tabs keep their order whichever way text reads")
         assertEquals(DeskAction.NONE, action(DeskKey.TAB, ctrl = true, open = true), "not under a sheet")
-        assertEquals(DeskAction.NONE, action(DeskKey.TAB), "plain Tab moves the focus")
+        assertEquals(DeskAction.NONE, action(DeskKey.TAB, focusInside = true), "plain Tab inside the page moves the focus on")
         assertEquals(DeskAction.NONE, action(DeskKey.TAB, ctrl = true, alt = true))
+    }
+
+    @Test
+    fun tabFromTheWindowsFrameGoesIntoThePage() {
+        assertEquals(DeskAction.ENTER_PAGE, action(DeskKey.TAB))
+        assertEquals(DeskAction.ENTER_PAGE, action(DeskKey.TAB, shift = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.TAB, focusInside = true), "inside, Tab is the focus system's")
+        assertEquals(DeskAction.NONE, action(DeskKey.TAB, alt = true))
     }
 
     @Test

@@ -17,6 +17,9 @@ enum class DeskAction {
     /** The app closes, asking first as XTA's back from Home does. */
     LEAVE_APP,
 
+    /** The focus goes into the page, to its first control: Tab while the window's frame holds it. */
+    ENTER_PAGE,
+
     /** The list read moves a line, a screen, or to its top or end ([DesktopActions.scroll]). */
     LINE_UP,
     LINE_DOWN,
@@ -43,7 +46,9 @@ object DesktopKeys {
      * the next page, Ctrl+Shift+Tab and Ctrl+Page Up to the one before, as a
      * browser turns its tabs, even from a field. Ctrl+Q closes the app, as
      * Linux apps quit, asking first as the mouse's back button on the first
-     * screen does.
+     * screen does. Tab while the window's frame holds the focus (at launch,
+     * after a screen changes) moves it into the page, to its first control,
+     * where Tab and Shift+Tab then go on from one to the next.
      */
     fun action(
         key: DeskKey,
@@ -60,6 +65,7 @@ object DesktopKeys {
         key == DeskKey.F5 || (key == DeskKey.R && ctrl) -> DeskAction.REFRESH
         key == DeskKey.Q && ctrl && !alt -> DeskAction.LEAVE_APP
         ctrl && !alt && key in TAB_KEYS -> if (somethingOpen) DeskAction.NONE else tabTurn(key, shift)
+        key == DeskKey.TAB && !focusInside && !alt && !ctrl -> DeskAction.ENTER_PAGE
         focusInside || alt || ctrl -> DeskAction.NONE
         key in SCROLL_KEYS -> if (somethingOpen) DeskAction.NONE else scroll(key, shift)
         key == DeskKey.LEFT -> if (rtl) DeskAction.NEXT_PAGE else DeskAction.PREVIOUS_PAGE
