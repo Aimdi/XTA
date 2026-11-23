@@ -120,6 +120,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_tab_unfiled
 import com.aimdi.xtanative.ui.generated.resources.saved_title
 import com.aimdi.xtanative.ui.generated.resources.saved_write_note
 import com.aimdi.xtanative.ui.generated.resources.settings
+import com.aimdi.xtanative.ui.home.FindsWithKeys
 import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.post.PostActions
 import org.jetbrains.compose.resources.pluralStringResource
@@ -173,6 +174,8 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
     var dialog by remember { mutableStateOf<SavedDialog?>(null) }
     var query by rememberSaveable { mutableStateOf("") }
     val view = state.view
+    // While selecting, the search is put away with the rest of the bar: Ctrl+F and / leave the selection be, rather than leave Saved.
+    if (view.selecting) FindsWithKeys {}
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
