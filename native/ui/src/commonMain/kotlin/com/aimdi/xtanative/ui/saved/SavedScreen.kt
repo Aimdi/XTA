@@ -80,6 +80,7 @@ import com.aimdi.xtanative.store.saved.SavedSort
 import com.aimdi.xtanative.store.saved.SavedSource
 import com.aimdi.xtanative.store.saved.SavedTabs
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -206,8 +207,9 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
             }
         },
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            if (!view.selecting) {
+        Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()), horizontalAlignment = Alignment.CenterHorizontally) {
+            // The search and the chips over the reading column the posts below keep to, in a wide window.
+            if (!view.selecting) Column(Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp).fillMaxWidth()) {
                 SearchRow(
                     query = query,
                     onQuery = { query = it; vm.search(it) },

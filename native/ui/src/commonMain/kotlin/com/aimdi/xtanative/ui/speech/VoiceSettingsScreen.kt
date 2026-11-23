@@ -55,6 +55,7 @@ import com.aimdi.xtanative.services.speech.VoiceEngines
 import com.aimdi.xtanative.services.speech.VoiceFailure
 import com.aimdi.xtanative.services.speech.VoiceInstall
 import com.aimdi.xtanative.services.util.formatByteSize
+import com.aimdi.xtanative.ui.common.CenteredPage
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -114,9 +115,15 @@ fun VoiceSettingsScreen(onBack: () -> Unit) {
             )
         },
     ) { padding ->
-        VoiceSettingsList(vm, PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 24.dp), Modifier.fillMaxSize())
+        // As the other settings pages: a readable column, centred in a wide window.
+        CenteredPage(extra = SETTINGS_EXTRA) {
+            VoiceSettingsList(vm, PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 24.dp), Modifier.fillMaxSize())
+        }
     }
 }
+
+/** What a settings page is wider than the reading column (SettingsPage's 840 dp). */
+private val SETTINGS_EXTRA = 120.dp
 
 /**
  * The same settings as a sheet over a reader ("Voice settings" in its menu,
