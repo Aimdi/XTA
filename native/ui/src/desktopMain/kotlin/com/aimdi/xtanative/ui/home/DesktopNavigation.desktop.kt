@@ -179,5 +179,6 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.MoveHome -> DeskKey.HOME
     Key.MoveEnd -> DeskKey.END
     Key.Tab -> DeskKey.TAB
+    Key.Q -> DeskKey.Q
     else -> DeskKey.OTHER
 }

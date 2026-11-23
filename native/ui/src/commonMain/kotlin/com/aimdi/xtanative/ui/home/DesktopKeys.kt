@@ -1,7 +1,7 @@
 package com.aimdi.xtanative.ui.home
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, OTHER }
 
 enum class DeskAction {
     /** Out of the text field being typed in, as XTA's first Esc does. */
@@ -41,7 +41,9 @@ object DesktopKeys {
      * list being read, as in a browser, unless a field is being typed in or
      * something is open over the page. Ctrl+Tab and Ctrl+Page Down turn to
      * the next page, Ctrl+Shift+Tab and Ctrl+Page Up to the one before, as a
-     * browser turns its tabs, even from a field.
+     * browser turns its tabs, even from a field. Ctrl+Q closes the app, as
+     * Linux apps quit, asking first as the mouse's back button on the first
+     * screen does.
      */
     fun action(
         key: DeskKey,
@@ -56,6 +58,7 @@ object DesktopKeys {
         key == DeskKey.ESCAPE && focusInside -> DeskAction.LEAVE_FIELD
         key == DeskKey.ESCAPE || key == DeskKey.BACK || (key == DeskKey.LEFT && alt) -> back(canGoBack, somethingOpen)
         key == DeskKey.F5 || (key == DeskKey.R && ctrl) -> DeskAction.REFRESH
+        key == DeskKey.Q && ctrl && !alt -> DeskAction.LEAVE_APP
         ctrl && !alt && key in TAB_KEYS -> if (somethingOpen) DeskAction.NONE else tabTurn(key, shift)
         focusInside || alt || ctrl -> DeskAction.NONE
         key in SCROLL_KEYS -> if (somethingOpen) DeskAction.NONE else scroll(key, shift)

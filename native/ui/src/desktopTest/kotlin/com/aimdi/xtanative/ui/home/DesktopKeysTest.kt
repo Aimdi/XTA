@@ -100,6 +100,14 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun ctrlQClosesTheAppFromAnywhere() {
+        assertEquals(DeskAction.LEAVE_APP, action(DeskKey.Q, ctrl = true))
+        assertEquals(DeskAction.LEAVE_APP, action(DeskKey.Q, ctrl = true, focusInside = true, open = true), "from a field or a sheet too")
+        assertEquals(DeskAction.NONE, action(DeskKey.Q), "a plain Q is typed or ignored")
+        assertEquals(DeskAction.NONE, action(DeskKey.Q, ctrl = true, alt = true))
+    }
+
+    @Test
     fun pagesDoNotWrap() {
         assertEquals(1, DesktopKeys.turned(0, 3, 1))
         assertNull(DesktopKeys.turned(0, 3, -1))
