@@ -367,4 +367,8 @@
     <string name="intro_page_of">Paĝo %1$d el %2$d</string>
     <string name="settings_desktop_notifications">Labortablaj sciigoj</string>
     <string name="settings_desktop_notifications_description">Sciigi, kiam elŝuto finiĝas dum vi estas en alia fenestro</string>
+    <string name="settings_close_to_tray">Fermi al la pleto</string>
+    <string name="settings_close_to_tray_description">Fermi la fenestron lasas la apon funkcii en la sistempleto; ĉesu ĝin per la menuo de ĝia piktogramo</string>
+    <string name="tray_show">Montri fenestron</string>
+    <string name="tray_hide">Kaŝi fenestron</string>
 </resources>

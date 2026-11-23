@@ -367,4 +367,8 @@
     <string name="intro_page_of">Page %1$d of %2$d</string>
     <string name="settings_desktop_notifications">Desktop notifications</string>
     <string name="settings_desktop_notifications_description">Say when a download finishes while you are in another window</string>
+    <string name="settings_close_to_tray">Close to tray</string>
+    <string name="settings_close_to_tray_description">Closing the window keeps the app running in the tray; quit from the tray icon’s menu</string>
+    <string name="tray_show">Show window</string>
+    <string name="tray_hide">Hide window</string>
 </resources>

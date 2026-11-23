@@ -369,4 +369,8 @@
     <string name="intro_page_of">Page %1$d sur %2$d</string>
     <string name="settings_desktop_notifications">Notifications du bureau</string>
     <string name="settings_desktop_notifications_description">Prévenir quand un téléchargement se termine pendant que vous êtes dans une autre fenêtre</string>
+    <string name="settings_close_to_tray">Fermer dans la zone de notification</string>
+    <string name="settings_close_to_tray_description">Fermer la fenêtre laisse l’app tourner dans la zone de notification ; quittez depuis le menu de son icône</string>
+    <string name="tray_show">Afficher la fenêtre</string>
+    <string name="tray_hide">Masquer la fenêtre</string>
 </resources>

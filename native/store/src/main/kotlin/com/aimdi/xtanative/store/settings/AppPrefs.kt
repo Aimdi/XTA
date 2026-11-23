@@ -246,4 +246,7 @@ object SpeechPrefs : PrefSection() {
 object DesktopPrefs : PrefSection() {
     /** The desktop's own notification tells of a finished download while another window is in use. */
     val notifications = flag("desktop.notifications", true, seeded = false)
+
+    /** Closing the window hides it to the tray's icon, while a tray shows it, instead of quitting. */
+    val closeToTray = flag("desktop.close_to_tray", false, seeded = false)
 }

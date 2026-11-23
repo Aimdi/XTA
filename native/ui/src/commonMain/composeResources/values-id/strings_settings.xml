@@ -365,4 +365,8 @@
     <string name="intro_page_of">Halaman %1$d dari %2$d</string>
     <string name="settings_desktop_notifications">Notifikasi desktop</string>
     <string name="settings_desktop_notifications_description">Beri tahu saat unduhan selesai ketika Anda berada di jendela lain</string>
+    <string name="settings_close_to_tray">Tutup ke baki sistem</string>
+    <string name="settings_close_to_tray_description">Menutup jendela membuat aplikasi tetap berjalan di baki sistem; keluar lewat menu ikonnya</string>
+    <string name="tray_show">Tampilkan jendela</string>
+    <string name="tray_hide">Sembunyikan jendela</string>
 </resources>

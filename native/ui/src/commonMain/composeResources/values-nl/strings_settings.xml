@@ -367,4 +367,8 @@
     <string name="intro_page_of">Pagina %1$d van %2$d</string>
     <string name="settings_desktop_notifications">Bureaubladmeldingen</string>
     <string name="settings_desktop_notifications_description">Melden wanneer een download klaar is terwijl je in een ander venster bent</string>
+    <string name="settings_close_to_tray">Sluiten naar systeemvak</string>
+    <string name="settings_close_to_tray_description">Bij het sluiten van het venster blijft de app in het systeemvak draaien; afsluiten via het menu van het pictogram</string>
+    <string name="tray_show">Venster tonen</string>
+    <string name="tray_hide">Venster verbergen</string>
 </resources>

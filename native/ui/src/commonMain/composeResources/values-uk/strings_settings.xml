@@ -371,4 +371,8 @@
     <string name="intro_page_of">Сторінка %1$d з %2$d</string>
     <string name="settings_desktop_notifications">Сповіщення на робочому столі</string>
     <string name="settings_desktop_notifications_description">Повідомляти про завершення завантаження, поки ви в іншому вікні</string>
+    <string name="settings_close_to_tray">Згортати в трей</string>
+    <string name="settings_close_to_tray_description">Після закриття вікна застосунок працює далі в треї; вийти можна з меню його значка</string>
+    <string name="tray_show">Показати вікно</string>
+    <string name="tray_hide">Сховати вікно</string>
 </resources>

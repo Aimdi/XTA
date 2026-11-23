@@ -365,4 +365,8 @@
     <string name="intro_page_of">第 %1$d 頁，共 %2$d 頁</string>
     <string name="settings_desktop_notifications">桌面通知</string>
     <string name="settings_desktop_notifications_description">在其他視窗中時，下載完成後發出通知</string>
+    <string name="settings_close_to_tray">關閉時縮小至系統匣</string>
+    <string name="settings_close_to_tray_description">關閉視窗後應用程式繼續在系統匣中執行；從系統匣圖示的選單結束</string>
+    <string name="tray_show">顯示視窗</string>
+    <string name="tray_hide">隱藏視窗</string>
 </resources>

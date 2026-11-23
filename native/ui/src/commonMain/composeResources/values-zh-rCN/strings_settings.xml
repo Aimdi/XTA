@@ -365,4 +365,8 @@
     <string name="intro_page_of">第 %1$d 页，共 %2$d 页</string>
     <string name="settings_desktop_notifications">桌面通知</string>
     <string name="settings_desktop_notifications_description">在其他窗口中时，下载完成后发出通知</string>
+    <string name="settings_close_to_tray">关闭时最小化到托盘</string>
+    <string name="settings_close_to_tray_description">关闭窗口后应用继续在系统托盘中运行；从托盘图标的菜单退出</string>
+    <string name="tray_show">显示窗口</string>
+    <string name="tray_hide">隐藏窗口</string>
 </resources>

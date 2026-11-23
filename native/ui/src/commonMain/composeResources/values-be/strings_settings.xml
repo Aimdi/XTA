@@ -371,4 +371,8 @@
     <string name="intro_page_of">Старонка %1$d з %2$d</string>
     <string name="settings_desktop_notifications">Апавяшчэнні на працоўным стале</string>
     <string name="settings_desktop_notifications_description">Паведамляць пра канец спампоўкі, пакуль вы ў іншым акне</string>
+    <string name="settings_close_to_tray">Згортваць у трэй</string>
+    <string name="settings_close_to_tray_description">Пасля закрыцця акна праграма працуе далей у трэі; выйсці можна з меню яе значка</string>
+    <string name="tray_show">Паказаць акно</string>
+    <string name="tray_hide">Схаваць акно</string>
 </resources>

@@ -110,6 +110,7 @@ internal fun GeneralSettings(title: String, vm: SettingsViewModel, focus: String
             PrefSwitch(settings, GeneralPrefs.confirmClose, stringResource(Res.string.settings_confirm_close), stringResource(Res.string.settings_confirm_close_description), vm, focus)
             if (isDesktop) {
                 PrefSwitch(settings, DesktopPrefs.notifications, stringResource(Res.string.settings_desktop_notifications), stringResource(Res.string.settings_desktop_notifications_description), vm, focus)
+                PrefSwitch(settings, DesktopPrefs.closeToTray, stringResource(Res.string.settings_close_to_tray), stringResource(Res.string.settings_close_to_tray_description), vm, focus)
             }
             BrowserPickerRow()
             PrefSwitch(settings, GeneralPrefs.cleanLinks, stringResource(Res.string.settings_clean_links), stringResource(Res.string.settings_clean_links_description), vm, focus)

@@ -30,7 +30,7 @@ enum class DBusType(val code: Int) {
  * One D-Bus message, as the session bus carries it: [body] holds a value
  * per complete type of [signature] (String for 's', Int for 'i' and 'u',
  * Long for 'x', Double for 'd', Boolean for 'b', List for an array or a
- * struct, Map for a dictionary, [Variant], [ObjectPath], [Signature]).
+ * struct (a ByteArray may stand for an 'ay' written), Map for a dictionary, [Variant], [ObjectPath], [Signature]).
  */
 data class DBusMessage(
     val type: DBusType,
@@ -269,6 +269,8 @@ object DBusWire {
                     write(key, k)
                     write(item, v)
                 }
+            } else if (element == "y" && value is ByteArray) {
+                out.write(value)
             } else {
                 (value as List<*>).forEach { write(element, it) }
             }

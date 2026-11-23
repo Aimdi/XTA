@@ -365,4 +365,8 @@
     <string name="intro_page_of">%2$d ページ中 %1$d ページ目</string>
     <string name="settings_desktop_notifications">デスクトップ通知</string>
     <string name="settings_desktop_notifications_description">別のウィンドウを使っている間にダウンロードが終わったら知らせる</string>
+    <string name="settings_close_to_tray">閉じるとトレイに格納</string>
+    <string name="settings_close_to_tray_description">ウィンドウを閉じてもアプリはシステムトレイで動き続けます。終了はトレイアイコンのメニューから</string>
+    <string name="tray_show">ウィンドウを表示</string>
+    <string name="tray_hide">ウィンドウを隠す</string>
 </resources>

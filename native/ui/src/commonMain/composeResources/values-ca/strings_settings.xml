@@ -369,4 +369,8 @@
     <string name="intro_page_of">Pàgina %1$d de %2$d</string>
     <string name="settings_desktop_notifications">Notificacions de l’escriptori</string>
     <string name="settings_desktop_notifications_description">Avisa quan acabi una baixada mentre ets en una altra finestra</string>
+    <string name="settings_close_to_tray">Tanca a la safata</string>
+    <string name="settings_close_to_tray_description">En tancar la finestra, l’app continua a la safata del sistema; surt des del menú de la seva icona</string>
+    <string name="tray_show">Mostra la finestra</string>
+    <string name="tray_hide">Amaga la finestra</string>
 </resources>

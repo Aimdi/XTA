@@ -367,4 +367,8 @@
     <string name="intro_page_of">Leht %1$d / %2$d</string>
     <string name="settings_desktop_notifications">Töölauateated</string>
     <string name="settings_desktop_notifications_description">Teata allalaadimise lõppemisest, kui oled teises aknas</string>
+    <string name="settings_close_to_tray">Sulge salve</string>
+    <string name="settings_close_to_tray_description">Akna sulgemisel jääb rakendus süsteemisalve tööle; välju selle ikooni menüüst</string>
+    <string name="tray_show">Näita akent</string>
+    <string name="tray_hide">Peida aken</string>
 </resources>

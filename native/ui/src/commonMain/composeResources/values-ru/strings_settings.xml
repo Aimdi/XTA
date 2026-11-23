@@ -371,4 +371,8 @@
     <string name="intro_page_of">Страница %1$d из %2$d</string>
     <string name="settings_desktop_notifications">Уведомления на рабочем столе</string>
     <string name="settings_desktop_notifications_description">Сообщать о завершении загрузки, пока вы в другом окне</string>
+    <string name="settings_close_to_tray">Сворачивать в трей</string>
+    <string name="settings_close_to_tray_description">При закрытии окна приложение продолжает работать в трее; выйти можно из меню его значка</string>
+    <string name="tray_show">Показать окно</string>
+    <string name="tray_hide">Скрыть окно</string>
 </resources>

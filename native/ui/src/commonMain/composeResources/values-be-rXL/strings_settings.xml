@@ -371,4 +371,8 @@
     <string name="intro_page_of">Staronka %1$d z %2$d</string>
     <string name="settings_desktop_notifications">Apaviaščenni na pracoŭnym stale</string>
     <string name="settings_desktop_notifications_description">Paviedamlać pra kaniec spampoŭki, pakul vy ŭ inšym aknie</string>
+    <string name="settings_close_to_tray">Zhortvać u trej</string>
+    <string name="settings_close_to_tray_description">Pasla zakryccia akna prahrama pracuje dalej u trei; vyjsci možna z mieniu jaje značka</string>
+    <string name="tray_show">Pakazać akno</string>
+    <string name="tray_hide">Schavać akno</string>
 </resources>

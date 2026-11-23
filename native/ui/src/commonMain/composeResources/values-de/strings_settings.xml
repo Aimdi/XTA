@@ -367,4 +367,8 @@
     <string name="intro_page_of">Seite %1$d von %2$d</string>
     <string name="settings_desktop_notifications">Desktop-Benachrichtigungen</string>
     <string name="settings_desktop_notifications_description">Melden, wenn ein Download fertig ist, während du in einem anderen Fenster bist</string>
+    <string name="settings_close_to_tray">In den Tray schließen</string>
+    <string name="settings_close_to_tray_description">Beim Schließen des Fensters läuft die App im Tray weiter; beenden über das Menü des Tray-Symbols</string>
+    <string name="tray_show">Fenster zeigen</string>
+    <string name="tray_hide">Fenster ausblenden</string>
 </resources>

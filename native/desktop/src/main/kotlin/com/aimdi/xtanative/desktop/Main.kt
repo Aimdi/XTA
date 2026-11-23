@@ -29,11 +29,15 @@ import com.aimdi.xtanative.store.settings.DesktopPrefs
 import com.aimdi.xtanative.ui.XtaNativeContent
 import com.aimdi.xtanative.ui.appImageLoader
 import com.aimdi.xtanative.ui.appName
+import com.aimdi.xtanative.ui.chrome.AppQuit
 import com.aimdi.xtanative.ui.chrome.InstanceMessage
 import com.aimdi.xtanative.ui.chrome.SavedWindow
 import com.aimdi.xtanative.ui.chrome.SavedWindowFile
 import com.aimdi.xtanative.ui.chrome.SingleInstance
 import com.aimdi.xtanative.ui.chrome.WindowFullscreen
+import com.aimdi.xtanative.ui.chrome.tray.TrayAction
+import com.aimdi.xtanative.ui.chrome.tray.TrayService
+import com.aimdi.xtanative.ui.chrome.tray.trayWords
 import com.aimdi.xtanative.ui.links.DesktopIncomingLinks
 import com.aimdi.xtanative.ui.media.mpris.MprisSessions
 import com.aimdi.xtanative.ui.saved.DesktopNotices
@@ -51,6 +55,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
@@ -59,7 +64,10 @@ import kotlinx.coroutines.withTimeoutOrNull
  * XTA Native on the Linux desktop: the Android app's screens in one window.
  * A second start raises the window already open and ends (SingleInstance),
  * handing it the link it was started with (`xta-native <url>`);
- * the window opens as large as it was left, as XTA's does.
+ * the window opens as large as it was left, as XTA's does. The app's icon
+ * sits in the desktop's tray (TrayService); with Settings › General › Close
+ * to tray on, closing the window hides it there, and `--minimized` starts
+ * it hidden there, while a tray shows the icon.
  */
 @OptIn(FlowPreview::class)
 fun main(args: Array<String>) {
@@ -73,6 +81,10 @@ fun main(args: Array<String>) {
     val instance = SingleInstance.claim(files, link?.let(InstanceMessage::Open) ?: InstanceMessage.Raise) ?: exitProcess(0)
     link?.let(DesktopIncomingLinks::hand)
     val raises = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val trayClicks = MutableSharedFlow<TrayAction>(extraBufferCapacity = 4)
+    val tray = TrayService.desktop
+    tray.onAction = { action -> if (action == TrayAction.SHOW) raises.tryEmit(Unit) else trayClicks.tryEmit(action) }
+    val startHidden = "--minimized" in args
     // The desktop's dark or light is asked while the window starts, so "System" opens in it.
     DesktopColorScheme.desktop.start()
     MprisSessions.service.onRaise = { raises.tryEmit(Unit) }
@@ -95,15 +107,57 @@ fun main(args: Array<String>) {
         val graph = app.graph
         val name = appName()
         LaunchedEffect(name) { MprisSessions.service.identity = name }
+        val words = trayWords(name)
+        LaunchedEffect(words) {
+            tray.words(words)
+            tray.start()
+        }
+        val toTray by remember(graph) { graph.settings.observe(DesktopPrefs.closeToTray) }.collectAsState(initial = false)
+        val inTray by tray.shown.collectAsState()
+        // `--minimized` starts hidden in the tray, once the tray shows the icon and Close to tray is on; else the window opens.
+        var visible by remember { mutableStateOf(!startHidden) }
+        var deciding by remember { mutableStateOf(startHidden) }
+        // Each raise counted, so the window comes in front once it is on screen.
+        var fronts by remember { mutableStateOf(0) }
+        val quit = {
+            windowFile.write(kept)
+            exitApplication()
+        }
+        // Here, outside the window, as a hidden window's content may not run.
+        LaunchedEffect(Unit) {
+            raises.collect {
+                visible = true
+                fronts++
+            }
+        }
+        LaunchedEffect(visible) { tray.windowShown(visible) }
+        LaunchedEffect(Unit) {
+            trayClicks.collect { action ->
+                when {
+                    action == TrayAction.QUIT -> quit()
+                    visible -> visible = false
+                    else -> raises.tryEmit(Unit)
+                }
+            }
+        }
+        if (startHidden) {
+            LaunchedEffect(Unit) {
+                val hides = withTimeoutOrNull(TRAY_WAIT_MS) { tray.shown.first { it } } == true &&
+                    graph.settings.observe(DesktopPrefs.closeToTray).first()
+                if (!hides) visible = true
+                deciding = false
+            }
+        }
+        // A tray that goes away while the window is hidden in it gives the window back.
+        LaunchedEffect(inTray, deciding) { if (!inTray && !visible && !deciding) visible = true }
         val state = rememberWindowState(
             placement = if (saved.maximized) WindowPlacement.Maximized else WindowPlacement.Floating,
             size = DpSize(saved.width.dp, saved.height.dp),
         )
         Window(
-            onCloseRequest = {
-                windowFile.write(kept)
-                exitApplication()
-            },
+            // Closed to the tray only while a tray shows the icon, so the window is never lost; a quit asked (Ctrl+Q) quits.
+            onCloseRequest = { if (!AppQuit.taken() && toTray && tray.shown.value) visible = false else quit() },
+            visible = visible,
             title = name,
             icon = appIcon(),
             state = state,
@@ -127,12 +181,11 @@ fun main(args: Array<String>) {
                     .debounce(500)
                     .collect(windowFile::write)
             }
-            LaunchedEffect(Unit) {
-                raises.collect {
-                    state.isMinimized = false
-                    window.toFront()
-                    window.requestFocus()
-                }
+            LaunchedEffect(fronts) {
+                if (fronts == 0) return@LaunchedEffect
+                state.isMinimized = false
+                window.toFront()
+                window.requestFocus()
             }
             CompositionLocalProvider(LocalUriHandler provides SystemBrowser) {
                 Box(Modifier.fillMaxSize()) {
@@ -149,6 +202,9 @@ fun main(args: Array<String>) {
     instance.close()
     exitProcess(0)
 }
+
+/** How long `--minimized` waits for a tray to show the icon before it opens the window after all. */
+private const val TRAY_WAIT_MS = 4_000L
 
 /** The app once made and started; what failed doing it fails here, as it did before it moved off this thread. */
 private fun FutureTask<DesktopApp>.started(): DesktopApp = try {

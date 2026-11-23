@@ -367,4 +367,8 @@
     <string name="intro_page_of">पृष्ठ %1$d / %2$d</string>
     <string name="settings_desktop_notifications">डेस्कटॉप सूचनाएँ</string>
     <string name="settings_desktop_notifications_description">जब आप किसी दूसरी विंडो में हों और कोई डाउनलोड पूरा हो, तो बताएँ</string>
+    <string name="settings_close_to_tray">ट्रे में बंद करें</string>
+    <string name="settings_close_to_tray_description">विंडो बंद करने पर ऐप सिस्टम ट्रे में चलता रहता है; उसके आइकन के मेनू से बाहर निकलें</string>
+    <string name="tray_show">विंडो दिखाएँ</string>
+    <string name="tray_hide">विंडो छिपाएँ</string>
 </resources>

@@ -369,4 +369,8 @@
     <string name="intro_page_of">Página %1$d de %2$d</string>
     <string name="settings_desktop_notifications">Notificações da área de trabalho</string>
     <string name="settings_desktop_notifications_description">Avisar quando um download terminar enquanto você estiver em outra janela</string>
+    <string name="settings_close_to_tray">Fechar para a bandeja</string>
+    <string name="settings_close_to_tray_description">Fechar a janela mantém o app rodando na bandeja do sistema; saia pelo menu do ícone</string>
+    <string name="tray_show">Mostrar janela</string>
+    <string name="tray_hide">Ocultar janela</string>
 </resources>
