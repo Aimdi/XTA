@@ -2,7 +2,7 @@ package com.aimdi.xtanative.ui.media
 
 import androidx.compose.runtime.Composable
 
-/** The app's one media session, for whatever plays without a screen (a podcast, a reading); [AudioSessions.None] on the desktop. */
+/** The app's one media session, for whatever plays without a screen (a podcast, a reading): Android's media session, the desktop's MPRIS player. */
 @Composable
 expect fun rememberAudioSessions(): AudioSessions
 

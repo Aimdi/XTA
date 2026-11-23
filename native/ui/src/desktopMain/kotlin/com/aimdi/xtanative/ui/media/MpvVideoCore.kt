@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.media
 
+import com.aimdi.xtanative.ui.media.mpris.MprisSessions
 import javax.swing.SwingUtilities
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -100,6 +101,14 @@ internal class MpvVideoCore<P : MpvPictures>(
         player?.onChange = ::changed
     }
 
+    /** What the desktop's media keys do to this video while it is the one heard. */
+    private val controls = AudioSessionBinding(
+        onPlay = { if (!state.value.playing) playOrPause() },
+        onPause = { setActive(false) },
+        onStop = { setActive(false) },
+        onSeek = ::seekTo,
+    )
+
     override fun open(source: VideoSource) {
         val opened = player ?: return
         pictures?.opened()
@@ -133,11 +142,13 @@ internal class MpvVideoCore<P : MpvPictures>(
         }
         player?.stop()
         OneVideo.stopped(this)
+        tellControls()
     }
 
     override fun release() {
         released = true
         OneVideo.stopped(this)
+        tellControls()
         pictures?.close() ?: player?.close()
     }
 
@@ -164,6 +175,7 @@ internal class MpvVideoCore<P : MpvPictures>(
         if (synchronized(lock) { source?.gif } != false) return
         player?.setMuted(muted)
         current.update { it.copy(muted = muted) }
+        tellControls()
     }
 
     override fun setSpeed(speed: Double) {
@@ -213,8 +225,31 @@ internal class MpvVideoCore<P : MpvPictures>(
             current.update { it.after(after) }
             source?.gif ?: true
         }
+        tellControls()
         if (gif || after.playing == before.playing) return
         onMain { if (after.playing && !released) OneVideo.started(this) { setActive(false) } else OneVideo.stopped(this) }
+    }
+
+    /**
+     * The media keys (MPRIS) reach a video that is heard: once it starts
+     * playing with its sound on, until it is stopped, muted or let go;
+     * paused, it stays theirs, so the play key plays it again.
+     */
+    private fun tellControls() {
+        if (player == null) return
+        val now = state.value
+        val gif = synchronized(lock) { source?.gif } ?: true
+        val sessions = MprisSessions.service
+        val heard = !released && !gif && now.started && !now.muted && !now.failed
+        val durationMs = now.durationMs.takeIf { it > 0 }
+        when {
+            !heard -> sessions.clear(this)
+            sessions.holds(this) -> sessions.update(this, now.playing, now.positionMs, durationMs)
+            now.playing -> {
+                sessions.bind(this, title = "", artist = null, binding = controls)
+                sessions.update(this, playing = true, positionMs = now.positionMs, durationMs = durationMs)
+            }
+        }
     }
 
     /** Holding [lock]: back to the variant before, again for a GIF, or failed. */
@@ -242,5 +277,6 @@ internal class MpvVideoCore<P : MpvPictures>(
             retries = 0
             current.update { it.copy(started = true) }
         }
+        tellControls()
     }
 }

@@ -12,9 +12,15 @@ import com.aimdi.xtanative.services.speech.VoiceEnginePackage
 import com.aimdi.xtanative.services.speech.VoiceEngines
 import com.aimdi.xtanative.services.speech.VoiceSynthesizer
 import com.aimdi.xtanative.ui.common.AppResources
+import com.aimdi.xtanative.ui.media.AudioSessionBinding
 import com.aimdi.xtanative.ui.media.MpvContinuityPlayer
 import com.aimdi.xtanative.ui.media.MpvEngine
+import com.aimdi.xtanative.ui.media.mpris.MprisSessions
 import java.io.File
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 @Composable
 internal actual fun rememberSpeechPlatform(): () -> SpeechPlatform = { DesktopSpeech }
@@ -29,7 +35,7 @@ internal actual fun rememberSpeechPlatform(): () -> SpeechPlatform = { DesktopSp
 private object DesktopSpeech : SpeechPlatform {
     override val engine: SpeechEngine? = null
     override val voices: SystemVoices? = null
-    override val session: SpeechSession = object : SpeechSession {}
+    override val session: SpeechSession = DesktopSpeechSession
     override val voiceEngine: VoiceEnginePackage? = null
 
     private val carried: File? = engineFolder()?.takeIf { VoiceEngines.carriedIn(it) }
@@ -41,6 +47,23 @@ private object DesktopSpeech : SpeechPlatform {
     override val voiceFolder: File by lazy { File(File(xdg("XDG_DATA_HOME", ".local/share"), "xta-native"), "voices") }
 
     private fun engineFolder(): File? = AppResources.folder("voice-engine", System.getenv("XTA_NATIVE_VOICE_ENGINE"))
+}
+
+/**
+ * A reading as the desktop's media controls see it (MPRIS): its title, and
+ * the play/pause or stop key ends it, as the media notification's stop does
+ * on Android.
+ */
+private object DesktopSpeechSession : SpeechSession {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    override fun bind(title: String, stop: suspend () -> Unit) {
+        val sessions = MprisSessions.service
+        sessions.bind(title, binding = AudioSessionBinding(onStop = { scope.launch { stop() } }))
+        sessions.update(playing = true)
+    }
+
+    override fun clear() = MprisSessions.service.clear()
 }
 
 /** $[name], else [fallback] in the home folder. */

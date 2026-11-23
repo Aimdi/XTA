@@ -2,10 +2,11 @@ package com.aimdi.xtanative.ui.media
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import com.aimdi.xtanative.ui.media.mpris.MprisSessions
 
-/** No media session on the desktop, as XTA has none there: what plays has its controls in the app. */
+/** The desktop's media session: an MPRIS player on the session bus while something is bound ([MprisSessions]). */
 @Composable
-actual fun rememberAudioSessions(): AudioSessions = AudioSessions.None
+actual fun rememberAudioSessions(): AudioSessions = MprisSessions.service
 
 /**
  * libmpv's players for a podcast episode (as XTA's media_kit plays them on

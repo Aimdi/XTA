@@ -169,6 +169,6 @@ private const val NOTICE_MS = 6_000L
 private fun VoiceCheckEffect(parts: SpeechParts) {
     val sessions = rememberAudioSessions()
     LaunchedEffect(parts) {
-        if (VoiceCheck.take()) VoiceCheck.run(parts, sessions.takeIf { it !== AudioSessions.None })
+        if (VoiceCheck.take()) VoiceCheck.run(parts, sessions.takeIf { it !== AudioSessions.None && it.pressedInVoiceCheck })
     }
 }

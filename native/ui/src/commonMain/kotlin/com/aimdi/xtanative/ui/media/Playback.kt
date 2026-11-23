@@ -145,6 +145,9 @@ interface AudioSessions {
 
     fun clear()
 
+    /** Whether CI's voice check presses this session's controls from outside (Android's, through adb); nothing presses the desktop's there. */
+    val pressedInVoiceCheck: Boolean get() = true
+
     /** Where the platform has no media session: everything plays without one. */
     object None : AudioSessions {
         override fun bind(title: String, artist: String?, binding: AudioSessionBinding) = Unit

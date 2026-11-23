@@ -33,6 +33,7 @@ import com.aimdi.xtanative.ui.chrome.SavedWindowFile
 import com.aimdi.xtanative.ui.chrome.SingleInstance
 import com.aimdi.xtanative.ui.chrome.WindowFullscreen
 import com.aimdi.xtanative.ui.links.DesktopIncomingLinks
+import com.aimdi.xtanative.ui.media.mpris.MprisSessions
 import com.aimdi.xtanative.ui.media.VideoCheck
 import java.awt.Dimension
 import java.awt.GraphicsEnvironment
@@ -62,6 +63,7 @@ fun main(args: Array<String>) {
     val instance = SingleInstance.claim(files, link?.let(InstanceMessage::Open) ?: InstanceMessage.Raise) ?: exitProcess(0)
     link?.let(DesktopIncomingLinks::hand)
     val raises = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    MprisSessions.service.onRaise = { raises.tryEmit(Unit) }
     instance.listen { message ->
         if (message is InstanceMessage.Open) DesktopIncomingLinks.hand(message.url)
         raises.tryEmit(Unit)
@@ -78,6 +80,8 @@ fun main(args: Array<String>) {
         val app = remember { starting.started() }
         var beforeFullscreen by remember { mutableStateOf<WindowPlacement?>(null) }
         val graph = app.graph
+        val name = appName()
+        LaunchedEffect(name) { MprisSessions.service.identity = name }
         val state = rememberWindowState(
             placement = if (saved.maximized) WindowPlacement.Maximized else WindowPlacement.Floating,
             size = DpSize(saved.width.dp, saved.height.dp),
@@ -87,7 +91,7 @@ fun main(args: Array<String>) {
                 windowFile.write(kept)
                 exitApplication()
             },
-            title = appName(),
+            title = name,
             icon = appIcon(),
             state = state,
             // F11 fills the screen and gives it back, over every screen and viewer.
