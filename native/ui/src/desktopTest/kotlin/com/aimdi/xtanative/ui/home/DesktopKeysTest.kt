@@ -362,7 +362,8 @@ class DesktopKeysTest {
     fun altHomeGoesHome() {
         assertEquals(DeskAction.GO_HOME, DesktopKeys.action(DeskKey.HOME, alt = true, ctrl = false, focusInside = false, canGoBack = true))
         assertEquals(DeskAction.GO_HOME, DesktopKeys.action(DeskKey.HOME, alt = true, ctrl = false, focusInside = true, canGoBack = true))
-        assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.HOME, alt = true, ctrl = false, focusInside = false, canGoBack = true, somethingOpen = true))
+        // Over an opened post, which counts as something open, too.
+        assertEquals(DeskAction.GO_HOME, DesktopKeys.action(DeskKey.HOME, alt = true, ctrl = false, focusInside = false, canGoBack = true, somethingOpen = true))
         // Home alone still goes to the list's top.
         assertEquals(DeskAction.TO_TOP, DesktopKeys.action(DeskKey.HOME, alt = false, ctrl = false, focusInside = false, canGoBack = true))
     }

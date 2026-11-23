@@ -106,7 +106,8 @@ object DesktopKeys {
         ctrl && !alt && key in TEXT_KEYS -> textSize(key)
         (key == DeskKey.F1 && !alt && !ctrl) || (key == DeskKey.QUESTION && !focusInside && !alt && !ctrl) ->
             if (somethingOpen) DeskAction.NONE else DeskAction.SHOW_KEYS
-        key == DeskKey.HOME && alt && !ctrl && !shift -> if (somethingOpen) DeskAction.NONE else DeskAction.GO_HOME
+        // Over an opened post (a card the page counts as open) too: going home leaves it with the rest.
+        key == DeskKey.HOME && alt && !ctrl && !shift -> DeskAction.GO_HOME
         key == DeskKey.V && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.OPEN_PASTED_LINK
         (key == DeskKey.F && ctrl && !alt && !shift) || (key == DeskKey.SLASH && !focusInside && !alt && !ctrl) ->
             if (somethingOpen) DeskAction.NONE else DeskAction.FIND
