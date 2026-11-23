@@ -70,6 +70,14 @@ object ViewerZoom {
     fun wheeled(scale: Float, notches: Float): Float =
         (scale * WHEEL_STEP.pow(-notches)).coerceIn(MIN, MAX)
 
+    /** The scale a zoom key ([ViewerKey.ZOOM_IN], OUT, RESET) makes of [scale]: a wheel's notch in or out, or the whole photo; [scale] for any other key. */
+    fun keyed(scale: Float, key: ViewerKey): Float = when (key) {
+        ViewerKey.ZOOM_IN -> wheeled(scale, -1f)
+        ViewerKey.ZOOM_OUT -> wheeled(scale, 1f)
+        ViewerKey.ZOOM_RESET -> MIN
+        else -> scale
+    }
+
     /** Whether the photo is zoomed in, so one finger pans it rather than turning the page or closing the viewer. */
     fun zoomed(scale: Float): Boolean = scale > MIN + 0.01f
 }

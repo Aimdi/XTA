@@ -17,4 +17,13 @@ internal fun viewerKeyOf(event: KeyEvent): ViewerKey = ViewerKeys.of(
     copy = event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && event.key == Key.C,
     saveAs = event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && event.key == Key.S,
     closeKey = event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && event.key == Key.W,
+    zoom = if (event.isAltPressed) ViewerKey.NONE else zoomKeyOf(event.key),
 )
+
+/** + (or =), - and 0, on the main keys or the number pad: the photo's zoom. */
+private fun zoomKeyOf(key: Key): ViewerKey = when (key) {
+    Key.Plus, Key.Equals, Key.NumPadAdd -> ViewerKey.ZOOM_IN
+    Key.Minus, Key.NumPadSubtract -> ViewerKey.ZOOM_OUT
+    Key.Zero, Key.NumPad0 -> ViewerKey.ZOOM_RESET
+    else -> ViewerKey.NONE
+}

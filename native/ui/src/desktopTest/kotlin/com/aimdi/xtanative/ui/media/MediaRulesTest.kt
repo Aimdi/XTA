@@ -194,4 +194,21 @@ class MediaRulesTest {
         assertEquals(VideoKey.LEAVE, VideoKeys.of(escape = false, space = false, left = true, right = false, modified = true, back = true))
         assertEquals(VideoKey.LEAVE, VideoKeys.of(escape = false, space = false, left = false, right = false, modified = false, back = true))
     }
+
+    @Test
+    fun plusMinusAndZeroZoomTheViewersPhoto() {
+        fun key(zoom: ViewerKey, modified: Boolean = false) = ViewerKeys.of(escape = false, left = false, right = false, back = false, modified = modified, zoom = zoom)
+        assertEquals(ViewerKey.ZOOM_IN, key(ViewerKey.ZOOM_IN))
+        // With Ctrl too, as a browser zooms.
+        assertEquals(ViewerKey.ZOOM_OUT, key(ViewerKey.ZOOM_OUT, modified = true))
+        assertEquals(ViewerKey.ZOOM_RESET, key(ViewerKey.ZOOM_RESET))
+        assertEquals(ViewerKey.NONE, key(ViewerKey.NONE))
+        // A zoom key is no other key.
+        assertEquals(ViewerKey.NONE, key(ViewerKey.CLOSE))
+        assertEquals(ViewerZoom.wheeled(1f, -1f), ViewerZoom.keyed(1f, ViewerKey.ZOOM_IN))
+        assertEquals(ViewerZoom.wheeled(2f, 1f), ViewerZoom.keyed(2f, ViewerKey.ZOOM_OUT))
+        assertEquals(ViewerZoom.MIN, ViewerZoom.keyed(3f, ViewerKey.ZOOM_RESET))
+        assertEquals(ViewerZoom.MIN, ViewerZoom.keyed(ViewerZoom.MIN, ViewerKey.ZOOM_OUT))
+        assertEquals(2f, ViewerZoom.keyed(2f, ViewerKey.NEXT))
+    }
 }

@@ -15,6 +15,7 @@
     <string name="keys_text_size">Texto más grande, más pequeño o normal</string>
     <string name="keys_full_screen">Pantalla completa</string>
     <string name="keys_video">Vídeo a pantalla completa: reproducir o pausar, saltar 10 segundos</string>
+    <string name="keys_photo_zoom">Ampliar, reducir o ver entera una foto</string>
     <string name="keys_quit">Salir de XTA</string>
     <string name="keys_ctrl">Ctrl</string>
     <string name="keys_shift">Mayús</string>

@@ -32,7 +32,7 @@ object VideoKeys {
 }
 
 /** What a key does to the media viewer on the desktop ([ViewerKeys]). */
-enum class ViewerKey { PREVIOUS, NEXT, CLOSE, COPY, SAVE_AS, NONE }
+enum class ViewerKey { PREVIOUS, NEXT, CLOSE, COPY, SAVE_AS, ZOOM_IN, ZOOM_OUT, ZOOM_RESET, NONE }
 
 /**
  * The media viewer's keys: ← and → turn its pages, Esc closes it, and going
@@ -40,18 +40,33 @@ enum class ViewerKey { PREVIOUS, NEXT, CLOSE, COPY, SAVE_AS, NONE }
  * goes back from any screen; with Ctrl or Alt held the arrows are not the
  * viewer's. Ctrl+C copies the picture shown and Ctrl+S saves it where the
  * reader picks ([copy], [saveAs]), where the platform can; Ctrl+W
- * ([closeKey]) closes it, as a desktop app closes what it shows.
+ * ([closeKey]) closes it, as a desktop app closes what it shows. + and -
+ * zoom the photo shown in and out, and 0 shows it whole again, as a
+ * desktop's photo viewers do, with Ctrl held too ([zoom]).
  */
 object ViewerKeys {
-    fun of(escape: Boolean, left: Boolean, right: Boolean, back: Boolean, modified: Boolean, copy: Boolean = false, saveAs: Boolean = false, closeKey: Boolean = false): ViewerKey = when {
+    fun of(
+        escape: Boolean,
+        left: Boolean,
+        right: Boolean,
+        back: Boolean,
+        modified: Boolean,
+        copy: Boolean = false,
+        saveAs: Boolean = false,
+        closeKey: Boolean = false,
+        zoom: ViewerKey = ViewerKey.NONE,
+    ): ViewerKey = when {
         escape || back || closeKey -> ViewerKey.CLOSE
         copy -> ViewerKey.COPY
         saveAs -> ViewerKey.SAVE_AS
+        zoom in ZOOM_KEYS -> zoom
         modified -> ViewerKey.NONE
         left -> ViewerKey.PREVIOUS
         right -> ViewerKey.NEXT
         else -> ViewerKey.NONE
     }
+
+    private val ZOOM_KEYS = setOf(ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET)
 }
 
 /** The rules of the media viewer's videos (_video.dart, _video_controls.dart, video_quality.dart). */

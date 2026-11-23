@@ -15,6 +15,7 @@
     <string name="keys_text_size">Větší, menší nebo normální písmo</string>
     <string name="keys_full_screen">Celá obrazovka</string>
     <string name="keys_video">Video na celou obrazovku: přehrát nebo pozastavit, přeskočit 10 sekund</string>
+    <string name="keys_photo_zoom">Přiblížit, oddálit nebo zobrazit celou fotku</string>
     <string name="keys_quit">Ukončit XTA</string>
     <string name="keys_ctrl">Ctrl</string>
     <string name="keys_shift">Shift</string>

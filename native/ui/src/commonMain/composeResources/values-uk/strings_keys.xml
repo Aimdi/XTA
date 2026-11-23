@@ -15,6 +15,7 @@
     <string name="keys_text_size">Більший, менший або звичайний текст</string>
     <string name="keys_full_screen">Повноекранний режим</string>
     <string name="keys_video">Відео на весь екран: відтворити або призупинити, перемотати на 10 секунд</string>
+    <string name="keys_photo_zoom">Збільшити, зменшити або показати фото повністю</string>
     <string name="keys_quit">Вийти з XTA</string>
     <string name="keys_ctrl">Ctrl</string>
     <string name="keys_shift">Shift</string>

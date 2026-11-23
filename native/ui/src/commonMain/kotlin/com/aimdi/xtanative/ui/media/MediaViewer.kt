@@ -47,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -58,12 +59,13 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.core.x.model.PhotoSize
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.photoUrl
-import com.aimdi.xtanative.core.x.model.PhotoSize
 import com.aimdi.xtanative.data.LocalPostCache
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.downloads.LocalPlatformFiles
@@ -82,7 +84,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_share_image
 import com.aimdi.xtanative.ui.home.HoldsKeys
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.post.PostIcons
-import com.aimdi.xtanative.ui.common.onSecondaryClick
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -184,6 +186,8 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     if (onNearEnd != null) {
         LaunchedEffect(pager.currentPage, items.size) { if (MediaGallery.nearEnd(pager.currentPage, items.size)) onNearEnd() }
     }
+    // The zoom keys, for the photo shown.
+    val zoomKeys = remember { MutableSharedFlow<ViewerKey>(extraBufferCapacity = 8) }
     Box(
         Modifier
             .fillMaxSize()
@@ -196,6 +200,9 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
                     ViewerKey.NEXT -> true.also { turn(1) }
                     ViewerKey.CLOSE -> true.also { onClose() }
                     ViewerKey.COPY, ViewerKey.SAVE_AS -> fileMenu?.key(key) ?: false
+                    // The photo shown zooms; a video's page leaves the keys alone.
+                    ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET ->
+                        (items.getOrNull(pager.currentPage)?.kind == XMedia.Kind.PHOTO).also { if (it) zoomKeys.tryEmit(key) }
                     ViewerKey.NONE -> false
                 }
             }
@@ -222,14 +229,22 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
             }
             // A right-click on the page opens the desktop's menu for it, as a browser's on a picture.
             val pageMenu = if (fileMenu != null) Modifier.onSecondaryClick(fileMenu::openForShown) else Modifier
-            Box(Modifier.weight(1f).fillMaxWidth().then(pageMenu)) {
+            // Clipped: a zoomed photo stays under the bar, whose buttons stay in reach.
+            Box(Modifier.weight(1f).fillMaxWidth().clipToBounds().then(pageMenu)) {
                 if (items.isEmpty()) {
                     Text(stringResource(Res.string.reader_media_unknown), color = Color.White, modifier = Modifier.align(Alignment.Center))
                 } else {
                     HorizontalPager(state = pager, modifier = Modifier.fillMaxSize(), key = { it }) { page ->
                         val item = items[page]
                         when (item.kind) {
-                            XMedia.Kind.PHOTO -> ZoomablePhoto(viewed.shownUrl(item, size), item.alt, motion = !reduced, onBackdrop = { backdrop = it }, onClose = onClose)
+                            XMedia.Kind.PHOTO -> ZoomablePhoto(
+                                viewed.shownUrl(item, size),
+                                item.alt,
+                                motion = !reduced,
+                                onBackdrop = { backdrop = it },
+                                onClose = onClose,
+                                zoomKeys = zoomKeys.takeIf { pager.currentPage == page },
+                            )
                             XMedia.Kind.VIDEO, XMedia.Kind.GIF -> {
                                 val download: ((String) -> Unit)? = if (saver == null) null else { url -> viewed.save(viewed.pages[page], url)?.let(saver::save) }
                                 val credit = remember(page, viewed) { viewed.pages.getOrNull(page)?.let { VideoCredit.of(posts.post(it.postId), photoUrl(item.url, PhotoSize.LARGE)) } }

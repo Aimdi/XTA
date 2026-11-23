@@ -15,6 +15,7 @@
     <string name="keys_text_size">Teks lebih besar, lebih kecil, atau normal</string>
     <string name="keys_full_screen">Layar penuh</string>
     <string name="keys_video">Video layar penuh: putar atau jeda, lompat 10 detik</string>
+    <string name="keys_photo_zoom">Perbesar, perkecil, atau tampilkan foto utuh</string>
     <string name="keys_quit">Keluar dari XTA</string>
     <string name="keys_ctrl">Ctrl</string>
     <string name="keys_shift">Shift</string>
