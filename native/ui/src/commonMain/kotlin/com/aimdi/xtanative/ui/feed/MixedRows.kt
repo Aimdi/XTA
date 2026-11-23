@@ -170,7 +170,7 @@ fun PluginPostsOnly(
 ) {
     val layout = rememberFeedLayout(emptyList(), posts)
     val byKey = remember(posts) { posts.associateBy { it.key } }
-    WithReadingColumn(contentPadding) { padding ->
+    WithReadingColumn(contentPadding, list) { padding ->
         LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
             if (problem != null) item(key = "x-problem", contentType = "notice") { ProblemRow(problem, onRetry) }
             items(posts, key = { it.key }, contentType = { "plugin-post" }) { post -> PlacedPluginPost(post, layout, plugins, byKey) {} }

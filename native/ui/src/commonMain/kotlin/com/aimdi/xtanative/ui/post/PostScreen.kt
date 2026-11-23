@@ -145,7 +145,7 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
         PostScopeProvider(focalId = id, translateAll = true, revealReplies = reveal) {
             val prefs = postScope().prefs
             val zenHidden = prefs.zen && !state.repliesRevealed
-            WithReadingColumn(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 48.dp)) { column ->
+            WithReadingColumn(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 48.dp), list) { column ->
                 LazyColumn(
                     state = list,
                     contentPadding = column,

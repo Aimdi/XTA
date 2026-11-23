@@ -232,7 +232,7 @@ private fun QuotesList(state: QuotesUi, vm: QuotesViewModel, actions: PostAction
     rememberReadRecovery(quotes.retryable, quotes.loading || quotes.loadingMore, vm::retryQuotes)
     PageMore(list, quotes.items.size) { quotes.cursor?.let(vm::loadQuotes) }
     val layout = rememberFeedLayout(quotes.items)
-    WithReadingColumn(padding) { column ->
+    WithReadingColumn(padding, list) { column ->
         LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             item(key = "sort") {
                 SortChip(state.quoteSort, Sorts.X_QUOTES, { quoteSortLabel(it) }, ::quoteSortIcon, vm::selectQuotes, Modifier.padding(start = 4.dp))

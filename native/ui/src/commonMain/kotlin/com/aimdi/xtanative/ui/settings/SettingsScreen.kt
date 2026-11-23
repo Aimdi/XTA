@@ -1,9 +1,11 @@
 package com.aimdi.xtanative.ui.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -57,6 +59,7 @@ import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.ThemePrefs
+import com.aimdi.xtanative.ui.common.ColumnScrollbar
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -105,7 +108,10 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: (
     val snackbar = remember { SnackbarHostState() }
 
     SettingsPage(stringResource(Res.string.settings_title), onBack, snackbar) { padding ->
-        Column(Modifier.padding(padding).verticalScroll(rememberScrollState()).padding(bottom = 24.dp)) {
+        val scroll = rememberScrollState()
+        Box(Modifier.fillMaxSize().padding(padding)) {
+        ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd))
+        Column(Modifier.verticalScroll(scroll).padding(bottom = 24.dp)) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
@@ -123,6 +129,7 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: (
             } else {
                 SearchResults(query, onOpen)
             }
+        }
         }
     }
 }

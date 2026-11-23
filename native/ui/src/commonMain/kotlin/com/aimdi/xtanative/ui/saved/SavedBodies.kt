@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -80,21 +81,23 @@ internal fun SavedBodyView(
     onOpenThread: (String) -> Unit,
     vm: SavedViewModel,
 ) {
+    // A list for each kind of tab, as each had its own, named here so the scrollbar follows it.
+    val list = key(state.body::class) { rememberRetappedList() }
     when (val body = state.body) {
         is SavedBody.Empty -> EmptyPane(body.kind, onWriteNote)
         is SavedBody.Grid -> MediaGrid(body.tiles, actions, contentPadding, onRemove = vm::removeFromGrid)
-        is SavedBody.Posts -> WithReadingColumn(contentPadding) { column -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), column) {
+        is SavedBody.Posts -> WithReadingColumn(contentPadding, list) { column -> LazyColumn(Modifier.fillMaxSize(), list, column) {
             items(body.posts, key = { it.id }, contentType = { "saved" }) { post ->
                 SavedRow(post, actions, state.view.selecting, post.id in state.view.selected, vm)
             }
         } }
-        is SavedBody.Likes -> WithReadingColumn(contentPadding) { column -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), column) {
+        is SavedBody.Likes -> WithReadingColumn(contentPadding, list) { column -> LazyColumn(Modifier.fillMaxSize(), list, column) {
             items(body.likes, key = { it.id }, contentType = { "like" }) { like ->
                 KeptPost(like.about, actions)
                 Hairline()
             }
         } }
-        is SavedBody.LikesByGroup -> WithReadingColumn(contentPadding) { column -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), column) {
+        is SavedBody.LikesByGroup -> WithReadingColumn(contentPadding, list) { column -> LazyColumn(Modifier.fillMaxSize(), list, column) {
             items(body.rows, key = { it.key }) { row ->
                 when (row) {
                     is LikesRow.Heading -> Text(
@@ -110,7 +113,7 @@ internal fun SavedBodyView(
                 }
             }
         } }
-        is SavedBody.Notes -> WithReadingColumn(contentPadding) { column -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), column) {
+        is SavedBody.Notes -> WithReadingColumn(contentPadding, list) { column -> LazyColumn(Modifier.fillMaxSize(), list, column) {
             items(body.notes, key = { it.note.id }, contentType = { "note" }) { row ->
                 NoteTile(
                     note = row.note,

@@ -212,7 +212,7 @@ fun ProfileScreen(
             ) {
                 val tabbed = state.complete && user != null
                 // A wide window keeps the profile in the reading column, as the feeds are.
-                WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp)) { column ->
+                WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp), list) { column ->
                 LazyColumn(
                     state = list,
                     contentPadding = column,

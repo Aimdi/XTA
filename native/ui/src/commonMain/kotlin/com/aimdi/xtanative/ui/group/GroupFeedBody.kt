@@ -241,7 +241,7 @@ private fun FeedList(state: GroupFeedUi, vm: GroupFeedViewModel, actions: PostAc
         if (post != null) PluginPostRow(post, mixed.plugins[post.source]) else byKey[key]?.let { draw(it) }
     }
     val divider = run.divider
-    WithReadingColumn(contentPadding) { padding ->
+    WithReadingColumn(contentPadding, list) { padding ->
         LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
             run.stale?.let { stale -> item(key = "stale", contentType = "notice") { StaleNotice(stale, run.savedAt, vm) } }
             itemsIndexed(threads, key = { _, thread -> thread.id }, contentType = { _, _ -> "thread" }) { index, thread ->

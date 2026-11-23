@@ -348,7 +348,7 @@ private fun PostResults(read: PagedRead<XThread, String>, list: LazyListState, a
     LoadMoreNearEnd(list, paged, onMore)
     LaunchedEffect(paged.loading) { if (paged.loading) list.scrollToItem(0) }
     val layout = rememberFeedLayout(paged.items)
-    WithReadingColumn(padding) { column ->
+    WithReadingColumn(padding, list) { column ->
         LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             feedThreads(paged.items, layout, actions)
             pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets)

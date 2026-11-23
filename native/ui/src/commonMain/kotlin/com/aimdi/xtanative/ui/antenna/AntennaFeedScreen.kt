@@ -64,7 +64,7 @@ fun AntennaFeedScreen(id: String, actions: PostActions, onBack: () -> Unit) {
             !loaded -> LoadingRow(Modifier.padding(top = padding.calculateTopPadding()))
             // Deleted since it was opened.
             antenna == null -> EmptyNote(stringResource(Res.string.discover_no_results), modifier = Modifier.padding(top = padding.calculateTopPadding()))
-            else -> WithReadingColumn(padding) { column ->
+            else -> WithReadingColumn(padding, list) { column ->
                 val layout = rememberFeedLayout(posts.items)
                 LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                     feedThreads(posts.items, layout, actions)

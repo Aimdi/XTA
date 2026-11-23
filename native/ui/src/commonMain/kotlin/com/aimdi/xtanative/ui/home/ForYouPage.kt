@@ -129,7 +129,7 @@ private fun ForYouList(state: ForYouUi, vm: ForYouViewModel, actions: PostAction
     }
     val layout = rememberFeedLayout(state.threads)
     val divider = state.divider
-    WithReadingColumn(contentPadding) { padding ->
+    WithReadingColumn(contentPadding, list) { padding ->
         LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
             state.notice?.let { notice ->
                 item(key = "notice", contentType = "notice") { RefreshNotice(notice, vm::dismissNotice) }
