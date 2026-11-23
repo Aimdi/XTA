@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Kiirklahvid</string>
+    <string name="keys_help">Näita neid kiirklahve</string>
+    <string name="keys_back">Tagasi või sulge avatu</string>
+    <string name="keys_refresh">Värskenda</string>
+    <string name="keys_search">Otsi</string>
+    <string name="keys_tabs">Järgmine või eelmine vahekaart</string>
+    <string name="keys_pages">Eelmine või järgmine leht</string>
+    <string name="keys_scroll_line">Keri veidi</string>
+    <string name="keys_scroll_screen">Keri ekraani võrra</string>
+    <string name="keys_scroll_ends">Algusesse või lõppu</string>
+    <string name="keys_move">Liigu nuppude ja väljade vahel</string>
+    <string name="keys_text_size">Suurem, väiksem või tavaline tekst</string>
+    <string name="keys_full_screen">Täisekraan</string>
+    <string name="keys_video">Täisekraanvideo: esita või peata, hüppa 10 sekundit</string>
+    <string name="keys_quit">Sulge XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Tühik</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

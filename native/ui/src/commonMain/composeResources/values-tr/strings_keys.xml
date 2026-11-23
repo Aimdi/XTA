@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Klavye kısayolları</string>
+    <string name="keys_help">Bu kısayolları göster</string>
+    <string name="keys_back">Geri dön veya açık olanı kapat</string>
+    <string name="keys_refresh">Yenile</string>
+    <string name="keys_search">Ara</string>
+    <string name="keys_tabs">Sonraki veya önceki sekme</string>
+    <string name="keys_pages">Önceki veya sonraki sayfa</string>
+    <string name="keys_scroll_line">Biraz kaydır</string>
+    <string name="keys_scroll_screen">Bir ekran kaydır</string>
+    <string name="keys_scroll_ends">Başa veya sona git</string>
+    <string name="keys_move">Düğmeler ve alanlar arasında gezin</string>
+    <string name="keys_text_size">Daha büyük, daha küçük veya normal yazı</string>
+    <string name="keys_full_screen">Tam ekran</string>
+    <string name="keys_video">Tam ekran video: oynat veya duraklat, 10 saniye atla</string>
+    <string name="keys_quit">XTA\'dan çık</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Boşluk</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

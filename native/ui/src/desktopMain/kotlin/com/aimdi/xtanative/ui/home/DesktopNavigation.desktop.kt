@@ -62,6 +62,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, con
     var focusInside by remember { mutableStateOf(false) }
     // Whether the window took the last key pressed, so the character it types goes nowhere.
     var keyTaken by remember { mutableStateOf(false) }
+    var showKeys by remember { mutableStateOf(false) }
     // A frame later: what gives the keys back is still leaving when it asks. The frame takes them only if
     // nothing in the page has since (a screen that focuses its field as it opens keeps it).
     // A sheet swapped for another in the same frame closes before the next opens: by the time the frame
@@ -124,6 +125,10 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, con
                 scope.launch { list.moveFor(action, line) }
                 true
             } ?: false
+        DeskAction.SHOW_KEYS -> {
+            showKeys = true
+            true
+        }
         DeskAction.NONE -> false
     }
 
@@ -138,10 +143,15 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, con
         return keyTaken
     }
 
-    // A / is the character typed, on any layout (Shift+7 on a German one), and only one no field has typed reaches here.
+    // A / or ? is the character typed, on any layout (Shift+7 on a German one), and only one no field has typed reaches here.
     fun onTyped(event: KeyEvent): Boolean {
-        if (event.type == KeyEventType.KeyDown || event.type == KeyEventType.KeyUp || event.utf16CodePoint != '/'.code) return false
-        val action = DesktopKeys.action(DeskKey.SLASH, event.isAltPressed, event.isCtrlPressed, focusInside = false, nav.previousBackStackEntry != null, rtl, actions.somethingOpen(), event.isShiftPressed)
+        if (event.type == KeyEventType.KeyDown || event.type == KeyEventType.KeyUp) return false
+        val key = when (event.utf16CodePoint) {
+            '/'.code -> DeskKey.SLASH
+            '?'.code -> DeskKey.QUESTION
+            else -> return false
+        }
+        val action = DesktopKeys.action(key, event.isAltPressed, event.isCtrlPressed, focusInside = false, nav.previousBackStackEntry != null, rtl, actions.somethingOpen(), event.isShiftPressed)
         if (actions.overlayHoldsKeys()) return false
         return act(action)
     }
@@ -174,6 +184,12 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, con
         ) {
             content()
         }
+    }
+    if (showKeys) {
+        ShortcutsDialog(onDismiss = {
+            showKeys = false
+            actions.keysToFrame()
+        })
     }
     // The frame takes the focus when nothing has it: at the start, and once the screen that had it is gone.
     // Only after the screens change, so a sheet's own field is never robbed of it.
@@ -231,6 +247,7 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.Tab -> DeskKey.TAB
     Key.Q -> DeskKey.Q
     Key.F -> DeskKey.F
+    Key.F1 -> DeskKey.F1
     Key.Plus, Key.Equals, Key.NumPadAdd -> DeskKey.PLUS
     Key.Minus, Key.NumPadSubtract -> DeskKey.MINUS
     Key.Zero, Key.NumPad0 -> DeskKey.ZERO

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">اختصارات لوحة المفاتيح</string>
+    <string name="keys_help">عرض هذه الاختصارات</string>
+    <string name="keys_back">الرجوع، أو إغلاق ما هو مفتوح</string>
+    <string name="keys_refresh">تحديث</string>
+    <string name="keys_search">بحث</string>
+    <string name="keys_tabs">علامة التبويب التالية أو السابقة</string>
+    <string name="keys_pages">الصفحة السابقة أو التالية</string>
+    <string name="keys_scroll_line">التمرير قليلًا</string>
+    <string name="keys_scroll_screen">التمرير بمقدار شاشة</string>
+    <string name="keys_scroll_ends">الانتقال إلى الأعلى أو إلى النهاية</string>
+    <string name="keys_move">التنقل بين الأزرار والحقول</string>
+    <string name="keys_text_size">نص أكبر أو أصغر أو عادي</string>
+    <string name="keys_full_screen">ملء الشاشة</string>
+    <string name="keys_video">فيديو بملء الشاشة: تشغيل أو إيقاف مؤقت، والتخطي 10 ثوانٍ</string>
+    <string name="keys_quit">إنهاء XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">مسافة</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

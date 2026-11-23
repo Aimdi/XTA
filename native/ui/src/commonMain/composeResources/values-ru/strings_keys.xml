@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Сочетания клавиш</string>
+    <string name="keys_help">Показать эти сочетания</string>
+    <string name="keys_back">Назад или закрыть открытое</string>
+    <string name="keys_refresh">Обновить</string>
+    <string name="keys_search">Поиск</string>
+    <string name="keys_tabs">Следующая или предыдущая вкладка</string>
+    <string name="keys_pages">Предыдущая или следующая страница</string>
+    <string name="keys_scroll_line">Прокрутить немного</string>
+    <string name="keys_scroll_screen">Прокрутить на экран</string>
+    <string name="keys_scroll_ends">В начало или в конец</string>
+    <string name="keys_move">Переходить между кнопками и полями</string>
+    <string name="keys_text_size">Крупнее, мельче или обычный текст</string>
+    <string name="keys_full_screen">Полноэкранный режим</string>
+    <string name="keys_video">Видео на весь экран: воспроизвести или приостановить, перемотать на 10 секунд</string>
+    <string name="keys_quit">Выйти из XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Пробел</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

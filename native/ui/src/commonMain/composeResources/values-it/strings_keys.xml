@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Scorciatoie da tastiera</string>
+    <string name="keys_help">Mostra queste scorciatoie</string>
+    <string name="keys_back">Torna indietro o chiudi ciò che è aperto</string>
+    <string name="keys_refresh">Aggiorna</string>
+    <string name="keys_search">Cerca</string>
+    <string name="keys_tabs">Scheda successiva o precedente</string>
+    <string name="keys_pages">Pagina precedente o successiva</string>
+    <string name="keys_scroll_line">Scorri un poco</string>
+    <string name="keys_scroll_screen">Scorri di una schermata</string>
+    <string name="keys_scroll_ends">Vai all’inizio o alla fine</string>
+    <string name="keys_move">Spostati tra pulsanti e campi</string>
+    <string name="keys_text_size">Testo più grande, più piccolo o normale</string>
+    <string name="keys_full_screen">Schermo intero</string>
+    <string name="keys_video">Video a schermo intero: riproduci o metti in pausa, salta 10 secondi</string>
+    <string name="keys_quit">Esci da XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Maiusc</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Spazio</string>
+    <string name="keys_page_up">Pag ↑</string>
+    <string name="keys_page_down">Pag ↓</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">Fine</string>
+</resources>

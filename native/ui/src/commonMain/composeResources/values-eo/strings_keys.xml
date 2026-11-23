@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Klavaraj fulmoklavoj</string>
+    <string name="keys_help">Montri ĉi tiujn fulmoklavojn</string>
+    <string name="keys_back">Reen, aŭ fermi tion, kio estas malfermita</string>
+    <string name="keys_refresh">Aktualigi</string>
+    <string name="keys_search">Serĉi</string>
+    <string name="keys_tabs">Sekva aŭ antaŭa langeto</string>
+    <string name="keys_pages">Antaŭa aŭ sekva paĝo</string>
+    <string name="keys_scroll_line">Rulumi iomete</string>
+    <string name="keys_scroll_screen">Rulumi je ekrano</string>
+    <string name="keys_scroll_ends">Al la komenco aŭ al la fino</string>
+    <string name="keys_move">Moviĝi inter butonoj kaj kampoj</string>
+    <string name="keys_text_size">Pli granda, pli malgranda aŭ normala teksto</string>
+    <string name="keys_full_screen">Tutekrane</string>
+    <string name="keys_video">Tutekrana video: ludi aŭ paŭzi, salti 10 sekundojn</string>
+    <string name="keys_quit">Ĉesigi XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Spaceto</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

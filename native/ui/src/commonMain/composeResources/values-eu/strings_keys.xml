@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Lasterbideak</string>
+    <string name="keys_help">Erakutsi lasterbide hauek</string>
+    <string name="keys_back">Itzuli, edo itxi irekita dagoena</string>
+    <string name="keys_refresh">Freskatu</string>
+    <string name="keys_search">Bilatu</string>
+    <string name="keys_tabs">Hurrengo edo aurreko fitxa</string>
+    <string name="keys_pages">Aurreko edo hurrengo orria</string>
+    <string name="keys_scroll_line">Korritu pixka bat</string>
+    <string name="keys_scroll_screen">Korritu pantaila bat</string>
+    <string name="keys_scroll_ends">Joan hasierara edo amaierara</string>
+    <string name="keys_move">Mugitu botoi eta eremuen artean</string>
+    <string name="keys_text_size">Testu handiagoa, txikiagoa edo normala</string>
+    <string name="keys_full_screen">Pantaila osoa</string>
+    <string name="keys_video">Pantaila osoko bideoa: erreproduzitu edo pausatu, jauzi 10 segundo</string>
+    <string name="keys_quit">Irten XTAtik</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Zuriunea</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

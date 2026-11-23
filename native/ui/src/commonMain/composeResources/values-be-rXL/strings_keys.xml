@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Spałučenni kłaviš</string>
+    <string name="keys_help">Pakazać hetyja spałučenni</string>
+    <string name="keys_back">Nazad abo zakryć adkrytaje</string>
+    <string name="keys_refresh">Abnavić</string>
+    <string name="keys_search">Pošuk</string>
+    <string name="keys_tabs">Nastupnaja abo papiaredniaja ŭkładka</string>
+    <string name="keys_pages">Papiaredniaja abo nastupnaja staronka</string>
+    <string name="keys_scroll_line">Prakrucić krychu</string>
+    <string name="keys_scroll_screen">Prakrucić na ekran</string>
+    <string name="keys_scroll_ends">Na pačatak abo ŭ kaniec</string>
+    <string name="keys_move">Pierachodzić pamiž knopkami i palami</string>
+    <string name="keys_text_size">Bolšy, mienšy abo zvyčajny tekst</string>
+    <string name="keys_full_screen">Poŭnaekranny režym</string>
+    <string name="keys_video">Videa na ŭvieś ekran: prajhrać abo prypynić, pieramiascicca na 10 siekund</string>
+    <string name="keys_quit">Vyjsci z XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Prabieł</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

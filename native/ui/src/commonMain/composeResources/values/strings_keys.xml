@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The desktop's list of keyboard shortcuts (F1 or ?): what each does, and the keys whose names keyboards print in the reader's language. -->
+<resources>
+    <string name="keys_title">Keyboard shortcuts</string>
+    <string name="keys_help">Show these shortcuts</string>
+    <string name="keys_back">Go back, or close what is open</string>
+    <string name="keys_refresh">Refresh</string>
+    <string name="keys_search">Search</string>
+    <string name="keys_tabs">Next or previous tab</string>
+    <string name="keys_pages">Previous or next page</string>
+    <string name="keys_scroll_line">Scroll a little</string>
+    <string name="keys_scroll_screen">Scroll a screen</string>
+    <string name="keys_scroll_ends">Go to the top or the end</string>
+    <string name="keys_move">Move between buttons and fields</string>
+    <string name="keys_text_size">Larger, smaller or normal text</string>
+    <string name="keys_full_screen">Full screen</string>
+    <string name="keys_video">Full-screen video: play or pause, skip 10 seconds</string>
+    <string name="keys_quit">Quit XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Space</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

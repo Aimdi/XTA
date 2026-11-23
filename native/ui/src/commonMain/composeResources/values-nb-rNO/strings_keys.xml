@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Hurtigtaster</string>
+    <string name="keys_help">Vis disse hurtigtastene</string>
+    <string name="keys_back">Gå tilbake, eller lukk det som er åpent</string>
+    <string name="keys_refresh">Oppdater</string>
+    <string name="keys_search">Søk</string>
+    <string name="keys_tabs">Neste eller forrige fane</string>
+    <string name="keys_pages">Forrige eller neste side</string>
+    <string name="keys_scroll_line">Rull litt</string>
+    <string name="keys_scroll_screen">Rull en skjerm</string>
+    <string name="keys_scroll_ends">Til toppen eller slutten</string>
+    <string name="keys_move">Flytt mellom knapper og felt</string>
+    <string name="keys_text_size">Større, mindre eller normal tekst</string>
+    <string name="keys_full_screen">Fullskjerm</string>
+    <string name="keys_video">Video i fullskjerm: spill av eller sett på pause, hopp 10 sekunder</string>
+    <string name="keys_quit">Avslutt XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Mellomrom</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

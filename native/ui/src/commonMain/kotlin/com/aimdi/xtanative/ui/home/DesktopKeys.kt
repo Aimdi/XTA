@@ -1,7 +1,7 @@
 package com.aimdi.xtanative.ui.home
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, OTHER }
 
 enum class DeskAction {
     /** Out of the text field being typed in, as XTA's first Esc does. */
@@ -35,6 +35,9 @@ enum class DeskAction {
     SCREEN_DOWN,
     TO_TOP,
     TO_END,
+
+    /** The list of the desktop's keys opens ([DesktopShortcuts]). */
+    SHOW_KEYS,
     NONE,
 }
 
@@ -60,7 +63,8 @@ object DesktopKeys {
      * from a field, and / while nothing is being typed in, go to the search,
      * as a desktop app's do: the page's own field, else the app's search.
      * Ctrl with + (or =), - and 0 make the text bigger, smaller, or its
-     * size again, as a browser's zoom does, from a field too.
+     * size again, as a browser's zoom does, from a field too. F1, and ?
+     * while nothing is being typed in, list these keys.
      */
     fun action(
         key: DeskKey,
@@ -79,6 +83,8 @@ object DesktopKeys {
         ctrl && !alt && key in TAB_KEYS -> if (somethingOpen) DeskAction.NONE else tabTurn(key, shift)
         key == DeskKey.TAB && !focusInside && !alt && !ctrl -> DeskAction.ENTER_PAGE
         ctrl && !alt && key in TEXT_KEYS -> textSize(key)
+        (key == DeskKey.F1 && !alt && !ctrl) || (key == DeskKey.QUESTION && !focusInside && !alt && !ctrl) ->
+            if (somethingOpen) DeskAction.NONE else DeskAction.SHOW_KEYS
         (key == DeskKey.F && ctrl && !alt && !shift) || (key == DeskKey.SLASH && !focusInside && !alt && !ctrl) ->
             if (somethingOpen) DeskAction.NONE else DeskAction.FIND
         focusInside || alt || ctrl -> DeskAction.NONE

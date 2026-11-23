@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">キーボードショートカット</string>
+    <string name="keys_help">このショートカット一覧を表示</string>
+    <string name="keys_back">戻る、または開いているものを閉じる</string>
+    <string name="keys_refresh">更新</string>
+    <string name="keys_search">検索</string>
+    <string name="keys_tabs">次または前のタブ</string>
+    <string name="keys_pages">前または次のページ</string>
+    <string name="keys_scroll_line">少しスクロール</string>
+    <string name="keys_scroll_screen">1画面分スクロール</string>
+    <string name="keys_scroll_ends">先頭または末尾へ移動</string>
+    <string name="keys_move">ボタンや入力欄の間を移動</string>
+    <string name="keys_text_size">文字を大きく、小さく、または標準に</string>
+    <string name="keys_full_screen">全画面表示</string>
+    <string name="keys_video">全画面の動画：再生または一時停止、10秒スキップ</string>
+    <string name="keys_quit">XTAを終了</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">スペース</string>
+    <string name="keys_page_up">PageUp</string>
+    <string name="keys_page_down">PageDown</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

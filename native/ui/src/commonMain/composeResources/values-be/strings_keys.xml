@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Спалучэнні клавіш</string>
+    <string name="keys_help">Паказаць гэтыя спалучэнні</string>
+    <string name="keys_back">Назад або закрыць адкрытае</string>
+    <string name="keys_refresh">Абнавіць</string>
+    <string name="keys_search">Пошук</string>
+    <string name="keys_tabs">Наступная або папярэдняя ўкладка</string>
+    <string name="keys_pages">Папярэдняя або наступная старонка</string>
+    <string name="keys_scroll_line">Пракруціць крыху</string>
+    <string name="keys_scroll_screen">Пракруціць на экран</string>
+    <string name="keys_scroll_ends">На пачатак або ў канец</string>
+    <string name="keys_move">Пераходзіць паміж кнопкамі і палямі</string>
+    <string name="keys_text_size">Большы, меншы або звычайны тэкст</string>
+    <string name="keys_full_screen">Поўнаэкранны рэжым</string>
+    <string name="keys_video">Відэа на ўвесь экран: прайграць або прыпыніць, перамясціцца на 10 секунд</string>
+    <string name="keys_quit">Выйсці з XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Прабел</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

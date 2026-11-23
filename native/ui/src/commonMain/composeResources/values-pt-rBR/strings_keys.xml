@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Atalhos de teclado</string>
+    <string name="keys_help">Mostrar estes atalhos</string>
+    <string name="keys_back">Voltar ou fechar o que está aberto</string>
+    <string name="keys_refresh">Atualizar</string>
+    <string name="keys_search">Pesquisar</string>
+    <string name="keys_tabs">Próxima aba ou aba anterior</string>
+    <string name="keys_pages">Página anterior ou próxima</string>
+    <string name="keys_scroll_line">Rolar um pouco</string>
+    <string name="keys_scroll_screen">Rolar uma tela</string>
+    <string name="keys_scroll_ends">Ir para o início ou o fim</string>
+    <string name="keys_move">Mover entre botões e campos</string>
+    <string name="keys_text_size">Texto maior, menor ou normal</string>
+    <string name="keys_full_screen">Tela cheia</string>
+    <string name="keys_video">Vídeo em tela cheia: reproduzir ou pausar, pular 10 segundos</string>
+    <string name="keys_quit">Sair do XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Espaço</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

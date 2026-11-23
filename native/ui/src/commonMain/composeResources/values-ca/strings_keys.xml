@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Dreceres de teclat</string>
+    <string name="keys_help">Mostra aquestes dreceres</string>
+    <string name="keys_back">Torna enrere o tanca el que és obert</string>
+    <string name="keys_refresh">Actualitza</string>
+    <string name="keys_search">Cerca</string>
+    <string name="keys_tabs">Pestanya següent o anterior</string>
+    <string name="keys_pages">Pàgina anterior o següent</string>
+    <string name="keys_scroll_line">Desplaça’t una mica</string>
+    <string name="keys_scroll_screen">Desplaça’t una pantalla</string>
+    <string name="keys_scroll_ends">Ves al principi o al final</string>
+    <string name="keys_move">Mou-te entre botons i camps</string>
+    <string name="keys_text_size">Text més gran, més petit o normal</string>
+    <string name="keys_full_screen">Pantalla completa</string>
+    <string name="keys_video">Vídeo a pantalla completa: reprodueix o posa en pausa, salta 10 segons</string>
+    <string name="keys_quit">Surt de l’XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Maj</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Espai</string>
+    <string name="keys_page_up">RePàg</string>
+    <string name="keys_page_down">AvPàg</string>
+    <string name="keys_home">Inici</string>
+    <string name="keys_end">Fi</string>
+</resources>

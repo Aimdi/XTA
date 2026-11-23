@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Tastenkürzel</string>
+    <string name="keys_help">Diese Tastenkürzel zeigen</string>
+    <string name="keys_back">Zurück, oder Geöffnetes schließen</string>
+    <string name="keys_refresh">Aktualisieren</string>
+    <string name="keys_search">Suchen</string>
+    <string name="keys_tabs">Nächster oder vorheriger Tab</string>
+    <string name="keys_pages">Vorherige oder nächste Seite</string>
+    <string name="keys_scroll_line">Ein Stück scrollen</string>
+    <string name="keys_scroll_screen">Eine Bildschirmseite scrollen</string>
+    <string name="keys_scroll_ends">Zum Anfang oder zum Ende</string>
+    <string name="keys_move">Zwischen Schaltflächen und Feldern wechseln</string>
+    <string name="keys_text_size">Größere, kleinere oder normale Schrift</string>
+    <string name="keys_full_screen">Vollbild</string>
+    <string name="keys_video">Video im Vollbild: abspielen oder pausieren, 10 Sekunden springen</string>
+    <string name="keys_quit">XTA beenden</string>
+    <string name="keys_ctrl">Strg</string>
+    <string name="keys_shift">Umschalt</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Leertaste</string>
+    <string name="keys_page_up">Bild ↑</string>
+    <string name="keys_page_down">Bild ↓</string>
+    <string name="keys_home">Pos1</string>
+    <string name="keys_end">Ende</string>
+</resources>

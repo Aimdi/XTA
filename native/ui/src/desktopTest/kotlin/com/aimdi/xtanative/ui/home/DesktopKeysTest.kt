@@ -241,4 +241,21 @@ class DesktopKeysTest {
             assertFalse(com.aimdi.xtanative.ui.SearchKeys.opensSearchOver(route), "over $route")
         }
     }
+
+    @Test
+    fun f1AndAQuestionMarkListTheKeys() {
+        assertEquals(DeskAction.SHOW_KEYS, action(DeskKey.F1))
+        assertEquals(DeskAction.SHOW_KEYS, action(DeskKey.F1, focusInside = true), "F1 types nothing, so a field keeps no claim to it")
+        assertEquals(DeskAction.SHOW_KEYS, action(DeskKey.QUESTION, shift = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.QUESTION, focusInside = true), "a field types its ?")
+        assertEquals(DeskAction.NONE, action(DeskKey.F1, open = true), "not over a sheet")
+        assertEquals(DeskAction.NONE, action(DeskKey.F1, ctrl = true))
+    }
+
+    @Test
+    fun everyShortcutListedHasKeys() {
+        assertTrue(DesktopShortcuts.all.isNotEmpty())
+        DesktopShortcuts.all.forEach { shortcut -> assertTrue(shortcut.keys.isNotEmpty() && shortcut.keys.all { it.isNotEmpty() }, "${shortcut.does}") }
+        assertEquals(DesktopShortcuts.all.size, DesktopShortcuts.all.map { it.does }.distinct().size)
+    }
 }

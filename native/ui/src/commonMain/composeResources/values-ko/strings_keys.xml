@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">키보드 단축키</string>
+    <string name="keys_help">이 단축키 보기</string>
+    <string name="keys_back">뒤로 가기 또는 열린 항목 닫기</string>
+    <string name="keys_refresh">새로고침</string>
+    <string name="keys_search">검색</string>
+    <string name="keys_tabs">다음 또는 이전 탭</string>
+    <string name="keys_pages">이전 또는 다음 페이지</string>
+    <string name="keys_scroll_line">조금 스크롤</string>
+    <string name="keys_scroll_screen">한 화면 스크롤</string>
+    <string name="keys_scroll_ends">맨 위 또는 맨 끝으로 이동</string>
+    <string name="keys_move">버튼과 입력란 사이 이동</string>
+    <string name="keys_text_size">글자 크게, 작게 또는 기본 크기</string>
+    <string name="keys_full_screen">전체 화면</string>
+    <string name="keys_video">전체 화면 동영상: 재생 또는 일시정지, 10초 건너뛰기</string>
+    <string name="keys_quit">XTA 종료</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">스페이스</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

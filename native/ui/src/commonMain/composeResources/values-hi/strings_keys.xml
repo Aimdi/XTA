@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">कीबोर्ड शॉर्टकट</string>
+    <string name="keys_help">ये शॉर्टकट दिखाएँ</string>
+    <string name="keys_back">वापस जाएँ, या जो खुला है उसे बंद करें</string>
+    <string name="keys_refresh">रीफ़्रेश करें</string>
+    <string name="keys_search">खोजें</string>
+    <string name="keys_tabs">अगला या पिछला टैब</string>
+    <string name="keys_pages">पिछला या अगला पेज</string>
+    <string name="keys_scroll_line">थोड़ा स्क्रॉल करें</string>
+    <string name="keys_scroll_screen">एक स्क्रीन स्क्रॉल करें</string>
+    <string name="keys_scroll_ends">ऊपर या अंत तक जाएँ</string>
+    <string name="keys_move">बटनों और फ़ील्ड के बीच जाएँ</string>
+    <string name="keys_text_size">बड़ा, छोटा या सामान्य टेक्स्ट</string>
+    <string name="keys_full_screen">फ़ुल स्क्रीन</string>
+    <string name="keys_video">फ़ुल स्क्रीन वीडियो: चलाएँ या रोकें, 10 सेकंड आगे-पीछे जाएँ</string>
+    <string name="keys_quit">XTA बंद करें</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">स्पेस</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

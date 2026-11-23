@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Klávesové zkratky</string>
+    <string name="keys_help">Zobrazit tyto zkratky</string>
+    <string name="keys_back">Zpět, nebo zavřít, co je otevřené</string>
+    <string name="keys_refresh">Obnovit</string>
+    <string name="keys_search">Hledat</string>
+    <string name="keys_tabs">Další nebo předchozí karta</string>
+    <string name="keys_pages">Předchozí nebo další stránka</string>
+    <string name="keys_scroll_line">Posunout o kousek</string>
+    <string name="keys_scroll_screen">Posunout o obrazovku</string>
+    <string name="keys_scroll_ends">Na začátek nebo na konec</string>
+    <string name="keys_move">Přecházet mezi tlačítky a poli</string>
+    <string name="keys_text_size">Větší, menší nebo normální písmo</string>
+    <string name="keys_full_screen">Celá obrazovka</string>
+    <string name="keys_video">Video na celou obrazovku: přehrát nebo pozastavit, přeskočit 10 sekund</string>
+    <string name="keys_quit">Ukončit XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Mezerník</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

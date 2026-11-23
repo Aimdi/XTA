@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Pintasan keyboard</string>
+    <string name="keys_help">Tampilkan pintasan ini</string>
+    <string name="keys_back">Kembali, atau tutup yang sedang terbuka</string>
+    <string name="keys_refresh">Segarkan</string>
+    <string name="keys_search">Cari</string>
+    <string name="keys_tabs">Tab berikutnya atau sebelumnya</string>
+    <string name="keys_pages">Halaman sebelumnya atau berikutnya</string>
+    <string name="keys_scroll_line">Gulir sedikit</string>
+    <string name="keys_scroll_screen">Gulir satu layar</string>
+    <string name="keys_scroll_ends">Ke atas atau ke akhir</string>
+    <string name="keys_move">Berpindah antar tombol dan kolom</string>
+    <string name="keys_text_size">Teks lebih besar, lebih kecil, atau normal</string>
+    <string name="keys_full_screen">Layar penuh</string>
+    <string name="keys_video">Video layar penuh: putar atau jeda, lompat 10 detik</string>
+    <string name="keys_quit">Keluar dari XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Spasi</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>

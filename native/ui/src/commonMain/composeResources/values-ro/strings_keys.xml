@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Comenzi rapide de la tastatură</string>
+    <string name="keys_help">Arată aceste comenzi rapide</string>
+    <string name="keys_back">Înapoi sau închide ce este deschis</string>
+    <string name="keys_refresh">Reîmprospătează</string>
+    <string name="keys_search">Caută</string>
+    <string name="keys_tabs">Fila următoare sau anterioară</string>
+    <string name="keys_pages">Pagina anterioară sau următoare</string>
+    <string name="keys_scroll_line">Derulează puțin</string>
+    <string name="keys_scroll_screen">Derulează un ecran</string>
+    <string name="keys_scroll_ends">Mergi la început sau la sfârșit</string>
+    <string name="keys_move">Treci de la un buton sau câmp la altul</string>
+    <string name="keys_text_size">Text mai mare, mai mic sau normal</string>
+    <string name="keys_full_screen">Ecran complet</string>
+    <string name="keys_video">Video pe ecran complet: redă sau pune pauză, sari 10 secunde</string>
+    <string name="keys_quit">Închide XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Spațiu</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+</resources>
