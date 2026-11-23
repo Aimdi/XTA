@@ -172,7 +172,7 @@ fun NoteEditorDialog(
     Dialog(onDismissRequest = close, properties = DialogProperties(usePlatformDefaultWidth = false, dismissOnClickOutside = false)) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             Box(Modifier.fillMaxSize().systemBarsPadding().imePadding(), contentAlignment = Alignment.TopCenter) {
-                Column(Modifier.fillMaxSize().widthIn(max = 720.dp)) {
+                Column(Modifier.widthIn(max = 720.dp).fillMaxSize()) {
                     EditorBar(title(target), state.busy, state.saving, NoteRules.canSave(target, state, editor.dirty), close, save)
                     HorizontalDivider()
                     if (state.recovered) Text(stringResource(Res.string.saved_draft_restored), modifier = Modifier.padding(8.dp))

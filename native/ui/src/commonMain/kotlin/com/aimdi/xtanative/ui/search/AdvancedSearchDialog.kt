@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -67,6 +68,7 @@ import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Inclusion
 import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.discover_accounts
@@ -178,28 +180,31 @@ internal fun AdvancedSearchDialog(
             },
             bottomBar = { ApplyBar(onApply) },
         ) { padding ->
-            Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())) {
-                Section(DiscoverIcons.TextFields, Res.string.discover_search_term) {
-                    listOf(Filter.ALL_WORDS, Filter.EXACT_PHRASE, Filter.ANY_WORDS, Filter.NONE_WORDS, Filter.HASHTAGS).forEach { filter ->
-                        TextFilter(filters, filter, onChange)
+            // A form in the reading column's width, centred in a wide window, as the settings pages are.
+            Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
+                Column(Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp).fillMaxSize().verticalScroll(rememberScrollState())) {
+                    Section(DiscoverIcons.TextFields, Res.string.discover_search_term) {
+                        listOf(Filter.ALL_WORDS, Filter.EXACT_PHRASE, Filter.ANY_WORDS, Filter.NONE_WORDS, Filter.HASHTAGS).forEach { filter ->
+                            TextFilter(filters, filter, onChange)
+                        }
+                        LanguageField(filters.language) { code -> onChange { it.copy(language = code) } }
                     }
-                    LanguageField(filters.language) { code -> onChange { it.copy(language = code) } }
-                }
-                Section(DiscoverIcons.AlternateEmail, Res.string.discover_accounts) {
-                    listOf(Filter.FROM_ACCOUNTS, Filter.TO_ACCOUNTS, Filter.MENTIONING_ACCOUNTS).forEach { filter ->
-                        TextFilter(filters, filter, onChange)
+                    Section(DiscoverIcons.AlternateEmail, Res.string.discover_accounts) {
+                        listOf(Filter.FROM_ACCOUNTS, Filter.TO_ACCOUNTS, Filter.MENTIONING_ACCOUNTS).forEach { filter ->
+                            TextFilter(filters, filter, onChange)
+                        }
                     }
-                }
-                Section(DiscoverIcons.PermMedia, Res.string.discover_content_filter) { ContentFilters(filters, onChange) }
-                Section(DiscoverIcons.Tune, Res.string.discover_filters) {
-                    listOf(Filter.MIN_REPLIES, Filter.MIN_LIKES, Filter.MIN_RETWEETS).forEach { filter ->
-                        TextFilter(filters, filter, onChange, number = true)
+                    Section(DiscoverIcons.PermMedia, Res.string.discover_content_filter) { ContentFilters(filters, onChange) }
+                    Section(DiscoverIcons.Tune, Res.string.discover_filters) {
+                        listOf(Filter.MIN_REPLIES, Filter.MIN_LIKES, Filter.MIN_RETWEETS).forEach { filter ->
+                            TextFilter(filters, filter, onChange, number = true)
+                        }
+                        DateRow(stringResource(Res.string.discover_since), filters.since) { day -> onChange { it.copy(since = day) } }
+                        DateRow(stringResource(Res.string.discover_until), filters.until) { day -> onChange { it.copy(until = day) } }
                     }
-                    DateRow(stringResource(Res.string.discover_since), filters.since) { day -> onChange { it.copy(since = day) } }
-                    DateRow(stringResource(Res.string.discover_until), filters.until) { day -> onChange { it.copy(until = day) } }
+                    QueryPreview(filters.query)
+                    Spacer(Modifier.height(8.dp))
                 }
-                QueryPreview(filters.query)
-                Spacer(Modifier.height(8.dp))
             }
         }
     }
@@ -422,9 +427,9 @@ private fun QueryPreview(query: String) {
 
 @Composable
 private fun ApplyBar(onApply: () -> Unit) {
-    Column(Modifier.fillMaxWidth()) {
+    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Hairline()
-        Button(onClick = onApply, modifier = Modifier.fillMaxWidth().padding(12.dp).heightIn(min = 48.dp)) {
+        Button(onClick = onApply, modifier = Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp).fillMaxWidth().padding(12.dp).heightIn(min = 48.dp)) {
             Icon(Icons.Filled.Search, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.discover_search), modifier = Modifier.padding(start = 8.dp))
         }
