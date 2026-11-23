@@ -166,6 +166,9 @@ private class HomeShellState(
     var sheet by mutableStateOf<HomeSheet?>(null)
     var layer by mutableStateOf<HomeLayer?>(null)
 
+    /** Whether the window is wide enough for the sidebar, where the menu stands beside Home and there is no drawer. */
+    var wide by mutableStateOf(false)
+
     /** The page shown; the first when it left the bar. */
     fun page(ui: HomeUi): BarPage = ui.bar.firstOrNull { it.id == barId } ?: ui.bar.first()
 
@@ -224,7 +227,8 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean, wide: Boolean) {
         },
     )
     // A window widened past the sidebar's breakpoint shows the menu beside Home: a drawer open then closes.
-    LaunchedEffect(wide) { if (wide && shell.drawer.isOpen) shell.drawer.snapTo(DrawerValue.Closed) }
+    shell.wide = wide
+    LaunchedEffect(wide, shell.drawer.targetValue) { if (wide && shell.drawer.targetValue == DrawerValue.Open) shell.drawer.snapTo(DrawerValue.Closed) }
     val feedCalls = FeedPageCalls(
         // In a wide window the menu stands open beside Home.
         openMenu = { if (!wide) scope.launch { shell.drawer.open() } },
@@ -315,7 +319,7 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
                 )
             }
         },
-        content = { Box(Modifier.fillMaxSize().drawerEdge(shell.drawer)) { content() } },
+        content = { Box(Modifier.fillMaxSize().then(if (shell.wide) Modifier else Modifier.drawerEdge(shell.drawer))) { content() } },
     )
 }
 
@@ -578,7 +582,8 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
                 onAdd = { shell.sheet = HomeSheet.STRIP },
                 onMenu = {
                     close()
-                    scope.launch { shell.drawer.open() }
+                    // In a wide window the menu stands open beside Home.
+                    if (!shell.wide) scope.launch { shell.drawer.open() }
                 },
                 onManage = {
                     close()
