@@ -102,6 +102,7 @@ import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.saved.SavedIcons
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.isActive
 import org.jetbrains.compose.resources.stringResource
 
 /** Where the search screen leads, besides posts and profiles: communities, the antennas and the search of the reader's library. */
@@ -338,11 +339,25 @@ private fun Results(vm: SearchViewModel, tab: SearchTab, actions: PostActions, s
     // Each tab keeps its place while another is shown.
     val lists = SearchTab.entries.associateWith { rememberLazyListState() }
     val pager = rememberPagerState(initialPage = tab.ordinal) { SearchTab.entries.size }
+    // A tab picked (a click, Ctrl+Tab) slides the pager there; a tab picked on the way, before it arrives, slides it on
+    // from where it is. Only where the pager comes to rest by itself (a swipe) does it pick the tab ([PagerTurns]).
+    val turns = remember(pager) { PagerTurns() }
     LaunchedEffect(tab) {
-        if (pager.currentPage != tab.ordinal) pager.animateScrollToPage(tab.ordinal)
+        if (pager.currentPage == tab.ordinal && !pager.isScrollInProgress) {
+            // Already there (a slide away cut short by picking this tab again): nothing slides.
+            turns.ended()
+            return@LaunchedEffect
+        }
+        turns.started(tab.ordinal)
+        try {
+            pager.animateScrollToPage(tab.ordinal)
+        } finally {
+            // Arrived, or stopped by a drag: the pager's own rest counts again. Not when a newer tab took over.
+            if (isActive) turns.ended()
+        }
     }
     LaunchedEffect(pager) {
-        snapshotFlow { pager.settledPage }.collect { vm.select(SearchTab.entries[it]) }
+        snapshotFlow { pager.settledPage }.collect { page -> if (turns.picks(page)) vm.select(SearchTab.entries[page]) }
     }
     HorizontalPager(state = pager, key = { SearchTab.entries[it].name }, modifier = Modifier.fillMaxSize()) { page ->
         val shown = SearchTab.entries[page]
