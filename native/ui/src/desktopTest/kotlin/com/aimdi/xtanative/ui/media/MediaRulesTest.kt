@@ -161,4 +161,18 @@ class MediaRulesTest {
         assertEquals(ViewerZoom.MAX, ViewerZoom.wheeled(3.9f, -5f), "never past the most")
         assertEquals(2f, ViewerZoom.wheeled(2f, 0f))
     }
+
+    @Test
+    fun aVideoFullScreenTakesThePlayersKeys() {
+        fun key(escape: Boolean = false, space: Boolean = false, left: Boolean = false, right: Boolean = false, modified: Boolean = false) =
+            VideoKeys.of(escape, space, left, right, modified)
+        assertEquals(VideoKey.LEAVE, key(escape = true))
+        assertEquals(VideoKey.PLAY_PAUSE, key(space = true))
+        assertEquals(VideoKey.BACK, key(left = true))
+        assertEquals(VideoKey.FORWARD, key(right = true))
+        assertEquals(VideoKey.NONE, key())
+        assertEquals(VideoKey.NONE, key(space = true, modified = true), "Ctrl+Space is the window's")
+        assertEquals(VideoKey.NONE, key(left = true, modified = true), "Alt+← goes back, not ten seconds")
+        assertEquals(VideoKey.LEAVE, key(escape = true, modified = true))
+    }
 }

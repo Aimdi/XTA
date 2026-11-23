@@ -20,7 +20,10 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isAltPressed
+import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
@@ -91,7 +94,7 @@ private fun FullscreenLayer(video: FullscreenVideo, onClose: () -> Unit) {
             .background(Color.Black)
             // Nothing under it is touched while it is up, picture-in-picture included.
             .pointerInput(Unit) { awaitPointerEventScope { while (true) awaitPointerEvent().changes.forEach { it.consume() } } }
-            .onKeyEvent { event -> (event.type == KeyEventType.KeyDown && event.key == Key.Escape).also { if (it) onClose() } }
+            .onKeyEvent { event -> event.type == KeyEventType.KeyDown && fullscreenKey(event, player, onClose) }
             .focusRequester(focus)
             .focusable(),
     ) {
@@ -134,3 +137,24 @@ internal expect val FullscreenTurns: Boolean
 /** Picture-in-picture, or null where there is none (the desktop, a phone without it); [onDismissed] hears its window closed. */
 @Composable
 internal expect fun rememberPictureInPicture(onDismissed: () -> Unit): PictureInPicture?
+
+/** [event] done to the video full screen ([VideoKeys]); false when it is not the video's. */
+private fun fullscreenKey(event: KeyEvent, playback: VideoPlayback, onClose: () -> Unit): Boolean {
+    val key = VideoKeys.of(
+        escape = event.key == Key.Escape,
+        space = event.key == Key.Spacebar,
+        left = event.key == Key.DirectionLeft,
+        right = event.key == Key.DirectionRight,
+        modified = event.isCtrlPressed || event.isAltPressed,
+    )
+    val now = playback.state.value
+    val skip = VideoRules.SEEK_SECONDS * 1000L
+    when (key) {
+        VideoKey.LEAVE -> onClose()
+        VideoKey.PLAY_PAUSE -> playback.playOrPause()
+        VideoKey.BACK -> playback.seekTo(VideoRules.seekTarget(now.positionMs, -skip, now.durationMs))
+        VideoKey.FORWARD -> playback.seekTo(VideoRules.seekTarget(now.positionMs, skip, now.durationMs))
+        VideoKey.NONE -> return false
+    }
+    return true
+}

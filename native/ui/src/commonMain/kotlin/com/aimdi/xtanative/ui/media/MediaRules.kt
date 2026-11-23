@@ -10,6 +10,26 @@ import java.util.Locale
 /** One MP4 a video can play at, as the quality sheet lists it: `720p`. */
 data class VideoQuality(val url: String, val label: String)
 
+/** What a key does to a video full screen on the desktop ([VideoKeys]). */
+enum class VideoKey { LEAVE, PLAY_PAUSE, BACK, FORWARD, NONE }
+
+/**
+ * A video full screen's keys, as a desktop's players have them: Esc
+ * leaves, Space plays or pauses, ← and → skip back and on
+ * [VideoRules.SEEK_SECONDS], as a double tap on either half does. With
+ * Ctrl or Alt held they are the window's, not the video's.
+ */
+object VideoKeys {
+    fun of(escape: Boolean, space: Boolean, left: Boolean, right: Boolean, modified: Boolean): VideoKey = when {
+        escape -> VideoKey.LEAVE
+        modified -> VideoKey.NONE
+        space -> VideoKey.PLAY_PAUSE
+        left -> VideoKey.BACK
+        right -> VideoKey.FORWARD
+        else -> VideoKey.NONE
+    }
+}
+
 /** The rules of the media viewer's videos (_video.dart, _video_controls.dart, video_quality.dart). */
 object VideoRules {
     /** Seconds a double tap on either half of a video skips. */
