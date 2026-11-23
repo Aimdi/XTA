@@ -365,7 +365,9 @@ fun XtaNativeRoot() {
         // intro, the sign-in or an import, not over a plugin's pages (they keep their own keys), and not a
         // second search over one still opening.
         val openSearch = remember(nav) { { if (SearchKeys.opensSearchOver(nav.currentDestination?.route)) nav.navigate(Routes.search(null)) } }
-        DesktopNavigation(nav, openSearch) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) }
+        // Ctrl+, opens the settings, unless they are open already, or a screen that must be finished first is.
+        val openSettings = remember(nav) { { if (SearchKeys.opensSettingsOver(nav.currentDestination?.route)) nav.navigate(Routes.SETTINGS) } }
+        DesktopNavigation(nav, openSearch, openSettings) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) }
     }
     if (askSignIn) {
         NotLoggedInDialog(onImportBackup = { nav.navigate(Routes.IMPORT) }, onLogin = { nav.navigate(Routes.SIGN_IN) }, onDismiss = { askSignIn = false })
@@ -773,4 +775,8 @@ internal object SearchKeys {
 
     /** Over [route], the screen shown: not over those that keep the reader where they are, nor a plugin's pages. */
     fun opensSearchOver(route: String?): Boolean = route != null && route !in KEPT && !route.startsWith("plugin")
+
+    /** Ctrl+, over [route]: not over the intro, the sign-in or an import, nor over the settings themselves. */
+    fun opensSettingsOver(route: String?): Boolean =
+        route != null && route !in setOf(Routes.INTRO, Routes.SIGN_IN, Routes.IMPORT) && !route.startsWith(Routes.SETTINGS)
 }

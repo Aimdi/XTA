@@ -39,11 +39,12 @@ enum class ViewerKey { PREVIOUS, NEXT, CLOSE, COPY, SAVE_AS, NONE }
  * back the desktop's way ([back]: Alt+← or the Back key) closes it too, as it
  * goes back from any screen; with Ctrl or Alt held the arrows are not the
  * viewer's. Ctrl+C copies the picture shown and Ctrl+S saves it where the
- * reader picks ([copy], [saveAs]), where the platform can.
+ * reader picks ([copy], [saveAs]), where the platform can; Ctrl+W
+ * ([closeKey]) closes it, as a desktop app closes what it shows.
  */
 object ViewerKeys {
-    fun of(escape: Boolean, left: Boolean, right: Boolean, back: Boolean, modified: Boolean, copy: Boolean = false, saveAs: Boolean = false): ViewerKey = when {
-        escape || back -> ViewerKey.CLOSE
+    fun of(escape: Boolean, left: Boolean, right: Boolean, back: Boolean, modified: Boolean, copy: Boolean = false, saveAs: Boolean = false, closeKey: Boolean = false): ViewerKey = when {
+        escape || back || closeKey -> ViewerKey.CLOSE
         copy -> ViewerKey.COPY
         saveAs -> ViewerKey.SAVE_AS
         modified -> ViewerKey.NONE

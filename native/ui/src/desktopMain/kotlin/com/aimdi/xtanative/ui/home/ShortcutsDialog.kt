@@ -46,6 +46,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_tabs
 import com.aimdi.xtanative.ui.generated.resources.keys_text_size
 import com.aimdi.xtanative.ui.generated.resources.keys_title
 import com.aimdi.xtanative.ui.generated.resources.keys_video
+import com.aimdi.xtanative.ui.generated.resources.settings_title
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -71,7 +72,7 @@ object DesktopShortcuts {
 
     val all: List<Shortcut> = listOf(
         Shortcut(Res.string.keys_help, listOf(listOf(sign("?")), listOf(sign("F1")))),
-        Shortcut(Res.string.keys_back, listOf(listOf(KeyCap.Named(Res.string.keys_esc)), listOf(alt, sign("←")))),
+        Shortcut(Res.string.keys_back, listOf(listOf(KeyCap.Named(Res.string.keys_esc)), listOf(alt, sign("←")), listOf(ctrl, sign("W")))),
         Shortcut(Res.string.keys_refresh, listOf(listOf(sign("F5")), listOf(ctrl, sign("R")))),
         Shortcut(Res.string.keys_search, listOf(listOf(ctrl, sign("F")), listOf(sign("/")))),
         Shortcut(Res.string.keys_tabs, listOf(listOf(ctrl, tab), listOf(ctrl, shift, tab))),
@@ -85,6 +86,7 @@ object DesktopShortcuts {
         Shortcut(Res.string.keys_move, listOf(listOf(tab), listOf(shift, tab))),
         Shortcut(Res.string.keys_text_size, listOf(listOf(ctrl, sign("+")), listOf(ctrl, sign("−")), listOf(ctrl, sign("0")))),
         Shortcut(Res.string.keys_full_screen, listOf(listOf(sign("F11")))),
+        Shortcut(Res.string.settings_title, listOf(listOf(ctrl, sign(",")))),
         Shortcut(Res.string.keys_video, listOf(listOf(space), listOf(sign("←")), listOf(sign("→")))),
         Shortcut(Res.string.keys_quit, listOf(listOf(ctrl, sign("Q")))),
     )

@@ -16,4 +16,5 @@ internal fun viewerKeyOf(event: KeyEvent): ViewerKey = ViewerKeys.of(
     modified = event.isAltPressed || event.isCtrlPressed,
     copy = event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && event.key == Key.C,
     saveAs = event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && event.key == Key.S,
+    closeKey = event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && event.key == Key.W,
 )

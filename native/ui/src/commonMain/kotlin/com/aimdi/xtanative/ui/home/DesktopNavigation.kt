@@ -177,7 +177,7 @@ val LocalDesktopActionsHost = staticCompositionLocalOf { DesktopActionsHost() }
  * [DesktopActions]. Off the desktop it is [content] alone.
  */
 @Composable
-expect fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, content: @Composable () -> Unit)
+expect fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, content: @Composable () -> Unit)
 
 /**
  * Lets Ctrl+F and / ([DesktopKeys]) go to the screen's own search while it is

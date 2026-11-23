@@ -1,7 +1,7 @@
 package com.aimdi.xtanative.ui.home
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, OTHER }
 
 enum class DeskAction {
     /** Out of the text field being typed in, as XTA's first Esc does. */
@@ -38,6 +38,9 @@ enum class DeskAction {
 
     /** The list of the desktop's keys opens ([DesktopShortcuts]). */
     SHOW_KEYS,
+
+    /** Settings open, as Ctrl+, opens a desktop app's preferences. */
+    OPEN_SETTINGS,
     NONE,
 }
 
@@ -64,7 +67,9 @@ object DesktopKeys {
      * as a desktop app's do: the page's own field, else the app's search.
      * Ctrl with + (or =), - and 0 make the text bigger, smaller, or its
      * size again, as a browser's zoom does, from a field too. F1, and ?
-     * while nothing is being typed in, list these keys.
+     * while nothing is being typed in, list these keys. Ctrl+, opens the
+     * settings, and Ctrl+W closes what is open over the page (a sheet, a
+     * menu), as a desktop app closes a document; it never goes back further.
      */
     fun action(
         key: DeskKey,
@@ -80,6 +85,8 @@ object DesktopKeys {
         key == DeskKey.ESCAPE || key == DeskKey.BACK || (key == DeskKey.LEFT && alt) -> back(canGoBack, somethingOpen)
         key == DeskKey.F5 || (key == DeskKey.R && ctrl) -> DeskAction.REFRESH
         key == DeskKey.Q && ctrl && !alt -> DeskAction.LEAVE_APP
+        key == DeskKey.W && ctrl && !alt && !shift -> if (somethingOpen) DeskAction.CLOSE else DeskAction.NONE
+        key == DeskKey.COMMA && ctrl && !alt && !shift -> if (somethingOpen) DeskAction.NONE else DeskAction.OPEN_SETTINGS
         ctrl && !alt && key in TAB_KEYS -> if (somethingOpen) DeskAction.NONE else tabTurn(key, shift)
         key == DeskKey.TAB && !focusInside && !alt && !ctrl -> DeskAction.ENTER_PAGE
         ctrl && !alt && key in TEXT_KEYS -> textSize(key)

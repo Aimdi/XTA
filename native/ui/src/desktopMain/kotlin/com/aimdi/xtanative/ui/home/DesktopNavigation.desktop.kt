@@ -53,7 +53,7 @@ import kotlinx.coroutines.launch
  * arrive here first.
  */
 @Composable
-actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, content: @Composable () -> Unit) {
+actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, content: @Composable () -> Unit) {
     val focus = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val settingsStore = LocalSettingsStore.current
@@ -125,6 +125,10 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, con
                 scope.launch { list.moveFor(action, line) }
                 true
             } ?: false
+        DeskAction.OPEN_SETTINGS -> {
+            openSettings()
+            true
+        }
         DeskAction.SHOW_KEYS -> {
             showKeys = true
             true
@@ -248,6 +252,8 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.Q -> DeskKey.Q
     Key.F -> DeskKey.F
     Key.F1 -> DeskKey.F1
+    Key.Comma -> DeskKey.COMMA
+    Key.W -> DeskKey.W
     Key.Plus, Key.Equals, Key.NumPadAdd -> DeskKey.PLUS
     Key.Minus, Key.NumPadSubtract -> DeskKey.MINUS
     Key.Zero, Key.NumPad0 -> DeskKey.ZERO

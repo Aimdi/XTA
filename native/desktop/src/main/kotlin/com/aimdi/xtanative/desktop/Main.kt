@@ -63,6 +63,11 @@ import kotlinx.coroutines.withTimeoutOrNull
  */
 @OptIn(FlowPreview::class)
 fun main(args: Array<String>) {
+    // `xta-native --version`, as command-line programs answer it: the name and version, before anything starts.
+    if ("--version" in args) {
+        println("xta-native ${System.getProperty("xtanative.version").orEmpty()}".trim())
+        exitProcess(0)
+    }
     val files = dataFolder()
     val link = InstanceMessage.linkIn(args)
     val instance = SingleInstance.claim(files, link?.let(InstanceMessage::Open) ?: InstanceMessage.Raise) ?: exitProcess(0)

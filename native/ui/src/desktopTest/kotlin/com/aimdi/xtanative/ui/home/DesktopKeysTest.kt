@@ -258,4 +258,18 @@ class DesktopKeysTest {
         DesktopShortcuts.all.forEach { shortcut -> assertTrue(shortcut.keys.isNotEmpty() && shortcut.keys.all { it.isNotEmpty() }, "${shortcut.does}") }
         assertEquals(DesktopShortcuts.all.size, DesktopShortcuts.all.map { it.does }.distinct().size)
     }
+
+    @Test
+    fun ctrlCommaOpensTheSettingsAndCtrlWClosesWhatIsOpen() {
+        assertEquals(DeskAction.OPEN_SETTINGS, action(DeskKey.COMMA, ctrl = true))
+        assertEquals(DeskAction.OPEN_SETTINGS, action(DeskKey.COMMA, ctrl = true, focusInside = true), "from a field too")
+        assertEquals(DeskAction.NONE, action(DeskKey.COMMA, ctrl = true, open = true), "not over a sheet")
+        assertEquals(DeskAction.CLOSE, action(DeskKey.W, ctrl = true, open = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.W, ctrl = true), "it never goes back a screen")
+        assertTrue(com.aimdi.xtanative.ui.SearchKeys.opensSettingsOver("home"))
+        assertFalse(com.aimdi.xtanative.ui.SearchKeys.opensSettingsOver("settings"))
+        assertFalse(com.aimdi.xtanative.ui.SearchKeys.opensSettingsOver("settings/{section}"))
+        assertFalse(com.aimdi.xtanative.ui.SearchKeys.opensSettingsOver("intro"))
+        assertEquals(com.aimdi.xtanative.ui.media.ViewerKey.CLOSE, com.aimdi.xtanative.ui.media.ViewerKeys.of(escape = false, left = false, right = false, back = false, modified = true, closeKey = true))
+    }
 }
