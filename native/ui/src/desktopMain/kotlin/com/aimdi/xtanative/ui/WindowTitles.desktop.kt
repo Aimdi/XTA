@@ -28,23 +28,23 @@ sealed interface TitlePart {
     /** A screen known by its name: Settings, Downloads… */
     data class Named(val name: StringResource) : TitlePart
 
-    /** A search, of [query] where there is one. */
-    data class Search(val query: String?) : TitlePart
-
     /** A profile: `@name`. */
     data class Profile(val screenName: String) : TitlePart
 }
 
 /**
- * The window's title as a desktop app's names what it shows ("flutter –
- * Search – XTA Native"), for the window switcher, the bar and the task
- * list: [of] picks the part for a screen, from its route and arguments.
+ * The window's title as a desktop app's names what it shows ("Search – XTA
+ * Native", "@name – XTA Native"), for the window switcher, the bar and the
+ * task list: [of] picks the part for a screen, from its route and arguments.
+ * A search's words stay out: one typed on the Search screen does not change
+ * its route, so the title could not follow it.
  * Home, and screens whose name the route does not hold (a community, a
  * list), leave the app's name alone.
  */
 object WindowTitles {
     private val NAMED: Map<String, StringResource> = mapOf(
         Routes.DECK to Res.string.home_deck,
+        Routes.SEARCH to Res.string.search,
         Routes.POST to Res.string.post,
         Routes.QUOTES to Res.string.post,
         Routes.REPOSTERS to Res.string.post,
@@ -72,7 +72,6 @@ object WindowTitles {
     /** The part for the screen at [route] (a route pattern), its arguments read by [arg]; null for none. */
     fun of(route: String?, arg: (String) -> String?): TitlePart? = when (route) {
         null -> null
-        Routes.SEARCH -> TitlePart.Search(arg("q")?.trim()?.ifEmpty { null })
         Routes.PROFILE, Routes.FOLLOWING, Routes.FOLLOWERS -> arg("screenName")?.trim()?.ifEmpty { null }?.let(TitlePart::Profile)
         else -> NAMED[route]?.let(TitlePart::Named)
     }
@@ -101,7 +100,6 @@ internal actual fun WindowTitleFollows(nav: NavHostController) {
         null -> null
         is TitlePart.Named -> stringResource(part.name)
         is TitlePart.Profile -> "@" + part.screenName
-        is TitlePart.Search -> stringResource(Res.string.search).let { search -> part.query?.let { "$it – $search" } ?: search }
     }
     LaunchedEffect(text) { DesktopWindowTitle.show(text) }
 }

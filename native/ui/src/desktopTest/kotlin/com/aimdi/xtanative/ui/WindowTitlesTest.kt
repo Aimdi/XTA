@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui
 
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_downloads
+import com.aimdi.xtanative.ui.generated.resources.search
 import com.aimdi.xtanative.ui.generated.resources.settings_title
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -12,8 +13,8 @@ class WindowTitlesTest {
 
     @Test
     fun aScreenNamesTheWindow() {
-        assertEquals(TitlePart.Search("flutter"), of(Routes.SEARCH, "q" to " flutter "))
-        assertEquals(TitlePart.Search(null), of(Routes.SEARCH, "q" to ""))
+        // A search's words stay out of it (typed ones would not follow).
+        assertEquals(TitlePart.Named(Res.string.search), of(Routes.SEARCH, "q" to "flutter"))
         assertEquals(TitlePart.Profile("quax_tests"), of(Routes.PROFILE, "screenName" to "quax_tests"))
         assertEquals(TitlePart.Profile("a"), of(Routes.FOLLOWERS, "screenName" to "a"))
         assertEquals(TitlePart.Named(Res.string.settings_title), of(Routes.SETTINGS_SECTION))

@@ -232,8 +232,9 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
             }
             // A right-click on the page opens the desktop's menu for it, as a browser's on a picture.
             val pageMenu = if (fileMenu != null) Modifier.onSecondaryClick(fileMenu::openForShown) else Modifier
-            // Clipped: a zoomed photo stays under the bar, whose buttons stay in reach.
-            Box(Modifier.weight(1f).fillMaxWidth().clipToBounds().then(pageMenu)) {
+            // A zoomed photo is clipped, so it stays under the bar, whose buttons stay in reach; unzoomed, one dragged away to close slides out under the bar.
+            val clip = if (zoomedPages[pager.currentPage] == true) Modifier.clipToBounds() else Modifier
+            Box(Modifier.weight(1f).fillMaxWidth().then(clip).then(pageMenu)) {
                 if (items.isEmpty()) {
                     Text(stringResource(Res.string.reader_media_unknown), color = Color.White, modifier = Modifier.align(Alignment.Center))
                 } else {
