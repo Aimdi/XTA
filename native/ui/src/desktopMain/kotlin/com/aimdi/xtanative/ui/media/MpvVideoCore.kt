@@ -101,6 +101,10 @@ internal class MpvVideoCore<P : MpvPictures>(
         player?.onChange = ::changed
     }
 
+    /** Whether it was heard playing when the media keys were last told, so they are claimed only as that starts. */
+    @Volatile
+    private var wasPlaying = false
+
     /** What the desktop's media keys do to this video while it is the one heard. */
     private val controls = AudioSessionBinding(
         onPlay = { if (!state.value.playing) playOrPause() },
@@ -242,10 +246,13 @@ internal class MpvVideoCore<P : MpvPictures>(
         val sessions = MprisSessions.service
         val heard = !released && !gif && now.started && !now.muted && !now.failed
         val durationMs = now.durationMs.takeIf { it > 0 }
+        // Only starting to be heard playing (it plays, or its sound comes on) claims the keys: a reading bound since keeps them while this plays on.
+        val startedPlaying = heard && now.playing && !wasPlaying
+        wasPlaying = heard && now.playing
         when {
             !heard -> sessions.clear(this)
             sessions.holds(this) -> sessions.update(this, now.playing, now.positionMs, durationMs)
-            now.playing -> {
+            startedPlaying -> {
                 sessions.bind(this, title = "", artist = null, binding = controls)
                 sessions.update(this, playing = true, positionMs = now.positionMs, durationMs = durationMs)
             }

@@ -59,11 +59,12 @@ private object DesktopSpeechSession : SpeechSession {
 
     override fun bind(title: String, stop: suspend () -> Unit) {
         val sessions = MprisSessions.service
-        sessions.bind(title, binding = AudioSessionBinding(onStop = { scope.launch { stop() } }))
-        sessions.update(playing = true)
+        sessions.bind(this, title, artist = null, binding = AudioSessionBinding(onStop = { scope.launch { stop() } }))
+        sessions.update(this, playing = true, positionMs = 0, durationMs = null)
     }
 
-    override fun clear() = MprisSessions.service.clear()
+    // Only the reading's own: a video that took the keys since keeps them.
+    override fun clear() = MprisSessions.service.clear(this)
 }
 
 /** $[name], else [fallback] in the home folder. */

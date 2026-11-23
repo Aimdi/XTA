@@ -3,8 +3,9 @@ Type=Application
 Name=XTA Native
 GenericName=Feed reader
 Comment=Private, read-only reader for X and other networks
-# %U: `xta-native <url>` opens an X link (or a page a plugin reads) in the app; a link router
-# (handlr, junction) can send x.com links here. XTA claims no web scheme: it is no browser.
+# %U: `xta-native <url>` opens an X link (or a page a plugin reads) in the app; a link router (handlr, junction)
+# can send x.com links here. XTA claims no web scheme: it is no browser, and a link it hands
+# back to the browser within seconds is not taken again, so a router cannot loop.
 Exec=xta-native %U
 Icon=com.aimdi.xtanative
 Terminal=false

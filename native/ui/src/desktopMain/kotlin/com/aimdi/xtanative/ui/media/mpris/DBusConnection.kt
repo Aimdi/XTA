@@ -158,7 +158,9 @@ class DBusConnection private constructor(private val channel: SocketChannel) : A
             return try {
                 channel.connect(UnixDomainSocketAddress.of(socket.toPath()))
                 authenticate(channel, uid() ?: return null.also { channel.close() })
-                DBusConnection(channel).also { it.start() }.takeIf { it.uniqueName != null && it.open }
+                val connection = DBusConnection(channel).also { it.start() }
+                // A bus that never said who this is: let go of the socket and its reader.
+                connection.takeIf { it.uniqueName != null && it.open } ?: null.also { connection.close() }
             } catch (_: Exception) {
                 runCatching { channel.close() }
                 null

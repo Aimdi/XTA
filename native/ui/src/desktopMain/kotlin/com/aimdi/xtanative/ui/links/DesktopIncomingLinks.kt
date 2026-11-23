@@ -17,11 +17,35 @@ object DesktopIncomingLinks {
 
     private val waiting = Channel<String>(WAITING, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
-    /** Opens [url] in the app as soon as its screens are up. */
+    /** Opens [url] in the app as soon as its screens are up; one the app has just sent to the browser is not taken back. */
     fun hand(url: String) {
+        if (SentOutside.cameBack(url)) return
         waiting.trySend(url)
     }
 
     /** The links handed here, each to one collector only. */
     internal val links: Flow<String> = waiting.receiveAsFlow()
+}
+
+/**
+ * The links the app sent out to the desktop's browser lately. Where a link
+ * router sends X links to the app (`xta-native %U`), one the app cannot
+ * show and hands out would come straight back, and round again: it is
+ * dropped instead, for [WINDOW_MS].
+ */
+internal object SentOutside {
+    private const val WINDOW_MS = 10_000L
+    private val sent = LinkedHashMap<String, Long>()
+
+    @Synchronized
+    fun sent(url: String, now: Long = System.currentTimeMillis()) {
+        sent.entries.removeAll { now - it.value > WINDOW_MS }
+        sent[url] = now
+    }
+
+    @Synchronized
+    fun cameBack(url: String, now: Long = System.currentTimeMillis()): Boolean {
+        val at = sent[url] ?: return false
+        return (now - at <= WINDOW_MS).also { if (it) sent.remove(url) }
+    }
 }

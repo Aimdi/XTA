@@ -33,6 +33,7 @@ internal object DesktopLinks : LinkPlatform {
     override fun launch(launch: LinkLaunch) {
         val url = launch.url.trim()
         if (!url.startsWith("https://") && !url.startsWith("http://")) return
+        SentOutside.sent(url)
         if (!browse(url)) runCatching { ProcessBuilder("xdg-open", url).start() }
     }
 

@@ -152,4 +152,18 @@ class MprisTest {
             daemon.waitFor(5, TimeUnit.SECONDS)
         }
     }
+
+    @Test
+    fun eachClearsOnlyWhatItBound() {
+        val service = MprisService({ null }, onMain = { it() })
+        val video = Any()
+        val reading = Any()
+        service.bind(video, "", null, AudioSessionBinding(onStop = {}))
+        service.bind(reading, "A post", null, AudioSessionBinding(onStop = {}))
+        service.update(video, playing = false, positionMs = 0, durationMs = null)
+        service.clear(video)
+        assertEquals(true, service.holds(reading), "the reading bound last keeps the keys")
+        service.clear(reading)
+        assertEquals(false, service.holds(reading))
+    }
 }
