@@ -31,9 +31,15 @@ import androidx.navigation.NavHostController
  * going back first closes what it has open. One screen holds them at a time,
  * the one resumed; see [DesktopShortcuts]. [refocus] gives the keys back
  * to the frame unless something in the page holds them; [takeKeys] takes
- * them from whatever in the page holds them.
+ * them from whatever in the page holds them. [screen] is the screen shown
+ * now (the back stack's top entry), so a sheet knows whether it closes over
+ * the screen it opened on.
  */
-class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}, private val takeKeys: () -> Unit = {}) {
+class DesktopActions(
+    private val refocus: (FocusRequester?) -> Unit = {},
+    private val takeKeys: () -> Unit = {},
+    private val screen: () -> Any? = { null },
+) {
     private var owner: Any? = null
     private var refreshing: (() -> Unit)? = null
     private var turning: ((Int) -> Unit)? = null
@@ -292,21 +298,33 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}, privat
     /** The sheets open now ([GivesKeysBack]); one over another hands nothing back as it goes. */
     private var sheets = 0
 
+    /** The screen the first of the sheets open now opened over. */
+    private var sheetScreen: Any? = null
+
     internal fun sheetOpened() {
+        if (sheets == 0) sheetScreen = screen()
         sheets++
     }
+
+    /** Whether a sheet is open now: one opened in place of another as it closed takes back the keys it handed back. */
+    internal fun sheetOpen(): Boolean = sheets > 0
 
     /**
      * A sheet going: once the last is gone, the keys back to the overlay under
      * it, else the window's frame. One still open (a sheet that opened
-     * another) keeps its own field's focus.
+     * another) keeps its own field's focus. Back on the screen it opened
+     * over, the frame takes the keys from the page too: the button clicked to
+     * open the sheet (Add column's +) still holds them, and would keep the
+     * reading keys and Ctrl+← / Ctrl+→ dead until Esc or a click elsewhere.
+     * On a screen the sheet opened (a pick that went somewhere), a field it
+     * focuses keeps the keys.
      */
-    /** Whether a sheet is open now: one opened in place of another as it closed takes back the keys it handed back. */
-    internal fun sheetOpen(): Boolean = sheets > 0
-
     internal fun sheetClosed() {
         sheets = (sheets - 1).coerceAtLeast(0)
-        if (sheets == 0) refocus(holders.lastOrNull())
+        if (sheets > 0) return
+        val under = holders.lastOrNull()
+        if (under == null && screen() == sheetScreen) takeKeys() else refocus(under)
+        sheetScreen = null
     }
 
     /** The keys back to the window's frame (or the overlay holding them), once a field has let go of them ([rememberLeaveField]). */

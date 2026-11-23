@@ -88,7 +88,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                 val held = created[0]?.let { it.sheetOpen() || it.overlayHoldsKeys() } == true
                 if (!held) runCatching { focus.requestFocus() }
             }
-        }).also { created[0] = it }
+        }, screen = { nav.currentBackStackEntry }).also { created[0] = it }
     }
     // What is drawn above this frame (a video full screen) reaches the actions through the root's host.
     val host = LocalDesktopActionsHost.current

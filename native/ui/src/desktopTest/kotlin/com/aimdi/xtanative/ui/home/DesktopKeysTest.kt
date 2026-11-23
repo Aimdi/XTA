@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.home
 
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.geometry.Offset
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -196,16 +197,44 @@ class DesktopKeysTest {
 
     @Test
     fun aSheetOverAnotherHandsTheKeysBackOnlyWhenTheLastGoes() {
-        var refocused = 0
-        val actions = DesktopActions(refocus = { refocused++ })
+        var handed = 0
+        val actions = DesktopActions(refocus = { handed++ }, takeKeys = { handed++ })
         actions.sheetOpened()
         actions.sheetOpened()
         actions.sheetClosed()
-        assertEquals(0, refocused, "the sheet under it keeps its field's focus")
+        assertEquals(0, handed, "the sheet under it keeps its field's focus")
         actions.sheetClosed()
-        assertEquals(1, refocused)
+        assertEquals(1, handed)
         actions.sheetClosed()
-        assertEquals(2, refocused, "never below none")
+        assertEquals(2, handed, "never below none")
+    }
+
+    @Test
+    fun aSheetClosingOverTheScreenItOpenedOnTakesTheKeysFromTheButtonThatOpenedIt() {
+        var screen = "deck"
+        val refocused = mutableListOf<FocusRequester?>()
+        var taken = 0
+        val actions = DesktopActions(refocus = { refocused += it }, takeKeys = { taken++ }, screen = { screen })
+        actions.sheetOpened()
+        actions.sheetClosed()
+        assertEquals(1, taken, "the + clicked to open it held the keys: the frame takes them")
+        assertEquals(emptyList(), refocused)
+
+        // A pick that went to another screen: a field that screen focuses keeps the keys.
+        actions.sheetOpened()
+        screen = "search"
+        actions.sheetClosed()
+        assertEquals(1, taken)
+        assertEquals(listOf<FocusRequester?>(null), refocused)
+
+        // Over an overlay (a video full screen), the keys go back to it.
+        val video = FocusRequester()
+        actions.holdKeys(video)
+        refocused.clear()
+        actions.sheetOpened()
+        actions.sheetClosed()
+        assertEquals(1, taken)
+        assertEquals(listOf<FocusRequester?>(video), refocused)
     }
 
     @Test
