@@ -99,7 +99,9 @@ keeps its own chrome under the shell's header. 15 adds
 opens on the desktop (its post's menu), since a mouse's long press does
 not reach a long click there, and `PluginReadingColumn`, which keeps a
 plugin's list in the app's reading column in a wide window, with the
-desktop's scrollbar and reading keys; a plugin that uses either says 15,
+desktop's scrollbar and reading keys, and `rememberPluginSheetState`, a
+sheet's state that opens it all the way on the desktop and gives the keys
+back as it closes; a plugin that uses any of them says 15,
 and an app of 14 (native-1.0.14) offers it as "needs a newer XTA Native".
 
 On Home every plugin is one shell (option A of the "Unified Plugin Shell"
