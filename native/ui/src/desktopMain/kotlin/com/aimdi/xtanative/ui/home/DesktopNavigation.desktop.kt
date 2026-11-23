@@ -113,6 +113,9 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, con
                 settingsStore.update { settings ->
                     settings.with(AccessibilityPrefs.textScale, DesktopKeys.textScaled(settings[AccessibilityPrefs.textScale], action, TEXT_SCALES))
                 }
+                // A field the new size lays out afresh (Search's, moving under its bar) loses the focus: the keys come back here.
+                delay(REFOCUS_AFTER_MS)
+                actions.keysToFrame()
             }
             true
         }

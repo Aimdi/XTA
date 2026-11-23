@@ -96,9 +96,9 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
     val list = rememberLazyListState()
     if (state.tab == CommunityTab.TOP) LoadMoreNearEnd(list, posts, vm::morePosts)
     val layout = rememberFeedLayout(posts.items)
-    // F5 and Ctrl+R read the community (or its posts) again; ← → and Ctrl+Tab turn its tabs, as on Home.
+    // F5 and Ctrl+R read the community's posts again (the community, once it failed); ← → and Ctrl+Tab turn its tabs, as on Home.
     DesktopShortcuts(
-        refresh = { if (state.community == null) vm.load() else vm.retryPosts() },
+        refresh = { if (state.community != null) vm.retryPosts() else if (state.problem != null) vm.load() },
         turn = { by -> if (state.community != null) DesktopKeys.turned(state.tab.ordinal, CommunityTab.entries.size, by)?.let { vm.select(CommunityTab.entries[it]) } },
         isOpen = { false },
         close = {},

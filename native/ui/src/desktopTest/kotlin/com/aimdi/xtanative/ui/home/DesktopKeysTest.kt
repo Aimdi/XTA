@@ -233,4 +233,12 @@ class DesktopKeysTest {
         assertEquals(1.0, DesktopKeys.textScaled(1.35, DeskAction.TEXT_RESET, range))
         assertEquals(1.35, DesktopKeys.textScaled(1.35, DeskAction.REFRESH, range))
     }
+
+    @Test
+    fun theSearchOpensOverTheAppsScreensOnly() {
+        assertTrue(com.aimdi.xtanative.ui.SearchKeys.opensSearchOver("home"))
+        listOf("intro", "import", "search?q={q}&tab={tab}&focus={focus}", "plugin/rss", "plugin/rss/search?q={q}", "plugin-media/{key}/{index}", null).forEach { route ->
+            assertFalse(com.aimdi.xtanative.ui.SearchKeys.opensSearchOver(route), "over $route")
+        }
+    }
 }

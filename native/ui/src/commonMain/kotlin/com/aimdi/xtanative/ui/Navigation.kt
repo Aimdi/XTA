@@ -361,8 +361,10 @@ fun XtaNativeRoot() {
         ProblemActions(addAccount = { nav.navigate(Routes.SIGN_IN) }, diagnostics = { nav.navigate(SettingsRoutes.of(SettingsSection.DIAGNOSTICS)) })
     }
     CompositionLocalProvider(LocalGalleryOpener provides galleries, LocalProblemActions provides problems, LocalLivePlayer provides livePlayer) {
-        // Ctrl+F and / on a screen with no search of its own open the search, its field ready (not over the intro).
-        val openSearch = remember(nav) { { if (nav.currentDestination?.route != Routes.INTRO) nav.navigate(Routes.search(null)) } }
+        // Ctrl+F and / on a screen with no search of its own open the search, its field ready: not over the
+        // intro, the sign-in or an import, not over a plugin's pages (they keep their own keys), and not a
+        // second search over one still opening.
+        val openSearch = remember(nav) { { if (SearchKeys.opensSearchOver(nav.currentDestination?.route)) nav.navigate(Routes.search(null)) } }
         DesktopNavigation(nav, openSearch) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) }
     }
     if (askSignIn) {
@@ -764,3 +766,11 @@ private fun savedLinks(nav: NavHostController) = SavedLinks(
     openSettings = { nav.navigate(Routes.SETTINGS) },
     searchLibrary = { nav.navigate(Routes.library(null)) },
 )
+
+/** Where Ctrl+F and / open the app's search, on a screen with no search field of its own. */
+internal object SearchKeys {
+    private val KEPT = setOf(Routes.INTRO, Routes.SIGN_IN, Routes.IMPORT, Routes.SEARCH)
+
+    /** Over [route], the screen shown: not over those that keep the reader where they are, nor a plugin's pages. */
+    fun opensSearchOver(route: String?): Boolean = route != null && route !in KEPT && !route.startsWith("plugin")
+}
