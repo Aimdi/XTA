@@ -270,6 +270,7 @@ class DesktopKeysTest {
         assertFalse(com.aimdi.xtanative.ui.SearchKeys.opensSettingsOver("settings"))
         assertFalse(com.aimdi.xtanative.ui.SearchKeys.opensSettingsOver("settings/{section}"))
         assertFalse(com.aimdi.xtanative.ui.SearchKeys.opensSettingsOver("intro"))
+        assertFalse(com.aimdi.xtanative.ui.SearchKeys.opensSettingsOver(com.aimdi.xtanative.ui.settings.SettingsRoutes.PLUGINS), "the intro's plugin store")
         assertEquals(com.aimdi.xtanative.ui.media.ViewerKey.CLOSE, com.aimdi.xtanative.ui.media.ViewerKeys.of(escape = false, left = false, right = false, back = false, modified = true, closeKey = true))
     }
 }

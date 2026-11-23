@@ -365,8 +365,11 @@ fun XtaNativeRoot() {
         // intro, the sign-in or an import, not over a plugin's pages (they keep their own keys), and not a
         // second search over one still opening.
         val openSearch = remember(nav) { { if (SearchKeys.opensSearchOver(nav.currentDestination?.route)) nav.navigate(Routes.search(null)) } }
-        // Ctrl+, opens the settings, unless they are open already, or a screen that must be finished first is.
-        val openSettings = remember(nav) { { if (SearchKeys.opensSettingsOver(nav.currentDestination?.route)) nav.navigate(Routes.SETTINGS) } }
+        // Ctrl+, goes back to the settings where they are open below (Read aloud, the licences, the plugin store),
+        // else opens them, unless a screen that must be finished first is shown.
+        val openSettings = remember(nav) {
+            { if (!nav.popBackStack(Routes.SETTINGS, inclusive = false) && SearchKeys.opensSettingsOver(nav.currentDestination?.route)) nav.navigate(Routes.SETTINGS) }
+        }
         DesktopNavigation(nav, openSearch, openSettings) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) }
     }
     if (askSignIn) {
@@ -776,7 +779,11 @@ internal object SearchKeys {
     /** Over [route], the screen shown: not over those that keep the reader where they are, nor a plugin's pages. */
     fun opensSearchOver(route: String?): Boolean = route != null && route !in KEPT && !route.startsWith("plugin")
 
-    /** Ctrl+, over [route]: not over the intro, the sign-in or an import, nor over the settings themselves. */
+    /**
+     * Ctrl+, over [route], with no settings open below it: not over the
+     * intro, the sign-in, an import or the plugin store the intro opens,
+     * nor over the settings themselves.
+     */
     fun opensSettingsOver(route: String?): Boolean =
-        route != null && route !in setOf(Routes.INTRO, Routes.SIGN_IN, Routes.IMPORT) && !route.startsWith(Routes.SETTINGS)
+        route != null && route !in setOf(Routes.INTRO, Routes.SIGN_IN, Routes.IMPORT, SettingsRoutes.PLUGINS) && !route.startsWith(Routes.SETTINGS)
 }
