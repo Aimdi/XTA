@@ -51,12 +51,15 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -238,6 +241,9 @@ private fun DeleteDialog(antenna: Antenna, onDelete: () -> Unit, onDismiss: () -
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AntennaEditor(draft: AntennaDraft, onChange: (AntennaDraft) -> Unit, onSave: () -> Unit, onDismiss: () -> Unit) {
+    // A new antenna starts at its name, which has the keys as the editor opens.
+    val nameFocus = remember { FocusRequester() }
+    LaunchedEffect(Unit) { if (draft.isNew) runCatching { nameFocus.requestFocus() } }
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
         Column(
             // Above the keyboard, as XTA lifts its editor.
@@ -250,7 +256,7 @@ private fun AntennaEditor(draft: AntennaDraft, onChange: (AntennaDraft) -> Unit,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 4.dp),
             )
-            EditorField(draft.name, Res.string.discover_antenna_name) { onChange(draft.copy(name = it)) }
+            EditorField(draft.name, Res.string.discover_antenna_name, modifier = Modifier.focusRequester(nameFocus)) { onChange(draft.copy(name = it)) }
             EditorField(draft.include, Res.string.discover_antenna_include) { onChange(draft.copy(include = it)) }
             EditorField(draft.exclude, Res.string.discover_antenna_exclude, last = true, onDone = { if (draft.canSave) onSave() }) {
                 onChange(draft.copy(exclude = it))
@@ -269,6 +275,7 @@ private fun EditorField(
     label: StringResource,
     last: Boolean = false,
     onDone: () -> Unit = {},
+    modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
 ) {
     OutlinedTextField(
@@ -278,7 +285,7 @@ private fun EditorField(
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = if (last) ImeAction.Done else ImeAction.Next),
         keyboardActions = KeyboardActions(onDone = { onDone() }),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     )
 }
 

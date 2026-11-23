@@ -68,9 +68,11 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.focusGroup
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -395,21 +397,25 @@ internal fun TextFieldDialog(
     onDismiss: () -> Unit,
     onSave: (String) -> Unit,
 ) {
-    var text by rememberSaveable { mutableStateOf(initial) }
+    // The field has the keys as the dialog opens, its cursor after what is there, so typing goes on from it.
+    var field by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(initial, TextRange(initial.length))) }
+    val text = field.text
+    val focus = remember { FocusRequester() }
+    LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
         text = {
             OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
+                value = field,
+                onValueChange = { field = it },
                 placeholder = hint?.let { { Text(it) } },
                 singleLine = true,
                 visualTransformation = if (secret) PasswordVisualTransformation() else VisualTransformation.None,
                 keyboardOptions = KeyboardOptions(keyboardType = if (url) KeyboardType.Uri else if (secret) KeyboardType.Password else KeyboardType.Text, imeAction = ImeAction.Done),
                 // Enter (or the keyboard's Done) saves, as Save does.
                 keyboardActions = KeyboardActions(onDone = { onSave(text) }),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().focusRequester(focus),
             )
         },
         confirmButton = { TextButton(onClick = { onSave(text) }) { Text(stringResource(Res.string.settings_save)) } },
