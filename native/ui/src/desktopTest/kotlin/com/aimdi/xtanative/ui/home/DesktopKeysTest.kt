@@ -334,4 +334,14 @@ class DesktopKeysTest {
         assertEquals(0, DesktopKeys.coveredAfterStep(listOf(item(1, 0, 48), item(2, 48)), 2))
         assertEquals(0, DesktopKeys.coveredAfterStep(listOf(item(2, 0), item(3, 300)), 2))
     }
+
+    @Test
+    fun ctrlVOpensACopiedLinkWhileNothingIsTyped() {
+        assertEquals(DeskAction.OPEN_PASTED_LINK, DesktopKeys.action(DeskKey.V, alt = false, ctrl = true, focusInside = false, canGoBack = false))
+        // In a field Ctrl+V pastes, as ever; under a menu or with Shift it is not the window's.
+        assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.V, alt = false, ctrl = true, focusInside = true, canGoBack = false))
+        assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.V, alt = false, ctrl = true, focusInside = false, canGoBack = false, somethingOpen = true))
+        assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.V, alt = false, ctrl = true, focusInside = false, canGoBack = false, shift = true))
+        assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.V, alt = false, ctrl = false, focusInside = false, canGoBack = false))
+    }
 }

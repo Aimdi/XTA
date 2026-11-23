@@ -5,6 +5,7 @@
     <string name="keys_back">Itzuli, edo itxi irekita dagoena</string>
     <string name="keys_refresh">Freskatu</string>
     <string name="keys_search">Bilatu</string>
+    <string name="keys_open_copied_link">Ireki kopiatutako esteka</string>
     <string name="keys_tabs">Hurrengo edo aurreko fitxa</string>
     <string name="keys_pages">Aurreko edo hurrengo orria</string>
     <string name="keys_scroll_line">Korritu pixka bat</string>

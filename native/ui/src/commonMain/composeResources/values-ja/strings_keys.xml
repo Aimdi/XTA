@@ -5,6 +5,7 @@
     <string name="keys_back">戻る、または開いているものを閉じる</string>
     <string name="keys_refresh">更新</string>
     <string name="keys_search">検索</string>
+    <string name="keys_open_copied_link">コピーしたリンクを開く</string>
     <string name="keys_tabs">次または前のタブ</string>
     <string name="keys_pages">前または次のページ</string>
     <string name="keys_scroll_line">少しスクロール</string>

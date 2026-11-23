@@ -5,6 +5,7 @@
     <string name="keys_back">返回，或关闭已打开的内容</string>
     <string name="keys_refresh">刷新</string>
     <string name="keys_search">搜索</string>
+    <string name="keys_open_copied_link">打开复制的链接</string>
     <string name="keys_tabs">下一个或上一个标签页</string>
     <string name="keys_pages">上一页或下一页</string>
     <string name="keys_scroll_line">滚动一点</string>

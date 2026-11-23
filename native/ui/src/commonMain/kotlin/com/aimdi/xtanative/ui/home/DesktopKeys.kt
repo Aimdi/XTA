@@ -1,7 +1,7 @@
 package com.aimdi.xtanative.ui.home
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, OTHER }
 
 enum class DeskAction {
     /** Out of the text field being typed in, as XTA's first Esc does. */
@@ -35,6 +35,9 @@ enum class DeskAction {
     /** The list read moves to the start of its next item, or of the one before ([DesktopKeys.itemStep]), as j and k do on X's site. */
     NEXT_ITEM,
     PREVIOUS_ITEM,
+
+    /** A web address on the clipboard opens, as one dropped on the window does (Ctrl+V while nothing is being typed in). */
+    OPEN_PASTED_LINK,
     SCREEN_UP,
     SCREEN_DOWN,
     TO_TOP,
@@ -75,7 +78,8 @@ object DesktopKeys {
      * settings, and Ctrl+W closes what is open over the page (a sheet, a
      * menu), as a desktop app closes a document; it never goes back further.
      * j and k move the list read to its next post or the one before, as on
-     * X's site, while nothing is being typed in.
+     * X's site, while nothing is being typed in. Ctrl+V, while nothing is
+     * being typed in, opens a link copied elsewhere, as dropping it does.
      */
     fun action(
         key: DeskKey,
@@ -98,6 +102,7 @@ object DesktopKeys {
         ctrl && !alt && key in TEXT_KEYS -> textSize(key)
         (key == DeskKey.F1 && !alt && !ctrl) || (key == DeskKey.QUESTION && !focusInside && !alt && !ctrl) ->
             if (somethingOpen) DeskAction.NONE else DeskAction.SHOW_KEYS
+        key == DeskKey.V && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.OPEN_PASTED_LINK
         (key == DeskKey.F && ctrl && !alt && !shift) || (key == DeskKey.SLASH && !focusInside && !alt && !ctrl) ->
             if (somethingOpen) DeskAction.NONE else DeskAction.FIND
         focusInside || alt || ctrl -> DeskAction.NONE

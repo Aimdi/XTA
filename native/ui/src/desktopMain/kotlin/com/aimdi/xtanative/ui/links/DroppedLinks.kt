@@ -68,3 +68,17 @@ internal fun Modifier.takesDroppedLinks(): Modifier {
         target = target,
     )
 }
+
+/** A link copied elsewhere, opened with Ctrl+V as one dropped on the window is ([DroppedLinks]). */
+internal object PastedLinks {
+    /** Opens the web address on the system clipboard; false when it holds none. */
+    fun open(): Boolean {
+        val text = runCatching {
+            val clipboard = java.awt.Toolkit.getDefaultToolkit().systemClipboard
+            if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) clipboard.getData(DataFlavor.stringFlavor) as? String else null
+        }.getOrNull()
+        val link = DroppedLinks.linkIn(text) ?: return false
+        DesktopIncomingLinks.hand(link)
+        return true
+    }
+}

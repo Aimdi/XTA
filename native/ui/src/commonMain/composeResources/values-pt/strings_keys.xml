@@ -5,6 +5,7 @@
     <string name="keys_back">Voltar ou fechar o que está aberto</string>
     <string name="keys_refresh">Atualizar</string>
     <string name="keys_search">Pesquisar</string>
+    <string name="keys_open_copied_link">Abrir um link copiado</string>
     <string name="keys_tabs">Separador seguinte ou anterior</string>
     <string name="keys_pages">Página anterior ou seguinte</string>
     <string name="keys_scroll_line">Deslocar um pouco</string>

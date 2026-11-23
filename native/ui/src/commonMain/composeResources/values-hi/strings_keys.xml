@@ -5,6 +5,7 @@
     <string name="keys_back">वापस जाएँ, या जो खुला है उसे बंद करें</string>
     <string name="keys_refresh">रीफ़्रेश करें</string>
     <string name="keys_search">खोजें</string>
+    <string name="keys_open_copied_link">कॉपी किया गया लिंक खोलें</string>
     <string name="keys_tabs">अगला या पिछला टैब</string>
     <string name="keys_pages">पिछला या अगला पेज</string>
     <string name="keys_scroll_line">थोड़ा स्क्रॉल करें</string>

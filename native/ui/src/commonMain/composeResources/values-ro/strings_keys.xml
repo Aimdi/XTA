@@ -5,6 +5,7 @@
     <string name="keys_back">Înapoi sau închide ce este deschis</string>
     <string name="keys_refresh">Reîmprospătează</string>
     <string name="keys_search">Caută</string>
+    <string name="keys_open_copied_link">Deschide un link copiat</string>
     <string name="keys_tabs">Fila următoare sau anterioară</string>
     <string name="keys_pages">Pagina anterioară sau următoare</string>
     <string name="keys_scroll_line">Derulează puțin</string>

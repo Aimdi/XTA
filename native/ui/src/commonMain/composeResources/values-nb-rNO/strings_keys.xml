@@ -5,6 +5,7 @@
     <string name="keys_back">Gå tilbake, eller lukk det som er åpent</string>
     <string name="keys_refresh">Oppdater</string>
     <string name="keys_search">Søk</string>
+    <string name="keys_open_copied_link">Åpne en kopiert lenke</string>
     <string name="keys_tabs">Neste eller forrige fane</string>
     <string name="keys_pages">Forrige eller neste side</string>
     <string name="keys_scroll_line">Rull litt</string>

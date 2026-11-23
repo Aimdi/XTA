@@ -5,6 +5,7 @@
     <string name="keys_back">Geri dön veya açık olanı kapat</string>
     <string name="keys_refresh">Yenile</string>
     <string name="keys_search">Ara</string>
+    <string name="keys_open_copied_link">Kopyalanan bağlantıyı aç</string>
     <string name="keys_tabs">Sonraki veya önceki sekme</string>
     <string name="keys_pages">Önceki veya sonraki sayfa</string>
     <string name="keys_scroll_line">Biraz kaydır</string>

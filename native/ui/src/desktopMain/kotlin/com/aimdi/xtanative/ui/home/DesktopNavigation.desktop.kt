@@ -44,6 +44,7 @@ import androidx.navigation.NavHostController
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.ui.chrome.AppClosing
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.links.PastedLinks
 import com.aimdi.xtanative.ui.links.takesDroppedLinks
 import com.aimdi.xtanative.ui.settings.SettingsChoices
 import kotlinx.coroutines.delay
@@ -128,6 +129,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                 scope.launch { list.moveFor(action, line) }
                 true
             } ?: false
+        // Only a web address alone; other text on the clipboard leaves the key to the page.
+        DeskAction.OPEN_PASTED_LINK -> PastedLinks.open()
         DeskAction.OPEN_SETTINGS -> {
             openSettings()
             true
@@ -280,6 +283,7 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.Comma -> DeskKey.COMMA
     Key.W -> DeskKey.W
     Key.J -> DeskKey.J
+    Key.V -> DeskKey.V
     Key.K -> DeskKey.K
     Key.Plus, Key.Equals, Key.NumPadAdd -> DeskKey.PLUS
     Key.Minus, Key.NumPadSubtract -> DeskKey.MINUS

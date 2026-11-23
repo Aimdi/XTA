@@ -5,6 +5,7 @@
     <string name="keys_back">Tagasi või sulge avatu</string>
     <string name="keys_refresh">Värskenda</string>
     <string name="keys_search">Otsi</string>
+    <string name="keys_open_copied_link">Ava kopeeritud link</string>
     <string name="keys_tabs">Järgmine või eelmine vahekaart</string>
     <string name="keys_pages">Eelmine või järgmine leht</string>
     <string name="keys_scroll_line">Keri veidi</string>

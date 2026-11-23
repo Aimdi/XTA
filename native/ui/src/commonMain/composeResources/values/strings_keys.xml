@@ -6,6 +6,7 @@
     <string name="keys_back">Go back, or close what is open</string>
     <string name="keys_refresh">Refresh</string>
     <string name="keys_search">Search</string>
+    <string name="keys_open_copied_link">Open a copied link</string>
     <string name="keys_tabs">Next or previous tab</string>
     <string name="keys_pages">Previous or next page</string>
     <string name="keys_scroll_line">Scroll a little</string>

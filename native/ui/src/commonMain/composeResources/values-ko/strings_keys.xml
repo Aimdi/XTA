@@ -5,6 +5,7 @@
     <string name="keys_back">뒤로 가기 또는 열린 항목 닫기</string>
     <string name="keys_refresh">새로고침</string>
     <string name="keys_search">검색</string>
+    <string name="keys_open_copied_link">복사한 링크 열기</string>
     <string name="keys_tabs">다음 또는 이전 탭</string>
     <string name="keys_pages">이전 또는 다음 페이지</string>
     <string name="keys_scroll_line">조금 스크롤</string>

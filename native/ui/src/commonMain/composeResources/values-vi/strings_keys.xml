@@ -5,6 +5,7 @@
     <string name="keys_back">Quay lại, hoặc đóng mục đang mở</string>
     <string name="keys_refresh">Làm mới</string>
     <string name="keys_search">Tìm kiếm</string>
+    <string name="keys_open_copied_link">Mở liên kết đã sao chép</string>
     <string name="keys_tabs">Thẻ tiếp theo hoặc trước đó</string>
     <string name="keys_pages">Trang trước hoặc trang sau</string>
     <string name="keys_scroll_line">Cuộn một chút</string>

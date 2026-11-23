@@ -5,6 +5,7 @@
     <string name="keys_back">Назад або закрити відкрите</string>
     <string name="keys_refresh">Оновити</string>
     <string name="keys_search">Пошук</string>
+    <string name="keys_open_copied_link">Відкрити скопійоване посилання</string>
     <string name="keys_tabs">Наступна або попередня вкладка</string>
     <string name="keys_pages">Попередня або наступна сторінка</string>
     <string name="keys_scroll_line">Прокрутити трохи</string>

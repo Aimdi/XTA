@@ -5,6 +5,7 @@
     <string name="keys_back">Torna enrere o tanca el que és obert</string>
     <string name="keys_refresh">Actualitza</string>
     <string name="keys_search">Cerca</string>
+    <string name="keys_open_copied_link">Obre un enllaç copiat</string>
     <string name="keys_tabs">Pestanya següent o anterior</string>
     <string name="keys_pages">Pàgina anterior o següent</string>
     <string name="keys_scroll_line">Desplaça’t una mica</string>

@@ -5,6 +5,7 @@
     <string name="keys_back">Zpět, nebo zavřít, co je otevřené</string>
     <string name="keys_refresh">Obnovit</string>
     <string name="keys_search">Hledat</string>
+    <string name="keys_open_copied_link">Otevřít zkopírovaný odkaz</string>
     <string name="keys_tabs">Další nebo předchozí karta</string>
     <string name="keys_pages">Předchozí nebo další stránka</string>
     <string name="keys_scroll_line">Posunout o kousek</string>

@@ -5,6 +5,7 @@
     <string name="keys_back">Kembali, atau tutup yang sedang terbuka</string>
     <string name="keys_refresh">Segarkan</string>
     <string name="keys_search">Cari</string>
+    <string name="keys_open_copied_link">Buka tautan yang disalin</string>
     <string name="keys_tabs">Tab berikutnya atau sebelumnya</string>
     <string name="keys_pages">Halaman sebelumnya atau berikutnya</string>
     <string name="keys_scroll_line">Gulir sedikit</string>
