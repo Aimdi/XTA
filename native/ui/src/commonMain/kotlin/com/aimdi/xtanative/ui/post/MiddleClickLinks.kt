@@ -54,3 +54,20 @@ internal fun Modifier.linkMiddleClicks(text: AnnotatedString, layout: TextLayout
         }
     }
 }
+
+/** A middle click anywhere on this opens [url] (a web address, see [MiddleClickLinks]) with [openInBrowser]; nothing without one. */
+@Composable
+internal fun Modifier.middleClickOpens(url: String?, openInBrowser: (String) -> Unit): Modifier {
+    val address = MiddleClickLinks.webAddressOf(url) ?: return this
+    val open by rememberUpdatedState(openInBrowser)
+    return pointerInput(address) {
+        awaitPointerEventScope {
+            while (true) {
+                val event = awaitPointerEvent()
+                if (event.type != PointerEventType.Press || !event.buttons.isTertiaryPressed) continue
+                event.changes.forEach { it.consume() }
+                open(address)
+            }
+        }
+    }
+}
