@@ -19,6 +19,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
@@ -35,6 +36,8 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isBackPressed
 import androidx.compose.ui.input.pointer.isCtrlPressed
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -187,10 +190,23 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         return act(action)
     }
 
+    val frameOrigin = remember { arrayOf(Offset.Zero) }
     CompositionLocalProvider(LocalDesktopActions provides actions) {
         Box(
             Modifier
                 .fillMaxSize()
+                .onGloballyPositioned { frameOrigin[0] = it.positionInWindow() }
+                .pointerInput(actions) {
+                    // After the lists had the event ([DesktopActions.point]): the pointer's place in the window, from every move.
+                    awaitPointerEventScope {
+                        while (true) {
+                            val event = awaitPointerEvent(PointerEventPass.Final)
+                            if (event.type == PointerEventType.Move || event.type == PointerEventType.Enter) {
+                                event.changes.firstOrNull()?.let { actions.pointerAt(frameOrigin[0] + it.position) }
+                            }
+                        }
+                    }
+                }
                 .pointerInput(nav) {
                     var wheeled = 0f
                     awaitPointerEventScope {

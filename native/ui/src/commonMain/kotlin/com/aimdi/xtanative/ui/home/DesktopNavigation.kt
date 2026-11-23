@@ -117,7 +117,7 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
         if (pointed === list) pointed = null
     }
 
-    /** Where in the window the pointer last pointed at a list. */
+    /** Where in the window the pointer last was: over a list ([point]), or anywhere ([pointerAt]). */
     private var pointer: Offset? = null
 
     /**
@@ -164,10 +164,23 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
      */
     fun stepColumn(by: Int): Boolean {
         val order = columnOrder()
-        val current = chosenColumn ?: readList()?.let { listColumns[it] }
+        val current = chosen() ?: readList()?.let { listColumns[it] }
         val index = DesktopKeys.columnStep(order.size, order.indexOf(current).takeIf { it >= 0 }, by) ?: return false
         chosenColumn = order[index]
         return true
+    }
+
+    /** The chosen column while the page still shows it; one removed since (its menu's Remove) counts as none, so the keys never go dead. */
+    private fun chosen(): Any? = chosenColumn?.takeIf { it in columnOrder() }
+
+    /**
+     * Where the pointer is in the window, from any of its moves, not only over
+     * a list: told after the lists had theirs ([point]), so a move onto a list
+     * still counts as one, while a list sliding under a pointer resting off any
+     * list (a column's error page, a divider) does not take the keys.
+     */
+    internal fun pointerAt(at: Offset) {
+        pointer = at
     }
 
     /** What is drawn over the screens and holds the keys for its own (the media viewer, a video full screen), the last on top. */
@@ -215,7 +228,7 @@ class DesktopActions(private val refocus: (FocusRequester?) -> Unit = {}) {
      * over, else the first on screen (the page's own, before any column
      * beside it).
      */
-    internal fun readList(): LazyListState? = when (val column = chosenColumn) {
+    internal fun readList(): LazyListState? = when (val column = chosen()) {
         null -> pointed ?: lists.firstOrNull()
         else -> lists.lastOrNull { listColumns[it] == column }
     }

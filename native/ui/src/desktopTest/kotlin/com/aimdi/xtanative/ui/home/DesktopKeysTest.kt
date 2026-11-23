@@ -482,4 +482,42 @@ class DesktopKeysTest {
         assertNull(actions.chosenColumn)
         assertSame(second, actions.readList())
     }
+
+    @Test
+    fun aRemovedChosenColumnLeavesTheKeysToTheOthers() {
+        val actions = DesktopActions()
+        val first = LazyListState()
+        val second = LazyListState()
+        actions.addList(first, "a")
+        actions.addList(second, "b")
+        var order = listOf("a", "b")
+        actions.takeColumns(Any()) { order }
+        actions.stepColumn(1)
+        actions.stepColumn(1)
+        assertEquals("b", actions.chosenColumn)
+        // The chosen column removed (its menu's Remove): the keys move what is left, and stepping starts from there.
+        order = listOf("a")
+        actions.removeList(second)
+        assertSame(first, actions.readList())
+        assertTrue(actions.stepColumn(1))
+        assertEquals("a", actions.chosenColumn)
+    }
+
+    @Test
+    fun aPointerRestingOffAnyListKeepsTheChosenColumnWhenTheDeckSlides() {
+        val actions = DesktopActions()
+        val first = LazyListState()
+        val second = LazyListState()
+        actions.addList(first, "a")
+        actions.addList(second, "b")
+        actions.takeColumns(Any()) { listOf("a", "b") }
+        // The pointer rests on a column's error page (no list), then the keys choose a column.
+        actions.pointerAt(Offset(900f, 300f))
+        actions.stepColumn(1)
+        actions.stepColumn(1)
+        // The deck slid: a list came under the resting pointer, and the window said so.
+        actions.point(first, Offset(900f, 300f))
+        assertEquals("b", actions.chosenColumn)
+        assertSame(second, actions.readList())
+    }
 }
