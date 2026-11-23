@@ -39,6 +39,21 @@ class DesktopColorSchemeTest {
         assertNull(PortalColors.changed(signal("org.gnome.desktop.interface", PortalColors.KEY, 1)))
     }
 
+    @Test
+    fun theDesktopsAnimationsSwitchReducesMotion() {
+        assertEquals(true, PortalMotion.off(Variant("b", false)))
+        assertEquals(false, PortalMotion.off(Variant("b", true)))
+        assertNull(PortalMotion.off(Variant("u", 1L)))
+        fun signal(namespace: String, key: String, on: Boolean) = DBusMessage(
+            DBusType.SIGNAL, iface = PortalColors.SETTINGS, member = "SettingChanged", signature = "ssv",
+            body = listOf(namespace, key, Variant("b", on)),
+        )
+        assertEquals(true, PortalMotion.changed(signal(PortalMotion.NAMESPACE, PortalMotion.KEY, false)))
+        assertNull(PortalMotion.changed(signal(PortalColors.NAMESPACE, PortalMotion.KEY, false)))
+        // Neither reads the other's setting.
+        assertNull(PortalColors.changed(signal(PortalMotion.NAMESPACE, PortalMotion.KEY, false)))
+    }
+
     /** A bus of the test's own, never the desktop's; null without dbus-daemon. */
     private fun privateBus(): Pair<Process, File>? {
         val folder = Files.createTempDirectory("xta-dbus").toFile()

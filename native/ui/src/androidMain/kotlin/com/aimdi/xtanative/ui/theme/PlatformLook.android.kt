@@ -8,3 +8,6 @@ internal actual fun ProvidePlatformLook(content: @Composable () -> Unit) = conte
 
 @Composable
 internal actual fun systemPrefersDark(): Boolean = isSystemInDarkTheme()
+
+@Composable
+internal actual fun systemReducesMotion(): Boolean = false

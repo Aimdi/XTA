@@ -34,3 +34,11 @@ internal actual fun systemPrefersDark(): Boolean {
     val portal = scheme.dark.collectAsState().value
     return portal ?: isSystemInDarkTheme()
 }
+
+/** Whether the desktop's own settings turn animations off, as its settings portal says, followed as it changes. */
+@Composable
+internal actual fun systemReducesMotion(): Boolean {
+    val scheme = DesktopColorScheme.desktop
+    LaunchedEffect(scheme) { scheme.start() }
+    return scheme.animationsOff.collectAsState().value
+}

@@ -14,3 +14,11 @@ internal expect fun ProvidePlatformLook(content: @Composable () -> Unit)
 /** Whether the system prefers dark, for the "System" background: Android's night mode, the desktop's settings portal. */
 @Composable
 internal expect fun systemPrefersDark(): Boolean
+
+/**
+ * Whether the system's own settings turn animations off: the desktop's, as
+ * its settings portal says; on Android false, where "Remove animations"
+ * already stops Compose's animations.
+ */
+@Composable
+internal expect fun systemReducesMotion(): Boolean

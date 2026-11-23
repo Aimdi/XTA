@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.asStateFlow
  * portals of other desktops answer, and which changes as the reader
  * switches): true for dark, false for light, null where nothing says, as
  * Java itself cannot tell on Linux. Read once at the start, then followed.
+ * On the same connection, whether the desktop has its animations off
+ * ([animationsOff], GNOME's enable-animations, which the portals pass on).
  */
 class DesktopColorScheme(
     private val connect: () -> DBusConnection?,
@@ -22,6 +24,10 @@ class DesktopColorScheme(
 ) {
     private val mutable = MutableStateFlow(PortalColors.fromGtkTheme(gtkTheme))
     val dark: StateFlow<Boolean?> = mutable.asStateFlow()
+    private val stillness = MutableStateFlow(false)
+
+    /** Whether the desktop's settings turn animations off; false where nothing says. */
+    val animationsOff: StateFlow<Boolean> = stillness.asStateFlow()
     private val started = AtomicBoolean(false)
 
     @Volatile
@@ -42,13 +48,19 @@ class DesktopColorScheme(
     private fun follow() {
         val bus = connect() ?: return
         connection = bus
-        bus.onSignal = { signal -> PortalColors.changed(signal)?.let { mutable.value = it } }
+        bus.onSignal = { signal ->
+            PortalColors.changed(signal)?.let { mutable.value = it }
+            PortalMotion.changed(signal)?.let { stillness.value = it }
+        }
         bus.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "AddMatch", "s", listOf(PortalColors.MATCH))
         val answer = bus.call(PortalColors.PORTAL, PortalColors.PATH, PortalColors.SETTINGS, "ReadOne", "ss", listOf(PortalColors.NAMESPACE, PortalColors.KEY))
             ?.takeIf { it.type == DBusType.METHOD_RETURN }
             // Portals before version 2 have only Read, whose value comes wrapped once more.
             ?: bus.call(PortalColors.PORTAL, PortalColors.PATH, PortalColors.SETTINGS, "Read", "ss", listOf(PortalColors.NAMESPACE, PortalColors.KEY))
         answer?.takeIf { it.type == DBusType.METHOD_RETURN }?.let { reply -> PortalColors.dark(reply.body.firstOrNull())?.let { mutable.value = it } }
+        bus.call(PortalColors.PORTAL, PortalColors.PATH, PortalColors.SETTINGS, "ReadOne", "ss", listOf(PortalMotion.NAMESPACE, PortalMotion.KEY))
+            ?.takeIf { it.type == DBusType.METHOD_RETURN }
+            ?.let { reply -> PortalMotion.off(reply.body.firstOrNull())?.let { stillness.value = it } }
     }
 
     /** Stops following (tests). */
@@ -60,6 +72,24 @@ class DesktopColorScheme(
         /** The desktop's own, on its session bus. */
         val desktop: DesktopColorScheme by lazy { DesktopColorScheme(DBusConnection::session) }
     }
+}
+
+/** The desktop's animations setting through the settings portal (GNOME's org.gnome.desktop.interface enable-animations), as plain decisions. */
+object PortalMotion {
+    const val NAMESPACE = "org.gnome.desktop.interface"
+    const val KEY = "enable-animations"
+
+    /** Whether the portal's value turns animations off: true for false; null for no answer of that kind. */
+    fun off(value: Any?): Boolean? = (unwrapped(value) as? Boolean)?.not()
+
+    /** What a SettingChanged signal says of the animations; null for any other signal or setting. */
+    fun changed(signal: DBusMessage): Boolean? {
+        if (signal.iface != PortalColors.SETTINGS || signal.member != "SettingChanged" || signal.body.size < 3) return null
+        if (signal.body[0] != NAMESPACE || signal.body[1] != KEY) return null
+        return off(signal.body[2])
+    }
+
+    private tailrec fun unwrapped(value: Any?): Any? = if (value is Variant) unwrapped(value.value) else value
 }
 
 /** The settings portal's color-scheme, as plain decisions. */

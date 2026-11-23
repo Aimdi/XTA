@@ -24,6 +24,7 @@ fun XtaTheme(content: @Composable () -> Unit) {
     val stored by LocalSettingsStore.current.state.collectAsStateWithLifecycle()
     val settings = stored ?: Settings()
     val systemDark = systemPrefersDark()
+    val reducesMotion = systemReducesMotion()
     val tokens = XLook.tokens(settings, systemDark)
     val scheme = remember(tokens) { XLook.scheme(tokens) }
     val density = LocalDensity.current
@@ -32,7 +33,8 @@ fun XtaTheme(content: @Composable () -> Unit) {
     val language = AppLocale.of(settings[GeneralPrefs.locale])
     CompositionLocalProvider(
         LocalXLook provides scheme,
-        LocalReducedMotion provides settings[AccessibilityPrefs.disableAnimations],
+        // The app's own switch, or the desktop's settings turning animations off.
+        LocalReducedMotion provides (settings[AccessibilityPrefs.disableAnimations] || reducesMotion),
         LocalDensity provides Density(density.density, density.fontScale * textScale),
     ) {
         // Inside the reader's text size: the desktop marks the density with the language.
