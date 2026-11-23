@@ -367,6 +367,8 @@
     <string name="settings_desktop_notifications_description">Báo khi một tệp tải xuống xong trong lúc bạn đang ở cửa sổ khác</string>
     <string name="settings_close_to_tray">Đóng xuống khay hệ thống</string>
     <string name="settings_close_to_tray_description">Khi đóng cửa sổ, ứng dụng vẫn chạy trong khay hệ thống; thoát từ menu của biểu tượng</string>
+    <string name="settings_start_at_login">Khởi động khi đăng nhập</string>
+    <string name="settings_start_at_login_description">Mở ứng dụng khi bạn đăng nhập; khi bật Đóng xuống khay hệ thống, ứng dụng chờ trong khay</string>
     <string name="tray_show">Hiện cửa sổ</string>
     <string name="tray_hide">Ẩn cửa sổ</string>
 </resources>

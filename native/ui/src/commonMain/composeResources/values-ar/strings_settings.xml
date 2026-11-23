@@ -377,6 +377,8 @@
     <string name="settings_desktop_notifications_description">الإعلام عند اكتمال تنزيل بينما تكون في نافذة أخرى</string>
     <string name="settings_close_to_tray">الإغلاق إلى علبة النظام</string>
     <string name="settings_close_to_tray_description">عند إغلاق النافذة يبقى التطبيق يعمل في علبة النظام؛ اخرج منه عبر قائمة أيقونته</string>
+    <string name="settings_start_at_login">التشغيل عند تسجيل الدخول</string>
+    <string name="settings_start_at_login_description">يفتح التطبيق عند تسجيل الدخول؛ ومع تفعيل «الإغلاق إلى علبة النظام» ينتظر في العلبة</string>
     <string name="tray_show">إظهار النافذة</string>
     <string name="tray_hide">إخفاء النافذة</string>
 </resources>

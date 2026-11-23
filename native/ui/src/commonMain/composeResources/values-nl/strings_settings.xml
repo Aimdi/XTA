@@ -369,6 +369,8 @@
     <string name="settings_desktop_notifications_description">Melden wanneer een download klaar is terwijl je in een ander venster bent</string>
     <string name="settings_close_to_tray">Sluiten naar systeemvak</string>
     <string name="settings_close_to_tray_description">Bij het sluiten van het venster blijft de app in het systeemvak draaien; afsluiten via het menu van het pictogram</string>
+    <string name="settings_start_at_login">Starten bij aanmelden</string>
+    <string name="settings_start_at_login_description">Opent de app bij het aanmelden; met Sluiten naar systeemvak wacht hij in het systeemvak</string>
     <string name="tray_show">Venster tonen</string>
     <string name="tray_hide">Venster verbergen</string>
 </resources>

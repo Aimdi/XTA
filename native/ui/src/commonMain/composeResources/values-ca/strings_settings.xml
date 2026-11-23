@@ -371,6 +371,8 @@
     <string name="settings_desktop_notifications_description">Avisa quan acabi una baixada mentre ets en una altra finestra</string>
     <string name="settings_close_to_tray">Tanca a la safata</string>
     <string name="settings_close_to_tray_description">En tancar la finestra, l’app continua a la safata del sistema; surt des del menú de la seva icona</string>
+    <string name="settings_start_at_login">Inicia en iniciar la sessió</string>
+    <string name="settings_start_at_login_description">Obre l’aplicació en iniciar la sessió; amb «Tanca a la safata» activat, espera a la safata</string>
     <string name="tray_show">Mostra la finestra</string>
     <string name="tray_hide">Amaga la finestra</string>
 </resources>

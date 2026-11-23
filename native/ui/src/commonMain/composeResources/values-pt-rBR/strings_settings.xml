@@ -371,6 +371,8 @@
     <string name="settings_desktop_notifications_description">Avisar quando um download terminar enquanto você estiver em outra janela</string>
     <string name="settings_close_to_tray">Fechar para a bandeja</string>
     <string name="settings_close_to_tray_description">Fechar a janela mantém o app rodando na bandeja do sistema; saia pelo menu do ícone</string>
+    <string name="settings_start_at_login">Iniciar ao fazer login</string>
+    <string name="settings_start_at_login_description">Abre o app ao fazer login; com Fechar para a bandeja ativado, ele espera na bandeja</string>
     <string name="tray_show">Mostrar janela</string>
     <string name="tray_hide">Ocultar janela</string>
 </resources>

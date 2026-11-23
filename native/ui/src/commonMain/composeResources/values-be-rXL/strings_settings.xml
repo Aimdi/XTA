@@ -373,6 +373,8 @@
     <string name="settings_desktop_notifications_description">Paviedamlać pra kaniec spampoŭki, pakul vy ŭ inšym aknie</string>
     <string name="settings_close_to_tray">Zhortvać u trej</string>
     <string name="settings_close_to_tray_description">Pasla zakryccia akna prahrama pracuje dalej u trei; vyjsci možna z mieniu jaje značka</string>
+    <string name="settings_start_at_login">Zapuskać pry ŭvachodzie</string>
+    <string name="settings_start_at_login_description">Adkryvaje prahramu pry ŭvachodzie; kali ŭklučana «Zhortvać u trej», jana čakaje ŭ trei</string>
     <string name="tray_show">Pakazać akno</string>
     <string name="tray_hide">Schavać akno</string>
 </resources>

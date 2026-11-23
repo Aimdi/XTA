@@ -373,6 +373,8 @@
     <string name="settings_desktop_notifications_description">Informuj o zakończonym pobieraniu, gdy jesteś w innym oknie</string>
     <string name="settings_close_to_tray">Zamykaj do zasobnika</string>
     <string name="settings_close_to_tray_description">Po zamknięciu okna aplikacja działa dalej w zasobniku systemowym; zakończ ją z menu jej ikony</string>
+    <string name="settings_start_at_login">Uruchamiaj po zalogowaniu</string>
+    <string name="settings_start_at_login_description">Otwiera aplikację po zalogowaniu; z włączonym zamykaniem do zasobnika czeka w zasobniku</string>
     <string name="tray_show">Pokaż okno</string>
     <string name="tray_hide">Ukryj okno</string>
 </resources>

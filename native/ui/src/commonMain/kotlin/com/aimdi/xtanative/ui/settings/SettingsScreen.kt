@@ -64,6 +64,8 @@ import com.aimdi.xtanative.ui.common.ColumnScrollbar
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login
+import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login_description
 import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.intro.IntroFlow
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -254,6 +256,7 @@ private val INDEX = listOf(
     Indexed(SettingsSection.GENERAL, GeneralPrefs.confirmClose.key, Res.string.settings_confirm_close, Res.string.settings_confirm_close_description),
     Indexed(SettingsSection.GENERAL, DesktopPrefs.notifications.key, Res.string.settings_desktop_notifications, Res.string.settings_desktop_notifications_description),
     Indexed(SettingsSection.GENERAL, DesktopPrefs.closeToTray.key, Res.string.settings_close_to_tray, Res.string.settings_close_to_tray_description),
+    Indexed(SettingsSection.GENERAL, START_AT_LOGIN_KEY, Res.string.settings_start_at_login, Res.string.settings_start_at_login_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.cleanLinks.key, Res.string.settings_clean_links, Res.string.settings_clean_links_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.disableScreenshots.key, Res.string.settings_disable_screenshots, Res.string.settings_disable_screenshots_hint),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.initialTab.key, Res.string.settings_default_tab, Res.string.settings_default_tab_description),
@@ -310,7 +313,7 @@ private val INDEX = listOf(
 private val ANDROID_ONLY = setOf(GeneralPrefs.disableScreenshots.key, AccessibilityPrefs.haptics.key, ThemePrefs.hideStatusBar.key)
 
 /** The controls only the desktop has: its notifications and its tray. */
-private val DESKTOP_ONLY = setOf(DesktopPrefs.notifications.key, DesktopPrefs.closeToTray.key)
+private val DESKTOP_ONLY = setOf(DesktopPrefs.notifications.key, DesktopPrefs.closeToTray.key, START_AT_LOGIN_KEY)
 
 /** Every control the search can find, in this platform's settings: the desktop has none of [ANDROID_ONLY], Android none of [DESKTOP_ONLY]. */
 @Composable

@@ -369,6 +369,8 @@
     <string name="settings_desktop_notifications_description">Say when a download finishes while you are in another window</string>
     <string name="settings_close_to_tray">Close to tray</string>
     <string name="settings_close_to_tray_description">Closing the window keeps the app running in the tray; quit from the tray icon’s menu</string>
+    <string name="settings_start_at_login">Start at login</string>
+    <string name="settings_start_at_login_description">Opens the app when you log in; with Close to tray on, it waits in the tray</string>
     <string name="tray_show">Show window</string>
     <string name="tray_hide">Hide window</string>
 </resources>

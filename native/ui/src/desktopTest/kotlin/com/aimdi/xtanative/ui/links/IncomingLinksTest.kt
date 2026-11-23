@@ -1,7 +1,7 @@
 package com.aimdi.xtanative.ui.links
 
-import com.aimdi.xtanative.ui.search.SearchTab
 import com.aimdi.xtanative.services.links.XLink
+import com.aimdi.xtanative.ui.search.SearchTab
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking

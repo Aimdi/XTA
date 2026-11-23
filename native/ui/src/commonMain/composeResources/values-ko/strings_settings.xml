@@ -367,6 +367,8 @@
     <string name="settings_desktop_notifications_description">다른 창에 있는 동안 다운로드가 끝나면 알림</string>
     <string name="settings_close_to_tray">닫으면 트레이로</string>
     <string name="settings_close_to_tray_description">창을 닫아도 앱이 시스템 트레이에서 계속 실행됩니다. 종료는 트레이 아이콘 메뉴에서 하세요</string>
+    <string name="settings_start_at_login">로그인할 때 시작</string>
+    <string name="settings_start_at_login_description">로그인할 때 앱을 엽니다. ‘닫으면 트레이로’가 켜져 있으면 트레이에서 대기합니다</string>
     <string name="tray_show">창 보이기</string>
     <string name="tray_hide">창 숨기기</string>
 </resources>

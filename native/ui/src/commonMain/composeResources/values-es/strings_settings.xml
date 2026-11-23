@@ -371,6 +371,8 @@
     <string name="settings_desktop_notifications_description">Avisar cuando termine una descarga mientras estás en otra ventana</string>
     <string name="settings_close_to_tray">Cerrar a la bandeja</string>
     <string name="settings_close_to_tray_description">Al cerrar la ventana, la app sigue en la bandeja del sistema; sal desde el menú de su icono</string>
+    <string name="settings_start_at_login">Iniciar al iniciar sesión</string>
+    <string name="settings_start_at_login_description">Abre la app al iniciar sesión; con «Cerrar a la bandeja» activado, espera en la bandeja</string>
     <string name="tray_show">Mostrar ventana</string>
     <string name="tray_hide">Ocultar ventana</string>
 </resources>

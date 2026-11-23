@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.ui.links
 
-import com.aimdi.xtanative.ui.search.SearchTab
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.services.links.BrowserPicker
 import com.aimdi.xtanative.services.links.InstalledBrowser
@@ -20,6 +19,7 @@ import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.XtaPrefs
+import com.aimdi.xtanative.ui.search.SearchTab
 import java.net.URI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

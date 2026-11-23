@@ -369,6 +369,8 @@
     <string name="settings_desktop_notifications_description">Melden, wenn ein Download fertig ist, während du in einem anderen Fenster bist</string>
     <string name="settings_close_to_tray">In den Tray schließen</string>
     <string name="settings_close_to_tray_description">Beim Schließen des Fensters läuft die App im Tray weiter; beenden über das Menü des Tray-Symbols</string>
+    <string name="settings_start_at_login">Beim Anmelden starten</string>
+    <string name="settings_start_at_login_description">Öffnet die App beim Anmelden; mit „In den Tray schließen“ wartet sie im Tray</string>
     <string name="tray_show">Fenster zeigen</string>
     <string name="tray_hide">Fenster ausblenden</string>
 </resources>

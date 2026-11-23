@@ -373,6 +373,8 @@
     <string name="settings_desktop_notifications_description">Повідомляти про завершення завантаження, поки ви в іншому вікні</string>
     <string name="settings_close_to_tray">Згортати в трей</string>
     <string name="settings_close_to_tray_description">Після закриття вікна застосунок працює далі в треї; вийти можна з меню його значка</string>
+    <string name="settings_start_at_login">Запускати під час входу</string>
+    <string name="settings_start_at_login_description">Відкриває застосунок під час входу; якщо ввімкнено «Згортати в трей», він чекає в треї</string>
     <string name="tray_show">Показати вікно</string>
     <string name="tray_hide">Сховати вікно</string>
 </resources>

@@ -369,6 +369,8 @@
     <string name="settings_desktop_notifications_description">Si fra når en nedlasting er ferdig mens du er i et annet vindu</string>
     <string name="settings_close_to_tray">Lukk til systemstatusfeltet</string>
     <string name="settings_close_to_tray_description">Når vinduet lukkes, kjører appen videre i systemstatusfeltet; avslutt fra menyen til ikonet</string>
+    <string name="settings_start_at_login">Start ved pålogging</string>
+    <string name="settings_start_at_login_description">Åpner appen når du logger på; med Lukk til systemstatusfeltet venter den der</string>
     <string name="tray_show">Vis vindu</string>
     <string name="tray_hide">Skjul vindu</string>
 </resources>

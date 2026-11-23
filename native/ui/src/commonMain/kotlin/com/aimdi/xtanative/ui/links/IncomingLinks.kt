@@ -1,9 +1,9 @@
 package com.aimdi.xtanative.ui.links
 
-import com.aimdi.xtanative.ui.search.SearchTab
 import com.aimdi.xtanative.services.links.SharedLinks
 import com.aimdi.xtanative.services.links.XLink
 import com.aimdi.xtanative.services.links.XLinks
+import com.aimdi.xtanative.ui.search.SearchTab
 import kotlinx.coroutines.CancellationException
 
 /** Where a link another app opens here goes. */

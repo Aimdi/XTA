@@ -53,8 +53,8 @@ import com.aimdi.xtanative.store.crash.CrashReporter
 import com.aimdi.xtanative.store.downloads.DownloadDestination
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.store.settings.CrashReportPrefs
-import com.aimdi.xtanative.store.settings.DownloadType
 import com.aimdi.xtanative.store.settings.DesktopPrefs
+import com.aimdi.xtanative.store.settings.DownloadType
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.LanguageFilterAction
 import com.aimdi.xtanative.store.settings.MediaGridLayout
@@ -69,6 +69,8 @@ import com.aimdi.xtanative.store.settings.ThemeBackground
 import com.aimdi.xtanative.store.settings.ThemePrefs
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login
+import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login_description
 import com.aimdi.xtanative.ui.links.BrowserPickerRow
 import com.aimdi.xtanative.ui.speech.VoiceSettingsSheet
 import com.aimdi.xtanative.ui.theme.Contrast
@@ -111,6 +113,16 @@ internal fun GeneralSettings(title: String, vm: SettingsViewModel, focus: String
             if (isDesktop) {
                 PrefSwitch(settings, DesktopPrefs.notifications, stringResource(Res.string.settings_desktop_notifications), stringResource(Res.string.settings_desktop_notifications_description), vm, focus)
                 PrefSwitch(settings, DesktopPrefs.closeToTray, stringResource(Res.string.settings_close_to_tray), stringResource(Res.string.settings_close_to_tray_description), vm, focus)
+                rememberLoginStart()?.let { login ->
+                    // Read from the desktop each time the page opens: the entry may have been changed outside the app.
+                    var startsAtLogin by remember(login) { mutableStateOf(login.isOn()) }
+                    SwitchRow(
+                        stringResource(Res.string.settings_start_at_login),
+                        stringResource(Res.string.settings_start_at_login_description),
+                        startsAtLogin,
+                        focused = focus == START_AT_LOGIN_KEY,
+                    ) { on -> if (login.set(on)) startsAtLogin = on }
+                }
             }
             BrowserPickerRow()
             PrefSwitch(settings, GeneralPrefs.cleanLinks, stringResource(Res.string.settings_clean_links), stringResource(Res.string.settings_clean_links_description), vm, focus)

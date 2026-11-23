@@ -367,6 +367,8 @@
     <string name="settings_desktop_notifications_description">在其他視窗中時，下載完成後發出通知</string>
     <string name="settings_close_to_tray">關閉時縮小至系統匣</string>
     <string name="settings_close_to_tray_description">關閉視窗後應用程式繼續在系統匣中執行；從系統匣圖示的選單結束</string>
+    <string name="settings_start_at_login">登入時啟動</string>
+    <string name="settings_start_at_login_description">登入時開啟應用程式；開啟「關閉時縮小至系統匣」時，會在系統匣中等待</string>
     <string name="tray_show">顯示視窗</string>
     <string name="tray_hide">隱藏視窗</string>
 </resources>

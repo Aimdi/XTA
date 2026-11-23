@@ -371,6 +371,8 @@
     <string name="settings_desktop_notifications_description">Avisar quando uma transferência terminar enquanto está noutra janela</string>
     <string name="settings_close_to_tray">Fechar para a área de notificação</string>
     <string name="settings_close_to_tray_description">Fechar a janela mantém a app a correr na área de notificação; saia pelo menu do ícone</string>
+    <string name="settings_start_at_login">Iniciar ao iniciar sessão</string>
+    <string name="settings_start_at_login_description">Abre a app ao iniciar sessão; com Fechar para a área de notificação ativo, fica lá à espera</string>
     <string name="tray_show">Mostrar janela</string>
     <string name="tray_hide">Ocultar janela</string>
 </resources>
