@@ -9,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -69,18 +70,26 @@ internal fun SourceVideoPage(
     LaunchedEffect(state.url) { onPlaying(state.url) }
     val fullscreen = LocalVideoFullscreen.current
     val gif = source?.gif == true
+    val download: (() -> Unit)? = onDownload?.let { save -> { save(player.state.value.url) } }
+    val open: (() -> Unit)? = if (gif) null else fullscreen?.let { screen ->
+        {
+            kept.enteredFullscreen()
+            screen.open(FullscreenVideo(player, aspectRatio ?: (16f / 9f), download, onClosed = kept::leftFullscreen))
+        }
+    }
+    // The viewer's keys for the page shown: play, pause, skip, mute, full screen.
+    val keys = LocalViewerVideoKeys.current
+    if (active && keys != null) {
+        val latestOpen by rememberUpdatedState(open)
+        LaunchedEffect(keys, player) {
+            keys.collect { key -> if (key == VideoKey.FULLSCREEN) latestOpen?.invoke() else if (!gif) playbackKey(key, player) }
+        }
+    }
     Box(Modifier.fillMaxSize().navigationBarsPadding()) {
         // Full screen has it: the page keeps its poster meanwhile.
         if (fullscreen?.shows(player) == true) return@Box poster()
         player.Picture(fill = false, Modifier.fillMaxSize())
         if (!gif) {
-            val download: (() -> Unit)? = onDownload?.let { save -> { save(player.state.value.url) } }
-            val open: (() -> Unit)? = fullscreen?.let { screen ->
-                {
-                    kept.enteredFullscreen()
-                    screen.open(FullscreenVideo(player, aspectRatio ?: (16f / 9f), download, onClosed = kept::leftFullscreen))
-                }
-            }
             VideoControls(player, VideoChrome(onFullscreen = open, onDownload = download), Modifier.fillMaxSize())
         }
         // Over the player: a surface of its own lies behind the window, and would clear a poster drawn under it.
@@ -88,3 +97,6 @@ internal fun SourceVideoPage(
         if (!gif) MuteCorner(state.muted, onToggle = { toggleMute(player, state.muted) }, Modifier.align(Alignment.BottomEnd))
     }
 }
+
+/** The media viewer's video keys ([VideoKeys.onViewerPage]), for the page it shows; none outside the viewer. */
+internal val LocalViewerVideoKeys = androidx.compose.runtime.staticCompositionLocalOf<kotlinx.coroutines.flow.Flow<VideoKey>?> { null }

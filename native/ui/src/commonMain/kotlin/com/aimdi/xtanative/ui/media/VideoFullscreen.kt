@@ -138,6 +138,21 @@ internal expect val FullscreenTurns: Boolean
 @Composable
 internal expect fun rememberPictureInPicture(onDismissed: () -> Unit): PictureInPicture?
 
+/** [key] done to [playback] ([VideoKeys]): play, pause, skip, mute or start over; false for a key it does not take. */
+internal fun playbackKey(key: VideoKey, playback: VideoPlayback): Boolean {
+    val now = playback.state.value
+    val skip = VideoRules.SEEK_SECONDS * 1000L
+    when (key) {
+        VideoKey.PLAY_PAUSE -> playback.playOrPause()
+        VideoKey.BACK -> playback.seekTo(VideoRules.seekTarget(now.positionMs, -skip, now.durationMs))
+        VideoKey.FORWARD -> playback.seekTo(VideoRules.seekTarget(now.positionMs, skip, now.durationMs))
+        VideoKey.MUTE -> toggleMute(playback, now.muted)
+        VideoKey.RESTART -> playback.seekTo(0)
+        else -> return false
+    }
+    return true
+}
+
 /** [event] done to the video full screen ([VideoKeys]); false when it is not the video's. */
 private fun fullscreenKey(event: KeyEvent, playback: VideoPlayback, onClose: () -> Unit): Boolean {
     val key = VideoKeys.of(
@@ -150,19 +165,9 @@ private fun fullscreenKey(event: KeyEvent, playback: VideoPlayback, onClose: () 
         letter = PLAYER_LETTERS[event.key],
         home = event.key == Key.MoveHome,
     )
-    val now = playback.state.value
-    val skip = VideoRules.SEEK_SECONDS * 1000L
-    when (key) {
-        VideoKey.LEAVE -> onClose()
-        VideoKey.PLAY_PAUSE -> playback.playOrPause()
-        VideoKey.BACK -> playback.seekTo(VideoRules.seekTarget(now.positionMs, -skip, now.durationMs))
-        VideoKey.FORWARD -> playback.seekTo(VideoRules.seekTarget(now.positionMs, skip, now.durationMs))
-        VideoKey.MUTE -> toggleMute(playback, now.muted)
-        VideoKey.RESTART -> playback.seekTo(0)
-        VideoKey.NONE -> return false
-    }
-    return true
+    if (key == VideoKey.LEAVE) return true.also { onClose() }
+    return playbackKey(key, playback)
 }
 
 /** The letter keys the web's video players answer to, by where they sit ([VideoKeys]'s `letter`). */
-private val PLAYER_LETTERS = mapOf(Key.F to 'f', Key.K to 'k', Key.J to 'j', Key.L to 'l', Key.M to 'm')
+internal val PLAYER_LETTERS = mapOf(Key.F to 'f', Key.K to 'k', Key.J to 'j', Key.L to 'l', Key.M to 'm')

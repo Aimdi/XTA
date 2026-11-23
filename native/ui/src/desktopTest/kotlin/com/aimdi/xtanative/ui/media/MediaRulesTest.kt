@@ -246,4 +246,16 @@ class MediaRulesTest {
         assertEquals(VideoKey.NONE, key('m', modified = true))
         assertEquals(VideoKey.NONE, key('x'))
     }
+
+    @Test
+    fun aVideoOnTheViewersPageTakesThePlayersLetters() {
+        assertEquals(VideoKey.PLAY_PAUSE, VideoKeys.onViewerPage(space = true, letter = null, modified = false))
+        assertEquals(VideoKey.PLAY_PAUSE, VideoKeys.onViewerPage(space = false, letter = 'k', modified = false))
+        assertEquals(VideoKey.FORWARD, VideoKeys.onViewerPage(space = false, letter = 'l', modified = false))
+        assertEquals(VideoKey.MUTE, VideoKeys.onViewerPage(space = false, letter = 'm', modified = false))
+        // f goes full screen here, rather than leaving it.
+        assertEquals(VideoKey.FULLSCREEN, VideoKeys.onViewerPage(space = false, letter = 'f', modified = false))
+        assertEquals(VideoKey.NONE, VideoKeys.onViewerPage(space = false, letter = 'm', modified = true))
+        assertEquals(VideoKey.NONE, VideoKeys.onViewerPage(space = false, letter = null, modified = false))
+    }
 }

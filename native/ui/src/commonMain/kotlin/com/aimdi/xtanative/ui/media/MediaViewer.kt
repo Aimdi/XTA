@@ -53,6 +53,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isAltPressed
+import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
@@ -189,6 +191,8 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     // The zoom and pan keys, for the photo shown, and which pages' photos are zoomed in.
     val zoomKeys = remember { MutableSharedFlow<ViewerKey>(extraBufferCapacity = 8) }
     val zoomedPages = remember { mutableStateMapOf<Int, Boolean>() }
+    // A video page's keys: Space, k, j, l, m and f, for the page shown.
+    val videoKeys = remember { MutableSharedFlow<VideoKey>(extraBufferCapacity = 8) }
     Box(
         Modifier
             .fillMaxSize()
@@ -196,6 +200,11 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
             // Before the focus target: key events reach the nodes above the focused one.
             .onKeyEvent { event ->
                 if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
+                val shownKind = items.getOrNull(pager.currentPage)?.kind
+                if (shownKind == XMedia.Kind.VIDEO || shownKind == XMedia.Kind.GIF) {
+                    val videoKey = VideoKeys.onViewerPage(event.key == Key.Spacebar, PLAYER_LETTERS[event.key], event.isCtrlPressed || event.isAltPressed)
+                    if (videoKey != VideoKey.NONE) return@onKeyEvent true.also { videoKeys.tryEmit(videoKey) }
+                }
                 when (val key = viewerKeyOf(event, zoomed = zoomedPages[pager.currentPage] == true)) {
                     ViewerKey.PREVIOUS -> true.also { turn(-1) }
                     ViewerKey.NEXT -> true.also { turn(1) }
@@ -253,7 +262,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
                             XMedia.Kind.VIDEO, XMedia.Kind.GIF -> {
                                 val download: ((String) -> Unit)? = if (saver == null) null else { url -> viewed.save(viewed.pages[page], url)?.let(saver::save) }
                                 val credit = remember(page, viewed) { viewed.pages.getOrNull(page)?.let { VideoCredit.of(posts.post(it.postId), photoUrl(item.url, PhotoSize.LARGE)) } }
-                                CompositionLocalProvider(LocalVideoCredit provides credit) {
+                                CompositionLocalProvider(LocalVideoCredit provides credit, LocalViewerVideoKeys provides videoKeys) {
                                     VideoPage(item, active = pager.currentPage == page, onPlaying = { url -> playing[page] = url }, onDownload = download)
                                 }
                             }

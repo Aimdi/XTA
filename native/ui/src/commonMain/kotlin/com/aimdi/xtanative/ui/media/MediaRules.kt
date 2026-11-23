@@ -11,7 +11,7 @@ import java.util.Locale
 data class VideoQuality(val url: String, val label: String)
 
 /** What a key does to a video full screen on the desktop ([VideoKeys]). */
-enum class VideoKey { LEAVE, PLAY_PAUSE, BACK, FORWARD, MUTE, RESTART, NONE }
+enum class VideoKey { LEAVE, PLAY_PAUSE, BACK, FORWARD, MUTE, RESTART, FULLSCREEN, NONE }
 
 /**
  * A video full screen's keys, as a desktop's players have them: Esc
@@ -42,6 +42,18 @@ object VideoKeys {
         letter == 'm' -> VideoKey.MUTE
         home -> VideoKey.RESTART
         else -> VideoKey.NONE
+    }
+
+    /**
+     * A video's keys on the media viewer's page, where ← → and Home are the
+     * viewer's (its pages): Space and k play or pause, j and l skip, m mutes,
+     * and f goes full screen ([VideoKey.FULLSCREEN]); with Ctrl or Alt held
+     * none is the video's.
+     */
+    fun onViewerPage(space: Boolean, letter: Char?, modified: Boolean): VideoKey = when {
+        modified -> VideoKey.NONE
+        letter == 'f' -> VideoKey.FULLSCREEN
+        else -> of(escape = false, space = space, left = false, right = false, modified = false, letter = letter)
     }
 }
 
