@@ -65,6 +65,17 @@ class MprisService(
         if (tell) schedule()
     }
 
+    /** The artwork [artUrl] for what [owner] bound, once found; nothing when another is bound since. */
+    fun artFor(owner: Any, artUrl: String) {
+        val tell = synchronized(lock) {
+            if (this.owner !== owner || binding == null) return
+            val before = now
+            now = now.copy(artUrl = artUrl)
+            before != now
+        }
+        if (tell) schedule()
+    }
+
     override fun clear() = clear(null)
 
     /** Unbinds [owner] (anything for null); nothing when another is bound. */
@@ -167,6 +178,13 @@ class MprisService(
  * files, and nothing is fetched for it.
  */
 internal object CachedArt {
+    private val looking = java.util.concurrent.Executors.newSingleThreadExecutor { task -> Thread(task, "xta-native-art").apply { isDaemon = true } }
+
+    /** [fileUrl] of [url] on a thread of its own, handed to [found] when there is one. */
+    fun lookUp(url: String, found: (String) -> Unit) {
+        runCatching { looking.execute { fileUrl(url)?.let(found) } }
+    }
+
     fun fileUrl(url: String?): String? {
         url ?: return null
         return runCatching {

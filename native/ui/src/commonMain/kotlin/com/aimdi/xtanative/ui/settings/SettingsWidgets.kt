@@ -52,6 +52,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.runtime.DisposableEffect
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalFocusManager
@@ -99,11 +101,13 @@ internal fun SettingsPage(
             TopAppBar(
                 title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = {
-                    IconTip(stringResource(Res.string.settings_back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.settings_back)) } }
+                    Box(Modifier.onFocusChanged { if (it.hasFocus) rows.inRows = false }) {
+                        IconTip(stringResource(Res.string.settings_back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.settings_back)) } }
+                    }
                 },
                 actions = {
-                    actions()
-                    TabIntoRows(rows)
+                    Row(Modifier.onFocusChanged { if (it.hasFocus) rows.inRows = false }) { actions() }
+                    if (isDesktop && rows.attached) TabIntoRows(rows)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
@@ -128,8 +132,11 @@ internal fun SettingsPage(
 internal class SettingsRowsEntry {
     val rows = FocusRequester()
 
-    /** Whether the rows held the focus just before the step got it: Shift+Tab out of them. */
+    /** Whether the rows had the focus since the bar last had it: the step then got it by Shift+Tab out of them. */
     var inRows = false
+
+    /** Whether the page's rows are a [settingsRows] group the step can hand the focus to; pages without one get no step. */
+    var attached by mutableStateOf(false)
 }
 
 /** The page's [SettingsRowsEntry], for [SettingsList] to take the focus Tab brings. */
@@ -141,9 +148,10 @@ private fun TabIntoRows(entry: SettingsRowsEntry) {
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
     Box(
-        Modifier.size(1.dp).onFocusChanged { state ->
+        Modifier.size(1.dp).clearAndSetSemantics {}.onFocusChanged { state ->
             if (!state.isFocused) return@onFocusChanged
             val back = entry.inRows
+            entry.inRows = false
             // After the move that brought the focus here is done: a move made inside it is undone by it.
             scope.launch {
                 if (back || !runCatching { entry.rows.requestFocus() }.isSuccess) focusManager.moveFocus(FocusDirection.Previous)
@@ -169,7 +177,12 @@ internal fun SettingsList(padding: PaddingValues, content: @Composable ColumnSco
 @Composable
 internal fun Modifier.settingsRows(): Modifier {
     val entry = LocalSettingsRows.current ?: return this
-    return onFocusChanged { entry.inRows = it.hasFocus }.focusRequester(entry.rows).focusGroup()
+    DisposableEffect(entry) {
+        entry.attached = true
+        onDispose { entry.attached = false }
+    }
+    // Set as the rows gain the focus, cleared only by the bar: the order focus callbacks run in decides nothing.
+    return onFocusChanged { if (it.hasFocus) entry.inRows = true }.focusRequester(entry.rows).focusGroup()
 }
 
 /** A group's heading, a small grey label on the page, and what it is about. */

@@ -23,22 +23,22 @@ object PluginDownloads {
     }
 
     /**
-     * "<plugin>-<the file's own name>", as XTA names a plugin's media: the
-     * name decoded from the address, its separators made `_`, its start kept
-     * within Android's limit (where sites put their name and the post's) and
-     * its extension kept; "<plugin>-media" when the address names no file.
-     */
-    /**
      * What the desktop viewer's menu saves and copies of a plugin's [media]:
      * its own file, named as [fileName] names one of no plugin's ("xta-…");
      * null for a stream, which has no file.
      */
-    fun viewerSave(media: MediaItem): MediaSave? {
+    internal fun viewerSave(media: MediaItem): MediaSave? {
         val url = url(media) ?: return null
         val kind = if (media.kind == MediaItem.Kind.PHOTO) XMedia.Kind.PHOTO else XMedia.Kind.VIDEO
         return MediaSave(url, fileName("xta", url), kind, postId = "")
     }
 
+    /**
+     * "<plugin>-<the file's own name>", as XTA names a plugin's media: the
+     * name decoded from the address, its separators made `_`, its start kept
+     * within Android's limit (where sites put their name and the post's) and
+     * its extension kept; "<plugin>-media" when the address names no file.
+     */
     fun fileName(source: String, url: String): String {
         val base = lastSegment(url)
         val name = source.trim().ifEmpty { "xta" }

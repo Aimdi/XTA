@@ -255,7 +255,9 @@ internal class MpvVideoCore<P : MpvPictures>(
             sessions.holds(this) -> sessions.update(this, now.playing, now.positionMs, durationMs)
             startedPlaying -> {
                 val credit = synchronized(lock) { source?.credit }
-                sessions.bind(this, title = credit?.title.orEmpty(), artist = credit?.artist, binding = controls, artUrl = CachedArt.fileUrl(credit?.art))
+                sessions.bind(this, title = credit?.title.orEmpty(), artist = credit?.artist, binding = controls)
+                // The poster's file is looked up off this thread (the window's or mpv's), then shown if this still has the keys.
+                credit?.art?.let { art -> CachedArt.lookUp(art) { file -> sessions.artFor(this, file) } }
                 sessions.update(this, playing = true, positionMs = now.positionMs, durationMs = durationMs)
             }
         }

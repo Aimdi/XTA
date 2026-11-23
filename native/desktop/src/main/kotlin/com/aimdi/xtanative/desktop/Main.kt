@@ -133,7 +133,7 @@ fun main(args: Array<String>) {
                 Box(Modifier.fillMaxSize()) {
                     XtaNativeContent(graph, app.plugins)
                     // A download or offline save that ends while another window is in use is told by the desktop too.
-                    val notifies by graph.settings.observe(DesktopPrefs.notifications).collectAsState(initial = true)
+                    val notifies by remember(graph) { graph.settings.observe(DesktopPrefs.notifications) }.collectAsState(initial = true)
                     DesktopNotices(name, notifies) { window.isActive }
                     VideoCheck.Shown()
                 }
