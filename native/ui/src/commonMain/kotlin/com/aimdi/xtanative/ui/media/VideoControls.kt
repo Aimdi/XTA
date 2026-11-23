@@ -57,6 +57,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.Role
@@ -153,6 +156,18 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
     Box(
         modifier
             .fillMaxSize()
+            // A mouse moving over the video shows the controls and keeps them up while it moves, as a desktop's players do.
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent(PointerEventPass.Initial)
+                        if (event.type == PointerEventType.Move && event.changes.any { it.type == PointerType.Mouse }) {
+                            visible = true
+                            touch()
+                        }
+                    }
+                }
+            }
             .pointerInput(playback) {
                 detectTapGestures(
                     onTap = { visible = !visible },
