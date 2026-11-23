@@ -178,6 +178,17 @@ object DesktopKeys {
         }
     }
 
+    /**
+     * Whether what has the focus inside the page ([focusInside]) keeps the
+     * keys from [action]: a field being typed in ([typing]), or anything the
+     * keyboard moved the focus to (Tab), where Space and Enter press it. A
+     * button, tab or chip the mouse last [clicked] has the focus too (the
+     * mouse's press gives it), but holds no claim to them: the reading keys,
+     * j and k, Ctrl+← / Ctrl+→ and Esc go on working at once, as in a
+     * browser, where only a field keeps the keys after a click.
+     */
+    fun keysInside(focusInside: Boolean, typing: Boolean, clicked: Boolean): Boolean = focusInside && (typing || !clicked)
+
     private val SCROLL_KEYS = setOf(DeskKey.UP, DeskKey.DOWN, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN, DeskKey.SPACE, DeskKey.HOME, DeskKey.END)
 
     private val TAB_KEYS = setOf(DeskKey.TAB, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN)

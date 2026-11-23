@@ -26,6 +26,22 @@ class DesktopKeysTest {
     ) = DesktopKeys.action(key, alt, ctrl, focusInside, canGoBack, rtl, open, shift, selecting, openIsRead)
 
     @Test
+    fun aButtonClickedKeepsNoKeysButAFieldOrWhatTabReachedDoes() {
+        assertFalse(DesktopKeys.keysInside(focusInside = false, typing = false, clicked = false), "the frame itself has them")
+        assertFalse(DesktopKeys.keysInside(focusInside = true, typing = false, clicked = true), "a tab, chip or refresh button clicked")
+        assertTrue(DesktopKeys.keysInside(focusInside = true, typing = true, clicked = true), "a field clicked into")
+        assertTrue(DesktopKeys.keysInside(focusInside = true, typing = false, clicked = false), "a button reached with Tab: Space presses it")
+        assertTrue(DesktopKeys.keysInside(focusInside = true, typing = true, clicked = false), "a field reached with Tab")
+        // After the click, the keys read on at once.
+        val inside = DesktopKeys.keysInside(focusInside = true, typing = false, clicked = true)
+        assertEquals(DeskAction.NEXT_ITEM, action(DeskKey.J, focusInside = inside))
+        assertEquals(DeskAction.SCREEN_DOWN, action(DeskKey.PAGE_DOWN, focusInside = inside))
+        assertEquals(DeskAction.SCREEN_DOWN, action(DeskKey.SPACE, focusInside = inside))
+        assertEquals(DeskAction.PREVIOUS_COLUMN, action(DeskKey.LEFT, ctrl = true, focusInside = inside))
+        assertEquals(DeskAction.BACK, action(DeskKey.ESCAPE, focusInside = inside), "nothing to leave first")
+    }
+
+    @Test
     fun altArrowsMoveTheRowUnderThePointer() {
         assertEquals(DeskAction.MOVE_ROW_UP, action(DeskKey.UP, alt = true))
         assertEquals(DeskAction.MOVE_ROW_DOWN, action(DeskKey.DOWN, alt = true))

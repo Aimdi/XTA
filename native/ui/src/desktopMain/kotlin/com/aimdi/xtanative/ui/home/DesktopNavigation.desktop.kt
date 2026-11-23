@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
@@ -38,6 +39,7 @@ import androidx.compose.ui.input.pointer.isCtrlPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.platform.InterceptPlatformTextInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -58,6 +60,7 @@ import kotlinx.coroutines.launch
  * keeps the focus whenever nothing inside it has it, so the keys always
  * arrive here first.
  */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, openHome: () -> Unit, content: @Composable () -> Unit) {
     val focus = remember { FocusRequester() }
@@ -66,6 +69,10 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     val scope = rememberCoroutineScope()
     var hasFocus by remember { mutableStateOf(false) }
     var focusInside by remember { mutableStateOf(false) }
+    // The fields in the page being typed in now: a focused field opens its text input while it has the focus.
+    val typing = remember { intArrayOf(0) }
+    // Whether the mouse pressed since the keyboard last moved the focus (Tab): what it left the focus on is no field to keep the keys.
+    var clicked by remember { mutableStateOf(false) }
     // Whether the window took the last key pressed, so the character it types goes nowhere.
     var keyTaken by remember { mutableStateOf(false) }
     var showKeys by remember { mutableStateOf(false) }
@@ -169,6 +176,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     fun onKey(event: KeyEvent): Boolean {
         // The character a key the window took types (Ctrl+= types =) is not typed into a field as well.
         if (event.type != KeyEventType.KeyDown) return event.type != KeyEventType.KeyUp && keyTaken
+        // Tab moves the focus with the keyboard: where it lands keeps the keys, as before any click.
+        if (event.key == Key.Tab) clicked = false
         // Ctrl and a digit go to that tab, as a browser's do, from a field too; not under something open over the page.
         TAB_DIGITS[event.key]?.let { digit ->
             if (event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && !actions.overlayHoldsKeys() && !actions.somethingOpen()) {
@@ -179,7 +188,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         val canGoBack = nav.previousBackStackEntry != null
         val key = deskKey(event.key)
         val action = DesktopKeys.action(
-            key, event.isAltPressed, event.isCtrlPressed, focusInside, canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed,
+            key, event.isAltPressed, event.isCtrlPressed, DesktopKeys.keysInside(focusInside, typing[0] > 0, clicked), canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed,
             selecting = actions.selecting(), openIsRead = actions.openIsRead(),
         )
         // A search field's first Esc drops the recent search it highlighted; the next leaves the field.
@@ -228,6 +237,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                     awaitPointerEventScope {
                         while (true) {
                             val event = awaitPointerEvent(PointerEventPass.Initial)
+                            if (event.type == PointerEventType.Press) clicked = true
                             if (event.type == PointerEventType.Press && event.buttons.isBackPressed) {
                                 act(DesktopKeys.mouseBack(nav.previousBackStackEntry != null, actions.somethingOpen()))
                             }
@@ -256,7 +266,16 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                 .focusRequester(focus)
                 .focusable(),
         ) {
-            content()
+            InterceptPlatformTextInput(interceptor = { request, next ->
+                typing[0]++
+                try {
+                    next.startInputMethod(request)
+                } finally {
+                    typing[0]--
+                }
+            }) {
+                content()
+            }
         }
     }
     if (showKeys) {
