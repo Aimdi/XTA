@@ -3,4 +3,7 @@
     <string name="media_alt_badge">ALT</string>
     <string name="media_alt_title">Görsel açıklaması</string>
     <string name="media_tap_to_show">%1$s göstermek için dokunun</string>
+    <string name="media_copy_image">Resmi kopyala</string>
+    <string name="media_save_as">Farklı kaydet…</string>
+    <string name="media_copy_failed">Resim kopyalanamadı</string>
 </resources>

@@ -3,4 +3,7 @@
     <string name="media_alt_badge">ALT</string>
     <string name="media_alt_title">Irudiaren deskribapena</string>
     <string name="media_tap_to_show">Sakatu %1$s erakusteko</string>
+    <string name="media_copy_image">Kopiatu irudia</string>
+    <string name="media_save_as">Gorde honela…</string>
+    <string name="media_copy_failed">Ezin izan da irudia kopiatu</string>
 </resources>

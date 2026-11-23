@@ -3,4 +3,7 @@
     <string name="media_alt_badge">ALT</string>
     <string name="media_alt_title">Descrizione dell'immagine</string>
     <string name="media_tap_to_show">Tocca per mostrare %1$s</string>
+    <string name="media_copy_image">Copia immagine</string>
+    <string name="media_save_as">Salva con nome…</string>
+    <string name="media_copy_failed">Impossibile copiare l’immagine</string>
 </resources>

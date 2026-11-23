@@ -3,4 +3,7 @@
     <string name="media_alt_badge">ALT</string>
     <string name="media_alt_title">Descrierea imaginii</string>
     <string name="media_tap_to_show">Atingeți pentru a afișa %1$s</string>
+    <string name="media_copy_image">Copiază imaginea</string>
+    <string name="media_save_as">Salvează ca…</string>
+    <string name="media_copy_failed">Imaginea nu a putut fi copiată</string>
 </resources>

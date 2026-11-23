@@ -3,4 +3,7 @@
     <string name="media_alt_badge">ALT</string>
     <string name="media_alt_title">Mô tả hình ảnh</string>
     <string name="media_tap_to_show">Chạm để hiển thị %1$s</string>
+    <string name="media_copy_image">Sao chép hình ảnh</string>
+    <string name="media_save_as">Lưu thành…</string>
+    <string name="media_copy_failed">Không thể sao chép hình ảnh</string>
 </resources>

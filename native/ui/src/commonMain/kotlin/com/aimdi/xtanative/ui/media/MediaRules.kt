@@ -32,17 +32,20 @@ object VideoKeys {
 }
 
 /** What a key does to the media viewer on the desktop ([ViewerKeys]). */
-enum class ViewerKey { PREVIOUS, NEXT, CLOSE, NONE }
+enum class ViewerKey { PREVIOUS, NEXT, CLOSE, COPY, SAVE_AS, NONE }
 
 /**
  * The media viewer's keys: ← and → turn its pages, Esc closes it, and going
  * back the desktop's way ([back]: Alt+← or the Back key) closes it too, as it
  * goes back from any screen; with Ctrl or Alt held the arrows are not the
- * viewer's.
+ * viewer's. Ctrl+C copies the picture shown and Ctrl+S saves it where the
+ * reader picks ([copy], [saveAs]), where the platform can.
  */
 object ViewerKeys {
-    fun of(escape: Boolean, left: Boolean, right: Boolean, back: Boolean, modified: Boolean): ViewerKey = when {
+    fun of(escape: Boolean, left: Boolean, right: Boolean, back: Boolean, modified: Boolean, copy: Boolean = false, saveAs: Boolean = false): ViewerKey = when {
         escape || back -> ViewerKey.CLOSE
+        copy -> ViewerKey.COPY
+        saveAs -> ViewerKey.SAVE_AS
         modified -> ViewerKey.NONE
         left -> ViewerKey.PREVIOUS
         right -> ViewerKey.NEXT

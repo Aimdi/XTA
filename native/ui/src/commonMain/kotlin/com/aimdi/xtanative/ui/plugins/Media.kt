@@ -261,7 +261,7 @@ fun MediaPager(
                     ViewerKey.PREVIOUS -> true.also { turn(-1) }
                     ViewerKey.NEXT -> true.also { turn(1) }
                     ViewerKey.CLOSE -> true.also { onClose() }
-                    ViewerKey.NONE -> false
+                    ViewerKey.COPY, ViewerKey.SAVE_AS, ViewerKey.NONE -> false
                 }
             }
             .focusRequester(focus)
