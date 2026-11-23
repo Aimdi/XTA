@@ -22,6 +22,7 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -67,6 +68,7 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.focusGroup
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -404,7 +406,9 @@ internal fun TextFieldDialog(
                 placeholder = hint?.let { { Text(it) } },
                 singleLine = true,
                 visualTransformation = if (secret) PasswordVisualTransformation() else VisualTransformation.None,
-                keyboardOptions = KeyboardOptions(keyboardType = if (url) KeyboardType.Uri else if (secret) KeyboardType.Password else KeyboardType.Text),
+                keyboardOptions = KeyboardOptions(keyboardType = if (url) KeyboardType.Uri else if (secret) KeyboardType.Password else KeyboardType.Text, imeAction = ImeAction.Done),
+                // Enter (or the keyboard's Done) saves, as Save does.
+                keyboardActions = KeyboardActions(onDone = { onSave(text) }),
                 modifier = Modifier.fillMaxWidth(),
             )
         },
