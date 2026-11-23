@@ -185,7 +185,7 @@ fun PostCard(
             val buttons = if (translation != null) 2 else 1
             Box(Modifier.weight(1f)) {
                 Column(Modifier.padding(end = PostGeometry.END_PADDING.dp)) {
-                    PostAuthor(shown, scope, Modifier.padding(top = PostGeometry.TEXT_GAP.dp, end = PostGeometry.authorLineEnd(buttons).dp))
+                    PostAuthor(shown, scope, actions, Modifier.padding(top = PostGeometry.TEXT_GAP.dp, end = PostGeometry.authorLineEnd(buttons).dp))
                     PostView.replyingTo(shown, quoted = false, midThread = midThread)?.let { ReplyingTo(it, shown.replyToPostId, actions) }
                     when {
                         PostView.textMissing(shown) -> StateTile(stringResource(Res.string.posts_no_text), null, Modifier.padding(top = 2.dp))
@@ -237,7 +237,7 @@ private fun ContextLines(post: XPost, actions: PostActions, pinned: Boolean, fir
     }
 }
 
-/** The author's picture, opening the profile; a plain face in non-confirmation-bias mode; XTA's follow badge on it. */
+/** The author's picture, opening the profile, with the author's card where the pointer rests on it; a plain face in non-confirmation-bias mode; XTA's follow badge on it. */
 @Composable
 internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, size: Dp) {
     if (!PostView.showsAuthor(post, scope.prefs, scope.profileScreenName)) {
@@ -245,21 +245,28 @@ internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, siz
         return
     }
     val open = { actions.openUser(post.author.screenName, post.author.id) }
-    if (!scope.prefs.followBadge) {
-        Avatar(post.author.largeAvatarUrl, size, onClick = open)
-        return
+    AuthorHoverCard(post.author, post.author.largeAvatarUrl, open) {
+        if (scope.prefs.followBadge) {
+            FollowBadge(post.author, size) { Avatar(post.author.largeAvatarUrl, size, onClick = open) }
+        } else {
+            Avatar(post.author.largeAvatarUrl, size, onClick = open)
+        }
     }
-    FollowBadge(post.author, size) { Avatar(post.author.largeAvatarUrl, size, onClick = open) }
 }
 
-/** "Name ✓ @handle · 3h", or the time alone when the author is not shown. */
+/**
+ * "Name ✓ @handle · 3h", the name showing the author's card where the pointer
+ * rests on it, with the picture at [avatarUrl] that the post shows beside it;
+ * or the time alone when the author is not shown.
+ */
 @Composable
-internal fun PostAuthor(post: XPost, scope: PostScope, modifier: Modifier = Modifier) {
+internal fun PostAuthor(post: XPost, scope: PostScope, actions: PostActions, modifier: Modifier = Modifier, avatarUrl: String? = post.author.largeAvatarUrl) {
     val full = fullTimeText(post.createdAt)
     val time = if (scope.prefs.absoluteTimestamps) full else agoText(post.createdAt)
     if (PostView.showsAuthor(post, scope.prefs, scope.profileScreenName)) {
         // The full date and time where the pointer rests on a short one, as on X's site (a tooltip on the desktop; nothing on Android).
-        AuthorLine(post.author.name, post.author.screenName, time, post.author.verified, modifier, timeTip = full)
+        val card = AuthorLineCard(post.author, avatarUrl) { actions.openUser(post.author.screenName, post.author.id) }
+        AuthorLine(post.author.name, post.author.screenName, time, post.author.verified, modifier, timeTip = full, card = card)
     } else {
         Text(time, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = modifier)
     }
@@ -361,7 +368,7 @@ fun QuotedPost(post: XPost, actions: PostActions, modifier: Modifier = Modifier)
                     Avatar(post.author.avatarUrl, 20.dp)
                     Spacer(Modifier.width(6.dp))
                 }
-                PostAuthor(post, scope, Modifier.weight(1f))
+                PostAuthor(post, scope, actions, Modifier.weight(1f), avatarUrl = post.author.avatarUrl)
             }
             if (post.article == null) ExpandablePostText(post, actions, Modifier.padding(top = 4.dp))
             PostAttachments(post, scope, actions, gap = 8.dp, quoted = true)

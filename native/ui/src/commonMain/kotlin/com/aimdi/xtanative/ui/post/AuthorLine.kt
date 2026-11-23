@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import kotlin.math.max
@@ -75,9 +76,16 @@ object AuthorLineLayout {
 @Composable
 fun AuthorLine(name: String, handle: String, time: String, verified: Boolean, modifier: Modifier = Modifier) = AuthorLine(name, handle, time, verified, modifier, timeTip = null)
 
-/** [AuthorLine] whose time names [timeTip] (the full date and time) where the pointer rests on it, as X's site does; plugin API keeps the one above. */
+/** The author an [AuthorLine]'s name shows a card about ([AuthorHoverCard]) with the picture at [avatarUrl], and what opens their profile from it. */
+internal data class AuthorLineCard(val user: XUser, val avatarUrl: String?, val onOpen: () -> Unit)
+
+/**
+ * [AuthorLine] whose time names [timeTip] (the full date and time) where the
+ * pointer rests on it, as X's site does, and whose name shows [card] there;
+ * plugin API keeps the one above.
+ */
 @Composable
-internal fun AuthorLine(name: String, handle: String, time: String, verified: Boolean, modifier: Modifier, timeTip: String?) {
+internal fun AuthorLine(name: String, handle: String, time: String, verified: Boolean, modifier: Modifier, timeTip: String?, card: AuthorLineCard? = null) {
     val grey = MaterialTheme.colorScheme.onSurfaceVariant
     val style = MaterialTheme.typography.bodyMedium
     val fontScale = LocalDensity.current.fontScale
@@ -85,7 +93,8 @@ internal fun AuthorLine(name: String, handle: String, time: String, verified: Bo
     Layout(
         modifier = modifier,
         content = {
-            Text(name, style = style, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            val nameText = @Composable { Text(name, style = style, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+            if (card == null) nameText() else AuthorHoverCard(card.user, card.avatarUrl, card.onOpen, nameText)
             if (verified) {
                 Icon(XIcons.Verified, contentDescription = null, tint = Color.Unspecified, modifier = Modifier.padding(start = 2.dp).size(17.dp))
             } else {

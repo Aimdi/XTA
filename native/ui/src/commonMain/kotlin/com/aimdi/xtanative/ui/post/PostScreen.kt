@@ -356,13 +356,11 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
             Column(Modifier.weight(1f)) {
                 if (PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            shown.author.name,
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f, fill = false),
-                        )
+                        Box(Modifier.weight(1f, fill = false)) {
+                            AuthorHoverCard(shown.author, shown.author.largeAvatarUrl, { actions.openUser(shown.author.screenName, shown.author.id) }) {
+                                Text(shown.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            }
+                        }
                         if (shown.author.verified) {
                             Icon(XIcons.Verified, null, tint = Color.Unspecified, modifier = Modifier.padding(start = 2.dp).size(18.dp))
                         }
