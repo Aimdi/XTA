@@ -73,4 +73,33 @@ class DesktopNotificationsTest {
             daemon.waitFor(5, TimeUnit.SECONDS)
         }
     }
+
+    @Test
+    fun aFinishedDownloadsNotificationShowsItInItsFolder() {
+        assertEquals(listOf("default", ""), DesktopNotifications.actionsFor(null, "Show in folder"))
+        assertEquals(listOf("default", "", "show-in-folder", "Show in folder"), DesktopNotifications.actionsFor("file:///a.jpg", "Show in folder"))
+        val (daemon, socket) = privateBus() ?: return println("no dbus-daemon: skipped")
+        try {
+            val server = assertNotNull(DBusConnection.connect(socket))
+            val calls = LinkedBlockingQueue<DBusMessage>()
+            server.onCall = { call ->
+                calls.add(call)
+                server.reply(call, "u", listOf(9L))
+            }
+            server.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "RequestName", "su", listOf(DesktopNotifications.NAME, 4L))
+            val shown = LinkedBlockingQueue<String>()
+            val notifications = DesktopNotifications({ DBusConnection.connect(socket) }, onMain = { it() })
+            notifications.onShowInFolder = { shown.add(it) }
+            notifications.notify("XTA Native", "Saved to Pictures/XTA", folder = "file:///home/me/Pictures/XTA/a.jpg", folderLabel = "Show in folder")
+            notifications.settle()
+            val call = assertNotNull(calls.poll(5, TimeUnit.SECONDS))
+            assertEquals(listOf("default", "", "show-in-folder", "Show in folder"), call.body[5])
+            server.signal(DesktopNotifications.PATH, DesktopNotifications.NAME, "ActionInvoked", "us", listOf(9L, "show-in-folder"))
+            assertEquals("file:///home/me/Pictures/XTA/a.jpg", shown.poll(5, TimeUnit.SECONDS))
+            server.close()
+        } finally {
+            daemon.destroy()
+            daemon.waitFor(5, TimeUnit.SECONDS)
+        }
+    }
 }

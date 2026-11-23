@@ -1,10 +1,15 @@
 package com.aimdi.xtanative.ui.saved
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import com.aimdi.xtanative.ui.downloads.FileManagerShow
+import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.downloads_show_in_folder
 import com.aimdi.xtanative.ui.media.mpris.DBusConnection
 import com.aimdi.xtanative.ui.media.mpris.DBusMessage
 import com.aimdi.xtanative.ui.media.mpris.Variant
@@ -13,13 +18,16 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.swing.SwingUtilities
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * The end of a download or an offline save, said by the desktop's own
  * notifications (org.freedesktop.Notifications) while the window is not the
  * one in use, as a browser tells of a finished download: the line the
  * window's foot says, under the app's name. Clicking it brings the window
- * forward. Nothing is asked of any network; the bus's work runs on a thread
+ * forward; a finished download's has "Show in folder" too, which opens the
+ * file manager on it. Nothing is asked of any network; the bus's work runs on a thread
  * of its own.
  */
 class DesktopNotifications(
@@ -30,20 +38,33 @@ class DesktopNotifications(
     @Volatile
     var onActivate: (() -> Unit)? = null
 
+    /** Shows a download in its folder, when a notification's "Show in folder" is clicked; given its saved address. */
+    @Volatile
+    var onShowInFolder: ((String) -> Unit)? = null
+
+    /** The saved address of each notification that offers "Show in folder", by its id. */
+    private val folders = java.util.concurrent.ConcurrentHashMap<Long, String>()
+
     private val bus: ExecutorService = Executors.newSingleThreadExecutor { task -> Thread(task, "xta-native-notify").apply { isDaemon = true } }
     private var connection: DBusConnection? = null
     private var tried = false
     private val sent = Collections.synchronizedSet(mutableSetOf<Long>())
 
-    /** Shows [body] under [summary], the app's name; the notification's id once the desktop took it, through [shown] (tests). */
-    fun notify(summary: String, body: String, shown: (Long?) -> Unit = {}) {
+    /**
+     * Shows [body] under [summary], the app's name; with [folder] (a
+     * download's saved address and the button's [folderLabel]) it offers
+     * "Show in folder" too. The notification's id once the desktop took it,
+     * through [shown] (tests).
+     */
+    fun notify(summary: String, body: String, folder: String? = null, folderLabel: String = "", shown: (Long?) -> Unit = {}) {
         runCatching {
             bus.execute {
                 val id = connected()?.call(
                     NAME, PATH, NAME, "Notify", "susssasa{sv}i",
-                    listOf(summary, 0L, ICON, summary, body, listOf(DEFAULT, ""), mapOf("desktop-entry" to Variant("s", ICON)), EXPIRE_DEFAULT),
+                    listOf(summary, 0L, ICON, summary, body, actionsFor(folder, folderLabel), mapOf("desktop-entry" to Variant("s", ICON)), EXPIRE_DEFAULT),
                 )?.body?.firstOrNull() as? Long
                 id?.let(sent::add)
+                if (id != null && folder != null) folders[id] = folder
                 shown(id)
             }
         }
@@ -65,11 +86,15 @@ class DesktopNotifications(
         }
     }
 
-    /** One of this app's notifications clicked: the window comes forward. */
+    /** One of this app's notifications clicked: the window comes forward; its "Show in folder", the file manager on the download. */
     private fun signalled(signal: DBusMessage) {
-        if (signal.member != "ActionInvoked" || signal.body.getOrNull(1) != DEFAULT) return
+        if (signal.member != "ActionInvoked") return
         val id = signal.body.firstOrNull() as? Long ?: return
-        if (id in sent) onActivate?.let(onMain)
+        if (id !in sent) return
+        when (signal.body.getOrNull(1)) {
+            DEFAULT -> onActivate?.let(onMain)
+            SHOW_IN_FOLDER -> folders[id]?.let { saved -> onShowInFolder?.let { show -> onMain { show(saved) } } }
+        }
     }
 
     companion object {
@@ -77,11 +102,16 @@ class DesktopNotifications(
         const val PATH = "/org/freedesktop/Notifications"
         private const val ICON = "com.aimdi.xtanative"
         private const val DEFAULT = "default"
+        private const val SHOW_IN_FOLDER = "show-in-folder"
         private const val EXPIRE_DEFAULT = -1
         private const val MATCH = "type='signal',interface='$NAME',member='ActionInvoked',path='$PATH'"
 
         /** The desktop's own, on its session bus. */
         val desktop: DesktopNotifications by lazy { DesktopNotifications(DBusConnection::session) }
+
+        /** The Notify actions: clicking the notification, and "Show in folder" where there is a [folder]. */
+        fun actionsFor(folder: String?, folderLabel: String): List<String> =
+            listOf(DEFAULT, "") + (if (folder != null) listOf(SHOW_IN_FOLDER, folderLabel) else emptyList())
 
         /** Whether [notice] ends work the reader may have left the window during: a download or an offline save, done or failed. */
         fun tells(notice: KeepNotice): Boolean = when (notice) {
@@ -104,9 +134,16 @@ fun DesktopNotices(appName: String, enabled: Boolean, windowActive: () -> Boolea
     val shown by KeepNotices.shown.collectAsState()
     val current = shown ?: return
     val text = noticeText(current.notice)
+    val folderLabel = stringResource(Res.string.downloads_show_in_folder)
     val active by rememberUpdatedState(windowActive)
     val on by rememberUpdatedState(enabled)
+    val scope = rememberCoroutineScope()
+    DisposableEffect(Unit) {
+        DesktopNotifications.desktop.onShowInFolder = { saved -> scope.launch { FileManagerShow.show(saved) } }
+        onDispose { DesktopNotifications.desktop.onShowInFolder = null }
+    }
     LaunchedEffect(current.serial) {
-        if (on && DesktopNotifications.tells(current.notice) && !active()) DesktopNotifications.desktop.notify(appName, text)
+        val folder = (current.notice as? KeepNotice.SavedTo)?.savedUri
+        if (on && DesktopNotifications.tells(current.notice) && !active()) DesktopNotifications.desktop.notify(appName, text, folder, folderLabel)
     }
 }
