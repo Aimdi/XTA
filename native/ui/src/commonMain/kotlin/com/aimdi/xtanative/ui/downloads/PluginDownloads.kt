@@ -1,8 +1,10 @@
 package com.aimdi.xtanative.ui.downloads
 
+import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.store.downloads.MAX_DOWNLOAD_STEM_BYTES
 import com.aimdi.xtanative.store.downloads.extensionFor
 import com.aimdi.xtanative.store.downloads.fitUtf8Bytes
+import com.aimdi.xtanative.ui.media.MediaSave
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import java.net.URI
 import java.net.URLDecoder
@@ -26,6 +28,17 @@ object PluginDownloads {
      * within Android's limit (where sites put their name and the post's) and
      * its extension kept; "<plugin>-media" when the address names no file.
      */
+    /**
+     * What the desktop viewer's menu saves and copies of a plugin's [media]:
+     * its own file, named as [fileName] names one of no plugin's ("xta-…");
+     * null for a stream, which has no file.
+     */
+    fun viewerSave(media: MediaItem): MediaSave? {
+        val url = url(media) ?: return null
+        val kind = if (media.kind == MediaItem.Kind.PHOTO) XMedia.Kind.PHOTO else XMedia.Kind.VIDEO
+        return MediaSave(url, fileName("xta", url), kind, postId = "")
+    }
+
     fun fileName(source: String, url: String): String {
         val base = lastSegment(url)
         val name = source.trim().ifEmpty { "xta" }

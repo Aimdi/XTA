@@ -82,15 +82,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_share_image
 import com.aimdi.xtanative.ui.home.HoldsKeys
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.post.PostIcons
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.runtime.mutableStateOf
 import com.aimdi.xtanative.ui.common.onSecondaryClick
-import com.aimdi.xtanative.ui.generated.resources.media_copy_failed
-import com.aimdi.xtanative.ui.generated.resources.media_copy_image
-import com.aimdi.xtanative.ui.generated.resources.media_save_as
-import com.aimdi.xtanative.ui.generated.resources.posts_copied
-import com.aimdi.xtanative.ui.generated.resources.reader_link_copy
-import com.aimdi.xtanative.ui.post.PostMenuSurface
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -166,19 +158,10 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     val playing = remember { mutableStateMapOf<Int, String>() }
     val focus = remember { FocusRequester() }
     val pager = rememberPagerState(initialPage = start.coerceIn(0, (items.size - 1).coerceAtLeast(0))) { items.size }
-    val fileActions = rememberViewerFileActions()
-    var menu by remember { mutableStateOf<MediaSave?>(null) }
-    val imageCopied = stringResource(Res.string.posts_copied)
-    val imageNotCopied = stringResource(Res.string.media_copy_failed)
-
     /** What Save, Share and the desktop's menu act on: the page shown, as the variant a video plays. */
     fun shownSave(): MediaSave? = viewed.pages.getOrNull(pager.currentPage)?.let { viewed.save(it, playing[pager.currentPage]) }
 
-    fun copyImage(save: MediaSave?) {
-        val actions = fileActions ?: return
-        if (save?.kind != XMedia.Kind.PHOTO) return
-        scope.launch { snackbar.showSnackbar(if (actions.copyImage(save.url)) imageCopied else imageNotCopied) }
-    }
+    val fileMenu = rememberViewerFileMenu(snackbar, refocus = { runCatching { focus.requestFocus() } }, shown = ::shownSave)
 
     fun turn(by: Int) {
         val target = pager.currentPage + by
@@ -208,12 +191,11 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
             // Before the focus target: key events reach the nodes above the focused one.
             .onKeyEvent { event ->
                 if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
-                when (viewerKeyOf(event)) {
+                when (val key = viewerKeyOf(event)) {
                     ViewerKey.PREVIOUS -> true.also { turn(-1) }
                     ViewerKey.NEXT -> true.also { turn(1) }
                     ViewerKey.CLOSE -> true.also { onClose() }
-                    ViewerKey.COPY -> (fileActions != null && shownSave()?.kind == XMedia.Kind.PHOTO).also { if (it) copyImage(shownSave()) }
-                    ViewerKey.SAVE_AS -> fileActions?.let { actions -> shownSave()?.let { save -> true.also { actions.saveAs(save) } } } ?: false
+                    ViewerKey.COPY, ViewerKey.SAVE_AS -> fileMenu?.key(key) ?: false
                     ViewerKey.NONE -> false
                 }
             }
@@ -236,7 +218,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
                 }
             }
             // A right-click on the page opens the desktop's menu for it, as a browser's on a picture.
-            val pageMenu = if (fileActions != null) Modifier.onSecondaryClick { menu = shownSave() } else Modifier
+            val pageMenu = if (fileMenu != null) Modifier.onSecondaryClick(fileMenu::openForShown) else Modifier
             Box(Modifier.weight(1f).fillMaxWidth().then(pageMenu)) {
                 if (items.isEmpty()) {
                     Text(stringResource(Res.string.reader_media_unknown), color = Color.White, modifier = Modifier.align(Alignment.Center))
@@ -260,31 +242,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
         }
         SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding())
     }
-    val shownMenu = menu
-    if (fileActions != null && shownMenu != null) {
-        val closeMenu = {
-            menu = null
-            runCatching { focus.requestFocus() }
-            Unit
-        }
-        PostMenuSurface(onDismiss = closeMenu) {
-            if (shownMenu.kind == XMedia.Kind.PHOTO) {
-                DropdownMenuItem(text = { Text(stringResource(Res.string.media_copy_image)) }, onClick = {
-                    closeMenu()
-                    copyImage(shownMenu)
-                })
-            }
-            DropdownMenuItem(text = { Text(stringResource(Res.string.media_save_as)) }, onClick = {
-                closeMenu()
-                fileActions.saveAs(shownMenu)
-            })
-            DropdownMenuItem(text = { Text(stringResource(Res.string.reader_link_copy)) }, onClick = {
-                closeMenu()
-                copyText(shownMenu.url)
-                scope.launch { snackbar.showSnackbar(copied) }
-            })
-        }
-    }
+    fileMenu?.Menu()
 }
 
 /** The black bar over the pages: back, "2 / 4" rolling with the page, and [actions] for the page shown. */

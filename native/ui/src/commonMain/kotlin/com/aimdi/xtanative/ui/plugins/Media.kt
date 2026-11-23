@@ -81,6 +81,7 @@ import com.aimdi.xtanative.ui.common.ShowMediaTile
 import com.aimdi.xtanative.ui.common.mediaShown
 import com.aimdi.xtanative.ui.common.rememberPicture
 import com.aimdi.xtanative.ui.common.turnTo
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.downloads.PluginDownloads
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -103,6 +104,7 @@ import com.aimdi.xtanative.ui.media.VideoRules
 import com.aimdi.xtanative.ui.media.VideoSource
 import com.aimdi.xtanative.ui.media.ViewerKey
 import com.aimdi.xtanative.ui.media.rememberVideoPlayers
+import com.aimdi.xtanative.ui.media.rememberViewerFileMenu
 import com.aimdi.xtanative.ui.media.viewerKeyOf
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.launch
@@ -251,17 +253,20 @@ fun MediaPager(
     val reduced = LocalReducedMotion.current
     val pager = rememberPagerState(initialPage = start.coerceIn(0, (items.size - 1).coerceAtLeast(0))) { items.size }
     val turn = { by: Int -> (pager.currentPage + by).takeIf { it in items.indices }?.let { page -> scope.launch { pager.turnTo(page, reduced) } } }
+    // The desktop's right-click menu, Ctrl+C and Ctrl+S, as the app's own viewer has them.
+    val fileMenu = rememberViewerFileMenu(snackbar, refocus = { runCatching { focus.requestFocus() } }) { items.getOrNull(pager.currentPage)?.let(PluginDownloads::viewerSave) }
     Box(
         Modifier
             .fillMaxSize()
             .background(Color.Black)
             .onKeyEvent { event ->
                 if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
-                when (viewerKeyOf(event)) {
+                when (val key = viewerKeyOf(event)) {
                     ViewerKey.PREVIOUS -> true.also { turn(-1) }
                     ViewerKey.NEXT -> true.also { turn(1) }
                     ViewerKey.CLOSE -> true.also { onClose() }
-                    ViewerKey.COPY, ViewerKey.SAVE_AS, ViewerKey.NONE -> false
+                    ViewerKey.COPY, ViewerKey.SAVE_AS -> fileMenu?.key(key) ?: false
+                    ViewerKey.NONE -> false
                 }
             }
             .focusRequester(focus)
@@ -274,7 +279,8 @@ fun MediaPager(
         LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
         // Closed, it leaves the keys to what it covered, which would otherwise have none.
         HoldsKeys(focus)
-        HorizontalPager(state = pager, modifier = Modifier.fillMaxSize(), key = { it }) { page ->
+        val pageMenu = if (fileMenu != null) Modifier.onSecondaryClick(fileMenu::openForShown) else Modifier
+        HorizontalPager(state = pager, modifier = Modifier.fillMaxSize().then(pageMenu), key = { it }) { page ->
             val item = items[page]
             when (item.kind) {
                 MediaItem.Kind.PHOTO -> ZoomableImage(rememberPicture(item.imageUrl), item.alt, Modifier.fillMaxSize())
@@ -287,6 +293,7 @@ fun MediaPager(
         PagerBar(items, pager, onDownload, onOpenPost, snackbar, Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopEnd))
         SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(16.dp))
     }
+    fileMenu?.Menu()
 }
 
 /** [MediaPager] as plugin API 2 calls it, without Open post. */
