@@ -129,7 +129,8 @@ internal class TimelinesState(val index: Int, val toTop: ToTop, val unread: Set<
  * lists them; the bar's mark opens that picker. Where the page is wide
  * enough for two ([HomeWide]), the timelines after the one shown are read
  * beside it, each a column of its own that reads on its own; a column's
- * name makes it the one shown.
+ * name makes it the one shown. There, as on the Deck, Ctrl+← and Ctrl+→
+ * choose the column the reading keys move ([ReadColumns]).
  */
 @Composable
 internal fun HomeFeedPage(
@@ -150,21 +151,32 @@ internal fun HomeFeedPage(
             ShownTimeline(ui, vm, timelines, following, networks, actions, routes, refresh, calls, Modifier.fillMaxSize())
         } else {
             val each = HomeWide.columnWidth(maxWidth.value, beside.size + 1).dp
+            val shown = ui.tabs.getOrNull(timelines.index)?.key
+            // Ctrl+← and Ctrl+→ choose the column the reading keys move, as on the Deck.
+            ReadColumns(listOfNotNull(shown) + beside.map { it.key })
+            val chosen = chosenReadColumn()
             Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center) {
-                ShownTimeline(ui, vm, timelines, following, networks, actions, routes, refresh, calls, Modifier.width(each).fillMaxHeight())
+                ReadColumn(shown ?: Unit) {
+                    ShownTimeline(
+                        ui, vm, timelines, following, networks, actions, routes, refresh, calls,
+                        Modifier.width(each).fillMaxHeight().chosenMark(shown != null && chosen == shown),
+                    )
+                }
                 beside.forEach { tab ->
                     VerticalDivider()
                     key(tab.key) {
-                        DeckColumnView(
-                            columnOf(tab),
-                            tabLabel(tab, ui),
-                            ColumnPlace(first = false, last = false),
-                            ColumnCalls(onTitle = { calls.onTab(ui.tabs.indexOf(tab)) }, menu = false),
-                            toTop = 0,
-                            refreshedAll = 0,
-                            actions = actions,
-                            modifier = Modifier.width(each).fillMaxHeight(),
-                        )
+                        ReadColumn(tab.key) {
+                            DeckColumnView(
+                                columnOf(tab),
+                                tabLabel(tab, ui),
+                                ColumnPlace(first = false, last = false),
+                                ColumnCalls(onTitle = { calls.onTab(ui.tabs.indexOf(tab)) }, menu = false),
+                                toTop = 0,
+                                refreshedAll = 0,
+                                actions = actions,
+                                modifier = Modifier.width(each).fillMaxHeight().chosenMark(chosen == tab.key),
+                            )
+                        }
                     }
                 }
             }

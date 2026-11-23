@@ -202,11 +202,12 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
 
 /**
  * The column the reading keys move once Ctrl+← or Ctrl+→ chose it
- * ([ReadColumn]): a line in the accent colour across its top, and the deck
- * scrolled sideways to bring it into view.
+ * ([ReadColumn]), on the Deck and on Home's wide page ([HomeWide]): a line
+ * in the accent colour across its top, and the page scrolled sideways to
+ * bring it into view where it scrolls.
  */
 @Composable
-private fun Modifier.chosenMark(chosen: Boolean): Modifier {
+internal fun Modifier.chosenMark(chosen: Boolean): Modifier {
     val view = remember { BringIntoViewRequester() }
     LaunchedEffect(chosen) { if (chosen) view.bringIntoView() }
     val color = MaterialTheme.colorScheme.primary
