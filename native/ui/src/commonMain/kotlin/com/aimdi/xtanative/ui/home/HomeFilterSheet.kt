@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalProblemActions
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
 import com.aimdi.xtanative.ui.generated.resources.home_feed_accounts
@@ -89,7 +90,7 @@ internal fun HomeFilterSheet(ui: HomeUi, onApply: (HomeFilterDraft) -> Unit, onD
     val shownGroups = DrawerGroups.matching(groups, query)
     val ids = if (groupsShown) groups.map { it.id } else accountIds
 
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.fillMaxWidth().fillMaxHeight(0.9f)) {
             Row(Modifier.padding(start = 20.dp, end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.home_feed_accounts), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))

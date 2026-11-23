@@ -18,6 +18,7 @@ import com.aimdi.xtanative.data.plugins.PluginSaves
 import com.aimdi.xtanative.data.plugins.PluginSheet
 import com.aimdi.xtanative.data.plugins.keepable
 import com.aimdi.xtanative.store.settings.SubscriptionPrefs
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PostMenuHandlers
 import com.aimdi.xtanative.ui.plugins.PostMenuRows
@@ -120,7 +121,7 @@ private fun CashtagSheet(symbol: String, onDismiss: () -> Unit) {
     val running by plugins.running.collectAsStateWithLifecycle()
     val language = currentLanguage()
     val entries = remember(symbol, running, language) { plugins.cashtagEntries(symbol, language, running) }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp)) {
             MenuRow(ShowChart, CashtagLinks.title(symbol)) {
                 onDismiss()

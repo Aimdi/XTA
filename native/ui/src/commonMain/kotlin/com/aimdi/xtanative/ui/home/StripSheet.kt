@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
 import com.aimdi.xtanative.ui.generated.resources.home_plugin_store
@@ -75,7 +76,7 @@ internal fun StripSheet(
     val drag = rememberRowDrag(list)
     val byId = pinned.associateBy { it.id }
     val keys: List<Any> = pinned.map { it.id }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         LazyColumn(state = list, modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
             item(key = "title") {
                 Column {

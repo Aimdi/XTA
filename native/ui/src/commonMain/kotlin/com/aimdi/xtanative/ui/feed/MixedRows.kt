@@ -54,6 +54,7 @@ import com.aimdi.xtanative.ui.common.ReadRetries
 import com.aimdi.xtanative.ui.common.ReadSource
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.rememberReadRecovery
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.problem_cached_content
 import com.aimdi.xtanative.ui.generated.resources.problem_source_loading
@@ -229,7 +230,7 @@ private fun SourceChip(id: String, read: SourceRead, plugin: XtaPlugin?, onRetry
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CachedCopySheet(onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Text(stringResource(Res.string.problem_cached_content), modifier = Modifier.padding(16.dp))
     }
 }

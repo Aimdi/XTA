@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_filters
 import com.aimdi.xtanative.ui.generated.resources.posts_followed_by_basis
@@ -79,7 +80,7 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun FeedSettingsSheet(state: ProfileUi, follow: FollowUi, vm: ProfileViewModel, onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
             Text(stringResource(Res.string.posts_filters), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
             SwitchRow(stringResource(Res.string.posts_hide_retweets), stringResource(Res.string.posts_hide_retweets_description), state.repostsHidden, vm::hideReposts)
@@ -167,7 +168,7 @@ private fun RowScope.NoteInline(note: String, onEdit: () -> Unit) {
 @Composable
 internal fun NoteSheet(note: String, onSave: (String) -> Unit, onDismiss: () -> Unit) {
     var text by rememberSaveable { mutableStateOf(note) }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(stringResource(Res.string.posts_profile_note_title), style = MaterialTheme.typography.titleMedium)
             Text(stringResource(Res.string.posts_profile_note_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -224,7 +225,7 @@ private fun followedByText(followedBy: FollowedBy): String? = when (val label = 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun FollowedBySheet(followedBy: FollowedBy, actions: PostActions, onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 24.dp)) {
             Text(stringResource(Res.string.posts_followed_by_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             followedBy.followers.forEach { member ->

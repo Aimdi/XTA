@@ -49,6 +49,7 @@ import com.aimdi.xtanative.core.x.model.XConversation
 import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedPost
 import com.aimdi.xtanative.ui.common.LocalXClient
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -177,7 +178,7 @@ fun DeleteFolderDialog(onDismiss: () -> Unit, onDelete: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun FolderMenuSheet(onRename: () -> Unit, onDelete: () -> Unit, onManage: () -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp)) {
             SheetRow(Icons.Filled.Edit, stringResource(Res.string.saved_rename), onRename)
             SheetRow(Icons.Filled.Delete, stringResource(Res.string.saved_delete), onDelete)
@@ -199,7 +200,7 @@ private fun SheetRow(icon: androidx.compose.ui.graphics.vector.ImageVector, labe
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MoveSheet(folders: List<SavedFolder>, onDismiss: () -> Unit, onPick: (String?) -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         LazyColumn(Modifier.padding(bottom = 16.dp)) {
             item(key = "unfiled") { SheetRow(SavedIcons.NoFolder, stringResource(Res.string.saved_tab_unfiled)) { onPick(null) } }
             items(folders, key = { it.id }) { folder -> SheetRow(SavedIcons.Folder, folder.name) { onPick(folder.id) } }

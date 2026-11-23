@@ -78,6 +78,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_download
 import com.aimdi.xtanative.ui.generated.resources.reader_more_options
@@ -434,7 +435,7 @@ private fun FailedOverlay(playback: VideoPlayback) {
 @Composable
 private fun VideoSheets(sheet: VideoSheet?, state: VideoState, playback: VideoPlayback, chrome: VideoChrome, show: (VideoSheet?) -> Unit) {
     sheet ?: return
-    ModalBottomSheet(onDismissRequest = { show(null) }) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = { show(null) }) {
         Column(Modifier.verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) {
             when (sheet) {
                 VideoSheet.MORE -> MoreRows(state, playback, chrome, show)

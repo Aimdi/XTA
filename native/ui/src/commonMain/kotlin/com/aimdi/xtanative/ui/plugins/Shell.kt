@@ -72,6 +72,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_more_options
 import com.aimdi.xtanative.ui.generated.resources.home_sort_filter
@@ -290,7 +291,7 @@ private fun FilterButton(filter: ShellFilter, color: Color) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShellSortSheet(subtitle: String?, onDismiss: () -> Unit, onReset: (() -> Unit)? = null, content: @Composable ColumnScope.() -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp).padding(bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Column(Modifier.padding(horizontal = 4.dp).semantics(mergeDescendants = true) { heading() }) {
                 Text(stringResource(Res.string.home_sort_filter), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)

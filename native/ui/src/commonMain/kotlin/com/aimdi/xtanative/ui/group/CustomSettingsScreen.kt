@@ -67,6 +67,7 @@ import com.aimdi.xtanative.core.feed.MutedKeyword
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.WithReadingColumn
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.groups_content_filter
@@ -274,7 +275,7 @@ private fun MutedWords(keywords: List<MutedKeyword>, actions: GroupSettingsActio
         }
     }
     editing?.let { keyword ->
-        ModalBottomSheet(onDismissRequest = { editing = null }, containerColor = MaterialTheme.colorScheme.background) {
+        ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = { editing = null }, containerColor = MaterialTheme.colorScheme.background) {
             Column(Modifier.padding(bottom = 16.dp)) {
                 OptionRow(GroupIcons.VisibilityOffOutlined, stringResource(Res.string.groups_filter_hide)) {
                     editing = null

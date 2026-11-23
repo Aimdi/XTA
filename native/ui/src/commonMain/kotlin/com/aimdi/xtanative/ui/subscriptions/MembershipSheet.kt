@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_add_to_group
 import com.aimdi.xtanative.ui.generated.resources.groups_none_yet
@@ -84,7 +85,7 @@ fun GroupMembershipSheet(
     val ordered = GroupPicker.ordered(groups, openOrder, view.createdIds)
     val chips = GroupPicker.chips(ordered, view, shown)
 
-    ModalBottomSheet(onDismissRequest = { onDone(GroupPicker.answer(selected, chosen)) }, containerColor = MaterialTheme.colorScheme.background) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = { onDone(GroupPicker.answer(selected, chosen)) }, containerColor = MaterialTheme.colorScheme.background) {
         Column(Modifier.imePadding()) {
             Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.groups_add_to_group), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))

@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.following
 import com.aimdi.xtanative.ui.generated.resources.groups_combine_clear
@@ -115,7 +116,7 @@ fun GroupSwitcherSheet(
     onDismiss: () -> Unit,
 ) {
     val currentId = state.group?.id
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
         if (state.groups.isEmpty()) {
             Text(stringResource(Res.string.groups_none_yet), modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 32.dp))
             return@ModalBottomSheet

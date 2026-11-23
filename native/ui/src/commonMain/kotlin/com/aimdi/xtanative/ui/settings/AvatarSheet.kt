@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.AccountPrefs
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.settings_avatar_choose
 import com.aimdi.xtanative.ui.generated.resources.settings_avatar_clear
@@ -52,7 +53,7 @@ fun AvatarSheet(onDismiss: () -> Unit) {
             onDismiss()
         }
     }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp)) {
             Text(stringResource(Res.string.settings_avatar_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             Text(

@@ -67,6 +67,7 @@ import com.aimdi.xtanative.store.reading.ArticleReading
 import com.aimdi.xtanative.store.reading.BlockExtent
 import com.aimdi.xtanative.store.reading.firstVisibleBlock
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.plugin_reader_appearance
 import com.aimdi.xtanative.ui.generated.resources.plugin_reader_finish
@@ -122,7 +123,7 @@ fun ArticleReaderControls(reading: ArticleReading, supportsAppearance: Boolean, 
         } }
     }
     if (appearance) {
-        ModalBottomSheet(onDismissRequest = { appearance = false }) {
+        ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = { appearance = false }) {
             Column(Modifier.padding(start = 24.dp, end = 24.dp, bottom = 24.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(Res.string.plugin_reader_appearance), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))

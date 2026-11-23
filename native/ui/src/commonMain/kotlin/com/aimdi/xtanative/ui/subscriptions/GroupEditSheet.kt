@@ -68,6 +68,7 @@ import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.GroupPack
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.groups_add_to_group
@@ -463,7 +464,7 @@ private fun IconDialog(onPick: (String) -> Unit, onDismiss: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupChoiceSheet(groups: List<FollowGroup>, current: String?, noneLabel: StringResource?, onPick: (String?) -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
         LazyColumn(Modifier.padding(bottom = 16.dp)) {
             if (noneLabel != null) {
                 item(key = "none") {

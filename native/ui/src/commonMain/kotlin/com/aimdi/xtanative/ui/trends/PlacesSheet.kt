@@ -35,6 +35,7 @@ import com.aimdi.xtanative.core.x.model.XTrendPlace
 import com.aimdi.xtanative.core.x.model.XTrendPlaces
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_find_the_available_trend_locations
 import com.aimdi.xtanative.ui.generated.resources.discover_country
@@ -54,7 +55,7 @@ internal fun PlacesSheet(vm: TrendsViewModel, places: XTrendPlaces, onDismiss: (
         vm.add(place)
         onDismiss()
     }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         val problem = picker.problem
         when {
             picker.loading -> LoadingRow()

@@ -70,6 +70,7 @@ import com.aimdi.xtanative.store.settings.DeckWidth
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.following
@@ -367,7 +368,7 @@ private fun AddColumnSheet(choices: List<DeckColumn>, networks: HomeNetworks, on
     val session by LocalGraph.current.sessions.state.collectAsStateWithLifecycle()
     val available by networks.available.collectAsStateWithLifecycle()
     val groups = session?.groups.orEmpty()
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Text(
             stringResource(Res.string.home_deck_add),
             style = MaterialTheme.typography.titleMedium,
