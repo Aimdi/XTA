@@ -42,6 +42,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyReaderFilter
 import com.aimdi.xtanative.networks.bluesky.BlueskyReading
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.post.PostIcons
 
 /** A list's filter and how to change it. */
@@ -100,7 +101,7 @@ internal fun FiltersButton(filter: BlueskyReaderFilter, onChange: (BlueskyReader
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun FiltersSheet(filter: BlueskyReaderFilter, onChange: (BlueskyReaderFilter) -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(pluginString(Strings.filters), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))

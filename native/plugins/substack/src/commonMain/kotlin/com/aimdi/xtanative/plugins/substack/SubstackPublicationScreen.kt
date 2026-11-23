@@ -39,7 +39,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -67,6 +66,7 @@ import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -347,7 +347,7 @@ private fun EmptyPublication(model: PublicationModel, filter: SubstackPublicatio
 private fun SimilarSheet(app: SubstackApp, publication: SubstackPublication, onDismiss: () -> Unit) {
     val similar = rememberKept("substack-similar-${publication.baseUrl}") { scope -> SimilarModel(app, publication, scope) }
     val state by similar.state.collectAsState()
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
         Column(Modifier.fillMaxHeight(0.85f)) {
             SheetHeading(pluginString(Strings.similar_title), onDismiss)
             Text(pluginString(Strings.similar_intro), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp))

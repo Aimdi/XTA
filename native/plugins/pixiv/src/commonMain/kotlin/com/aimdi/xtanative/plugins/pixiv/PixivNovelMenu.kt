@@ -47,6 +47,7 @@ import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.plugins.rememberTextFileSaver
 import com.aimdi.xtanative.ui.saved.SavedIcons
 import kotlinx.coroutines.launch
@@ -61,7 +62,7 @@ internal fun NovelMenu(novel: PixivNovel, content: PixivNovelContent?, onAppeara
         onClose()
         action()
     }
-    ModalBottomSheet(onDismissRequest = onClose) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onClose) {
         Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = 8.dp)) {
             val user = novel.user
             ListItem(
@@ -111,7 +112,7 @@ private fun MenuRow(icon: ImageVector, label: PluginText, hint: PluginText? = nu
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun NovelExportSheet(onPick: (PixivNovelExportFormat) -> Unit, onClose: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onClose) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onClose) {
         Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = 8.dp)) {
             ListItem(headlineContent = { Text(pluginString(Strings.novel_export), style = MaterialTheme.typography.titleMedium) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
             MenuRow(PixivIcons.Notes, Strings.novel_export_plain, Strings.novel_export_plain_hint) { onPick(PixivNovelExportFormat.PLAIN) }

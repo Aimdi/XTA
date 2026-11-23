@@ -49,6 +49,7 @@ import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberImageChooser
 import com.aimdi.xtanative.ui.plugins.rememberKept
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -74,7 +75,7 @@ private fun sauceNaoPicture(picture: ByteArray): ByteArray? =
 internal fun SauceNaoSheet(model: PixivSauceModel, onClose: () -> Unit) {
     val state by model.state.collectAsState()
     val choose = rememberImageChooser(pluginString(Strings.saucenao_pick)) { read -> model.chosen(read) }
-    ModalBottomSheet(onDismissRequest = onClose) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onClose) {
         BoxWithConstraints {
             Column(Modifier.fillMaxWidth().heightIn(max = maxHeight * 0.85f).navigationBarsPadding().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
                 Text(pluginString(Strings.saucenao_title), style = MaterialTheme.typography.titleLarge)

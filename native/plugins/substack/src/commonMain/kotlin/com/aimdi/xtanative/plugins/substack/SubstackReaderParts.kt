@@ -22,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -41,6 +40,7 @@ import com.aimdi.xtanative.networks.substack.SubstackHighlights
 import com.aimdi.xtanative.networks.substack.SubstackPassage
 import com.aimdi.xtanative.networks.substack.SubstackPost
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.plugins.rememberShareText
 
 /** What opens over the article: its contents (or find), its highlights, a footnote. */
@@ -91,7 +91,7 @@ private fun ContentsSheet(content: ReaderContent.Article, find: Boolean, onDismi
     val focus = remember { FocusRequester() }
     val article = content.article
     val results = remember(article, query) { article.contents(query) }
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
         Column(Modifier.fillMaxHeight(0.88f)) {
             SheetHeading(pluginString(Strings.contents), onDismiss)
             Text(pluginString(Strings.find), modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp))
@@ -129,7 +129,7 @@ private fun HighlightsSheet(app: SubstackApp, post: SubstackPost, onDismiss: () 
     val all by app.highlights.state.collectAsState()
     val quotes = all[post.key].orEmpty()
     val share = rememberShareText()
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp)) {
             SheetHeading(pluginString(Strings.highlights), onDismiss)
             if (quotes.isEmpty()) {
@@ -160,7 +160,7 @@ private fun FootnoteSheet(app: SubstackApp, content: ReaderContent.Article, numb
     if (notes.isEmpty()) return LaunchedEffect(Unit) { onDismiss() }
     val body = MaterialTheme.typography.bodyLarge
     val taps = remember(app) { ArticleTaps(onLink = { url -> onDismiss(); app.openLink(url) }, onFootnote = {}, onImage = {}) }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         SelectionContainer {
             Column(Modifier.padding(start = 20.dp, end = 20.dp, bottom = 24.dp)) {
                 notes.forEach { BlockView(it, body, emptyList(), emptyMap(), null, taps) }

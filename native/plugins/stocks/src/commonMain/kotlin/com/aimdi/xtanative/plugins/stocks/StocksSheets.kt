@@ -32,7 +32,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -57,6 +56,7 @@ import com.aimdi.xtanative.networks.stocks.Watchlist
 import com.aimdi.xtanative.ui.common.rememberCopyContract
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -116,7 +116,7 @@ internal fun StocksAddSheet(app: StocksApp, onDismiss: () -> Unit, onPick: (Stri
     val focus = remember { FocusRequester() }
     val state = model.state
     LaunchedEffect(focus) { focus.requestFocus() }
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
         Column(Modifier.fillMaxWidth().fillMaxHeight(0.68f).imePadding()) {
             Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 PluginFilterChip(pluginString(Strings.plugin_name), selected = !state.crypto, onClick = { model.change(text, crypto = false) })
@@ -195,7 +195,7 @@ internal fun StocksManageSheet(app: StocksApp, onDismiss: () -> Unit, onRemoved:
     val entries by app.watchlist.state.collectAsState()
     val copy = rememberCopyContract(say)
     val shown = entries ?: return
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         LazyColumn(Modifier.fillMaxWidth().navigationBarsPadding()) {
             item {
                 ListItem(headlineContent = { Text(pluginString(Strings.manage_watchlist)) }, supportingContent = { Text(pluginString(Strings.feed_hint)) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))

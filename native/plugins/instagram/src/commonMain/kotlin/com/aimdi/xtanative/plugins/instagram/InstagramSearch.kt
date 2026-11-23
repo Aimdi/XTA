@@ -31,7 +31,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -61,6 +60,7 @@ import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -180,7 +180,7 @@ internal fun InstagramSearchSheet(app: InstagramApp, initial: String?, onDismiss
         }
     }
     LaunchedEffect(Unit) { if (initial?.isNotBlank() == true) run(initial) }
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
         Column(Modifier.fillMaxWidth().fillMaxHeight(0.7f).imePadding().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
             OutlinedTextField(
                 value = text,
