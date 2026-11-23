@@ -36,7 +36,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -62,6 +61,7 @@ import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 
 /**
  * The row above a feed's posts, as XTA's SubstackReadingToolbar: the
@@ -123,7 +123,7 @@ private fun Marked(on: Boolean, content: @Composable () -> Unit) {
 internal fun ReadingOptions(state: HomeState, pane: HomePane, autofocus: Boolean, onDismiss: () -> Unit) {
     val controls = state.controls
     val options = controls.options(pane)
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
         Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 16.dp)) {
             SheetHeading(pluginString(Strings.filters), onDismiss)
             LoadedControls(options, autofocus) { controls.configure(pane, it) }
@@ -181,7 +181,7 @@ private fun PublicationPicker(app: SubstackApp, followed: List<SubstackPublicati
     val read by app.read.state.collectAsState()
     val pins by app.pins.state.collectAsState()
     val unread = remember(posts, read) { SubstackHomeRules.withUnread(posts, read) }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         SheetHeading(pluginString(Strings.library_following), onDismiss)
         LazyColumn(Modifier.fillMaxWidth(), contentPadding = PaddingValues(bottom = 16.dp)) {
             items(followed, key = { it.id + "\n" + it.baseUrl }) { publication ->

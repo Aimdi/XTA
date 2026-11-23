@@ -60,6 +60,7 @@ import com.aimdi.xtanative.services.ai.TranslationStatus
 import com.aimdi.xtanative.ui.common.LocalSessions
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_add_to_group
 import com.aimdi.xtanative.ui.generated.resources.posts_open_post
@@ -395,7 +396,7 @@ private fun BadgeDisc(avatar: Dp, subscribe: String, addToGroup: String, onFollo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SubscribeSheet(onSubscribe: () -> Unit, onGroups: () -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp)) {
             MenuRow(GroupIcons.PersonAdd, stringResource(Res.string.posts_subscribe), onSubscribe)
             MenuRow(PostIcons.GroupAdd, stringResource(Res.string.posts_add_to_group), onGroups)

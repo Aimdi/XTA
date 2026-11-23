@@ -67,6 +67,7 @@ import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.PullToReload
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
@@ -174,7 +175,7 @@ private fun ForYou(app: InstagramApp, pages: PagedItems<InstagramPost>, frame: P
     ScrollsToTop(list, frame.toTop)
     ReadsMoreNearEnd(list, paged) { pages.more() }
     PullToRefreshBox(isRefreshing = paged.loading && paged.loaded, onRefresh = pages::refresh, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             val problem = paged.problem
             when {
                 paged.items.isEmpty() && problem != null -> item(key = "problem") { RetryMessage(pluginString(InstagramFailures.of(problem)), onRetry = pages::refresh) }
@@ -191,7 +192,7 @@ private fun ForYou(app: InstagramApp, pages: PagedItems<InstagramPost>, frame: P
                     guest && paged.items.isNotEmpty() -> GuestNote(Strings.for_you_guest_note)
                 }
             }
-        }
+        } }
     }
 }
 
@@ -253,7 +254,7 @@ private fun Following(app: InstagramApp, frame: PluginFrame, onSearch: () -> Uni
     val list = rememberLazyListState()
     ScrollsToTop(list, frame.toTop)
     PullToRefreshBox(isRefreshing = state.loading && state.items.isNotEmpty(), onRefresh = { app.following.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             val problem = state.problem
             when {
                 state.items.isNotEmpty() -> items(state.items.distinctBy { it.id }, key = { "post:" + it.id }, contentType = { "post" }) { InstagramPostCard(app, it) }
@@ -261,7 +262,7 @@ private fun Following(app: InstagramApp, frame: PluginFrame, onSearch: () -> Uni
                 !state.loaded -> item(key = "loading") { FeedSkeleton() }
                 else -> item(key = "empty") { EmptyFollowing(!rows.isNullOrEmpty(), onRetry = { app.following.refresh(force = true) }, onSearch = onSearch) }
             }
-        }
+        } }
     }
 }
 
@@ -291,14 +292,14 @@ private fun Accounts(app: InstagramApp, frame: PluginFrame, onSearch: () -> Unit
     ScrollsToTop(list, frame.toTop)
     // A pull reads the accounts kept here again, over the list and over its empty pane, as XTA's RefreshIndicator does.
     PullToReload(reload = { app.follows.reload() }) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             val follows = rows
             when {
                 follows == null -> item(key = "loading") { LoadingRow() }
                 follows.isEmpty() -> item(key = "empty") { EmptyFollowing(false, onRetry = {}, onSearch = onSearch) }
                 else -> accountRows(app, follows) { unfollowing = it }
             }
-        }
+        } }
     }
     unfollowing?.let { handle -> UnfollowDialog(handle, onConfirm = { app.unfollow(handle) }) { unfollowing = null } }
 }

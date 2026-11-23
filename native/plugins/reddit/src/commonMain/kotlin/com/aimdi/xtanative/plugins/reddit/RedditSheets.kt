@@ -76,6 +76,7 @@ import com.aimdi.xtanative.ui.plugins.ShellSortSheet
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.saved.SavedIcons
 
@@ -93,7 +94,7 @@ internal fun PostSheet(app: RedditApp, post: RedditPost, onDismiss: () -> Unit) 
     val outside = rememberOpenOutside()
     val share = rememberShareLink()
     val url = RedditThreadRules.postUrl(post)
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 16.dp)) {
             Text(
                 post.title,
@@ -169,7 +170,7 @@ internal fun SortSheet(app: RedditApp, subtitle: String? = null, onDismiss: () -
         app.change { settings -> settings.with(RedditPrefs.sort, sort).let { if (window == null) it else it.with(RedditPrefs.timeFilter, window) } }
         onDismiss()
     }
-    ModalBottomSheet(onDismissRequest = { picked?.let { done(it, null) } ?: onDismiss() }) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = { picked?.let { done(it, null) } ?: onDismiss() }) {
         Text(
             pluginString(if (picked == null) Strings.sort else Strings.time_filter),
             style = MaterialTheme.typography.titleLarge,
@@ -273,7 +274,7 @@ internal fun sortTitle(choices: RedditChoices): String =
 internal fun CommunitiesSheet(app: RedditApp, onDismiss: () -> Unit) {
     val names by app.followed.collectAsState()
     var adding by remember { mutableStateOf(false) }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Icon(RedditGlyphs.Forum, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             Spacer(Modifier.width(12.dp))
@@ -381,7 +382,7 @@ internal fun AddSubredditDialog(app: RedditApp, onDismiss: () -> Unit) {
 internal fun AboutSheet(app: RedditApp, subreddit: String, onDismiss: () -> Unit) {
     var tries by remember { mutableIntStateOf(0) }
     val about by produceState<Result<RedditSubredditAbout>?>(null, subreddit, tries) { value = attempt { app.about(subreddit) } }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         val read = about
         val failure = read?.exceptionOrNull()
         when {

@@ -36,7 +36,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -55,7 +54,10 @@ import com.aimdi.xtanative.services.speech.VoiceEngines
 import com.aimdi.xtanative.services.speech.VoiceFailure
 import com.aimdi.xtanative.services.speech.VoiceInstall
 import com.aimdi.xtanative.services.util.formatByteSize
+import com.aimdi.xtanative.ui.common.CenteredPage
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_back
 import com.aimdi.xtanative.ui.generated.resources.reader_cancel
@@ -108,14 +110,20 @@ fun VoiceSettingsScreen(onBack: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.reader_speech_title)) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.reader_back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.reader_back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.reader_back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
     ) { padding ->
-        VoiceSettingsList(vm, PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 24.dp), Modifier.fillMaxSize())
+        // As the other settings pages: a readable column, centred in a wide window.
+        CenteredPage(extra = SETTINGS_EXTRA) {
+            VoiceSettingsList(vm, PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 24.dp), Modifier.fillMaxSize())
+        }
     }
 }
+
+/** What a settings page is wider than the reading column (SettingsPage's 840 dp). */
+private val SETTINGS_EXTRA = 120.dp
 
 /**
  * The same settings as a sheet over a reader ("Voice settings" in its menu,
@@ -125,7 +133,7 @@ fun VoiceSettingsScreen(onBack: () -> Unit) {
 @Composable
 fun VoiceSettingsSheet(onDismiss: () -> Unit) {
     val vm = voiceSettingsViewModel()
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
         Column(Modifier.fillMaxHeight(0.8f)) {
             Text(stringResource(Res.string.reader_speech_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             VoiceSettingsList(vm, PaddingValues(bottom = 8.dp), Modifier.weight(1f))
@@ -320,15 +328,15 @@ private fun DownloadRow(
             }
         }
         when (VoiceRows.action(install)) {
-            VoiceAction.DOWNLOAD -> IconButton(onClick = { onDownload?.invoke() }, enabled = onDownload != null) {
+            VoiceAction.DOWNLOAD -> IconTip(stringResource(Res.string.reader_download)) { IconButton(onClick = { onDownload?.invoke() }, enabled = onDownload != null) {
                 Icon(ReaderIcons.Download, stringResource(Res.string.reader_download))
-            }
-            VoiceAction.RETRY -> IconButton(onClick = { onDownload?.invoke() }, enabled = onDownload != null) {
+            } }
+            VoiceAction.RETRY -> IconTip(stringResource(Res.string.reader_retry)) { IconButton(onClick = { onDownload?.invoke() }, enabled = onDownload != null) {
                 Icon(Icons.Filled.Refresh, stringResource(Res.string.reader_retry))
-            }
-            VoiceAction.CANCEL -> IconButton(onClick = onCancel) { Icon(Icons.Filled.Close, stringResource(Res.string.reader_cancel)) }
+            } }
+            VoiceAction.CANCEL -> IconTip(stringResource(Res.string.reader_cancel)) { IconButton(onClick = onCancel) { Icon(Icons.Filled.Close, stringResource(Res.string.reader_cancel)) } }
             VoiceAction.WAIT -> Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp) }
-            VoiceAction.DELETE -> IconButton(onClick = { confirm = true }) { Icon(Icons.Filled.Delete, stringResource(Res.string.reader_delete)) }
+            VoiceAction.DELETE -> IconTip(stringResource(Res.string.reader_delete)) { IconButton(onClick = { confirm = true }) { Icon(Icons.Filled.Delete, stringResource(Res.string.reader_delete)) } }
         }
     }
     if (confirm) {

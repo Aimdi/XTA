@@ -172,3 +172,17 @@ fun mediaTiles(savedId: String, content: SavedContent): List<SavedMediaTile> {
 
 /** The ids Select all takes: the saved posts the list shows. */
 fun visibleIds(body: SavedBody): List<String> = (body as? SavedBody.Posts)?.posts?.map { it.id }.orEmpty()
+
+/**
+ * [this] after Ctrl+A: every post of [visible] selected, as a file manager
+ * selects all; a selection starts where Select is offered (a tab of saved
+ * posts, not the media grid). Null where there is nothing to select.
+ */
+fun SavedView.selectedAllByKeys(visible: List<String>): SavedView? = when {
+    visible.isEmpty() -> null
+    selecting || (sortable && !mediaOnly) -> copy(selecting = true, selected = visible.toSet())
+    else -> null
+}
+
+/** Whether Delete asks to remove the selection: only while selecting, with something selected, as the bar's button. */
+val SavedView.removableByKeys: Boolean get() = selecting && selected.isNotEmpty()

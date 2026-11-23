@@ -367,4 +367,12 @@
     <string name="intro_illustration_phone">Publicações, gostos e itens guardados dentro de um telemóvel</string>
     <string name="intro_illustration_flow">As publicações vão do X para o teu telemóvel, nunca ao contrário</string>
     <string name="intro_page_of">Página %1$d de %2$d</string>
+    <string name="settings_desktop_notifications">Notificações do ambiente de trabalho</string>
+    <string name="settings_desktop_notifications_description">Avisar quando uma transferência terminar enquanto está noutra janela</string>
+    <string name="settings_close_to_tray">Fechar para a área de notificação</string>
+    <string name="settings_close_to_tray_description">Fechar a janela mantém a app a correr na área de notificação; saia pelo menu do ícone</string>
+    <string name="settings_start_at_login">Iniciar ao iniciar sessão</string>
+    <string name="settings_start_at_login_description">Abre a app ao iniciar sessão; com Fechar para a área de notificação ativo, fica lá à espera</string>
+    <string name="tray_show">Mostrar janela</string>
+    <string name="tray_hide">Ocultar janela</string>
 </resources>

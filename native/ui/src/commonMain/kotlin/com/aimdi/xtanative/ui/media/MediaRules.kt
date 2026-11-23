@@ -10,6 +10,123 @@ import java.util.Locale
 /** One MP4 a video can play at, as the quality sheet lists it: `720p`. */
 data class VideoQuality(val url: String, val label: String)
 
+/**
+ * What a key does to a video full screen on the desktop ([VideoKeys]). The
+ * JUMP keys go to [tenths] tenths of the way through it (0 to 9).
+ */
+enum class VideoKey(val tenths: Int = -1) {
+    LEAVE, PLAY_PAUSE, BACK, FORWARD, MUTE, RESTART, FULLSCREEN, SLOWER, FASTER, END,
+    JUMP_0(0), JUMP_1(1), JUMP_2(2), JUMP_3(3), JUMP_4(4), JUMP_5(5), JUMP_6(6), JUMP_7(7), JUMP_8(8), JUMP_9(9),
+    NONE,
+}
+
+/**
+ * A video full screen's keys, as a desktop's players have them: Esc
+ * leaves, Space plays or pauses, ← and → skip back and on
+ * [VideoRules.SEEK_SECONDS], as a double tap on either half does. The
+ * letters of the web's video players do the same ([letter]): k plays or
+ * pauses, j and l skip, m mutes or unmutes, f leaves full screen; Home
+ * starts it over and End goes to its end. The characters typed ([typed], so
+ * on any layout): < and > play it slower or faster, a step of
+ * [VideoRules.SPEEDS] at a time, and 0 to 9 jump to 0 % to 90 % of it. With
+ * Ctrl or Alt held they are the window's, not the video's.
+ */
+object VideoKeys {
+    /** [back] is going back the desktop's way, Alt+← or the Back key, which leaves the video as Esc does. */
+    fun of(
+        escape: Boolean,
+        space: Boolean,
+        left: Boolean,
+        right: Boolean,
+        modified: Boolean,
+        back: Boolean = false,
+        letter: Char? = null,
+        home: Boolean = false,
+        end: Boolean = false,
+        typed: Char? = null,
+    ): VideoKey = when {
+        escape || back -> VideoKey.LEAVE
+        modified -> VideoKey.NONE
+        letter == 'f' -> VideoKey.LEAVE
+        space || letter == 'k' -> VideoKey.PLAY_PAUSE
+        left || letter == 'j' -> VideoKey.BACK
+        right || letter == 'l' -> VideoKey.FORWARD
+        letter == 'm' -> VideoKey.MUTE
+        home -> VideoKey.RESTART
+        end -> VideoKey.END
+        typed == '<' -> VideoKey.SLOWER
+        typed == '>' -> VideoKey.FASTER
+        typed != null && typed in '0'..'9' -> VideoKey.entries.first { it.tenths == typed - '0' }
+        else -> VideoKey.NONE
+    }
+
+    /**
+     * A video's keys on the media viewer's page, where ← → and Home and End
+     * are the viewer's (its pages): Space and k play or pause, j and l skip,
+     * m mutes, f goes full screen ([VideoKey.FULLSCREEN]), < and > change
+     * the speed and 0 to 9 jump ([typed]); with Ctrl or Alt held none is the
+     * video's.
+     */
+    fun onViewerPage(space: Boolean, letter: Char?, modified: Boolean, typed: Char? = null): VideoKey = when {
+        modified -> VideoKey.NONE
+        letter == 'f' -> VideoKey.FULLSCREEN
+        else -> of(escape = false, space = space, left = false, right = false, modified = false, letter = letter, typed = typed)
+    }
+}
+
+/** What a key does to the media viewer on the desktop ([ViewerKeys]). */
+enum class ViewerKey { PREVIOUS, NEXT, FIRST, LAST, CLOSE, COPY, SAVE_AS, ZOOM_IN, ZOOM_OUT, ZOOM_RESET, PAN_LEFT, PAN_RIGHT, PAN_UP, PAN_DOWN, NONE }
+
+/**
+ * The media viewer's keys: ← and → turn its pages, Esc closes it, and going
+ * back the desktop's way ([back]: Alt+← or the Back key) closes it too, as it
+ * goes back from any screen; with Ctrl or Alt held the arrows are not the
+ * viewer's. Ctrl+C copies the picture shown and Ctrl+S saves it where the
+ * reader picks ([copy], [saveAs]), where the platform can; Ctrl+W
+ * ([closeKey]) closes it, as a desktop app closes what it shows. + and -
+ * zoom the photo shown in and out, and 0 shows it whole again, as a
+ * desktop's photo viewers do, with Ctrl held too ([zoom]). While the photo
+ * is zoomed in ([zoomed]) the arrows move about it instead of turning the
+ * page; Home and End go to the first page and the last.
+ */
+object ViewerKeys {
+    fun of(
+        escape: Boolean,
+        left: Boolean,
+        right: Boolean,
+        back: Boolean,
+        modified: Boolean,
+        copy: Boolean = false,
+        saveAs: Boolean = false,
+        closeKey: Boolean = false,
+        zoom: ViewerKey = ViewerKey.NONE,
+        up: Boolean = false,
+        down: Boolean = false,
+        home: Boolean = false,
+        end: Boolean = false,
+        zoomed: Boolean = false,
+    ): ViewerKey = when {
+        escape || back || closeKey -> ViewerKey.CLOSE
+        copy -> ViewerKey.COPY
+        saveAs -> ViewerKey.SAVE_AS
+        zoom in ZOOM_KEYS -> zoom
+        modified -> ViewerKey.NONE
+        zoomed && (left || right || up || down) -> when {
+            left -> ViewerKey.PAN_LEFT
+            right -> ViewerKey.PAN_RIGHT
+            up -> ViewerKey.PAN_UP
+            else -> ViewerKey.PAN_DOWN
+        }
+        left -> ViewerKey.PREVIOUS
+        right -> ViewerKey.NEXT
+        home -> ViewerKey.FIRST
+        end -> ViewerKey.LAST
+        else -> ViewerKey.NONE
+    }
+
+    private val ZOOM_KEYS = setOf(ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET)
+}
+
 /** The rules of the media viewer's videos (_video.dart, _video_controls.dart, video_quality.dart). */
 object VideoRules {
     /** Seconds a double tap on either half of a video skips. */
@@ -17,6 +134,15 @@ object VideoRules {
 
     /** The playback speeds offered, slowest first; the sheet lists them fastest first. */
     val SPEEDS = listOf(0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0)
+
+    /** The speed a step slower than [speed] among [SPEEDS] (< on the desktop); the slowest stays. */
+    fun slower(speed: Double): Double = SPEEDS.lastOrNull { it < speed - 0.01 } ?: SPEEDS.first()
+
+    /** The speed a step faster than [speed] among [SPEEDS] (> on the desktop); the fastest stays. */
+    fun faster(speed: Double): Double = SPEEDS.firstOrNull { it > speed + 0.01 } ?: SPEEDS.last()
+
+    /** The place [tenths] tenths of the way through a video of [durationMs] (0 to 9 on the desktop). */
+    fun jumpTarget(tenths: Int, durationMs: Long): Long = durationMs.coerceAtLeast(0) * tenths.coerceIn(0, 10) / 10
 
     /** How long the controls stay after the last touch. */
     const val CONTROLS_SHOWN_MS = 3_000L

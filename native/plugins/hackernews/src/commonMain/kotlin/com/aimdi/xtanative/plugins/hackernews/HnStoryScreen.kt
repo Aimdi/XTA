@@ -54,6 +54,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.plugins.LinkedText
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.TextRun
 import com.aimdi.xtanative.ui.plugins.pluginPlural
@@ -86,7 +87,7 @@ internal fun HnStoryScreen(app: HnApp, id: Long) {
     ) { padding ->
         val rows = remember(thread, collapsed) { HnComment.visible(thread?.comments.orEmpty(), collapsed) }
         PullToRefreshBox(isRefreshing = state.loading && state.loaded, onRefresh = reader::refresh, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            LazyColumn(contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp), modifier = Modifier.fillMaxSize()) {
+            PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp)) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = column) {
                 thread?.let { item(key = "lead") { Lead(app, it.story) } }
                 val error = state.error
                 when {
@@ -97,7 +98,7 @@ internal fun HnStoryScreen(app: HnApp, id: Long) {
                     val folded = comment.id in collapsed
                     CommentBubble(comment, depth, folded) { collapsed = if (folded) collapsed - comment.id else collapsed + comment.id }
                 }
-            }
+            } }
         }
     }
 }

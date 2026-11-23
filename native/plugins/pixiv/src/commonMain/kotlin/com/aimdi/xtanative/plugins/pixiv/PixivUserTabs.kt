@@ -33,6 +33,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivUserListKind
 import com.aimdi.xtanative.networks.pixiv.PixivUserPreview
 import com.aimdi.xtanative.networks.pixiv.PixivUserProfile
 import com.aimdi.xtanative.networks.pixiv.PixivWorkType
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -197,7 +198,7 @@ private fun ProfileInfo(profile: PixivUserProfile) {
     val runtime = LocalPixiv.current
     val copy = rememberCopy()
     val rows = infoRows(profile, currentLanguage())
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp)) {
+    PluginReadingColumn(PaddingValues(top = 8.dp, bottom = 16.dp)) { column -> LazyColumn(Modifier.fillMaxSize(), contentPadding = column) {
         items(rows.size) { index ->
             val row = rows[index]
             InfoLine(row) { action ->
@@ -209,7 +210,7 @@ private fun ProfileInfo(profile: PixivUserProfile) {
             }
             if (index < rows.lastIndex) HorizontalDivider(Modifier.padding(horizontal = 16.dp))
         }
-    }
+    } }
 }
 
 @Composable

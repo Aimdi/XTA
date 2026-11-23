@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.app_name
@@ -66,7 +68,9 @@ import org.jetbrains.compose.resources.stringResource
  * The account menu (XTA's home drawer): the reader's account at the top, then
  * search and settings, the screens beside the bar and those of its pages the
  * reader took off it, and the groups, which are this app's lists and what the
- * reader reaches for most.
+ * reader reaches for most. In a wide window it stands open beside Home
+ * ([HomeWide]), with the bar's pages ([pages]) under the account and
+ * nothing to close ([onClose] null).
  */
 @Composable
 internal fun AccountMenu(
@@ -76,8 +80,9 @@ internal fun AccountMenu(
     unread: Set<String>,
     onGo: (String) -> Unit,
     onGroup: (FollowGroup) -> Unit,
-    onClose: () -> Unit,
+    onClose: (() -> Unit)?,
     onAvatar: () -> Unit,
+    pages: LazyListScope.() -> Unit = {},
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     val groups = DrawerGroups.listed(ui.session.groups, ui.session.feedGroups, routes.exists(HomeRoutes.GROUP))
@@ -86,6 +91,7 @@ internal fun AccountMenu(
         item(key = "account") {
             AccountHeader(ui.account, onClose = onClose, onAvatar = onAvatar, onSettings = { onGo(HomeDestination.SETTINGS.route) }.takeIf { routes.exists(HomeDestination.SETTINGS.route) })
         }
+        pages()
         item(key = "buttons") {
             Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 HomeMenu.shown(HomeMenu.buttons, routes.exists, deckFits).forEach { destination ->
@@ -131,7 +137,7 @@ internal fun AccountMenu(
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun AccountHeader(account: XAccount?, onClose: () -> Unit, onAvatar: () -> Unit, onSettings: (() -> Unit)?) {
+private fun AccountHeader(account: XAccount?, onClose: (() -> Unit)?, onAvatar: () -> Unit, onSettings: (() -> Unit)?) {
     Column(
         Modifier
             .fillMaxWidth()
@@ -146,7 +152,7 @@ private fun AccountHeader(account: XAccount?, onClose: () -> Unit, onAvatar: () 
         Row(verticalAlignment = Alignment.CenterVertically) {
             AccountMark(account, 52.dp)
             Spacer(Modifier.weight(1f))
-            IconButton(onClick = onClose) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) }
+            if (onClose != null) IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } }
         }
         Text(stringResource(Res.string.app_name), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(top = 10.dp))
         account?.screenName?.takeIf { it.isNotEmpty() }?.let { name ->

@@ -2,15 +2,20 @@ package com.aimdi.xtanative.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -30,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -54,8 +60,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.feed.FeedSort
 import com.aimdi.xtanative.core.feed.FeedStrip
+import com.aimdi.xtanative.core.session.DeckColumn
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalParentTurnsPages
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberLiveEdges
@@ -118,9 +126,12 @@ internal class TimelinesState(val index: Int, val toTop: ToTop, val unread: Set<
  * networks pinned there) under Following's one bar while Following is shown,
  * else the timeline's own; both leave with the scroll when Theme says so. A
  * drag sideways turns to the next or the previous timeline, as their picker
- * lists them; the bar's mark opens that picker.
+ * lists them; the bar's mark opens that picker. Where the page is wide
+ * enough for two ([HomeWide]), the timelines after the one shown are read
+ * beside it, each a column of its own that reads on its own; a column's
+ * name makes it the one shown. There, as on the Deck, Ctrl+← and Ctrl+→
+ * choose the column the reading keys move ([ReadColumns]).
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HomeFeedPage(
     ui: HomeUi,
@@ -132,6 +143,69 @@ internal fun HomeFeedPage(
     routes: HomeRoutes,
     refresh: () -> Unit,
     calls: FeedPageCalls,
+) {
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val count = HomeWide.columns(maxWidth.value, ui.tabs.size)
+        val beside = HomeWide.beside(ui.tabs, timelines.index, count)
+        if (beside.isEmpty()) {
+            ShownTimeline(ui, vm, timelines, following, networks, actions, routes, refresh, calls, Modifier.fillMaxSize())
+        } else {
+            val each = HomeWide.columnWidth(maxWidth.value, beside.size + 1).dp
+            val shown = ui.tabs.getOrNull(timelines.index)?.key
+            // Ctrl+← and Ctrl+→ choose the column the reading keys move, as on the Deck.
+            ReadColumns(listOfNotNull(shown) + beside.map { it.key })
+            val chosen = chosenReadColumn()
+            Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center) {
+                ReadColumn(shown ?: Unit) {
+                    ShownTimeline(
+                        ui, vm, timelines, following, networks, actions, routes, refresh, calls,
+                        Modifier.width(each).fillMaxHeight().chosenMark(shown != null && chosen == shown),
+                    )
+                }
+                beside.forEach { tab ->
+                    VerticalDivider()
+                    key(tab.key) {
+                        ReadColumn(tab.key) {
+                            DeckColumnView(
+                                columnOf(tab),
+                                tabLabel(tab, ui),
+                                ColumnPlace(first = false, last = false),
+                                ColumnCalls(onTitle = { calls.onTab(ui.tabs.indexOf(tab)) }, menu = false),
+                                toTop = 0,
+                                refreshedAll = 0,
+                                actions = actions,
+                                modifier = Modifier.width(each).fillMaxHeight().chosenMark(chosen == tab.key),
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** A timeline of Home as the column the deck draws it in. */
+private fun columnOf(tab: HomeTab): DeckColumn = when (tab) {
+    HomeTab.Following -> DeckColumn.Following
+    HomeTab.ForYou -> DeckColumn.ForYou
+    is HomeTab.Network -> DeckColumn.Network(tab.id)
+    is HomeTab.Group -> DeckColumn.Group(tab.id)
+}
+
+/** The timeline shown, under its bar: the whole page, or the first column of a wide one. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ShownTimeline(
+    ui: HomeUi,
+    vm: HomeViewModel,
+    timelines: TimelinesState,
+    following: FollowingLook,
+    networks: HomeNetworks,
+    actions: PostActions,
+    routes: HomeRoutes,
+    refresh: () -> Unit,
+    calls: FeedPageCalls,
+    modifier: Modifier,
 ) {
     val tabs = ui.tabs
     val reader = rememberScreenReaderOn()
@@ -171,7 +245,7 @@ internal fun HomeFeedPage(
     }
     CompositionLocalProvider(LocalHomeReading provides reading.takeIf { source != null }) {
     Scaffold(
-        modifier = Modifier.nestedScroll(reading.connection).nestedScroll(bar.nestedScrollConnection),
+        modifier = modifier.nestedScroll(reading.connection).nestedScroll(bar.nestedScrollConnection),
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             if (current == HomeTab.Following) {
@@ -193,7 +267,7 @@ internal fun HomeFeedPage(
                     ) {
                         // Only the search and what the reader pinned stay on the bar; the rest is in the plugin sheet.
                         key(current.id) { NetworkActions(current.id, ui, networks, vm::setTopBarPins, routes, extras, menu = false) }
-                        if (desktop) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
+                        if (desktop) IconTip(stringResource(Res.string.home_refresh)) { IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) } }
                     }
                 }
                 if (sheet) {
@@ -300,10 +374,10 @@ private fun TimelineTopBar(
 @Composable
 private fun PickerMark(tab: HomeTab, ui: HomeUi, networks: HomeNetworks, unread: Boolean, onClick: () -> Unit) {
     val label = listOfNotNull(tabLabel(tab, ui), stringResource(Res.string.home_unread).takeIf { unread }, stringResource(Res.string.home_networks)).joinToString(", ")
-    IconButton(onClick = onClick, modifier = Modifier.semantics { contentDescription = label }) {
+    IconTip(label) { IconButton(onClick = onClick, modifier = Modifier.semantics { contentDescription = label }) {
         // The label says the dot already.
         Box(Modifier.clearAndSetSemantics {}) { UnreadDot(unread) { TimelineMark(tab, networks, 24.dp) } }
-    }
+    } }
 }
 
 /** A timeline's mark: Following's stacked posts, X's own mark, a network's. */
@@ -347,13 +421,13 @@ private fun RowScope.TabActions(
     when (tab) {
         HomeTab.ForYou -> {
             val x = stringResource(Res.string.home_x)
-            IconButton(onClick = { routes.openIfExists(HomeDestination.SEARCH.route) }) { Icon(Icons.Filled.Search, stringResource(Res.string.home_search_in, x)) }
+            IconTip(stringResource(Res.string.home_search_in, x)) { IconButton(onClick = { routes.openIfExists(HomeDestination.SEARCH.route) }) { Icon(Icons.Filled.Search, stringResource(Res.string.home_search_in, x)) } }
             val off = HomeFilter.turnedOff(ui.filter, ui.session.accounts, ui.session.groups)
             PinnedOptions(FeedStrip.FOR_YOU, xOptions(routes, refresh, calls), ui.topBarPins[FeedStrip.FOR_YOU].orEmpty(), onPins, attention = off > 0)
         }
         is HomeTab.Network -> {
             key(tab.id) { NetworkActions(tab.id, ui, networks, onPins) }
-            if (LocalDesktopActions.current != null) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
+            if (LocalDesktopActions.current != null) IconTip(stringResource(Res.string.home_refresh)) { IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) } }
         }
         HomeTab.Following, is HomeTab.Group, null -> Unit
     }
@@ -455,9 +529,9 @@ private fun xOptions(routes: HomeRoutes, refresh: () -> Unit, calls: FeedPageCal
 /** Home feed accounts (homeFeedAccountsButton): a person, with a dot while accounts or groups are turned off. */
 @Composable
 internal fun FeedAccountsButton(off: Int, onClick: () -> Unit) {
-    IconButton(onClick = onClick) {
+    IconTip(stringResource(Res.string.home_feed_accounts)) { IconButton(onClick = onClick) {
         OffDot(off) { Icon(Icons.Outlined.Person, stringResource(Res.string.home_feed_accounts)) }
-    }
+    } }
 }
 
 /**
@@ -538,14 +612,16 @@ private fun PinnedOptions(
     more: @Composable ColumnScope.(close: () -> Unit) -> Unit = {},
 ) {
     TopBarPins.shown(options, pins) { it.id }.forEach { option ->
-        IconButton(onClick = option.onClick) { Icon(option.icon, option.label) }
+        IconTip(option.label) { IconButton(onClick = option.onClick) { Icon(option.icon, option.label) } }
     }
     if (!menu) return
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) {
-            val label = stringResource(Res.string.home_more_options)
-            if (attention) BadgedBox(badge = { Badge() }) { Icon(Icons.Filled.MoreVert, label) } else Icon(Icons.Filled.MoreVert, label)
+        val label = stringResource(Res.string.home_more_options)
+        IconTip(label) {
+            IconButton(onClick = { open = true }) {
+                if (attention) BadgedBox(badge = { Badge() }) { Icon(Icons.Filled.MoreVert, label) } else Icon(Icons.Filled.MoreVert, label)
+            }
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             if (options.isNotEmpty()) {
@@ -577,14 +653,14 @@ private fun OptionItems(id: String, options: List<NetworkOption>, pins: List<Str
             text = { Text(option.label) },
             leadingIcon = { Icon(option.icon, contentDescription = null) },
             trailingIcon = {
-                IconButton(onClick = { onPins(id, TopBarPins.toggled(pins, option.id)) }) {
+                IconTip(pinLabel) { IconButton(onClick = { onPins(id, TopBarPins.toggled(pins, option.id)) }) {
                     Icon(
                         XIcons.Pin,
                         pinLabel,
                         tint = if (option.id in pins) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp),
                     )
-                }
+                } }
             },
             onClick = {
                 close()

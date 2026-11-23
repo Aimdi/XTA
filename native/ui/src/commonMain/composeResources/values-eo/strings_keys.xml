@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Klavaraj fulmoklavoj</string>
+    <string name="keys_help">Montri ĉi tiujn fulmoklavojn</string>
+    <string name="keys_back">Reen, aŭ fermi tion, kio estas malfermita</string>
+    <string name="keys_go_home">Reen al la hejmo</string>
+    <string name="keys_refresh">Aktualigi</string>
+    <string name="keys_search">Serĉi</string>
+    <string name="keys_recent_searches">Elekti lastatempan serĉon el la serĉkampo</string>
+    <string name="keys_open_copied_link">Malfermi kopiitan ligilon</string>
+    <string name="keys_tabs">Sekva aŭ antaŭa langeto</string>
+    <string name="keys_tab_number">Iri al langeto (9: la lasta)</string>
+    <string name="keys_pages">Antaŭa aŭ sekva paĝo</string>
+    <string name="keys_columns">Antaŭa aŭ sekva kolumno por rulumi (Kolumnaro)</string>
+    <string name="keys_scroll_line">Rulumi iomete</string>
+    <string name="keys_next_post">Sekva aŭ antaŭa afiŝo</string>
+    <string name="keys_scroll_screen">Rulumi je ekrano</string>
+    <string name="keys_scroll_ends">Al la komenco aŭ al la fino</string>
+    <string name="keys_move">Moviĝi inter butonoj kaj kampoj</string>
+    <string name="keys_text_size">Pli granda, pli malgranda aŭ normala teksto</string>
+    <string name="keys_full_screen">Tutekrane</string>
+    <string name="keys_video">Tutekrana video: ludi aŭ paŭzi, salti 10 sekundojn</string>
+    <string name="keys_video_more">Plenekrana video: silentigi, rekomenci, eliri</string>
+    <string name="keys_video_speed">Plenekrana video: pli malrapide aŭ pli rapide</string>
+    <string name="keys_video_jump">Plenekrana video: salti al 0 ĝis 90 procentoj, aŭ al la fino</string>
+    <string name="keys_photo_zoom">Zomi foton en, el aŭ tutan</string>
+    <string name="keys_photo_move">Moviĝi en zomita foto</string>
+    <string name="keys_quit">Ĉesigi XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Spaceto</string>
+    <string name="keys_wheel">Rado</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+    <string name="keys_select_all">Konservitaĵoj: elekti ĉion montritan</string>
+    <string name="keys_remove_selected">Konservitaĵoj: forigi la elektitajn</string>
+    <string name="keys_leave_selection">Konservitaĵoj: ĉesi elekti</string>
+    <string name="keys_delete">Del</string>
+    <string name="keys_move_row">Movi vicon supren aŭ suben en reordigebla listo (tiun kun la fokuso aŭ sub la musmontrilo)</string>
+</resources>

@@ -27,7 +27,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import com.aimdi.xtanative.ui.home.rememberRetappedList
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -57,7 +56,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.session.GroupBoard
 import com.aimdi.xtanative.store.settings.GroupsLayout
-import com.aimdi.xtanative.ui.group.RankWithAiButton
+import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_censored
 import com.aimdi.xtanative.ui.generated.resources.groups_create
@@ -67,6 +67,10 @@ import com.aimdi.xtanative.ui.generated.resources.groups_none_description
 import com.aimdi.xtanative.ui.generated.resources.groups_none_yet
 import com.aimdi.xtanative.ui.generated.resources.groups_pin
 import com.aimdi.xtanative.ui.generated.resources.groups_unpin
+import com.aimdi.xtanative.ui.group.RankWithAiButton
+import com.aimdi.xtanative.ui.home.rememberRetappedList
+import com.aimdi.xtanative.ui.home.rememberRowKeyMoves
+import com.aimdi.xtanative.ui.home.rowMovedByKeys
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -82,12 +86,13 @@ fun GroupsPage(
     onCreate: () -> Unit,
     onPin: (String, Boolean) -> Unit,
     onMove: (Int, Int) -> Unit,
+    onStep: (id: String, up: Boolean) -> Unit,
     contentPadding: PaddingValues,
     onDiscover: ((String) -> Unit)? = null,
 ) {
     when {
         state.groupCount == 0 -> EmptyGroups(onCreate, contentPadding)
-        state.layout == GroupsLayout.LIST -> GroupsList(state, onOpen, onEdit, onPin, onMove, contentPadding, onDiscover)
+        state.layout == GroupsLayout.LIST -> GroupsList(state, onOpen, onEdit, onPin, onMove, onStep, contentPadding, onDiscover)
         else -> GroupsBoard(state, onOpen, onEdit, contentPadding, onDiscover)
     }
 }
@@ -172,6 +177,8 @@ private fun GroupTileView(tile: GroupTile, compact: Boolean, fixedHeight: Float?
             .let { if (fixedHeight != null) it.height(fixedHeight.dp) else it.aspectRatio(ratio) }
             .clip(shape)
             .let { if (chosen != null) it.border(1.dp, chosen.copy(alpha = 0.55f), shape) else it }
+            // A right-click opens what a long press does, as a desktop opens a thing's menu.
+            .onSecondaryClick(onLongPress)
             .combinedClickable(onClick = onTap, onLongClick = onLongPress)
             .semantics(mergeDescendants = true) { contentDescription = label },
     ) {
@@ -266,6 +273,7 @@ private fun GroupsList(
     onEdit: (String) -> Unit,
     onPin: (String, Boolean) -> Unit,
     onMove: (Int, Int) -> Unit,
+    onStep: (id: String, up: Boolean) -> Unit,
     contentPadding: PaddingValues,
     onDiscover: ((String) -> Unit)?,
 ) {
@@ -273,6 +281,9 @@ private fun GroupsList(
     val drag = rememberRowDrag(list)
     val tiles = state.board.all.associateBy { it.id }
     val keys: List<Any> = state.board.safe.map { it.id } + (if (state.board.nsfw.isNotEmpty()) listOf(HEADER) else emptyList()) + state.board.nsfw.map { it.id }
+    val moves = rememberRowKeyMoves { key, up ->
+        (state.canDragGroups && key is String && GroupBoardModel.keyStep(state.board, keys.indexOf(key), up) != null).also { if (it) onStep(key as String, up) }
+    }
     LazyColumn(
         state = list,
         contentPadding = PaddingValues(
@@ -289,7 +300,7 @@ private fun GroupsList(
                 CensoredHeader()
             } else {
                 val dragged = drag.key == key
-                Box(Modifier.graphicsLayer { translationY = if (dragged) drag.offset else 0f }.let { if (dragged) it.background(MaterialTheme.colorScheme.surfaceContainerHigh) else it }) {
+                Box(Modifier.rowMovedByKeys(moves, key).graphicsLayer { translationY = if (dragged) drag.offset else 0f }.let { if (dragged) it.background(MaterialTheme.colorScheme.surfaceContainerHigh) else it }) {
                     GroupListRow(
                         tile = tile,
                         onOpen = { onOpen(tile.id) },
@@ -329,6 +340,8 @@ private fun GroupListRow(tile: GroupTile, onOpen: () -> Unit, onEdit: () -> Unit
             .fillMaxWidth()
             .heightIn(min = 64.dp)
             .clip(RoundedCornerShape(12.dp))
+            // A right-click opens what a long press does, as a desktop opens a thing's menu.
+            .onSecondaryClick(onEdit)
             .combinedClickable(onClick = onOpen, onLongClick = onEdit)
             .padding(start = 16.dp + NEST_INDENT * tile.depth, end = 8.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -358,14 +371,14 @@ private fun GroupListRow(tile: GroupTile, onOpen: () -> Unit, onEdit: () -> Unit
             }
         }
         if (onDiscover != null) RankWithAiButton(iconSize = 20.dp, onClick = onDiscover)
-        IconButton(onClick = onPin) {
+        IconTip(stringResource(if (group.pinned) Res.string.groups_unpin else Res.string.groups_pin)) { IconButton(onClick = onPin) {
             Icon(
                 if (group.pinned) GroupIcons.PushPin else GroupIcons.PushPinOutlined,
                 contentDescription = stringResource(if (group.pinned) Res.string.groups_unpin else Res.string.groups_pin),
                 tint = if (group.pinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp),
             )
-        }
+        } }
         if (handle != null) {
             Icon(GroupIcons.DragHandle, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = handle.padding(8.dp))
         } else {

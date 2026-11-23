@@ -23,7 +23,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -55,6 +58,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -63,6 +69,8 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
+import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.cancel
@@ -133,7 +141,7 @@ fun SortUngroupedScreen(onBack: () -> Unit, onSortOneByOne: (List<String>) -> Un
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.groups_sort_title)) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
@@ -254,7 +262,7 @@ fun UngroupedSorterScreen(accountIds: List<String>, openProfile: (String) -> Uni
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.groups_sort_ungrouped)) },
-                navigationIcon = { IconButton(onClick = onDone) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onDone) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 actions = {
                     if (!sorter.finished) {
                         Text(
@@ -291,7 +299,7 @@ fun UngroupedSorterScreen(accountIds: List<String>, openProfile: (String) -> Uni
         } else if (sorter.finished || account == null) {
             SorterEnd(sorter, vm::sortSkipped, onDone, Modifier.padding(padding))
         } else {
-            LazyColumn(Modifier.fillMaxSize().padding(padding), contentPadding = PaddingValues(16.dp)) {
+            rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(16.dp), readList) { column -> LazyColumn(state = readList, contentPadding = column, modifier = Modifier.fillMaxSize().padding(padding)) {
                 item(key = "card") {
                     AnimatedContent(
                         targetState = sorter.position,
@@ -307,7 +315,7 @@ fun UngroupedSorterScreen(accountIds: List<String>, openProfile: (String) -> Uni
                 item(key = "groups") {
                     GroupChips(state, onGroup = { vm.put(listOf(it)) }, onSeveral = { several = true }, onCreate = { naming = true })
                 }
-            }
+            } } }
         }
     }
     val current = sorter.current
@@ -402,11 +410,23 @@ private fun SorterEnd(sorter: SorterState, onSortSkipped: () -> Unit, onFinish: 
 @Composable
 fun GroupNameDialog(onCreate: (String) -> Unit, onDismiss: () -> Unit) {
     var name by remember { mutableStateOf("") }
+    // The field has the keys as the dialog opens: the name can be typed at once.
+    val focus = remember { FocusRequester() }
+    LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.groups_create)) },
         text = {
-            OutlinedTextField(value = name, onValueChange = { name = it }, singleLine = true, label = { Text(stringResource(Res.string.groups_name)) })
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                singleLine = true,
+                label = { Text(stringResource(Res.string.groups_name)) },
+                // Enter (or the keyboard's Done) creates, as the button does; nothing while the name is blank.
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { if (name.isNotBlank()) onCreate(name.trim()) }),
+                modifier = Modifier.focusRequester(focus),
+            )
         },
         confirmButton = {
             Button(onClick = { onCreate(name.trim()) }, enabled = name.isNotBlank()) { Text(stringResource(Res.string.groups_create_button)) }

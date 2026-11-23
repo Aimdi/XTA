@@ -1,8 +1,10 @@
 package com.aimdi.xtanative.ui.downloads
 
+import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.store.downloads.MAX_DOWNLOAD_STEM_BYTES
 import com.aimdi.xtanative.store.downloads.extensionFor
 import com.aimdi.xtanative.store.downloads.fitUtf8Bytes
+import com.aimdi.xtanative.ui.media.MediaSave
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import java.net.URI
 import java.net.URLDecoder
@@ -18,6 +20,17 @@ object PluginDownloads {
     fun url(media: MediaItem): String? = media.downloadUrl?.takeIf { isWeb(it) && !isPlaylist(it) } ?: when (media.kind) {
         MediaItem.Kind.PHOTO -> media.imageUrl.takeIf(::isWeb)
         MediaItem.Kind.VIDEO, MediaItem.Kind.GIF -> media.videoUrl?.takeIf { isWeb(it) && !isPlaylist(it) }
+    }
+
+    /**
+     * What the desktop viewer's menu saves and copies of a plugin's [media]:
+     * its own file, named as [fileName] names one of no plugin's ("xta-…");
+     * null for a stream, which has no file.
+     */
+    internal fun viewerSave(media: MediaItem): MediaSave? {
+        val url = url(media) ?: return null
+        val kind = if (media.kind == MediaItem.Kind.PHOTO) XMedia.Kind.PHOTO else XMedia.Kind.VIDEO
+        return MediaSave(url, fileName("xta", url), kind, postId = "")
     }
 
     /**

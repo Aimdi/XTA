@@ -5,6 +5,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -19,7 +21,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -52,6 +53,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.plugins.Destination
+import com.aimdi.xtanative.ui.common.FlatFilterChip
+import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_all
@@ -64,6 +68,7 @@ import com.aimdi.xtanative.ui.generated.resources.retry
 import com.aimdi.xtanative.ui.generated.resources.saved_note_author
 import com.aimdi.xtanative.ui.generated.resources.saved_search_library
 import com.aimdi.xtanative.ui.generated.resources.saved_title
+import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import org.jetbrains.compose.resources.stringResource
@@ -92,7 +97,7 @@ fun LibrarySearchScreen(initialQuery: String?, open: (LibraryTarget) -> Unit, on
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 title = { Text(title) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
@@ -108,7 +113,7 @@ fun LibrarySearchScreen(initialQuery: String?, open: (LibraryTarget) -> Unit, on
                 singleLine = true,
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 placeholder = { Text(title) },
-                modifier = Modifier.fillMaxWidth().padding(12.dp).focusRequester(focus),
+                modifier = Modifier.fillMaxWidth().padding(12.dp).focusRequester(focus).foundWithKeys(),
             )
             KindChips(state.kind, vm::pick)
             if (state.query.isNotBlank()) ElsewhereChips(state.query.trim(), open)
@@ -116,14 +121,14 @@ fun LibrarySearchScreen(initialQuery: String?, open: (LibraryTarget) -> Unit, on
                 if (state.saysNoResults(results)) {
                     EmptyNote(stringResource(Res.string.discover_no_results))
                 } else {
-                    LazyColumn(Modifier.fillMaxSize()) {
+                    rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(), readList) { column -> LazyColumn(state = readList, modifier = Modifier.fillMaxSize(), contentPadding = column) {
                         items(results, key = { it.id }, contentType = { "result" }) { result ->
                             ResultRow(result) {
                                 vm.opening(result)
                                 open(result.target)
                             }
                         }
-                    }
+                    } } }
                 }
                 if (state.loading) LinearProgressIndicator(Modifier.fillMaxWidth().align(Alignment.TopCenter))
                 if (state.failed) RetryPill(vm::load, Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))

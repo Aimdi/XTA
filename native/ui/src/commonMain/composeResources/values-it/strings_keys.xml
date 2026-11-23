@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Scorciatoie da tastiera</string>
+    <string name="keys_help">Mostra queste scorciatoie</string>
+    <string name="keys_back">Torna indietro o chiudi ciò che è aperto</string>
+    <string name="keys_go_home">Torna alla Home</string>
+    <string name="keys_refresh">Aggiorna</string>
+    <string name="keys_search">Cerca</string>
+    <string name="keys_recent_searches">Scegliere una ricerca recente dal campo di ricerca</string>
+    <string name="keys_open_copied_link">Apri un link copiato</string>
+    <string name="keys_tabs">Scheda successiva o precedente</string>
+    <string name="keys_tab_number">Vai a una scheda (9: l’ultima)</string>
+    <string name="keys_pages">Pagina precedente o successiva</string>
+    <string name="keys_columns">Colonna precedente o successiva da scorrere (Deck)</string>
+    <string name="keys_scroll_line">Scorri un poco</string>
+    <string name="keys_next_post">Post successivo o precedente</string>
+    <string name="keys_scroll_screen">Scorri di una schermata</string>
+    <string name="keys_scroll_ends">Vai all’inizio o alla fine</string>
+    <string name="keys_move">Spostati tra pulsanti e campi</string>
+    <string name="keys_text_size">Testo più grande, più piccolo o normale</string>
+    <string name="keys_full_screen">Schermo intero</string>
+    <string name="keys_video">Video a schermo intero: riproduci o metti in pausa, salta 10 secondi</string>
+    <string name="keys_video_more">Video a schermo intero: silenzia, ricomincia, esci</string>
+    <string name="keys_video_speed">Video a schermo intero: più lento o più veloce</string>
+    <string name="keys_video_jump">Video a schermo intero: salta dallo 0 al 90 per cento, o alla fine</string>
+    <string name="keys_photo_zoom">Ingrandisci, riduci o mostra intera una foto</string>
+    <string name="keys_photo_move">Spostarsi in una foto ingrandita</string>
+    <string name="keys_quit">Esci da XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Maiusc</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Spazio</string>
+    <string name="keys_wheel">Rotellina</string>
+    <string name="keys_page_up">Pag ↑</string>
+    <string name="keys_page_down">Pag ↓</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">Fine</string>
+    <string name="keys_select_all">Salvati: seleziona tutto ciò che è mostrato</string>
+    <string name="keys_remove_selected">Salvati: rimuovi i selezionati</string>
+    <string name="keys_leave_selection">Salvati: esci dalla selezione</string>
+    <string name="keys_delete">Canc</string>
+    <string name="keys_move_row">Sposta una riga su o giù in un elenco riordinabile (quella con il focus o quella sotto il puntatore)</string>
+</resources>

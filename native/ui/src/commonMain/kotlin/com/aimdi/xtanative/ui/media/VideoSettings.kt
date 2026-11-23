@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.media
 
 import com.aimdi.xtanative.core.x.model.XMedia
+import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.Settings
 
@@ -18,6 +19,8 @@ internal data class VideoSource(
     val muted: Boolean = true,
     val gif: Boolean = false,
     val startMs: Long = 0,
+    /** What the desktop's media controls show of it (MPRIS): its post's author and words, and its poster. */
+    val credit: VideoCredit? = null,
 ) {
     companion object {
         /**
@@ -143,5 +146,33 @@ internal object VideoBuffering {
             backMs = VideoRules.SEEK_SECONDS * 1000,
             targetBytes = AHEAD_BYTES + BACK_BYTES,
         )
+    }
+}
+
+/**
+ * A video as media controls name it, from what the app already has: [title]
+ * the start of its post's words (its links left out), [artist] the post's
+ * author, [art] the picture its tile shows, which the desktop hands on only
+ * once it is on disk.
+ */
+internal data class VideoCredit(val title: String, val artist: String?, val art: String? = null) {
+    companion object {
+        /** The longest title, as a media widget shows one line. */
+        const val TITLE_CHARS = 80
+
+        private val links = Regex("""https?://\S+""")
+        private val spaces = Regex("""\s+""")
+
+        /** [post]'s credit with [poster] as its art; null without a post. */
+        fun of(post: XPost?, poster: Any? = null): VideoCredit? {
+            post ?: return null
+            return VideoCredit(title(post.text), post.author.name.ifBlank { post.author.screenName }.ifBlank { null }, poster as? String)
+        }
+
+        /** [text] on one line, without links, at most [TITLE_CHARS] long. */
+        fun title(text: String): String {
+            val line = text.replace(links, " ").replace(spaces, " ").trim()
+            return if (line.length <= TITLE_CHARS) line else line.take(TITLE_CHARS - 1).trimEnd() + "…"
+        }
     }
 }

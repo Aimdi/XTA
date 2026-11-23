@@ -42,6 +42,7 @@ import com.aimdi.xtanative.ui.chrome.CloseOnBack
 import com.aimdi.xtanative.ui.chrome.ConfirmClose
 import com.aimdi.xtanative.ui.chrome.SwipeBackCard
 import com.aimdi.xtanative.ui.chrome.UpdateCheck
+import com.aimdi.xtanative.ui.common.CenteredPage
 import com.aimdi.xtanative.ui.common.LocalProblemActions
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemActions
@@ -119,7 +120,7 @@ import com.aimdi.xtanative.ui.trends.TrendsActions
 import com.aimdi.xtanative.ui.trends.TrendsScreen
 import java.net.URLEncoder
 
-private object Routes {
+internal object Routes {
     const val ROOT = "root"
     const val IMPORT = "import"
     const val SIGN_IN = SettingsRoutes.SIGN_IN
@@ -304,7 +305,8 @@ fun XtaNativeRoot() {
             openPost = { id -> backs.open(opening) { nav.navigate(Routes.post(id)) } },
             openProfile = { name -> nav.navigate(Routes.profile(name)) },
             openMedia = { postId, index -> nav.navigate(Routes.media(postId, index)) },
-            search = { query -> nav.navigate(Routes.search(query)) },
+            // A search with no words yet (the desktop entry's "New search") opens with its field ready to type in.
+            search = { query -> nav.navigate(Routes.search(query, null, focus = query.isBlank())) },
             openQuotes = { id -> nav.navigate(Routes.quotes(id)) },
             openReposters = { id -> nav.navigate(Routes.reposters(id)) },
             openArticle = { postId -> nav.navigate(Routes.article(postId)) },
@@ -338,6 +340,7 @@ fun XtaNativeRoot() {
             post = actions.openPost,
             profile = { name, tab -> nav.navigate(Routes.profile(name, tab = ProfileTab.of(tab))) },
             search = actions.search,
+            searchOn = { query, tab -> nav.navigate(Routes.search(query, tab.routeName, focus = query.isBlank())) },
             browser = { url, from -> nav.navigate(Routes.browser(url, from)) },
             community = { id, about -> true.also { nav.navigate(if (about) Routes.communityAbout(id) else Routes.community(id)) } },
             list = { id -> true.also { nav.navigate(Routes.list(id)) } },
@@ -360,7 +363,18 @@ fun XtaNativeRoot() {
         ProblemActions(addAccount = { nav.navigate(Routes.SIGN_IN) }, diagnostics = { nav.navigate(SettingsRoutes.of(SettingsSection.DIAGNOSTICS)) })
     }
     CompositionLocalProvider(LocalGalleryOpener provides galleries, LocalProblemActions provides problems, LocalLivePlayer provides livePlayer) {
-        DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) }
+        // Ctrl+F and / on a screen with no search of its own open the search, its field ready: not over the
+        // intro, the sign-in or an import, not over a plugin's pages (they keep their own keys), and not a
+        // second search over one still opening.
+        val openSearch = remember(nav) { { if (SearchKeys.opensSearchOver(nav.currentDestination?.route)) nav.navigate(Routes.search(null)) } }
+        // Ctrl+, goes back to the settings where they are open below (Read aloud, the licences, the plugin store),
+        // else opens them, unless a screen that must be finished first is shown.
+        val openSettings = remember(nav) {
+            { if (!nav.popBackStack(Routes.SETTINGS, inclusive = false) && SearchKeys.opensSettingsOver(nav.currentDestination?.route)) nav.navigate(Routes.SETTINGS) }
+        }
+        // Alt+Home goes back to Home, as a browser's goes to its home page; nothing where Home is not below.
+        val openHome = remember(nav) { { nav.popBackStack(Routes.HOME, inclusive = false); Unit } }
+        DesktopNavigation(nav, openSearch, openSettings, openHome) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) }
     }
     if (askSignIn) {
         NotLoggedInDialog(onImportBackup = { nav.navigate(Routes.IMPORT) }, onLogin = { nav.navigate(Routes.SIGN_IN) }, onDismiss = { askSignIn = false })
@@ -398,6 +412,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
     val searchActions = all.search
     val trendsActions = all.trends
     val homeRoutes = all.home
+    WindowTitleFollows(nav)
     NavHost(
         navController = nav,
         startDestination = start,
@@ -515,7 +530,8 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
                 navArgument("focus") { type = NavType.StringType; nullable = true; defaultValue = null },
             ),
         ) { entry ->
-            SearchScreen(entry.text("q"), SearchTab.of(entry.text("tab")), actions, searchActions, onBack = { nav.popBackStack() }, focusOnOpen = entry.text("focus") == "1")
+            // Its search field, tabs and rows in one column in a wide window, as Discover.
+            CenteredPage { SearchScreen(entry.text("q"), SearchTab.of(entry.text("tab")), actions, searchActions, onBack = { nav.popBackStack() }, focusOnOpen = entry.text("focus") == "1") }
         }
         composable(Routes.TRENDS) {
             TrendsScreen(trendsActions, onBack = { nav.popBackStack() })
@@ -574,11 +590,13 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             SavedScreen(actions, savedLinks(nav), onBack = { nav.popBackStack() })
         }
         composable(Routes.LIBRARY, arguments = listOf(navArgument("q") { type = NavType.StringType; nullable = true; defaultValue = null })) { entry ->
-            LibrarySearchScreen(
-                entry.text("q"),
-                open = { target -> if (target is LibraryTarget.XPost) actions.openPost(target.id) else nav.navigate(Routes.of(target)) },
-                onBack = { nav.popBackStack() },
-            )
+            CenteredPage {
+                LibrarySearchScreen(
+                    entry.text("q"),
+                    open = { target -> if (target is LibraryTarget.XPost) actions.openPost(target.id) else nav.navigate(Routes.of(target)) },
+                    onBack = { nav.popBackStack() },
+                )
+            }
         }
         composable(Routes.SUBSCRIPTIONS) {
             SubscriptionsScreen(subscriptionsNavigation(nav, actions), onBack = { nav.popBackStack() })
@@ -758,3 +776,19 @@ private fun savedLinks(nav: NavHostController) = SavedLinks(
     openSettings = { nav.navigate(Routes.SETTINGS) },
     searchLibrary = { nav.navigate(Routes.library(null)) },
 )
+
+/** Where Ctrl+F and / open the app's search, on a screen with no search field of its own. */
+internal object SearchKeys {
+    private val KEPT = setOf(Routes.INTRO, Routes.SIGN_IN, Routes.IMPORT, Routes.SEARCH)
+
+    /** Over [route], the screen shown: not over those that keep the reader where they are, nor a plugin's pages. */
+    fun opensSearchOver(route: String?): Boolean = route != null && route !in KEPT && !route.startsWith("plugin")
+
+    /**
+     * Ctrl+, over [route], with no settings open below it: not over the
+     * intro, the sign-in, an import or the plugin store the intro opens,
+     * nor over the settings themselves.
+     */
+    fun opensSettingsOver(route: String?): Boolean =
+        route != null && route !in setOf(Routes.INTRO, Routes.SIGN_IN, Routes.IMPORT, SettingsRoutes.PLUGINS) && !route.startsWith(Routes.SETTINGS)
+}

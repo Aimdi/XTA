@@ -156,6 +156,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Comprova la connexió i la carpeta de baixades i torna-ho a provar.</string>
     <string name="downloads_open_file">Obre el fitxer</string>
+    <string name="downloads_show_in_folder">Mostra a la carpeta</string>
     <string name="downloads_open_failed">No s’ha pogut obrir aquest fitxer. Pot ser que s’hagi mogut o suprimit.</string>
     <string name="downloads_queued">En espera</string>
     <string name="downloads_downloading">Descarregant suports...</string>

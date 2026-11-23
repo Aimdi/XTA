@@ -53,6 +53,27 @@ object XLinks {
 
     private fun xLink(url: String?): WebLink? = url?.let(WebLink::parse)?.takeIf { it.host in HOSTS }
 
+    /**
+     * The search an `x.com/search?q=…` link asks for (its words; "" for the
+     * search page with none), or a `/hashtag/<tag>` link ("#tag"); null for
+     * any other link.
+     */
+    fun searchQuery(url: String?): String? {
+        val link = xLink(url?.trim()?.ifEmpty { null }) ?: return null
+        val segments = link.segments
+        return when {
+            segments == listOf("search") -> link.query("q").orEmpty().trim()
+            segments.size == 2 && segments[0] == "hashtag" && segments[1].isNotBlank() -> "#" + segments[1].trim()
+            else -> null
+        }
+    }
+
+    /** The `f` of an X search page's link (`live`, `media`, `user`…): the tab X's page opens on; null for none or another link. */
+    fun searchFilter(url: String?): String? {
+        val link = xLink(url?.trim()?.ifEmpty { null }) ?: return null
+        return link.query("f")?.trim()?.ifEmpty { null }?.takeIf { link.segments == listOf("search") }
+    }
+
     /** The article id in an `x.com/i/article/…` link, or null if it is not one. */
     fun articleId(url: String?): String? {
         val segments = xLink(url?.ifEmpty { null })?.segments ?: return null

@@ -3,4 +3,8 @@
     <string name="media_alt_badge">ALT</string>
     <string name="media_alt_title">चित्र का विवरण</string>
     <string name="media_tap_to_show">%1$s दिखाने के लिए टैप करें</string>
+    <string name="media_copy_image">इमेज कॉपी करें</string>
+    <string name="media_save_as">इस रूप में सहेजें…</string>
+    <string name="media_drag_out">इमेज को किसी दूसरे ऐप में खींचें</string>
+    <string name="media_copy_failed">इमेज कॉपी नहीं हो सकी</string>
 </resources>

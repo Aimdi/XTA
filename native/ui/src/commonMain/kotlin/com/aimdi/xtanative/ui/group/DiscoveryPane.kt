@@ -78,6 +78,7 @@ import com.aimdi.xtanative.store.follows.Judgement
 import com.aimdi.xtanative.store.settings.SubscriptionPrefs
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.problemText
 import com.aimdi.xtanative.ui.feed.PluginPostRow
@@ -155,9 +156,9 @@ fun rememberAiReady(): Boolean {
 /** "Rank with AI" as a bar's or a tile's button: the sparkle. */
 @Composable
 fun RankWithAiButton(modifier: Modifier = Modifier, iconSize: Dp = 24.dp, onClick: () -> Unit) {
-    IconButton(onClick = onClick, modifier = modifier) {
+    IconTip(stringResource(Res.string.groups_discovery_ai)) { IconButton(onClick = onClick, modifier = modifier) {
         Icon(GroupIcons.AutoAwesome, stringResource(Res.string.groups_discovery_ai), modifier = Modifier.size(iconSize))
-    }
+    } }
 }
 
 /**
@@ -175,7 +176,7 @@ fun GroupDiscoveryScreen(groupId: String, actions: PostActions, onBack: () -> Un
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.groups_discover) + " · " + name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
@@ -350,7 +351,7 @@ private fun HeaderMenu(state: DiscoveryUi, header: DiscoveryHeaderActions) {
         action()
     }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.groups_menu)) }
+        IconTip(stringResource(Res.string.groups_menu)) { IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.groups_menu)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             MenuRow(GroupIcons.InfoOutline, stringResource(Res.string.groups_more_info)) { pick(header.onInfo) }
             if (state.canUndo) MenuRow(GroupIcons.Undo, stringResource(Res.string.groups_undo)) { pick(header.vm::undo) }
@@ -498,13 +499,13 @@ private fun AddButton(groupName: String, added: Boolean, adding: Boolean, onAdd:
         }
         return
     }
-    IconButton(onClick = onAdd, enabled = !adding) {
+    IconTip(stringResource(Res.string.groups_discovery_add_to_group, groupName)) { IconButton(onClick = onAdd, enabled = !adding) {
         if (adding) {
             CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
         } else {
             Icon(DiscoveryIcons.GroupAddOutlined, stringResource(Res.string.groups_discovery_add_to_group, groupName), tint = MaterialTheme.colorScheme.primary)
         }
-    }
+    } }
 }
 
 /** "Reposted by @a, @b and 3 more", "Followed by 4 members": the signal most of its supporters share. */
@@ -574,7 +575,7 @@ private fun RowMenu(candidate: Candidate, rows: RowActions, openProfile: () -> U
         action()
     }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.groups_menu)) }
+        IconTip(stringResource(Res.string.groups_menu)) { IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.groups_menu)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             MenuRow(DiscoveryIcons.ThumbUpOutlined, stringResource(Res.string.groups_discovery_more_like)) { pick { rows.vm.judge(candidate, Judgement.MORE) } }
             MenuRow(DiscoveryIcons.ThumbDownOutlined, stringResource(Res.string.groups_discovery_less_like)) { pick { rows.vm.judge(candidate, Judgement.LESS) } }

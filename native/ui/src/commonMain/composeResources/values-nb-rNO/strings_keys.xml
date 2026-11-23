@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Hurtigtaster</string>
+    <string name="keys_help">Vis disse hurtigtastene</string>
+    <string name="keys_back">Gå tilbake, eller lukk det som er åpent</string>
+    <string name="keys_go_home">Tilbake til Hjem</string>
+    <string name="keys_refresh">Oppdater</string>
+    <string name="keys_search">Søk</string>
+    <string name="keys_recent_searches">Velg et nylig søk fra søkefeltet</string>
+    <string name="keys_open_copied_link">Åpne en kopiert lenke</string>
+    <string name="keys_tabs">Neste eller forrige fane</string>
+    <string name="keys_tab_number">Gå til en fane (9: den siste)</string>
+    <string name="keys_pages">Forrige eller neste side</string>
+    <string name="keys_columns">Forrige eller neste kolonne å rulle (Kolonner)</string>
+    <string name="keys_scroll_line">Rull litt</string>
+    <string name="keys_next_post">Neste eller forrige innlegg</string>
+    <string name="keys_scroll_screen">Rull en skjerm</string>
+    <string name="keys_scroll_ends">Til toppen eller slutten</string>
+    <string name="keys_move">Flytt mellom knapper og felt</string>
+    <string name="keys_text_size">Større, mindre eller normal tekst</string>
+    <string name="keys_full_screen">Fullskjerm</string>
+    <string name="keys_video">Video i fullskjerm: spill av eller sett på pause, hopp 10 sekunder</string>
+    <string name="keys_video_more">Video i fullskjerm: demp, start på nytt, gå ut</string>
+    <string name="keys_video_speed">Video i fullskjerm: saktere eller raskere</string>
+    <string name="keys_video_jump">Video i fullskjerm: hopp til 0 til 90 prosent, eller til slutten</string>
+    <string name="keys_photo_zoom">Zoom et bilde inn, ut eller vis hele</string>
+    <string name="keys_photo_move">Flytt rundt i et forstørret bilde</string>
+    <string name="keys_quit">Avslutt XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Mellomrom</string>
+    <string name="keys_wheel">Hjul</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+    <string name="keys_select_all">Lagret: velg alt som vises</string>
+    <string name="keys_remove_selected">Lagret: fjern de valgte</string>
+    <string name="keys_leave_selection">Lagret: avslutt valg</string>
+    <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">Flytt en rad opp eller ned i en liste du kan sortere om (den med fokus eller den under pekeren)</string>
+</resources>

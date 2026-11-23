@@ -73,12 +73,14 @@ import com.aimdi.xtanative.ui.article.ArticleBody
 import com.aimdi.xtanative.ui.article.ArticleLayout
 import com.aimdi.xtanative.ui.article.ArticlePreviewCard
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.post
@@ -133,7 +135,7 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.post)) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
@@ -145,7 +147,7 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
         PostScopeProvider(focalId = id, translateAll = true, revealReplies = reveal) {
             val prefs = postScope().prefs
             val zenHidden = prefs.zen && !state.repliesRevealed
-            WithReadingColumn(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 48.dp)) { column ->
+            WithReadingColumn(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 48.dp), list) { column ->
                 LazyColumn(
                     state = list,
                     contentPadding = column,
@@ -347,19 +349,18 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
     val article = remember(shown) { ArticleLayout.fullArticle(shown) }
     val picture = rememberPostPicture()
     Column(Modifier.fillMaxWidth().recordedIn(picture).padding(horizontal = 16.dp, vertical = 12.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        // A right-click on the author line opens the ⋯ menu; the text under it keeps the desktop's own copy menu.
+        Row(Modifier.onSecondaryClick { menu = true }, verticalAlignment = Alignment.CenterVertically) {
             PostAvatar(shown, scope, actions, 44.dp)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 if (PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            shown.author.name,
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f, fill = false),
-                        )
+                        Box(Modifier.weight(1f, fill = false)) {
+                            AuthorHoverCard(shown.author, shown.author.largeAvatarUrl, { actions.openUser(shown.author.screenName, shown.author.id) }) {
+                                Text(shown.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            }
+                        }
                         if (shown.author.verified) {
                             Icon(XIcons.Verified, null, tint = Color.Unspecified, modifier = Modifier.padding(start = 2.dp).size(18.dp))
                         }

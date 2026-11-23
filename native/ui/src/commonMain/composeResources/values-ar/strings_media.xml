@@ -3,4 +3,8 @@
     <string name="media_alt_badge">ALT</string>
     <string name="media_alt_title">وصف الصورة</string>
     <string name="media_tap_to_show">انقر للعرض %1$s</string>
+    <string name="media_copy_image">نسخ الصورة</string>
+    <string name="media_save_as">حفظ باسم…</string>
+    <string name="media_drag_out">اسحب الصورة إلى تطبيق آخر</string>
+    <string name="media_copy_failed">تعذّر نسخ الصورة</string>
 </resources>

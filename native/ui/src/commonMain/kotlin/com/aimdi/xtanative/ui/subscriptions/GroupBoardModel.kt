@@ -4,6 +4,7 @@ import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.GroupTree
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.store.settings.GroupsOrder
+import com.aimdi.xtanative.ui.home.RowSteps
 
 /** One group on the board or in the list: how deep it is nested, how many members it has and whose faces it shows. */
 data class GroupTile(
@@ -109,6 +110,35 @@ object GroupBoardModel {
             else -> to.coerceAtLeast(header + 1)
         }
         return SubscriptionList.moved(rows, from, target.coerceIn(0, rows.lastIndex)).filterNotNull()
+    }
+
+    /**
+     * Where Alt+↑ or Alt+↓ takes the row at [from] (an index as [reordered]
+     * takes it): a place up or down within its own part, never past the
+     * Censored header; null at the part's end, or for the header itself.
+     */
+    fun keyStep(sections: GroupSections, from: Int, up: Boolean): Int? {
+        val header = if (sections.nsfw.isEmpty()) -1 else sections.safe.size
+        val part = when {
+            header < 0 || from < header -> sections.safe.indices
+            from == header -> return null
+            else -> (header + 1)..(header + sections.nsfw.size)
+        }
+        return RowSteps.target(from, up, part)
+    }
+
+    /**
+     * [session] with group [id] a place up or down in the list in the
+     * reader's own order (Alt+↑, Alt+↓), found where it is in [session] as it
+     * is saved by then, within its own part as [keyStep] keeps it; null when
+     * it is gone or at the part's end.
+     */
+    fun stepped(session: Session, field: GroupsOrder, ascending: Boolean, id: String, up: Boolean): Session? {
+        val board = sections(tiles(session, field, ascending, query = ""))
+        val rows: List<String?> = board.safe.map { it.id } + (if (board.nsfw.isEmpty()) emptyList() else listOf(null)) + board.nsfw.map { it.id }
+        val from = rows.indexOf(id).takeIf { it >= 0 } ?: return null
+        val to = keyStep(board, from, up) ?: return null
+        return reordered(board, from, to)?.let { withPositions(session, it) }
     }
 
     /** [session] with each group's place its index in [ids], as XTA saves the reader's own order. */

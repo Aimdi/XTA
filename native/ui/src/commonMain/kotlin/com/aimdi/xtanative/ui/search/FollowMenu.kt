@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.store.settings.SubscriptionPrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalSessions
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -88,14 +89,14 @@ fun FollowMenu(target: FollowTarget, modifier: Modifier = Modifier, face: @Compo
 /** The icon face: someone to follow, followed, or followed but kept out of the main feed. */
 @Composable
 private fun FollowIcon(state: Followed, onClick: () -> Unit) {
-    IconButton(onClick = onClick) {
+    IconTip(stringResource(if (state.followed) Res.string.discover_unsubscribe else Res.string.discover_subscribe)) { IconButton(onClick = onClick) {
         val icon = when {
             !state.followed -> DiscoverIcons.PersonAdd
             state.inFeed -> DiscoverIcons.PersonRemove
             else -> DiscoverIcons.VisibilityOff
         }
         Icon(icon, contentDescription = stringResource(if (state.followed) Res.string.discover_unsubscribe else Res.string.discover_subscribe))
-    }
+    } }
 }
 
 /**

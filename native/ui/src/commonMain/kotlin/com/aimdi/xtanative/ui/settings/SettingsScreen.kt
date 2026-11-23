@@ -1,9 +1,11 @@
 package com.aimdi.xtanative.ui.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -53,13 +55,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
+import com.aimdi.xtanative.store.settings.DesktopPrefs
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.ThemePrefs
+import com.aimdi.xtanative.ui.common.ColumnScrollbar
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login
+import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login_description
+import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.intro.IntroFlow
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.launch
@@ -105,7 +112,10 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: (
     val snackbar = remember { SnackbarHostState() }
 
     SettingsPage(stringResource(Res.string.settings_title), onBack, snackbar) { padding ->
-        Column(Modifier.padding(padding).verticalScroll(rememberScrollState()).padding(bottom = 24.dp)) {
+        val scroll = rememberScrollState()
+        Box(Modifier.fillMaxSize().padding(padding)) {
+        ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd))
+        Column(Modifier.settingsRows().verticalScroll(scroll).padding(bottom = 24.dp)) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
@@ -116,13 +126,14 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: (
                 },
                 singleLine = true,
                 shape = MaterialTheme.shapes.extraLarge,
-                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp),
+                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp).foundWithKeys(),
             )
             if (query.isBlank()) {
                 SettingsHome(onOpen, onIntroAgain, snackbar, vm)
             } else {
                 SearchResults(query, onOpen)
             }
+        }
         }
     }
 }
@@ -243,6 +254,9 @@ private class Indexed(val section: SettingsSection, val key: String, val title: 
 private val INDEX = listOf(
     Indexed(SettingsSection.GENERAL, GeneralPrefs.checkForUpdates.key, Res.string.settings_update_check, Res.string.settings_update_check_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.confirmClose.key, Res.string.settings_confirm_close, Res.string.settings_confirm_close_description),
+    Indexed(SettingsSection.GENERAL, DesktopPrefs.notifications.key, Res.string.settings_desktop_notifications, Res.string.settings_desktop_notifications_description),
+    Indexed(SettingsSection.GENERAL, DesktopPrefs.closeToTray.key, Res.string.settings_close_to_tray, Res.string.settings_close_to_tray_description),
+    Indexed(SettingsSection.GENERAL, START_AT_LOGIN_KEY, Res.string.settings_start_at_login, Res.string.settings_start_at_login_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.cleanLinks.key, Res.string.settings_clean_links, Res.string.settings_clean_links_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.disableScreenshots.key, Res.string.settings_disable_screenshots, Res.string.settings_disable_screenshots_hint),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.initialTab.key, Res.string.settings_default_tab, Res.string.settings_default_tab_description),
@@ -298,8 +312,11 @@ private val INDEX = listOf(
 /** The controls only Android has: the desktop's window takes no screenshot block, gives no haptics and has no status bar. */
 private val ANDROID_ONLY = setOf(GeneralPrefs.disableScreenshots.key, AccessibilityPrefs.haptics.key, ThemePrefs.hideStatusBar.key)
 
-/** Every control the search can find, in this platform's settings: the desktop has none of [ANDROID_ONLY]. */
+/** The controls only the desktop has: its notifications and its tray. */
+private val DESKTOP_ONLY = setOf(DesktopPrefs.notifications.key, DesktopPrefs.closeToTray.key, START_AT_LOGIN_KEY)
+
+/** Every control the search can find, in this platform's settings: the desktop has none of [ANDROID_ONLY], Android none of [DESKTOP_ONLY]. */
 @Composable
 private fun searchableControls(): List<SettingsControl> = INDEX
-    .filter { !isDesktop || it.key !in ANDROID_ONLY }
+    .filter { if (isDesktop) it.key !in ANDROID_ONLY else it.key !in DESKTOP_ONLY }
     .map { SettingsControl(it.section, it.key, stringResource(it.title), it.description?.let { res -> stringResource(res) }.orEmpty()) }

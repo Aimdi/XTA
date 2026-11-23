@@ -44,7 +44,7 @@ plugin API version it was built against, `PLUGIN_API_VERSION`) and `entry`
 
 ## The plugin API
 
-`PLUGIN_API_VERSION` is 14. Version 1 is what native-0.1.41 shipped; 2,
+`PLUGIN_API_VERSION` is 15. Version 1 is what native-0.1.41 shipped; 2,
 which native-0.1.45 shipped, added `cashtagStrip` and `routeForCashtag` and
 the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
 plugin, the chip tabs, the shelf, the recent searches, the action row,
@@ -94,7 +94,15 @@ account switcher, from a long press on its avatar), the sort
 sheet (`ShellSortSheet`, `ShellSortHeading`, `ShellSortOption`,
 `ShellSortPills`) and `ShellMenuButton`, a plugin's own entries, which are
 in the plugin sheet on Home and a ⋮ menu elsewhere. A plugin built before
-keeps its own chrome under the shell's header.
+keeps its own chrome under the shell's header. 15 adds
+`Modifier.onContextClick`: a right-click opens what a card's long press
+opens on the desktop (its post's menu), since a mouse's long press does
+not reach a long click there, and `PluginReadingColumn`, which keeps a
+plugin's list in the app's reading column in a wide window, with the
+desktop's scrollbar and reading keys, and `rememberPluginSheetState`, a
+sheet's state that opens it all the way on the desktop and gives the keys
+back as it closes; a plugin that uses any of them says 15,
+and an app of 14 (native-1.0.14) offers it as "needs a newer XTA Native".
 
 On Home every plugin is one shell (option A of the "Unified Plugin Shell"
 canvas), two rows that hide together as the posts scroll:

@@ -3,4 +3,8 @@
     <string name="media_alt_badge">ALT</string>
     <string name="media_alt_title">Popis obrázku</string>
     <string name="media_tap_to_show">Ťukněte pro zobrazení %1$s</string>
+    <string name="media_copy_image">Kopírovat obrázek</string>
+    <string name="media_save_as">Uložit jako…</string>
+    <string name="media_drag_out">Přetáhněte obrázek do jiné aplikace</string>
+    <string name="media_copy_failed">Obrázek se nepodařilo zkopírovat</string>
 </resources>

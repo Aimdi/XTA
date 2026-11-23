@@ -79,6 +79,9 @@ import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedSort
 import com.aimdi.xtanative.store.saved.SavedSource
 import com.aimdi.xtanative.store.saved.SavedTabs
+import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.ReadingColumn
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -118,6 +121,9 @@ import com.aimdi.xtanative.ui.generated.resources.saved_tab_unfiled
 import com.aimdi.xtanative.ui.generated.resources.saved_title
 import com.aimdi.xtanative.ui.generated.resources.saved_write_note
 import com.aimdi.xtanative.ui.generated.resources.settings
+import com.aimdi.xtanative.ui.home.FindsWithKeys
+import com.aimdi.xtanative.ui.home.SelectsWithKeys
+import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.post.PostActions
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -170,6 +176,15 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
     var dialog by remember { mutableStateOf<SavedDialog?>(null) }
     var query by rememberSaveable { mutableStateOf("") }
     val view = state.view
+    // While selecting, the search is put away with the rest of the bar: Ctrl+F and / leave the selection be, rather than leave Saved.
+    if (view.selecting) FindsWithKeys {}
+    // Ctrl+A, Delete and Esc on the selection, as in a file manager; Delete asks first, as the bar's button does.
+    SelectsWithKeys(
+        selecting = view.selecting,
+        selectAll = { dialog == null && vm.selectAllByKeys() },
+        remove = { (dialog == null && view.removableByKeys).also { if (it) dialog = SavedDialog.RemoveSelected } },
+        leave = { (dialog == null && view.selecting).also { if (it) vm.finishSelection() } },
+    )
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -205,8 +220,9 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
             }
         },
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            if (!view.selecting) {
+        Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()), horizontalAlignment = Alignment.CenterHorizontally) {
+            // The search and the chips over the reading column the posts below keep to, in a wide window.
+            if (!view.selecting) Column(Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp).fillMaxWidth()) {
                 SearchRow(
                     query = query,
                     onQuery = { query = it; vm.search(it) },
@@ -226,7 +242,7 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
                     onNewFolder = { dialog = SavedDialog.EditFolder(null) },
                 )
             }
-            Box(Modifier.weight(1f)) {
+            Box(Modifier.weight(1f).fillMaxWidth()) {
                 if (state.loaded) {
                     SavedBodyView(
                         state = state,
@@ -299,7 +315,7 @@ private fun TitleBar(notice: SavedNotice, onBack: (() -> Unit)?, searchable: Boo
     val noticeText = onDeviceText(notice)
     TopAppBar(
         navigationIcon = {
-            if (onBack != null) IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }
+            if (onBack != null) IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
         },
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -312,9 +328,9 @@ private fun TitleBar(notice: SavedNotice, onBack: (() -> Unit)?, searchable: Boo
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f, fill = false),
                 )
-                IconButton(onClick = { KeepNotices.show(KeepNotice.OnDevice(notice)) }) {
+                IconTip(noticeText) { IconButton(onClick = { KeepNotices.show(KeepNotice.OnDevice(notice)) }) {
                     Icon(Icons.Filled.Lock, noticeText, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
-                }
+                } }
             }
         },
         actions = { SavedMenu(searchable, onMenu) },
@@ -347,17 +363,17 @@ private fun SavedMenu(searchable: Boolean, onMenu: (SavedMenuAction) -> Unit) {
 @Composable
 private fun SelectionBar(count: Int, allSelected: Boolean, onClose: () -> Unit, onSelectAll: () -> Unit, onMove: () -> Unit, onRemove: () -> Unit) {
     TopAppBar(
-        navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } },
+        navigationIcon = { IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } } },
         title = { Text(if (count == 0) stringResource(Res.string.saved_none_selected) else pluralStringResource(Res.plurals.saved_selected, count, count)) },
         actions = {
-            IconButton(onClick = onSelectAll) {
+            IconTip(stringResource(if (allSelected) Res.string.saved_clear_selection else Res.string.saved_select_all)) { IconButton(onClick = onSelectAll) {
                 Icon(
                     if (allSelected) SavedIcons.Deselect else SavedIcons.SelectAll,
                     stringResource(if (allSelected) Res.string.saved_clear_selection else Res.string.saved_select_all),
                 )
-            }
-            IconButton(onClick = onMove, enabled = count > 0) { Icon(SavedIcons.MoveToFolder, stringResource(Res.string.saved_move_selected)) }
-            IconButton(onClick = onRemove, enabled = count > 0) { Icon(Icons.Filled.Delete, stringResource(Res.string.saved_delete)) }
+            } }
+            IconTip(stringResource(Res.string.saved_move_selected)) { IconButton(onClick = onMove, enabled = count > 0) { Icon(SavedIcons.MoveToFolder, stringResource(Res.string.saved_move_selected)) } }
+            IconTip(stringResource(Res.string.saved_delete)) { IconButton(onClick = onRemove, enabled = count > 0) { Icon(Icons.Filled.Delete, stringResource(Res.string.saved_delete)) } }
         },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
     )
@@ -389,11 +405,11 @@ private fun SearchRow(query: String, onQuery: (String) -> Unit, menu: SavedFilte
                 textStyle = TextStyle(fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface),
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().foundWithKeys(),
             )
         }
         if (query.isNotEmpty()) {
-            IconButton(onClick = { onQuery("") }) { Icon(Icons.Filled.Close, stringResource(Res.string.saved_clear_search), tint = muted, modifier = Modifier.size(18.dp)) }
+            IconTip(stringResource(Res.string.saved_clear_search)) { IconButton(onClick = { onQuery("") }) { Icon(Icons.Filled.Close, stringResource(Res.string.saved_clear_search), tint = muted, modifier = Modifier.size(18.dp)) } }
         }
         VerticalDivider(Modifier.height(20.dp), color = MaterialTheme.colorScheme.outlineVariant)
         FilterButton(menu, sort, mediaOnly, onFilter)
@@ -405,9 +421,9 @@ private fun SearchRow(query: String, onQuery: (String) -> Unit, menu: SavedFilte
 private fun FilterButton(menu: SavedFilterMenu, sort: SavedSort, mediaOnly: Boolean, onFilter: (SavedFilterAction) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }, enabled = menu.enabled) {
+        IconTip(stringResource(Res.string.saved_filter_and_sort)) { IconButton(onClick = { open = true }, enabled = menu.enabled) {
             Icon(SavedIcons.Tune, stringResource(Res.string.saved_filter_and_sort), modifier = Modifier.size(20.dp))
-        }
+        } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             @Composable
             fun checked(action: SavedFilterAction, label: String, on: Boolean) = DropdownMenuItem(
@@ -470,9 +486,9 @@ private fun ChipRow(
             )
         }
         item(key = "new") {
-            IconButton(onClick = onNewFolder) {
+            IconTip(stringResource(Res.string.saved_new_folder)) { IconButton(onClick = onNewFolder) {
                 Icon(Icons.Filled.Add, stringResource(Res.string.saved_new_folder), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
-            }
+            } }
         }
     }
 }
@@ -497,6 +513,8 @@ private fun TabChip(label: String, selected: Boolean, trailing: ImageVector?, on
             .heightIn(min = 32.dp)
             .clip(shape)
             .border(1.dp, if (selected) accent else MaterialTheme.colorScheme.outlineVariant, shape)
+            // A right-click opens what a long press does, as a desktop opens a thing's menu.
+            .then(onLongClick?.let { Modifier.onSecondaryClick(it) } ?: Modifier)
             .combinedClickable(role = Role.Tab, onClick = onClick, onLongClick = onLongClick)
             .semantics { this.selected = selected }
             .padding(horizontal = 10.dp, vertical = 6.dp),

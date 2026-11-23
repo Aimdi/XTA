@@ -53,6 +53,7 @@ import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.longPressOver
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.plugins.rememberShareText
@@ -72,6 +73,7 @@ internal fun InstagramPostCard(app: InstagramApp, post: InstagramPost, openAutho
     Column(
         Modifier
             .fillMaxWidth()
+            .onContextClick { app.openMenu(post) }
             .longPressOver { app.openMenu(post) }
             .semantics { onLongClick(more) { app.openMenu(post); true } },
     ) {

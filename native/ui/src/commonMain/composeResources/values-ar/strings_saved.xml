@@ -168,6 +168,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">تحقق من اتصالك ومجلد التنزيلات، ثم حاول مجددًا.</string>
     <string name="downloads_open_file">فتح الملف</string>
+    <string name="downloads_show_in_folder">إظهار في المجلد</string>
     <string name="downloads_open_failed">تعذّر فتح هذا الملف. ربما تم نقله أو حذفه.</string>
     <string name="downloads_queued">قيد الانتظار</string>
     <string name="downloads_downloading">تحميل الوسائط...</string>

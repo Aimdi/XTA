@@ -63,6 +63,7 @@ import com.aimdi.xtanative.ui.common.ShowMediaTile
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.datePattern
 import com.aimdi.xtanative.ui.common.mediaShown
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_filter_broadcasts
 import com.aimdi.xtanative.ui.generated.resources.posts_filter_photos
@@ -318,6 +319,8 @@ private fun GridTile(item: MediaGridItem, index: Int, grid: MediaGridRows, modif
         Box(
             Modifier
                 .fillMaxSize()
+                // A right-click does what a long press does (Saved's: remove the picture).
+                .then(long?.let { Modifier.onSecondaryClick { it(item) } } ?: Modifier)
                 .combinedClickable(role = Role.Button, onClick = { grid.onOpen(item) }, onLongClick = long?.let { { it(item) } })
                 .semantics { contentDescription = label },
         ) {

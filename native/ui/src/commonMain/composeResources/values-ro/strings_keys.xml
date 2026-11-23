@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Comenzi rapide de la tastatură</string>
+    <string name="keys_help">Arată aceste comenzi rapide</string>
+    <string name="keys_back">Înapoi sau închide ce este deschis</string>
+    <string name="keys_go_home">Înapoi la Acasă</string>
+    <string name="keys_refresh">Reîmprospătează</string>
+    <string name="keys_search">Caută</string>
+    <string name="keys_recent_searches">Alege o căutare recentă din câmpul de căutare</string>
+    <string name="keys_open_copied_link">Deschide un link copiat</string>
+    <string name="keys_tabs">Fila următoare sau anterioară</string>
+    <string name="keys_tab_number">Mergi la o filă (9: ultima)</string>
+    <string name="keys_pages">Pagina anterioară sau următoare</string>
+    <string name="keys_columns">Coloana anterioară sau următoare de derulat (Coloane)</string>
+    <string name="keys_scroll_line">Derulează puțin</string>
+    <string name="keys_next_post">Postarea următoare sau anterioară</string>
+    <string name="keys_scroll_screen">Derulează un ecran</string>
+    <string name="keys_scroll_ends">Mergi la început sau la sfârșit</string>
+    <string name="keys_move">Treci de la un buton sau câmp la altul</string>
+    <string name="keys_text_size">Text mai mare, mai mic sau normal</string>
+    <string name="keys_full_screen">Ecran complet</string>
+    <string name="keys_video">Video pe ecran complet: redă sau pune pauză, sari 10 secunde</string>
+    <string name="keys_video_more">Video pe tot ecranul: dezactivează sunetul, de la început, ieși</string>
+    <string name="keys_video_speed">Video pe tot ecranul: mai încet sau mai repede</string>
+    <string name="keys_video_jump">Video pe tot ecranul: salt la 0–90 la sută sau la final</string>
+    <string name="keys_photo_zoom">Mărește, micșorează sau arată fotografia întreagă</string>
+    <string name="keys_photo_move">Deplasează-te într-o fotografie mărită</string>
+    <string name="keys_quit">Închide XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Spațiu</string>
+    <string name="keys_wheel">Rotiță</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+    <string name="keys_select_all">Salvat: selectează tot ce se vede</string>
+    <string name="keys_remove_selected">Salvat: elimină cele selectate</string>
+    <string name="keys_leave_selection">Salvat: oprește selectarea</string>
+    <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">Mută un rând în sus sau în jos într-o listă care se poate reordona (cel cu focus sau cel de sub cursor)</string>
+</resources>

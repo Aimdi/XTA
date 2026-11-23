@@ -156,6 +156,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Check your connection and download folder, then retry.</string>
     <string name="downloads_open_file">Open file</string>
+    <string name="downloads_show_in_folder">Show in folder</string>
     <string name="downloads_open_failed">This file could not be opened. It may have been moved or deleted.</string>
     <string name="downloads_queued">Waiting</string>
     <string name="downloads_downloading">Downloading media...</string>

@@ -47,6 +47,7 @@ import com.aimdi.xtanative.networks.substack.SubstackPosts
 import com.aimdi.xtanative.networks.substack.SubstackReading
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.agoText
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 
@@ -79,7 +80,7 @@ internal fun rememberMarks(app: SubstackApp): PostMarks {
 @Composable
 internal fun SubstackPostCard(app: SubstackApp, post: SubstackPost, marks: PostMarks, logoUrl: String? = null, modifier: Modifier = Modifier) {
     val unread = marks.unread(post)
-    Column(modifier.fillMaxWidth().combinedClickable(onClick = { app.openPost(post) }, onLongClick = { app.openMenu(post) })) {
+    Column(modifier.fillMaxWidth().onContextClick { app.openMenu(post) }.combinedClickable(onClick = { app.openPost(post) }, onLongClick = { app.openMenu(post) })) {
         Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp)) {
             CardHeader(app, post, unread, logoUrl)
             post.authorName?.takeIf { it.isNotBlank() }?.let {

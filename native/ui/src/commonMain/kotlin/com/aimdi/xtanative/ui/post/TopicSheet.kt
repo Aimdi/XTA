@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.ui.common.LocalSessions
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.topic_follow
 import com.aimdi.xtanative.ui.generated.resources.topic_follow_done
@@ -36,7 +37,7 @@ internal fun TopicSheet(topic: String, onDismiss: () -> Unit) {
     val keeper = LocalKeeper.current
     val session by sessions.state.collectAsStateWithLifecycle()
     val followed = session?.let { TopicLinks.isFollowed(it, topic) } ?: false
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp)) {
             MenuRow(if (followed) Icons.Outlined.Check else TagIcon, stringResource(if (followed) Res.string.topic_following else Res.string.topic_follow)) {
                 onDismiss()

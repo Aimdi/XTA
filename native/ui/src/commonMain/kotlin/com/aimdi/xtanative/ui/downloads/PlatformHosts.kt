@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.downloads
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
 /**
  * What the platform's file dialogs need in the window, once: Android's save
@@ -18,3 +19,22 @@ internal expect fun PlatformFilesHost()
  */
 @Composable
 internal expect fun rememberFilePicker(images: Boolean, title: String): suspend () -> PickedFile?
+
+/**
+ * Files dropped here from the desktop's file manager, as the picker
+ * would take them ([rememberFilePicker], not only pictures): each a read
+ * of its own for [onDropped], in the order dropped; other files and text
+ * are left to what is under it. Nothing where the platform drops no files
+ * (Android).
+ */
+@Composable
+internal expect fun Modifier.takesDroppedFiles(enabled: Boolean, onDropped: (List<suspend () -> PickedFile?>) -> Unit): Modifier
+
+/**
+ * A picture on the clipboard (a screenshot copied), as a file a note
+ * attaches: PNG, read when asked; null when the clipboard holds none, or
+ * holds text, which a paste puts in the field. Null where the platform
+ * pastes no pictures here (Android, whose keyboard does).
+ */
+@Composable
+internal expect fun rememberClipboardPicture(): (suspend () -> PickedFile?)?

@@ -64,6 +64,7 @@ import com.aimdi.xtanative.ui.plugins.Fetched
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RetryMessage
@@ -250,7 +251,7 @@ private fun RefreshableConversation(
     // Pulling shows its own spinner; what was kept shown while the page is read first says "updating" instead.
     val fresh = state.value?.loaded == true
     PullToRefreshBox(isRefreshing = state.loading && fresh, onRefresh = onRetry, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = PaddingValues(bottom = 24.dp), modifier = Modifier.fillMaxSize().then(scrolling)) {
+        PluginReadingColumn(PaddingValues(bottom = 24.dp), list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize().then(scrolling), contentPadding = column) {
             threadRows(app, conversation)
             statusRows(conversation, state, onRetry)
             if (conversation.replies.isNotEmpty()) {
@@ -263,7 +264,7 @@ private fun RefreshableConversation(
             ThreadsBeside.topicOf(conversation)?.let { topic ->
                 onTopicRows(app, topic, onTopic.found, ThreadsBeside.onTopic(conversation, onTopic.posts)) { onTopic.beside.ask(topic) }
             }
-        }
+        } }
         if (conversation.replies.isNotEmpty()) {
             ReloadStatus(state.loading, state.problem?.let { ThreadsFailures.post(it, currentLanguage()) }, onRetry, updating = !fresh)
         }

@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.threads
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -60,6 +61,7 @@ import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginAvatar
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RetryMessage
@@ -185,7 +187,7 @@ private fun PeopleList(app: ThreadsApp, list: ThreadsPeopleList, key: String, si
         val body = ThreadsPeopleView.body(signedIn, read = first.value != null, problem = first.problem != null, people = people.size, typed = typed)
         val state = rememberLazyListState()
         ReadsMoreNear(state, model.more, more)
-        LazyColumn(state = state, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(PaddingValues(), state) { column -> LazyColumn(state = state, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             when (body) {
                 ThreadsPeopleView.Body.PROBLEM -> item(key = "problem") { RetryMessage(problemText(list, first.problem), onRetry = { model.first.load(force = true) }) }
                 ThreadsPeopleView.Body.LOADING -> item(key = "loading") { LoadingRow() }
@@ -194,7 +196,7 @@ private fun PeopleList(app: ThreadsApp, list: ThreadsPeopleList, key: String, si
                 else -> personRows(app, people) { app.openProfile(it) }
             }
             if (body == ThreadsPeopleView.Body.PEOPLE || body == ThreadsPeopleView.Body.NO_MATCH) sessionMoreFoot("people", more, model.more::loadMore) { model.more.retry() }
-        }
+        } }
     }
 }
 

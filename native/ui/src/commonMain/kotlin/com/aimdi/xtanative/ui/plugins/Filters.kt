@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.ReadFailureSheet
 import com.aimdi.xtanative.ui.common.ReadSource
 import com.aimdi.xtanative.ui.common.flatChipBorder
@@ -49,7 +50,7 @@ fun PluginFilterChip(label: String, selected: Boolean, onClick: () -> Unit, modi
 fun PartialFailureButton(message: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     val surface = LocalPluginSurface.current
     var open by rememberSaveable { mutableStateOf(false) }
-    IconButton(onClick = { open = true }, modifier = modifier) { Icon(Icons.Outlined.Warning, message, tint = MaterialTheme.colorScheme.error) }
+    IconTip(message) { IconButton(onClick = { open = true }, modifier = modifier) { Icon(Icons.Outlined.Warning, message, tint = MaterialTheme.colorScheme.error) } }
     if (open) {
         ReadFailureSheet(ReadSource(surface?.name.orEmpty(), isX = false, openSettings = surface?.openSettings), null, onRetry, message) { open = false }
     }

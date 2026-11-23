@@ -1,12 +1,12 @@
 package com.aimdi.xtanative.ui.subscriptions
 
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,8 +44,8 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,12 +54,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -67,6 +71,8 @@ import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.GroupPack
 import com.aimdi.xtanative.core.session.Session
+import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.groups_add_to_group
@@ -134,7 +140,11 @@ fun GroupEditSheet(
     var message by remember { mutableStateOf<StringResource?>(null) }
     var nameTouched by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val sheet = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheet = rememberSheetState(alwaysFull = true)
+    // A new group starts at its name, which has the keys as the sheet opens; a group being edited
+    // opens without, so the keyboard does not cover its members.
+    val nameFocus = remember { FocusRequester() }
+    LaunchedEffect(groupId) { if (groupId == null) runCatching { nameFocus.requestFocus() } }
 
     fun save() {
         nameTouched = true
@@ -158,11 +168,11 @@ fun GroupEditSheet(
                     placeholder = { Text(stringResource(Res.string.groups_name)) },
                     isError = nameTouched && !draft.canSave,
                     supportingText = if (nameTouched && !draft.canSave) ({ Text(stringResource(Res.string.groups_please_enter_a_name)) }) else null,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).focusRequester(nameFocus),
                 )
-                IconButton(onClick = { picker = EditPicker.COLOR }) {
+                IconTip(stringResource(Res.string.groups_pick_color)) { IconButton(onClick = { picker = EditPicker.COLOR }) {
                     Icon(GroupIcons.Palette, stringResource(Res.string.groups_pick_color), tint = groupColor(draft.seedColor))
-                }
+                } }
             }
             Text(stringResource(Res.string.groups_mark_label), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 12.dp, bottom = 8.dp))
             MarkStyleRow(draft.shownStyle) { style ->
@@ -402,14 +412,18 @@ private fun Swatch(color: Long, selected: Boolean, label: String?, onClick: () -
 
 @Composable
 private fun EmojiDialog(current: String, onPick: (String) -> Unit, onDismiss: () -> Unit) {
-    var text by remember { mutableStateOf(current) }
+    // The field has the keys as the dialog opens, its emoji selected, so the next one typed takes its place.
+    var field by remember { mutableStateOf(TextFieldValue(current, TextRange(0, current.length))) }
+    val text = field.text
+    val focus = remember { FocusRequester() }
+    LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.groups_choose_emoji)) },
         text = {
             TextField(
-                value = text,
-                onValueChange = { text = it },
+                value = field,
+                onValueChange = { field = it },
                 singleLine = true,
                 placeholder = { Text(stringResource(Res.string.groups_choose_emoji)) },
                 textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 40.sp, textAlign = TextAlign.Center),
@@ -418,6 +432,7 @@ private fun EmojiDialog(current: String, onPick: (String) -> Unit, onDismiss: ()
                     onPick(text.trim())
                     onDismiss()
                 }),
+                modifier = Modifier.focusRequester(focus),
             )
         },
         confirmButton = {
@@ -441,12 +456,12 @@ private fun IconDialog(onPick: (String) -> Unit, onDismiss: () -> Unit) {
             LazyVerticalGrid(GridCells.Fixed(5), Modifier.size(width = 320.dp, height = 320.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 itemsIndexed(keys) { index, key ->
                     val label = stringResource(Res.string.groups_choose_icon_number, index + 1, keys.size)
-                    IconButton(onClick = {
+                    IconTip(label) { IconButton(onClick = {
                         onPick(key)
                         onDismiss()
                     }) {
                         Icon(GroupIcons.mark(key)!!, contentDescription = label)
-                    }
+                    } }
                 }
             }
         },
@@ -462,7 +477,7 @@ private fun IconDialog(onPick: (String) -> Unit, onDismiss: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupChoiceSheet(groups: List<FollowGroup>, current: String?, noneLabel: StringResource?, onPick: (String?) -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
         LazyColumn(Modifier.padding(bottom = 16.dp)) {
             if (noneLabel != null) {
                 item(key = "none") {

@@ -60,6 +60,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPerson
 import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.common.XIcons
 
@@ -91,7 +92,7 @@ internal fun DockRow(app: ThreadsApp, options: ThreadsFeedOptions, onAdd: () -> 
 private fun FollowingSheet(app: ThreadsApp, onAdd: () -> Unit, onDismiss: () -> Unit) {
     val rows by app.accounts.state.collectAsState()
     var unfollowing by remember { mutableStateOf<String?>(null) }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         LazyColumn(Modifier.navigationBarsPadding().padding(horizontal = 8.dp)) {
             item(key = "title") { Text(pluginString(Strings.following), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(16.dp)) }
             items(ThreadsAccounts.accounts(rows), key = { it.handle }) { account ->
@@ -134,7 +135,7 @@ internal fun UnfollowDialog(handle: String, onConfirm: () -> Unit, onDismiss: ()
 @Composable
 private fun FilterSheet(app: ThreadsApp, onDismiss: () -> Unit) {
     val options by app.options.collectAsState()
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.navigationBarsPadding().verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
             Text(pluginString(Strings.filters), style = MaterialTheme.typography.titleLarge)
             val contents = listOf(ThreadsFeedContent.ALL to Strings.all, ThreadsFeedContent.MEDIA to Strings.media, ThreadsFeedContent.LINKS to Strings.links)

@@ -156,6 +156,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Kontrolli ühendust ja allalaadimiskausta ning proovi uuesti.</string>
     <string name="downloads_open_file">Ava fail</string>
+    <string name="downloads_show_in_folder">Näita kaustas</string>
     <string name="downloads_open_failed">Seda faili ei saanud avada. See võib olla teisaldatud või kustutatud.</string>
     <string name="downloads_queued">Ootel</string>
     <string name="downloads_downloading">Laadin alla meediat...</string>

@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import com.aimdi.xtanative.ui.home.rememberRetappedList
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,6 +48,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
@@ -63,6 +64,10 @@ import com.aimdi.xtanative.ui.generated.resources.groups_quiet_account_off
 import com.aimdi.xtanative.ui.generated.resources.groups_search
 import com.aimdi.xtanative.ui.generated.resources.groups_show_in_main_feed
 import com.aimdi.xtanative.ui.generated.resources.groups_unsubscribe
+import com.aimdi.xtanative.ui.home.RowSteps
+import com.aimdi.xtanative.ui.home.rememberRetappedList
+import com.aimdi.xtanative.ui.home.rememberRowKeyMoves
+import com.aimdi.xtanative.ui.home.rowMovedByKeys
 import org.jetbrains.compose.resources.stringResource
 
 /** What a row of the people list can be asked. */
@@ -73,6 +78,8 @@ class PeopleActions(
     val setInFeed: (SubscriptionRow, Boolean) -> Unit,
     val setPostCap: (SubscriptionRow, Int?) -> Unit,
     val move: (Int, Int) -> Unit,
+    /** The row of a key a place up or down (Alt+↑, Alt+↓). */
+    val step: (key: String, up: Boolean) -> Unit,
 )
 
 /** The people followed here (_list.dart): in the chosen order or the reader's own, which a long press drags rows into. */
@@ -114,16 +121,15 @@ private fun PeopleList(state: SubscriptionsUi, actions: PeopleActions, contentPa
     val drag = rememberRowDrag(list)
     val rows = state.people.associateBy { it.key }
     val keys: List<Any> = state.people.map { it.key }
-    LazyColumn(
-        state = list,
-        contentPadding = PaddingValues(
+    val moves = rememberRowKeyMoves { key, up ->
+        (state.canDragPeople && RowSteps.step(keys, key, up) != null).also { if (it) actions.step(key as String, up) }
+    }
+    WithReadingColumn(PaddingValues(
             start = 8.dp,
             end = 8.dp,
             top = contentPadding.calculateTopPadding() + 4.dp,
             bottom = contentPadding.calculateBottomPadding() + 16.dp,
-        ),
-        modifier = Modifier.fillMaxSize(),
-    ) {
+        ), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         items(drag.shown(keys), key = { it }) { key ->
             val row = rows[key] ?: return@items
             val dragged = drag.key == key
@@ -144,6 +150,7 @@ private fun PeopleList(state: SubscriptionsUi, actions: PeopleActions, contentPa
             }
             Box(
                 Modifier
+                    .rowMovedByKeys(moves, key)
                     .graphicsLayer { translationY = if (dragged) drag.offset else 0f }
                     .let { if (dragged) it.background(MaterialTheme.colorScheme.surfaceContainerHigh, RoundedCornerShape(12.dp)) else it }
                     .then(reorder),
@@ -151,7 +158,7 @@ private fun PeopleList(state: SubscriptionsUi, actions: PeopleActions, contentPa
                 SubscriptionRowView(row, actions)
             }
         }
-    }
+    } }
 }
 
 /**
@@ -190,17 +197,17 @@ private fun SubscriptionRowView(row: SubscriptionRow, actions: PeopleActions) {
             )
         }
         if (!row.isX) {
-            IconButton(onClick = { actions.pickGroups(row) }) {
+            IconTip(stringResource(Res.string.groups_add_to_group)) { IconButton(onClick = { actions.pickGroups(row) }) {
                 Icon(GroupIcons.Group, contentDescription = stringResource(Res.string.groups_add_to_group))
-            }
+            } }
         }
         Box {
-            IconButton(onClick = { menu = true }) {
+            IconTip(stringResource(Res.string.groups_unsubscribe)) { IconButton(onClick = { menu = true }) {
                 Icon(
                     if (row.inFeed || !row.isX) GroupIcons.PersonRemove else GroupIcons.VisibilityOff,
                     contentDescription = stringResource(Res.string.groups_unsubscribe),
                 )
-            }
+            } }
             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                 DropdownMenuItem(text = { Text(stringResource(Res.string.groups_unsubscribe)) }, onClick = {
                     menu = false

@@ -26,7 +26,6 @@ import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -49,6 +48,7 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 
 /**
  * Favorites narrowed to one bookmark tag, as XTA's picker: All and
@@ -59,7 +59,7 @@ import com.aimdi.xtanative.ui.plugins.rememberKept
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun BookmarkTagPicker(source: PixivFavoritesSource, tag: String?, onPick: (PixivFavoritesSource, String?) -> Unit, onClose: () -> Unit) {
-    val sheet = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheet = rememberPluginSheetState(alwaysFull = true)
     var query by remember { mutableStateOf("") }
     val sources = if (source == PixivFavoritesSource.DEVICE) listOf(source) else listOf(PixivFavoritesSource.PUBLIC, PixivFavoritesSource.PRIVATE)
     var shown by remember { mutableIntStateOf(sources.indexOf(source).coerceAtLeast(0)) }

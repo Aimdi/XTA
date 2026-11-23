@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import com.aimdi.xtanative.networks.pixiv.PixivUserListKind
 import com.aimdi.xtanative.networks.pixiv.PixivUserPreview
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
@@ -73,7 +74,7 @@ internal fun FollowsHere() {
         PixivEmpty(pluginString(Strings.follows_here_empty))
         return
     }
-    LazyColumn(Modifier.fillMaxSize()) {
+    PluginReadingColumn(PaddingValues()) { column -> LazyColumn(Modifier.fillMaxSize(), contentPadding = column) {
         items(follows, key = { it.id }) { follow ->
             val user = follow.toUser()
             ListItem(
@@ -90,7 +91,7 @@ internal fun FollowsHere() {
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
             )
         }
-    }
+    } }
 }
 
 /** Creators Pixiv suggests, as cards with their works. */

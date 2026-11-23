@@ -74,8 +74,10 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.ArchiveFilter
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemRow
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.clickableNoRipple
 import com.aimdi.xtanative.ui.common.countText
@@ -113,6 +115,8 @@ import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_nex
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
 import com.aimdi.xtanative.ui.generated.resources.reader_link_share
 import com.aimdi.xtanative.ui.generated.resources.search
+import com.aimdi.xtanative.ui.home.DesktopKeys
+import com.aimdi.xtanative.ui.home.DesktopShortcuts
 import com.aimdi.xtanative.ui.media.MediaGridLook
 import com.aimdi.xtanative.ui.media.MediaGridRows
 import com.aimdi.xtanative.ui.media.mediaGrid
@@ -142,7 +146,9 @@ import org.jetbrains.compose.resources.stringResource
  * filter. A protected account's posts and a sensitive profile wait behind
  * their gates. Its bar's Search opens [searchPosts] on "from:@name", its
  * Share hands the profile's link on. [userId], when known, is what it is
- * read by; [openingTab] is the tab a link named.
+ * read by; [openingTab] is the tab a link named. On the desktop it answers
+ * F5 and turns its tabs with the keys unless [ownKeys] is false (shown
+ * inside a screen that keeps the keys, the Deck).
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -152,6 +158,7 @@ fun ProfileScreen(
     onBack: () -> Unit,
     userId: String? = null,
     openingTab: ProfileTab? = null,
+    ownKeys: Boolean = true,
     searchPosts: (query: String) -> Unit = actions.search,
 ) {
     val graph = LocalGraph.current
@@ -175,17 +182,26 @@ fun ProfileScreen(
     val scrolled by remember(list) { derivedStateOf { list.firstVisibleItemIndex > 3 } }
     val user = state.user
     val shownName = user?.screenName ?: screenName
+    // F5 and Ctrl+R read the profile again; ← → and Ctrl+Tab turn its tabs, as on Home; going back closes its sheet first.
+    // Not where the screen it is shown in keeps the keys ([ownKeys] false: the Deck's detail).
+    if (ownKeys) DesktopShortcuts(
+        refresh = vm::refresh,
+        turn = { by -> if (state.complete && user != null) DesktopKeys.turned(state.tab.ordinal, ProfileTab.entries.size, by)?.let { vm.select(ProfileTab.entries[it]) } },
+        jump = { digit -> if (state.complete && user != null) DesktopKeys.pageAt(digit, ProfileTab.entries.size)?.let { vm.select(ProfileTab.entries[it]) } },
+        isOpen = { sheet != ProfileSheet.NONE },
+        close = { sheet = ProfileSheet.NONE },
+    )
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { Text(user?.name ?: "@$screenName", maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 actions = {
                     if (user != null) {
-                        IconButton(onClick = { searchPosts(ProfileHeader.searchQuery(user)) }) { Icon(Icons.Filled.Search, stringResource(Res.string.search)) }
-                        IconButton(onClick = { share(ProfileHeader.shareUrl(user, shareBase)) }) { Icon(Icons.Outlined.Share, stringResource(Res.string.reader_link_share)) }
+                        IconTip(stringResource(Res.string.search)) { IconButton(onClick = { searchPosts(ProfileHeader.searchQuery(user)) }) { Icon(Icons.Filled.Search, stringResource(Res.string.search)) } }
+                        IconTip(stringResource(Res.string.reader_link_share)) { IconButton(onClick = { share(ProfileHeader.shareUrl(user, shareBase)) }) { Icon(Icons.Outlined.Share, stringResource(Res.string.reader_link_share)) } }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -210,9 +226,11 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()),
             ) {
                 val tabbed = state.complete && user != null
+                // A wide window keeps the profile in the reading column, as the feeds are.
+                WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp), list) { column ->
                 LazyColumn(
                     state = list,
-                    contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp),
+                    contentPadding = column,
                     modifier = Modifier.fillMaxSize().swipeTabs(if (tabbed) ProfileTab.entries else emptyList(), state.tab, vm::select),
                 ) {
                     item(key = "header", contentType = "header") {
@@ -240,6 +258,7 @@ fun ProfileScreen(
                             }
                         }
                     }
+                }
                 }
             }
         }
@@ -355,7 +374,7 @@ private fun <T> FilterBar(selected: T, options: List<Filter<T>>, onSelect: (T) -
     Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         options.forEach { option ->
             val chosen = option.value == selected
-            IconButton(
+            IconTip(stringResource(option.label)) { IconButton(
                 onClick = { if (!chosen) onSelect(option.value) },
                 modifier = Modifier.clip(CircleShape).background(if (chosen) MaterialTheme.colorScheme.surfaceContainerHigh else Color.Transparent),
             ) {
@@ -365,7 +384,7 @@ private fun <T> FilterBar(selected: T, options: List<Filter<T>>, onSelect: (T) -
                     tint = if (chosen) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp),
                 )
-            }
+            } }
         }
     }
 }
@@ -454,7 +473,7 @@ private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actio
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (user != null && state.complete) {
-                IconButton(onClick = { onSheet(ProfileSheet.FILTERS) }) { Icon(PostIcons.Tune, stringResource(Res.string.posts_filters)) }
+                IconTip(stringResource(Res.string.posts_filters)) { IconButton(onClick = { onSheet(ProfileSheet.FILTERS) }) { Icon(PostIcons.Tune, stringResource(Res.string.posts_filters)) } }
                 ProfileFollowButton(user)
             }
         }

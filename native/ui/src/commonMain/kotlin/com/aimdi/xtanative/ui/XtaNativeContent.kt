@@ -28,6 +28,8 @@ import com.aimdi.xtanative.ui.generated.resources.app_name
 import com.aimdi.xtanative.ui.generated.resources.crash_something_broke
 import com.aimdi.xtanative.ui.generated.resources.crash_start_failed
 import com.aimdi.xtanative.ui.generated.resources.dismiss
+import com.aimdi.xtanative.ui.home.DesktopActionsHost
+import com.aimdi.xtanative.ui.home.LocalDesktopActionsHost
 import com.aimdi.xtanative.ui.links.LinksFrame
 import com.aimdi.xtanative.ui.media.VideoFullscreenFrame
 import com.aimdi.xtanative.ui.pluginstore.PluginsFrame
@@ -57,6 +59,7 @@ fun XtaNativeContent(graph: AppGraph, plugins: AppPlugins) {
         LocalTranslation provides graph.translation,
         LocalPostCache provides graph.posts,
         LocalPlatformFiles provides graph.platformFiles,
+        LocalDesktopActionsHost provides remember { DesktopActionsHost() },
     ) {
         XtaTheme { SharedPostPrefs { SwitchedHapticsFrame { LinksFrame { PluginsFrame(plugins) { DownloadsFrame { VideoFullscreenFrame { SpeechBarScaffold { RootOrBroken(graph) } } } } } } } }
     }

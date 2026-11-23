@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The desktop's list of keyboard shortcuts (F1 or ?): what each does, and the keys whose names keyboards print in the reader's language. -->
+<resources>
+    <string name="keys_title">Keyboard shortcuts</string>
+    <string name="keys_help">Show these shortcuts</string>
+    <string name="keys_back">Go back, or close what is open</string>
+    <string name="keys_go_home">Back to Home</string>
+    <string name="keys_refresh">Refresh</string>
+    <string name="keys_search">Search</string>
+    <string name="keys_recent_searches">Pick a recent search from the search field</string>
+    <string name="keys_open_copied_link">Open a copied link</string>
+    <string name="keys_tabs">Next or previous tab</string>
+    <string name="keys_tab_number">Go to a tab (9: the last)</string>
+    <string name="keys_pages">Previous or next page</string>
+    <string name="keys_columns">Previous or next column to scroll (Deck)</string>
+    <string name="keys_scroll_line">Scroll a little</string>
+    <string name="keys_next_post">Next or previous post</string>
+    <string name="keys_scroll_screen">Scroll a screen</string>
+    <string name="keys_scroll_ends">Go to the top or the end</string>
+    <string name="keys_move">Move between buttons and fields</string>
+    <string name="keys_text_size">Larger, smaller or normal text</string>
+    <string name="keys_full_screen">Full screen</string>
+    <string name="keys_video">Full-screen video: play or pause, skip 10 seconds</string>
+    <string name="keys_video_more">Full-screen video: mute, start over, leave full screen</string>
+    <string name="keys_video_speed">Full-screen video: slower or faster</string>
+    <string name="keys_video_jump">Full-screen video: jump to 0 to 90 percent, or to the end</string>
+    <string name="keys_photo_zoom">Zoom a photo in, out, or whole</string>
+    <string name="keys_photo_move">Move about a zoomed photo</string>
+    <string name="keys_quit">Quit XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Space</string>
+    <string name="keys_wheel">Wheel</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+    <string name="keys_select_all">Saved: select everything shown</string>
+    <string name="keys_remove_selected">Saved: remove the selected</string>
+    <string name="keys_leave_selection">Saved: stop selecting</string>
+    <string name="keys_delete">Del</string>
+    <string name="keys_move_row">Move a row up or down in a list you can reorder (the one with the focus or under the pointer)</string>
+</resources>

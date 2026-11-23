@@ -46,8 +46,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -56,7 +58,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
@@ -70,6 +71,7 @@ import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.community.CommunityRow
 import com.aimdi.xtanative.ui.feed.feedThreads
@@ -91,12 +93,17 @@ import com.aimdi.xtanative.ui.generated.resources.discover_search
 import com.aimdi.xtanative.ui.generated.resources.discover_search_x
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.saved_search_library
+import com.aimdi.xtanative.ui.home.DesktopKeys
+import com.aimdi.xtanative.ui.home.DesktopShortcuts
+import com.aimdi.xtanative.ui.home.foundWithKeys
+import com.aimdi.xtanative.ui.home.rememberLeaveField
 import com.aimdi.xtanative.ui.media.mediaGrid
 import com.aimdi.xtanative.ui.media.rememberMediaGridRows
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.saved.SavedIcons
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.isActive
 import org.jetbrains.compose.resources.stringResource
 
 /** Where the search screen leads, besides posts and profiles: communities, the antennas and the search of the reader's library. */
@@ -121,8 +128,28 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
         if (field.text != state.text) field = TextFieldValue(state.text, TextRange(state.text.length))
     }
     val focus = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-    LaunchedEffect(Unit) { if (initial.isNullOrBlank() || focusOnOpen) focus.requestFocus() }
+    val leaveField = rememberLeaveField()
+    // The recent searches under the field, which the desktop's ↓ and ↑ highlight from it.
+    val shownRecent = if (state.view.hasQuery) emptyList() else recent
+    val pick = rememberRecentPick()
+    val searchRecent = { query: String ->
+        vm.searchAgain(query)
+        leaveField()
+    }
+    // The field takes the keyboard as the screen opens, not again when the reader comes back to it from a result.
+    var opened by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        if (!opened && (initial.isNullOrBlank() || focusOnOpen)) focus.requestFocus()
+        opened = true
+    }
+    // F5 and Ctrl+R read the shown tab again; ← → and Ctrl+Tab turn the tabs, as on Home.
+    DesktopShortcuts(
+        refresh = { if (state.view.hasQuery) vm.retry(state.tab) },
+        turn = { by -> DesktopKeys.turned(state.tab.ordinal, SearchTab.entries.size, by)?.let { vm.select(SearchTab.entries[it]) } },
+        jump = { digit -> DesktopKeys.pageAt(digit, SearchTab.entries.size)?.let { vm.select(SearchTab.entries[it]) } },
+        isOpen = { state.editing != null },
+        close = vm::closeAdvanced,
+    )
     val searchField = @Composable { modifier: Modifier ->
         SearchField(
             value = field,
@@ -133,14 +160,14 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
             filters = state.view.advanced.activeFilters.size,
             onSearch = {
                 vm.submit()
-                focusManager.clearFocus()
+                leaveField()
             },
             onClear = {
                 vm.clear()
                 focus.requestFocus()
             },
             onAdvanced = vm::openAdvanced,
-            modifier = modifier.focusRequester(focus),
+            modifier = modifier.focusRequester(focus).foundWithKeys().pickedFromRecent(pick, shownRecent, field.text, searchRecent),
         )
     }
 
@@ -163,18 +190,16 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
             if (!state.view.hasQuery) {
                 RecentSearchesBar(
                     recent,
-                    onSelect = { query ->
-                        vm.searchAgain(query)
-                        focusManager.clearFocus()
-                    },
+                    onSelect = searchRecent,
                     onRemove = vm::removeRecent,
                     onClear = vm::clearRecent,
+                    highlighted = pick.of(recent),
                 )
                 StartState()
             } else {
                 FilterStrip(SearchFilters.chips(state.view.advanced)) { filter ->
                     vm.clearFilter(filter)
-                    focusManager.clearFocus()
+                    leaveField()
                 }
                 Results(vm, state.tab, actions, searchActions, PaddingValues(bottom = padding.calculateBottomPadding()))
             }
@@ -186,7 +211,7 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
             onChange = vm::edit,
             onApply = {
                 vm.applyAdvanced()
-                focusManager.clearFocus()
+                leaveField()
             },
             onDismiss = vm::closeAdvanced,
         )
@@ -213,7 +238,7 @@ private fun SearchHeader(
         Column {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }
+                    IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
                 },
                 title = {
                     if (separate) {
@@ -223,8 +248,8 @@ private fun SearchHeader(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { searchActions.openLibrary(query) }) { Icon(SavedIcons.ManageSearch, stringResource(Res.string.saved_search_library)) }
-                    IconButton(onClick = searchActions.openAntennas) { Icon(DiscoverIcons.Sensors, stringResource(Res.string.discover_antennas)) }
+                    IconTip(stringResource(Res.string.saved_search_library)) { IconButton(onClick = { searchActions.openLibrary(query) }) { Icon(SavedIcons.ManageSearch, stringResource(Res.string.saved_search_library)) } }
+                    IconTip(stringResource(Res.string.discover_antennas)) { IconButton(onClick = searchActions.openAntennas) { Icon(DiscoverIcons.Sensors, stringResource(Res.string.discover_antennas)) } }
                     if (hasQuery) FollowMenu(FollowTarget.Search(query))
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -254,7 +279,7 @@ private fun SearchField(
         trailingIcon = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (value.text.isNotEmpty()) {
-                    IconButton(onClick = onClear) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) }
+                    IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = onClear) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } }
                 }
                 AdvancedButton(filters, onAdvanced)
             }
@@ -276,7 +301,7 @@ private fun SearchField(
 @Composable
 private fun AdvancedButton(filters: Int, onClick: () -> Unit) {
     val label = stringResource(Res.string.discover_advanced_search)
-    IconButton(onClick = onClick) {
+    IconTip(label) { IconButton(onClick = onClick) {
         if (filters > 0) {
             BadgedBox(badge = { Badge { Text(filters.toString()) } }) {
                 Icon(DiscoverIcons.Tune, contentDescription = label, tint = MaterialTheme.colorScheme.primary)
@@ -284,7 +309,7 @@ private fun AdvancedButton(filters: Int, onClick: () -> Unit) {
         } else {
             Icon(DiscoverIcons.Tune, contentDescription = label)
         }
-    }
+    } }
 }
 
 @Composable
@@ -321,11 +346,34 @@ private fun Results(vm: SearchViewModel, tab: SearchTab, actions: PostActions, s
     // Each tab keeps its place while another is shown.
     val lists = SearchTab.entries.associateWith { rememberLazyListState() }
     val pager = rememberPagerState(initialPage = tab.ordinal) { SearchTab.entries.size }
+    // A tab picked (a click, Ctrl+Tab) slides the pager there; a tab picked on the way, before it arrives, slides it on
+    // from where it is. Only where the pager comes to rest by itself (a swipe) does it pick the tab ([PagerTurns]).
+    val turns = remember(pager) { PagerTurns() }
+    var slidesEnded by remember(pager) { mutableIntStateOf(0) }
     LaunchedEffect(tab) {
-        if (pager.currentPage != tab.ordinal) pager.animateScrollToPage(tab.ordinal)
+        if (pager.currentPage == tab.ordinal && pager.currentPageOffsetFraction == 0f && !pager.isScrollInProgress) {
+            // Already there (a slide away cut short by picking this tab again): nothing slides.
+            turns.ended()
+            return@LaunchedEffect
+        }
+        turns.started(tab.ordinal)
+        var arrived = false
+        try {
+            pager.animateScrollToPage(tab.ordinal)
+            arrived = true
+        } finally {
+            // Arrived, or stopped by a drag: the pager's own rest counts again, even a rest on the page it
+            // already rested on before (the flow below says it again). Not when a newer tab took over.
+            if (isActive) {
+                turns.ended()
+                // Only a slide a drag stopped: an arrival's rest comes through the flow by itself, and the pager may
+                // not have laid out its last page yet to say it at once.
+                if (!arrived) slidesEnded++
+            }
+        }
     }
     LaunchedEffect(pager) {
-        snapshotFlow { pager.settledPage }.collect { vm.select(SearchTab.entries[it]) }
+        snapshotFlow { pager.settledPage to slidesEnded }.collect { (page, _) -> if (turns.picks(page)) vm.select(SearchTab.entries[page]) }
     }
     HorizontalPager(state = pager, key = { SearchTab.entries[it].name }, modifier = Modifier.fillMaxSize()) { page ->
         val shown = SearchTab.entries[page]
@@ -348,7 +396,7 @@ private fun PostResults(read: PagedRead<XThread, String>, list: LazyListState, a
     LoadMoreNearEnd(list, paged, onMore)
     LaunchedEffect(paged.loading) { if (paged.loading) list.scrollToItem(0) }
     val layout = rememberFeedLayout(paged.items)
-    WithReadingColumn(padding) { column ->
+    WithReadingColumn(padding, list) { column ->
         LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             feedThreads(paged.items, layout, actions)
             pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets)
@@ -363,23 +411,23 @@ private fun MediaResults(vm: SearchViewModel, list: LazyListState, actions: Post
     val grid = rememberMediaGridRows(paged.items, actions, updates, onMore)
     LoadMoreNearEnd(list, paged, onMore)
     LaunchedEffect(paged.loading) { if (paged.loading) list.scrollToItem(0) }
-    LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+    WithReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         mediaGrid(grid)
         pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets)
-    }
+    } }
 }
 
 @Composable
 private fun PeopleResults(vm: SearchViewModel, list: LazyListState, actions: PostActions, onRetry: () -> Unit, onMore: () -> Unit, padding: PaddingValues) {
     val paged by vm.people.state.collectAsStateWithLifecycle()
     LaunchedEffect(paged.loading) { if (paged.loading) list.scrollToItem(0) }
-    LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+    WithReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         itemsIndexed(paged.items, key = { _, user -> user.id }, contentType = { _, _ -> "person" }) { index, user ->
             PersonRow(user, onOpen = { actions.openUser(user.screenName, user.id) })
             if (index < paged.items.lastIndex) PersonDivider()
         }
         pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, icon = DiscoverIcons.PersonSearch)
-    }
+    } }
 }
 
 @Composable
@@ -387,12 +435,12 @@ private fun CommunityResults(vm: SearchViewModel, list: LazyListState, searchAct
     val paged by vm.communities.state.collectAsStateWithLifecycle()
     LoadMoreNearEnd(list, paged, onMore)
     LaunchedEffect(paged.loading) { if (paged.loading) list.scrollToItem(0) }
-    LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+    WithReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         items(paged.items, key = { it.id }, contentType = { "community" }) { community ->
             CommunityRow(community) { searchActions.openCommunity(community.id) }
         }
         pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, icon = DiscoverIcons.Groups)
-    }
+    } }
 }
 
 /** The filters set, as chips above the results: a tap takes one away and searches again without it. */

@@ -162,6 +162,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Zkontrolujte připojení a složku pro stahování a zkuste to znovu.</string>
     <string name="downloads_open_file">Otevřít soubor</string>
+    <string name="downloads_show_in_folder">Zobrazit ve složce</string>
     <string name="downloads_open_failed">Tento soubor se nepodařilo otevřít. Mohl být přesunut nebo smazán.</string>
     <string name="downloads_queued">Čeká</string>
     <string name="downloads_downloading">Stahování médií...</string>

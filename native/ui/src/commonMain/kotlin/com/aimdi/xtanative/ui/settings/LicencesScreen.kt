@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.appName
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.chrome_licences_count
 import com.aimdi.xtanative.ui.generated.resources.chrome_licences_legalese
@@ -35,12 +37,12 @@ fun LicencesScreen(onOpen: (module: String) -> Unit, onBack: () -> Unit) {
     val list = remember { LicenceList.shipped }
     val version = LocalGraph.current.version.ifEmpty { "dev" }
     SettingsPage(stringResource(Res.string.settings_licenses), onBack) { padding ->
-        LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 24.dp)) {
+        rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 24.dp), readList) { column -> LazyColumn(state = readList, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             item(key = "about") { AboutHeader(version) }
             items(list.libraries, key = { it.module }) { library ->
                 LibraryRow(library) { onOpen(library.module) }
             }
-        }
+        } } }
     }
 }
 
@@ -83,7 +85,7 @@ fun LicenceScreen(module: String, onBack: () -> Unit) {
     val library = remember(module) { list.find(module) }
     val paragraphs = remember(library) { library?.let { LicenceText.paragraphs(list.textsOf(it)) }.orEmpty() }
     SettingsPage(library?.name ?: module, onBack) { padding ->
-        LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 24.dp)) {
+        rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 24.dp), readList) { column -> LazyColumn(state = readList, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             library?.let { item(key = "about") { LibraryHeader(it) } }
             items(paragraphs.size) { index ->
                 when (val paragraph = paragraphs[index]) {
@@ -99,7 +101,7 @@ fun LicenceScreen(module: String, onBack: () -> Unit) {
                     )
                 }
             }
-        }
+        } } }
     }
 }
 

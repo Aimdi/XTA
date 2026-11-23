@@ -21,3 +21,19 @@ internal expect fun rememberBackupSaver(onSaved: (String?) -> Unit): (fileName: 
 @Composable
 internal expect fun rememberFolderPicker(onPicked: (stored: String, name: String) -> Unit): () -> Unit
 
+
+/** The settings search's key for Start at login, which is no stored setting: the desktop's autostart entry is. */
+internal const val START_AT_LOGIN_KEY = "desktop.start_at_login"
+
+/** Whether the app starts when the reader logs in, the platform's way (the desktop's autostart entry). */
+internal interface LoginStart {
+    /** Whether it does now, as the platform has it (the reader may have changed it elsewhere). */
+    fun isOn(): Boolean
+
+    /** Makes it [on]; false when that failed. */
+    fun set(on: Boolean): Boolean
+}
+
+/** The desktop's [LoginStart]; null where there is none (Android, or a desktop build not started from its launcher). */
+@Composable
+internal expect fun rememberLoginStart(): LoginStart?

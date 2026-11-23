@@ -33,6 +33,7 @@ import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NetworkPersonRow
 import com.aimdi.xtanative.ui.plugins.PluginChipTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RetryMessage
@@ -72,14 +73,14 @@ private fun SearchLanding(app: MastodonApp, frame: PluginFrame) {
     val state by trends.state.collectAsState()
     val follows by app.follows.state.collectAsState()
     val error = state.error
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = frame.padding) {
+    PluginReadingColumn(frame.padding) { column -> LazyColumn(Modifier.fillMaxSize(), contentPadding = column) {
         followed(app, follows.orEmpty().take(FOLLOWED_SHOWN))
         when {
             state.loading -> item(key = "loading") { LoadingRow() }
             error != null -> item(key = "problem") { RetryMessage(pluginString(problemText(error)), trends::search) }
             else -> item(key = "trending") { Trending(app, state.results.tags) }
         }
-    }
+    } }
 }
 
 private fun LazyListScope.followed(app: MastodonApp, follows: List<MastodonFollow>) {

@@ -365,4 +365,12 @@
     <string name="intro_illustration_phone">Postitused, meeldimised ja salvestatud üksused telefonis</string>
     <string name="intro_illustration_flow">Postitused liiguvad X-ist sinu telefoni, mitte kunagi tagasi</string>
     <string name="intro_page_of">Leht %1$d / %2$d</string>
+    <string name="settings_desktop_notifications">Töölauateated</string>
+    <string name="settings_desktop_notifications_description">Teata allalaadimise lõppemisest, kui oled teises aknas</string>
+    <string name="settings_close_to_tray">Sulge salve</string>
+    <string name="settings_close_to_tray_description">Akna sulgemisel jääb rakendus süsteemisalve tööle; välju selle ikooni menüüst</string>
+    <string name="settings_start_at_login">Käivita sisselogimisel</string>
+    <string name="settings_start_at_login_description">Avab rakenduse sisselogimisel; kui „Sulge salve“ on sees, ootab see salves</string>
+    <string name="tray_show">Näita akent</string>
+    <string name="tray_hide">Peida aken</string>
 </resources>

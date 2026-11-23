@@ -54,12 +54,60 @@ class DesktopWindowTest {
 
     @Test
     fun onlyKnownLinesAreMessages() {
-        assertEquals(InstanceMessage.RAISE, InstanceMessage.parse("raise"))
-        assertEquals(InstanceMessage.RAISE, InstanceMessage.parse(" raise\n"))
+        assertEquals(InstanceMessage.Raise, InstanceMessage.parse("raise"))
+        assertEquals(InstanceMessage.Raise, InstanceMessage.parse(" raise\n"))
         assertNull(InstanceMessage.parse("RAISE"))
-        assertNull(InstanceMessage.parse("open https://x.com"))
+        assertEquals(InstanceMessage.Open("https://x.com/a/status/1"), InstanceMessage.parse("open https://x.com/a/status/1\n"))
+        assertNull(InstanceMessage.parse("open file:///etc/passwd"))
+        assertNull(InstanceMessage.parse("open https://x.com/a b"))
+        assertNull(InstanceMessage.parse("open "))
         assertNull(InstanceMessage.parse(""))
         assertNull(InstanceMessage.parse(null))
+    }
+
+    @Test
+    fun aMessageTravelsAsTheLineItIsReadFrom() {
+        val open = InstanceMessage.Open("https://twitter.com/jack")
+        assertEquals(open, InstanceMessage.parse(open.line))
+        assertEquals(InstanceMessage.Raise, InstanceMessage.parse(InstanceMessage.Raise.line))
+    }
+
+    @Test
+    fun theLinkAStartIsGivenIsItsFirstWebAddress() {
+        assertEquals("https://x.com/jack", InstanceMessage.linkIn(arrayOf("--verbose", "https://x.com/jack", "http://t.co/a")))
+        assertEquals("http://t.co/a", InstanceMessage.linkIn(arrayOf("http://t.co/a")))
+        assertNull(InstanceMessage.linkIn(arrayOf()))
+        assertNull(InstanceMessage.linkIn(arrayOf("x.com/jack", "javascript:alert(1)", "HTTPS://X.COM")))
+        assertNull(InstanceMessage.linkIn(arrayOf("https://x.com/" + "a".repeat(InstanceMessage.MAX_URL))))
+    }
+
+    @Test
+    fun aSecondStartHandsTheFirstItsLink() {
+        val folder = Files.createTempDirectory("xta-instance").toFile()
+        val first = assertNotNull(SingleInstance.claim(folder))
+        val heard = LinkedBlockingQueue<InstanceMessage>()
+        first.listen(heard::add)
+        try {
+            assertNull(SingleInstance.claim(folder, InstanceMessage.Open("https://x.com/jack/status/20")))
+            assertEquals(InstanceMessage.Open("https://x.com/jack/status/20"), heard.poll(5, TimeUnit.SECONDS))
+        } finally {
+            first.close()
+        }
+    }
+
+    @Test
+    fun aCopyTooOldToOpenLinksIsAskedToRaiseItsWindow() {
+        val folder = Files.createTempDirectory("xta-instance").toFile()
+        val first = assertNotNull(SingleInstance.claim(folder))
+        val heard = LinkedBlockingQueue<InstanceMessage>()
+        // A copy from before links: it answers "raise" only, and ignores what it does not know.
+        first.listen { message -> if (message == InstanceMessage.Raise) heard.add(message) else throw IllegalStateException("unknown line") }
+        try {
+            assertNull(SingleInstance.claim(folder, InstanceMessage.Open("https://x.com/jack")))
+            assertEquals(InstanceMessage.Raise, heard.poll(10, TimeUnit.SECONDS))
+        } finally {
+            first.close()
+        }
     }
 
     @Test
@@ -70,7 +118,7 @@ class DesktopWindowTest {
         first.listen(heard::add)
         try {
             assertNull(SingleInstance.claim(folder))
-            assertEquals(InstanceMessage.RAISE, heard.poll(5, TimeUnit.SECONDS))
+            assertEquals(InstanceMessage.Raise, heard.poll(5, TimeUnit.SECONDS))
         } finally {
             first.close()
         }

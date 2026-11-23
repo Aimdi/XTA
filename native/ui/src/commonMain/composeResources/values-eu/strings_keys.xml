@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Lasterbideak</string>
+    <string name="keys_help">Erakutsi lasterbide hauek</string>
+    <string name="keys_back">Itzuli, edo itxi irekita dagoena</string>
+    <string name="keys_go_home">Itzuli hasierara</string>
+    <string name="keys_refresh">Freskatu</string>
+    <string name="keys_search">Bilatu</string>
+    <string name="keys_recent_searches">Bilaketa-eremutik azken bilaketa bat aukeratu</string>
+    <string name="keys_open_copied_link">Ireki kopiatutako esteka</string>
+    <string name="keys_tabs">Hurrengo edo aurreko fitxa</string>
+    <string name="keys_tab_number">Joan fitxa batera (9: azkena)</string>
+    <string name="keys_pages">Aurreko edo hurrengo orria</string>
+    <string name="keys_columns">Korritzeko aurreko edo hurrengo zutabea (Zutabeak)</string>
+    <string name="keys_scroll_line">Korritu pixka bat</string>
+    <string name="keys_next_post">Hurrengo edo aurreko argitalpena</string>
+    <string name="keys_scroll_screen">Korritu pantaila bat</string>
+    <string name="keys_scroll_ends">Joan hasierara edo amaierara</string>
+    <string name="keys_move">Mugitu botoi eta eremuen artean</string>
+    <string name="keys_text_size">Testu handiagoa, txikiagoa edo normala</string>
+    <string name="keys_full_screen">Pantaila osoa</string>
+    <string name="keys_video">Pantaila osoko bideoa: erreproduzitu edo pausatu, jauzi 10 segundo</string>
+    <string name="keys_video_more">Pantaila osoko bideoa: isilarazi, hasi berriro, irten</string>
+    <string name="keys_video_speed">Pantaila osoko bideoa: motelago edo azkarrago</string>
+    <string name="keys_video_jump">Pantaila osoko bideoa: joan ehuneko 0tik 90era, edo amaierara</string>
+    <string name="keys_photo_zoom">Handitu, txikitu edo osorik erakutsi argazkia</string>
+    <string name="keys_photo_move">Mugitu handitutako argazkian</string>
+    <string name="keys_quit">Irten XTAtik</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Zuriunea</string>
+    <string name="keys_wheel">Gurpila</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+    <string name="keys_select_all">Gordeak: hautatu erakutsitako guztia</string>
+    <string name="keys_remove_selected">Gordeak: kendu hautatuak</string>
+    <string name="keys_leave_selection">Gordeak: utzi hautatzeari</string>
+    <string name="keys_delete">Supr</string>
+    <string name="keys_move_row">Mugitu errenkada bat gora edo behera berrantola daitekeen zerrenda batean (fokua duena edo erakuslearen azpikoa)</string>
+</resources>

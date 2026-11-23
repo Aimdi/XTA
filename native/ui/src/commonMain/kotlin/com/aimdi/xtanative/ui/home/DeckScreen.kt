@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -37,12 +39,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -56,6 +59,8 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -68,7 +73,9 @@ import com.aimdi.xtanative.core.session.DeckColumns
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.DeckWidth
 import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.following
@@ -113,7 +120,9 @@ private const val DETAIL_MIN_WIDTH = 420
  * column offers what is not on the deck yet. A post or a profile opened from
  * a column opens beside them ([DeckDetail]), the columns staying as they
  * were. The desktop's F5 and Ctrl+R read every column again; Escape closes
- * what the detail column shows, one page at a time.
+ * what the detail column shows, one page at a time, and meanwhile the
+ * reading keys move the page it shows, Ctrl+← and Ctrl+→ choosing it or a
+ * column.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -133,17 +142,24 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     val toTop = remember { mutableStateMapOf<String, Int>() }
     var refreshedAll by remember { mutableIntStateOf(0) }
     var adding by remember { mutableStateOf(false) }
-    DesktopShortcuts(refresh = { refreshedAll++ }, turn = {}, isOpen = { detail.open }, close = { detail.back() })
+    // The detail beside the columns closes first at Esc, but covers nothing: the reading keys move it, and Ctrl+→ reaches it.
+    DesktopShortcuts(refresh = { refreshedAll++ }, turn = {}, isOpen = { detail.open }, close = { detail.back() }, readsOpen = { detail.open })
+    ReadColumns(columns.map { it.id } + listOfNotNull(DetailColumn.takeIf { detail.open }))
+    val chosen = chosenReadColumn()
+    // What the detail has just opened (a post, a profile, one back) is what the reading keys move next.
+    val desk = LocalDesktopActions.current
+    val shown = detail.pages.lastOrNull()
+    LaunchedEffect(desk, shown, detail.pages.size) { if (shown != null) desk?.readOpened(DetailColumn) }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.home_deck)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }
+                    IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
                 },
                 actions = {
-                    IconButton(onClick = { adding = true }) { Icon(Icons.Filled.Add, stringResource(Res.string.home_deck_add)) }
+                    IconTip(stringResource(Res.string.home_deck_add)) { IconButton(onClick = { adding = true }) { Icon(Icons.Filled.Add, stringResource(Res.string.home_deck_add)) } }
                     WidthMenu(width) { chosen -> scope.launch { settings.set(HomePrefs.deckColumnWidth, chosen) } }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -166,10 +182,12 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
                                     onMove = { by -> edit { DeckColumns.moved(it, index, by) } },
                                     onRemove = { edit { ids -> ids - column.id } },
                                 )
-                                DeckColumnView(
-                                    column, labelOf(column, groups, available), place, calls, toTop[column.id] ?: 0, refreshedAll,
-                                    columnActions, Modifier.width(each).fillMaxHeight(),
-                                )
+                                ReadColumn(column.id) {
+                                    DeckColumnView(
+                                        column, labelOf(column, groups, available), place, calls, toTop[column.id] ?: 0, refreshedAll,
+                                        columnActions, Modifier.width(each).fillMaxHeight().chosenMark(chosen == column.id),
+                                    )
+                                }
                             }
                         }
                     }
@@ -177,7 +195,9 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
             }
             if (detail.open) {
                 VerticalDivider()
-                Box(Modifier.width(maxOf(width.dp, DETAIL_MIN_WIDTH).dp).fillMaxHeight()) { DetailView(detail, columnActions) }
+                Box(Modifier.width(maxOf(width.dp, DETAIL_MIN_WIDTH).dp).fillMaxHeight().chosenMark(chosen == DetailColumn)) {
+                    ReadColumn(DetailColumn) { DetailView(detail, columnActions) }
+                }
             }
         }
     }
@@ -189,15 +209,38 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     }
 }
 
-/** Where a column stands among the others: the first moves no further left, the last no further right. */
-private class ColumnPlace(val first: Boolean, val last: Boolean)
+/**
+ * The column the reading keys move once Ctrl+← or Ctrl+→ chose it
+ * ([ReadColumn]), on the Deck and on Home's wide page ([HomeWide]): a line
+ * in the accent colour across its top, and the page scrolled sideways to
+ * bring it into view where it scrolls.
+ */
+@Composable
+internal fun Modifier.chosenMark(chosen: Boolean): Modifier {
+    val view = remember { BringIntoViewRequester() }
+    LaunchedEffect(chosen) { if (chosen) view.bringIntoView() }
+    val color = MaterialTheme.colorScheme.primary
+    return bringIntoViewRequester(view).drawWithContent {
+        drawContent()
+        if (chosen) drawRect(color, size = Size(size.width, CHOSEN_MARK.toPx()))
+    }
+}
 
-/** What a column's header does: its title back to the top, its menu moving it by a place or taking it off. */
-private class ColumnCalls(val onTitle: () -> Unit, val onMove: (by: Int) -> Unit, val onRemove: () -> Unit)
+/** How thick the chosen column's line is. */
+private val CHOSEN_MARK = 3.dp
+
+/** Where a column stands among the others: the first moves no further left, the last no further right. */
+internal class ColumnPlace(val first: Boolean, val last: Boolean)
+
+/**
+ * What a column's header does: its title back to the top, its menu moving it by a place or taking it off.
+ * Home's own columns ([HomeWide]) follow its timelines and have no such [menu].
+ */
+internal class ColumnCalls(val onTitle: () -> Unit, val onMove: (by: Int) -> Unit = {}, val onRemove: () -> Unit = {}, val menu: Boolean = true)
 
 /** A column of the deck: its header over its timeline, read again on its own and with every column ([refreshedAll]). */
 @Composable
-private fun DeckColumnView(
+internal fun DeckColumnView(
     column: DeckColumn,
     label: String,
     place: ColumnPlace,
@@ -262,8 +305,8 @@ private fun ColumnHeader(label: String, place: ColumnPlace, calls: ColumnCalls, 
             modifier = Modifier.weight(1f).clickable(onClick = calls.onTitle).padding(horizontal = 12.dp, vertical = 12.dp),
         )
         extra()
-        IconButton(onClick = onRefresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
-        ColumnMenu(place, calls)
+        IconTip(stringResource(Res.string.home_refresh)) { IconButton(onClick = onRefresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) } }
+        if (calls.menu) ColumnMenu(place, calls)
     }
     HorizontalDivider()
 }
@@ -272,7 +315,7 @@ private fun ColumnHeader(label: String, place: ColumnPlace, calls: ColumnCalls, 
 private fun ColumnMenu(place: ColumnPlace, calls: ColumnCalls) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.home_more_options)) }
+        IconTip(stringResource(Res.string.home_more_options)) { IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.home_more_options)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.home_deck_move_left)) },
@@ -294,7 +337,7 @@ private fun ColumnMenu(place: ColumnPlace, calls: ColumnCalls) {
 private fun WidthMenu(current: DeckWidth, onPick: (DeckWidth) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.home_more_options)) }
+        IconTip(stringResource(Res.string.home_more_options)) { IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.home_more_options)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             Text(
                 stringResource(Res.string.home_deck_width),
@@ -363,7 +406,7 @@ private fun AddColumnSheet(choices: List<DeckColumn>, networks: HomeNetworks, on
     val session by LocalGraph.current.sessions.state.collectAsStateWithLifecycle()
     val available by networks.available.collectAsStateWithLifecycle()
     val groups = session?.groups.orEmpty()
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Text(
             stringResource(Res.string.home_deck_add),
             style = MaterialTheme.typography.titleMedium,
@@ -385,6 +428,9 @@ private fun AddColumnSheet(choices: List<DeckColumn>, networks: HomeNetworks, on
         }
     }
 }
+
+/** The detail column's key among the deck's columns ([ReadColumn]), apart from every column's id. */
+private object DetailColumn
 
 /** What the detail column shows: a post's conversation or a profile. */
 internal sealed interface DeckPage {
@@ -438,7 +484,7 @@ private fun DetailView(detail: DeckDetail, actions: PostActions) {
     holder.SaveableStateProvider("${detail.pages.size}:$page") {
         when (page) {
             is DeckPage.Post -> PostScreen(page.id, actions, onBack = detail::back)
-            is DeckPage.Profile -> ProfileScreen(page.screenName, actions, onBack = detail::back, userId = page.userId)
+            is DeckPage.Profile -> ProfileScreen(page.screenName, actions, onBack = detail::back, userId = page.userId, ownKeys = false)
         }
     }
 }

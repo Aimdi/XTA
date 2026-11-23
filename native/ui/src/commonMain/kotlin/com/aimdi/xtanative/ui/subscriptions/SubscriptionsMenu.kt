@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.store.settings.GroupsLayout
 import com.aimdi.xtanative.store.settings.GroupsOrder
 import com.aimdi.xtanative.store.settings.SubscriptionsOrder
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_antennas
 import com.aimdi.xtanative.ui.generated.resources.groups_columns
@@ -85,7 +86,7 @@ fun SubscriptionsMenuSheet(state: SubscriptionsUi, vm: SubscriptionsViewModel, a
         onDismiss()
         action()
     }
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
         Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 12.dp)) {
             Text(
                 stringResource(if (groups) Res.string.groups_groups else Res.string.groups_subscriptions),

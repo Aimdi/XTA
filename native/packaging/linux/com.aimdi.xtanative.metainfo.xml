@@ -5,17 +5,17 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT</project_license>
   <name>XTA Native</name>
-  <summary>XTA's X reader written in Kotlin, a prototype to compare with XTA</summary>
+  <summary>Private, read-only reader for X and other networks</summary>
   <description>
     <p>
-      XTA Native is XTA, the private, read-oriented way to browse X, written
-      again in Kotlin to compare with it. It reads X and other sources, such
+      XTA Native is XTA, the private, read-oriented way to browse X. It reads X and other sources, such
       as Bluesky, Mastodon, Reddit, Substack and RSS feeds, and never posts,
       likes or shares anything in your name. The accounts you follow, your
-      groups, saved posts and likes stay on this computer, apart from XTA's.
+      groups, saved posts and likes stay on this computer.
     </p>
     <ul>
       <li>Timelines of the accounts you follow, in groups you arrange</li>
+      <li>Several timelines side by side in a wide window, and a deck of columns</li>
       <li>Profiles, conversations, search and communities</li>
       <li>Saved posts with notes, offline articles and downloads</li>
       <li>No trackers: XTA Native talks only to the sites you read</li>

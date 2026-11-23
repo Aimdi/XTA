@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">鍵盤快速鍵</string>
+    <string name="keys_help">顯示這些快速鍵</string>
+    <string name="keys_back">返回，或關閉已開啟的內容</string>
+    <string name="keys_go_home">返回首頁</string>
+    <string name="keys_refresh">重新整理</string>
+    <string name="keys_search">搜尋</string>
+    <string name="keys_recent_searches">在搜尋欄中選擇最近的搜尋</string>
+    <string name="keys_open_copied_link">開啟複製的連結</string>
+    <string name="keys_tabs">下一個或上一個分頁</string>
+    <string name="keys_tab_number">前往某個分頁（9：最後一個）</string>
+    <string name="keys_pages">上一頁或下一頁</string>
+    <string name="keys_columns">上一欄或下一欄用於捲動（多欄）</string>
+    <string name="keys_scroll_line">捲動一點</string>
+    <string name="keys_next_post">下一則或上一則貼文</string>
+    <string name="keys_scroll_screen">捲動一個畫面</string>
+    <string name="keys_scroll_ends">前往頂端或結尾</string>
+    <string name="keys_move">在按鈕與欄位之間移動</string>
+    <string name="keys_text_size">放大、縮小或恢復一般文字</string>
+    <string name="keys_full_screen">全螢幕</string>
+    <string name="keys_video">全螢幕影片：播放或暫停，跳過 10 秒</string>
+    <string name="keys_video_more">全螢幕影片：靜音、從頭播放、離開全螢幕</string>
+    <string name="keys_video_speed">全螢幕影片：減速或加速</string>
+    <string name="keys_video_jump">全螢幕影片：跳到百分之 0 至 90 處，或跳到結尾</string>
+    <string name="keys_photo_zoom">放大、縮小或完整顯示相片</string>
+    <string name="keys_photo_move">在放大的相片中移動</string>
+    <string name="keys_quit">結束 XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">空白鍵</string>
+    <string name="keys_wheel">滾輪</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+    <string name="keys_select_all">已儲存：全選顯示的內容</string>
+    <string name="keys_remove_selected">已儲存：移除所選內容</string>
+    <string name="keys_leave_selection">已儲存：結束選取</string>
+    <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">在可重新排序的清單中上移或下移一列（有焦點的列或指標下的列）</string>
+</resources>

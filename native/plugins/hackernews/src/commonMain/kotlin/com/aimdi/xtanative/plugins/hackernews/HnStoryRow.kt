@@ -29,6 +29,7 @@ import com.aimdi.xtanative.networks.hackernews.HnStory
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.saved.SavedIcons
@@ -47,6 +48,7 @@ internal fun HnStoryRow(app: HnApp, story: HnStory, rank: Int? = null) {
         Column(
             Modifier
                 .fillMaxWidth()
+                .onContextClick { app.openMenu(story) }
                 .combinedClickable(onClick = { app.openStory(story) }, onLongClick = { app.openMenu(story) })
                 .padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 4.dp),
         ) {

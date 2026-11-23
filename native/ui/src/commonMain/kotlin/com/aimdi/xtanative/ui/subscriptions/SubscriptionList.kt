@@ -4,6 +4,7 @@ import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.store.backup.NetworkAccount
 import com.aimdi.xtanative.store.backup.NetworkMembers
 import com.aimdi.xtanative.store.settings.SubscriptionsOrder
+import com.aimdi.xtanative.ui.home.RowSteps
 import com.aimdi.xtanative.ui.plugins.PluginSubscription
 
 /**
@@ -91,6 +92,10 @@ object SubscriptionList {
         }
         return placed + left
     }
+
+    /** [rows] with the row of [key] a place up or down (Alt+↑, Alt+↓), found where it is in them; null when it is gone or at an end. */
+    fun stepped(rows: List<SubscriptionRow>, key: String, up: Boolean): List<SubscriptionRow>? =
+        RowSteps.step(rows.map { it.key }, key, up)?.let { (from, to) -> moved(rows, from, to) }
 
     /** The reader's own order as XTA keeps it: the ids, comma-separated. */
     fun customOrder(rows: List<SubscriptionRow>): String = rows.joinToString(",") { it.orderKey }

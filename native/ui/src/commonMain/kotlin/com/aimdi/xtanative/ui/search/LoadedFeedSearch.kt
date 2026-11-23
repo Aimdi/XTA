@@ -1,11 +1,13 @@
 package com.aimdi.xtanative.ui.search
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
@@ -31,6 +33,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.ui.common.BackHandling
+import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.feed.PluginPostRow
 import com.aimdi.xtanative.ui.feed.SourcedPost
 import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
@@ -40,6 +44,7 @@ import com.aimdi.xtanative.ui.generated.resources.discover_loaded_hint
 import com.aimdi.xtanative.ui.generated.resources.discover_loaded_title
 import com.aimdi.xtanative.ui.generated.resources.discover_no_results
 import com.aimdi.xtanative.ui.generated.resources.discover_search
+import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -48,7 +53,7 @@ import org.jetbrains.compose.resources.stringResource
 /** The bar button a feed opens [LoadedFeedSearchScreen] with, as XTA's feeds have it first in their bar. */
 @Composable
 fun LoadedSearchButton(onClick: () -> Unit) {
-    IconButton(onClick = onClick) { Icon(GroupIcons.ManageSearch, stringResource(Res.string.discover_loaded_title)) }
+    IconTip(stringResource(Res.string.discover_loaded_title)) { IconButton(onClick = onClick) { Icon(GroupIcons.ManageSearch, stringResource(Res.string.discover_loaded_title)) } }
 }
 
 /**
@@ -74,7 +79,7 @@ fun LoadedFeedSearchScreen(threads: List<XThread>, actions: PostActions, onBack:
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }
+                    IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
                 },
                 title = { Text(stringResource(Res.string.discover_loaded_title)) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -89,15 +94,15 @@ fun LoadedFeedSearchScreen(threads: List<XThread>, actions: PostActions, onBack:
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 label = { Text(stringResource(Res.string.discover_search)) },
                 supportingText = { Text(stringResource(Res.string.discover_loaded_hint)) },
-                modifier = Modifier.fillMaxWidth().padding(12.dp).focusRequester(focus),
+                modifier = Modifier.fillMaxWidth().padding(12.dp).focusRequester(focus).foundWithKeys(),
             )
             if (matches.isEmpty() && matchingPosts.isEmpty()) {
                 EmptyNote(stringResource(Res.string.discover_no_results))
             } else {
-                LazyColumn(Modifier.fillMaxSize()) {
+                rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(), readList) { column -> LazyColumn(state = readList, modifier = Modifier.fillMaxSize(), contentPadding = column) {
                     items(matches, key = { it.id }, contentType = { "thread" }) { thread -> ThreadRows(thread, actions) }
                     items(matchingPosts, key = { it.key }, contentType = { "plugin" }) { post -> PluginPostRow(post, plugins[post.source]) }
-                }
+                } } }
             }
         }
     }

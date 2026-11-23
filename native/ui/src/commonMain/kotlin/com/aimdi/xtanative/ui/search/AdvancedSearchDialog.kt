@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,7 +34,6 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -65,7 +65,10 @@ import com.aimdi.xtanative.core.x.search.XAdvancedSearch
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Content
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Filter
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Inclusion
+import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.discover_accounts
@@ -164,41 +167,44 @@ internal fun AdvancedSearchDialog(
             topBar = {
                 TopAppBar(
                     navigationIcon = {
-                        IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_close)) }
+                        IconTip(stringResource(Res.string.discover_close)) { IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_close)) } }
                     },
                     title = { Text(stringResource(Res.string.discover_advanced_search)) },
                     actions = {
-                        IconButton(onClick = { onChange { XAdvancedSearch() } }, enabled = filters.activeFilters.isNotEmpty()) {
+                        IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = { onChange { XAdvancedSearch() } }, enabled = filters.activeFilters.isNotEmpty()) {
                             Icon(Icons.Filled.Refresh, stringResource(Res.string.discover_clear))
-                        }
+                        } }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
                 )
             },
             bottomBar = { ApplyBar(onApply) },
         ) { padding ->
-            Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())) {
-                Section(DiscoverIcons.TextFields, Res.string.discover_search_term) {
-                    listOf(Filter.ALL_WORDS, Filter.EXACT_PHRASE, Filter.ANY_WORDS, Filter.NONE_WORDS, Filter.HASHTAGS).forEach { filter ->
-                        TextFilter(filters, filter, onChange)
+            // A form in the reading column's width, centred in a wide window, as the settings pages are.
+            Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
+                Column(Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp).fillMaxSize().verticalScroll(rememberScrollState())) {
+                    Section(DiscoverIcons.TextFields, Res.string.discover_search_term) {
+                        listOf(Filter.ALL_WORDS, Filter.EXACT_PHRASE, Filter.ANY_WORDS, Filter.NONE_WORDS, Filter.HASHTAGS).forEach { filter ->
+                            TextFilter(filters, filter, onChange)
+                        }
+                        LanguageField(filters.language) { code -> onChange { it.copy(language = code) } }
                     }
-                    LanguageField(filters.language) { code -> onChange { it.copy(language = code) } }
-                }
-                Section(DiscoverIcons.AlternateEmail, Res.string.discover_accounts) {
-                    listOf(Filter.FROM_ACCOUNTS, Filter.TO_ACCOUNTS, Filter.MENTIONING_ACCOUNTS).forEach { filter ->
-                        TextFilter(filters, filter, onChange)
+                    Section(DiscoverIcons.AlternateEmail, Res.string.discover_accounts) {
+                        listOf(Filter.FROM_ACCOUNTS, Filter.TO_ACCOUNTS, Filter.MENTIONING_ACCOUNTS).forEach { filter ->
+                            TextFilter(filters, filter, onChange)
+                        }
                     }
-                }
-                Section(DiscoverIcons.PermMedia, Res.string.discover_content_filter) { ContentFilters(filters, onChange) }
-                Section(DiscoverIcons.Tune, Res.string.discover_filters) {
-                    listOf(Filter.MIN_REPLIES, Filter.MIN_LIKES, Filter.MIN_RETWEETS).forEach { filter ->
-                        TextFilter(filters, filter, onChange, number = true)
+                    Section(DiscoverIcons.PermMedia, Res.string.discover_content_filter) { ContentFilters(filters, onChange) }
+                    Section(DiscoverIcons.Tune, Res.string.discover_filters) {
+                        listOf(Filter.MIN_REPLIES, Filter.MIN_LIKES, Filter.MIN_RETWEETS).forEach { filter ->
+                            TextFilter(filters, filter, onChange, number = true)
+                        }
+                        DateRow(stringResource(Res.string.discover_since), filters.since) { day -> onChange { it.copy(since = day) } }
+                        DateRow(stringResource(Res.string.discover_until), filters.until) { day -> onChange { it.copy(until = day) } }
                     }
-                    DateRow(stringResource(Res.string.discover_since), filters.since) { day -> onChange { it.copy(since = day) } }
-                    DateRow(stringResource(Res.string.discover_until), filters.until) { day -> onChange { it.copy(until = day) } }
+                    QueryPreview(filters.query)
+                    Spacer(Modifier.height(8.dp))
                 }
-                QueryPreview(filters.query)
-                Spacer(Modifier.height(8.dp))
             }
         }
     }
@@ -248,7 +254,7 @@ private fun TextFilter(filters: XAdvancedSearch, filter: Filter, onChange: ((XAd
         label = { Text(filterLabel(SearchFilters.labelOf(filter, filters))) },
         singleLine = true,
         trailingIcon = if (value.isEmpty()) null else {
-            { IconButton(onClick = { onChange { it.cleared(filter) } }) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } }
+            { IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = { onChange { it.cleared(filter) } }) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } } }
         },
         keyboardOptions = KeyboardOptions(keyboardType = if (number) KeyboardType.Number else KeyboardType.Text, imeAction = ImeAction.Next),
         shape = RoundedCornerShape(12.dp),
@@ -354,7 +360,7 @@ private fun DateRow(label: String, value: LocalDate?, onChange: (LocalDate?) -> 
             Text(shown, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         if (value != null) {
-            IconButton(onClick = { onChange(null) }) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) }
+            IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = { onChange(null) }) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } }
         } else {
             Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -421,9 +427,9 @@ private fun QueryPreview(query: String) {
 
 @Composable
 private fun ApplyBar(onApply: () -> Unit) {
-    Column(Modifier.fillMaxWidth()) {
+    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Hairline()
-        Button(onClick = onApply, modifier = Modifier.fillMaxWidth().padding(12.dp).heightIn(min = 48.dp)) {
+        Button(onClick = onApply, modifier = Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp).fillMaxWidth().padding(12.dp).heightIn(min = 48.dp)) {
             Icon(Icons.Filled.Search, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.discover_search), modifier = Modifier.padding(start = 8.dp))
         }

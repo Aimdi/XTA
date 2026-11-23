@@ -24,6 +24,7 @@ import com.aimdi.xtanative.networks.mastodon.MastodonTagReader
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.RetryRow
@@ -45,7 +46,7 @@ internal fun MastodonTagScreen(app: MastodonApp, name: String) {
         actions = { IconButton(onClick = reader::refresh) { Icon(Icons.Filled.Refresh, pluginString(Strings.retry)) } },
     ) { padding ->
         PullToRefreshBox(isRefreshing = state.loading && state.posts.isNotEmpty(), onRefresh = reader::refresh, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            LazyColumn(state = list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp), modifier = Modifier.fillMaxSize()) {
+            PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp), list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
                 val error = state.error
                 when {
                     state.posts.isEmpty() && (state.loading || !state.loaded) -> item(key = "loading") { PluginFeedSkeleton() }
@@ -62,7 +63,7 @@ internal fun MastodonTagScreen(app: MastodonApp, name: String) {
                         state.canLoadMore -> LoadMoreButton(reader::loadMore)
                     }
                 }
-            }
+            } }
         }
     }
 }

@@ -63,6 +63,7 @@ import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedState
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
@@ -287,7 +288,7 @@ private fun <T : Any> ResultList(pages: PagedItems<T>, key: (T) -> String, empty
     val list = rememberLazyListState()
     ScrollsToTop(list, frame.toTop)
     PullToRefreshBox(isRefreshing = paged.loading && paged.loaded, onRefresh = pages::refresh, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             pagedRows(paged, pages, key, empty, { pluginString(errorText(it)) }, row)
             when (SearchFoot.of(paged)) {
                 SearchFoot.MORE -> item(key = "search-more") {
@@ -296,7 +297,7 @@ private fun <T : Any> ResultList(pages: PagedItems<T>, key: (T) -> String, empty
                 SearchFoot.END -> item(key = "search-end") { MessageText(pluginString(Strings.search_end)) }
                 SearchFoot.NONE -> Unit
             }
-        }
+        } }
     }
 }
 

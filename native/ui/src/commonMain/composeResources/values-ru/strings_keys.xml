@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Сочетания клавиш</string>
+    <string name="keys_help">Показать эти сочетания</string>
+    <string name="keys_back">Назад или закрыть открытое</string>
+    <string name="keys_go_home">Вернуться на главную</string>
+    <string name="keys_refresh">Обновить</string>
+    <string name="keys_search">Поиск</string>
+    <string name="keys_recent_searches">Выбрать недавний поиск из поля поиска</string>
+    <string name="keys_open_copied_link">Открыть скопированную ссылку</string>
+    <string name="keys_tabs">Следующая или предыдущая вкладка</string>
+    <string name="keys_tab_number">Перейти на вкладку (9: последняя)</string>
+    <string name="keys_pages">Предыдущая или следующая страница</string>
+    <string name="keys_columns">Предыдущая или следующая колонка для прокрутки (Колонки)</string>
+    <string name="keys_scroll_line">Прокрутить немного</string>
+    <string name="keys_next_post">Следующий или предыдущий пост</string>
+    <string name="keys_scroll_screen">Прокрутить на экран</string>
+    <string name="keys_scroll_ends">В начало или в конец</string>
+    <string name="keys_move">Переходить между кнопками и полями</string>
+    <string name="keys_text_size">Крупнее, мельче или обычный текст</string>
+    <string name="keys_full_screen">Полноэкранный режим</string>
+    <string name="keys_video">Видео на весь экран: воспроизвести или приостановить, перемотать на 10 секунд</string>
+    <string name="keys_video_more">Видео на весь экран: выключить звук, сначала, выйти</string>
+    <string name="keys_video_speed">Видео на весь экран: медленнее или быстрее</string>
+    <string name="keys_video_jump">Видео на весь экран: перейти к 0–90 процентам или в конец</string>
+    <string name="keys_photo_zoom">Увеличить, уменьшить или показать фото целиком</string>
+    <string name="keys_photo_move">Перемещаться по увеличенному фото</string>
+    <string name="keys_quit">Выйти из XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Пробел</string>
+    <string name="keys_wheel">Колёсико</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+    <string name="keys_select_all">Избранное: выбрать всё показанное</string>
+    <string name="keys_remove_selected">Избранное: удалить выбранное</string>
+    <string name="keys_leave_selection">Избранное: завершить выбор</string>
+    <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">Переместить строку выше или ниже в списке, который можно упорядочить (ту, что в фокусе, или под указателем)</string>
+</resources>

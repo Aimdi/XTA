@@ -80,7 +80,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun CardView(card: XCard, post: XPost, actions: PostActions, modifier: Modifier = Modifier) {
     val open = rememberCardOpener(post, actions)
-    CardBody(card, post, modifier) { link -> open(link.url, link.title.ifBlank { null }) }
+    // A middle click opens a link's card in the browser, as one on a link in the text does.
+    CardBody(card, post, modifier.middleClickOpens((card as? XCard.Link)?.url, actions.openInBrowser)) { link -> open(link.url, link.title.ifBlank { null }) }
 }
 
 /** A card drawn without its post: its page opens in XTA's browser on its own. */

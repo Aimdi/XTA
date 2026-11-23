@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.feed.FeedSort
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.following
 import com.aimdi.xtanative.ui.generated.resources.groups_filters
@@ -176,9 +177,9 @@ private fun ModeTab(label: String, selected: Boolean, padding: Dp, onClick: () -
 @Composable
 private fun PickerButton(unread: Boolean, onPicker: () -> Unit) {
     val source = stringResource(Res.string.following)
-    IconButton(onClick = onPicker, modifier = Modifier.semantics { contentDescription = source }) {
+    IconTip(source) { IconButton(onClick = onPicker, modifier = Modifier.semantics { contentDescription = source }) {
         UnreadDot(unread) { Icon(HomeIcons.DynamicFeed, contentDescription = null) }
-    }
+    } }
 }
 
 /** The order and filters, the search of the loaded posts, Home feed accounts and the desktop's refresh. */
@@ -189,7 +190,7 @@ private fun Controls(look: FollowingLook, calls: FollowingCalls) {
         LoadedSearchButton(calls.onSearchLoaded)
         FeedAccountsButton(look.accountsOff, calls.onAccounts)
         calls.onRefresh?.let { refresh ->
-            IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
+            IconTip(stringResource(Res.string.home_refresh)) { IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) } }
         }
     }
 }
@@ -205,9 +206,9 @@ private fun OrderButton(feed: GroupFeedUi, onOrder: (FeedSort) -> Unit, onFilter
     val filters = feed.activeFilters
     val label = stringResource(sortLabel(feed.settings.sort)) + " · " + stringResource(Res.string.groups_filters)
     Box {
-        IconButton(onClick = { open = true }, modifier = Modifier.semantics { contentDescription = label }) {
+        IconTip(label) { IconButton(onClick = { open = true }, modifier = Modifier.semantics { contentDescription = label }) {
             Counted(filters) { Icon(HomeIcons.FilterList, contentDescription = null) }
-        }
+        } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             FollowingBar.ORDERS.forEach { sort ->
                 DropdownMenuItem(

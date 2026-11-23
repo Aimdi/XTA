@@ -367,4 +367,12 @@
     <string name="intro_illustration_phone">Postări, aprecieri și elemente salvate într-un telefon</string>
     <string name="intro_illustration_flow">Postările curg de la X spre telefonul tău, niciodată înapoi</string>
     <string name="intro_page_of">Pagina %1$d din %2$d</string>
+    <string name="settings_desktop_notifications">Notificări pe desktop</string>
+    <string name="settings_desktop_notifications_description">Anunță când se termină o descărcare cât timp ești în altă fereastră</string>
+    <string name="settings_close_to_tray">Închide în zona de notificare</string>
+    <string name="settings_close_to_tray_description">La închiderea ferestrei, aplicația rămâne pornită în zona de notificare; ieși din meniul pictogramei</string>
+    <string name="settings_start_at_login">Pornește la autentificare</string>
+    <string name="settings_start_at_login_description">Deschide aplicația la autentificare; cu Închide în zona de notificare activat, așteaptă acolo</string>
+    <string name="tray_show">Arată fereastra</string>
+    <string name="tray_hide">Ascunde fereastra</string>
 </resources>

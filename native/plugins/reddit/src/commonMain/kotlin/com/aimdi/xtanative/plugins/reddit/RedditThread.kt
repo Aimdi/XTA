@@ -50,6 +50,7 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -86,7 +87,7 @@ internal fun ThreadScreen(app: RedditApp, route: RedditRoute.Thread) {
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             PullToRefreshBox(isRefreshing = state.refreshing, onRefresh = thread::load, modifier = Modifier.fillMaxSize()) {
-                LazyColumn(state = list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 96.dp), modifier = Modifier.fillMaxSize()) {
+                PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 96.dp), list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
                     item(key = "post") { PostBlock(app, state, onComments = { scope.launch { list.scrollTo(1, reduced) } }) }
                     item(key = "header") {
                         CommentsHeader(
@@ -98,7 +99,7 @@ internal fun ThreadScreen(app: RedditApp, route: RedditRoute.Thread) {
                         )
                     }
                     commentRows(app, thread, state, rows)
-                }
+                } }
             }
             if (rows != null && RedditThreadRules.showsJump(rows)) {
                 JumpButton(Modifier.align(Alignment.BottomEnd).padding(end = 16.dp, bottom = padding.calculateBottomPadding() + 16.dp)) { jump(scope, list, rows, reduced) }

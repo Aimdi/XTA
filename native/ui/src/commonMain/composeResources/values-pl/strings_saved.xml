@@ -162,6 +162,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Sprawdź połączenie i folder pobierania, a następnie spróbuj ponownie.</string>
     <string name="downloads_open_file">Otwórz plik</string>
+    <string name="downloads_show_in_folder">Pokaż w folderze</string>
     <string name="downloads_open_failed">Nie udało się otworzyć tego pliku. Mógł zostać przeniesiony lub usunięty.</string>
     <string name="downloads_queued">Oczekiwanie</string>
     <string name="downloads_downloading">Pobieranie multimediów…</string>

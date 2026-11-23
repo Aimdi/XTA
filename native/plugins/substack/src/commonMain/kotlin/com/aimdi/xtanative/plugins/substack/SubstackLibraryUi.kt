@@ -52,6 +52,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.addToGroupText
@@ -109,7 +110,7 @@ private fun FollowingList(app: SubstackApp, query: String, frame: PluginFrame) {
     ScrollsToTop(list, frame.toTop)
     val all = publications ?: return LoadingRow()
     val shown = all.filter { SubstackHomeRules.matches(query, it) }
-    LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+    PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
         if (shown.isEmpty()) {
             item(key = "empty") {
                 EmptyState(pluginString(if (query.isBlank()) Strings.empty else Strings.library_search_empty)) {
@@ -126,7 +127,7 @@ private fun FollowingList(app: SubstackApp, query: String, frame: PluginFrame) {
             FollowRow(app, publication, publication.id in pins)
             Hairline()
         }
-    }
+    } }
 }
 
 @Composable
@@ -175,7 +176,7 @@ private fun LibraryPosts(
     val shown = SubstackHomeRules.library(posts, query, passages)
     val list = rememberLazyListState()
     ScrollsToTop(list, frame.toTop)
-    LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+    PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
         if (shown.isEmpty()) item(key = "empty") { EmptyState(pluginString(if (query.isBlank()) empty else Strings.library_search_empty)) }
         items(shown, key = { "post-" + it.first.key }) { (post, passage) ->
             passage?.let {
@@ -190,5 +191,5 @@ private fun LibraryPosts(
             }
             SubstackPostCard(app, post, marks)
         }
-    }
+    } }
 }

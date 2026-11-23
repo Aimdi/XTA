@@ -18,6 +18,7 @@ import com.aimdi.xtanative.data.plugins.PluginSaves
 import com.aimdi.xtanative.data.plugins.PluginSheet
 import com.aimdi.xtanative.data.plugins.keepable
 import com.aimdi.xtanative.store.settings.SubscriptionPrefs
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PostMenuHandlers
 import com.aimdi.xtanative.ui.plugins.PostMenuRows
@@ -25,6 +26,7 @@ import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pathIcon
 import com.aimdi.xtanative.ui.post.CashtagLinks
 import com.aimdi.xtanative.ui.post.MenuRow
+import com.aimdi.xtanative.ui.post.PostMenuSurface
 import com.aimdi.xtanative.ui.saved.Keeping
 import com.aimdi.xtanative.ui.saved.SaveSheet
 import com.aimdi.xtanative.ui.saved.SavedNoteEditor
@@ -85,7 +87,6 @@ private fun GroupsSheet(sheet: PluginSheet.Groups, onDismiss: () -> Unit) {
  * sharing its link, its folder, and the browser ([PostMenuRows]); then what
  * the running plugins add ([PluginSheetEntries]).
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PostMenuSheet(sheet: PluginSheet.Menu, onDismiss: () -> Unit) {
     val plugins = LocalPlugins.current
@@ -101,11 +102,9 @@ private fun PostMenuSheet(sheet: PluginSheet.Menu, onDismiss: () -> Unit) {
             chooseFolder = { plugins.show(PluginSheet.Folders(menu.post)) },
         )
     }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.padding(bottom = 16.dp)) {
-            PostMenuRows(menu, menu.post.id in saved, handlers, onDismiss)
-            PluginSheetEntries(remember(menu) { PluginSaves.shared(menu) }, onDismiss)
-        }
+    PostMenuSurface(onDismiss) {
+        PostMenuRows(menu, menu.post.id in saved, handlers, onDismiss)
+        PluginSheetEntries(remember(menu) { PluginSaves.shared(menu) }, onDismiss)
     }
 }
 
@@ -122,7 +121,7 @@ private fun CashtagSheet(symbol: String, onDismiss: () -> Unit) {
     val running by plugins.running.collectAsStateWithLifecycle()
     val language = currentLanguage()
     val entries = remember(symbol, running, language) { plugins.cashtagEntries(symbol, language, running) }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp)) {
             MenuRow(ShowChart, CashtagLinks.title(symbol)) {
                 onDismiss()

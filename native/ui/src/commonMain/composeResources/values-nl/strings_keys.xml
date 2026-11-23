@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Sneltoetsen</string>
+    <string name="keys_help">Deze sneltoetsen tonen</string>
+    <string name="keys_back">Terug, of sluiten wat open is</string>
+    <string name="keys_go_home">Terug naar Start</string>
+    <string name="keys_refresh">Vernieuwen</string>
+    <string name="keys_search">Zoeken</string>
+    <string name="keys_recent_searches">Een recente zoekopdracht kiezen vanuit het zoekveld</string>
+    <string name="keys_open_copied_link">Gekopieerde link openen</string>
+    <string name="keys_tabs">Volgend of vorig tabblad</string>
+    <string name="keys_tab_number">Naar een tabblad (9: het laatste)</string>
+    <string name="keys_pages">Vorige of volgende pagina</string>
+    <string name="keys_columns">Vorige of volgende kolom om te scrollen (Deck)</string>
+    <string name="keys_scroll_line">Een stukje scrollen</string>
+    <string name="keys_next_post">Volgende of vorige post</string>
+    <string name="keys_scroll_screen">Een scherm scrollen</string>
+    <string name="keys_scroll_ends">Naar het begin of het einde</string>
+    <string name="keys_move">Tussen knoppen en velden bewegen</string>
+    <string name="keys_text_size">Grotere, kleinere of normale tekst</string>
+    <string name="keys_full_screen">Volledig scherm</string>
+    <string name="keys_video">Video op volledig scherm: afspelen of pauzeren, 10 seconden verspringen</string>
+    <string name="keys_video_more">Video op volledig scherm: dempen, opnieuw beginnen, verlaten</string>
+    <string name="keys_video_speed">Video op volledig scherm: langzamer of sneller</string>
+    <string name="keys_video_jump">Video op volledig scherm: naar 0 tot 90 procent springen, of naar het einde</string>
+    <string name="keys_photo_zoom">Foto in- of uitzoomen of helemaal tonen</string>
+    <string name="keys_photo_move">Door een ingezoomde foto bewegen</string>
+    <string name="keys_quit">XTA afsluiten</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Spatie</string>
+    <string name="keys_wheel">Scrollwiel</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+    <string name="keys_select_all">Opgeslagen: alles wat getoond wordt selecteren</string>
+    <string name="keys_remove_selected">Opgeslagen: geselecteerde verwijderen</string>
+    <string name="keys_leave_selection">Opgeslagen: selecteren stoppen</string>
+    <string name="keys_delete">Del</string>
+    <string name="keys_move_row">Een rij omhoog of omlaag zetten in een lijst die je kunt herschikken (die met de focus of die onder de aanwijzer)</string>
+</resources>

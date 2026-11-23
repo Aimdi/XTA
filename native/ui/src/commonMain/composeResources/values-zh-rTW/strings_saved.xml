@@ -153,6 +153,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">請檢查網路連線和下載資料夾後重試。</string>
     <string name="downloads_open_file">開啟檔案</string>
+    <string name="downloads_show_in_folder">在資料夾中顯示</string>
     <string name="downloads_open_failed">無法開啟此檔案。它可能已被移動或刪除。</string>
     <string name="downloads_queued">等待中</string>
     <string name="downloads_downloading">正在下載媒體…</string>

@@ -7,8 +7,9 @@ import androidx.compose.runtime.compositionLocalOf
 /**
  * Settings › Accessibility › Disable animations, for the whole app (XTA's
  * xtaReduceMotion): while it is true, screens open and close, pages turn and
- * lists go back to the top at once. The theme provides it from the settings;
- * Android's own "Remove animations" already stops Compose's animations.
+ * lists go back to the top at once. The theme provides it from the settings,
+ * or the desktop's own settings turning animations off; Android's own
+ * "Remove animations" already stops Compose's animations.
  */
 val LocalReducedMotion = compositionLocalOf { false }
 

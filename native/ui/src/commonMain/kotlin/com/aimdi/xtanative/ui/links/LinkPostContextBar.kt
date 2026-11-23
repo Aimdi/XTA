@@ -42,6 +42,7 @@ import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.format.Formats
 import com.aimdi.xtanative.services.links.LinkPostContext
 import com.aimdi.xtanative.services.links.NetworkLink
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.currentLocale
@@ -118,9 +119,9 @@ fun LinkPostContextBar(post: LinkPostContext, onBackToPost: () -> Unit, onShareP
                 }
             }
             if (onSharePost != null) {
-                IconButton(onClick = onSharePost) {
+                IconTip(stringResource(Res.string.reader_link_share_post)) { IconButton(onClick = onSharePost) {
                     Icon(ReaderIcons.SendOutlined, stringResource(Res.string.reader_link_share_post), tint = colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
-                }
+                } }
             }
             NetworkMark(post.network)
         }

@@ -26,6 +26,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +47,7 @@ import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedTabs
 import com.aimdi.xtanative.store.settings.SavedPrefs
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.saved_delete
@@ -58,6 +60,9 @@ import com.aimdi.xtanative.ui.generated.resources.saved_tab_all
 import com.aimdi.xtanative.ui.generated.resources.saved_tab_likes
 import com.aimdi.xtanative.ui.generated.resources.saved_tab_notes
 import com.aimdi.xtanative.ui.generated.resources.saved_tab_unfiled
+import com.aimdi.xtanative.ui.home.RowSteps
+import com.aimdi.xtanative.ui.home.rememberRowKeyMoves
+import com.aimdi.xtanative.ui.home.rowMovedByKeys
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -86,8 +91,8 @@ fun SavedFoldersScreen(onBack: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.saved_manage_folders)) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
-                actions = { IconButton(onClick = { creating = true }) { Icon(SavedIcons.NewFolder, stringResource(Res.string.saved_new_folder)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
+                actions = { IconTip(stringResource(Res.string.saved_new_folder)) { IconButton(onClick = { creating = true }) { Icon(SavedIcons.NewFolder, stringResource(Res.string.saved_new_folder)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
@@ -102,6 +107,11 @@ fun SavedFoldersScreen(onBack: () -> Unit) {
                 onMoved = { from, to ->
                     val tokens = SavedTabs.moved(rows.map { it.token }, from, to)
                     graph.keep { graph.settings.set(SavedPrefs.tabOrder, tokens) }
+                },
+                onStep = { token, up ->
+                    graph.keep {
+                        graph.settings.update { now -> FolderRow.stepped(loaded, now[SavedPrefs.tabOrder], token, up)?.let { now.with(SavedPrefs.tabOrder, it) } ?: now }
+                    }
                 },
             ) { row, handle ->
                 when (row) {
@@ -137,12 +147,12 @@ private fun BuiltInRow(row: FolderRow.BuiltIn, shown: Boolean?, handle: @Composa
     Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(start = 24.dp, end = 16.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(builtInLabel(row.token), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
         if (shown != null) {
-            IconButton(onClick = { onShown(!shown) }) {
+            IconTip(stringResource(if (shown) Res.string.saved_hide else Res.string.saved_show)) { IconButton(onClick = { onShown(!shown) }) {
                 Icon(
                     if (shown) SavedIcons.Visibility else SavedIcons.VisibilityOff,
                     stringResource(if (shown) Res.string.saved_hide else Res.string.saved_show),
                 )
-            }
+            } }
         }
         handle()
     }
@@ -166,7 +176,7 @@ private fun FolderRowView(row: FolderRow.Folder, handle: @Composable () -> Unit,
             Text(row.folder.name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(pluralStringResource(Res.plurals.saved_folder_count, row.count, row.count), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        IconButton(onClick = onDelete) { Icon(Icons.Filled.Delete, stringResource(Res.string.saved_delete)) }
+        IconTip(stringResource(Res.string.saved_delete)) { IconButton(onClick = onDelete) { Icon(Icons.Filled.Delete, stringResource(Res.string.saved_delete)) } }
         handle()
     }
 }
@@ -181,6 +191,7 @@ private fun ReorderableRows(
     rows: List<FolderRow>,
     modifier: Modifier,
     onMoved: (from: Int, to: Int) -> Unit,
+    onStep: (token: String, up: Boolean) -> Unit,
     row: @Composable (FolderRow, handle: @Composable () -> Unit) -> Unit,
 ) {
     val heights = remember { mutableStateMapOf<String, Int>() }
@@ -190,12 +201,17 @@ private fun ReorderableRows(
     var offset by remember { mutableFloatStateOf(0f) }
     val heightList = rows.map { heights[it.token] ?: 0 }
     val target = dragging?.let { dropIndex(it, offset, heightList) }
+    val step by rememberUpdatedState(onStep)
+    val moves = rememberRowKeyMoves { token, up ->
+        (RowSteps.step(current.map { it.token }, token, up) != null).also { if (it) step(token as String, up) }
+    }
     Column(modifier.verticalScroll(rememberScrollState())) {
-        rows.forEachIndexed { index, item ->
+        rows.forEachIndexed { index, item -> key(item.token) {
             val shift = shiftOf(index, dragging, target, heightList)
             Box(
                 Modifier
                     .fillMaxWidth()
+                    .rowMovedByKeys(moves, item.token)
                     .onSizeChanged { heights[item.token] = it.height }
                     .zIndex(if (index == dragging) 1f else 0f)
                     .graphicsLayer { translationY = if (index == dragging) offset else shift }
@@ -228,7 +244,7 @@ private fun ReorderableRows(
                     Hairline()
                 }
             }
-        }
+        } }
     }
 }
 

@@ -4,6 +4,7 @@ import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.store.downloads.DownloadBatchResult
 import com.aimdi.xtanative.store.downloads.DownloadCancellation
+import com.aimdi.xtanative.store.downloads.DownloadDestination
 import com.aimdi.xtanative.store.downloads.DownloadEntry
 import com.aimdi.xtanative.store.downloads.DownloadRequest
 import com.aimdi.xtanative.store.downloads.DownloadStatus
@@ -114,13 +115,18 @@ object Downloading {
     /** The media viewer's Save (_media.dart's download button): the file the viewer names, saved as any download is. */
     fun saver(graph: AppGraph): MediaSaver = MediaSaver { media -> save(graph, media.url, media.fileName) }
 
-    /** Saves [url] as [fileName], in [subfolder] of the destination when one is named, saying how it went. */
-    suspend fun file(graph: AppGraph, url: String, fileName: String, subfolder: String? = null) {
+    /** Saves [url] as [fileName] where the reader picks in the save dialog, whatever the download setting says (the desktop's "Save as…"). */
+    fun saveAs(graph: AppGraph, url: String, fileName: String) {
+        scope.launch { file(graph, url, fileName, asking = true) }
+    }
+
+    /** Saves [url] as [fileName], in [subfolder] of the destination when one is named ([asking]: where the reader picks), saying how it went. */
+    suspend fun file(graph: AppGraph, url: String, fileName: String, subfolder: String? = null, asking: Boolean = false) {
         KeepNotices.show(KeepNotice.Downloading)
         val notice = try {
             val settings = graph.settings.load()
             graph.downloads.setConcurrency(settings[MediaPrefs.downloadConcurrency])
-            val destination = downloadDestination(settings)
+            val destination = if (asking) DownloadDestination.ASK else downloadDestination(settings)
             val entry = graph.downloads.enqueue(url, fileName, destination.treeUri, destination.background, subfolder).await()
             downloadNotice(entry, graph.platformFiles.folderOf(entry))
         } catch (e: CancellationException) {

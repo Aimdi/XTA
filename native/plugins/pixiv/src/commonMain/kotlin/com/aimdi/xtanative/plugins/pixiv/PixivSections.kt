@@ -60,6 +60,7 @@ import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.post.PostIcons
 import java.time.Instant
 import java.time.LocalDate
@@ -241,7 +242,7 @@ private fun RankingPinsSheet(novels: Boolean, onClose: () -> Unit) {
     val table = PixivRankingPins.tableOf(novels)
     val offered = PixivRanking.offered(table, settings[PixivPrefs.showR18])
     val pins = PixivRankingPins.of(settings, novels)
-    ModalBottomSheet(onDismissRequest = onClose) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onClose) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 24.dp)) {
             Text(pluginString(Strings.ranking_edit_title), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(4.dp))

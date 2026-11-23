@@ -8,10 +8,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.DrawerState
@@ -22,10 +26,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -43,8 +50,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,6 +62,8 @@ import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.DeckGroups
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.BackHandling
+import com.aimdi.xtanative.ui.common.CenteredPage
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.rememberLiveEdges
 import com.aimdi.xtanative.ui.common.rememberScreenReaderOn
@@ -118,7 +129,7 @@ fun HomeScreen(actions: PostActions, routes: HomeRoutes, screens: HomeBarScreens
     }
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val deckFits = DeckGroups.fits(maxWidth.value, minOf(maxWidth, maxHeight).value)
-        HomeShell(HomeParts(ui, vm, networks, actions, routes, screens), deckFits)
+        HomeShell(HomeParts(ui, vm, networks, actions, routes, screens), deckFits, HomeWide.sidebar(maxWidth.value))
     }
 }
 
@@ -155,6 +166,9 @@ private class HomeShellState(
     var sheet by mutableStateOf<HomeSheet?>(null)
     var layer by mutableStateOf<HomeLayer?>(null)
 
+    /** Whether the window is wide enough for the sidebar, where the menu stands beside Home and there is no drawer. */
+    var wide by mutableStateOf(false)
+
     /** The page shown; the first when it left the bar. */
     fun page(ui: HomeUi): BarPage = ui.bar.firstOrNull { it.id == barId } ?: ui.bar.first()
 
@@ -189,7 +203,7 @@ private fun rememberShell(ui: HomeUi): HomeShellState {
 }
 
 @Composable
-private fun HomeShell(parts: HomeParts, deckFits: Boolean) {
+private fun HomeShell(parts: HomeParts, deckFits: Boolean, wide: Boolean) {
     val ui = parts.ui
     val shell = rememberShell(ui)
     val scope = rememberCoroutineScope()
@@ -205,6 +219,7 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean) {
     DesktopShortcuts(
         refresh = refresh,
         turn = { by -> if (page == BarPage.Feed) DesktopKeys.turned(index, ui.tabs.size, by)?.let { shell.turnTo(ui, it) } },
+        jump = { digit -> if (page == BarPage.Feed) DesktopKeys.pageAt(digit, ui.tabs.size)?.let { shell.turnTo(ui, it) } },
         isOpen = { shell.drawer.isOpen || shell.sheet != null || shell.layer != null },
         close = {
             shell.sheet = null
@@ -212,8 +227,12 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean) {
             scope.launch { shell.drawer.close() }
         },
     )
+    // A window widened past the sidebar's breakpoint shows the menu beside Home: a drawer open then closes.
+    shell.wide = wide
+    LaunchedEffect(wide, shell.drawer.targetValue) { if (wide && shell.drawer.targetValue == DrawerValue.Open) shell.drawer.snapTo(DrawerValue.Closed) }
     val feedCalls = FeedPageCalls(
-        openMenu = { scope.launch { shell.drawer.open() } },
+        // In a wide window the menu stands open beside Home.
+        openMenu = { if (!wide) scope.launch { shell.drawer.open() } },
         openSheet = { shell.sheet = it },
         openLayer = { shell.layer = it },
         onTab = { shell.turnTo(ui, it) },
@@ -223,13 +242,55 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean) {
             if (FollowingBar.opensCustom(sort)) shell.layer = HomeLayer.FOLLOWING_CUSTOM
         },
     )
-    Box(Modifier.fillMaxSize()) {
-        HomeDrawer(parts, shell, deckFits, unread) {
-            HomeBody(parts, shell, page, followingLook(following, ui, unread), unread, refresh, feedCalls)
+    Row(Modifier.fillMaxSize()) {
+        if (wide) {
+            HomeSidebar(parts, shell, page, deckFits, unread)
+            VerticalDivider()
         }
-        HomeLayers(parts, shell, following)
+        // Clipped: the closed drawer's sheet waits just past the start edge, over the sidebar otherwise.
+        Box(Modifier.weight(1f).fillMaxHeight().clipToBounds()) {
+            HomeDrawer(parts, shell, deckFits, unread) {
+                HomeBody(parts, shell, page, followingLook(following, ui, unread), unread, refresh, feedCalls, wide)
+            }
+            HomeLayers(parts, shell, following)
+        }
     }
     HomeSheets(parts, shell, following, unread)
+}
+
+/**
+ * The navigation of a wide window ([HomeWide]): the account menu standing
+ * open down Home's start edge, with the bar's pages in it, the one shown
+ * marked, so nothing has to be opened to move about and the pages keep the
+ * window's whole height.
+ */
+@Composable
+private fun HomeSidebar(parts: HomeParts, shell: HomeShellState, page: BarPage, deckFits: Boolean, unread: Set<String>) {
+    val ui = parts.ui
+    // A Surface gives the menu's text the page's content colour, as the drawer's sheet does.
+    Surface(Modifier.width(HomeWide.SIDEBAR_WIDTH.dp).fillMaxHeight(), color = MaterialTheme.colorScheme.background) {
+        AccountMenu(
+            ui = ui,
+            routes = parts.routes,
+            deckFits = deckFits,
+            unread = unread,
+            onGo = { parts.routes.openIfExists(it) },
+            onGroup = { parts.routes.openGroup(it.id) },
+            onClose = null,
+            onAvatar = { shell.sheet = HomeSheet.AVATAR },
+            pages = {
+                itemsIndexed(ui.bar, key = { _, barPage -> "page-" + barPage.id }) { index, barPage ->
+                    NavigationDrawerItem(
+                        label = { Text(barLabel(barPage, ui), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        selected = barPage == page,
+                        onClick = { barTapped(shell, ui, index) },
+                        icon = { BarPageIcon(barPage, barPage == page, ui, parts.networks) },
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                    )
+                }
+            },
+        )
+    }
 }
 
 /** The account menu (XTA's home drawer) around Home, opened from the timeline picker. */
@@ -259,13 +320,13 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
                 )
             }
         },
-        content = { Box(Modifier.fillMaxSize().drawerEdge(shell.drawer)) { content() } },
+        content = { Box(Modifier.fillMaxSize().then(if (shell.wide) Modifier else Modifier.drawerEdge(shell.drawer))) { content() } },
     )
 }
 
 /** The bar's page shown, above the bar, which slips away as the page is scrolled down. */
 @Composable
-private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, following: FollowingLook, unread: Set<String>, refresh: () -> Unit, feedCalls: FeedPageCalls) {
+private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, following: FollowingLook, unread: Set<String>, refresh: () -> Unit, feedCalls: FeedPageCalls, wide: Boolean) {
     val ui = parts.ui
     val takeover = remember { NetworkBarTakeover() }
     Scaffold(
@@ -282,6 +343,7 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
                 onHoldHome = { shell.sheet = HomeSheet.PICKER },
                 sections = takeover.on(page),
                 hidden = takeover.hidesBar(page),
+                beside = wide,
             )
         },
     ) { padding ->
@@ -303,7 +365,7 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
                         feedCalls,
                     )
                     BarPage.Subscriptions -> parts.screens.subscriptions()
-                    BarPage.Trending -> parts.screens.trends()
+                    BarPage.Trending -> CenteredPage { parts.screens.trends() }
                     BarPage.Saved -> parts.screens.saved()
                     is BarPage.Network -> if (shown.id in ui.missing) {
                         MissingPage(onChoose = { if (parts.routes.exists(HomeDestination.SETTINGS.route)) parts.routes.open(SettingsRoutes.of(SettingsSection.HOME)) })
@@ -380,7 +442,7 @@ private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: I
                         // Off Home's Feed there is no plugin sheet: the plugin's own entries stay its ⋮ ([ShellMenuButton]).
                         PluginActions(client)
                         key(id) { NetworkActions(id, ui, networks, onPins, routes, extras) }
-                        if (LocalDesktopActions.current != null) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
+                        if (LocalDesktopActions.current != null) IconTip(stringResource(Res.string.home_refresh)) { IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) } }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
                 )
@@ -498,6 +560,7 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
             onPin = parts.vm::pin,
             onUnpin = parts.vm::unpin,
             onMove = parts.vm::move,
+            onStep = parts.vm::step,
             onDismiss = close,
         )
         HomeSheet.PICKER -> PluginSwitcherSheet(
@@ -521,7 +584,8 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
                 onAdd = { shell.sheet = HomeSheet.STRIP },
                 onMenu = {
                     close()
-                    scope.launch { shell.drawer.open() }
+                    // In a wide window the menu stands open beside Home.
+                    if (!shell.wide) scope.launch { shell.drawer.open() }
                 },
                 onManage = {
                     close()

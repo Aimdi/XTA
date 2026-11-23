@@ -41,6 +41,7 @@ import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.plugins.PluginPostMenuRows
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.saved.SavedIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -62,7 +63,7 @@ internal fun SheetRow(icon: ImageVector, label: String, onClick: () -> Unit, sub
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PixivSheetFrame(sheets: PixivSheets, content: @Composable () -> Unit) {
-    ModalBottomSheet(onDismissRequest = sheets::close) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = sheets::close) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) { content() }
     }
 }

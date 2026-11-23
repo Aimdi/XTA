@@ -31,7 +31,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -54,6 +53,7 @@ import com.aimdi.xtanative.store.settings.BooruPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
@@ -88,7 +88,7 @@ internal fun SwitchRow(title: String, description: String, checked: Boolean, onC
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun <T : Any> ChoiceSheet(choices: List<Pair<T, String>>, selected: T? = null, onDismiss: () -> Unit, onPick: (T) -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), dragHandle = null) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true), dragHandle = null) {
         Column(Modifier.fillMaxWidth().navigationBarsPadding().verticalScroll(rememberScrollState()).padding(vertical = 8.dp)) {
             choices.forEach { (value, label) ->
                 Row(

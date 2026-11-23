@@ -196,6 +196,20 @@ class SubscriptionsViewModel(private val graph: AppGraph, private val follows: P
     }
 
     /**
+     * The row of [key] a place up or down (Alt+↑, Alt+↓): found where it is
+     * in the order as it is saved by then, so a held key moves the same row
+     * along however far the list on screen lags behind.
+     */
+    fun stepPerson(key: String, up: Boolean) {
+        val now = ui.value
+        if (!now.canDragPeople) return
+        settings { saved ->
+            val rows = SubscriptionList.ordered(now.allPeople, saved[SubscriptionPrefs.order], saved[SubscriptionPrefs.ascending], saved[SubscriptionPrefs.customOrder])
+            SubscriptionList.stepped(rows, key, up)?.let { saved.with(SubscriptionPrefs.customOrder, SubscriptionList.customOrder(it)) } ?: saved
+        }
+    }
+
+    /**
      * [row] unfollowed and out of every group, with XTA's undo: a plugin's
      * account by its plugin, as XTA's stores remove theirs. It runs to its end
      * whatever screen is up.
@@ -227,6 +241,13 @@ class SubscriptionsViewModel(private val graph: AppGraph, private val follows: P
         if (!now.canDragGroups) return
         val ids = GroupBoardModel.reordered(now.board, from, to) ?: return
         session { GroupBoardModel.withPositions(it, ids) }
+    }
+
+    /** Group [id] a place up or down in the list (Alt+↑, Alt+↓), found where it is in the groups as they are saved by then. */
+    fun stepGroup(id: String, up: Boolean) {
+        val now = ui.value
+        if (!now.canDragGroups) return
+        session { GroupBoardModel.stepped(it, now.groupsOrder, now.groupsAscending, id, up) ?: it }
     }
 
     /** A pack someone exported, as a new group. */

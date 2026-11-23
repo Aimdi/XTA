@@ -369,4 +369,12 @@
     <string name="intro_illustration_phone">Příspěvky, lajky a uložené položky v telefonu</string>
     <string name="intro_illustration_flow">Příspěvky proudí z X do vašeho telefonu, nikdy zpět</string>
     <string name="intro_page_of">Stránka %1$d z %2$d</string>
+    <string name="settings_desktop_notifications">Oznámení na ploše</string>
+    <string name="settings_desktop_notifications_description">Upozornit na dokončené stahování, když jste v jiném okně</string>
+    <string name="settings_close_to_tray">Zavírat do oznamovací oblasti</string>
+    <string name="settings_close_to_tray_description">Po zavření okna aplikace běží dál v oznamovací oblasti; ukončíte ji z nabídky její ikony</string>
+    <string name="settings_start_at_login">Spustit po přihlášení</string>
+    <string name="settings_start_at_login_description">Otevře aplikaci po přihlášení; se zapnutým „Zavírat do oznamovací oblasti“ čeká v oznamovací oblasti</string>
+    <string name="tray_show">Zobrazit okno</string>
+    <string name="tray_hide">Skrýt okno</string>
 </resources>

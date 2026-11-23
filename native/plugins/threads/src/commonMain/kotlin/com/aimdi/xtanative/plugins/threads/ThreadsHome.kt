@@ -58,6 +58,7 @@ import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
@@ -310,7 +311,7 @@ private fun Refreshable(app: ThreadsApp, frame: PluginFrame, list: LazyListState
     val state by app.feed.state.collectAsState()
     ScrollsToTop(list, frame.toTop)
     PullToRefreshBox(isRefreshing = state.loading && state.loaded, onRefresh = { app.feed.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize(), content = content)
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), content = content, contentPadding = column) }
     }
 }
 
@@ -359,9 +360,9 @@ private fun LikedPane(app: ThreadsApp, frame: PluginFrame) {
     val list = rememberLazyListState()
     ScrollsToTop(list, frame.toTop)
     PullToRefreshBox(isRefreshing = false, onRefresh = { scope.launch { app.likes.load() } }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             if (posts.isEmpty()) item(key = "empty") { EmptyPane(ThreadsHeart.Outlined, pluginString(Strings.liked_empty)) }
             items(posts, key = { "liked:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
-        }
+        } }
     }
 }

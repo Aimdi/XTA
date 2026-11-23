@@ -50,6 +50,7 @@ import com.aimdi.xtanative.networks.stocks.FollowedSectionKeeper
 import com.aimdi.xtanative.networks.stocks.SignalGroups
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.plugins.PagedItems
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.XThreadRow
@@ -124,7 +125,7 @@ internal fun StocksPostsList(
             },
             modifier = Modifier.fillMaxSize(),
         ) {
-            LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+            PluginReadingColumn(padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
                 header()
                 pagedRows(paged, feed.pages, XThread::id, X, empty) { thread ->
                     section.partStartingAt(thread.id)?.let { SectionHeader(pluginString(if (it == FollowedPart.FOLLOWED) Strings.posts_followed else Strings.posts_others)) }
@@ -134,7 +135,7 @@ internal fun StocksPostsList(
                         PostRow(shown, signal, folds[shown.id] ?: foldsByDefault, actions) { app.fold(shown.id, it) }
                     }
                 }
-            }
+            } }
         }
     }
 }

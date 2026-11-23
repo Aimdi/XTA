@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Phím tắt</string>
+    <string name="keys_help">Hiện các phím tắt này</string>
+    <string name="keys_back">Quay lại, hoặc đóng mục đang mở</string>
+    <string name="keys_go_home">Quay về Trang chủ</string>
+    <string name="keys_refresh">Làm mới</string>
+    <string name="keys_search">Tìm kiếm</string>
+    <string name="keys_recent_searches">Chọn một tìm kiếm gần đây từ ô tìm kiếm</string>
+    <string name="keys_open_copied_link">Mở liên kết đã sao chép</string>
+    <string name="keys_tabs">Thẻ tiếp theo hoặc trước đó</string>
+    <string name="keys_tab_number">Chuyển đến một tab (9: tab cuối)</string>
+    <string name="keys_pages">Trang trước hoặc trang sau</string>
+    <string name="keys_columns">Cột trước hoặc cột sau để cuộn (Cột)</string>
+    <string name="keys_scroll_line">Cuộn một chút</string>
+    <string name="keys_next_post">Bài đăng tiếp theo hoặc trước đó</string>
+    <string name="keys_scroll_screen">Cuộn một màn hình</string>
+    <string name="keys_scroll_ends">Lên đầu hoặc xuống cuối</string>
+    <string name="keys_move">Di chuyển giữa các nút và ô nhập</string>
+    <string name="keys_text_size">Chữ lớn hơn, nhỏ hơn hoặc bình thường</string>
+    <string name="keys_full_screen">Toàn màn hình</string>
+    <string name="keys_video">Video toàn màn hình: phát hoặc tạm dừng, tua 10 giây</string>
+    <string name="keys_video_more">Video toàn màn hình: tắt tiếng, phát lại từ đầu, thoát</string>
+    <string name="keys_video_speed">Video toàn màn hình: chậm hơn hoặc nhanh hơn</string>
+    <string name="keys_video_jump">Video toàn màn hình: nhảy tới 0 đến 90 phần trăm, hoặc tới cuối</string>
+    <string name="keys_photo_zoom">Phóng to, thu nhỏ hoặc xem toàn bộ ảnh</string>
+    <string name="keys_photo_move">Di chuyển trong ảnh đã phóng to</string>
+    <string name="keys_quit">Thoát XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Dấu cách</string>
+    <string name="keys_wheel">Con lăn</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+    <string name="keys_select_all">Đã lưu: chọn tất cả mục đang hiện</string>
+    <string name="keys_remove_selected">Đã lưu: xóa các mục đã chọn</string>
+    <string name="keys_leave_selection">Đã lưu: thôi chọn</string>
+    <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">Di chuyển một hàng lên hoặc xuống trong danh sách có thể sắp xếp lại (hàng đang được chọn hoặc dưới con trỏ)</string>
+</resources>

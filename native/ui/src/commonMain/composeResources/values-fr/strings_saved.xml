@@ -156,6 +156,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Vérifiez votre connexion et le dossier de téléchargement, puis réessayez.</string>
     <string name="downloads_open_file">Ouvrir le fichier</string>
+    <string name="downloads_show_in_folder">Afficher dans le dossier</string>
     <string name="downloads_open_failed">Impossible d’ouvrir ce fichier. Il a peut-être été déplacé ou supprimé.</string>
     <string name="downloads_queued">En attente</string>
     <string name="downloads_downloading">Téléchargement du média…</string>

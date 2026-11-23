@@ -162,6 +162,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Праверце злучэнне і папку спамповак, затым паўтарыце спробу.</string>
     <string name="downloads_open_file">Адкрыць файл</string>
+    <string name="downloads_show_in_folder">Паказаць у папцы</string>
     <string name="downloads_open_failed">Не ўдалося адкрыць гэты файл. Магчыма, ён быў перамешчаны або выдалены.</string>
     <string name="downloads_queued">У чаканні</string>
     <string name="downloads_downloading">Загрузка медыя...</string>

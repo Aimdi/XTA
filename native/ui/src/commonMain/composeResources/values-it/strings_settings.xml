@@ -367,4 +367,12 @@
     <string name="intro_illustration_phone">Post, Mi piace ed elementi salvati dentro un telefono</string>
     <string name="intro_illustration_flow">I post vanno da X al tuo telefono, mai indietro</string>
     <string name="intro_page_of">Pagina %1$d di %2$d</string>
+    <string name="settings_desktop_notifications">Notifiche del desktop</string>
+    <string name="settings_desktop_notifications_description">Avvisa quando un download finisce mentre sei in un’altra finestra</string>
+    <string name="settings_close_to_tray">Chiudi nell’area di notifica</string>
+    <string name="settings_close_to_tray_description">Chiudendo la finestra l’app resta attiva nell’area di notifica; esci dal menu della sua icona</string>
+    <string name="settings_start_at_login">Avvia all’accesso</string>
+    <string name="settings_start_at_login_description">Apre l’app all’accesso; con «Chiudi nell’area di notifica» attivo, resta lì in attesa</string>
+    <string name="tray_show">Mostra finestra</string>
+    <string name="tray_hide">Nascondi finestra</string>
 </resources>

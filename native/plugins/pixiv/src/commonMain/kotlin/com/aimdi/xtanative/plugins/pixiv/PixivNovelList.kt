@@ -53,7 +53,9 @@ import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 
@@ -85,7 +87,7 @@ internal fun <T : Any> PixivRows(
     RefreshesOn(refresh) { list.refresh() }
     RowsReadAhead(scroll, state) { list.more() }
     PullToRefreshBox(isRefreshing = state.loading && state.items.isNotEmpty(), onRefresh = list::refresh, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = scroll, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(padding, scroll) { column -> LazyColumn(state = scroll, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             header()
             when {
                 state.items.isEmpty() && state.error != null -> item(key = "state") { PixivProblem(state.error, list::refresh) }
@@ -104,7 +106,7 @@ internal fun <T : Any> PixivRows(
                     }
                 }
             }
-        }
+        } }
     }
 }
 
@@ -149,7 +151,7 @@ internal fun NovelCard(novel: PixivNovel, order: Int? = null, showSeries: Boolea
     val runtime = LocalPixiv.current
     val sheets = LocalPixivSheets.current
     Row(
-        Modifier.fillMaxWidth().combinedClickable(
+        Modifier.fillMaxWidth().onContextClick(onLongPress ?: { sheets.show(PixivSheet.NovelActions(novel)) }).combinedClickable(
             onClick = onTap ?: { runtime.openNovel(novel) },
             onLongClick = onLongPress ?: { sheets.show(PixivSheet.NovelActions(novel)) },
         ).padding(start = 16.dp, end = 4.dp, top = 12.dp, bottom = 12.dp),

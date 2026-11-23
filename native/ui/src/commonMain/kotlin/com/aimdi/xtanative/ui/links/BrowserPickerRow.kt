@@ -32,6 +32,7 @@ import com.aimdi.xtanative.services.links.BrowserPicker
 import com.aimdi.xtanative.services.links.InstalledBrowser
 import com.aimdi.xtanative.services.links.LinkDestination
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_links_in_app
 import com.aimdi.xtanative.ui.generated.resources.reader_links_in_app_description
@@ -74,7 +75,7 @@ fun BrowserPickerRow(modifier: Modifier = Modifier) {
     }
 
     if (open) {
-        ModalBottomSheet(onDismissRequest = { open = false }) {
+        ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = { open = false }) {
             Column(Modifier.verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) {
                 Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp)) {
                     Text(stringResource(Res.string.reader_links_open_in), style = MaterialTheme.typography.titleMedium)

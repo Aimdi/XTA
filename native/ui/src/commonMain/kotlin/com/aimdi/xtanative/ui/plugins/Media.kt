@@ -74,12 +74,14 @@ import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.AltBadge
 import com.aimdi.xtanative.ui.common.AltTextDialog
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.ShowMediaTile
 import com.aimdi.xtanative.ui.common.mediaShown
 import com.aimdi.xtanative.ui.common.rememberPicture
 import com.aimdi.xtanative.ui.common.turnTo
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.downloads.PluginDownloads
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -89,6 +91,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_download
 import com.aimdi.xtanative.ui.generated.resources.reader_link_copied
 import com.aimdi.xtanative.ui.generated.resources.reader_link_share
 import com.aimdi.xtanative.ui.generated.resources.reader_media
+import com.aimdi.xtanative.ui.home.HoldsKeys
 import com.aimdi.xtanative.ui.media.GifCorner
 import com.aimdi.xtanative.ui.media.MediaIcons
 import com.aimdi.xtanative.ui.media.ReaderIcons
@@ -99,7 +102,10 @@ import com.aimdi.xtanative.ui.media.TileVideo
 import com.aimdi.xtanative.ui.media.VideoQuality
 import com.aimdi.xtanative.ui.media.VideoRules
 import com.aimdi.xtanative.ui.media.VideoSource
+import com.aimdi.xtanative.ui.media.ViewerKey
 import com.aimdi.xtanative.ui.media.rememberVideoPlayers
+import com.aimdi.xtanative.ui.media.rememberViewerFileMenu
+import com.aimdi.xtanative.ui.media.viewerKeyOf
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -247,17 +253,23 @@ fun MediaPager(
     val reduced = LocalReducedMotion.current
     val pager = rememberPagerState(initialPage = start.coerceIn(0, (items.size - 1).coerceAtLeast(0))) { items.size }
     val turn = { by: Int -> (pager.currentPage + by).takeIf { it in items.indices }?.let { page -> scope.launch { pager.turnTo(page, reduced) } } }
+    // The desktop's right-click menu, Ctrl+C and Ctrl+S, as the app's own viewer has them.
+    val fileMenu = rememberViewerFileMenu(snackbar, refocus = { runCatching { focus.requestFocus() } }) { items.getOrNull(pager.currentPage)?.let(PluginDownloads::viewerSave) }
     Box(
         Modifier
             .fillMaxSize()
             .background(Color.Black)
             .onKeyEvent { event ->
                 if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
-                when (event.key) {
-                    Key.DirectionLeft -> true.also { turn(-1) }
-                    Key.DirectionRight -> true.also { turn(1) }
-                    Key.Escape -> true.also { onClose() }
-                    else -> false
+                when (val key = viewerKeyOf(event)) {
+                    ViewerKey.PREVIOUS -> true.also { turn(-1) }
+                    ViewerKey.NEXT -> true.also { turn(1) }
+                    ViewerKey.FIRST -> true.also { turn(-pager.currentPage) }
+                    ViewerKey.LAST -> true.also { turn(items.size - 1 - pager.currentPage) }
+                    ViewerKey.CLOSE -> true.also { onClose() }
+                    ViewerKey.COPY, ViewerKey.SAVE_AS -> fileMenu?.key(key) ?: false
+                    // Plugins' pictures zoom with the wheel and pinch only (ZoomableImage is plugin API).
+                    ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET, ViewerKey.PAN_LEFT, ViewerKey.PAN_RIGHT, ViewerKey.PAN_UP, ViewerKey.PAN_DOWN, ViewerKey.NONE -> false
                 }
             }
             .focusRequester(focus)
@@ -268,19 +280,23 @@ fun MediaPager(
             return@Box
         }
         LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
-        HorizontalPager(state = pager, modifier = Modifier.fillMaxSize(), key = { it }) { page ->
+        // Closed, it leaves the keys to what it covered, which would otherwise have none.
+        HoldsKeys(focus)
+        val pageMenu = if (fileMenu != null) Modifier.onSecondaryClick(fileMenu::openForShown) else Modifier
+        HorizontalPager(state = pager, modifier = Modifier.fillMaxSize().then(pageMenu), key = { it }) { page ->
             val item = items[page]
             when (item.kind) {
                 MediaItem.Kind.PHOTO -> ZoomableImage(rememberPicture(item.imageUrl), item.alt, Modifier.fillMaxSize())
                 MediaItem.Kind.VIDEO, MediaItem.Kind.GIF -> QualityVideoPage(item, qualities.getOrNull(page).orEmpty(), active = pager.currentPage == page)
             }
         }
-        IconButton(onClick = onClose, modifier = Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopStart)) {
+        IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose, modifier = Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopStart)) {
             Icon(Icons.Filled.Close, stringResource(Res.string.close), tint = Color.White)
-        }
+        } }
         PagerBar(items, pager, onDownload, onOpenPost, snackbar, Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopEnd))
         SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(16.dp))
     }
+    fileMenu?.Menu()
 }
 
 /** [MediaPager] as plugin API 2 calls it, without Open post. */
@@ -305,17 +321,17 @@ private fun PagerBar(items: List<MediaItem>, pager: PagerState, onDownload: ((Me
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         if (items.size > 1) Text("${pager.currentPage + 1} / ${items.size}", color = Color.White, modifier = Modifier.padding(horizontal = 12.dp))
         if (onOpenPost != null) {
-            IconButton(onClick = onOpenPost) { Icon(PostIcons.OpenInNew, stringResource(Res.string.posts_open_post), tint = Color.White) }
+            IconTip(stringResource(Res.string.posts_open_post)) { IconButton(onClick = onOpenPost) { Icon(PostIcons.OpenInNew, stringResource(Res.string.posts_open_post), tint = Color.White) } }
         }
         shown.description?.let { description ->
-            IconButton(onClick = { describing = description }) { Icon(ReaderIcons.ClosedCaption, stringResource(Res.string.media_alt_title), tint = Color.White) }
+            IconTip(stringResource(Res.string.media_alt_title)) { IconButton(onClick = { describing = description }) { Icon(ReaderIcons.ClosedCaption, stringResource(Res.string.media_alt_title), tint = Color.White) } }
         }
         if (onDownload != null && PluginDownloads.url(shown) != null) {
-            IconButton(onClick = { onDownload(shown) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) }
+            IconTip(stringResource(Res.string.reader_download)) { IconButton(onClick = { onDownload(shown) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) } }
         }
-        IconButton(onClick = { if (!share(shown.sharedUrl)) scope.launch { snackbar.showSnackbar(copied) } }) {
+        IconTip(stringResource(Res.string.reader_link_share)) { IconButton(onClick = { if (!share(shown.sharedUrl)) scope.launch { snackbar.showSnackbar(copied) } }) {
             Icon(Icons.Filled.Share, stringResource(Res.string.reader_link_share), tint = Color.White)
-        }
+        } }
     }
     describing?.let { AltTextDialog(it) { describing = null } }
 }

@@ -365,4 +365,12 @@
     <string name="intro_illustration_phone">फ़ोन के अंदर पोस्ट, लाइक और सहेजी गई चीज़ें</string>
     <string name="intro_illustration_flow">पोस्ट X से आपके फ़ोन तक आती हैं, कभी वापस नहीं</string>
     <string name="intro_page_of">पृष्ठ %1$d / %2$d</string>
+    <string name="settings_desktop_notifications">डेस्कटॉप सूचनाएँ</string>
+    <string name="settings_desktop_notifications_description">जब आप किसी दूसरी विंडो में हों और कोई डाउनलोड पूरा हो, तो बताएँ</string>
+    <string name="settings_close_to_tray">ट्रे में बंद करें</string>
+    <string name="settings_close_to_tray_description">विंडो बंद करने पर ऐप सिस्टम ट्रे में चलता रहता है; उसके आइकन के मेनू से बाहर निकलें</string>
+    <string name="settings_start_at_login">लॉग इन पर शुरू करें</string>
+    <string name="settings_start_at_login_description">लॉग इन करने पर ऐप खोलता है; ट्रे में बंद करें चालू हो तो यह ट्रे में रहता है</string>
+    <string name="tray_show">विंडो दिखाएँ</string>
+    <string name="tray_hide">विंडो छिपाएँ</string>
 </resources>

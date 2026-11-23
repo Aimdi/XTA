@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.media
 
 import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.pow
 
 /** A point or a shift on screen, in pixels. */
 data class Shift(val x: Float, val y: Float) {
@@ -20,7 +21,8 @@ data class Shift(val x: Float, val y: Float) {
  * How a photo in the viewer zooms and pans (_photo.dart's gesture config,
  * double_tap_zoom.dart): between [MIN] and [MAX] times its fitted size, a
  * pinch allowed a little below [MIN] before it springs back, and a double
- * tap toggling between the two ends around the point tapped. The photo is
+ * tap toggling between the two ends around the point tapped; on the desktop
+ * the mouse wheel zooms around the pointer ([wheeled]). The photo is
  * scaled about the middle of the page, then shifted.
  */
 object ViewerZoom {
@@ -57,6 +59,43 @@ object ViewerZoom {
 
     /** Where a scale settles once the fingers lift: back up to [MIN] from below it. */
     fun settled(scale: Float): Float = scale.coerceIn(MIN, MAX)
+
+    /** How much one notch of a mouse wheel zooms: a fifth in or out. */
+    const val WHEEL_STEP = 1.2f
+
+    /**
+     * The scale after a mouse wheel turned [notches] (positive towards the
+     * reader, as a page scrolls down: out), within [MIN] and [MAX].
+     */
+    fun wheeled(scale: Float, notches: Float): Float =
+        (scale * WHEEL_STEP.pow(-notches)).coerceIn(MIN, MAX)
+
+    /** The scale a zoom key ([ViewerKey.ZOOM_IN], OUT, RESET) makes of [scale]: a wheel's notch in or out, or the whole photo; [scale] for any other key. */
+    fun keyed(scale: Float, key: ViewerKey): Float = when (key) {
+        ViewerKey.ZOOM_IN -> wheeled(scale, -1f)
+        ViewerKey.ZOOM_OUT -> wheeled(scale, 1f)
+        ViewerKey.ZOOM_RESET -> MIN
+        else -> scale
+    }
+
+    /** How far an arrow key moves a zoomed photo: this share of the page. */
+    const val PAN_SHARE = 0.15f
+
+    /**
+     * Where an arrow ([ViewerKey.PAN_LEFT] and the rest) takes the view of a
+     * photo zoomed to [scale] on a page [width] by [height]: that way by
+     * [PAN_SHARE] of the page, the photo moving the other way, within [bounds].
+     */
+    fun panned(shift: Shift, scale: Float, key: ViewerKey, width: Float, height: Float): Shift {
+        val step = when (key) {
+            ViewerKey.PAN_LEFT -> Shift(width * PAN_SHARE, 0f)
+            ViewerKey.PAN_RIGHT -> Shift(-width * PAN_SHARE, 0f)
+            ViewerKey.PAN_UP -> Shift(0f, height * PAN_SHARE)
+            ViewerKey.PAN_DOWN -> Shift(0f, -height * PAN_SHARE)
+            else -> Shift.ZERO
+        }
+        return bounds(shift + step, scale, width, height)
+    }
 
     /** Whether the photo is zoomed in, so one finger pans it rather than turning the page or closing the viewer. */
     fun zoomed(scale: Float): Boolean = scale > MIN + 0.01f

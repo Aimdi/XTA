@@ -74,6 +74,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
 import com.aimdi.xtanative.ui.generated.resources.home_alt_microblogging
@@ -207,7 +208,8 @@ private fun Modifier.hiding(state: HomeBarsState): Modifier = layout { measurabl
  * pages flat across the bottom in the page's colour with a hairline along
  * its top, the selected one's icon filled, with labels when Theme says so.
  * Networks beyond the first stand behind one Networks place. Holding Home
- * opens the timeline picker; a swipe across the bar turns its pages.
+ * opens the timeline picker; a swipe across the bar turns its pages. In a
+ * wide window ([beside]) the pages are in the navigation column instead.
  */
 @Composable
 internal fun HomeBottomBar(
@@ -220,8 +222,10 @@ internal fun HomeBottomBar(
     onHoldHome: () -> Unit,
     sections: NetworkBarSections? = null,
     hidden: Boolean = false,
+    beside: Boolean = false,
 ) {
-    if (hidden) return
+    // In a wide window the pages stand in the column beside Home; a network's sections still need the bar.
+    if (hidden || (beside && sections == null)) return
     val slots = remember(ui.bar, ui.recentNetworks) { HomeBar.slots(ui.bar, ui.recentNetworks) }
     if (sections != null) return NetworkSectionsBar(ui, state, sections) { onPage(ui.bar.indexOf(BarPage.Feed).coerceAtLeast(0)) }
     val selected = HomeBar.slotOf(slots, page)
@@ -361,7 +365,7 @@ private fun BarIcon(vector: ImageVector) {
 }
 
 @Composable
-private fun BarPageIcon(page: BarPage, selected: Boolean, ui: HomeUi, networks: HomeNetworks) {
+internal fun BarPageIcon(page: BarPage, selected: Boolean, ui: HomeUi, networks: HomeNetworks) {
     when (page) {
         BarPage.Feed -> BarIcon(if (selected) HomeBarIcons.HomeFilled else HomeBarIcons.Home)
         BarPage.Subscriptions -> BarIcon(if (selected) HomeBarIcons.SubscriptionsFilled else HomeBarIcons.Subscriptions)
@@ -395,7 +399,7 @@ internal fun NetworksSheet(ui: HomeUi, networks: HomeNetworks, current: String?,
     val onBar = HomeBar.networks(ui.bar)
     val (recent, rest) = AltMicroblogging.sections(onBar, ui.recentNetworks, ui.microblogsGrouped)
     val sheet = NetworkRows(ui, networks, current, AltMicroblogging.members(onBar), onPick)
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
         LazyColumn(Modifier.padding(bottom = 16.dp)) {
             item(key = "title") {
                 Text(stringResource(Res.string.home_networks), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp))

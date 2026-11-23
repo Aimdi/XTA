@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">键盘快捷键</string>
+    <string name="keys_help">显示这些快捷键</string>
+    <string name="keys_back">返回，或关闭已打开的内容</string>
+    <string name="keys_go_home">返回首页</string>
+    <string name="keys_refresh">刷新</string>
+    <string name="keys_search">搜索</string>
+    <string name="keys_recent_searches">在搜索框中选择最近的搜索</string>
+    <string name="keys_open_copied_link">打开复制的链接</string>
+    <string name="keys_tabs">下一个或上一个标签页</string>
+    <string name="keys_tab_number">转到某个标签页（9：最后一个）</string>
+    <string name="keys_pages">上一页或下一页</string>
+    <string name="keys_columns">上一栏或下一栏用于滚动（多栏）</string>
+    <string name="keys_scroll_line">滚动一点</string>
+    <string name="keys_next_post">下一条或上一条帖子</string>
+    <string name="keys_scroll_screen">滚动一屏</string>
+    <string name="keys_scroll_ends">转到顶部或末尾</string>
+    <string name="keys_move">在按钮和输入框之间移动</string>
+    <string name="keys_text_size">放大、缩小或恢复正常文字</string>
+    <string name="keys_full_screen">全屏</string>
+    <string name="keys_video">全屏视频：播放或暂停，跳过 10 秒</string>
+    <string name="keys_video_more">全屏视频：静音、从头播放、退出全屏</string>
+    <string name="keys_video_speed">全屏视频：减速或加速</string>
+    <string name="keys_video_jump">全屏视频：跳到百分之 0 至 90 处，或跳到结尾</string>
+    <string name="keys_photo_zoom">放大、缩小或完整显示照片</string>
+    <string name="keys_photo_move">在放大的照片中移动</string>
+    <string name="keys_quit">退出 XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">空格</string>
+    <string name="keys_wheel">滚轮</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+    <string name="keys_select_all">书签：全选显示的内容</string>
+    <string name="keys_remove_selected">书签：移除所选内容</string>
+    <string name="keys_leave_selection">书签：结束选择</string>
+    <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">在可重新排序的列表中上移或下移一行（有焦点的行或指针下的行）</string>
+</resources>

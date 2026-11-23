@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">キーボードショートカット</string>
+    <string name="keys_help">このショートカット一覧を表示</string>
+    <string name="keys_back">戻る、または開いているものを閉じる</string>
+    <string name="keys_go_home">ホームに戻る</string>
+    <string name="keys_refresh">更新</string>
+    <string name="keys_search">検索</string>
+    <string name="keys_recent_searches">検索欄から最近の検索を選ぶ</string>
+    <string name="keys_open_copied_link">コピーしたリンクを開く</string>
+    <string name="keys_tabs">次または前のタブ</string>
+    <string name="keys_tab_number">タブへ移動（9: 最後）</string>
+    <string name="keys_pages">前または次のページ</string>
+    <string name="keys_columns">スクロールする前または次の列（デッキ）</string>
+    <string name="keys_scroll_line">少しスクロール</string>
+    <string name="keys_next_post">次または前の投稿</string>
+    <string name="keys_scroll_screen">1画面分スクロール</string>
+    <string name="keys_scroll_ends">先頭または末尾へ移動</string>
+    <string name="keys_move">ボタンや入力欄の間を移動</string>
+    <string name="keys_text_size">文字を大きく、小さく、または標準に</string>
+    <string name="keys_full_screen">全画面表示</string>
+    <string name="keys_video">全画面の動画：再生または一時停止、10秒スキップ</string>
+    <string name="keys_video_more">全画面動画: ミュート、最初から、全画面を終了</string>
+    <string name="keys_video_speed">全画面動画: 遅く、または速く</string>
+    <string name="keys_video_jump">全画面動画: 0〜90 パーセントの位置、または最後へ移動</string>
+    <string name="keys_photo_zoom">写真を拡大・縮小・全体表示</string>
+    <string name="keys_photo_move">拡大した写真の中を移動</string>
+    <string name="keys_quit">XTAを終了</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">スペース</string>
+    <string name="keys_wheel">ホイール</string>
+    <string name="keys_page_up">PageUp</string>
+    <string name="keys_page_down">PageDown</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+    <string name="keys_select_all">保存ツイート: 表示中をすべて選択</string>
+    <string name="keys_remove_selected">保存ツイート: 選択したものを削除</string>
+    <string name="keys_leave_selection">保存ツイート: 選択を終了</string>
+    <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">並べ替えできるリストで行を上下に移動（フォーカスのある行、またはポインターの下の行）</string>
+</resources>

@@ -36,6 +36,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
 import com.aimdi.xtanative.ui.generated.resources.home_plugin_store
@@ -66,6 +68,7 @@ internal fun StripSheet(
     onPin: (String) -> Unit,
     onUnpin: (String) -> Unit,
     onMove: (Int, Int) -> Unit,
+    onStep: (id: String, up: Boolean) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val pinned = StripPins.pinned(ui.pins, ui.networks)
@@ -74,8 +77,11 @@ internal fun StripSheet(
     val drag = rememberRowDrag(list)
     val byId = pinned.associateBy { it.id }
     val keys: List<Any> = pinned.map { it.id }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
-        LazyColumn(state = list, modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+    val moves = rememberRowKeyMoves { key, up ->
+        (RowSteps.step(keys, key, up) != null).also { if (it) onStep(key as String, up) }
+    }
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        LazyColumn(state = list, modifier = Modifier.fillMaxWidth().hoveredRowMovedByKeys(moves).padding(bottom = 16.dp)) {
             item(key = "title") {
                 Column {
                     Text(stringResource(Res.string.home_strip_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 24.dp))
@@ -99,9 +105,9 @@ internal fun StripSheet(
             items(drag.shown(keys), key = { it }) { key ->
                 val network = byId[key] ?: return@items
                 val dragged = drag.key == key
-                Box(Modifier.graphicsLayer { translationY = if (dragged) drag.offset else 0f }.let { if (dragged) it.background(MaterialTheme.colorScheme.surfaceContainerHigh) else it }) {
+                Box(Modifier.rowMovedByKeys(moves, key).graphicsLayer { translationY = if (dragged) drag.offset else 0f }.let { if (dragged) it.background(MaterialTheme.colorScheme.surfaceContainerHigh) else it }) {
                     NetworkRow(network, networks, onClick = { onOpen(network.id) }) {
-                        IconButton(onClick = { onUnpin(network.id) }) { Icon(HomeIcons.RemoveCircle, stringResource(Res.string.home_strip_remove)) }
+                        IconTip(stringResource(Res.string.home_strip_remove)) { IconButton(onClick = { onUnpin(network.id) }) { Icon(HomeIcons.RemoveCircle, stringResource(Res.string.home_strip_remove)) } }
                         DragHandle(
                             Modifier.pointerInput(key, keys) {
                                 detectDragGestures(
@@ -132,7 +138,7 @@ internal fun StripSheet(
                         onOpen(network.id)
                     }
                     NetworkRow(network, networks, onClick = add) {
-                        IconButton(onClick = add) { Icon(Icons.Filled.AddCircle, stringResource(Res.string.home_add_timeline)) }
+                        IconTip(stringResource(Res.string.home_add_timeline)) { IconButton(onClick = add) { Icon(Icons.Filled.AddCircle, stringResource(Res.string.home_add_timeline)) } }
                     }
                 }
             }

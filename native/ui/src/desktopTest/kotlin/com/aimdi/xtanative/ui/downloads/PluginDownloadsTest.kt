@@ -46,4 +46,14 @@ class PluginDownloadsTest {
         assertEquals("https://x.test/sample.jpg", PluginDownloads.url(MediaItem("https://x.test/sample.jpg", downloadUrl = "file:///etc/hosts")), "not a web file")
         assertEquals("https://x.test/v.mp4", PluginDownloads.url(MediaItem("https://x.test/p.jpg", MediaItem.Kind.VIDEO, videoUrl = "https://x.test/v.mp4", downloadUrl = "https://x.test/hls/a.m3u8")))
     }
+
+    @Test
+    fun theDesktopViewersMenuActsOnAPluginsOwnFile() {
+        val photo = PluginDownloads.viewerSave(MediaItem("https://x.test/a.jpg"))
+        assertEquals("https://x.test/a.jpg", photo?.url)
+        assertEquals(com.aimdi.xtanative.core.x.model.XMedia.Kind.PHOTO, photo?.kind)
+        assertEquals("xta-a.jpg", photo?.fileName)
+        assertEquals(com.aimdi.xtanative.core.x.model.XMedia.Kind.VIDEO, PluginDownloads.viewerSave(MediaItem("https://x.test/p.jpg", MediaItem.Kind.VIDEO, videoUrl = "https://x.test/v.mp4"))?.kind)
+        assertNull(PluginDownloads.viewerSave(MediaItem("https://x.test/p.jpg", MediaItem.Kind.VIDEO, videoUrl = "https://x.test/hls/playlist.m3u8")), "a stream has no file")
+    }
 }

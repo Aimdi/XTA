@@ -19,6 +19,7 @@ import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.XtaPrefs
+import com.aimdi.xtanative.ui.search.SearchTab
 import java.net.URI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +42,8 @@ class LinkScreens(
     /** An X profile, on the tab its link named (`/media`, `/with_replies`) when it named one. */
     val profile: (screenName: String, tab: XProfileTab?) -> Unit,
     val search: (query: String) -> Unit,
+    /** The search of [query] on a given tab, where the link named one; without it, [search]. */
+    val searchOn: ((query: String, tab: SearchTab) -> Unit)? = null,
     /** XTA's browser screen at [url]; [from] finds the post it was opened from, see [LinkOpener.opening]. */
     val browser: (url: String, from: String?) -> Unit,
     val network: (NetworkLink) -> Boolean = { false },

@@ -363,4 +363,12 @@
     <string name="intro_illustration_phone">Postingan, suka, dan item tersimpan di dalam ponsel</string>
     <string name="intro_illustration_flow">Postingan mengalir dari X ke ponsel Anda, tidak pernah sebaliknya</string>
     <string name="intro_page_of">Halaman %1$d dari %2$d</string>
+    <string name="settings_desktop_notifications">Notifikasi desktop</string>
+    <string name="settings_desktop_notifications_description">Beri tahu saat unduhan selesai ketika Anda berada di jendela lain</string>
+    <string name="settings_close_to_tray">Tutup ke baki sistem</string>
+    <string name="settings_close_to_tray_description">Menutup jendela membuat aplikasi tetap berjalan di baki sistem; keluar lewat menu ikonnya</string>
+    <string name="settings_start_at_login">Mulai saat masuk</string>
+    <string name="settings_start_at_login_description">Membuka aplikasi saat Anda masuk; dengan Tutup ke baki sistem aktif, aplikasi menunggu di baki</string>
+    <string name="tray_show">Tampilkan jendela</string>
+    <string name="tray_hide">Sembunyikan jendela</string>
 </resources>

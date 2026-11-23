@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -22,22 +23,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_media
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -47,14 +53,24 @@ private enum class PhotoGesture { UNDECIDED, TRANSFORM, SLIDE, PAGE }
 /**
  * A photo in the viewer (_photo.dart, double_tap_zoom.dart): at full size,
  * pinched between one and four times, panned once zoomed in, and a double
- * tap toggles between the two around the point tapped. At its fitted size a
+ * tap toggles between the two around the point tapped; the mouse wheel zooms
+ * about the pointer. At its fitted size a
  * drag up or down slides it away and, far or fast enough, closes the viewer
  * ([onBackdrop] hears how dark the backdrop stays meanwhile); a sideways drag
  * turns the page. [motion] off makes every change at once.
  */
 @Composable
-internal fun ZoomablePhoto(url: String, alt: String?, motion: Boolean, onBackdrop: (Float) -> Unit, onClose: () -> Unit) {
+internal fun ZoomablePhoto(
+    url: String,
+    alt: String?,
+    motion: Boolean,
+    onBackdrop: (Float) -> Unit,
+    onClose: () -> Unit,
+    zoomKeys: Flow<ViewerKey>? = null,
+    onZoomed: (Boolean) -> Unit = {},
+) {
     var scale by remember { mutableFloatStateOf(1f) }
+    var area by remember { mutableStateOf(IntSize.Zero) }
     var shift by remember { mutableStateOf(Shift.ZERO) }
     var slide by remember { mutableFloatStateOf(0f) }
     var loading by remember { mutableStateOf(true) }
@@ -81,9 +97,44 @@ internal fun ZoomablePhoto(url: String, alt: String?, motion: Boolean, onBackdro
         }
     }
 
+    // The keys' zoom goes about the middle, eased as a double tap's; the arrows move a zoomed photo about.
+    LaunchedEffect(zoomKeys) {
+        zoomKeys?.collect { key ->
+            val width = area.width.toFloat()
+            val height = area.height.toFloat()
+            val to = ViewerZoom.keyed(scale, key)
+            when {
+                to != scale -> animateTo(to, if (ViewerZoom.zoomed(to)) ViewerZoom.shiftFor(Shift.ZERO, scale, shift, to, width, height) else Shift.ZERO)
+                ViewerZoom.zoomed(scale) -> animateTo(scale, ViewerZoom.panned(shift, scale, key, width, height))
+            }
+        }
+    }
+    // The viewer reads the arrows as moving about the photo while it is zoomed in.
+    val zoomedNow by rememberUpdatedState(onZoomed)
+    LaunchedEffect(Unit) { snapshotFlow { ViewerZoom.zoomed(scale) }.collect { zoomedNow(it) } }
+
     Box(
         Modifier
             .fillMaxSize()
+            .onSizeChanged { area = it }
+            // The mouse wheel zooms about the pointer, as a desktop's photo viewers do.
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        if (event.type != PointerEventType.Scroll) continue
+                        val change = event.changes.firstOrNull() ?: continue
+                        val to = ViewerZoom.wheeled(scale, change.scrollDelta.y)
+                        if (to != scale) {
+                            animation[0]?.cancel()
+                            val focus = Shift(change.position.x - size.width / 2f, change.position.y - size.height / 2f)
+                            shift = ViewerZoom.shiftFor(focus, scale, shift, to, size.width.toFloat(), size.height.toFloat())
+                            scale = to
+                        }
+                        change.consume()
+                    }
+                }
+            }
             .pointerInput(Unit) {
                 detectTapGestures(
                     onDoubleTap = { tap ->

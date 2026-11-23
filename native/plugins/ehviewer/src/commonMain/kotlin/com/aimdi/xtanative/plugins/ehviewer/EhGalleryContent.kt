@@ -73,6 +73,7 @@ import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberImageRequest
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 
 /** How many comments the page shows before Show all. */
 private const val COMMENTS_SHOWN = 3
@@ -202,7 +203,7 @@ internal fun GalleryComments(comments: List<EhComment>, onShowAll: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AllComments(comments: List<EhComment>, onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         LazyColumn(Modifier.fillMaxWidth()) {
             item {
                 Text(

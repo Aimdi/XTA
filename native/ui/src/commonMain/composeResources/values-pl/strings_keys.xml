@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="keys_title">Skróty klawiszowe</string>
+    <string name="keys_help">Pokaż te skróty</string>
+    <string name="keys_back">Wstecz lub zamknij to, co otwarte</string>
+    <string name="keys_go_home">Wróć do strony głównej</string>
+    <string name="keys_refresh">Odśwież</string>
+    <string name="keys_search">Szukaj</string>
+    <string name="keys_recent_searches">Wybierz ostatnie wyszukiwanie z pola wyszukiwania</string>
+    <string name="keys_open_copied_link">Otwórz skopiowany link</string>
+    <string name="keys_tabs">Następna lub poprzednia karta</string>
+    <string name="keys_tab_number">Przejdź do karty (9: ostatnia)</string>
+    <string name="keys_pages">Poprzednia lub następna strona</string>
+    <string name="keys_columns">Poprzednia lub następna kolumna do przewijania (Kolumny)</string>
+    <string name="keys_scroll_line">Przewiń trochę</string>
+    <string name="keys_next_post">Następny lub poprzedni wpis</string>
+    <string name="keys_scroll_screen">Przewiń o ekran</string>
+    <string name="keys_scroll_ends">Na początek lub na koniec</string>
+    <string name="keys_move">Przechodź między przyciskami i polami</string>
+    <string name="keys_text_size">Większy, mniejszy lub zwykły tekst</string>
+    <string name="keys_full_screen">Pełny ekran</string>
+    <string name="keys_video">Wideo na pełnym ekranie: odtwórz lub wstrzymaj, przeskocz 10 sekund</string>
+    <string name="keys_video_more">Wideo na pełnym ekranie: wycisz, od początku, wyjdź</string>
+    <string name="keys_video_speed">Wideo na pełnym ekranie: wolniej lub szybciej</string>
+    <string name="keys_video_jump">Wideo na pełnym ekranie: skok do 0–90 procent lub na koniec</string>
+    <string name="keys_photo_zoom">Powiększ, pomniejsz lub pokaż całe zdjęcie</string>
+    <string name="keys_photo_move">Przesuwaj powiększone zdjęcie</string>
+    <string name="keys_quit">Zamknij XTA</string>
+    <string name="keys_ctrl">Ctrl</string>
+    <string name="keys_shift">Shift</string>
+    <string name="keys_alt">Alt</string>
+    <string name="keys_esc">Esc</string>
+    <string name="keys_tab">Tab</string>
+    <string name="keys_space">Spacja</string>
+    <string name="keys_wheel">Kółko</string>
+    <string name="keys_page_up">Page Up</string>
+    <string name="keys_page_down">Page Down</string>
+    <string name="keys_home">Home</string>
+    <string name="keys_end">End</string>
+    <string name="keys_select_all">Zapisane: zaznacz wszystko, co widać</string>
+    <string name="keys_remove_selected">Zapisane: usuń zaznaczone</string>
+    <string name="keys_leave_selection">Zapisane: zakończ zaznaczanie</string>
+    <string name="keys_delete">Delete</string>
+    <string name="keys_move_row">Przesuń wiersz w górę lub w dół na liście, którą można przestawiać (ten z fokusem lub pod wskaźnikiem)</string>
+</resources>

@@ -42,6 +42,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.fullTimeText
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_community
 import com.aimdi.xtanative.ui.generated.resources.posts_more
@@ -130,7 +131,7 @@ private val MediaBleed = 16.dp
  * reply line, the text and what the post carries, and the counts.
  * [continues] and [midThread] join it to the posts of its thread by a line
  * through the avatars. A tap opens it; with "Double-tap to like" on, a
- * double-tap likes it on this device.
+ * double-tap likes it on this device. A right-click opens its ⋯ menu.
  */
 @Composable
 fun PostCard(
@@ -148,9 +149,11 @@ fun PostCard(
     val drawn = translation?.shown ?: shown
     val railColor = MaterialTheme.colorScheme.outlineVariant
     val picture = rememberPostPicture()
+    var menu by rememberSaveable(shown.id) { mutableStateOf(false) }
     Column(
         modifier
             .fillMaxWidth()
+            .onSecondaryClick { menu = true }
             .recordedIn(picture)
             .opening(rememberDoubleTapLike(shown, scope.prefs, actions)) { actions.openPost(shown.id) }
             .drawBehind {
@@ -179,11 +182,10 @@ fun PostCard(
                 contentAlignment = Alignment.Center,
             ) { PostAvatar(shown, scope, actions, AvatarSize) }
             Spacer(Modifier.width((PostGeometry.COLUMN_START - PostGeometry.AVATAR_START - PostGeometry.TOUCH_TARGET).dp))
-            var menu by rememberSaveable(shown.id) { mutableStateOf(false) }
             val buttons = if (translation != null) 2 else 1
             Box(Modifier.weight(1f)) {
                 Column(Modifier.padding(end = PostGeometry.END_PADDING.dp)) {
-                    PostAuthor(shown, scope, Modifier.padding(top = PostGeometry.TEXT_GAP.dp, end = PostGeometry.authorLineEnd(buttons).dp))
+                    PostAuthor(shown, scope, actions, Modifier.padding(top = PostGeometry.TEXT_GAP.dp, end = PostGeometry.authorLineEnd(buttons).dp))
                     PostView.replyingTo(shown, quoted = false, midThread = midThread)?.let { ReplyingTo(it, shown.replyToPostId, actions) }
                     when {
                         PostView.textMissing(shown) -> StateTile(stringResource(Res.string.posts_no_text), null, Modifier.padding(top = 2.dp))
@@ -235,7 +237,7 @@ private fun ContextLines(post: XPost, actions: PostActions, pinned: Boolean, fir
     }
 }
 
-/** The author's picture, opening the profile; a plain face in non-confirmation-bias mode; XTA's follow badge on it. */
+/** The author's picture, opening the profile, with the author's card where the pointer rests on it; a plain face in non-confirmation-bias mode; XTA's follow badge on it. */
 @Composable
 internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, size: Dp) {
     if (!PostView.showsAuthor(post, scope.prefs, scope.profileScreenName)) {
@@ -243,19 +245,28 @@ internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, siz
         return
     }
     val open = { actions.openUser(post.author.screenName, post.author.id) }
-    if (!scope.prefs.followBadge) {
-        Avatar(post.author.largeAvatarUrl, size, onClick = open)
-        return
+    AuthorHoverCard(post.author, post.author.largeAvatarUrl, open) {
+        if (scope.prefs.followBadge) {
+            FollowBadge(post.author, size) { Avatar(post.author.largeAvatarUrl, size, onClick = open) }
+        } else {
+            Avatar(post.author.largeAvatarUrl, size, onClick = open)
+        }
     }
-    FollowBadge(post.author, size) { Avatar(post.author.largeAvatarUrl, size, onClick = open) }
 }
 
-/** "Name ✓ @handle · 3h", or the time alone when the author is not shown. */
+/**
+ * "Name ✓ @handle · 3h", the name showing the author's card where the pointer
+ * rests on it, with the picture at [avatarUrl] that the post shows beside it;
+ * or the time alone when the author is not shown.
+ */
 @Composable
-internal fun PostAuthor(post: XPost, scope: PostScope, modifier: Modifier = Modifier) {
-    val time = if (scope.prefs.absoluteTimestamps) fullTimeText(post.createdAt) else agoText(post.createdAt)
+internal fun PostAuthor(post: XPost, scope: PostScope, actions: PostActions, modifier: Modifier = Modifier, avatarUrl: String? = post.author.largeAvatarUrl) {
+    val full = fullTimeText(post.createdAt)
+    val time = if (scope.prefs.absoluteTimestamps) full else agoText(post.createdAt)
     if (PostView.showsAuthor(post, scope.prefs, scope.profileScreenName)) {
-        AuthorLine(post.author.name, post.author.screenName, time, post.author.verified, modifier)
+        // The full date and time where the pointer rests on a short one, as on X's site (a tooltip on the desktop; nothing on Android).
+        val card = AuthorLineCard(post.author, avatarUrl) { actions.openUser(post.author.screenName, post.author.id) }
+        AuthorLine(post.author.name, post.author.screenName, time, post.author.verified, modifier, timeTip = full, card = card)
     } else {
         Text(time, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = modifier)
     }
@@ -357,7 +368,7 @@ fun QuotedPost(post: XPost, actions: PostActions, modifier: Modifier = Modifier)
                     Avatar(post.author.avatarUrl, 20.dp)
                     Spacer(Modifier.width(6.dp))
                 }
-                PostAuthor(post, scope, Modifier.weight(1f))
+                PostAuthor(post, scope, actions, Modifier.weight(1f), avatarUrl = post.author.avatarUrl)
             }
             if (post.article == null) ExpandablePostText(post, actions, Modifier.padding(top = 4.dp))
             PostAttachments(post, scope, actions, gap = 8.dp, quoted = true)

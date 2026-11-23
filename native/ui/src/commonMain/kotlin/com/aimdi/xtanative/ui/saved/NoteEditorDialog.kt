@@ -52,6 +52,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isAltPressed
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.isShiftPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -67,8 +75,11 @@ import com.aimdi.xtanative.store.saved.LocalPosts
 import com.aimdi.xtanative.store.saved.NoteEditor
 import com.aimdi.xtanative.store.saved.NoteMedia
 import com.aimdi.xtanative.store.saved.SavedContent
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.downloads.PickedFile
+import com.aimdi.xtanative.ui.downloads.rememberClipboardPicture
 import com.aimdi.xtanative.ui.downloads.rememberFilePicker
+import com.aimdi.xtanative.ui.downloads.takesDroppedFiles
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -93,6 +104,7 @@ import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
@@ -169,9 +181,40 @@ fun NoteEditorDialog(
     }
 
     Dialog(onDismissRequest = close, properties = DialogProperties(usePlatformDefaultWidth = false, dismissOnClickOutside = false)) {
-        Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        // Ctrl+S and Ctrl+Enter save, as a desktop editor's do, while Save itself would.
+        val canSave = NoteRules.canSave(target, state, editor.dirty)
+        val pastedPicture = rememberClipboardPicture()
+        var pasting by remember { mutableStateOf(false) }
+        // Files dropped from the file manager attach as the button's picks do, one after another (a note's, not a text note's).
+        val dropped: (List<suspend () -> PickedFile?>) -> Unit = { reads ->
+            scope.launch { editor.attachAll(reads.map { read -> suspend { attachPicked(keeper, editor.postId ?: newId, read) } }) }
+        }
+        Surface(
+            Modifier.fillMaxSize().takesDroppedFiles(enabled = note != null && !state.busy, onDropped = dropped).onPreviewKeyEvent { event ->
+                val down = event.type == KeyEventType.KeyDown
+                val saves = down && NoteKeys.saves(event.key == Key.S, event.key == Key.Enter || event.key == Key.NumPadEnter, event.isCtrlPressed, event.isAltPressed || event.isShiftPressed)
+                if (saves && canSave && !state.busy) save()
+                // Ctrl+V with a picture on the clipboard (a screenshot) attaches it to a note; text still pastes into the field.
+                if (down && note != null && pastedPicture != null && !pasting && event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && event.key == Key.V) {
+                    // One read at a time, however long Ctrl+V is held. Read first: only a picture starts attaching, which would keep
+                    // the field from taking pasted text meanwhile; it waits for an attaching under way (a drop) rather than being lost.
+                    pasting = true
+                    scope.launch {
+                        try {
+                            val picture = pastedPicture() ?: return@launch
+                            editor.state.first { !it.busy }
+                            editor.attach { attachPicked(keeper, editor.postId ?: newId) { picture } }
+                        } finally {
+                            pasting = false
+                        }
+                    }
+                }
+                saves
+            },
+            color = MaterialTheme.colorScheme.background,
+        ) {
             Box(Modifier.fillMaxSize().systemBarsPadding().imePadding(), contentAlignment = Alignment.TopCenter) {
-                Column(Modifier.fillMaxSize().widthIn(max = 720.dp)) {
+                Column(Modifier.widthIn(max = 720.dp).fillMaxSize()) {
                     EditorBar(title(target), state.busy, state.saving, NoteRules.canSave(target, state, editor.dirty), close, save)
                     HorizontalDivider()
                     if (state.recovered) Text(stringResource(Res.string.saved_draft_restored), modifier = Modifier.padding(8.dp))
@@ -283,7 +326,7 @@ private fun title(target: NoteTarget): String = when (NoteRules.title(target)) {
 @Composable
 private fun EditorBar(title: String, busy: Boolean, saving: Boolean, canSave: Boolean, onClose: () -> Unit, onSave: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(start = 8.dp, end = 16.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = onClose, enabled = !busy) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) }
+        IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose, enabled = !busy) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } }
         Spacer(Modifier.width(8.dp))
         Text(title, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
         Spacer(Modifier.width(8.dp))
@@ -299,10 +342,10 @@ private fun EditorBar(title: String, busy: Boolean, saving: Boolean, canSave: Bo
 private fun EditorFoot(body: String, attach: (() -> Unit)?, attaching: Boolean, busy: Boolean) {
     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         if (attach != null) {
-            IconButton(onClick = attach, enabled = !busy) {
+            IconTip(stringResource(Res.string.saved_note_attach)) { IconButton(onClick = attach, enabled = !busy) {
                 if (attaching) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
                 else Icon(SavedIcons.PermMedia, stringResource(Res.string.saved_note_attach))
-            }
+            } }
         }
         Spacer(Modifier.width(8.dp))
         Icon(Icons.Filled.Lock, stringResource(Res.string.saved_notice_notes), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
@@ -359,4 +402,9 @@ private fun QuotedPreview(content: SavedContent) {
         Text("@" + post.author.screenName, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(post.text, maxLines = 6, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 4.dp))
     }
+}
+
+/** The note editor's keys: Ctrl+S and Ctrl+Enter save ([s], [enter]), as a desktop editor's do; with Alt or Shift too ([other]) they are not the editor's. */
+internal object NoteKeys {
+    fun saves(s: Boolean, enter: Boolean, ctrl: Boolean, other: Boolean): Boolean = ctrl && !other && (s || enter)
 }

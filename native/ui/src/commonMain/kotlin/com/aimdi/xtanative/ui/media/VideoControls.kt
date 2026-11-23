@@ -57,6 +57,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.Role
@@ -77,6 +80,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_download
 import com.aimdi.xtanative.ui.generated.resources.reader_more_options
@@ -148,9 +153,31 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
             skipped = 0
         }
     }
+    // A change of speed (< and > on the desktop, or the menu) is said for a moment, as the web's players do.
+    var speedSeen by remember { mutableStateOf(state.speed) }
+    var speedShown by remember { mutableStateOf<Double?>(null) }
+    LaunchedEffect(state.speed) {
+        if (kotlin.math.abs(state.speed - speedSeen) < 0.001) return@LaunchedEffect
+        speedSeen = state.speed
+        speedShown = state.speed
+        delay(SPEED_SHOWN_MS)
+        speedShown = null
+    }
     Box(
         modifier
             .fillMaxSize()
+            // A mouse moving over the video shows the controls and keeps them up while it moves, as a desktop's players do.
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent(PointerEventPass.Initial)
+                        if (event.type == PointerEventType.Move && event.changes.any { it.type == PointerType.Mouse }) {
+                            visible = true
+                            touch()
+                        }
+                    }
+                }
+            }
             .pointerInput(playback) {
                 detectTapGestures(
                     onTap = { visible = !visible },
@@ -174,6 +201,7 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
             }
         }
         if (skipped != 0) SkipBadge(skipped, Modifier.align(if (skipped < 0) Alignment.CenterStart else Alignment.CenterEnd))
+        speedShown?.let { SpeedBadge(it, Modifier.align(Alignment.TopCenter)) }
         if (state.qualityFailed) QualityFailed(playback, Modifier.align(Alignment.TopCenter))
         if (state.failed) FailedOverlay(playback)
     }
@@ -227,7 +255,7 @@ internal fun toggleMute(playback: VideoPlayback, muted: Boolean) {
 
 @Composable
 private fun ControlButton(icon: ImageVector, label: String, onClick: () -> Unit) {
-    IconButton(onClick = onClick) { Icon(icon, contentDescription = label, tint = Color.White) }
+    IconTip(label) { IconButton(onClick = onClick) { Icon(icon, contentDescription = label, tint = Color.White) } }
 }
 
 /** Full screen's sound button, said as on or off. */
@@ -400,6 +428,19 @@ private fun SkipBadge(seconds: Int, modifier: Modifier) {
     }
 }
 
+/** How long a new speed is said over the video ([SpeedBadge]). */
+private const val SPEED_SHOWN_MS = 1_000L
+
+/** The speed the video now plays at, "1.5x", for a moment after it changed. */
+@Composable
+private fun SpeedBadge(speed: Double, modifier: Modifier) {
+    Text(
+        stringResource(Res.string.reader_video_speed_value, VideoRules.speedText(speed)),
+        color = Color.White,
+        modifier = modifier.padding(16.dp).clip(RoundedCornerShape(8.dp)).background(Color.Black.copy(alpha = 0.7f)).padding(horizontal = 12.dp, vertical = 8.dp),
+    )
+}
+
 /** A change of quality that would not play, said for a moment over the variant that plays on (_video_controls.dart's snack bar). */
 @Composable
 private fun QualityFailed(playback: VideoPlayback, modifier: Modifier) {
@@ -433,7 +474,7 @@ private fun FailedOverlay(playback: VideoPlayback) {
 @Composable
 private fun VideoSheets(sheet: VideoSheet?, state: VideoState, playback: VideoPlayback, chrome: VideoChrome, show: (VideoSheet?) -> Unit) {
     sheet ?: return
-    ModalBottomSheet(onDismissRequest = { show(null) }) {
+    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = { show(null) }) {
         Column(Modifier.verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) {
             when (sheet) {
                 VideoSheet.MORE -> MoreRows(state, playback, chrome, show)

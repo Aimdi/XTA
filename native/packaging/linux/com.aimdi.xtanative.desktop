@@ -1,11 +1,48 @@
 [Desktop Entry]
 Type=Application
 Name=XTA Native
-GenericName=X reader
-Comment=XTA's X reader written in Kotlin, a prototype to compare with XTA
-Exec=xta-native
+GenericName=Feed reader
+Comment=Private, read-only reader for X and other networks
+# %U: `xta-native <url>` opens an X link (or a page a plugin reads) in the app; a link router (handlr, junction)
+# can send x.com links here. XTA claims no web scheme: it is no browser, and a link it hands
+# back to the browser within seconds is not taken again, so a router cannot loop.
+Exec=xta-native %U
 Icon=com.aimdi.xtanative
 Terminal=false
 Categories=Network;News;
-Keywords=X;Twitter;Reader;
+Keywords=X;Twitter;Reader;Bluesky;Mastodon;Reddit;RSS;
 StartupWMClass=com-aimdi-xtanative-desktop-MainKt
+Actions=new-search;
+
+# X's search page, which the app opens as its own search with the field ready to type in.
+[Desktop Action new-search]
+Name=New search
+Name[ar]=بحث جديد
+Name[be]=Новы пошук
+Name[be@latin]=Novy pošuk
+Name[ca]=Cerca nova
+Name[cs]=Nové hledání
+Name[de]=Neue Suche
+Name[eo]=Nova serĉo
+Name[es]=Nueva búsqueda
+Name[et]=Uus otsing
+Name[eu]=Bilaketa berria
+Name[fr]=Nouvelle recherche
+Name[hi]=नई खोज
+Name[id]=Pencarian baru
+Name[it]=Nuova ricerca
+Name[ja]=新しい検索
+Name[ko]=새 검색
+Name[nb]=Nytt søk
+Name[nl]=Nieuwe zoekopdracht
+Name[pl]=Nowe wyszukiwanie
+Name[pt]=Nova pesquisa
+Name[pt_BR]=Nova pesquisa
+Name[ro]=Căutare nouă
+Name[ru]=Новый поиск
+Name[tr]=Yeni arama
+Name[uk]=Новий пошук
+Name[vi]=Tìm kiếm mới
+Name[zh_CN]=新搜索
+Name[zh_TW]=新搜尋
+Exec=xta-native https://x.com/search

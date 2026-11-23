@@ -111,6 +111,13 @@ class SavedViewModel(private val graph: AppGraph) : ViewModel() {
 
     fun finishSelection() = view.update { it.finishSelection() }
 
+    /** Ctrl+A: every post shown selected ([selectedAllByKeys]); false where there is nothing to select. */
+    fun selectAllByKeys(): Boolean {
+        val selected = view.value.selectedAllByKeys(ui.value.visible) ?: return false
+        view.value = selected
+        return true
+    }
+
     /** The selected posts into [folderId], or out of every folder with null. */
     fun moveSelected(folderId: String?) {
         val ids = view.value.selected

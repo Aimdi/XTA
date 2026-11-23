@@ -153,6 +153,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Periksa koneksi dan folder unduhan Anda, lalu coba lagi.</string>
     <string name="downloads_open_file">Buka file</string>
+    <string name="downloads_show_in_folder">Tampilkan di folder</string>
     <string name="downloads_open_failed">File ini tidak dapat dibuka. Mungkin sudah dipindahkan atau dihapus.</string>
     <string name="downloads_queued">Menunggu</string>
     <string name="downloads_downloading">Mengunduh media...</string>

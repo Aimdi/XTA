@@ -53,16 +53,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
@@ -86,7 +88,9 @@ import com.aimdi.xtanative.pluginhost.PluginState
 import com.aimdi.xtanative.pluginhost.PluginStatus
 import com.aimdi.xtanative.pluginhost.PluginStoreState
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.SearchPillShape
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.searchPillColors
 import com.aimdi.xtanative.ui.feed.ProvenanceColors
@@ -142,7 +146,9 @@ import com.aimdi.xtanative.ui.generated.resources.plugin_version
 import com.aimdi.xtanative.ui.generated.resources.retry
 import com.aimdi.xtanative.ui.generated.resources.settings
 import com.aimdi.xtanative.ui.generated.resources.settings_show_as_tab
+import com.aimdi.xtanative.ui.home.FindsWithKeys
 import com.aimdi.xtanative.ui.home.MicroblogGroupingRow
+import com.aimdi.xtanative.ui.home.rememberLeaveField
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -181,15 +187,24 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
     if (!store.catalogue.refreshing) pulled = false
     LaunchedEffect(Unit) { plugins.manager.refresh() }
     FollowInstalls(list, store, slots)
+    // Ctrl+F and / go to the search pill at the list's top, scrolled back into view.
+    val searchFocus = remember { FocusRequester() }
+    FindsWithKeys {
+        scope.launch {
+            list.scrollToItem(0)
+            withFrameNanos {}
+            runCatching { searchFocus.requestFocus() }
+        }
+    }
 
     PluginScaffold(
         title = stringResource(Res.string.plugin_store),
         onBack = onBack,
         actions = {
             ShowPrivateMenu(store.showPrivate) { show -> scope.launch { plugins.showPrivate(show) } }
-            IconButton(onClick = { scope.launch { plugins.manager.refresh() } }, enabled = !store.catalogue.refreshing) {
+            IconTip(stringResource(Res.string.retry)) { IconButton(onClick = { scope.launch { plugins.manager.refresh() } }, enabled = !store.catalogue.refreshing) {
                 Icon(Icons.Filled.Refresh, stringResource(Res.string.retry))
-            }
+            } }
         },
     ) { padding ->
         val actions = StoreActions(
@@ -213,8 +228,8 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
             },
             modifier = Modifier.padding(top = padding.calculateTopPadding()),
         ) {
-            LazyColumn(state = list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 24.dp), modifier = Modifier.fillMaxSize()) {
-                item(key = "search") { StoreSearchField(query) { query = it } }
+            WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 24.dp), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
+                item(key = "search") { StoreSearchField(query, Modifier.focusRequester(searchFocus)) { query = it } }
                 if (store.catalogue.refreshing) item(key = "refreshing") { LinearProgressIndicator(Modifier.fillMaxWidth()) }
                 if (store.catalogue.unreachable && !store.catalogue.refreshing) {
                     item(key = "unreachable") { Unreachable(store.catalogue.fetchedAt != null) { scope.launch { plugins.manager.refresh() } } }
@@ -238,7 +253,7 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
                 if (store.installed.isEmpty() && store.onOffer.isEmpty() && !store.catalogue.refreshing && !store.catalogue.unreachable) {
                     item(key = "empty") { MessageText(stringResource(Res.string.plugin_store_empty)) }
                 }
-            }
+            } }
         }
     }
 
@@ -303,8 +318,8 @@ private fun storeMatching(query: String, running: List<RunningPlugin>, locale: L
 
 /** XTA's "Search plugins": a pill above the list, filtering it as it is typed in. */
 @Composable
-private fun StoreSearchField(query: String, onQuery: (String) -> Unit) {
-    val focus = LocalFocusManager.current
+private fun StoreSearchField(query: String, modifier: Modifier, onQuery: (String) -> Unit) {
+    val leaveField = rememberLeaveField()
     TextField(
         value = query,
         onValueChange = onQuery,
@@ -312,10 +327,10 @@ private fun StoreSearchField(query: String, onQuery: (String) -> Unit) {
         placeholder = { Text(stringResource(Res.string.plugin_store_search)) },
         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = { focus.clearFocus() }),
+        keyboardActions = KeyboardActions(onSearch = { leaveField() }),
         shape = SearchPillShape,
         colors = searchPillColors(),
-        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
+        modifier = modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
     )
 }
 
@@ -432,9 +447,9 @@ private fun InstalledRow(shown: InstalledPlugin, plugins: AppPlugins, locale: Lo
                 TextButton(onClick = { actions.open(state.id) }) { Text(stringResource(Res.string.plugin_open)) }
             }
             if (plugin?.settings != null) {
-                IconButton(onClick = { actions.settings(state.id) }) {
+                IconTip(stringResource(Res.string.settings)) { IconButton(onClick = { actions.settings(state.id) }) {
                     Icon(GroupIcons.Tune, stringResource(Res.string.settings), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
-                }
+                } }
             }
             val home = plugin?.homeTab != null
             InstalledMenu(
@@ -649,9 +664,9 @@ private fun InstalledMenu(
 ) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) {
+        IconTip(stringResource(Res.string.plugin_more_options)) { IconButton(onClick = { open = true }) {
             Icon(Icons.Filled.MoreVert, stringResource(Res.string.plugin_more_options), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
-        }
+        } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             // A box has no room for these: its version, what it keeps and its settings are said and reached here.
             if (info.isNotEmpty()) {
@@ -704,7 +719,7 @@ private fun InstalledMenu(
 private fun ShowPrivateMenu(showPrivate: Boolean, onChange: (Boolean) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.plugin_more_options)) }
+        IconTip(stringResource(Res.string.plugin_more_options)) { IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.plugin_more_options)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.plugin_store_show_private)) },

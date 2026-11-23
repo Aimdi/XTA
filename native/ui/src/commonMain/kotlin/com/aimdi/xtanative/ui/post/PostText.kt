@@ -100,7 +100,7 @@ fun RunsText(
     topic?.let { TopicSheet(it) { topic = null } }
     Text(
         text,
-        modifier = modifier.tagPresses(text, layout) { topic = it },
+        modifier = modifier.tagPresses(text, layout) { topic = it }.linkMiddleClicks(text, layout, actions.openInBrowser),
         style = style,
         color = MaterialTheme.colorScheme.onSurface,
         maxLines = maxLines,
@@ -147,7 +147,7 @@ fun ExpandablePostText(
                     laidOut.take(layout)
                     if (clipped && layout.hasVisualOverflow) folds = true
                 },
-                modifier = (if (clipped && folds) Modifier.fadingBottom() else Modifier).tagPresses(text, laidOut) { topic = it },
+                modifier = (if (clipped && folds) Modifier.fadingBottom() else Modifier).tagPresses(text, laidOut) { topic = it }.linkMiddleClicks(text, laidOut, actions.openInBrowser),
             )
         }
         if (selectable) SelectionContainer { drawn() } else drawn()

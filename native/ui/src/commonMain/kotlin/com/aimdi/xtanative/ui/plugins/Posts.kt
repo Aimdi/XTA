@@ -60,6 +60,7 @@ import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.pinned
 import com.aimdi.xtanative.ui.generated.resources.plugin_post_hide
@@ -169,8 +170,8 @@ class NetworkPostExtras(
  * A post as a list row, as the app draws X's: who reposted or pinned it, the
  * author, whom it answers, its title and text, media, link card and quoted
  * post, and its counts, ending with the bookmark of a post the archive keeps
- * ([NetworkPostActions.archive]); a long press opens its menu
- * ([NetworkPostActions.more]). [continues] draws it as part of a thread going
+ * ([NetworkPostActions.archive]); a long press, or a right-click, opens
+ * its menu ([NetworkPostActions.more]). [continues] draws it as part of a thread going
  * on below; [indent] moves a reply under the one it answers; with [playing],
  * its first video plays in place. What a network adds to the row (its own
  * glyph on the author line, its own row in place of the counts, a long
@@ -226,10 +227,12 @@ fun NetworkPostCard(
 ) {
     var revealed by rememberSaveable(post.id, post.revision) { mutableStateOf(false) }
     val more = actions.more
+    val press = extras.onLongPress ?: more?.let { open -> { open(post) } }
     Column(
         modifier
             .fillMaxWidth()
-            .combinedClickable(onClick = { actions.open(post) }, onLongClick = extras.onLongPress ?: more?.let { open -> { open(post) } })
+            .then(press?.let { Modifier.onSecondaryClick(it) } ?: Modifier)
+            .combinedClickable(onClick = { actions.open(post) }, onLongClick = press)
             .padding(start = 16.dp + IndentStep * indent.coerceIn(0, MAX_INDENT), end = 16.dp, top = 12.dp, bottom = if (continues) 4.dp else 12.dp),
     ) {
         val repostedBy = post.repostedBy
@@ -307,7 +310,7 @@ fun NetworkFocalPost(post: NetworkPost, actions: NetworkPostActions, modifier: M
     var revealed by rememberSaveable(post.id, post.revision) { mutableStateOf(false) }
     val archive = rememberArchive(post, actions)
     val more = actions.more
-    val pressable = if (more == null) modifier else modifier.combinedClickable(onClick = {}, onLongClick = { more(post) })
+    val pressable = if (more == null) modifier else modifier.onSecondaryClick { more(post) }.combinedClickable(onClick = {}, onLongClick = { more(post) })
     Column(pressable.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Avatar(post.avatarUrl, 44.dp) { actions.openAuthor(post) }

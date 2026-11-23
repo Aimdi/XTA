@@ -306,7 +306,7 @@ private fun Tile(
 /** The page indicator and the card's buttons, pinned under the card: on the account card, XTA's Add account, Not now and Import backup. */
 @Composable
 private fun Footer(page: IntroPage, noAccount: Boolean, onNext: () -> Unit, onSignIn: () -> Unit, onImport: () -> Unit, onFinish: () -> Unit) {
-    Column(Modifier.fillMaxWidth().widthIn(max = 560.dp).padding(horizontal = 24.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(Modifier.widthIn(max = 560.dp).fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         PageIndicator(page.ordinal, IntroPage.entries.size)
         when {
             page == IntroPage.SOURCES -> Button(onClick = onFinish, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.intro_start_reading)) }

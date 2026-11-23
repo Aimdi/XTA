@@ -15,6 +15,7 @@ import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedState
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pagedRows
@@ -32,13 +33,13 @@ internal fun HnStoryList(app: HnApp, pages: PagedItems<HnStory>, emptyIcon: Imag
     ScrollsToTop(list, frame.toTop)
     ReadsMoreNearEnd(list, paged) { pages.more() }
     PullToRefreshBox(isRefreshing = paged.loading && paged.loaded, onRefresh = pages::refresh, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             if (HnListRules.nothing(paged)) {
                 item(key = "empty") { EmptyPane(emptyIcon, empty) }
             } else {
                 pagedRows(paged, pages, key = { "${it.id}" }, network = app.network, empty = empty, row = row)
             }
-        }
+        } }
     }
 }
 

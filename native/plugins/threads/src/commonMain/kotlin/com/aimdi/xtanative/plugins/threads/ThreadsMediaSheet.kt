@@ -17,6 +17,7 @@ import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.PluginMenuRow
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.plugins.rememberShareText
 import com.aimdi.xtanative.ui.post.PostIcons
 
@@ -36,7 +37,7 @@ internal fun ThreadsMediaSheet(app: ThreadsApp, post: ThreadsPost, index: Int, i
     val share = rememberShareText()
     val copied = pluginString(Strings.link_copied)
     val done = { action: () -> Unit -> { onDismiss(); action() } }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.navigationBarsPadding().padding(bottom = 8.dp)) {
             for (entry in ThreadsMediaActions.of(post, index, items, opens)) {
                 when (entry) {

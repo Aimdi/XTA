@@ -41,6 +41,7 @@ import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.Problem
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.WithReadingColumn
@@ -210,7 +211,7 @@ fun QuotesScreen(id: String, reposters: Boolean, actions: PostActions, onBack: (
                         }
                     }
                 },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
@@ -232,7 +233,7 @@ private fun QuotesList(state: QuotesUi, vm: QuotesViewModel, actions: PostAction
     rememberReadRecovery(quotes.retryable, quotes.loading || quotes.loadingMore, vm::retryQuotes)
     PageMore(list, quotes.items.size) { quotes.cursor?.let(vm::loadQuotes) }
     val layout = rememberFeedLayout(quotes.items)
-    WithReadingColumn(padding) { column ->
+    WithReadingColumn(padding, list) { column ->
         LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             item(key = "sort") {
                 SortChip(state.quoteSort, Sorts.X_QUOTES, { quoteSortLabel(it) }, ::quoteSortIcon, vm::selectQuotes, Modifier.padding(start = 4.dp))
@@ -254,7 +255,7 @@ private fun RepostersList(state: QuotesUi, vm: QuotesViewModel, actions: PostAct
     val options = Sorts.reposterSorts(reposters.items)
     val sort = Sorts.effective(state.reposterSort, options)
     val people = remember(reposters.items, sort) { Sorts.sortReposters(reposters.items, sort) }
-    LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+    WithReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         if (options.size > 1) {
             item(key = "sort") { SortChip(sort, options, { reposterSortLabel(it) }, ::reposterSortIcon, vm::selectReposters, Modifier.padding(start = 4.dp)) }
         }
@@ -268,7 +269,7 @@ private fun RepostersList(state: QuotesUi, vm: QuotesViewModel, actions: PostAct
         ) {
             items(people, key = { "user-" + it.id }) { user -> UserRow(user, actions) }
         }
-    }
+    } }
 }
 
 /** A list's first load, its failure, its emptiness, its rows and the page under way below them. */

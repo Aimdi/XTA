@@ -156,6 +156,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Egiaztatu konexioa eta deskargen karpeta, eta saiatu berriro.</string>
     <string name="downloads_open_file">Ireki fitxategia</string>
+    <string name="downloads_show_in_folder">Erakutsi karpetan</string>
     <string name="downloads_open_failed">Ezin izan da fitxategi hau ireki. Baliteke lekuz aldatu edo ezabatu izana.</string>
     <string name="downloads_queued">Zain</string>
     <string name="downloads_downloading">Multimedia deskargatzen...</string>

@@ -45,6 +45,7 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginString
 import kotlinx.coroutines.delay
@@ -116,13 +117,13 @@ private fun FeedList(feed: SubstackHomeFeed, state: SubstackHomeFeed.State, list
     var pulled by remember { mutableStateOf(false) }
     LaunchedEffect(state.refreshing) { if (!state.refreshing) pulled = false }
     PullToRefreshBox(isRefreshing = pulled && state.refreshing && state.loaded, onRefresh = { pulled = true; feed.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             when {
                 !state.loaded && error != null -> item(key = "problem") { FailurePane(error, onRetry = { feed.refresh(force = true) }) }
                 !state.loaded -> item(key = "loading") { PluginFeedSkeleton() }
                 else -> rows()
             }
-        }
+        } }
         if (state.refreshing && state.loaded && !pulled) {
             LinearProgressIndicator(Modifier.fillMaxWidth().height(3.dp).align(Alignment.TopCenter).padding(top = frame.padding.calculateTopPadding()))
         }
@@ -142,7 +143,7 @@ private fun LazyListScope.pinnedToolbar(toolbar: @Composable () -> Unit) {
 
 @Composable
 private fun NoFollows(app: SubstackApp, frame: PluginFrame, discover: Boolean) {
-    LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+    PluginReadingColumn(frame.padding) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = column) {
         item(key = "none") {
             EmptyState(
                 pluginString(Strings.empty),
@@ -161,7 +162,7 @@ private fun NoFollows(app: SubstackApp, frame: PluginFrame, discover: Boolean) {
                 }
             }
         }
-    }
+    } }
 }
 
 @Composable

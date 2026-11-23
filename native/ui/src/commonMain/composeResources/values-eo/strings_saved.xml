@@ -156,6 +156,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Kontrolu vian konekton kaj la elŝutdosierujon, poste reprovu.</string>
     <string name="downloads_open_file">Malfermi dosieron</string>
+    <string name="downloads_show_in_folder">Montri en dosierujo</string>
     <string name="downloads_open_failed">Ne eblis malfermi ĉi tiun dosieron. Eble ĝi estis movita aŭ forigita.</string>
     <string name="downloads_queued">Atendanta</string>
     <string name="downloads_downloading">Elŝutas plurmedion...</string>

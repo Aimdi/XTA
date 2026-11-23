@@ -1,6 +1,9 @@
 package com.aimdi.xtanative.ui.links
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import com.aimdi.xtanative.services.links.LinkLaunch
 import java.awt.Desktop
 import java.net.URI
@@ -12,9 +15,12 @@ internal actual fun rememberLinkPlatform(): LinkPlatform = DesktopLinks
 @Composable
 internal actual fun SharedTextEffect(onText: (String) -> Unit) = Unit
 
-/** No link is opened in the desktop app from outside. */
+/** Hands [onLink] each link `xta-native <url>` opened here ([DesktopIncomingLinks]). */
 @Composable
-internal actual fun IncomingLinkEffect(onLink: (String) -> Unit) = Unit
+internal actual fun IncomingLinkEffect(onLink: (String) -> Unit) {
+    val latest by rememberUpdatedState(onLink)
+    LaunchedEffect(Unit) { DesktopIncomingLinks.links.collect { latest(it) } }
+}
 
 /**
  * The desktop's one browser, its default: java.awt.Desktop, or xdg-open where
@@ -27,6 +33,7 @@ internal object DesktopLinks : LinkPlatform {
     override fun launch(launch: LinkLaunch) {
         val url = launch.url.trim()
         if (!url.startsWith("https://") && !url.startsWith("http://")) return
+        SentOutside.sent(url)
         if (!browse(url)) runCatching { ProcessBuilder("xdg-open", url).start() }
     }
 

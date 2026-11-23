@@ -156,6 +156,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Bağlantınızı ve indirme klasörünü kontrol edip tekrar deneyin.</string>
     <string name="downloads_open_file">Dosyayı aç</string>
+    <string name="downloads_show_in_folder">Klasörde göster</string>
     <string name="downloads_open_failed">Bu dosya açılamadı. Taşınmış veya silinmiş olabilir.</string>
     <string name="downloads_queued">Bekliyor</string>
     <string name="downloads_downloading">Medya indiriliyor...</string>

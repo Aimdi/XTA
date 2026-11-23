@@ -51,6 +51,7 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RetryRow
@@ -91,9 +92,9 @@ internal fun MastodonThreadScreen(app: MastodonApp, target: MastodonTarget) {
     ) { padding ->
         val hasReplies = state.thread.descendants.isNotEmpty()
         PullToRefreshBox(isRefreshing = state.loading && hasReplies, onRefresh = reader::refresh, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            LazyColumn(state = list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp), modifier = Modifier.fillMaxSize()) {
+            PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp), list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
                 threadRows(app, state, reader)
-            }
+            } }
         }
     }
 }

@@ -48,8 +48,10 @@ import com.aimdi.xtanative.core.x.model.XCommunity
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.datePattern
 import com.aimdi.xtanative.ui.common.swipeTabs
@@ -68,6 +70,8 @@ import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_com
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_members
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
+import com.aimdi.xtanative.ui.home.DesktopKeys
+import com.aimdi.xtanative.ui.home.DesktopShortcuts
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.search.DiscoverIcons
@@ -92,13 +96,21 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
     val list = rememberLazyListState()
     if (state.tab == CommunityTab.TOP) LoadMoreNearEnd(list, posts, vm::morePosts)
     val layout = rememberFeedLayout(posts.items)
+    // F5 and Ctrl+R read the community's posts again (the community, once it failed); ← → and Ctrl+Tab turn its tabs, as on Home.
+    DesktopShortcuts(
+        refresh = { if (state.community != null) vm.retryPosts() else if (state.problem != null) vm.load() },
+        turn = { by -> if (state.community != null) DesktopKeys.turned(state.tab.ordinal, CommunityTab.entries.size, by)?.let { vm.select(CommunityTab.entries[it]) } },
+        jump = { digit -> if (state.community != null) DesktopKeys.pageAt(digit, CommunityTab.entries.size)?.let { vm.select(CommunityTab.entries[it]) } },
+        isOpen = { false },
+        close = {},
+    )
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }
+                    IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
                 },
                 title = { Text(state.community?.name.orEmpty(), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -112,11 +124,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
             community == null && problem != null -> ProblemView(problem, vm::load, below, context = stringResource(Res.string.problem_unable_to_load_the_community))
             community == null -> LoadingRow(below)
             // Padding, not content padding: the tabs stick below the bar, not under it.
-            else -> LazyColumn(
-                state = list,
-                contentPadding = PaddingValues(bottom = padding.calculateBottomPadding()),
-                modifier = Modifier.fillMaxSize().then(below).swipeTabs(CommunityTab.entries, state.tab, vm::select),
-            ) {
+            else -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding()), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize().then(below).swipeTabs(CommunityTab.entries, state.tab, vm::select)) {
                 item(key = "header", contentType = "header") { CommunityHeader(community) { openMembers(community.id) } }
                 stickyHeader(key = "tabs", contentType = "tabs") { CommunityTabs(state.tab, vm::select) }
                 when (state.tab) {
@@ -126,7 +134,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
                     }
                     CommunityTab.ABOUT -> item(key = "about", contentType = "about") { CommunityAbout(community) }
                 }
-            }
+            } }
         }
     }
 }
@@ -145,14 +153,14 @@ fun CommunityMembersScreen(id: String, actions: PostActions, onBack: () -> Unit)
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }
+                    IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
                 },
                 title = { Text(stringResource(Res.string.discover_community_members)) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
     ) { padding ->
-        LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+        WithReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             itemsIndexed(members.items, key = { _, user -> user.id }, contentType = { _, _ -> "person" }) { index, user ->
                 PersonRow(user, onOpen = { actions.openUser(user.screenName, user.id) })
                 if (index < members.items.lastIndex) PersonDivider()
@@ -166,7 +174,7 @@ fun CommunityMembersScreen(id: String, actions: PostActions, onBack: () -> Unit)
                 firstFailed = Res.string.problem_unable_to_load_the_members,
                 moreFailed = Res.string.problem_unable_to_load_the_members,
             )
-        }
+        } }
     }
 }
 

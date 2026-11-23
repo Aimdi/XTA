@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,8 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.saved.SavedContent
-import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.FeedSkeleton
+import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_no_results
 import com.aimdi.xtanative.ui.generated.resources.saved_notice_saves
@@ -44,10 +46,7 @@ fun <T : Any> PluginSavedScreen(host: PluginHost, read: (PluginPostArchive) -> T
     val saved by host.savedPosts.collectAsState()
     val rows = remember(saved) { saved?.mapNotNull { kept -> ListedSave.of(kept, read) } }
     PluginScaffold(title = stringResource(Res.string.saved_title), onBack = host::back) { padding ->
-        LazyColumn(
-            contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp),
-            modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()),
-        ) {
+        rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 32.dp), readList) { column -> LazyColumn(state = readList, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             item(key = "notice") { SavedNotice(empty = rows?.isEmpty() == true) }
             if (rows == null) item(key = "loading") { FeedSkeleton(count = 3) }
             items(rows.orEmpty(), key = { it.kept.post.id }, contentType = { "saved" }) { listed ->
@@ -56,7 +55,7 @@ fun <T : Any> PluginSavedScreen(host: PluginHost, read: (PluginPostArchive) -> T
                 SavedNoteRow(listed.kept.post.id, listed.kept.note, listed.content) { host.editNote(listed.kept.post) }
                 Hairline()
             }
-        }
+        } } }
     }
 }
 

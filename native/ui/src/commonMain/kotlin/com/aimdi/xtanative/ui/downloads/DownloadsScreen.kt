@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -45,6 +46,8 @@ import com.aimdi.xtanative.store.downloads.DownloadEntry
 import com.aimdi.xtanative.store.downloads.DownloadStatus
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.cancel
@@ -62,6 +65,7 @@ import com.aimdi.xtanative.ui.generated.resources.downloads_progress
 import com.aimdi.xtanative.ui.generated.resources.downloads_queued
 import com.aimdi.xtanative.ui.generated.resources.downloads_retry_hint
 import com.aimdi.xtanative.ui.generated.resources.downloads_saving
+import com.aimdi.xtanative.ui.generated.resources.downloads_show_in_folder
 import com.aimdi.xtanative.ui.generated.resources.downloads_title
 import com.aimdi.xtanative.ui.generated.resources.retry
 import com.aimdi.xtanative.ui.saved.KeepNotice
@@ -83,6 +87,7 @@ fun DownloadsScreen(onBack: () -> Unit) {
     val queue = graph.downloads
     val state by queue.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val showInFolder = rememberShowInFolder()
     LaunchedEffect(queue) {
         queue.initialize()
         queue.setConcurrency(graph.settings.load()[MediaPrefs.downloadConcurrency])
@@ -92,11 +97,11 @@ fun DownloadsScreen(onBack: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.downloads_title)) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 actions = {
-                    IconButton(onClick = { scope.launch { queue.clearFinished() } }) {
+                    IconTip(stringResource(Res.string.downloads_clear_finished)) { IconButton(onClick = { scope.launch { queue.clearFinished() } }) {
                         Icon(SavedIcons.PlaylistRemove, stringResource(Res.string.downloads_clear_finished))
-                    }
+                    } }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
@@ -110,7 +115,7 @@ fun DownloadsScreen(onBack: () -> Unit) {
                 }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             }
-            Box(Modifier.weight(1f)) {
+            Box(Modifier.weight(1f).fillMaxWidth()) {
                 when {
                     !state.ready -> CircularProgressIndicator(Modifier.align(Alignment.Center))
                     state.entries.isEmpty() -> Column(
@@ -121,7 +126,7 @@ fun DownloadsScreen(onBack: () -> Unit) {
                         Icon(SavedIcons.Download, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(40.dp))
                         Text(stringResource(Res.string.downloads_empty), textAlign = TextAlign.Center)
                     }
-                    else -> LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 16.dp)) {
+                    else -> rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 16.dp), readList) { column -> LazyColumn(state = readList, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                         items(state.shown, key = { it.id }) { entry ->
                             DownloadRowView(
                                 entry,
@@ -133,10 +138,19 @@ fun DownloadsScreen(onBack: () -> Unit) {
                                         if (!graph.platformFiles.open(saved, entry.fileName)) KeepNotices.show(KeepNotice.OpenFailed)
                                     }
                                 },
+                                // The desktop's file manager, the file picked out in its folder.
+                                onShowInFolder = showInFolder?.let { show ->
+                                    {
+                                        scope.launch {
+                                            val saved = entry.savedUri ?: return@launch
+                                            if (!show(saved)) KeepNotices.show(KeepNotice.OpenFailed)
+                                        }
+                                    }
+                                },
                             )
                             Hairline()
                         }
-                    }
+                    } } }
                 }
             }
         }
@@ -144,7 +158,7 @@ fun DownloadsScreen(onBack: () -> Unit) {
 }
 
 @Composable
-private fun DownloadRowView(entry: DownloadEntry, onCancel: () -> Unit, onRetry: () -> Unit, onOpen: () -> Unit) {
+private fun DownloadRowView(entry: DownloadEntry, onCancel: () -> Unit, onRetry: () -> Unit, onOpen: () -> Unit, onShowInFolder: (() -> Unit)? = null) {
     val row = DownloadRow.of(entry)
     Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 10.dp, bottom = 10.dp)) {
         Icon(
@@ -174,9 +188,12 @@ private fun DownloadRowView(entry: DownloadEntry, onCancel: () -> Unit, onRetry:
             }
             if (row.retryHint) Text(stringResource(Res.string.downloads_retry_hint), style = MaterialTheme.typography.bodySmall)
         }
-        if (row.canCancel) IconButton(onClick = onCancel) { Icon(Icons.Filled.Close, stringResource(Res.string.cancel)) }
-        if (row.canRetry) IconButton(onClick = onRetry) { Icon(Icons.Filled.Refresh, stringResource(Res.string.retry)) }
-        if (row.canOpen) IconButton(onClick = onOpen) { Icon(SavedIcons.OpenInNew, stringResource(Res.string.downloads_open_file)) }
+        if (row.canCancel) IconTip(stringResource(Res.string.cancel)) { IconButton(onClick = onCancel) { Icon(Icons.Filled.Close, stringResource(Res.string.cancel)) } }
+        if (row.canRetry) IconTip(stringResource(Res.string.retry)) { IconButton(onClick = onRetry) { Icon(Icons.Filled.Refresh, stringResource(Res.string.retry)) } }
+        if (row.canOpen && onShowInFolder != null) {
+            IconTip(stringResource(Res.string.downloads_show_in_folder)) { IconButton(onClick = onShowInFolder) { Icon(SavedIcons.FolderOpen, stringResource(Res.string.downloads_show_in_folder)) } }
+        }
+        if (row.canOpen) IconTip(stringResource(Res.string.downloads_open_file)) { IconButton(onClick = onOpen) { Icon(SavedIcons.OpenInNew, stringResource(Res.string.downloads_open_file)) } }
         Spacer(Modifier.width(0.dp))
     }
 }

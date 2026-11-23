@@ -1,0 +1,14 @@
+{
+  "data": {
+    "list": {
+      "__typename": "List",
+      "id_str": "1500000000000000001",
+      "id": "TGlzdDoxNTAwMDAwMDAwMDAwMDAwMDAx",
+      "name": "Mock reading list",
+      "description": "A list the stand-in for X makes up for the desktop checks.",
+      "member_count": 3,
+      "subscriber_count": 0,
+      "mode": "Public"
+    }
+  }
+}

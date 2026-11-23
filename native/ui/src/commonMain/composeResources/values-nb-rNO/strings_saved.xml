@@ -156,6 +156,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Sjekk tilkoblingen og nedlastingsmappen, og prøv på nytt.</string>
     <string name="downloads_open_file">Åpne fil</string>
+    <string name="downloads_show_in_folder">Vis i mappe</string>
     <string name="downloads_open_failed">Kunne ikke åpne denne filen. Den kan ha blitt flyttet eller slettet.</string>
     <string name="downloads_queued">Venter</string>
     <string name="downloads_downloading">Laster ned media …</string>

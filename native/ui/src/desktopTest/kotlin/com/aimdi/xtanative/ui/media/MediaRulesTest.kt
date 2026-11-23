@@ -152,4 +152,146 @@ class MediaRulesTest {
         assertEquals(0.5f, SlideToClose.backdrop(300f, 1000f))
         assertEquals(0.2f, SlideToClose.backdrop(5000f, 1000f))
     }
+
+    @Test
+    fun theMouseWheelZoomsInAndOutWithinTheEnds() {
+        assertEquals(1.2f, ViewerZoom.wheeled(1f, -1f), 0.001f, "a notch away from the reader zooms in")
+        assertEquals(1f, ViewerZoom.wheeled(1.2f, 1f), 0.001f, "a notch towards the reader zooms out")
+        assertEquals(ViewerZoom.MIN, ViewerZoom.wheeled(1f, 3f), "never below the fitted size")
+        assertEquals(ViewerZoom.MAX, ViewerZoom.wheeled(3.9f, -5f), "never past the most")
+        assertEquals(2f, ViewerZoom.wheeled(2f, 0f))
+    }
+
+    @Test
+    fun aVideoFullScreenTakesThePlayersKeys() {
+        fun key(escape: Boolean = false, space: Boolean = false, left: Boolean = false, right: Boolean = false, modified: Boolean = false) =
+            VideoKeys.of(escape, space, left, right, modified)
+        assertEquals(VideoKey.LEAVE, key(escape = true))
+        assertEquals(VideoKey.PLAY_PAUSE, key(space = true))
+        assertEquals(VideoKey.BACK, key(left = true))
+        assertEquals(VideoKey.FORWARD, key(right = true))
+        assertEquals(VideoKey.NONE, key())
+        assertEquals(VideoKey.NONE, key(space = true, modified = true), "Ctrl+Space is the window's")
+        assertEquals(VideoKey.NONE, key(left = true, modified = true), "Alt+← goes back, not ten seconds")
+        assertEquals(VideoKey.LEAVE, key(escape = true, modified = true))
+    }
+
+    @Test
+    fun theViewerTurnsWithTheArrowsAndGoesBackWithAltLeft() {
+        fun key(escape: Boolean = false, left: Boolean = false, right: Boolean = false, back: Boolean = false, modified: Boolean = false) =
+            ViewerKeys.of(escape, left, right, back, modified)
+        assertEquals(ViewerKey.PREVIOUS, key(left = true))
+        assertEquals(ViewerKey.NEXT, key(right = true))
+        assertEquals(ViewerKey.CLOSE, key(escape = true))
+        assertEquals(ViewerKey.CLOSE, key(left = true, back = true, modified = true), "Alt+← goes back, not to the photo before")
+        assertEquals(ViewerKey.CLOSE, key(back = true), "the Back key")
+        assertEquals(ViewerKey.NONE, key(right = true, modified = true), "Ctrl+→ is not the viewer's")
+        assertEquals(ViewerKey.NONE, key())
+    }
+
+    @Test
+    fun goingBackLeavesAVideoFullScreen() {
+        assertEquals(VideoKey.LEAVE, VideoKeys.of(escape = false, space = false, left = true, right = false, modified = true, back = true))
+        assertEquals(VideoKey.LEAVE, VideoKeys.of(escape = false, space = false, left = false, right = false, modified = false, back = true))
+    }
+
+    @Test
+    fun plusMinusAndZeroZoomTheViewersPhoto() {
+        fun key(zoom: ViewerKey, modified: Boolean = false) = ViewerKeys.of(escape = false, left = false, right = false, back = false, modified = modified, zoom = zoom)
+        assertEquals(ViewerKey.ZOOM_IN, key(ViewerKey.ZOOM_IN))
+        // With Ctrl too, as a browser zooms.
+        assertEquals(ViewerKey.ZOOM_OUT, key(ViewerKey.ZOOM_OUT, modified = true))
+        assertEquals(ViewerKey.ZOOM_RESET, key(ViewerKey.ZOOM_RESET))
+        assertEquals(ViewerKey.NONE, key(ViewerKey.NONE))
+        // A zoom key is no other key.
+        assertEquals(ViewerKey.NONE, key(ViewerKey.CLOSE))
+        assertEquals(ViewerZoom.wheeled(1f, -1f), ViewerZoom.keyed(1f, ViewerKey.ZOOM_IN))
+        assertEquals(ViewerZoom.wheeled(2f, 1f), ViewerZoom.keyed(2f, ViewerKey.ZOOM_OUT))
+        assertEquals(ViewerZoom.MIN, ViewerZoom.keyed(3f, ViewerKey.ZOOM_RESET))
+        assertEquals(ViewerZoom.MIN, ViewerZoom.keyed(ViewerZoom.MIN, ViewerKey.ZOOM_OUT))
+        assertEquals(2f, ViewerZoom.keyed(2f, ViewerKey.NEXT))
+    }
+
+    @Test
+    fun theArrowsMoveAboutAZoomedPhotoAndHomeAndEndGoToTheEnds() {
+        fun key(left: Boolean = false, right: Boolean = false, up: Boolean = false, down: Boolean = false, home: Boolean = false, end: Boolean = false, zoomed: Boolean = false) =
+            ViewerKeys.of(escape = false, left = left, right = right, back = false, modified = false, up = up, down = down, home = home, end = end, zoomed = zoomed)
+        assertEquals(ViewerKey.PREVIOUS, key(left = true))
+        assertEquals(ViewerKey.NEXT, key(right = true))
+        assertEquals(ViewerKey.NONE, key(up = true))
+        assertEquals(ViewerKey.PAN_LEFT, key(left = true, zoomed = true))
+        assertEquals(ViewerKey.PAN_RIGHT, key(right = true, zoomed = true))
+        assertEquals(ViewerKey.PAN_UP, key(up = true, zoomed = true))
+        assertEquals(ViewerKey.PAN_DOWN, key(down = true, zoomed = true))
+        assertEquals(ViewerKey.FIRST, key(home = true))
+        assertEquals(ViewerKey.LAST, key(end = true, zoomed = true))
+        // Zoomed twice over on a 1000 x 800 page: the view moves 150 px and stops at the photo's edge (500 px).
+        assertEquals(Shift(150f, 0f), ViewerZoom.panned(Shift.ZERO, 2f, ViewerKey.PAN_LEFT, 1000f, 800f))
+        assertEquals(Shift(0f, -150f), ViewerZoom.panned(Shift.ZERO, 2f, ViewerKey.PAN_DOWN, 1000f, 1000f))
+        assertEquals(Shift(-500f, 0f), ViewerZoom.panned(Shift(-450f, 0f), 2f, ViewerKey.PAN_RIGHT, 1000f, 800f))
+        assertEquals(Shift.ZERO, ViewerZoom.panned(Shift.ZERO, 1f, ViewerKey.PAN_LEFT, 1000f, 800f))
+    }
+
+    @Test
+    fun theWebPlayersLettersWorkFullScreen() {
+        fun key(letter: Char? = null, home: Boolean = false, modified: Boolean = false) =
+            VideoKeys.of(escape = false, space = false, left = false, right = false, modified = modified, letter = letter, home = home)
+        assertEquals(VideoKey.PLAY_PAUSE, key('k'))
+        assertEquals(VideoKey.BACK, key('j'))
+        assertEquals(VideoKey.FORWARD, key('l'))
+        assertEquals(VideoKey.MUTE, key('m'))
+        assertEquals(VideoKey.LEAVE, key('f'))
+        assertEquals(VideoKey.RESTART, key(home = true))
+        // With Ctrl or Alt they are the window's.
+        assertEquals(VideoKey.NONE, key('m', modified = true))
+        assertEquals(VideoKey.NONE, key('x'))
+    }
+
+    @Test
+    fun aVideoOnTheViewersPageTakesThePlayersLetters() {
+        assertEquals(VideoKey.PLAY_PAUSE, VideoKeys.onViewerPage(space = true, letter = null, modified = false))
+        assertEquals(VideoKey.PLAY_PAUSE, VideoKeys.onViewerPage(space = false, letter = 'k', modified = false))
+        assertEquals(VideoKey.FORWARD, VideoKeys.onViewerPage(space = false, letter = 'l', modified = false))
+        assertEquals(VideoKey.MUTE, VideoKeys.onViewerPage(space = false, letter = 'm', modified = false))
+        // f goes full screen here, rather than leaving it.
+        assertEquals(VideoKey.FULLSCREEN, VideoKeys.onViewerPage(space = false, letter = 'f', modified = false))
+        assertEquals(VideoKey.NONE, VideoKeys.onViewerPage(space = false, letter = 'm', modified = true))
+        assertEquals(VideoKey.NONE, VideoKeys.onViewerPage(space = false, letter = null, modified = false))
+    }
+
+    @Test
+    fun lessAndMoreThanChangeTheSpeedAndDigitsJump() {
+        fun typed(c: Char, modified: Boolean = false) =
+            VideoKeys.of(escape = false, space = false, left = false, right = false, modified = modified, typed = c)
+        assertEquals(VideoKey.SLOWER, typed('<'))
+        assertEquals(VideoKey.FASTER, typed('>'))
+        assertEquals(VideoKey.JUMP_0, typed('0'))
+        assertEquals(5, typed('5').tenths)
+        assertEquals(VideoKey.JUMP_9, typed('9'))
+        assertEquals(VideoKey.END, VideoKeys.of(escape = false, space = false, left = false, right = false, modified = false, end = true))
+        // With Ctrl or Alt they are the window's (Ctrl+1 picks a tab).
+        assertEquals(VideoKey.NONE, typed('1', modified = true))
+        assertEquals(VideoKey.NONE, typed('>', modified = true))
+        assertEquals(VideoKey.NONE, typed('x'))
+        assertEquals(-1, VideoKey.NONE.tenths)
+        // On the viewer's page too; End stays the viewer's (its last page).
+        assertEquals(VideoKey.FASTER, VideoKeys.onViewerPage(space = false, letter = null, modified = false, typed = '>'))
+        assertEquals(VideoKey.JUMP_3, VideoKeys.onViewerPage(space = false, letter = null, modified = false, typed = '3'))
+        assertEquals(VideoKey.NONE, VideoKeys.onViewerPage(space = false, letter = null, modified = true, typed = '3'))
+    }
+
+    @Test
+    fun speedsStepThroughTheSheetsListAndStopAtItsEnds() {
+        assertEquals(1.25, VideoRules.faster(1.0))
+        assertEquals(0.75, VideoRules.slower(1.0))
+        assertEquals(2.0, VideoRules.faster(2.0))
+        assertEquals(0.25, VideoRules.slower(0.25))
+        // A speed between the steps goes to the next one either way.
+        assertEquals(1.5, VideoRules.faster(1.3))
+        assertEquals(1.25, VideoRules.slower(1.3))
+        assertEquals(0L, VideoRules.jumpTarget(0, 60_000))
+        assertEquals(30_000L, VideoRules.jumpTarget(5, 60_000))
+        assertEquals(54_000L, VideoRules.jumpTarget(9, 60_000))
+        assertEquals(0L, VideoRules.jumpTarget(5, 0))
+    }
 }

@@ -38,6 +38,7 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ReportsReadingScroll
 import com.aimdi.xtanative.ui.plugins.RetryMessage
@@ -195,6 +196,6 @@ private fun ForYouMessage(app: ThreadsApp, frame: PluginFrame, state: ThreadsFor
 @Composable
 private fun ForYouRefreshable(app: ThreadsApp, frame: PluginFrame, state: ThreadsForYouState, list: LazyListState, content: LazyListScope.() -> Unit) {
     PullToRefreshBox(isRefreshing = state.loading && (state.loaded || state.posts.isNotEmpty()), onRefresh = app::refreshForYou, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize(), content = content)
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), content = content, contentPadding = column) }
     }
 }

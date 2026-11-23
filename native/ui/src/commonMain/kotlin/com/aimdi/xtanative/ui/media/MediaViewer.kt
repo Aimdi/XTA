@@ -35,6 +35,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -46,20 +47,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isAltPressed
+import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.core.x.model.PhotoSize
 import com.aimdi.xtanative.core.x.model.XMedia
+import com.aimdi.xtanative.core.x.model.photoUrl
 import com.aimdi.xtanative.data.LocalPostCache
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.downloads.LocalPlatformFiles
@@ -75,8 +83,10 @@ import com.aimdi.xtanative.ui.generated.resources.reader_media_next
 import com.aimdi.xtanative.ui.generated.resources.reader_media_previous
 import com.aimdi.xtanative.ui.generated.resources.reader_media_unknown
 import com.aimdi.xtanative.ui.generated.resources.reader_share_image
+import com.aimdi.xtanative.ui.home.HoldsKeys
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.post.PostIcons
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -85,6 +95,9 @@ import org.jetbrains.compose.resources.stringResource
  * While none is provided, the viewer offers no download.
  */
 val LocalMediaSaver = staticCompositionLocalOf<MediaSaver?> { null }
+
+/** Saves where the reader picks in the save dialog, whatever the download setting says: the desktop viewer's "Save as…". */
+val LocalMediaSaveAs = staticCompositionLocalOf<MediaSaver?> { null }
 
 /** Whether the viewer has buttons at its sides to turn pages: the desktop, where pages otherwise turn only with a touch. */
 internal expect val viewerPageButtons: Boolean
@@ -135,6 +148,7 @@ fun GalleryViewer(key: String, start: Int, fallbackPostId: String?, fallbackInde
 @Composable
 private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onOpenPost: ((ViewerPage) -> Unit)? = null, onNearEnd: (() -> Unit)? = null) {
     val files = LocalPlatformFiles.current
+    val posts = LocalPostCache.current
     val items = viewed.items
     val size = rememberPhotoSize()
     val reduced = LocalReducedMotion.current
@@ -148,6 +162,10 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     val playing = remember { mutableStateMapOf<Int, String>() }
     val focus = remember { FocusRequester() }
     val pager = rememberPagerState(initialPage = start.coerceIn(0, (items.size - 1).coerceAtLeast(0))) { items.size }
+    /** What Save, Share and the desktop's menu act on: the page shown, as the variant a video plays. */
+    fun shownSave(): MediaSave? = viewed.pages.getOrNull(pager.currentPage)?.let { viewed.save(it, playing[pager.currentPage]) }
+
+    val fileMenu = rememberViewerFileMenu(snackbar, refocus = { runCatching { focus.requestFocus() } }, shown = ::shownSave)
 
     fun turn(by: Int) {
         val target = pager.currentPage + by
@@ -165,21 +183,46 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     }
 
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
+    // Closed, it leaves the keys to what it covered, which would otherwise have none.
+    HoldsKeys(focus)
     if (onNearEnd != null) {
         LaunchedEffect(pager.currentPage, items.size) { if (MediaGallery.nearEnd(pager.currentPage, items.size)) onNearEnd() }
     }
+    // The zoom and pan keys, for the photo shown, and which pages' photos are zoomed in.
+    val zoomKeys = remember { MutableSharedFlow<ViewerKey>(extraBufferCapacity = 8) }
+    val zoomedPages = remember { mutableStateMapOf<Int, Boolean>() }
+    // A video page's keys: Space, k, j, l, m, f, < > and 0 to 9, for the page shown.
+    val videoKeys = remember { MutableSharedFlow<VideoKey>(extraBufferCapacity = 8) }
     Box(
         Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = backdrop))
             // Before the focus target: key events reach the nodes above the focused one.
             .onKeyEvent { event ->
+                val shownKind = items.getOrNull(pager.currentPage)?.kind
+                val onVideo = shownKind == XMedia.Kind.VIDEO || shownKind == XMedia.Kind.GIF
+                // < > and the digits as typed, on any layout: the video's speed and its tenths.
+                val typed = typedChar(event)
+                if (typed != null) {
+                    val videoKey = if (onVideo) VideoKeys.onViewerPage(space = false, letter = null, modified = event.isCtrlPressed || event.isAltPressed, typed = typed) else VideoKey.NONE
+                    return@onKeyEvent (videoKey != VideoKey.NONE).also { if (it) videoKeys.tryEmit(videoKey) }
+                }
                 if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
-                when (event.key) {
-                    Key.DirectionLeft -> true.also { turn(-1) }
-                    Key.DirectionRight -> true.also { turn(1) }
-                    Key.Escape -> true.also { onClose() }
-                    else -> false
+                if (onVideo) {
+                    val videoKey = VideoKeys.onViewerPage(event.key == Key.Spacebar, PLAYER_LETTERS[event.key], event.isCtrlPressed || event.isAltPressed)
+                    if (videoKey != VideoKey.NONE) return@onKeyEvent true.also { videoKeys.tryEmit(videoKey) }
+                }
+                when (val key = viewerKeyOf(event, zoomed = zoomedPages[pager.currentPage] == true)) {
+                    ViewerKey.PREVIOUS -> true.also { turn(-1) }
+                    ViewerKey.NEXT -> true.also { turn(1) }
+                    ViewerKey.FIRST -> true.also { turn(-pager.currentPage) }
+                    ViewerKey.LAST -> true.also { turn(items.size - 1 - pager.currentPage) }
+                    ViewerKey.CLOSE -> true.also { onClose() }
+                    ViewerKey.COPY, ViewerKey.SAVE_AS -> fileMenu?.key(key) ?: false
+                    // The photo shown zooms and moves about; a video's page leaves the keys alone.
+                    ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET, ViewerKey.PAN_LEFT, ViewerKey.PAN_RIGHT, ViewerKey.PAN_UP, ViewerKey.PAN_DOWN ->
+                        (items.getOrNull(pager.currentPage)?.kind == XMedia.Kind.PHOTO).also { if (it) zoomKeys.tryEmit(key) }
+                    ViewerKey.NONE -> false
                 }
             }
             .focusRequester(focus)
@@ -189,28 +232,46 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
             val current = viewed.pages.getOrNull(pager.currentPage)
             ViewerBar(pager, items.size, backdrop, onClose) {
                 if (onOpenPost != null && current != null) {
-                    IconButton(onClick = { onOpenPost(current) }) { Icon(PostIcons.OpenInNew, stringResource(Res.string.posts_open_post), tint = Color.White) }
+                    IconTip(stringResource(Res.string.posts_open_post)) { IconButton(onClick = { onOpenPost(current) }) { Icon(PostIcons.OpenInNew, stringResource(Res.string.posts_open_post), tint = Color.White) } }
                 }
                 val save = current?.let { viewed.save(it, playing[pager.currentPage]) }
+                if (save != null && save.kind == XMedia.Kind.PHOTO) {
+                    items.getOrNull(pager.currentPage)?.let { PictureDragHandle(save, viewed.shownUrl(it, size)) }
+                }
                 if (saver != null && save != null) {
-                    IconButton(onClick = { saver.save(save) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) }
+                    IconTip(stringResource(Res.string.reader_download)) { IconButton(onClick = { saver.save(save) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) } }
                 }
                 if (save != null) {
                     val label = if (MediaSharing.sharesPicture(files, save)) Res.string.reader_share_image else Res.string.reader_link_share
-                    IconButton(onClick = { share(save) }) { Icon(Icons.Filled.Share, stringResource(label), tint = Color.White) }
+                    IconTip(stringResource(label)) { IconButton(onClick = { share(save) }) { Icon(Icons.Filled.Share, stringResource(label), tint = Color.White) } }
                 }
             }
-            Box(Modifier.weight(1f).fillMaxWidth()) {
+            // A right-click on the page opens the desktop's menu for it, as a browser's on a picture.
+            val pageMenu = if (fileMenu != null) Modifier.onSecondaryClick(fileMenu::openForShown) else Modifier
+            // A zoomed photo is clipped, so it stays under the bar, whose buttons stay in reach; unzoomed, one dragged away to close slides out under the bar.
+            val clip = if (zoomedPages[pager.currentPage] == true) Modifier.clipToBounds() else Modifier
+            Box(Modifier.weight(1f).fillMaxWidth().then(clip).then(pageMenu)) {
                 if (items.isEmpty()) {
                     Text(stringResource(Res.string.reader_media_unknown), color = Color.White, modifier = Modifier.align(Alignment.Center))
                 } else {
                     HorizontalPager(state = pager, modifier = Modifier.fillMaxSize(), key = { it }) { page ->
                         val item = items[page]
                         when (item.kind) {
-                            XMedia.Kind.PHOTO -> ZoomablePhoto(viewed.shownUrl(item, size), item.alt, motion = !reduced, onBackdrop = { backdrop = it }, onClose = onClose)
+                            XMedia.Kind.PHOTO -> ZoomablePhoto(
+                                viewed.shownUrl(item, size),
+                                item.alt,
+                                motion = !reduced,
+                                onBackdrop = { backdrop = it },
+                                onClose = onClose,
+                                zoomKeys = zoomKeys.takeIf { pager.currentPage == page },
+                                onZoomed = { zoomedPages[page] = it },
+                            )
                             XMedia.Kind.VIDEO, XMedia.Kind.GIF -> {
                                 val download: ((String) -> Unit)? = if (saver == null) null else { url -> viewed.save(viewed.pages[page], url)?.let(saver::save) }
-                                VideoPage(item, active = pager.currentPage == page, onPlaying = { url -> playing[page] = url }, onDownload = download)
+                                val credit = remember(page, viewed) { viewed.pages.getOrNull(page)?.let { VideoCredit.of(posts.post(it.postId), photoUrl(item.url, PhotoSize.LARGE)) } }
+                                CompositionLocalProvider(LocalVideoCredit provides credit, LocalViewerVideoKeys provides videoKeys) {
+                                    VideoPage(item, active = pager.currentPage == page, onPlaying = { url -> playing[page] = url }, onDownload = download)
+                                }
                             }
                         }
                     }
@@ -220,6 +281,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
         }
         SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding())
     }
+    fileMenu?.Menu()
 }
 
 /** The black bar over the pages: back, "2 / 4" rolling with the page, and [actions] for the page shown. */
@@ -230,7 +292,7 @@ private fun ViewerBar(pager: PagerState, count: Int, backdrop: Float, onClose: (
         Modifier.fillMaxWidth().background(Color.Black.copy(alpha = backdrop)).statusBarsPadding().heightIn(min = 56.dp).padding(end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.reader_back), tint = Color.White) }
+        IconTip(stringResource(Res.string.reader_back)) { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.reader_back), tint = Color.White) } }
         if (count > 1) {
             val page = pager.currentPage + 1
             Row(Modifier.padding(start = 8.dp).semantics { contentDescription = "$media $page/$count" }) {
@@ -255,11 +317,11 @@ private fun PageButtons(pager: PagerState, count: Int, turn: (Int) -> Unit) {
     val colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color.Black.copy(alpha = 0.54f), contentColor = Color.White)
     Row(Modifier.fillMaxSize().padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
         if (pager.currentPage > 0) {
-            FilledIconButton(onClick = { turn(-1) }, colors = colors) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, stringResource(Res.string.reader_media_previous)) }
+            IconTip(stringResource(Res.string.reader_media_previous)) { FilledIconButton(onClick = { turn(-1) }, colors = colors) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, stringResource(Res.string.reader_media_previous)) } }
         }
         Spacer(Modifier.weight(1f))
         if (pager.currentPage < count - 1) {
-            FilledIconButton(onClick = { turn(1) }, colors = colors) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, stringResource(Res.string.reader_media_next)) }
+            IconTip(stringResource(Res.string.reader_media_next)) { FilledIconButton(onClick = { turn(1) }, colors = colors) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, stringResource(Res.string.reader_media_next)) } }
         }
     }
 }

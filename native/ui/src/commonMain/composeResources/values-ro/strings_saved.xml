@@ -159,6 +159,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Verifică conexiunea și folderul de descărcări, apoi încearcă din nou.</string>
     <string name="downloads_open_file">Deschide fișierul</string>
+    <string name="downloads_show_in_folder">Arată în dosar</string>
     <string name="downloads_open_failed">Acest fișier nu a putut fi deschis. Este posibil să fi fost mutat sau șters.</string>
     <string name="downloads_queued">În așteptare</string>
     <string name="downloads_downloading">Descărcare media...</string>

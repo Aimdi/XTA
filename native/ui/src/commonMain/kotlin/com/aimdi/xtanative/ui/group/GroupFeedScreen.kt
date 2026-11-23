@@ -19,7 +19,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,9 +41,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.feed.ContentFilter
 import com.aimdi.xtanative.core.feed.FeedSort
 import com.aimdi.xtanative.ui.common.BackHandling
+import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.scrollToTop
+import com.aimdi.xtanative.ui.feed.MediaModes
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -53,15 +55,14 @@ import com.aimdi.xtanative.ui.generated.resources.groups_content_nsfw
 import com.aimdi.xtanative.ui.generated.resources.groups_content_sfw
 import com.aimdi.xtanative.ui.generated.resources.groups_custom
 import com.aimdi.xtanative.ui.generated.resources.groups_discover
-import com.aimdi.xtanative.ui.generated.resources.groups_media
 import com.aimdi.xtanative.ui.generated.resources.groups_filters
+import com.aimdi.xtanative.ui.generated.resources.groups_media
 import com.aimdi.xtanative.ui.generated.resources.groups_popular
 import com.aimdi.xtanative.ui.generated.resources.groups_recent
 import com.aimdi.xtanative.ui.generated.resources.groups_refresh
 import com.aimdi.xtanative.ui.generated.resources.groups_scroll_to_top
 import com.aimdi.xtanative.ui.home.DesktopShortcuts
 import com.aimdi.xtanative.ui.home.RetapsToTop
-import com.aimdi.xtanative.ui.feed.MediaModes
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.search.LoadedFeedSearchScreen
 import com.aimdi.xtanative.ui.search.LoadedSearchButton
@@ -171,7 +172,7 @@ private fun GroupTopBar(
     var menu by remember { mutableStateOf(false) }
     TopAppBar(
         navigationIcon = {
-            if (onBack != null) IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }
+            if (onBack != null) IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
         },
         title = {
             Box {
@@ -207,15 +208,15 @@ private fun GroupActions(state: GroupFeedUi, vm: GroupFeedViewModel, list: LazyL
     val groupId = state.group?.id
     if (discovering && groupId != null) {
         val discovery = discoveryViewModel(groupId)
-        IconButton(onClick = discovery::load) { Icon(Icons.Filled.Refresh, stringResource(Res.string.groups_refresh)) }
+        IconTip(stringResource(Res.string.groups_refresh)) { IconButton(onClick = discovery::load) { Icon(Icons.Filled.Refresh, stringResource(Res.string.groups_refresh)) } }
         return
     }
     LoadedSearchButton { open(GroupLayer.LOADED_SEARCH) }
-    IconButton(onClick = { open(GroupLayer.SETTINGS) }) { Icon(GroupIcons.Build, stringResource(Res.string.groups_filters)) }
-    IconButton(onClick = { scope.launch { list.scrollToTop(reduced) } }) {
+    IconTip(stringResource(Res.string.groups_filters)) { IconButton(onClick = { open(GroupLayer.SETTINGS) }) { Icon(GroupIcons.Build, stringResource(Res.string.groups_filters)) } }
+    IconTip(stringResource(Res.string.groups_scroll_to_top)) { IconButton(onClick = { scope.launch { list.scrollToTop(reduced) } }) {
         Icon(GroupIcons.ArrowUpward, stringResource(Res.string.groups_scroll_to_top))
-    }
-    IconButton(onClick = { vm.refresh() }) { Icon(Icons.Filled.Refresh, stringResource(Res.string.groups_refresh)) }
+    } }
+    IconTip(stringResource(Res.string.groups_refresh)) { IconButton(onClick = { vm.refresh() }) { Icon(Icons.Filled.Refresh, stringResource(Res.string.groups_refresh)) } }
 }
 
 /** The sheets a group's screen opens: its filters, the full group switcher and a new group. */

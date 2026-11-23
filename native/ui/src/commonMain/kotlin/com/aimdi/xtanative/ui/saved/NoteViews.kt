@@ -52,6 +52,7 @@ import com.aimdi.xtanative.store.saved.LocalPost
 import com.aimdi.xtanative.store.saved.NoteMedia
 import com.aimdi.xtanative.store.saved.SavedContent
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.downloads.LocalPlatformFiles
@@ -189,9 +190,9 @@ private fun NoteFooter(replies: Int, onReply: (() -> Unit)?, onOpen: (() -> Unit
         }
         Row {
             if (onOpen != null) {
-                IconButton(onClick = onOpen) { Icon(SavedIcons.OpenInFull, stringResource(Res.string.saved_show_more), modifier = Modifier.size(18.dp)) }
+                IconTip(stringResource(Res.string.saved_show_more)) { IconButton(onClick = onOpen) { Icon(SavedIcons.OpenInFull, stringResource(Res.string.saved_show_more), modifier = Modifier.size(18.dp)) } }
             }
-            IconButton(onClick = onEdit) { Icon(Icons.Filled.Edit, stringResource(Res.string.saved_edit_note), modifier = Modifier.size(20.dp)) }
+            IconTip(stringResource(Res.string.saved_edit_note)) { IconButton(onClick = onEdit) { Icon(Icons.Filled.Edit, stringResource(Res.string.saved_edit_note), modifier = Modifier.size(20.dp)) } }
         }
     }
 }
@@ -253,9 +254,9 @@ fun LocalFileViewer(file: File, video: Boolean, onClose: () -> Unit) {
     Dialog(onDismissRequest = onClose, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Box(Modifier.fillMaxSize().background(Color.Black)) {
             if (video) OfflineVideo(file, active = true, modifier = Modifier.fillMaxSize()) else ZoomableFile(file)
-            IconButton(onClick = onClose, modifier = Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopStart)) {
+            IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose, modifier = Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopStart)) {
                 Icon(Icons.Filled.Close, stringResource(Res.string.close), tint = Color.White)
-            }
+            } }
         }
     }
 }

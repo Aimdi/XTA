@@ -38,7 +38,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -63,7 +62,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -80,10 +78,14 @@ import com.aimdi.xtanative.core.x.model.XTrend
 import com.aimdi.xtanative.core.x.model.XTrendPlace
 import com.aimdi.xtanative.core.x.model.XTrendPlaces
 import com.aimdi.xtanative.data.LocalGraph
+import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_add_location
@@ -100,6 +102,8 @@ import com.aimdi.xtanative.ui.generated.resources.saved_search_library
 import com.aimdi.xtanative.ui.generated.resources.saved_source_x
 import com.aimdi.xtanative.ui.home.HomeRequests
 import com.aimdi.xtanative.ui.home.RetapsToTop
+import com.aimdi.xtanative.ui.home.foundWithKeys
+import com.aimdi.xtanative.ui.home.rememberLeaveField
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.pluginstore.SavesMediaOf
@@ -108,6 +112,8 @@ import com.aimdi.xtanative.ui.search.DiscoverIcons
 import com.aimdi.xtanative.ui.search.EmptyNote
 import com.aimdi.xtanative.ui.search.RecentSearchesBar
 import com.aimdi.xtanative.ui.search.SearchablePlugin
+import com.aimdi.xtanative.ui.search.pickedFromRecent
+import com.aimdi.xtanative.ui.search.rememberRecentPick
 import com.aimdi.xtanative.ui.search.searchablePlugins
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -147,7 +153,7 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
     LaunchedEffect(scope) { if (scope != state.scope) vm.select(scope) }
     val plugin = plugins.firstOrNull { it.id == scope }
     val focus = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
+    val leaveField = rememberLeaveField()
     val list = rememberLazyListState()
     // Home's bar tapped again here: the trends to the top, and from there the cursor into the search.
     RetapsToTop(list) { focus.requestFocus() }
@@ -164,10 +170,14 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
         if (query == null) {
             focus.requestFocus()
         } else {
-            focusManager.clearFocus()
+            leaveField()
             if (DiscoverScopes.opensXSearch(scope)) actions.openSearch(query)
         }
     }
+    // The recent searches under the bar, which the desktop's ↓ and ↑ highlight from it.
+    val shownRecent = if (state.committed.isEmpty()) recent else emptyList()
+    val pick = rememberRecentPick()
+    val searchRecent: (String) -> Unit = { query -> searched(vm.searchAgain(query)) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -176,7 +186,7 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
                 TopAppBar(
                     navigationIcon = {
                         if (onBack != null) {
-                            IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }
+                            IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
                         }
                     },
                     title = {
@@ -193,7 +203,8 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
                                 focus.requestFocus()
                             },
                             onLibrary = { actions.openLibrary(field.text) },
-                            modifier = Modifier.fillMaxWidth().padding(end = 12.dp).focusRequester(focus),
+                            modifier = Modifier.fillMaxWidth().padding(end = 12.dp).focusRequester(focus).foundWithKeys()
+                                .pickedFromRecent(pick, shownRecent, field.text, searchRecent),
                         )
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -215,9 +226,10 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
             if (state.committed.isEmpty()) {
                 RecentSearchesBar(
                     recent,
-                    onSelect = { query -> searched(vm.searchAgain(query)) },
+                    onSelect = searchRecent,
                     onRemove = vm::removeRecent,
                     onClear = vm::clearRecent,
+                    highlighted = pick.of(recent),
                 )
             }
             if (plugin == null) {
@@ -246,11 +258,11 @@ private fun DiscoverField(
         onValueChange = onValueChange,
         singleLine = true,
         placeholder = { Text(hint, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-        leadingIcon = { IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = stringResource(Res.string.discover_search)) } },
+        leadingIcon = { IconTip(stringResource(Res.string.discover_search)) { IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = stringResource(Res.string.discover_search)) } } },
         trailingIcon = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (value.text.isNotEmpty()) IconButton(onClick = onClear) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) }
-                IconButton(onClick = onLibrary) { Icon(SavedIcons.ManageSearch, stringResource(Res.string.saved_search_library)) }
+                if (value.text.isNotEmpty()) IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = onClear) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } }
+                IconTip(stringResource(Res.string.saved_search_library)) { IconButton(onClick = onLibrary) { Icon(SavedIcons.ManageSearch, stringResource(Res.string.saved_search_library)) } }
             }
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -323,6 +335,8 @@ private fun PlaceTab(place: XTrendPlace, selected: Boolean, onShow: (XTrendPlace
         Modifier
             .heightIn(min = 48.dp)
             .semantics { this.selected = selected }
+            // A right-click opens what a long press does, as a desktop opens a thing's menu.
+            .then(if (removable) Modifier.onSecondaryClick { menu = true } else Modifier)
             .combinedClickable(role = Role.Tab, onLongClick = if (removable) ({ menu = true }) else null) { onShow(place) }
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.Center,
@@ -379,11 +393,11 @@ private fun TrendsBody(state: TrendsUi, list: LazyListState, onRefresh: () -> Un
             !state.loaded -> Whole { LoadingRow() }
             state.trends.isEmpty() -> Whole { EmptyTrends(onAddLocation) }
             // Room under the last trend for the button over it.
-            else -> LazyColumn(state = list, contentPadding = PaddingValues(bottom = bottom + 88.dp), modifier = Modifier.fillMaxSize()) {
+            else -> WithReadingColumn(PaddingValues(bottom = bottom + 88.dp), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                 itemsIndexed(state.trends, key = { index, trend -> "$index-${trend.name}" }, contentType = { _, _ -> "trend" }) { index, trend ->
                     TrendRow(index + 1, trend) { onTrend(trend) }
                 }
-            }
+            } }
         }
     }
 }

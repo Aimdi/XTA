@@ -23,7 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -183,11 +182,11 @@ fun ReadFailureNotice(
     var explaining by remember { mutableStateOf(false) }
     FlowRow(modifier.padding(horizontal = 8.dp), verticalArrangement = Arrangement.Center, itemVerticalAlignment = Alignment.CenterVertically) {
         ReadRetryButton(problem, onRetry, seconds)
-        IconButton(onClick = { explaining = true }) {
+        IconTip(stringResource(Res.string.problem_more_info)) { IconButton(onClick = { explaining = true }) {
             Icon(GroupIcons.InfoOutline, stringResource(Res.string.problem_more_info), modifier = Modifier.size(18.dp))
-        }
+        } }
         if (onDismiss != null) {
-            IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, stringResource(Res.string.close), modifier = Modifier.size(18.dp)) }
+            IconTip(stringResource(Res.string.close)) { IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, stringResource(Res.string.close), modifier = Modifier.size(18.dp)) } }
         }
     }
     if (explaining) ReadFailureSheet(source, problem, onRetry, contextMessage) { explaining = false }
@@ -204,7 +203,7 @@ fun ReadFailureNotice(
 fun ReadFailureSheet(source: ReadSource, problem: Problem?, onRetry: () -> Unit, contextMessage: String? = null, onDismiss: () -> Unit) {
     val actions = LocalProblemActions.current
     val kind = problem?.let(ReadFailureKind::of)
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
@@ -212,7 +211,7 @@ fun ReadFailureSheet(source: ReadSource, problem: Problem?, onRetry: () -> Unit,
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.weight(1f),
                 )
-                IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) }
+                IconTip(stringResource(Res.string.close)) { IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } }
             }
             contextMessage?.let { Text(it) }
             kind?.let(::hintOf)?.let { Text(stringResource(it)) }

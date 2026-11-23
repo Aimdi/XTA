@@ -3,9 +3,18 @@ package com.aimdi.xtanative.ui.links
 import com.aimdi.xtanative.services.links.SharedLinks
 import com.aimdi.xtanative.services.links.XLink
 import com.aimdi.xtanative.services.links.XLinks
+import com.aimdi.xtanative.ui.search.SearchTab
 import kotlinx.coroutines.CancellationException
 
 /** Where a link another app opens here goes. */
+/** The app's tab for X's search filter `f`: Latest for `live`, Media, Accounts for `user`; null for the first tab or one the app has not. */
+internal fun searchTab(filter: String?): SearchTab? = when (filter) {
+    "live" -> SearchTab.LATEST
+    "media" -> SearchTab.MEDIA
+    "user" -> SearchTab.PEOPLE
+    else -> null
+}
+
 sealed interface IncomingStep {
     /** A plugin's or a network's screen took it. */
     data object Opened : IncomingStep
@@ -15,6 +24,9 @@ sealed interface IncomingStep {
 
     /** An X screen: a post, a profile, a community, a list or the live player. */
     data class Screen(val link: XLink, val url: String) : IncomingStep
+
+    /** X's search page, or a hashtag's: the app's search of [query] ("" opens it empty, its field ready to type in), on the [tab] the link named (null: the first). */
+    data class Search(val query: String, val tab: SearchTab? = null) : IncomingStep
 
     /** A shared Grok conversation, which only X's page shows: opened as a post's link is. */
     data class PostLink(val url: String) : IncomingStep
@@ -27,8 +39,9 @@ sealed interface IncomingStep {
  * The route of a link another app opens here (main.dart's handleInitialLink):
  * a plugin or a network first, a page X's reader should not read out to the
  * web, a t.co short link followed, then X's screens, the live player for a
- * broadcast or a Space, a Grok share as a post's link, and XTA's "Unable to
- * open link" for anything else.
+ * broadcast or a Space, X's search page and a hashtag as the app's search
+ * (so the desktop entry's "New search" opens it), a Grok share as a post's
+ * link, and XTA's "Unable to open link" for anything else.
  */
 object IncomingLinks {
     /** Where the "Report" of "Unable to open link" leads. */
@@ -44,6 +57,7 @@ object IncomingLinks {
         if (!SharedLinks.readsAsXLink(url)) return IncomingStep.Outside(url)
         val target = if (LinkSteps.hostOf(url) == "t.co") followed(url, resolve) else url
         target ?: return IncomingStep.Unable(url)
+        XLinks.searchQuery(target)?.let { return IncomingStep.Search(it, searchTab(XLinks.searchFilter(target))) }
         return when (val link = XLinks.parse(target)) {
             is XLink.Post, is XLink.Profile, is XLink.Community, is XLink.XList, is XLink.Live -> IncomingStep.Screen(link, target)
             is XLink.GrokShare -> IncomingStep.PostLink(link.url)
@@ -62,6 +76,7 @@ object IncomingLinks {
             is IncomingStep.Outside -> outside(step.url)
             is IncomingStep.PostLink -> postLink(step.url)
             is IncomingStep.Unable -> unable(step.url)
+            is IncomingStep.Search -> step.tab?.let { tab -> screens.searchOn?.invoke(step.query, tab) } ?: screens.search(step.query)
             is IncomingStep.Screen -> when (val link = step.link) {
                 is XLink.Post -> screens.post(link.id)
                 is XLink.Profile -> screens.profile(link.screenName, link.tab)

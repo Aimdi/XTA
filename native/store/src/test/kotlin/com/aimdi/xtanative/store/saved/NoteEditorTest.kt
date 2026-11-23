@@ -61,6 +61,19 @@ class NoteEditorTest {
     }
 
     @Test
+    fun aDropOfSeveralFilesSaysAFailureAmongThem() = timed {
+        val editor = NoteEditor()
+        val a = NoteMedia("a", "a.png", "image/png")
+        val c = NoteMedia("c", "c.png", "image/png")
+        editor.attachAll(listOf({ a }, { error("gone before it was read") }, { c }))
+        assertEquals(listOf(a, c), editor.state.value.media)
+        assertTrue(editor.state.value.attachFailed, "the failed file is said, though one after it attached")
+        assertFalse(editor.state.value.busy)
+        editor.attachAll(listOf({ null }))
+        assertFalse(editor.state.value.attachFailed)
+    }
+
+    @Test
     fun aCancelledOrFailedPickKeepsTheFilesThereWere() = timed {
         val editor = NoteEditor(media = listOf(photo))
         editor.attach { null }

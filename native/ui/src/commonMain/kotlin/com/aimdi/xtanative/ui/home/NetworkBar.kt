@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_switch_account
 import com.aimdi.xtanative.ui.generated.resources.home_switcher_title
@@ -205,6 +206,8 @@ private fun Avatar(id: String, name: String, networks: HomeNetworks, mark: Avata
         modifier
             .size(44.dp)
             .clip(CircleShape)
+            // A right-click switches the account, as a long press does.
+            .then(onAccounts?.let { Modifier.onSecondaryClick(it) } ?: Modifier)
             .combinedClickable(onClick = onClick, onLongClick = onAccounts, onLongClickLabel = switchLabel.takeIf { onAccounts != null })
             .clearAndSetSemantics {
                 role = Role.Button

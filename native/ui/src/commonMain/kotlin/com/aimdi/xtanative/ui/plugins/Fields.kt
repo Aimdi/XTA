@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.flow.collectLatest
 

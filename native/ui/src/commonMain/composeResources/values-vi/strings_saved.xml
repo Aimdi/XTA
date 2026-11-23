@@ -153,6 +153,7 @@
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Hãy kiểm tra kết nối và thư mục tải xuống rồi thử lại.</string>
     <string name="downloads_open_file">Mở tệp</string>
+    <string name="downloads_show_in_folder">Hiện trong thư mục</string>
     <string name="downloads_open_failed">Không thể mở tệp này. Tệp có thể đã bị di chuyển hoặc xóa.</string>
     <string name="downloads_queued">Đang chờ</string>
     <string name="downloads_downloading">Đang tải xuống đa phương tiện...</string>

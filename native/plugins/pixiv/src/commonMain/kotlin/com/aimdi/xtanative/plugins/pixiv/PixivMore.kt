@@ -44,6 +44,7 @@ import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.saved.SavedIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -157,7 +158,7 @@ internal fun PremiumBadge() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AccountSwitcher(onClose: () -> Unit, onAdd: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onClose) {
+    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onClose) {
         Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
             Text(pluginString(Strings.switch_account), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(vertical = 8.dp))
             PixivAccountList(onChanged = onClose)

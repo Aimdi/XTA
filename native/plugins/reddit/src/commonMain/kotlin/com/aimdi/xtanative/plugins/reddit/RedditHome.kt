@@ -66,6 +66,7 @@ import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTab
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
@@ -355,7 +356,7 @@ private fun FollowingFeed(app: RedditApp, frame: PluginFrame) {
     val list = rememberLazyListState()
     ScrollsToTop(list, frame.toTop)
     PullToRefreshBox(isRefreshing = state.loading && state.posts.isNotEmpty(), onRefresh = { app.feed.refresh(names, force = true) }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             val problem = state.problem
             when (RedditFeedBody.of(rows != null, names.isEmpty(), state)) {
                 RedditFeedBody.NOTHING_FOLLOWED -> item(key = "nothing") { AddFirst(app) }
@@ -365,7 +366,7 @@ private fun FollowingFeed(app: RedditApp, frame: PluginFrame) {
                 RedditFeedBody.POSTS -> Unit
             }
             items(state.posts, key = { "post:" + it.id }, contentType = { "post" }) { post -> RedditPostCard(app, post) }
-        }
+        } }
     }
 }
 

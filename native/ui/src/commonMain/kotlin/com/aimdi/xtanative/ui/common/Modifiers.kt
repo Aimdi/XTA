@@ -14,6 +14,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.PointerType
+import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 
 /** A tap target for a line of text, without the ripple a row would show. */
@@ -53,4 +56,35 @@ private suspend fun AwaitPointerEventScope.consumeUntilUp() {
         val event = awaitPointerEvent(PointerEventPass.Initial)
         event.changes.forEach { it.consume() }
     } while (event.changes.any { it.pressed })
+}
+
+/**
+ * [action] at a press of the mouse's secondary (right) button, as a desktop
+ * opens a thing's menu; nothing on a touch screen, which has no such button.
+ * The innermost thing with a menu takes the press (a photo's in a post, not
+ * the post's as well). The primary button's tap is left to the modifiers
+ * after it.
+ */
+fun Modifier.onSecondaryClick(action: () -> Unit): Modifier = composed {
+    val latest by rememberUpdatedState(action)
+    pointerInput(Unit) {
+        awaitPointerEventScope {
+            while (true) {
+                // Main: the innermost first. What a press runs through is not consumed, so taps, selection and
+                // the like below see it as before; the press is only marked as one a menu took.
+                val event = awaitPointerEvent(PointerEventPass.Main)
+                val press = event.changes.firstOrNull() ?: continue
+                // A mouse only: a stylus's barrel button counts as a secondary button on Android.
+                if (event.type == PointerEventType.Press && press.type == PointerType.Mouse && event.buttons.isSecondaryPressed && SecondaryPresses.take(press.uptimeMillis)) latest()
+            }
+        }
+    }
+}
+
+/** The right-click a menu has taken, by its time: the things around it with a menu of their own leave it be. */
+internal object SecondaryPresses {
+    private var taken = -1L
+
+    /** Whether the press at [uptime] is still free, taking it if so. */
+    fun take(uptime: Long): Boolean = (uptime != taken).also { taken = uptime }
 }

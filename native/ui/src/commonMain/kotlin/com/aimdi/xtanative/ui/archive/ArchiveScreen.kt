@@ -49,6 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.ArchiveNotesStore
 import com.aimdi.xtanative.ui.common.FlatFilterChip
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.downloads.rememberFilePicker
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.archive_extract
@@ -87,7 +88,7 @@ fun ArchiveScreen(id: String, onBack: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text(state.title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
@@ -112,7 +113,7 @@ fun ArchiveScreen(id: String, onBack: () -> Unit) {
                     headlineContent = { Text(quote) },
                     supportingContent = { Text(note) },
                     trailingContent = {
-                        IconButton(onClick = { vm.removeHighlight(quote) }) { Icon(Icons.Filled.Close, stringResource(Res.string.saved_delete)) }
+                        IconTip(stringResource(Res.string.saved_delete)) { IconButton(onClick = { vm.removeHighlight(quote) }) { Icon(Icons.Filled.Close, stringResource(Res.string.saved_delete)) } }
                     },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     modifier = Modifier.fillMaxWidth().clickable { highlighting = quote },

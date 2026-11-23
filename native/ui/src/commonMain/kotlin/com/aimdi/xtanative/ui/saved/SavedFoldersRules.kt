@@ -8,6 +8,7 @@ import com.aimdi.xtanative.store.saved.SavedTabs
 import com.aimdi.xtanative.store.saved.XtaTweetJson
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.SavedPrefs
+import com.aimdi.xtanative.ui.home.RowSteps
 import kotlinx.serialization.json.JsonElement
 
 /** A row of Manage folders (saved_folders_screen.dart): a built-in tab, shown or hidden, or a folder with its count. */
@@ -34,6 +35,16 @@ sealed interface FolderRow {
                     else -> folders.firstOrNull { it.id == token }?.let { Folder(it, library.countIn(it.id)) }
                 }
             }
+        }
+
+        /**
+         * The tabs' order with the tab [token] a place up or down (Alt+↑,
+         * Alt+↓), found where it is in [storedOrder] as it is saved by then;
+         * null when it is gone or at an end.
+         */
+        fun stepped(library: SavedLibrary, storedOrder: List<String>, token: String, up: Boolean): List<String>? {
+            val tokens = of(library, storedOrder).map { it.token }
+            return RowSteps.step(tokens, token, up)?.let { (from, to) -> SavedTabs.moved(tokens, from, to) }
         }
     }
 }

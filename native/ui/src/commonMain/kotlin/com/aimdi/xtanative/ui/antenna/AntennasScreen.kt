@@ -50,14 +50,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -73,8 +75,10 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.antenna.Antenna
 import com.aimdi.xtanative.store.antenna.AntennaScope
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_antenna_empty
@@ -116,7 +120,7 @@ fun AntennasScreen(openAntenna: (String) -> Unit, onBack: () -> Unit) {
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }
+                    IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
                 },
                 title = { Text(stringResource(Res.string.discover_antennas)) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -173,7 +177,7 @@ private fun AntennaRow(antenna: Antenna, onOpen: () -> Unit, onSettings: () -> U
             Text(antenna.includeTerms.joinToString(", "), style = MaterialTheme.typography.bodySmall, color = secondary, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
         Box {
-            IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = stringResource(Res.string.discover_show_menu)) }
+            IconTip(stringResource(Res.string.discover_show_menu)) { IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = stringResource(Res.string.discover_show_menu)) } }
             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                 DropdownMenuItem(
                     text = { Text(stringResource(Res.string.discover_settings)) },
@@ -237,7 +241,10 @@ private fun DeleteDialog(antenna: Antenna, onDelete: () -> Unit, onDismiss: () -
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AntennaEditor(draft: AntennaDraft, onChange: (AntennaDraft) -> Unit, onSave: () -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    // A new antenna starts at its name, which has the keys as the editor opens.
+    val nameFocus = remember { FocusRequester() }
+    LaunchedEffect(Unit) { if (draft.isNew) runCatching { nameFocus.requestFocus() } }
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
         Column(
             // Above the keyboard, as XTA lifts its editor.
             Modifier.widthIn(max = ContentWidth).fillMaxWidth().align(Alignment.CenterHorizontally).imePadding()
@@ -249,7 +256,7 @@ private fun AntennaEditor(draft: AntennaDraft, onChange: (AntennaDraft) -> Unit,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 4.dp),
             )
-            EditorField(draft.name, Res.string.discover_antenna_name) { onChange(draft.copy(name = it)) }
+            EditorField(draft.name, Res.string.discover_antenna_name, modifier = Modifier.focusRequester(nameFocus)) { onChange(draft.copy(name = it)) }
             EditorField(draft.include, Res.string.discover_antenna_include) { onChange(draft.copy(include = it)) }
             EditorField(draft.exclude, Res.string.discover_antenna_exclude, last = true, onDone = { if (draft.canSave) onSave() }) {
                 onChange(draft.copy(exclude = it))
@@ -268,6 +275,7 @@ private fun EditorField(
     label: StringResource,
     last: Boolean = false,
     onDone: () -> Unit = {},
+    modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
 ) {
     OutlinedTextField(
@@ -277,7 +285,7 @@ private fun EditorField(
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = if (last) ImeAction.Done else ImeAction.Next),
         keyboardActions = KeyboardActions(onDone = { onDone() }),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     )
 }
 

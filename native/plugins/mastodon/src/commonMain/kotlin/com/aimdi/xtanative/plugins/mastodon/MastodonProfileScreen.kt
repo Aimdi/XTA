@@ -44,6 +44,7 @@ import com.aimdi.xtanative.networks.mastodon.MastodonProfileReader
 import com.aimdi.xtanative.networks.mastodon.MastodonProfileTab
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.RetryRow
@@ -85,7 +86,7 @@ internal fun MastodonProfileScreen(app: MastodonApp, acct: String) {
         PullToRefreshBox(isRefreshing = state.loading && profile != null, onRefresh = reader::refresh, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             BoxWithConstraints(Modifier.fillMaxSize()) {
                 val columns = (maxWidth / MEDIA_TILE).toInt().coerceIn(2, 5)
-                LazyColumn(state = list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp), modifier = Modifier.fillMaxSize()) {
+                PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp), list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
                     if (profile == null) {
                         val error = state.profileError
                         item(key = "opening") { if (error != null) RetryMessage(pluginString(problemText(error)), reader::refresh) else LoadingRow() }
@@ -97,7 +98,7 @@ internal fun MastodonProfileScreen(app: MastodonApp, acct: String) {
                     }
                     stickyHeader(key = "tabs") { ProfileTabs(state.selected, reader::select) }
                     profileRows(app, state, reader, columns)
-                }
+                } }
             }
         }
     }

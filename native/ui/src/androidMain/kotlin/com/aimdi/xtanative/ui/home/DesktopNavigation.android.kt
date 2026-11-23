@@ -5,6 +5,6 @@ import androidx.navigation.NavHostController
 
 /** Android goes back with its own gesture and button: the content alone. */
 @Composable
-actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> Unit) {
+actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, openHome: () -> Unit, content: @Composable () -> Unit) {
     content()
 }
