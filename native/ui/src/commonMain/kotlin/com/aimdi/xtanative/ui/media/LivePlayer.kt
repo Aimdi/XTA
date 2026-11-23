@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.model.XLive
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.LocalXClient
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -84,10 +85,10 @@ fun LivePlayerScreen(live: XLive, onBack: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(if (live.isSpace) Res.string.posts_spaces else Res.string.posts_filter_broadcasts)) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 actions = {
                     if (watchUrl != null) {
-                        IconButton(onClick = { links?.openOutside(watchUrl) }) { Icon(ReaderIcons.OpenInNew, stringResource(Res.string.posts_open_in_browser)) }
+                        IconTip(stringResource(Res.string.posts_open_in_browser)) { IconButton(onClick = { links?.openOutside(watchUrl) }) { Icon(ReaderIcons.OpenInNew, stringResource(Res.string.posts_open_in_browser)) } }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

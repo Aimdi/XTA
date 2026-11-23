@@ -51,6 +51,7 @@ import com.aimdi.xtanative.store.offline.OfflineArticle
 import com.aimdi.xtanative.store.offline.OfflineEntry
 import com.aimdi.xtanative.store.offline.OfflineStore
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -120,10 +121,10 @@ fun OfflineLibraryScreen(onBack: () -> Unit, openMedia: (id: String) -> Unit, op
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.offline_title)) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 actions = {
-                    IconButton(onClick = { scope.launch { store.refresh() } }, enabled = !state.loading) { Icon(Icons.Filled.Refresh, stringResource(Res.string.retry)) }
-                    IconButton(onClick = { clearing = true }, enabled = OfflineRules.canClear(state)) { Icon(SavedIcons.DeleteSweep, stringResource(Res.string.offline_clear)) }
+                    IconTip(stringResource(Res.string.retry)) { IconButton(onClick = { scope.launch { store.refresh() } }, enabled = !state.loading) { Icon(Icons.Filled.Refresh, stringResource(Res.string.retry)) } }
+                    IconTip(stringResource(Res.string.offline_clear)) { IconButton(onClick = { clearing = true }, enabled = OfflineRules.canClear(state)) { Icon(SavedIcons.DeleteSweep, stringResource(Res.string.offline_clear)) } }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )

@@ -65,6 +65,7 @@ import com.aimdi.xtanative.core.feed.KeywordAction
 import com.aimdi.xtanative.core.feed.LanguageAction
 import com.aimdi.xtanative.core.feed.MutedKeyword
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -116,7 +117,7 @@ fun CustomSettingsScreen(state: GroupFeedUi, actions: GroupSettingsActions, onBa
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.groups_custom)) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
@@ -247,7 +248,7 @@ private fun MutedWords(keywords: List<MutedKeyword>, actions: GroupSettingsActio
             colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent, unfocusedContainerColor = Color.Transparent),
             modifier = Modifier.weight(1f),
         )
-        IconButton(onClick = add) { Icon(Icons.Filled.Add, stringResource(Res.string.groups_muted_hint), tint = MaterialTheme.colorScheme.primary) }
+        IconTip(stringResource(Res.string.groups_muted_hint)) { IconButton(onClick = add) { Icon(Icons.Filled.Add, stringResource(Res.string.groups_muted_hint), tint = MaterialTheme.colorScheme.primary) } }
     }
     if (keywords.isNotEmpty()) {
         FlowRow(Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {

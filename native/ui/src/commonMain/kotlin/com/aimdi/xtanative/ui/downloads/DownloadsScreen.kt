@@ -46,6 +46,7 @@ import com.aimdi.xtanative.store.downloads.DownloadEntry
 import com.aimdi.xtanative.store.downloads.DownloadStatus
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -94,11 +95,11 @@ fun DownloadsScreen(onBack: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.downloads_title)) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 actions = {
-                    IconButton(onClick = { scope.launch { queue.clearFinished() } }) {
+                    IconTip(stringResource(Res.string.downloads_clear_finished)) { IconButton(onClick = { scope.launch { queue.clearFinished() } }) {
                         Icon(SavedIcons.PlaylistRemove, stringResource(Res.string.downloads_clear_finished))
-                    }
+                    } }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
@@ -176,9 +177,9 @@ private fun DownloadRowView(entry: DownloadEntry, onCancel: () -> Unit, onRetry:
             }
             if (row.retryHint) Text(stringResource(Res.string.downloads_retry_hint), style = MaterialTheme.typography.bodySmall)
         }
-        if (row.canCancel) IconButton(onClick = onCancel) { Icon(Icons.Filled.Close, stringResource(Res.string.cancel)) }
-        if (row.canRetry) IconButton(onClick = onRetry) { Icon(Icons.Filled.Refresh, stringResource(Res.string.retry)) }
-        if (row.canOpen) IconButton(onClick = onOpen) { Icon(SavedIcons.OpenInNew, stringResource(Res.string.downloads_open_file)) }
+        if (row.canCancel) IconTip(stringResource(Res.string.cancel)) { IconButton(onClick = onCancel) { Icon(Icons.Filled.Close, stringResource(Res.string.cancel)) } }
+        if (row.canRetry) IconTip(stringResource(Res.string.retry)) { IconButton(onClick = onRetry) { Icon(Icons.Filled.Refresh, stringResource(Res.string.retry)) } }
+        if (row.canOpen) IconTip(stringResource(Res.string.downloads_open_file)) { IconButton(onClick = onOpen) { Icon(SavedIcons.OpenInNew, stringResource(Res.string.downloads_open_file)) } }
         Spacer(Modifier.width(0.dp))
     }
 }

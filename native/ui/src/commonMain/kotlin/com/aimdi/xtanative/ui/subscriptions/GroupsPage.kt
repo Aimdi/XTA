@@ -27,7 +27,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import com.aimdi.xtanative.ui.home.rememberRetappedList
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -57,7 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.session.GroupBoard
 import com.aimdi.xtanative.store.settings.GroupsLayout
-import com.aimdi.xtanative.ui.group.RankWithAiButton
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_censored
 import com.aimdi.xtanative.ui.generated.resources.groups_create
@@ -67,6 +66,8 @@ import com.aimdi.xtanative.ui.generated.resources.groups_none_description
 import com.aimdi.xtanative.ui.generated.resources.groups_none_yet
 import com.aimdi.xtanative.ui.generated.resources.groups_pin
 import com.aimdi.xtanative.ui.generated.resources.groups_unpin
+import com.aimdi.xtanative.ui.group.RankWithAiButton
+import com.aimdi.xtanative.ui.home.rememberRetappedList
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -358,14 +359,14 @@ private fun GroupListRow(tile: GroupTile, onOpen: () -> Unit, onEdit: () -> Unit
             }
         }
         if (onDiscover != null) RankWithAiButton(iconSize = 20.dp, onClick = onDiscover)
-        IconButton(onClick = onPin) {
+        IconTip(stringResource(if (group.pinned) Res.string.groups_unpin else Res.string.groups_pin)) { IconButton(onClick = onPin) {
             Icon(
                 if (group.pinned) GroupIcons.PushPin else GroupIcons.PushPinOutlined,
                 contentDescription = stringResource(if (group.pinned) Res.string.groups_unpin else Res.string.groups_pin),
                 tint = if (group.pinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp),
             )
-        }
+        } }
         if (handle != null) {
             Icon(GroupIcons.DragHandle, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = handle.padding(8.dp))
         } else {

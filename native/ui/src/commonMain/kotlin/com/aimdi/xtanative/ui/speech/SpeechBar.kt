@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.services.speech.SpeechPlayback
 import com.aimdi.xtanative.services.speech.Tts
 import com.aimdi.xtanative.services.speech.TtsFailureAction
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_dismiss
@@ -122,7 +123,7 @@ private fun ReadingRow(playback: SpeechPlayback, speech: AppSpeech) {
             Text(stringResource(Res.string.reader_speech_playing), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
             playback.title?.let { Text(it, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis) }
         }
-        IconButton(onClick = { speech.stop() }) { Icon(ReaderIcons.StopCircle, stringResource(Res.string.reader_speech_stop)) }
+        IconTip(stringResource(Res.string.reader_speech_stop)) { IconButton(onClick = { speech.stop() }) { Icon(ReaderIcons.StopCircle, stringResource(Res.string.reader_speech_stop)) } }
     }
 }
 
@@ -156,7 +157,7 @@ private fun NoticeRow(notice: SpeechNotice, speech: AppSpeech) {
                 }) { Text(stringResource(Res.string.reader_speech_get_sherpa)) }
             }
         }
-        IconButton(onClick = { speech.dismiss(notice) }) { Icon(Icons.Filled.Close, stringResource(Res.string.reader_dismiss)) }
+        IconTip(stringResource(Res.string.reader_dismiss)) { IconButton(onClick = { speech.dismiss(notice) }) { Icon(Icons.Filled.Close, stringResource(Res.string.reader_dismiss)) } }
     }
 }
 

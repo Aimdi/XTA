@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.feed.FeedSort
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_catch_up_mode
 import com.aimdi.xtanative.ui.generated.resources.groups_catch_up_mode_description
@@ -92,10 +93,10 @@ fun FeedSettingsSheet(state: GroupFeedUi, actions: GroupSettingsActions, onCusto
                     SortRow(FeedSort.RECENT, state.settings.sort, actions)
                     SortRow(FeedSort.POPULAR, state.settings.sort, actions)
                     SortRow(FeedSort.CUSTOM, state.settings.sort, actions) {
-                        IconButton(onClick = {
+                        IconTip(stringResource(Res.string.groups_custom)) { IconButton(onClick = {
                             actions.setSort(FeedSort.CUSTOM)
                             onCustom()
-                        }) { Icon(Icons.Filled.AddCircle, stringResource(Res.string.groups_custom)) }
+                        }) { Icon(Icons.Filled.AddCircle, stringResource(Res.string.groups_custom)) } }
                     }
                 }
             }

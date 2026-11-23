@@ -46,6 +46,7 @@ import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedTabs
 import com.aimdi.xtanative.store.settings.SavedPrefs
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.saved_delete
@@ -86,8 +87,8 @@ fun SavedFoldersScreen(onBack: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.saved_manage_folders)) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
-                actions = { IconButton(onClick = { creating = true }) { Icon(SavedIcons.NewFolder, stringResource(Res.string.saved_new_folder)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
+                actions = { IconTip(stringResource(Res.string.saved_new_folder)) { IconButton(onClick = { creating = true }) { Icon(SavedIcons.NewFolder, stringResource(Res.string.saved_new_folder)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
@@ -137,12 +138,12 @@ private fun BuiltInRow(row: FolderRow.BuiltIn, shown: Boolean?, handle: @Composa
     Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(start = 24.dp, end = 16.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(builtInLabel(row.token), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
         if (shown != null) {
-            IconButton(onClick = { onShown(!shown) }) {
+            IconTip(stringResource(if (shown) Res.string.saved_hide else Res.string.saved_show)) { IconButton(onClick = { onShown(!shown) }) {
                 Icon(
                     if (shown) SavedIcons.Visibility else SavedIcons.VisibilityOff,
                     stringResource(if (shown) Res.string.saved_hide else Res.string.saved_show),
                 )
-            }
+            } }
         }
         handle()
     }
@@ -166,7 +167,7 @@ private fun FolderRowView(row: FolderRow.Folder, handle: @Composable () -> Unit,
             Text(row.folder.name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(pluralStringResource(Res.plurals.saved_folder_count, row.count, row.count), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        IconButton(onClick = onDelete) { Icon(Icons.Filled.Delete, stringResource(Res.string.saved_delete)) }
+        IconTip(stringResource(Res.string.saved_delete)) { IconButton(onClick = onDelete) { Icon(Icons.Filled.Delete, stringResource(Res.string.saved_delete)) } }
         handle()
     }
 }

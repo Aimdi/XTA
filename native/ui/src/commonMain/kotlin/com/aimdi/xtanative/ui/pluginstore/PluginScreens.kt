@@ -44,6 +44,7 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.data.plugins.RunningPlugin
 import com.aimdi.xtanative.store.search.RecentSearches
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.SearchPillShape
 import com.aimdi.xtanative.ui.common.searchPillColors
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -128,11 +129,11 @@ fun PluginClientScreen(id: String, onBack: () -> Unit, onSearch: () -> Unit, onS
                     bar,
                     title = plugin?.title(currentLanguage()) ?: id,
                     mark = { if (plugin != null) Icon(plugin.icon, contentDescription = null, tint = markTint(plugin), modifier = Modifier.size(24.dp)) },
-                    back = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                    back = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                     modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets),
                 ) {
-                    if (plugin?.search != null) IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, stringResource(Res.string.search)) }
-                    if (plugin?.settings != null) IconButton(onClick = onSettings) { Icon(Icons.Filled.Settings, stringResource(Res.string.settings)) }
+                    if (plugin?.search != null) IconTip(stringResource(Res.string.search)) { IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, stringResource(Res.string.search)) } }
+                    if (plugin?.settings != null) IconTip(stringResource(Res.string.settings)) { IconButton(onClick = onSettings) { Icon(Icons.Filled.Settings, stringResource(Res.string.settings)) } }
                 }
             }
         },
@@ -235,7 +236,7 @@ internal fun ownSearchScreen(search: PluginSearch, initial: String?): String? =
 private fun SearchBar(text: String, search: PluginSearch?, onText: (String) -> Unit, onSend: () -> Unit, focus: FocusRequester, onBack: () -> Unit) {
     val language = currentLanguage()
     TopAppBar(
-        navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+        navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
         title = {
             TextField(
                 value = text,

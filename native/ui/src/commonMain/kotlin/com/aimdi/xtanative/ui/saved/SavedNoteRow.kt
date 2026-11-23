@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.offline.OfflineSaved
 import com.aimdi.xtanative.store.saved.SavedContent
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.offline_title
 import com.aimdi.xtanative.ui.generated.resources.saved_add_note
@@ -75,6 +76,6 @@ private fun NoteLine(note: String?, offline: Boolean, onEdit: () -> Unit, onOffl
                 }
             }
         }
-        if (offline) IconButton(onClick = onOffline) { Icon(SavedIcons.OfflinePinOutline, stringResource(Res.string.offline_title)) }
+        if (offline) IconTip(stringResource(Res.string.offline_title)) { IconButton(onClick = onOffline) { Icon(SavedIcons.OfflinePinOutline, stringResource(Res.string.offline_title)) } }
     }
 }

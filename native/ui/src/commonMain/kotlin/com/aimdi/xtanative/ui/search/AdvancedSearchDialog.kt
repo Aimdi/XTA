@@ -33,7 +33,6 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -65,7 +64,9 @@ import com.aimdi.xtanative.core.x.search.XAdvancedSearch
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Content
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Filter
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Inclusion
+import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.discover_accounts
@@ -164,13 +165,13 @@ internal fun AdvancedSearchDialog(
             topBar = {
                 TopAppBar(
                     navigationIcon = {
-                        IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_close)) }
+                        IconTip(stringResource(Res.string.discover_close)) { IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_close)) } }
                     },
                     title = { Text(stringResource(Res.string.discover_advanced_search)) },
                     actions = {
-                        IconButton(onClick = { onChange { XAdvancedSearch() } }, enabled = filters.activeFilters.isNotEmpty()) {
+                        IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = { onChange { XAdvancedSearch() } }, enabled = filters.activeFilters.isNotEmpty()) {
                             Icon(Icons.Filled.Refresh, stringResource(Res.string.discover_clear))
-                        }
+                        } }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
                 )
@@ -248,7 +249,7 @@ private fun TextFilter(filters: XAdvancedSearch, filter: Filter, onChange: ((XAd
         label = { Text(filterLabel(SearchFilters.labelOf(filter, filters))) },
         singleLine = true,
         trailingIcon = if (value.isEmpty()) null else {
-            { IconButton(onClick = { onChange { it.cleared(filter) } }) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } }
+            { IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = { onChange { it.cleared(filter) } }) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } } }
         },
         keyboardOptions = KeyboardOptions(keyboardType = if (number) KeyboardType.Number else KeyboardType.Text, imeAction = ImeAction.Next),
         shape = RoundedCornerShape(12.dp),
@@ -354,7 +355,7 @@ private fun DateRow(label: String, value: LocalDate?, onChange: (LocalDate?) -> 
             Text(shown, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         if (value != null) {
-            IconButton(onClick = { onChange(null) }) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) }
+            IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = { onChange(null) }) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } }
         } else {
             Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)

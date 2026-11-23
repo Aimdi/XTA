@@ -55,6 +55,7 @@ import com.aimdi.xtanative.services.speech.VoiceEngines
 import com.aimdi.xtanative.services.speech.VoiceFailure
 import com.aimdi.xtanative.services.speech.VoiceInstall
 import com.aimdi.xtanative.services.util.formatByteSize
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_back
@@ -108,7 +109,7 @@ fun VoiceSettingsScreen(onBack: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.reader_speech_title)) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.reader_back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.reader_back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.reader_back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
@@ -320,15 +321,15 @@ private fun DownloadRow(
             }
         }
         when (VoiceRows.action(install)) {
-            VoiceAction.DOWNLOAD -> IconButton(onClick = { onDownload?.invoke() }, enabled = onDownload != null) {
+            VoiceAction.DOWNLOAD -> IconTip(stringResource(Res.string.reader_download)) { IconButton(onClick = { onDownload?.invoke() }, enabled = onDownload != null) {
                 Icon(ReaderIcons.Download, stringResource(Res.string.reader_download))
-            }
-            VoiceAction.RETRY -> IconButton(onClick = { onDownload?.invoke() }, enabled = onDownload != null) {
+            } }
+            VoiceAction.RETRY -> IconTip(stringResource(Res.string.reader_retry)) { IconButton(onClick = { onDownload?.invoke() }, enabled = onDownload != null) {
                 Icon(Icons.Filled.Refresh, stringResource(Res.string.reader_retry))
-            }
-            VoiceAction.CANCEL -> IconButton(onClick = onCancel) { Icon(Icons.Filled.Close, stringResource(Res.string.reader_cancel)) }
+            } }
+            VoiceAction.CANCEL -> IconTip(stringResource(Res.string.reader_cancel)) { IconButton(onClick = onCancel) { Icon(Icons.Filled.Close, stringResource(Res.string.reader_cancel)) } }
             VoiceAction.WAIT -> Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp) }
-            VoiceAction.DELETE -> IconButton(onClick = { confirm = true }) { Icon(Icons.Filled.Delete, stringResource(Res.string.reader_delete)) }
+            VoiceAction.DELETE -> IconTip(stringResource(Res.string.reader_delete)) { IconButton(onClick = { confirm = true }) { Icon(Icons.Filled.Delete, stringResource(Res.string.reader_delete)) } }
         }
     }
     if (confirm) {

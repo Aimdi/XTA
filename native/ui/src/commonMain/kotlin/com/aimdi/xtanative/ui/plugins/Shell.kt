@@ -71,6 +71,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_more_options
 import com.aimdi.xtanative.ui.generated.resources.home_sort_filter
@@ -271,12 +272,12 @@ private fun Modifier.underline(on: Boolean, color: Color): Modifier = if (!on) t
 @Composable
 private fun FilterButton(filter: ShellFilter, color: Color) {
     val label = stringResource(if (filter.active) Res.string.home_sort_filter_on else Res.string.home_sort_filter)
-    IconButton(onClick = filter.onOpen) {
+    IconTip(label) { IconButton(onClick = filter.onOpen) {
         Box {
             Icon(PostIcons.Tune, label, tint = if (filter.active) color else MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp))
             if (filter.active) Box(Modifier.align(Alignment.TopEnd).size(6.dp).background(color, CircleShape))
         }
-    }
+    } }
 }
 
 /**
@@ -405,10 +406,10 @@ fun ShellMenuButton(attention: Boolean = false, items: @Composable ColumnScope.(
     var open by remember { mutableStateOf(false) }
     val close = { open = false }
     Box {
-        IconButton(onClick = { open = true }) {
+        IconTip(stringResource(Res.string.home_more_options)) { IconButton(onClick = { open = true }) {
             val more = stringResource(Res.string.home_more_options)
             if (attention) BadgedBox(badge = { Badge() }) { Icon(Icons.Filled.MoreVert, more) } else Icon(Icons.Filled.MoreVert, more)
-        }
+        } }
         DropdownMenu(expanded = open, onDismissRequest = close) { items(close) }
     }
 }

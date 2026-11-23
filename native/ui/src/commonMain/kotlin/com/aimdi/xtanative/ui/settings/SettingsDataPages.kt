@@ -72,6 +72,7 @@ import com.aimdi.xtanative.store.backup.WebDavVersion
 import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.crash.CrashReport
 import com.aimdi.xtanative.store.settings.DataPrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.rememberCopyText
@@ -545,10 +546,10 @@ internal fun DiagnosticsSettings(title: String, vm: SettingsViewModel, onBack: (
         snackbar,
         actions = {
             IconButton(onClick = { revision++ }) { Icon(Icons.Outlined.Refresh, null) }
-            IconButton(onClick = {
+            IconTip(stringResource(Res.string.settings_diagnostics_copy)) { IconButton(onClick = {
                 copyText((listOf(report.toPlainText()) + crashes.map { it.text }).joinToString("\n\n"))
                 scope.launch { snackbar.showSnackbar(copied) }
-            }) { Icon(Icons.Outlined.Share, stringResource(Res.string.settings_diagnostics_copy)) }
+            }) { Icon(Icons.Outlined.Share, stringResource(Res.string.settings_diagnostics_copy)) } }
         },
     ) { padding ->
         SettingsList(padding) {

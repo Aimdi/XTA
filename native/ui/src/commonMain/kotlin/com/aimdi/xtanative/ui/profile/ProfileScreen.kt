@@ -74,6 +74,7 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.ArchiveFilter
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.WithReadingColumn
@@ -182,11 +183,11 @@ fun ProfileScreen(
         topBar = {
             TopAppBar(
                 title = { Text(user?.name ?: "@$screenName", maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 actions = {
                     if (user != null) {
-                        IconButton(onClick = { searchPosts(ProfileHeader.searchQuery(user)) }) { Icon(Icons.Filled.Search, stringResource(Res.string.search)) }
-                        IconButton(onClick = { share(ProfileHeader.shareUrl(user, shareBase)) }) { Icon(Icons.Outlined.Share, stringResource(Res.string.reader_link_share)) }
+                        IconTip(stringResource(Res.string.search)) { IconButton(onClick = { searchPosts(ProfileHeader.searchQuery(user)) }) { Icon(Icons.Filled.Search, stringResource(Res.string.search)) } }
+                        IconTip(stringResource(Res.string.reader_link_share)) { IconButton(onClick = { share(ProfileHeader.shareUrl(user, shareBase)) }) { Icon(Icons.Outlined.Share, stringResource(Res.string.reader_link_share)) } }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -359,7 +360,7 @@ private fun <T> FilterBar(selected: T, options: List<Filter<T>>, onSelect: (T) -
     Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         options.forEach { option ->
             val chosen = option.value == selected
-            IconButton(
+            IconTip(stringResource(option.label)) { IconButton(
                 onClick = { if (!chosen) onSelect(option.value) },
                 modifier = Modifier.clip(CircleShape).background(if (chosen) MaterialTheme.colorScheme.surfaceContainerHigh else Color.Transparent),
             ) {
@@ -369,7 +370,7 @@ private fun <T> FilterBar(selected: T, options: List<Filter<T>>, onSelect: (T) -
                     tint = if (chosen) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp),
                 )
-            }
+            } }
         }
     }
 }
@@ -458,7 +459,7 @@ private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actio
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (user != null && state.complete) {
-                IconButton(onClick = { onSheet(ProfileSheet.FILTERS) }) { Icon(PostIcons.Tune, stringResource(Res.string.posts_filters)) }
+                IconTip(stringResource(Res.string.posts_filters)) { IconButton(onClick = { onSheet(ProfileSheet.FILTERS) }) { Icon(PostIcons.Tune, stringResource(Res.string.posts_filters)) } }
                 ProfileFollowButton(user)
             }
         }

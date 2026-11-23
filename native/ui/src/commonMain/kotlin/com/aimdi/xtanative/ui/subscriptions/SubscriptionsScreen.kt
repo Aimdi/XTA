@@ -59,6 +59,7 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -253,7 +254,7 @@ private fun Header(
 ) {
     TopAppBar(
         navigationIcon = {
-            if (onBack != null) IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }
+            if (onBack != null) IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
         },
         title = {
             Row(Modifier.height(56.dp)) {
@@ -264,13 +265,13 @@ private fun Header(
             }
         },
         actions = {
-            IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, stringResource(Res.string.groups_search)) }
+            IconTip(stringResource(Res.string.groups_search)) { IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, stringResource(Res.string.groups_search)) } }
             if (state.tab == SubscriptionsTab.GROUPS) {
-                IconButton(onClick = onCreate) { Icon(Icons.Filled.Add, stringResource(Res.string.groups_create)) }
+                IconTip(stringResource(Res.string.groups_create)) { IconButton(onClick = onCreate) { Icon(Icons.Filled.Add, stringResource(Res.string.groups_create)) } }
             } else {
-                IconButton(onClick = onImport) { Icon(GroupIcons.PersonAddOutlined, stringResource(Res.string.groups_import_subscriptions)) }
+                IconTip(stringResource(Res.string.groups_import_subscriptions)) { IconButton(onClick = onImport) { Icon(GroupIcons.PersonAddOutlined, stringResource(Res.string.groups_import_subscriptions)) } }
             }
-            IconButton(onClick = onMenu) { Icon(GroupIcons.Tune, stringResource(Res.string.groups_menu)) }
+            IconTip(stringResource(Res.string.groups_menu)) { IconButton(onClick = onMenu) { Icon(GroupIcons.Tune, stringResource(Res.string.groups_menu)) } }
         },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
     )
@@ -305,7 +306,7 @@ private fun SearchBar(state: SubscriptionsUi, vm: SubscriptionsViewModel) {
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
     TopAppBar(
-        navigationIcon = { IconButton(onClick = vm::closeSearch) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+        navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = vm::closeSearch) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
         title = {
             TextField(
                 value = state.query,

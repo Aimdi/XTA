@@ -37,10 +37,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
@@ -68,6 +68,7 @@ import com.aimdi.xtanative.core.session.DeckColumns
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.DeckWidth
 import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -140,10 +141,10 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
             TopAppBar(
                 title = { Text(stringResource(Res.string.home_deck)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }
+                    IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
                 },
                 actions = {
-                    IconButton(onClick = { adding = true }) { Icon(Icons.Filled.Add, stringResource(Res.string.home_deck_add)) }
+                    IconTip(stringResource(Res.string.home_deck_add)) { IconButton(onClick = { adding = true }) { Icon(Icons.Filled.Add, stringResource(Res.string.home_deck_add)) } }
                     WidthMenu(width) { chosen -> scope.launch { settings.set(HomePrefs.deckColumnWidth, chosen) } }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -265,7 +266,7 @@ private fun ColumnHeader(label: String, place: ColumnPlace, calls: ColumnCalls, 
             modifier = Modifier.weight(1f).clickable(onClick = calls.onTitle).padding(horizontal = 12.dp, vertical = 12.dp),
         )
         extra()
-        IconButton(onClick = onRefresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
+        IconTip(stringResource(Res.string.home_refresh)) { IconButton(onClick = onRefresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) } }
         if (calls.menu) ColumnMenu(place, calls)
     }
     HorizontalDivider()
@@ -275,7 +276,7 @@ private fun ColumnHeader(label: String, place: ColumnPlace, calls: ColumnCalls, 
 private fun ColumnMenu(place: ColumnPlace, calls: ColumnCalls) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.home_more_options)) }
+        IconTip(stringResource(Res.string.home_more_options)) { IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.home_more_options)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.home_deck_move_left)) },
@@ -297,7 +298,7 @@ private fun ColumnMenu(place: ColumnPlace, calls: ColumnCalls) {
 private fun WidthMenu(current: DeckWidth, onPick: (DeckWidth) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.home_more_options)) }
+        IconTip(stringResource(Res.string.home_more_options)) { IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.home_more_options)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             Text(
                 stringResource(Res.string.home_deck_width),

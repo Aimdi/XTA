@@ -67,6 +67,7 @@ import com.aimdi.xtanative.store.saved.LocalPosts
 import com.aimdi.xtanative.store.saved.NoteEditor
 import com.aimdi.xtanative.store.saved.NoteMedia
 import com.aimdi.xtanative.store.saved.SavedContent
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.downloads.PickedFile
 import com.aimdi.xtanative.ui.downloads.rememberFilePicker
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -283,7 +284,7 @@ private fun title(target: NoteTarget): String = when (NoteRules.title(target)) {
 @Composable
 private fun EditorBar(title: String, busy: Boolean, saving: Boolean, canSave: Boolean, onClose: () -> Unit, onSave: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(start = 8.dp, end = 16.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = onClose, enabled = !busy) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) }
+        IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose, enabled = !busy) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } }
         Spacer(Modifier.width(8.dp))
         Text(title, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
         Spacer(Modifier.width(8.dp))
@@ -299,10 +300,10 @@ private fun EditorBar(title: String, busy: Boolean, saving: Boolean, canSave: Bo
 private fun EditorFoot(body: String, attach: (() -> Unit)?, attaching: Boolean, busy: Boolean) {
     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         if (attach != null) {
-            IconButton(onClick = attach, enabled = !busy) {
+            IconTip(stringResource(Res.string.saved_note_attach)) { IconButton(onClick = attach, enabled = !busy) {
                 if (attaching) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
                 else Icon(SavedIcons.PermMedia, stringResource(Res.string.saved_note_attach))
-            }
+            } }
         }
         Spacer(Modifier.width(8.dp))
         Icon(Icons.Filled.Lock, stringResource(Res.string.saved_notice_notes), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))

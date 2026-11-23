@@ -51,6 +51,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.longPressOver
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
@@ -191,7 +192,7 @@ private fun SheetHead(shown: HomeTab?, ui: HomeUi, networks: HomeNetworks, plugi
         }
         Spacer(Modifier.weight(1f))
         plugin?.onSettings?.let { settings ->
-            IconButton(onClick = settings) { Icon(GroupIcons.Tune, stringResource(Res.string.settings)) }
+            IconTip(stringResource(Res.string.settings)) { IconButton(onClick = settings) { Icon(GroupIcons.Tune, stringResource(Res.string.settings)) } }
         }
         plugin?.onSwitchAccount?.let { switch ->
             TextButton(onClick = switch, modifier = Modifier.heightIn(min = 48.dp)) {
@@ -230,7 +231,7 @@ private fun TimelineWords(ui: HomeUi, shown: HomeTab?, unread: Set<String>, call
             timelines.forEach { tab -> Word(tabLabel(tab, ui), picked = tab == shown, lit = tab.key in unread) { calls.onTimeline(tab) } }
             groups.forEach { group -> Word(group.name, picked = false, lit = HomeTab.Group(group.id, group.name).key in unread) { calls.onGroup(group) } }
         }
-        IconButton(onClick = calls.onAdd) { Icon(Icons.Filled.Add, stringResource(Res.string.home_add_timeline), tint = MaterialTheme.colorScheme.primary) }
+        IconTip(stringResource(Res.string.home_add_timeline)) { IconButton(onClick = calls.onAdd) { Icon(Icons.Filled.Add, stringResource(Res.string.home_add_timeline), tint = MaterialTheme.colorScheme.primary) } }
     }
 }
 

@@ -5,8 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,8 +63,9 @@ import com.aimdi.xtanative.store.settings.AccountPrefs
 import com.aimdi.xtanative.store.settings.AiPrefs
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.NetworkPrefs
-import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.*
+import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.home.AccountMark
 import com.aimdi.xtanative.ui.signin.forgetWebSessions
 import kotlinx.coroutines.launch
@@ -93,10 +94,10 @@ internal fun HomeSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
         onBack,
         snackbar,
         actions = {
-            IconButton(onClick = {
+            IconTip(stringResource(Res.string.settings_reset_home_pages)) { IconButton(onClick = {
                 vm.set(HomePrefs.pages, HomePages.DEFAULTS)
                 pages = HomePages.load(vm.settings.value.with(HomePrefs.pages, HomePages.DEFAULTS), session.groups.map { it.id }).pages
-            }) { Icon(Icons.Outlined.Refresh, stringResource(Res.string.settings_reset_home_pages)) }
+            }) { Icon(Icons.Outlined.Refresh, stringResource(Res.string.settings_reset_home_pages)) } }
         },
     ) { padding ->
         SettingsList(padding) {
@@ -114,12 +115,12 @@ internal fun HomeSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.weight(1f),
                     )
-                    IconButton(onClick = { save(HomePages.moved(pages, index, index - 1)) }, enabled = index > 0) {
+                    IconTip(stringResource(Res.string.settings_move_up)) { IconButton(onClick = { save(HomePages.moved(pages, index, index - 1)) }, enabled = index > 0) {
                         Icon(Icons.Outlined.KeyboardArrowUp, stringResource(Res.string.settings_move_up))
-                    }
-                    IconButton(onClick = { save(HomePages.moved(pages, index, index + 1)) }, enabled = index < pages.lastIndex) {
+                    } }
+                    IconTip(stringResource(Res.string.settings_move_down)) { IconButton(onClick = { save(HomePages.moved(pages, index, index + 1)) }, enabled = index < pages.lastIndex) {
                         Icon(Icons.Outlined.KeyboardArrowDown, stringResource(Res.string.settings_move_down))
-                    }
+                    } }
                 }
             }
         }
@@ -141,7 +142,7 @@ internal fun AccountSettings(title: String, vm: SettingsViewModel, onBack: () ->
         title,
         onBack,
         actions = {
-            IconButton(onClick = { onOpen(SettingsRoutes.SIGN_IN) }) { Icon(Icons.Outlined.Add, stringResource(Res.string.signin_add_account)) }
+            IconTip(stringResource(Res.string.signin_add_account)) { IconButton(onClick = { onOpen(SettingsRoutes.SIGN_IN) }) { Icon(Icons.Outlined.Add, stringResource(Res.string.signin_add_account)) } }
         },
     ) { padding ->
         SettingsList(padding) {
@@ -257,7 +258,7 @@ private fun AccountRow(account: XAccount, on: Boolean, locked: Boolean, onDelete
             }
         }
         Checkbox(checked = on, onCheckedChange = null, enabled = !locked)
-        IconButton(onClick = onDelete) { Icon(Icons.Outlined.Delete, stringResource(Res.string.settings_delete)) }
+        IconTip(stringResource(Res.string.settings_delete)) { IconButton(onClick = onDelete) { Icon(Icons.Outlined.Delete, stringResource(Res.string.settings_delete)) } }
     }
 }
 

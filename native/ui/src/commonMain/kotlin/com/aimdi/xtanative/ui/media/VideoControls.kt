@@ -77,6 +77,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_download
 import com.aimdi.xtanative.ui.generated.resources.reader_more_options
@@ -227,7 +228,7 @@ internal fun toggleMute(playback: VideoPlayback, muted: Boolean) {
 
 @Composable
 private fun ControlButton(icon: ImageVector, label: String, onClick: () -> Unit) {
-    IconButton(onClick = onClick) { Icon(icon, contentDescription = label, tint = Color.White) }
+    IconTip(label) { IconButton(onClick = onClick) { Icon(icon, contentDescription = label, tint = Color.White) } }
 }
 
 /** Full screen's sound button, said as on or off. */

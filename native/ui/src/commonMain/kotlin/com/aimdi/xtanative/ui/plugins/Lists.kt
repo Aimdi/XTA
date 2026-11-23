@@ -38,6 +38,7 @@ import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.data.inFirstKinds
 import com.aimdi.xtanative.networks.NetworkFailure
 import com.aimdi.xtanative.networks.Page
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ReadFailureSheet
 import com.aimdi.xtanative.ui.common.ReadSource
@@ -146,9 +147,9 @@ fun RetryNotice(message: String?, onRetry: () -> Unit, problem: Problem? = null,
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         TextButton(onClick = onRetry) { Text(stringResource(Res.string.retry)) }
         if (surface != null) {
-            IconButton(onClick = { explaining = true }) {
+            IconTip(stringResource(Res.string.problem_more_info)) { IconButton(onClick = { explaining = true }) {
                 Icon(GroupIcons.InfoOutline, stringResource(Res.string.problem_more_info), modifier = Modifier.size(18.dp))
-            }
+            } }
         }
     }
     if (explaining && surface != null) {

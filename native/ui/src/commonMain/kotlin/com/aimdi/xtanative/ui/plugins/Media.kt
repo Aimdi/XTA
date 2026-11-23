@@ -74,6 +74,7 @@ import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.AltBadge
 import com.aimdi.xtanative.ui.common.AltTextDialog
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.ShowMediaTile
@@ -278,9 +279,9 @@ fun MediaPager(
                 MediaItem.Kind.VIDEO, MediaItem.Kind.GIF -> QualityVideoPage(item, qualities.getOrNull(page).orEmpty(), active = pager.currentPage == page)
             }
         }
-        IconButton(onClick = onClose, modifier = Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopStart)) {
+        IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose, modifier = Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopStart)) {
             Icon(Icons.Filled.Close, stringResource(Res.string.close), tint = Color.White)
-        }
+        } }
         PagerBar(items, pager, onDownload, onOpenPost, snackbar, Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopEnd))
         SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(16.dp))
     }
@@ -308,17 +309,17 @@ private fun PagerBar(items: List<MediaItem>, pager: PagerState, onDownload: ((Me
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         if (items.size > 1) Text("${pager.currentPage + 1} / ${items.size}", color = Color.White, modifier = Modifier.padding(horizontal = 12.dp))
         if (onOpenPost != null) {
-            IconButton(onClick = onOpenPost) { Icon(PostIcons.OpenInNew, stringResource(Res.string.posts_open_post), tint = Color.White) }
+            IconTip(stringResource(Res.string.posts_open_post)) { IconButton(onClick = onOpenPost) { Icon(PostIcons.OpenInNew, stringResource(Res.string.posts_open_post), tint = Color.White) } }
         }
         shown.description?.let { description ->
-            IconButton(onClick = { describing = description }) { Icon(ReaderIcons.ClosedCaption, stringResource(Res.string.media_alt_title), tint = Color.White) }
+            IconTip(stringResource(Res.string.media_alt_title)) { IconButton(onClick = { describing = description }) { Icon(ReaderIcons.ClosedCaption, stringResource(Res.string.media_alt_title), tint = Color.White) } }
         }
         if (onDownload != null && PluginDownloads.url(shown) != null) {
-            IconButton(onClick = { onDownload(shown) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) }
+            IconTip(stringResource(Res.string.reader_download)) { IconButton(onClick = { onDownload(shown) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) } }
         }
-        IconButton(onClick = { if (!share(shown.sharedUrl)) scope.launch { snackbar.showSnackbar(copied) } }) {
+        IconTip(stringResource(Res.string.reader_link_share)) { IconButton(onClick = { if (!share(shown.sharedUrl)) scope.launch { snackbar.showSnackbar(copied) } }) {
             Icon(Icons.Filled.Share, stringResource(Res.string.reader_link_share), tint = Color.White)
-        }
+        } }
     }
     describing?.let { AltTextDialog(it) { describing = null } }
 }

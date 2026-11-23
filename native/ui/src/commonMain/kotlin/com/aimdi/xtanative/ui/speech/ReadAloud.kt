@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_listen
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_stop_listening
@@ -22,10 +23,10 @@ fun ReadAloudButton(title: String, text: () -> String, modifier: Modifier = Modi
     val speech = LocalSpeech.current ?: return
     val playback by speech.playback.collectAsStateWithLifecycle()
     val reading = playback.speaking && playback.title == title
-    IconButton(onClick = { speech.toggle(title, text()) }, modifier = modifier) {
+    IconTip(stringResource(if (reading) Res.string.reader_speech_stop_listening else Res.string.reader_speech_listen)) { IconButton(onClick = { speech.toggle(title, text()) }, modifier = modifier) {
         Icon(
             if (reading) ReaderIcons.StopCircle else ReaderIcons.RecordVoiceOverOutlined,
             contentDescription = stringResource(if (reading) Res.string.reader_speech_stop_listening else Res.string.reader_speech_listen),
         )
-    }
+    } }
 }

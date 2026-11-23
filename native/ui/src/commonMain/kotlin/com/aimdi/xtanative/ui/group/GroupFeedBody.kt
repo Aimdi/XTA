@@ -59,6 +59,7 @@ import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.common.FeedSkeleton
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.PostSkeleton
 import com.aimdi.xtanative.ui.common.ProblemRow
@@ -352,7 +353,7 @@ private fun UnrelatedPill(vm: GroupFeedViewModel) {
     Pill {
         Icon(GroupIcons.WarningAmber, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.padding(start = 8.dp).size(18.dp))
         Text(stringResource(Res.string.groups_feed_issue), modifier = Modifier.padding(start = 8.dp))
-        IconButton(onClick = { explaining = true }) { Icon(GroupIcons.InfoOutline, stringResource(Res.string.groups_more_info)) }
+        IconTip(stringResource(Res.string.groups_more_info)) { IconButton(onClick = { explaining = true }) { Icon(GroupIcons.InfoOutline, stringResource(Res.string.groups_more_info)) } }
     }
     if (explaining) {
         var never by remember { mutableStateOf(false) }

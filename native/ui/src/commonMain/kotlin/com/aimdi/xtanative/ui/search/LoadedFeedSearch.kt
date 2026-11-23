@@ -33,6 +33,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.ui.common.BackHandling
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.feed.PluginPostRow
 import com.aimdi.xtanative.ui.feed.SourcedPost
@@ -51,7 +52,7 @@ import org.jetbrains.compose.resources.stringResource
 /** The bar button a feed opens [LoadedFeedSearchScreen] with, as XTA's feeds have it first in their bar. */
 @Composable
 fun LoadedSearchButton(onClick: () -> Unit) {
-    IconButton(onClick = onClick) { Icon(GroupIcons.ManageSearch, stringResource(Res.string.discover_loaded_title)) }
+    IconTip(stringResource(Res.string.discover_loaded_title)) { IconButton(onClick = onClick) { Icon(GroupIcons.ManageSearch, stringResource(Res.string.discover_loaded_title)) } }
 }
 
 /**
@@ -77,7 +78,7 @@ fun LoadedFeedSearchScreen(threads: List<XThread>, actions: PostActions, onBack:
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }
+                    IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
                 },
                 title = { Text(stringResource(Res.string.discover_loaded_title)) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),

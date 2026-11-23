@@ -3,9 +3,10 @@ package com.aimdi.xtanative.ui.plugins
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_add_to_group
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.ui.group.DiscoveryIcons
 import org.jetbrains.compose.resources.stringResource
 
@@ -22,7 +23,7 @@ fun AddToGroupButton(host: PluginHost, account: String, follow: suspend () -> Un
 /** The same button named in the plugin's own words ([label], RSS's "Add to a group"). */
 @Composable
 fun AddToGroupButton(host: PluginHost, account: String, label: String, follow: suspend () -> Unit = {}) {
-    IconButton(onClick = { host.addToGroup(account, follow) }) { Icon(AddToGroupIcon, label) }
+    IconTip(label) { IconButton(onClick = { host.addToGroup(account, follow) }) { Icon(AddToGroupIcon, label) } }
 }
 
 /** The glyph XTA's plugins draw "Add to group" with: Material's group_add, outlined. */

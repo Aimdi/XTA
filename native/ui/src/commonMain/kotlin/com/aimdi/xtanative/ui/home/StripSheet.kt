@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
 import com.aimdi.xtanative.ui.generated.resources.home_plugin_store
@@ -101,7 +102,7 @@ internal fun StripSheet(
                 val dragged = drag.key == key
                 Box(Modifier.graphicsLayer { translationY = if (dragged) drag.offset else 0f }.let { if (dragged) it.background(MaterialTheme.colorScheme.surfaceContainerHigh) else it }) {
                     NetworkRow(network, networks, onClick = { onOpen(network.id) }) {
-                        IconButton(onClick = { onUnpin(network.id) }) { Icon(HomeIcons.RemoveCircle, stringResource(Res.string.home_strip_remove)) }
+                        IconTip(stringResource(Res.string.home_strip_remove)) { IconButton(onClick = { onUnpin(network.id) }) { Icon(HomeIcons.RemoveCircle, stringResource(Res.string.home_strip_remove)) } }
                         DragHandle(
                             Modifier.pointerInput(key, keys) {
                                 detectDragGestures(
@@ -132,7 +133,7 @@ internal fun StripSheet(
                         onOpen(network.id)
                     }
                     NetworkRow(network, networks, onClick = add) {
-                        IconButton(onClick = add) { Icon(Icons.Filled.AddCircle, stringResource(Res.string.home_add_timeline)) }
+                        IconTip(stringResource(Res.string.home_add_timeline)) { IconButton(onClick = add) { Icon(Icons.Filled.AddCircle, stringResource(Res.string.home_add_timeline)) } }
                     }
                 }
             }

@@ -66,6 +66,7 @@ import com.aimdi.xtanative.store.reading.ArticleReadPoint
 import com.aimdi.xtanative.store.reading.ArticleReading
 import com.aimdi.xtanative.store.reading.BlockExtent
 import com.aimdi.xtanative.store.reading.firstVisibleBlock
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.plugin_reader_appearance
 import com.aimdi.xtanative.ui.generated.resources.plugin_reader_finish
@@ -106,26 +107,26 @@ fun ArticleReaderControls(reading: ArticleReading, supportsAppearance: Boolean, 
             else -> stringResource(Res.string.plugin_reader_opened)
         }
         Text(status, style = MaterialTheme.typography.labelMedium, maxLines = 2, modifier = Modifier.weight(1f))
-        IconButton(onClick = { reading.startOver(); onStartOver() }, enabled = supportsAppearance) {
+        IconTip(stringResource(Res.string.plugin_reader_start_over)) { IconButton(onClick = { reading.startOver(); onStartOver() }, enabled = supportsAppearance) {
             Icon(ReaderGlyphs.Replay, stringResource(Res.string.plugin_reader_start_over))
-        }
-        IconButton(onClick = { appearance = true }, enabled = supportsAppearance) {
+        } }
+        IconTip(stringResource(Res.string.plugin_reader_appearance)) { IconButton(onClick = { appearance = true }, enabled = supportsAppearance) {
             Icon(ReaderGlyphs.TextFields, stringResource(Res.string.plugin_reader_appearance))
-        }
-        IconButton(onClick = { scope.launch { reading.complete() } }, enabled = !point.completed && canComplete) {
+        } }
+        IconTip(stringResource(if (point.completed) Res.string.plugin_reader_finished else Res.string.plugin_reader_finish)) { IconButton(onClick = { scope.launch { reading.complete() } }, enabled = !point.completed && canComplete) {
             Icon(
                 if (point.completed) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
                 stringResource(if (point.completed) Res.string.plugin_reader_finished else Res.string.plugin_reader_finish),
                 tint = if (point.completed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
             )
-        }
+        } }
     }
     if (appearance) {
         ModalBottomSheet(onDismissRequest = { appearance = false }) {
             Column(Modifier.padding(start = 24.dp, end = 24.dp, bottom = 24.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(Res.string.plugin_reader_appearance), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
-                    IconButton(onClick = { appearance = false }) { Icon(Icons.Filled.Close, stringResource(Res.string.reader_close)) }
+                    IconTip(stringResource(Res.string.reader_close)) { IconButton(onClick = { appearance = false }) { Icon(Icons.Filled.Close, stringResource(Res.string.reader_close)) } }
                 }
                 Text(stringResource(Res.string.plugin_reader_text_size), modifier = Modifier.padding(top = 16.dp))
                 Slider(value = state.fontSize.toFloat(), onValueChange = { reading.appearance(fontSize = it.roundToInt().toDouble()) }, valueRange = 16f..28f, steps = 11)

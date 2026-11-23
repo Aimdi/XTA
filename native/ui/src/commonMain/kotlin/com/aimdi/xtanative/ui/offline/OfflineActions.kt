@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.store.offline.OfflineArticle
 import com.aimdi.xtanative.store.offline.OfflineSaved
 import com.aimdi.xtanative.store.saved.SavedContent
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.offline_article_text_only
@@ -88,7 +89,7 @@ fun OfflineSavedAction(postId: String, content: SavedContent, modifier: Modifier
         },
         trailingContent = entry?.let {
             {
-                IconButton(onClick = { keeping.launch { keeper.offline.remove(key) } }) { Icon(Icons.Filled.Delete, stringResource(Res.string.offline_remove)) }
+                IconTip(stringResource(Res.string.offline_remove)) { IconButton(onClick = { keeping.launch { keeper.offline.remove(key) } }) { Icon(Icons.Filled.Delete, stringResource(Res.string.offline_remove)) } }
             }
         },
     )

@@ -63,6 +63,7 @@ import com.aimdi.xtanative.core.feed.FeedStrip
 import com.aimdi.xtanative.core.session.DeckColumn
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalParentTurnsPages
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberLiveEdges
@@ -254,7 +255,7 @@ private fun ShownTimeline(
                     ) {
                         // Only the search and what the reader pinned stay on the bar; the rest is in the plugin sheet.
                         key(current.id) { NetworkActions(current.id, ui, networks, vm::setTopBarPins, routes, extras, menu = false) }
-                        if (desktop) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
+                        if (desktop) IconTip(stringResource(Res.string.home_refresh)) { IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) } }
                     }
                 }
                 if (sheet) {
@@ -361,10 +362,10 @@ private fun TimelineTopBar(
 @Composable
 private fun PickerMark(tab: HomeTab, ui: HomeUi, networks: HomeNetworks, unread: Boolean, onClick: () -> Unit) {
     val label = listOfNotNull(tabLabel(tab, ui), stringResource(Res.string.home_unread).takeIf { unread }, stringResource(Res.string.home_networks)).joinToString(", ")
-    IconButton(onClick = onClick, modifier = Modifier.semantics { contentDescription = label }) {
+    IconTip(label) { IconButton(onClick = onClick, modifier = Modifier.semantics { contentDescription = label }) {
         // The label says the dot already.
         Box(Modifier.clearAndSetSemantics {}) { UnreadDot(unread) { TimelineMark(tab, networks, 24.dp) } }
-    }
+    } }
 }
 
 /** A timeline's mark: Following's stacked posts, X's own mark, a network's. */
@@ -408,13 +409,13 @@ private fun RowScope.TabActions(
     when (tab) {
         HomeTab.ForYou -> {
             val x = stringResource(Res.string.home_x)
-            IconButton(onClick = { routes.openIfExists(HomeDestination.SEARCH.route) }) { Icon(Icons.Filled.Search, stringResource(Res.string.home_search_in, x)) }
+            IconTip(stringResource(Res.string.home_search_in, x)) { IconButton(onClick = { routes.openIfExists(HomeDestination.SEARCH.route) }) { Icon(Icons.Filled.Search, stringResource(Res.string.home_search_in, x)) } }
             val off = HomeFilter.turnedOff(ui.filter, ui.session.accounts, ui.session.groups)
             PinnedOptions(FeedStrip.FOR_YOU, xOptions(routes, refresh, calls), ui.topBarPins[FeedStrip.FOR_YOU].orEmpty(), onPins, attention = off > 0)
         }
         is HomeTab.Network -> {
             key(tab.id) { NetworkActions(tab.id, ui, networks, onPins) }
-            if (LocalDesktopActions.current != null) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
+            if (LocalDesktopActions.current != null) IconTip(stringResource(Res.string.home_refresh)) { IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) } }
         }
         HomeTab.Following, is HomeTab.Group, null -> Unit
     }
@@ -516,9 +517,9 @@ private fun xOptions(routes: HomeRoutes, refresh: () -> Unit, calls: FeedPageCal
 /** Home feed accounts (homeFeedAccountsButton): a person, with a dot while accounts or groups are turned off. */
 @Composable
 internal fun FeedAccountsButton(off: Int, onClick: () -> Unit) {
-    IconButton(onClick = onClick) {
+    IconTip(stringResource(Res.string.home_feed_accounts)) { IconButton(onClick = onClick) {
         OffDot(off) { Icon(Icons.Outlined.Person, stringResource(Res.string.home_feed_accounts)) }
-    }
+    } }
 }
 
 /**
@@ -599,14 +600,16 @@ private fun PinnedOptions(
     more: @Composable ColumnScope.(close: () -> Unit) -> Unit = {},
 ) {
     TopBarPins.shown(options, pins) { it.id }.forEach { option ->
-        IconButton(onClick = option.onClick) { Icon(option.icon, option.label) }
+        IconTip(option.label) { IconButton(onClick = option.onClick) { Icon(option.icon, option.label) } }
     }
     if (!menu) return
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) {
-            val label = stringResource(Res.string.home_more_options)
-            if (attention) BadgedBox(badge = { Badge() }) { Icon(Icons.Filled.MoreVert, label) } else Icon(Icons.Filled.MoreVert, label)
+        val label = stringResource(Res.string.home_more_options)
+        IconTip(label) {
+            IconButton(onClick = { open = true }) {
+                if (attention) BadgedBox(badge = { Badge() }) { Icon(Icons.Filled.MoreVert, label) } else Icon(Icons.Filled.MoreVert, label)
+            }
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             if (options.isNotEmpty()) {
@@ -638,14 +641,14 @@ private fun OptionItems(id: String, options: List<NetworkOption>, pins: List<Str
             text = { Text(option.label) },
             leadingIcon = { Icon(option.icon, contentDescription = null) },
             trailingIcon = {
-                IconButton(onClick = { onPins(id, TopBarPins.toggled(pins, option.id)) }) {
+                IconTip(pinLabel) { IconButton(onClick = { onPins(id, TopBarPins.toggled(pins, option.id)) }) {
                     Icon(
                         XIcons.Pin,
                         pinLabel,
                         tint = if (option.id in pins) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp),
                     )
-                }
+                } }
             },
             onClick = {
                 close()

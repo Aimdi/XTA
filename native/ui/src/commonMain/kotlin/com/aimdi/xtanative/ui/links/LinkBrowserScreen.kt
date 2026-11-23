@@ -49,6 +49,7 @@ import com.aimdi.xtanative.services.links.LinkBrowserAction
 import com.aimdi.xtanative.services.links.LinkBrowserSession
 import com.aimdi.xtanative.services.links.LinkBrowserState
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -150,7 +151,7 @@ fun LinkBrowserScreen(url: String, from: String?, onClose: () -> Unit) {
 @Composable
 private fun BrowserTopBar(state: LinkBrowserState, subtitle: String?, onClose: () -> Unit, onAction: (LinkBrowserAction) -> Unit) {
     Row(Modifier.fillMaxWidth().heightIn(min = 56.dp), verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = onClose) { Icon(Icons.Filled.Close, stringResource(Res.string.reader_close)) }
+        IconTip(stringResource(Res.string.reader_close)) { IconButton(onClick = onClose) { Icon(Icons.Filled.Close, stringResource(Res.string.reader_close)) } }
         Column(Modifier.weight(1f).semantics { heading() }) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
@@ -180,13 +181,13 @@ private fun BrowserTopBar(state: LinkBrowserState, subtitle: String?, onClose: (
 private fun BrowserMenu(onAction: (LinkBrowserAction) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) {
+        IconTip(stringResource(Res.string.reader_more_options)) { IconButton(onClick = { open = true }) {
             Icon(
                 ReaderIcons.MoreHoriz,
                 contentDescription = stringResource(Res.string.reader_more_options),
                 modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape).padding(3.dp).size(20.dp),
             )
-        }
+        } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             browserActions.forEach { (action, icon, label) ->
                 DropdownMenuItem(

@@ -86,6 +86,7 @@ import com.aimdi.xtanative.pluginhost.PluginState
 import com.aimdi.xtanative.pluginhost.PluginStatus
 import com.aimdi.xtanative.pluginhost.PluginStoreState
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.SearchPillShape
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
@@ -188,9 +189,9 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
         onBack = onBack,
         actions = {
             ShowPrivateMenu(store.showPrivate) { show -> scope.launch { plugins.showPrivate(show) } }
-            IconButton(onClick = { scope.launch { plugins.manager.refresh() } }, enabled = !store.catalogue.refreshing) {
+            IconTip(stringResource(Res.string.retry)) { IconButton(onClick = { scope.launch { plugins.manager.refresh() } }, enabled = !store.catalogue.refreshing) {
                 Icon(Icons.Filled.Refresh, stringResource(Res.string.retry))
-            }
+            } }
         },
     ) { padding ->
         val actions = StoreActions(
@@ -433,9 +434,9 @@ private fun InstalledRow(shown: InstalledPlugin, plugins: AppPlugins, locale: Lo
                 TextButton(onClick = { actions.open(state.id) }) { Text(stringResource(Res.string.plugin_open)) }
             }
             if (plugin?.settings != null) {
-                IconButton(onClick = { actions.settings(state.id) }) {
+                IconTip(stringResource(Res.string.settings)) { IconButton(onClick = { actions.settings(state.id) }) {
                     Icon(GroupIcons.Tune, stringResource(Res.string.settings), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
-                }
+                } }
             }
             val home = plugin?.homeTab != null
             InstalledMenu(
@@ -650,9 +651,9 @@ private fun InstalledMenu(
 ) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) {
+        IconTip(stringResource(Res.string.plugin_more_options)) { IconButton(onClick = { open = true }) {
             Icon(Icons.Filled.MoreVert, stringResource(Res.string.plugin_more_options), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
-        }
+        } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             // A box has no room for these: its version, what it keeps and its settings are said and reached here.
             if (info.isNotEmpty()) {
@@ -705,7 +706,7 @@ private fun InstalledMenu(
 private fun ShowPrivateMenu(showPrivate: Boolean, onChange: (Boolean) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.plugin_more_options)) }
+        IconTip(stringResource(Res.string.plugin_more_options)) { IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.plugin_more_options)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.plugin_store_show_private)) },

@@ -1,12 +1,12 @@
 package com.aimdi.xtanative.ui.subscriptions
 
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -67,6 +67,7 @@ import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.GroupPack
 import com.aimdi.xtanative.core.session.Session
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.groups_add_to_group
@@ -160,9 +161,9 @@ fun GroupEditSheet(
                     supportingText = if (nameTouched && !draft.canSave) ({ Text(stringResource(Res.string.groups_please_enter_a_name)) }) else null,
                     modifier = Modifier.weight(1f),
                 )
-                IconButton(onClick = { picker = EditPicker.COLOR }) {
+                IconTip(stringResource(Res.string.groups_pick_color)) { IconButton(onClick = { picker = EditPicker.COLOR }) {
                     Icon(GroupIcons.Palette, stringResource(Res.string.groups_pick_color), tint = groupColor(draft.seedColor))
-                }
+                } }
             }
             Text(stringResource(Res.string.groups_mark_label), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 12.dp, bottom = 8.dp))
             MarkStyleRow(draft.shownStyle) { style ->
@@ -441,12 +442,12 @@ private fun IconDialog(onPick: (String) -> Unit, onDismiss: () -> Unit) {
             LazyVerticalGrid(GridCells.Fixed(5), Modifier.size(width = 320.dp, height = 320.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 itemsIndexed(keys) { index, key ->
                     val label = stringResource(Res.string.groups_choose_icon_number, index + 1, keys.size)
-                    IconButton(onClick = {
+                    IconTip(label) { IconButton(onClick = {
                         onPick(key)
                         onDismiss()
                     }) {
                         Icon(GroupIcons.mark(key)!!, contentDescription = label)
-                    }
+                    } }
                 }
             }
         },

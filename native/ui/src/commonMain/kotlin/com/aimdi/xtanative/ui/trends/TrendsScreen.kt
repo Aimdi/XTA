@@ -81,6 +81,7 @@ import com.aimdi.xtanative.core.x.model.XTrendPlaces
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.WithReadingColumn
@@ -177,7 +178,7 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
                 TopAppBar(
                     navigationIcon = {
                         if (onBack != null) {
-                            IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }
+                            IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
                         }
                     },
                     title = {
@@ -247,11 +248,11 @@ private fun DiscoverField(
         onValueChange = onValueChange,
         singleLine = true,
         placeholder = { Text(hint, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-        leadingIcon = { IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = stringResource(Res.string.discover_search)) } },
+        leadingIcon = { IconTip(stringResource(Res.string.discover_search)) { IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = stringResource(Res.string.discover_search)) } } },
         trailingIcon = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (value.text.isNotEmpty()) IconButton(onClick = onClear) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) }
-                IconButton(onClick = onLibrary) { Icon(SavedIcons.ManageSearch, stringResource(Res.string.saved_search_library)) }
+                if (value.text.isNotEmpty()) IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = onClear) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } }
+                IconTip(stringResource(Res.string.saved_search_library)) { IconButton(onClick = onLibrary) { Icon(SavedIcons.ManageSearch, stringResource(Res.string.saved_search_library)) } }
             }
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),

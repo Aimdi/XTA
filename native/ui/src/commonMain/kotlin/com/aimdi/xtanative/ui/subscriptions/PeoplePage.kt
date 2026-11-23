@@ -48,6 +48,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -187,17 +188,17 @@ private fun SubscriptionRowView(row: SubscriptionRow, actions: PeopleActions) {
             )
         }
         if (!row.isX) {
-            IconButton(onClick = { actions.pickGroups(row) }) {
+            IconTip(stringResource(Res.string.groups_add_to_group)) { IconButton(onClick = { actions.pickGroups(row) }) {
                 Icon(GroupIcons.Group, contentDescription = stringResource(Res.string.groups_add_to_group))
-            }
+            } }
         }
         Box {
-            IconButton(onClick = { menu = true }) {
+            IconTip(stringResource(Res.string.groups_unsubscribe)) { IconButton(onClick = { menu = true }) {
                 Icon(
                     if (row.inFeed || !row.isX) GroupIcons.PersonRemove else GroupIcons.VisibilityOff,
                     contentDescription = stringResource(Res.string.groups_unsubscribe),
                 )
-            }
+            } }
             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                 DropdownMenuItem(text = { Text(stringResource(Res.string.groups_unsubscribe)) }, onClick = {
                     menu = false

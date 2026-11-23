@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.discover_clear_recent_searches
 import com.aimdi.xtanative.ui.generated.resources.discover_delete
@@ -63,8 +64,8 @@ fun RecentSearchesBar(
                 )
             }
         }
-        IconButton(onClick = onClear) {
+        IconTip(stringResource(Res.string.discover_clear_recent_searches)) { IconButton(onClick = onClear) {
             Icon(DiscoverIcons.DeleteSweep, contentDescription = stringResource(Res.string.discover_clear_recent_searches))
-        }
+        } }
     }
 }

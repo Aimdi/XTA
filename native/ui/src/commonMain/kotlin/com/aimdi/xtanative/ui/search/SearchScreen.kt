@@ -70,6 +70,7 @@ import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.community.CommunityRow
 import com.aimdi.xtanative.ui.feed.feedThreads
@@ -213,7 +214,7 @@ private fun SearchHeader(
         Column {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }
+                    IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
                 },
                 title = {
                     if (separate) {
@@ -223,8 +224,8 @@ private fun SearchHeader(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { searchActions.openLibrary(query) }) { Icon(SavedIcons.ManageSearch, stringResource(Res.string.saved_search_library)) }
-                    IconButton(onClick = searchActions.openAntennas) { Icon(DiscoverIcons.Sensors, stringResource(Res.string.discover_antennas)) }
+                    IconTip(stringResource(Res.string.saved_search_library)) { IconButton(onClick = { searchActions.openLibrary(query) }) { Icon(SavedIcons.ManageSearch, stringResource(Res.string.saved_search_library)) } }
+                    IconTip(stringResource(Res.string.discover_antennas)) { IconButton(onClick = searchActions.openAntennas) { Icon(DiscoverIcons.Sensors, stringResource(Res.string.discover_antennas)) } }
                     if (hasQuery) FollowMenu(FollowTarget.Search(query))
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -254,7 +255,7 @@ private fun SearchField(
         trailingIcon = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (value.text.isNotEmpty()) {
-                    IconButton(onClick = onClear) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) }
+                    IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = onClear) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } }
                 }
                 AdvancedButton(filters, onAdvanced)
             }
@@ -276,7 +277,7 @@ private fun SearchField(
 @Composable
 private fun AdvancedButton(filters: Int, onClick: () -> Unit) {
     val label = stringResource(Res.string.discover_advanced_search)
-    IconButton(onClick = onClick) {
+    IconTip(label) { IconButton(onClick = onClick) {
         if (filters > 0) {
             BadgedBox(badge = { Badge { Text(filters.toString()) } }) {
                 Icon(DiscoverIcons.Tune, contentDescription = label, tint = MaterialTheme.colorScheme.primary)
@@ -284,7 +285,7 @@ private fun AdvancedButton(filters: Int, onClick: () -> Unit) {
         } else {
             Icon(DiscoverIcons.Tune, contentDescription = label)
         }
-    }
+    } }
 }
 
 @Composable

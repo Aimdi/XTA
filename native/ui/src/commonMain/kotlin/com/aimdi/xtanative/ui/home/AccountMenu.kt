@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.app_name
@@ -151,7 +152,7 @@ private fun AccountHeader(account: XAccount?, onClose: (() -> Unit)?, onAvatar: 
         Row(verticalAlignment = Alignment.CenterVertically) {
             AccountMark(account, 52.dp)
             Spacer(Modifier.weight(1f))
-            if (onClose != null) IconButton(onClick = onClose) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) }
+            if (onClose != null) IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } }
         }
         Text(stringResource(Res.string.app_name), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(top = 10.dp))
         account?.screenName?.takeIf { it.isNotEmpty() }?.let { name ->

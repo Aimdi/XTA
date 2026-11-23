@@ -28,6 +28,7 @@ import com.aimdi.xtanative.networks.ReaderHtml
 import com.aimdi.xtanative.networks.RssItem
 import com.aimdi.xtanative.store.reading.ArticleReading
 import com.aimdi.xtanative.store.settings.PostsPrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.agoText
@@ -79,7 +80,7 @@ fun RssReaderScreen(
     PluginScaffold(title = shown.feedTitle, onBack = host::back, actions = {
         if (shown.hasReadableBody) OfflineArticleAction(RssOffline.articleOf(shown))
         actions()
-        shown.link?.let { link -> IconButton(onClick = { host.openLink(link) }) { Icon(PostIcons.OpenInNew, stringResource(Res.string.reader_link_open_in_browser)) } }
+        shown.link?.let { link -> IconTip(stringResource(Res.string.reader_link_open_in_browser)) { IconButton(onClick = { host.openLink(link) }) { Icon(PostIcons.OpenInNew, stringResource(Res.string.reader_link_open_in_browser)) } } }
     }) { padding ->
         Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             when {

@@ -59,6 +59,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.data.LocalPostCache
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.common.turnTo
@@ -192,15 +193,15 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
             val current = viewed.pages.getOrNull(pager.currentPage)
             ViewerBar(pager, items.size, backdrop, onClose) {
                 if (onOpenPost != null && current != null) {
-                    IconButton(onClick = { onOpenPost(current) }) { Icon(PostIcons.OpenInNew, stringResource(Res.string.posts_open_post), tint = Color.White) }
+                    IconTip(stringResource(Res.string.posts_open_post)) { IconButton(onClick = { onOpenPost(current) }) { Icon(PostIcons.OpenInNew, stringResource(Res.string.posts_open_post), tint = Color.White) } }
                 }
                 val save = current?.let { viewed.save(it, playing[pager.currentPage]) }
                 if (saver != null && save != null) {
-                    IconButton(onClick = { saver.save(save) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) }
+                    IconTip(stringResource(Res.string.reader_download)) { IconButton(onClick = { saver.save(save) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) } }
                 }
                 if (save != null) {
                     val label = if (MediaSharing.sharesPicture(files, save)) Res.string.reader_share_image else Res.string.reader_link_share
-                    IconButton(onClick = { share(save) }) { Icon(Icons.Filled.Share, stringResource(label), tint = Color.White) }
+                    IconTip(stringResource(label)) { IconButton(onClick = { share(save) }) { Icon(Icons.Filled.Share, stringResource(label), tint = Color.White) } }
                 }
             }
             Box(Modifier.weight(1f).fillMaxWidth()) {
@@ -233,7 +234,7 @@ private fun ViewerBar(pager: PagerState, count: Int, backdrop: Float, onClose: (
         Modifier.fillMaxWidth().background(Color.Black.copy(alpha = backdrop)).statusBarsPadding().heightIn(min = 56.dp).padding(end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.reader_back), tint = Color.White) }
+        IconTip(stringResource(Res.string.reader_back)) { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.reader_back), tint = Color.White) } }
         if (count > 1) {
             val page = pager.currentPage + 1
             Row(Modifier.padding(start = 8.dp).semantics { contentDescription = "$media $page/$count" }) {
@@ -258,11 +259,11 @@ private fun PageButtons(pager: PagerState, count: Int, turn: (Int) -> Unit) {
     val colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color.Black.copy(alpha = 0.54f), contentColor = Color.White)
     Row(Modifier.fillMaxSize().padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
         if (pager.currentPage > 0) {
-            FilledIconButton(onClick = { turn(-1) }, colors = colors) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, stringResource(Res.string.reader_media_previous)) }
+            IconTip(stringResource(Res.string.reader_media_previous)) { FilledIconButton(onClick = { turn(-1) }, colors = colors) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, stringResource(Res.string.reader_media_previous)) } }
         }
         Spacer(Modifier.weight(1f))
         if (pager.currentPage < count - 1) {
-            FilledIconButton(onClick = { turn(1) }, colors = colors) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, stringResource(Res.string.reader_media_next)) }
+            IconTip(stringResource(Res.string.reader_media_next)) { FilledIconButton(onClick = { turn(1) }, colors = colors) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, stringResource(Res.string.reader_media_next)) } }
         }
     }
 }
