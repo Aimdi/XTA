@@ -1,14 +1,11 @@
 package com.aimdi.xtanative.ui.post
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,8 +53,7 @@ fun PostMenu(post: XPost, actions: PostActions, onDismiss: () -> Unit) {
     }
 }
 
-/** The sheet's entries, the shared post sheet's ([PostMenuRows]), each closing it before it acts. */
-@OptIn(ExperimentalMaterial3Api::class)
+/** The sheet's entries, the shared post sheet's ([PostMenuRows]), each closing it before it acts; a menu at the pointer on the desktop ([PostMenuSurface]). */
 @Composable
 private fun MenuSheet(post: XPost, actions: PostActions, onDismiss: () -> Unit, onStep: (MenuStep) -> Unit) {
     val keeper = LocalKeeper.current
@@ -82,10 +78,8 @@ private fun MenuSheet(post: XPost, actions: PostActions, onDismiss: () -> Unit, 
             chooseFolder = { onStep(MenuStep.FOLDERS) },
         )
     }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.padding(bottom = 16.dp)) {
-            PostMenuRows(menu, saved, handlers, onDone = { onStep(MenuStep.CLOSED) })
-        }
+    PostMenuSurface(onDismiss) {
+        PostMenuRows(menu, saved, handlers, onDone = { onStep(MenuStep.CLOSED) })
     }
 }
 
