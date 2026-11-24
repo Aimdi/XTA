@@ -3,6 +3,7 @@
     <string name="keys_title">鍵盤快速鍵</string>
     <string name="keys_help">顯示這些快速鍵</string>
     <string name="keys_back">返回，或關閉已開啟的內容</string>
+    <string name="keys_forward">前進到剛才返回前的頁面</string>
     <string name="keys_go_home">返回首頁</string>
     <string name="keys_refresh">重新整理</string>
     <string name="keys_search">搜尋</string>

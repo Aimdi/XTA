@@ -3,6 +3,7 @@
     <string name="keys_title">Lasterbideak</string>
     <string name="keys_help">Erakutsi lasterbide hauek</string>
     <string name="keys_back">Itzuli, edo itxi irekita dagoena</string>
+    <string name="keys_forward">Aurrera, atzera egin duzun lekura</string>
     <string name="keys_go_home">Itzuli hasierara</string>
     <string name="keys_refresh">Freskatu</string>
     <string name="keys_search">Bilatu</string>

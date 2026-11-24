@@ -3,6 +3,7 @@
     <string name="keys_title">Sneltoetsen</string>
     <string name="keys_help">Deze sneltoetsen tonen</string>
     <string name="keys_back">Terug, of sluiten wat open is</string>
+    <string name="keys_forward">Vooruit naar waar je vandaan terugging</string>
     <string name="keys_go_home">Terug naar Start</string>
     <string name="keys_refresh">Vernieuwen</string>
     <string name="keys_search">Zoeken</string>

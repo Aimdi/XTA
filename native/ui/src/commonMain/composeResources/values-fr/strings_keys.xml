@@ -3,6 +3,7 @@
     <string name="keys_title">Raccourcis clavier</string>
     <string name="keys_help">Afficher ces raccourcis</string>
     <string name="keys_back">Revenir en arrière ou fermer ce qui est ouvert</string>
+    <string name="keys_forward">Avancer vers ce que vous avez quitté en revenant</string>
     <string name="keys_go_home">Retour à l’accueil</string>
     <string name="keys_refresh">Actualiser</string>
     <string name="keys_search">Rechercher</string>

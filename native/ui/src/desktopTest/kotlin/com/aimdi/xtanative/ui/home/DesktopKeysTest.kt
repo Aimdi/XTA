@@ -122,6 +122,30 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun altRightGoesForwardFromAFieldAndOverAnOpenedPostToo() {
+        assertEquals(DeskAction.FORWARD, action(DeskKey.RIGHT, alt = true))
+        assertEquals(DeskAction.FORWARD, action(DeskKey.RIGHT, alt = true, focusInside = true), "as Alt+← does from a field")
+        assertEquals(DeskAction.FORWARD, action(DeskKey.RIGHT, alt = true, canGoBack = false))
+        assertEquals(DeskAction.FORWARD, action(DeskKey.RIGHT, alt = true, open = true), "an opened post is a card the page counts as open")
+        assertEquals(DeskAction.NONE, action(DeskKey.RIGHT, alt = true, shift = true))
+        assertEquals(DeskAction.NEXT_COLUMN, action(DeskKey.RIGHT, ctrl = true))
+    }
+
+    @Test
+    fun x11SideButtonsComeAsAwtButtonsSixAndSeven() {
+        assertEquals(SideButton.BACK, DesktopKeys.sideButton(6))
+        assertEquals(SideButton.FORWARD, DesktopKeys.sideButton(7))
+        listOf(1, 2, 3, 4, 5, 8).forEach { assertNull(DesktopKeys.sideButton(it), "button $it") }
+    }
+
+    @Test
+    fun noKeyOfATextFieldGoesBackOrForward() {
+        // Backspace deletes in a field; it is no back key, as browsers dropped it.
+        assertEquals(DeskAction.NONE, action(DeskKey.OTHER))
+        assertEquals(DeskAction.NONE, action(DeskKey.RIGHT, focusInside = true))
+    }
+
+    @Test
     fun onTheFirstScreenTheMouseBackButtonClosesTheAppAndTheKeysDoNothing() {
         assertEquals(DeskAction.LEAVE_APP, DesktopKeys.mouseBack(canGoBack = false, somethingOpen = false))
         assertEquals(DeskAction.CLOSE, DesktopKeys.mouseBack(canGoBack = false, somethingOpen = true))

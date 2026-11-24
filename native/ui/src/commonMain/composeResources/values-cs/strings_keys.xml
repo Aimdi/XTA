@@ -3,6 +3,7 @@
     <string name="keys_title">Klávesové zkratky</string>
     <string name="keys_help">Zobrazit tyto zkratky</string>
     <string name="keys_back">Zpět, nebo zavřít, co je otevřené</string>
+    <string name="keys_forward">Vpřed tam, odkud jste se vrátili</string>
     <string name="keys_go_home">Zpět na domovskou stránku</string>
     <string name="keys_refresh">Obnovit</string>
     <string name="keys_search">Hledat</string>

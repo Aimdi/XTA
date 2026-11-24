@@ -3,6 +3,7 @@
     <string name="keys_title">Klavaraj fulmoklavoj</string>
     <string name="keys_help">Montri ĉi tiujn fulmoklavojn</string>
     <string name="keys_back">Reen, aŭ fermi tion, kio estas malfermita</string>
+    <string name="keys_forward">Antaŭen al tio, de kie vi revenis</string>
     <string name="keys_go_home">Reen al la hejmo</string>
     <string name="keys_refresh">Aktualigi</string>
     <string name="keys_search">Serĉi</string>

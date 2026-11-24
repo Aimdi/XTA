@@ -3,6 +3,7 @@
     <string name="keys_title">Сочетания клавиш</string>
     <string name="keys_help">Показать эти сочетания</string>
     <string name="keys_back">Назад или закрыть открытое</string>
+    <string name="keys_forward">Вперёд туда, откуда вернулись</string>
     <string name="keys_go_home">Вернуться на главную</string>
     <string name="keys_refresh">Обновить</string>
     <string name="keys_search">Поиск</string>

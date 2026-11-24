@@ -4,6 +4,7 @@
     <string name="keys_title">Keyboard shortcuts</string>
     <string name="keys_help">Show these shortcuts</string>
     <string name="keys_back">Go back, or close what is open</string>
+    <string name="keys_forward">Go forward to what you went back from</string>
     <string name="keys_go_home">Back to Home</string>
     <string name="keys_refresh">Refresh</string>
     <string name="keys_search">Search</string>

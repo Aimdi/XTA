@@ -3,6 +3,7 @@
     <string name="keys_title">Сполучення клавіш</string>
     <string name="keys_help">Показати ці сполучення</string>
     <string name="keys_back">Назад або закрити відкрите</string>
+    <string name="keys_forward">Уперед туди, звідки повернулися</string>
     <string name="keys_go_home">Назад на головну</string>
     <string name="keys_refresh">Оновити</string>
     <string name="keys_search">Пошук</string>

@@ -3,6 +3,7 @@
     <string name="keys_title">Comenzi rapide de la tastatură</string>
     <string name="keys_help">Arată aceste comenzi rapide</string>
     <string name="keys_back">Înapoi sau închide ce este deschis</string>
+    <string name="keys_forward">Înainte la ce ai părăsit mergând înapoi</string>
     <string name="keys_go_home">Înapoi la Acasă</string>
     <string name="keys_refresh">Reîmprospătează</string>
     <string name="keys_search">Caută</string>

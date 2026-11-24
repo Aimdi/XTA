@@ -37,6 +37,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isBackPressed
 import androidx.compose.ui.input.pointer.isCtrlPressed
+import androidx.compose.ui.input.pointer.isForwardPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
@@ -53,6 +54,7 @@ import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.links.PastedLinks
 import com.aimdi.xtanative.ui.links.takesDroppedLinks
 import com.aimdi.xtanative.ui.settings.SettingsChoices
+import java.awt.event.MouseEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -63,7 +65,7 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, openHome: () -> Unit, content: @Composable () -> Unit) {
+actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, openHome: () -> Unit, goForward: () -> Boolean, content: @Composable () -> Unit) {
     val focus = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val settingsStore = LocalSettingsStore.current
@@ -117,6 +119,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             true
         }
         DeskAction.BACK -> nav.popBackStack()
+        DeskAction.FORWARD -> goForward()
         DeskAction.REFRESH -> actions.refresh()
         DeskAction.PREVIOUS_PAGE -> actions.turn(-1)
         DeskAction.NEXT_PAGE -> actions.turn(1)
@@ -263,9 +266,15 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                     awaitPointerEventScope {
                         while (true) {
                             val event = awaitPointerEvent(PointerEventPass.Initial)
-                            if (event.type == PointerEventType.Press) clicked = true
-                            if (event.type == PointerEventType.Press && event.buttons.isBackPressed) {
-                                act(DesktopKeys.mouseBack(nav.previousBackStackEntry != null, actions.somethingOpen()))
+                            if (event.type == PointerEventType.Press) {
+                                clicked = true
+                                // On X11 the side buttons come as AWT's 6 and 7, which Compose does not name (its back and forward are 4 and 5).
+                                val side = (event.nativeEvent as? MouseEvent)?.let { DesktopKeys.sideButton(it.button) }
+                                when {
+                                    event.buttons.isBackPressed || side == SideButton.BACK ->
+                                        act(DesktopKeys.mouseBack(nav.previousBackStackEntry != null, actions.somethingOpen()))
+                                    event.buttons.isForwardPressed || side == SideButton.FORWARD -> act(DeskAction.FORWARD)
+                                }
                             }
                             // Ctrl and the wheel size the text, as Ctrl and +/- do; the page under it does not scroll meanwhile.
                             // Over the media viewer the wheel is its own (zoom).

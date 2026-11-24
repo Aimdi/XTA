@@ -541,10 +541,19 @@ val LocalDesktopActionsHost = staticCompositionLocalOf { DesktopActionsHost() }
  * Going back the way a PC does it (XTA's DesktopNavigation): the mouse's back
  * button, Alt+← and Esc go back as Android's back gesture does, the first Esc
  * leaving a text field being typed in, and the screen on top answers
- * [DesktopActions]. Off the desktop it is [content] alone.
+ * [DesktopActions]; Alt+→ and the mouse's forward button call [goForward],
+ * false when there is nothing to go forward to. Off the desktop it is
+ * [content] alone.
  */
 @Composable
-expect fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, openHome: () -> Unit = {}, content: @Composable () -> Unit)
+expect fun DesktopNavigation(
+    nav: NavHostController,
+    openSearch: () -> Unit,
+    openSettings: () -> Unit,
+    openHome: () -> Unit = {},
+    goForward: () -> Boolean = { false },
+    content: @Composable () -> Unit,
+)
 
 /**
  * Lets Ctrl+F and / ([DesktopKeys]) go to the screen's own search while it is

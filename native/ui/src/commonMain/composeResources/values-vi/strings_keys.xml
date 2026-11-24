@@ -3,6 +3,7 @@
     <string name="keys_title">Phím tắt</string>
     <string name="keys_help">Hiện các phím tắt này</string>
     <string name="keys_back">Quay lại, hoặc đóng mục đang mở</string>
+    <string name="keys_forward">Tiến tới mục bạn vừa quay lại từ đó</string>
     <string name="keys_go_home">Quay về Trang chủ</string>
     <string name="keys_refresh">Làm mới</string>
     <string name="keys_search">Tìm kiếm</string>

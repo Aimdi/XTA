@@ -374,7 +374,24 @@ fun XtaNativeRoot() {
         }
         // Alt+Home goes back to Home, as a browser's goes to its home page; nothing where Home is not below.
         val openHome = remember(nav) { { nav.popBackStack(Routes.HOME, inclusive = false); Unit } }
-        DesktopNavigation(nav, openSearch, openSettings, openHome) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) }
+        // Alt+→ and the mouse's forward button open again what going back left, as a browser's forward does.
+        val forward = remember(nav) { ForwardRoutes() }
+        LaunchedEffect(nav, forward) {
+            nav.currentBackStackEntryFlow.collect { entry ->
+                forward.shown(entry.id, entry.destination.route.orEmpty(), forwardStep(entry), nav.previousBackStackEntry?.id)
+            }
+        }
+        val goForward = remember(nav, forward, backs, opening) {
+            {
+                forward.next()?.let { step ->
+                    val open = { runCatching { nav.navigate(step.route) }.onFailure { forward.clear() }; Unit }
+                    // A post opens as a card over a picture of the screen, as it does when clicked.
+                    if (step.pattern == Routes.POST) backs.open(opening, open) else open()
+                    true
+                } ?: false
+            }
+        }
+        DesktopNavigation(nav, openSearch, openSettings, openHome, goForward) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) }
     }
     if (askSignIn) {
         NotLoggedInDialog(onImportBackup = { nav.navigate(Routes.IMPORT) }, onLogin = { nav.navigate(Routes.SIGN_IN) }, onDismiss = { askSignIn = false })
@@ -382,6 +399,16 @@ fun XtaNativeRoot() {
     ConfirmClose()
     UpdateCheck()
 }
+
+/** What opens [entry] again going forward: its route with its arguments filled in; null where they cannot be, or it is a step of setting up. */
+private fun forwardStep(entry: NavBackStackEntry): ForwardRoutes.Step? {
+    val pattern = entry.destination.route?.takeIf { it !in NOT_FORWARD } ?: return null
+    val args = entry.arguments?.read { toMap() }.orEmpty()
+    return ForwardRoutes.routeOf(pattern, args)?.let { ForwardRoutes.Step(it, pattern) }
+}
+
+/** Screens going forward never opens again: the app's setting up, and what only leads to the first screen. */
+private val NOT_FORWARD = setOf(Routes.ROOT, Routes.INTRO, Routes.IMPORT, Routes.SIGN_IN)
 
 /** The reading-aloud bar's "Voice settings" opens them over whatever screen is up. */
 @Composable

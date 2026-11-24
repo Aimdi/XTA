@@ -3,6 +3,7 @@
     <string name="keys_title">Scorciatoie da tastiera</string>
     <string name="keys_help">Mostra queste scorciatoie</string>
     <string name="keys_back">Torna indietro o chiudi ciò che è aperto</string>
+    <string name="keys_forward">Vai avanti a ciò da cui sei tornato indietro</string>
     <string name="keys_go_home">Torna alla Home</string>
     <string name="keys_refresh">Aggiorna</string>
     <string name="keys_search">Cerca</string>

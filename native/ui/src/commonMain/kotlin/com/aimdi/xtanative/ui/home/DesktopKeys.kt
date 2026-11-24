@@ -5,6 +5,9 @@ import androidx.compose.ui.geometry.Offset
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
 enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, N, OTHER }
 
+/** A mouse's side buttons: back and forward, as in a browser. */
+enum class SideButton { BACK, FORWARD }
+
 enum class DeskAction {
     /** Out of the text field being typed in, as XTA's first Esc does. */
     LEAVE_FIELD,
@@ -12,6 +15,9 @@ enum class DeskAction {
     /** What the page has open (a side menu) closes first. */
     CLOSE,
     BACK,
+
+    /** The screen the last back left opens again, as a browser's forward does (Alt+→, the mouse's forward button). */
+    FORWARD,
     REFRESH,
     PREVIOUS_PAGE,
     NEXT_PAGE,
@@ -169,6 +175,8 @@ object DesktopKeys {
             key == DeskKey.ESCAPE && focusInside -> DeskAction.LEAVE_FIELD
             key == DeskKey.ESCAPE && selecting && !somethingOpen -> DeskAction.LEAVE_SELECTION
             key == DeskKey.ESCAPE || key == DeskKey.BACK || (key == DeskKey.LEFT && alt) -> back(canGoBack, somethingOpen)
+            // Over an opened post (a card the page counts as open) too, as Alt+Home.
+            key == DeskKey.RIGHT && alt && !ctrl && !shift -> DeskAction.FORWARD
             key == DeskKey.F5 || (key == DeskKey.R && ctrl) -> DeskAction.REFRESH
             key == DeskKey.Q && ctrl && !alt -> DeskAction.LEAVE_APP
             key == DeskKey.W && ctrl && !alt && !shift -> if (somethingOpen) DeskAction.CLOSE else DeskAction.NONE
@@ -406,6 +414,20 @@ object DesktopKeys {
         digit in 1..8 -> (digit - 1).takeIf { it < count }
         else -> null
     }
+
+    /**
+     * The side button an AWT mouse [button] is, where Compose does not see it:
+     * on X11, X's buttons 8 and 9 (back, forward) come as AWT's 6 and 7, after
+     * the wheel's 4 to 7. Null for any other button.
+     */
+    fun sideButton(button: Int): SideButton? = when (button) {
+        X11_BACK -> SideButton.BACK
+        X11_FORWARD -> SideButton.FORWARD
+        else -> null
+    }
+
+    private const val X11_BACK = 6
+    private const val X11_FORWARD = 7
 
     /** The mouse's back button: as the keys, but on the first screen it closes the app, as XTA's goes back from Home. */
     fun mouseBack(canGoBack: Boolean, somethingOpen: Boolean): DeskAction =

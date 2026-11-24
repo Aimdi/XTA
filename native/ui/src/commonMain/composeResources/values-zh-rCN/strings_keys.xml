@@ -3,6 +3,7 @@
     <string name="keys_title">键盘快捷键</string>
     <string name="keys_help">显示这些快捷键</string>
     <string name="keys_back">返回，或关闭已打开的内容</string>
+    <string name="keys_forward">前进到刚才返回前的页面</string>
     <string name="keys_go_home">返回首页</string>
     <string name="keys_refresh">刷新</string>
     <string name="keys_search">搜索</string>

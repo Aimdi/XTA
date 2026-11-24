@@ -28,6 +28,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_ctrl
 import com.aimdi.xtanative.ui.generated.resources.keys_delete
 import com.aimdi.xtanative.ui.generated.resources.keys_end
 import com.aimdi.xtanative.ui.generated.resources.keys_esc
+import com.aimdi.xtanative.ui.generated.resources.keys_forward
 import com.aimdi.xtanative.ui.generated.resources.keys_full_screen
 import com.aimdi.xtanative.ui.generated.resources.keys_go_home
 import com.aimdi.xtanative.ui.generated.resources.keys_help
@@ -97,6 +98,7 @@ object DesktopShortcuts {
     val all: List<Shortcut> = listOf(
         Shortcut(Res.string.keys_help, listOf(listOf(sign("?")), listOf(sign("F1")))),
         Shortcut(Res.string.keys_back, listOf(listOf(KeyCap.Named(Res.string.keys_esc)), listOf(alt, sign("←")), listOf(ctrl, sign("W")))),
+        Shortcut(Res.string.keys_forward, listOf(listOf(alt, sign("→")))),
         Shortcut(Res.string.keys_go_home, listOf(listOf(alt, KeyCap.Named(Res.string.keys_home)))),
         Shortcut(Res.string.keys_refresh, listOf(listOf(sign("F5")), listOf(ctrl, sign("R")))),
         Shortcut(Res.string.keys_search, listOf(listOf(ctrl, sign("F")), listOf(sign("/")), listOf(ctrl, sign("K")), listOf(ctrl, sign("L")))),

@@ -3,6 +3,7 @@
     <string name="keys_title">Atalhos de teclado</string>
     <string name="keys_help">Mostrar estes atalhos</string>
     <string name="keys_back">Voltar ou fechar o que está aberto</string>
+    <string name="keys_forward">Avançar para o que deixou ao voltar</string>
     <string name="keys_go_home">Voltar ao início</string>
     <string name="keys_refresh">Atualizar</string>
     <string name="keys_search">Pesquisar</string>

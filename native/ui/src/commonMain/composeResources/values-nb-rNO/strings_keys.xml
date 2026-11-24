@@ -3,6 +3,7 @@
     <string name="keys_title">Hurtigtaster</string>
     <string name="keys_help">Vis disse hurtigtastene</string>
     <string name="keys_back">Gå tilbake, eller lukk det som er åpent</string>
+    <string name="keys_forward">Gå fremover til det du gikk tilbake fra</string>
     <string name="keys_go_home">Tilbake til Hjem</string>
     <string name="keys_refresh">Oppdater</string>
     <string name="keys_search">Søk</string>

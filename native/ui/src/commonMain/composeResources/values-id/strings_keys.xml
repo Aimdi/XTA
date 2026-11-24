@@ -3,6 +3,7 @@
     <string name="keys_title">Pintasan keyboard</string>
     <string name="keys_help">Tampilkan pintasan ini</string>
     <string name="keys_back">Kembali, atau tutup yang sedang terbuka</string>
+    <string name="keys_forward">Maju ke halaman yang baru Anda tinggalkan</string>
     <string name="keys_go_home">Kembali ke Beranda</string>
     <string name="keys_refresh">Segarkan</string>
     <string name="keys_search">Cari</string>

@@ -3,6 +3,7 @@
     <string name="keys_title">Skróty klawiszowe</string>
     <string name="keys_help">Pokaż te skróty</string>
     <string name="keys_back">Wstecz lub zamknij to, co otwarte</string>
+    <string name="keys_forward">Dalej, do tego, z czego wróciłeś</string>
     <string name="keys_go_home">Wróć do strony głównej</string>
     <string name="keys_refresh">Odśwież</string>
     <string name="keys_search">Szukaj</string>
