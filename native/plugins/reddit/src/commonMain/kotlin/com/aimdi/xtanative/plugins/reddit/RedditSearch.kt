@@ -52,6 +52,7 @@ import com.aimdi.xtanative.networks.reddit.RedditSubredditResult
 import com.aimdi.xtanative.networks.reddit.RedditUserResult
 import com.aimdi.xtanative.networks.reddit.normaliseSubreddit
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
@@ -242,7 +243,7 @@ private fun SearchField(text: String, autofocus: Boolean, onChange: (String) -> 
         onValueChange = onChange,
         singleLine = true,
         placeholder = { Text(pluginString(Strings.search_hint), maxLines = 1, overflow = TextOverflow.Ellipsis) },
-        trailingIcon = { IconButton(onClick = onSend) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search)) } },
+        trailingIcon = { IconTip(pluginString(Strings.search)) { IconButton(onClick = onSend) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search)) } } },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = { onSend() }),
         colors = TextFieldDefaults.colors(

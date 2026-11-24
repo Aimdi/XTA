@@ -66,6 +66,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.networks.reddit.RedditComment
 import com.aimdi.xtanative.networks.reddit.RedditCommentSort
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.pluginPlural
@@ -248,9 +249,9 @@ private fun CommentMenu(app: RedditApp, comment: RedditComment) {
     val outside = rememberOpenOutside()
     if (!comment.hasAuthor && comment.body.isEmpty() && url == null) return
     Box {
-        IconButton(onClick = { open = true }) {
+        IconTip(pluginString(Strings.more_options)) { IconButton(onClick = { open = true }) {
             Icon(RedditGlyphs.MoreHoriz, contentDescription = pluginString(Strings.more_options), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
-        }
+        } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             val close = { open = false }
             comment.author?.takeIf { comment.hasAuthor }?.let { author -> MenuItem(Icons.Outlined.Person, "u/$author", close) { app.openUser(author) } }
