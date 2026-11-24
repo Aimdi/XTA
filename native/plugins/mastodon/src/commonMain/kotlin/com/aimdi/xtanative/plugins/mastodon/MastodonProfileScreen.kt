@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonProfileReader
 import com.aimdi.xtanative.networks.mastodon.MastodonProfileTab
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
@@ -78,8 +79,8 @@ internal fun MastodonProfileScreen(app: MastodonApp, acct: String) {
         onBack = app.host::back,
         actions = {
             if (web != null) {
-                IconButton(onClick = { share(web) }) { Icon(Icons.Filled.Share, pluginString(Strings.share_link)) }
-                IconButton(onClick = { openOutside(web) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser)) }
+                IconTip(pluginString(Strings.share_link)) { IconButton(onClick = { share(web) }) { Icon(Icons.Filled.Share, pluginString(Strings.share_link)) } }
+                IconTip(pluginString(Strings.open_in_browser)) { IconButton(onClick = { openOutside(web) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser)) } }
             }
         },
     ) { padding ->

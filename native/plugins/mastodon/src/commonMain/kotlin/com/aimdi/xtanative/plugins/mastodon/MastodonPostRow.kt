@@ -28,6 +28,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonPost
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.NetworkBookmark
@@ -131,9 +132,9 @@ private fun EngagementRow(app: MastodonApp, post: MastodonPost, hideCounts: Bool
         CountButton(XIcons.Repost, post.reblogsCount, Strings.reposted_by, hideCounts, onClick = { app.openReposts(post) }, onLongClick = { app.openQuotes(post) })
         CountButton(XIcons.Like, post.favouritesCount, Strings.likes, hideCounts, onClick = onOpen)
         NetworkBookmark(archive)
-        IconButton(onClick = { openOutside(post.url) }, modifier = Modifier.size(40.dp)) {
+        IconTip(pluginString(Strings.open_in_browser)) { IconButton(onClick = { openOutside(post.url) }, modifier = Modifier.size(40.dp)) {
             Icon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
-        }
+        } }
     }
 }
 
