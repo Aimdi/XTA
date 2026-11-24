@@ -69,6 +69,7 @@ import com.aimdi.xtanative.networks.ehviewer.EhSearchState
 import com.aimdi.xtanative.networks.ehviewer.EhTag
 import com.aimdi.xtanative.store.settings.EhViewerPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
@@ -126,7 +127,7 @@ internal fun EhSearchScreen(app: EhApp, initial: String) = WithSettings(app.host
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                navigationIcon = { IconButton(onClick = app.host::back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) } },
+                navigationIcon = { IconTip(pluginString(Strings.back)) { IconButton(onClick = app.host::back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) } } },
                 title = {
                     TextField(
                         value = text,
@@ -136,7 +137,7 @@ internal fun EhSearchScreen(app: EhApp, initial: String) = WithSettings(app.host
                         },
                         singleLine = true,
                         placeholder = { Text(pluginString(Strings.search_hint)) },
-                        trailingIcon = { IconButton(onClick = { run(text.text) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } },
+                        trailingIcon = { IconTip(pluginString(Strings.search)) { IconButton(onClick = { run(text.text) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } } },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search, autoCorrectEnabled = false),
                         keyboardActions = KeyboardActions(onSearch = { run(text.text) }),
                         colors = TextFieldDefaults.colors(
@@ -278,7 +279,7 @@ private fun SearchHistory(app: EhApp, settings: Settings, onRun: (String) -> Uni
             item(key = "title") {
                 ListItem(
                     headlineContent = { Text(pluginString(Strings.tab_history), style = MaterialTheme.typography.titleSmall) },
-                    trailingContent = { IconButton(onClick = app::clearSearches) { Icon(DiscoverIcons.DeleteSweep, pluginString(Strings.clear_history)) } },
+                    trailingContent = { IconTip(pluginString(Strings.clear_history)) { IconButton(onClick = app::clearSearches) { Icon(DiscoverIcons.DeleteSweep, pluginString(Strings.clear_history)) } } },
                     colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.background),
                 )
             }
@@ -287,7 +288,7 @@ private fun SearchHistory(app: EhApp, settings: Settings, onRun: (String) -> Uni
             ListItem(
                 headlineContent = { Text(query) },
                 leadingContent = { Icon(PostIcons.History, contentDescription = null) },
-                trailingContent = { IconButton(onClick = { app.forgetSearch(query) }) { Icon(Icons.Filled.Close, pluginString(Strings.delete)) } },
+                trailingContent = { IconTip(pluginString(Strings.delete)) { IconButton(onClick = { app.forgetSearch(query) }) { Icon(Icons.Filled.Close, pluginString(Strings.delete)) } } },
                 colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.background),
                 modifier = Modifier.clickable { onRun(query) },
             )

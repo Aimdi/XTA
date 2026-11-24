@@ -62,6 +62,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.settings.EhReadingMode
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberCopyText
@@ -92,7 +93,7 @@ internal fun ReaderChrome(title: String, state: EhReaderState, model: EhReaderMo
             exit = if (reduced) ExitTransition.None else slideOutVertically { -it },
         ) {
             Row(Modifier.fillMaxWidth().background(BarColor).statusBarsPadding().height(56.dp), verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back), tint = Color.White) }
+                IconTip(pluginString(Strings.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back), tint = Color.White) } }
                 Text(title, color = Color.White, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f).padding(end = 16.dp))
             }
         }
@@ -117,7 +118,7 @@ private fun PageBar(state: EhReaderState, model: EhReaderModel, onCounter: () ->
             TextButton(onClick = onCounter, colors = ButtonDefaults.textButtonColors(contentColor = Color.White), modifier = Modifier.widthIn(max = counterWidth)) {
                 Text(pluginString(Strings.page_of, state.shownPage, total), maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
-            IconButton(onClick = onMode) { Icon(modeIcon(state.mode), pluginString(Strings.reader_mode), tint = Color.White) }
+            IconTip(pluginString(Strings.reader_mode)) { IconButton(onClick = onMode) { Icon(modeIcon(state.mode), pluginString(Strings.reader_mode), tint = Color.White) } }
         }
     }
 }

@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.ehviewer.EhToplistPeriod
 import com.aimdi.xtanative.ui.common.GridSkeleton
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.swipeTabs
@@ -98,8 +99,8 @@ private class HomeActions(val search: () -> Unit, val settings: () -> Unit)
 private fun TabRow(tab: EhTab, onTab: (EhTab) -> Unit, actions: HomeActions?) {
     PluginChipTabs(EhTab.entries, tab, onTab, icon = { tabLook(it).first }, label = { pluginString(tabLook(it).second) }) {
         if (actions != null) {
-            IconButton(onClick = actions.search) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
-            IconButton(onClick = actions.settings) { Icon(Icons.Filled.Settings, pluginString(Strings.settings)) }
+            IconTip(pluginString(Strings.search)) { IconButton(onClick = actions.search) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } }
+            IconTip(pluginString(Strings.settings)) { IconButton(onClick = actions.settings) { Icon(Icons.Filled.Settings, pluginString(Strings.settings)) } }
         }
     }
 }

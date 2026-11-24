@@ -33,6 +33,7 @@ import com.aimdi.xtanative.networks.ehviewer.EhGallery
 import com.aimdi.xtanative.networks.ehviewer.EhGalleryLoader
 import com.aimdi.xtanative.networks.ehviewer.EhGalleryState
 import com.aimdi.xtanative.networks.ehviewer.EhQuery
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
@@ -110,14 +111,14 @@ private fun GalleryActions(app: EhApp, gallery: EhGallery) {
     val copyText = rememberCopyText()
     val openOutside = rememberOpenOutside()
     val copied = pluginString(Strings.link_copied)
-    IconButton(onClick = { app.launch { app.favorites.toggle(gallery) } }) {
+    IconTip(pluginString(if (saved) Strings.unfavorite else Strings.favorite)) { IconButton(onClick = { app.launch { app.favorites.toggle(gallery) } }) {
         Icon(if (saved) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder, pluginString(if (saved) Strings.unfavorite else Strings.favorite))
-    }
-    IconButton(onClick = {
+    } }
+    IconTip(pluginString(Strings.copy_link)) { IconButton(onClick = {
         copyText(gallery.galleryUrl(app.client.host))
         app.notices.tell(copied)
-    }) { Icon(XIcons.Link, pluginString(Strings.copy_link)) }
-    IconButton(onClick = { openOutside(gallery.galleryUrl(app.client.host)) }) { Icon(SavedIcons.Public, pluginString(Strings.open_on_site)) }
+    }) { Icon(XIcons.Link, pluginString(Strings.copy_link)) } }
+    IconTip(pluginString(Strings.open_on_site)) { IconButton(onClick = { openOutside(gallery.galleryUrl(app.client.host)) }) { Icon(SavedIcons.Public, pluginString(Strings.open_on_site)) } }
 }
 
 @Composable
