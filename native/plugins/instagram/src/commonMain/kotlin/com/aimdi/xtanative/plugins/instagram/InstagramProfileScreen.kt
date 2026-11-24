@@ -2,6 +2,7 @@ package com.aimdi.xtanative.plugins.instagram
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -43,6 +44,7 @@ import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedState
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
@@ -95,10 +97,10 @@ private fun ProfileBody(app: InstagramApp, model: InstagramProfileModel, profile
     val list = rememberLazyListState()
     if (profile.isPrivate) {
         PullToRefreshBox(isRefreshing = refreshing, onRefresh = { model.profile.load() }, modifier = Modifier.fillMaxSize()) {
-            LazyColumn(state = list, modifier = Modifier.fillMaxSize()) {
+            PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                 item(key = "header") { Header(app, profile) }
                 item(key = "private") { MessageText(pluginString(Strings.profile_private)) }
-            }
+            } }
         }
         return
     }
@@ -109,10 +111,10 @@ private fun ProfileBody(app: InstagramApp, model: InstagramProfileModel, profile
     val settings by app.prefs.collectAsState()
     ReadsMoreNearEnd(list, paged) { pages.more() }
     PullToRefreshBox(isRefreshing = refreshing, onRefresh = { model.profile.load(); pages.refresh() }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             item(key = "header") { Header(app, profile) }
             posts(app, pages, paged, guest = !app.hasSession(settings))
-        }
+        } }
     }
 }
 
