@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.profile
 
+import com.aimdi.xtanative.ui.common.tabLeavesField
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -178,7 +179,7 @@ internal fun NoteSheet(note: String, onSave: (String) -> Unit, onDismiss: () -> 
                 placeholder = { Text(stringResource(Res.string.posts_profile_note_hint)) },
                 minLines = 3,
                 maxLines = 8,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().tabLeavesField(),
             )
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 Button(onClick = { onSave(text) }) { Text(stringResource(Res.string.posts_profile_note_save)) }

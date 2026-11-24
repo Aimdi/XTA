@@ -53,20 +53,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.runtime.DisposableEffect
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.focusGroup
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextRange
@@ -97,7 +86,6 @@ internal fun SettingsPage(
     floating: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
-    val rows = remember { SettingsRowsEntry() }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { if (snackbar != null) SnackbarHost(snackbar) },
@@ -106,14 +94,9 @@ internal fun SettingsPage(
             TopAppBar(
                 title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = {
-                    Box(Modifier.onFocusChanged { if (it.hasFocus) rows.inRows = false }) {
-                        IconTip(stringResource(Res.string.settings_back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.settings_back)) } }
-                    }
+                    IconTip(stringResource(Res.string.settings_back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.settings_back)) } }
                 },
-                actions = {
-                    Row(Modifier.onFocusChanged { if (it.hasFocus) rows.inRows = false }) { actions() }
-                    if (isDesktop && rows.attached) TabIntoRows(rows)
-                },
+                actions = actions,
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
@@ -121,48 +104,10 @@ internal fun SettingsPage(
         // A desktop window or a tablet: the rows stay a readable column, not a line across the screen.
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
             Box(Modifier.widthIn(max = SETTINGS_MAX_WIDTH).fillMaxSize()) {
-                CompositionLocalProvider(LocalSettingsRows provides rows) { content(padding) }
+                content(padding)
             }
         }
     }
-}
-
-/**
- * Where Tab goes from a settings page's top bar: into its rows. Compose's
- * Tab order never leaves the top bar for the scrolling rows below it (it
- * wraps to the bar's first button), so the bar ends in an invisible step
- * that hands the focus to the first row; Shift+Tab from the first row goes
- * on back to the bar's last button.
- */
-internal class SettingsRowsEntry {
-    val rows = FocusRequester()
-
-    /** Whether the rows had the focus since the bar last had it: the step then got it by Shift+Tab out of them. */
-    var inRows = false
-
-    /** Whether the page's rows are a [settingsRows] group the step can hand the focus to; pages without one get no step. */
-    var attached by mutableStateOf(false)
-}
-
-/** The page's [SettingsRowsEntry], for [SettingsList] to take the focus Tab brings. */
-internal val LocalSettingsRows = staticCompositionLocalOf<SettingsRowsEntry?> { null }
-
-/** The top bar's last, invisible step ([SettingsRowsEntry]). */
-@Composable
-private fun TabIntoRows(entry: SettingsRowsEntry) {
-    val focusManager = LocalFocusManager.current
-    val scope = rememberCoroutineScope()
-    Box(
-        Modifier.size(1.dp).clearAndSetSemantics {}.onFocusChanged { state ->
-            if (!state.isFocused) return@onFocusChanged
-            val back = entry.inRows
-            entry.inRows = false
-            // After the move that brought the focus here is done: a move made inside it is undone by it.
-            scope.launch {
-                if (back || !runCatching { entry.rows.requestFocus() }.isSuccess) focusManager.moveFocus(FocusDirection.Previous)
-            }
-        }.focusable(),
-    )
 }
 
 /** The widest a settings page grows. */
@@ -173,21 +118,9 @@ private val SETTINGS_MAX_WIDTH = 840.dp
 internal fun SettingsList(padding: PaddingValues, content: @Composable ColumnScope.() -> Unit) {
     val scroll = rememberScrollState()
     Box(Modifier.fillMaxSize().padding(padding)) {
-        Column(Modifier.fillMaxSize().settingsRows().verticalScrollByKeys(scroll).padding(bottom = 24.dp), content = content)
+        Column(Modifier.fillMaxSize().verticalScrollByKeys(scroll).padding(bottom = 24.dp), content = content)
         ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd))
     }
-}
-
-/** Rows Tab reaches from the top bar ([SettingsRowsEntry]): a focus group that takes the focus at its first row. */
-@Composable
-internal fun Modifier.settingsRows(): Modifier {
-    val entry = LocalSettingsRows.current ?: return this
-    DisposableEffect(entry) {
-        entry.attached = true
-        onDispose { entry.attached = false }
-    }
-    // Set as the rows gain the focus, cleared only by the bar: the order focus callbacks run in decides nothing.
-    return onFocusChanged { if (it.hasFocus) entry.inRows = true }.focusRequester(entry.rows).focusGroup()
 }
 
 /** A group's heading, a small grey label on the page, and what it is about. */

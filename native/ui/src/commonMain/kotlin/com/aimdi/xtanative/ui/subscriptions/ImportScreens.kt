@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.subscriptions
 
+import com.aimdi.xtanative.ui.common.tabLeavesField
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -85,7 +86,7 @@ fun ImportFollowingScreen(onBack: () -> Unit, onSortUngrouped: () -> Unit) {
                 Text(stringResource(if (state.invalid) Res.string.groups_import_handles_none else Res.string.groups_import_handles_helper))
             },
             isError = state.invalid,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().tabLeavesField(),
         )
         Progress(state.run, onSortUngrouped)
     }

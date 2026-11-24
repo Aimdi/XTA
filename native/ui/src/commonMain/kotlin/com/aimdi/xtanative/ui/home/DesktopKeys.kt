@@ -8,6 +8,9 @@ enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_D
 /** A mouse's side buttons: back and forward, as in a browser. */
 enum class SideButton { BACK, FORWARD }
 
+/** A step of the keyboard's focus walk ([DesktopKeys.tabStep]). */
+enum class TabStep { FORWARD, BACKWARD }
+
 enum class DeskAction {
     /** Out of the text field being typed in, as XTA's first Esc does. */
     LEAVE_FIELD,
@@ -222,6 +225,23 @@ object DesktopKeys {
             key == DeskKey.RIGHT -> if (rtl) DeskAction.PREVIOUS_PAGE else DeskAction.NEXT_PAGE
             else -> DeskAction.NONE
         }
+    }
+
+    /**
+     * Which way a Tab press walks the controls: forward, or back with Shift;
+     * null for anything else (Ctrl+Tab and Alt+Tab turn tabs or windows).
+     *
+     * Compose walks them in the order they are placed, and a Material
+     * scaffold places its page before its top bar: Tab from the bar's last
+     * button runs off the end and wraps to the window's frame. The frame
+     * then hands the same step on ([DesktopNavigation]), into the page, so
+     * the walk goes bar, page, bar, as the eye reads it, with no stop that
+     * shows nothing.
+     */
+    fun tabStep(key: DeskKey, shift: Boolean, ctrl: Boolean, alt: Boolean): TabStep? = when {
+        key != DeskKey.TAB || ctrl || alt -> null
+        shift -> TabStep.BACKWARD
+        else -> TabStep.FORWARD
     }
 
     /**

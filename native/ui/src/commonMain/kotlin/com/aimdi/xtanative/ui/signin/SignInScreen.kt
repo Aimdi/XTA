@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.signin
 
+import com.aimdi.xtanative.ui.common.tabLeavesField
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -145,7 +146,7 @@ internal fun CookieSignInPage(onBack: () -> Unit, onSignedIn: (XAccount) -> Unit
                 minLines = 2,
                 maxLines = 4,
                 keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().tabLeavesField(),
             )
             Spacer(Modifier.height(24.dp))
             Button(

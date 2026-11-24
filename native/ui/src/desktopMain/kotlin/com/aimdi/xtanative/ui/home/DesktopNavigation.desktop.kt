@@ -79,6 +79,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     // Whether the window took the last key pressed, so the character it types goes nowhere.
     var keyTaken by remember { mutableStateOf(false) }
     var showKeys by remember { mutableStateOf(false) }
+    // The Tab step being taken, until the next key: should it wrap to the frame, the frame hands it on ([DesktopKeys.tabStep]).
+    val tabbing = remember { arrayOfNulls<TabStep>(1) }
     // A frame later: what gives the keys back is still leaving when it asks. The frame takes them only if
     // nothing in the page has since (a screen that focuses its field as it opens keeps it).
     // A sheet swapped for another in the same frame closes before the next opens: by the time the frame
@@ -204,9 +206,12 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
 
     fun onKey(event: KeyEvent): Boolean {
         // The character a key the window took types (Ctrl+= types =) is not typed into a field as well.
+        // Its step is taken while Tab is down: what takes the focus later never takes it on.
+        if (event.type == KeyEventType.KeyUp) tabbing[0] = null
         if (event.type != KeyEventType.KeyDown) return event.type != KeyEventType.KeyUp && keyTaken
         // Tab moves the focus with the keyboard: where it lands keeps the keys, as before any click.
         if (event.key == Key.Tab) clicked = false
+        tabbing[0] = DesktopKeys.tabStep(deskKey(event.key), event.isShiftPressed, event.isCtrlPressed, event.isAltPressed)
         // Ctrl and a digit go to that tab, as a browser's do, from a field too; not under something open over the page.
         TAB_DIGITS[event.key]?.let { digit ->
             if (event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && !actions.overlayHoldsKeys() && !actions.somethingOpen()) {
@@ -268,6 +273,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                             val event = awaitPointerEvent(PointerEventPass.Initial)
                             if (event.type == PointerEventType.Press) {
                                 clicked = true
+                                tabbing[0] = null
                                 // On X11 the side buttons come as AWT's 6 and 7, which Compose does not name (its back and forward are 4 and 5).
                                 val side = (event.nativeEvent as? MouseEvent)?.let { DesktopKeys.sideButton(it.button) }
                                 when {
@@ -297,6 +303,13 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                     if (hasFocus && !state.hasFocus) actions.keysToFrame()
                     hasFocus = state.hasFocus
                     focusInside = state.hasFocus && !state.isFocused
+                    // Tab ran off the end of the page's order and wrapped to the frame, which shows nothing:
+                    // the same step goes on, once, after the move that brought it here is done.
+                    val step = tabbing[0]
+                    if (state.isFocused && step != null) {
+                        tabbing[0] = null
+                        scope.launch { focusManager.moveFocus(if (step == TabStep.FORWARD) FocusDirection.Next else FocusDirection.Previous) }
+                    }
                 }
                 .focusRequester(focus)
                 .focusable(),

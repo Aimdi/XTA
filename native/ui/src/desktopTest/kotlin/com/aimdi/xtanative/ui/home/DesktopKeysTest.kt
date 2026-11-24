@@ -26,6 +26,17 @@ class DesktopKeysTest {
     ) = DesktopKeys.action(key, alt, ctrl, focusInside, canGoBack, rtl, open, shift, selecting, openIsRead)
 
     @Test
+    fun tabStepsForwardAndShiftTabBackButCtrlOrAltTabIsNoStep() {
+        assertEquals(TabStep.FORWARD, DesktopKeys.tabStep(DeskKey.TAB, shift = false, ctrl = false, alt = false))
+        assertEquals(TabStep.BACKWARD, DesktopKeys.tabStep(DeskKey.TAB, shift = true, ctrl = false, alt = false))
+        assertNull(DesktopKeys.tabStep(DeskKey.TAB, shift = false, ctrl = true, alt = false), "Ctrl+Tab turns the tabs")
+        assertNull(DesktopKeys.tabStep(DeskKey.TAB, shift = true, ctrl = true, alt = false), "Ctrl+Shift+Tab turns them back")
+        assertNull(DesktopKeys.tabStep(DeskKey.TAB, shift = false, ctrl = false, alt = true), "Alt+Tab is the desktop's")
+        assertNull(DesktopKeys.tabStep(DeskKey.DOWN, shift = false, ctrl = false, alt = false))
+        assertNull(DesktopKeys.tabStep(DeskKey.OTHER, shift = true, ctrl = false, alt = false))
+    }
+
+    @Test
     fun aButtonClickedKeepsNoKeysButAFieldOrWhatTabReachedDoes() {
         assertFalse(DesktopKeys.keysInside(focusInside = false, typing = false, clicked = false), "the frame itself has them")
         assertFalse(DesktopKeys.keysInside(focusInside = true, typing = false, clicked = true), "a tab, chip or refresh button clicked")

@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.saved
 
+import com.aimdi.xtanative.ui.common.tabLeavesField
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -244,7 +245,7 @@ fun NoteEditorDialog(
                                     focusedIndicatorColor = Color.Transparent,
                                     unfocusedIndicatorColor = Color.Transparent,
                                 ),
-                                modifier = Modifier.fillMaxWidth().focusRequester(focus),
+                                modifier = Modifier.fillMaxWidth().focusRequester(focus).tabLeavesField(),
                             )
                             if (state.media.isNotEmpty()) {
                                 MediaStrip(editor.postId ?: newId, state.media, enabled = !state.busy) { editor.removeMedia(it) }
