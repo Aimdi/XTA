@@ -498,7 +498,11 @@ class DesktopKeysTest {
         assertEquals(1.05, DesktopKeys.textScaled(1.0, DeskAction.TEXT_BIGGER, range))
         assertEquals(1.15, DesktopKeys.textScaled(1.1, DeskAction.TEXT_BIGGER, range))
         assertEquals(1.5, DesktopKeys.textScaled(1.5, DeskAction.TEXT_BIGGER, range), "never above the slider's end")
-        assertEquals(1.0, DesktopKeys.textScaled(1.0, DeskAction.TEXT_SMALLER, range), "never below the system's size")
+        assertEquals(1.0, DesktopKeys.textScaled(1.0, DeskAction.TEXT_SMALLER, range), "never below the slider's start")
+        val wider = 0.85..1.5
+        assertEquals(0.95, DesktopKeys.textScaled(1.0, DeskAction.TEXT_SMALLER, wider), "below the system's size where the slider goes there")
+        assertEquals(0.85, DesktopKeys.textScaled(0.85, DeskAction.TEXT_SMALLER, wider))
+        assertEquals(1.0, DesktopKeys.textScaled(0.9, DeskAction.TEXT_RESET, wider), "back to the system's size, not the slider's start")
         assertEquals(1.25, DesktopKeys.textScaled(1.3, DeskAction.TEXT_SMALLER, range))
         assertEquals(1.1, DesktopKeys.textScaled(1.07, DeskAction.TEXT_BIGGER, range), "a size between steps goes onto one")
         assertEquals(1.0, DesktopKeys.textScaled(1.35, DeskAction.TEXT_RESET, range))

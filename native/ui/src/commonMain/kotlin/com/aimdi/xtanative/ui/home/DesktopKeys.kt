@@ -370,14 +370,17 @@ object DesktopKeys {
     /**
      * The text size [scale] after [action], kept in [range] (the setting's)
      * and on the slider's steps; [scale] itself for any other action. Reset
-     * is the size the range starts at, the system's.
+     * is the system's own size, which the slider goes a little under.
      */
     fun textScaled(scale: Double, action: DeskAction, range: ClosedFloatingPointRange<Double>): Double = when (action) {
         DeskAction.TEXT_BIGGER -> stepped(scale + TEXT_STEP).coerceIn(range)
         DeskAction.TEXT_SMALLER -> stepped(scale - TEXT_STEP).coerceIn(range)
-        DeskAction.TEXT_RESET -> range.start
+        DeskAction.TEXT_RESET -> SYSTEM_TEXT.coerceIn(range)
         else -> scale
     }
+
+    /** The system's own text size, which the reader's is set beside. */
+    private const val SYSTEM_TEXT = 1.0
 
     /** On a step, in hundredths as the slider keeps it (1.15, not 1.1500000000000001). */
     private fun stepped(scale: Double): Double = kotlin.math.round(scale / TEXT_STEP) * (TEXT_STEP * 100).toInt() / 100.0

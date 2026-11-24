@@ -210,7 +210,8 @@ object MediaPrefs : PrefSection() {
 
 /** Settings › Accessibility, gestures among them. */
 object AccessibilityPrefs : PrefSection() {
-    val textScale = real("accessibility.text_scale_factor", 1.0, range = 1.0..1.5)
+    /** The text's size beside the system's: a little smaller for more on a small phone, up to half again as large. */
+    val textScale = real("accessibility.text_scale_factor", 1.0, range = 0.85..1.5)
     val disableAnimations = flag("accessibility.disable_animations", false)
     val haptics = flag("accessibility.haptic_feedback", true)
 

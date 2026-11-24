@@ -136,9 +136,9 @@ object SettingsChoices {
     val downloadConcurrency = listOf(1, 2, 3, 4)
 
     /** The text size slider: 1.0 to 1.5 in ten steps. */
-    const val TEXT_SCALE_MIN = 1.0f
+    const val TEXT_SCALE_MIN = 0.85f
     const val TEXT_SCALE_MAX = 1.5f
-    const val TEXT_SCALE_STEPS = 9
+    const val TEXT_SCALE_STEPS = 12
 
     /**
      * The feeds the Default feed tab offers: Following, For you, then the
