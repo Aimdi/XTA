@@ -133,7 +133,7 @@ fun SavedFoldersScreen(onBack: () -> Unit) {
     }
     deleting?.let { folder ->
         DeleteFolderDialog(onDismiss = { deleting = null }) {
-            graph.keep { graph.saved.deleteFolder(folder.id) }
+            graph.keep { SavedUndo.offer(graph.saved.deleteFolderTaking(folder.id), graph.saved::putBack) }
             deleting = null
         }
     }

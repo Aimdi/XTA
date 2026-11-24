@@ -41,6 +41,7 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Gordeak: hautatu erakutsitako guztia</string>
     <string name="keys_remove_selected">Gordeak: kendu hautatuak</string>
+    <string name="keys_undo">Desegin kendu edo ezabatu berri dena, haren oharra ikusten den bitartean</string>
     <string name="keys_leave_selection">Gordeak: utzi hautatzeari</string>
     <string name="keys_delete">Supr</string>
     <string name="keys_move_row">Mugitu errenkada bat gora edo behera berrantola daitekeen zerrenda batean (fokua duena edo erakuslearen azpikoa)</string>

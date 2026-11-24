@@ -105,12 +105,9 @@ private fun KeepNoticeHost() {
                 scope.launch { if (!files.open(saved.savedUri, saved.fileName)) KeepNotices.show(KeepNotice.OpenFailed) }
             }) { Text(stringResource(Res.string.downloads_open_file), color = MaterialTheme.colorScheme.inversePrimary) }
         }
-    } ?: (current.notice as? KeepNotice.ChangesSaved)?.let { changed ->
+    } ?: (current.notice as? KeepNotice.ChangesSaved)?.let {
         {
-            TextButton(onClick = {
-                KeepNotices.hide(current)
-                keeper.keep { if (!changed.undo()) KeepNotices.show(KeepNotice.UndoFailed) }
-            }) { Text(stringResource(Res.string.groups_undo), color = MaterialTheme.colorScheme.inversePrimary) }
+            TextButton(onClick = { KeepNotices.undo(current, keeper::keep) }) { Text(stringResource(Res.string.groups_undo), color = MaterialTheme.colorScheme.inversePrimary) }
         }
     }
     val position = remember(lift) { FootOfWindow(lift) }

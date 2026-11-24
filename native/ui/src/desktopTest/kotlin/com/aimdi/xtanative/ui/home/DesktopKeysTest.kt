@@ -361,6 +361,17 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun ctrlZUndoesOutsideAFieldAndUnderNothingOpen() {
+        assertEquals(DeskAction.UNDO, action(DeskKey.Z, ctrl = true))
+        assertEquals(DeskAction.UNDO, action(DeskKey.Z, ctrl = true, selecting = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.Z, ctrl = true, focusInside = true), "a field undoes its typing")
+        assertEquals(DeskAction.NONE, action(DeskKey.Z, ctrl = true, open = true), "not under what is open over the page")
+        assertEquals(DeskAction.NONE, action(DeskKey.Z, ctrl = true, shift = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.Z, ctrl = true, alt = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.Z))
+    }
+
+    @Test
     fun theNewShownLastAnswersCtrlNAndOneThatDeclinesLetsTheKeyGo() {
         val actions = DesktopActions()
         val made = mutableListOf<String>()

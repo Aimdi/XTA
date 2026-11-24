@@ -41,6 +41,7 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">已儲存：全選顯示的內容</string>
     <string name="keys_remove_selected">已儲存：移除所選內容</string>
+    <string name="keys_undo">復原剛移除或刪除的內容（在提示顯示期間）</string>
     <string name="keys_leave_selection">已儲存：結束選取</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">在可重新排序的清單中上移或下移一列（有焦點的列或指標下的列）</string>

@@ -41,6 +41,7 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">저장됨: 표시된 항목 모두 선택</string>
     <string name="keys_remove_selected">저장됨: 선택한 항목 삭제</string>
+    <string name="keys_undo">방금 삭제한 항목 되돌리기 (알림이 보이는 동안)</string>
     <string name="keys_leave_selection">저장됨: 선택 끝내기</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">순서를 바꿀 수 있는 목록에서 행을 위나 아래로 이동 (포커스가 있거나 포인터 아래에 있는 행)</string>

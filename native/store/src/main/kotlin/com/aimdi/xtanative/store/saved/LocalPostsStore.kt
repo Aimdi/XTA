@@ -67,6 +67,34 @@ class LocalPostsStore(
         withContext(Dispatchers.IO) { folderOf(id).deleteRecursively() }
     }
 
+    /**
+     * [delete], answering the note with its files' bytes, for [putBack];
+     * null when there was no such note.
+     */
+    suspend fun deleteTaking(id: String): TakenNote? {
+        val notes = notes()
+        val note = notes.firstOrNull { it.id == id } ?: return null
+        val whole = withContext(Dispatchers.IO) { withData(note) }
+        delete(id)
+        return PutBack.taken(notes.map { if (it.id == id) whole else it }, { it.id == id }, { it.id })
+    }
+
+    /**
+     * Undoes [deleteTaking]: the note back where it was, as written then,
+     * with its files; its replies answer it again. False when a note of its
+     * id is there again, and nothing changes.
+     */
+    suspend fun putBack(taken: TakenNote): Boolean {
+        if (PutBack.into(notes(), taken) { it.id } == null) return false
+        withContext(Dispatchers.IO) { taken.items.forEach(::materialize) }
+        var done = false
+        stored.update { notes ->
+            PutBack.into(notes, Taken(taken.items.map { post -> post.copy(media = post.media.map { it.copy(data = null) }) }, taken.order)) { it.id }
+                ?.also { done = true } ?: notes
+        }
+        return done
+    }
+
     /** Where file [mediaId] of note [postId] is kept. */
     fun mediaFile(postId: String, mediaId: String): File = File(folderOf(postId), safeName(mediaId))
 

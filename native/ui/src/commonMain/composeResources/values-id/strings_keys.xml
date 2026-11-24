@@ -41,6 +41,7 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Disimpan: pilih semua yang ditampilkan</string>
     <string name="keys_remove_selected">Disimpan: hapus yang dipilih</string>
+    <string name="keys_undo">Urungkan yang baru dihapus, selama pemberitahuannya tampil</string>
     <string name="keys_leave_selection">Disimpan: berhenti memilih</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Pindahkan baris ke atas atau ke bawah dalam daftar yang bisa diurutkan ulang (yang sedang difokus atau di bawah penunjuk)</string>

@@ -41,6 +41,7 @@
     <string name="keys_end">Fin</string>
     <string name="keys_select_all">Guardado: seleccionar todo lo mostrado</string>
     <string name="keys_remove_selected">Guardado: quitar lo seleccionado</string>
+    <string name="keys_undo">Deshacer lo que se acaba de quitar o eliminar, mientras se ve su aviso</string>
     <string name="keys_leave_selection">Guardado: dejar de seleccionar</string>
     <string name="keys_delete">Supr</string>
     <string name="keys_move_row">Subir o bajar una fila en una lista que se puede reordenar (la que tiene el foco o la que está bajo el puntero)</string>

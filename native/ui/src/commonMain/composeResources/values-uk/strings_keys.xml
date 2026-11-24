@@ -41,6 +41,7 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Збережено: вибрати все показане</string>
     <string name="keys_remove_selected">Збережено: вилучити вибране</string>
+    <string name="keys_undo">Повернути щойно вилучене, поки видно сповіщення</string>
     <string name="keys_leave_selection">Збережено: завершити вибір</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Перемістити рядок вище або нижче у списку, який можна впорядкувати (той, що у фокусі, або під вказівником)</string>

@@ -41,6 +41,7 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Zapisane: zaznacz wszystko, co widać</string>
     <string name="keys_remove_selected">Zapisane: usuń zaznaczone</string>
+    <string name="keys_undo">Cofnij to, co właśnie usunięto, dopóki widać powiadomienie</string>
     <string name="keys_leave_selection">Zapisane: zakończ zaznaczanie</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Przesuń wiersz w górę lub w dół na liście, którą można przestawiać (ten z fokusem lub pod wskaźnikiem)</string>

@@ -41,6 +41,7 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Salvo: selecionar tudo o que aparece</string>
     <string name="keys_remove_selected">Salvo: remover os selecionados</string>
+    <string name="keys_undo">Desfazer o que acabou de ser removido ou excluído, enquanto o aviso aparece</string>
     <string name="keys_leave_selection">Salvo: parar de selecionar</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Mover uma linha para cima ou para baixo em uma lista reordenável (a que tem o foco ou a que está sob o ponteiro)</string>

@@ -41,6 +41,7 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Lagret: velg alt som vises</string>
     <string name="keys_remove_selected">Lagret: fjern de valgte</string>
+    <string name="keys_undo">Angre det som nettopp ble fjernet eller slettet, mens varselet vises</string>
     <string name="keys_leave_selection">Lagret: avslutt valg</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Flytt en rad opp eller ned i en liste du kan sortere om (den med fokus eller den under pekeren)</string>

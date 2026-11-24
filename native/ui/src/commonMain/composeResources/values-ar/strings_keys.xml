@@ -41,6 +41,7 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">المحفوظ: تحديد كل ما يظهر</string>
     <string name="keys_remove_selected">المحفوظ: إزالة المحدد</string>
+    <string name="keys_undo">تراجع عمّا أُزيل أو حُذف للتو، ما دام إشعاره ظاهرًا</string>
     <string name="keys_leave_selection">المحفوظ: إنهاء التحديد</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">تحريك صف لأعلى أو لأسفل في قائمة قابلة لإعادة الترتيب (الصف المحدد أو الذي تحت المؤشر)</string>

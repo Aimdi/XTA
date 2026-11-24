@@ -271,7 +271,7 @@ internal fun CleanupDialog(posts: List<SavedPost>, onDismiss: () -> Unit) {
             if (done && scan.broken.isNotEmpty()) {
                 TextButton(onClick = {
                     val ids = scan.broken.map { it.id }
-                    keeper.keep { keeper.saved.remove(ids) }
+                    keeper.keep { SavedUndo.offer(keeper.saved.removeTaking(ids), keeper.saved::putBack) }
                     onDismiss()
                 }) { Text("${stringResource(Res.string.saved_delete)} (${scan.broken.size})") }
             } else {

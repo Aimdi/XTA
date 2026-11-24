@@ -42,6 +42,7 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Saved: select everything shown</string>
     <string name="keys_remove_selected">Saved: remove the selected</string>
+    <string name="keys_undo">Undo what was just removed or deleted, while its notice shows</string>
     <string name="keys_leave_selection">Saved: stop selecting</string>
     <string name="keys_delete">Del</string>
     <string name="keys_move_row">Move a row up or down in a list you can reorder (the one with the focus or under the pointer)</string>

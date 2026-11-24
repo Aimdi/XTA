@@ -4,7 +4,7 @@ import androidx.compose.ui.geometry.Offset
 import kotlin.math.abs
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, N, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, N, Z, OTHER }
 
 /** A mouse's side buttons: back and forward, as in a browser. */
 enum class SideButton { BACK, FORWARD }
@@ -79,6 +79,9 @@ enum class DeskAction {
 
     /** The page stops selecting, as Esc does in a file manager ([DesktopActions.leaveSelection]). */
     LEAVE_SELECTION,
+
+    /** The change the notice at the foot of the window offers to undo is taken back, as its Undo does ([com.aimdi.xtanative.ui.saved.KeepNotices.undo]). */
+    UNDO,
 
     /** The row of a reorderable list the pointer rests on moves a place up or down, as its drag would move it ([DesktopActions.moveRow]). */
     MOVE_ROW_UP,
@@ -159,6 +162,10 @@ object DesktopKeys {
      * Ctrl+N, while nothing is being typed in and nothing is open over the
      * page, makes something new where the page has a New of its own (a note
      * in Saved, a group, an antenna), as a desktop app's makes a document.
+     * Ctrl+Z, while nothing is being typed in (where it undoes the typing)
+     * and nothing is open over the page, presses the Undo of the notice at
+     * the foot of the window (posts removed from Saved, a folder or a note
+     * deleted, accounts unfollowed), as a desktop app undoes its last change.
      */
     fun action(
         key: DeskKey,
@@ -201,6 +208,7 @@ object DesktopKeys {
                 else -> DeskAction.PREVIOUS_COLUMN
             }
             key == DeskKey.N && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.CREATE
+            key == DeskKey.Z && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.UNDO
             // In a field, Ctrl+A selects its text; Delete deletes a character there.
             key == DeskKey.A && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.SELECT_ALL
             key == DeskKey.DELETE && selecting && !focusInside && !alt && !ctrl && !shift -> if (somethingOpen) DeskAction.NONE else DeskAction.REMOVE_SELECTED

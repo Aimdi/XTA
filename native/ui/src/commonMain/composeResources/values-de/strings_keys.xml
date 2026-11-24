@@ -41,6 +41,7 @@
     <string name="keys_end">Ende</string>
     <string name="keys_select_all">Archiv: alles Gezeigte auswählen</string>
     <string name="keys_remove_selected">Archiv: Ausgewählte entfernen</string>
+    <string name="keys_undo">Gerade Entferntes oder Gelöschtes zurückholen, solange der Hinweis zu sehen ist</string>
     <string name="keys_leave_selection">Archiv: Auswahl beenden</string>
     <string name="keys_delete">Entf</string>
     <string name="keys_move_row">Eine Zeile in einer sortierbaren Liste nach oben oder unten verschieben (die fokussierte oder die unter dem Mauszeiger)</string>

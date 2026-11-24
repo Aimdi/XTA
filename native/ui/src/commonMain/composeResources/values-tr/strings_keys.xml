@@ -41,6 +41,7 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Kaydedilmiş: gösterilenlerin hepsini seç</string>
     <string name="keys_remove_selected">Kaydedilmiş: seçilenleri kaldır</string>
+    <string name="keys_undo">Az önce kaldırılanı veya silineni geri al, bildirimi görünürken</string>
     <string name="keys_leave_selection">Kaydedilmiş: seçimi bitir</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Yeniden sıralanabilen bir listede satırı yukarı veya aşağı taşı (odaktaki ya da işaretçinin altındaki)</string>

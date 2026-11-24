@@ -59,6 +59,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_scroll_line
 import com.aimdi.xtanative.ui.generated.resources.keys_scroll_screen
 import com.aimdi.xtanative.ui.generated.resources.keys_search
 import com.aimdi.xtanative.ui.generated.resources.keys_select_all
+import com.aimdi.xtanative.ui.generated.resources.keys_undo
 import com.aimdi.xtanative.ui.generated.resources.keys_shift
 import com.aimdi.xtanative.ui.generated.resources.keys_space
 import com.aimdi.xtanative.ui.generated.resources.keys_tab
@@ -133,6 +134,7 @@ object DesktopShortcuts {
         Shortcut(Res.string.keys_photo_move, listOf(listOf(sign("←")), listOf(sign("↑")), listOf(sign("→")), listOf(sign("↓")))),
         Shortcut(Res.string.keys_select_all, listOf(listOf(ctrl, sign("A")))),
         Shortcut(Res.string.keys_remove_selected, listOf(listOf(KeyCap.Named(Res.string.keys_delete)))),
+        Shortcut(Res.string.keys_undo, listOf(listOf(ctrl, sign("Z")))),
         Shortcut(Res.string.keys_leave_selection, listOf(listOf(KeyCap.Named(Res.string.keys_esc)))),
         Shortcut(Res.string.keys_move_row, listOf(listOf(alt, sign("↑")), listOf(alt, sign("↓")))),
         Shortcut(Res.string.keys_quit, listOf(listOf(ctrl, sign("Q")))),

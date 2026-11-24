@@ -49,6 +49,25 @@ class LikesStore(dir: StoreDir, private val clock: () -> Long = System::currentT
         kept.edit { likes -> Edit(if (likes.none { it.id == id }) likes else likes.filterNot { it.id == id }, Unit) }
     }
 
+    /** [unlike], answering the like with what was kept of the post, for [putBack]; null when it was not liked. */
+    suspend fun unlikeTaking(id: String): TakenLike? {
+        var taken: TakenLike? = null
+        kept.rewrite { likes ->
+            PutBack.taken(likes, { it.id == id }, { it.id })?.let { took ->
+                taken = took
+                likes.filterNot { it.id == id }
+            }
+        }
+        return taken
+    }
+
+    /** Undoes [unlikeTaking]: the like back where it was, as liked then; false when it is liked again since. */
+    suspend fun putBack(taken: TakenLike): Boolean {
+        var done = false
+        kept.rewrite { likes -> PutBack.into(likes, taken) { it.id }?.also { done = true } }
+        return done
+    }
+
     /** Everything kept, for the backup. */
     suspend fun content(): List<LikedPost> = likes()
 

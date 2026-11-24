@@ -41,6 +41,7 @@
     <string name="keys_end">Fine</string>
     <string name="keys_select_all">Salvati: seleziona tutto ciò che è mostrato</string>
     <string name="keys_remove_selected">Salvati: rimuovi i selezionati</string>
+    <string name="keys_undo">Annulla ciò che è stato appena rimosso o eliminato, finché se ne vede l\'avviso</string>
     <string name="keys_leave_selection">Salvati: esci dalla selezione</string>
     <string name="keys_delete">Canc</string>
     <string name="keys_move_row">Sposta una riga su o giù in un elenco riordinabile (quella con il focus o quella sotto il puntatore)</string>

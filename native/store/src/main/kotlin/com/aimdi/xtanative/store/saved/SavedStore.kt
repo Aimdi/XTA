@@ -91,6 +91,26 @@ class SavedStore(
 
     suspend fun remove(id: String) = remove(listOf(id))
 
+    /** [remove], answering what it took, content and all, for [putBack]; null when none of [ids] was saved. */
+    suspend fun removeTaking(ids: Collection<String>): TakenSaved? {
+        val removed = ids.toSet()
+        var taken: TakenSaved? = null
+        kept.rewrite { library ->
+            PutBack.taken(library.posts, { it.id in removed }, { it.id })?.let { took ->
+                taken = took
+                library.copy(posts = library.posts.filterNot { it.id in removed })
+            }
+        }
+        return taken
+    }
+
+    /** Undoes [removeTaking]: the posts back where they were; false when one is saved again since, and nothing changes. */
+    suspend fun putBack(taken: TakenSaved): Boolean {
+        var done = false
+        kept.rewrite { library -> PutBack.saved(library, taken)?.also { done = true } }
+        return done
+    }
+
     /** A new folder named [name] (trimmed) after the others; null when the name is blank. */
     suspend fun createFolder(name: String, autoDownload: Boolean = false, autoUpload: Boolean = false): SavedFolder? {
         val trimmed = name.trim().takeIf { it.isNotEmpty() } ?: return null
@@ -127,6 +147,30 @@ class SavedStore(
                 Unit,
             )
         }
+    }
+
+    /** [deleteFolder], answering the folder and the posts it held, for [putBack]; null when there was no such folder. */
+    suspend fun deleteFolderTaking(id: String): TakenFolder? {
+        var taken: TakenFolder? = null
+        kept.edit { library ->
+            val folder = library.folder(id) ?: return@edit Edit(library, Unit)
+            taken = TakenFolder(folder, library.posts.filter { it.folderId == id }.mapTo(HashSet()) { it.id })
+            Edit(
+                SavedLibrary(
+                    posts = library.posts.map { if (it.folderId == id) it.copy(folderId = null) else it },
+                    folders = library.folders.filterNot { it.id == id },
+                ),
+                Unit,
+            )
+        }
+        return taken
+    }
+
+    /** Undoes [deleteFolderTaking] ([PutBack.folder]); false when a folder of its id is there again. */
+    suspend fun putBack(taken: TakenFolder): Boolean {
+        var done = false
+        kept.edit { library -> Edit(PutBack.folder(library, taken)?.also { done = true } ?: library, Unit) }
+        return done
     }
 
     /** Everything kept, for the backup. */

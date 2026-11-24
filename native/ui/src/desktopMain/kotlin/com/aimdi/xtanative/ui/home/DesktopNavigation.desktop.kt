@@ -60,6 +60,8 @@ import com.aimdi.xtanative.ui.links.takesDroppedLinks
 import com.aimdi.xtanative.ui.post.LinkHover
 import com.aimdi.xtanative.ui.post.LinkHoverPill
 import com.aimdi.xtanative.ui.post.LocalLinkHover
+import com.aimdi.xtanative.ui.saved.KeepNotices
+import com.aimdi.xtanative.ui.saved.LocalKeeper
 import com.aimdi.xtanative.ui.settings.SettingsChoices
 import java.awt.event.MouseEvent
 import kotlinx.coroutines.delay
@@ -76,6 +78,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     val focus = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val settingsStore = LocalSettingsStore.current
+    val keeper = LocalKeeper.current
     val scope = rememberCoroutineScope()
     var hasFocus by remember { mutableStateOf(false) }
     var focusInside by remember { mutableStateOf(false) }
@@ -220,6 +223,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             true
         }
         DeskAction.CREATE -> actions.create()
+        DeskAction.UNDO -> KeepNotices.undo(KeepNotices.shown.value, keeper::keep)
         DeskAction.SELECT_ALL -> actions.selectAll()
         DeskAction.REMOVE_SELECTED -> actions.removeSelected()
         DeskAction.LEAVE_SELECTION -> actions.leaveSelection()
@@ -485,6 +489,7 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.C -> DeskKey.C
     Key.F10 -> DeskKey.F10
     Key.N -> DeskKey.N
+    Key.Z -> DeskKey.Z
     // Compose names no key for it: the Menu key is AWT's context-menu key.
     MENU_KEY -> DeskKey.MENU
     Key.Plus, Key.Equals, Key.NumPadAdd -> DeskKey.PLUS

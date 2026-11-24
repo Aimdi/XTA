@@ -41,6 +41,7 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Uloženo: vybrat vše zobrazené</string>
     <string name="keys_remove_selected">Uloženo: odebrat vybrané</string>
+    <string name="keys_undo">Vrátit právě odebrané nebo smazané, dokud je vidět jeho oznámení</string>
     <string name="keys_leave_selection">Uloženo: ukončit výběr</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Posunout řádek nahoru nebo dolů v seznamu, který jde přeskládat (ten se zaměřením nebo pod ukazatelem)</string>

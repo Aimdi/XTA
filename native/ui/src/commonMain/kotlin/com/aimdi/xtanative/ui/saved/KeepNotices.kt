@@ -116,6 +116,18 @@ object KeepNotices {
         current.update { if (it?.serial == shown.serial) null else it }
     }
 
+    /**
+     * Presses the Undo of [shown] (its button, or Ctrl+Z on the desktop): the
+     * notice goes and [keep] runs the undo, saying so when it could not be
+     * made. False when [shown] offers no undo.
+     */
+    fun undo(shown: ShownNotice?, keep: (suspend () -> Unit) -> Unit): Boolean {
+        val changed = shown?.notice as? KeepNotice.ChangesSaved ?: return false
+        hide(shown)
+        keep { if (!changed.undo()) show(KeepNotice.UndoFailed) }
+        return true
+    }
+
     /** Takes a working notice away, as XTA hides its working snack bar once the work is done. */
     fun endWorking() {
         current.update { if (it?.notice?.working == true) null else it }

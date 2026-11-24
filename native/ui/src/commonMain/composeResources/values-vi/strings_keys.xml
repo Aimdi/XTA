@@ -41,6 +41,7 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Đã lưu: chọn tất cả mục đang hiện</string>
     <string name="keys_remove_selected">Đã lưu: xóa các mục đã chọn</string>
+    <string name="keys_undo">Hoàn tác mục vừa xóa, khi thông báo của nó còn hiện</string>
     <string name="keys_leave_selection">Đã lưu: thôi chọn</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Di chuyển một hàng lên hoặc xuống trong danh sách có thể sắp xếp lại (hàng đang được chọn hoặc dưới con trỏ)</string>

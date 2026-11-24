@@ -41,6 +41,7 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Konservitaĵoj: elekti ĉion montritan</string>
     <string name="keys_remove_selected">Konservitaĵoj: forigi la elektitajn</string>
+    <string name="keys_undo">Malfari ĵus forigitaĵon, dum ĝia sciigo videblas</string>
     <string name="keys_leave_selection">Konservitaĵoj: ĉesi elekti</string>
     <string name="keys_delete">Del</string>
     <string name="keys_move_row">Movi vicon supren aŭ suben en reordigebla listo (tiun kun la fokuso aŭ sub la musmontrilo)</string>

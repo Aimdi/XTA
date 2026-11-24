@@ -41,6 +41,7 @@
     <string name="keys_end">Fin</string>
     <string name="keys_select_all">Enregistré : tout sélectionner</string>
     <string name="keys_remove_selected">Enregistré : retirer la sélection</string>
+    <string name="keys_undo">Annuler ce qui vient d\'être retiré ou supprimé, tant que son avis s\'affiche</string>
     <string name="keys_leave_selection">Enregistré : quitter la sélection</string>
     <string name="keys_delete">Suppr</string>
     <string name="keys_move_row">Monter ou descendre une ligne dans une liste réordonnable (celle qui a le focus ou celle sous le pointeur)</string>
