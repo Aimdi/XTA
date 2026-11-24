@@ -70,7 +70,8 @@ class SherpaVoiceSynthesizerTest {
         val config = engine.configs.single()
         assertEquals(File(voice.path, "de_DE-thorsten_emotional-medium.onnx").path, config.model)
         assertEquals(File(voice.path, "espeak-ng-data").path, config.dataDir)
-        assertEquals(2, config.threads)
+        // Half the cores of the machine the test runs on, two at least and four at most.
+        assertEquals(SherpaVoiceSynthesizer.defaultThreads(), config.threads)
         assertEquals(listOf("create", "speak:7:Guten Tag.:4:1.5"), engine.calls)
         assertEquals(setOf("offline-voice"), engine.threads)
     }
