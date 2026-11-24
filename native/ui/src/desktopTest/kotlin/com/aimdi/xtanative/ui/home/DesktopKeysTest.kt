@@ -157,6 +157,19 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun aSidewaysScrollOnX11IsNoBackOrForward() {
+        // X's 6 and 7 (a touchpad's sideways scroll) come as AWT's 4 and 5, which Compose calls back and forward.
+        assertNull(DesktopKeys.pressedSide(4, composeBack = true, composeForward = false))
+        assertNull(DesktopKeys.pressedSide(5, composeBack = false, composeForward = true))
+        assertEquals(SideButton.BACK, DesktopKeys.pressedSide(6, composeBack = false, composeForward = false))
+        assertEquals(SideButton.FORWARD, DesktopKeys.pressedSide(7, composeBack = false, composeForward = false))
+        assertNull(DesktopKeys.pressedSide(1, composeBack = false, composeForward = false))
+        // No AWT event: Compose's own flags.
+        assertEquals(SideButton.BACK, DesktopKeys.pressedSide(null, composeBack = true, composeForward = false))
+        assertEquals(SideButton.FORWARD, DesktopKeys.pressedSide(null, composeBack = false, composeForward = true))
+    }
+
+    @Test
     fun onTheFirstScreenTheMouseBackButtonClosesTheAppAndTheKeysDoNothing() {
         assertEquals(DeskAction.LEAVE_APP, DesktopKeys.mouseBack(canGoBack = false, somethingOpen = false))
         assertEquals(DeskAction.CLOSE, DesktopKeys.mouseBack(canGoBack = false, somethingOpen = true))

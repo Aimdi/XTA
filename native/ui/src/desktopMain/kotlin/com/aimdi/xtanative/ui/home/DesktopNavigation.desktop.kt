@@ -297,14 +297,16 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                             if (event.type == PointerEventType.Press) {
                                 clicked = true
                                 tabbing[0] = null
-                                // On X11 the side buttons come as AWT's 6 and 7, which Compose does not name (its back and forward are 4 and 5).
-                                val side = (event.nativeEvent as? MouseEvent)?.let { DesktopKeys.sideButton(it.button) }
-                                when {
-                                    event.buttons.isBackPressed || side == SideButton.BACK -> {
+                                // On X11 the side buttons come as AWT's 6 and 7, which Compose does not name; its back and forward
+                                // (AWT's 4 and 5) are a sideways scroll there, and are not taken for them ([DesktopKeys.pressedSide]).
+                                val awtButton = (event.nativeEvent as? MouseEvent)?.button
+                                when (DesktopKeys.pressedSide(awtButton, event.buttons.isBackPressed, event.buttons.isForwardPressed)) {
+                                    SideButton.BACK -> {
                                         val back = DesktopKeys.mouseBack(nav.previousBackStackEntry != null, actions.somethingOpen())
                                         if (back == DeskAction.LEAVE_APP && closeWindow != null) closeWindow() else act(back)
                                     }
-                                    event.buttons.isForwardPressed || side == SideButton.FORWARD -> act(DeskAction.FORWARD)
+                                    SideButton.FORWARD -> act(DeskAction.FORWARD)
+                                    null -> Unit
                                 }
                             }
                             // Ctrl and the wheel size the text, as Ctrl and +/- do; the page under it does not scroll meanwhile.

@@ -484,6 +484,20 @@ object DesktopKeys {
         else -> null
     }
 
+    /**
+     * The side button a press is: from AWT's [awtButton] where the press
+     * came through AWT, and only from it, since on X11 a sideways scroll
+     * (X's buttons 6 and 7: a touchpad, a tilting wheel) comes as AWT's 4
+     * and 5, which Compose reports as back and forward ([composeBack],
+     * [composeForward]); those count only where there is no AWT event.
+     */
+    fun pressedSide(awtButton: Int?, composeBack: Boolean, composeForward: Boolean): SideButton? = when {
+        awtButton != null -> sideButton(awtButton)
+        composeBack -> SideButton.BACK
+        composeForward -> SideButton.FORWARD
+        else -> null
+    }
+
     private const val X11_BACK = 6
     private const val X11_FORWARD = 7
 
