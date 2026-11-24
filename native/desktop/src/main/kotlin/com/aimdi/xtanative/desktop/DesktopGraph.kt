@@ -4,6 +4,7 @@ import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.pluginhost.HostPlatform
+import com.aimdi.xtanative.ui.common.XdgFolders
 import com.aimdi.xtanative.ui.downloads.DesktopFiles
 import com.aimdi.xtanative.ui.media.MpvEngine
 import com.aimdi.xtanative.ui.media.VideoCheck
@@ -82,12 +83,12 @@ private fun env(name: String): String? = System.getenv(name)?.takeIf { it.isNotB
 private fun ids(name: String): List<String> = env(name)?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }.orEmpty()
 
 /**
- * xta-native under $XDG_DATA_HOME, ~/.local/share where that is not set. Only
- * its user may open it: the session in it holds X cookies.
+ * xta-native under $XDG_DATA_HOME, ~/.local/share where that is not set or
+ * not absolute ([XdgFolders.base]). Only its user may open it: the session
+ * in it holds X cookies.
  */
 internal fun dataFolder(): File {
-    val base = System.getenv("XDG_DATA_HOME")?.takeIf { it.isNotBlank() }?.let(::File)
-        ?: File(System.getProperty("user.home"), ".local/share")
+    val base = XdgFolders.base("XDG_DATA_HOME", ".local/share")
     return File(base, "xta-native").apply {
         mkdirs()
         runCatching { Files.setPosixFilePermissions(toPath(), PosixFilePermissions.fromString("rwx------")) }

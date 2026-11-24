@@ -144,6 +144,16 @@ class PortalFilesTest {
         assertEquals(File(home, "Downloads"), XdgFolders.downloads(home) { if (it == "XDG_CONFIG_HOME") "/nonexistent" else null })
     }
 
+    @Test
+    fun aRelativeXdgBaseFolderIsIgnored() {
+        val home = File("/home/r")
+        val env = { value: String? -> { name: String -> value.takeIf { name == "XDG_DATA_HOME" } } }
+        assertEquals(File("/data/share"), XdgFolders.base("XDG_DATA_HOME", ".local/share", home, env("/data/share")))
+        assertEquals(File(home, ".local/share"), XdgFolders.base("XDG_DATA_HOME", ".local/share", home, env("data/share")))
+        assertEquals(File(home, ".local/share"), XdgFolders.base("XDG_DATA_HOME", ".local/share", home, env(" ")))
+        assertEquals(File(home, ".local/share"), XdgFolders.base("XDG_DATA_HOME", ".local/share", home, env(null)))
+    }
+
     /** How the fake portal answers. */
     private enum class Mode { PICK, CANCEL, OTHER, EARLY, OLD_HANDLE, SILENT_DIALOG, NO_REPLY }
 

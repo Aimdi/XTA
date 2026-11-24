@@ -2,8 +2,17 @@ package com.aimdi.xtanative.ui.common
 
 import java.io.File
 
-/** The reader's XDG user folders (Downloads, Pictures, Videos), in their own language and place. */
+/** The reader's XDG base folders and user folders (Downloads, Pictures, Videos), in their own language and place. */
 object XdgFolders {
+    /**
+     * The XDG base folder [name] (`XDG_DATA_HOME`, `XDG_CONFIG_HOME`,
+     * `XDG_CACHE_HOME`), else [fallback] in the home folder: a relative
+     * path in it is invalid and ignored, as the XDG Base Directory
+     * specification asks.
+     */
+    fun base(name: String, fallback: String, home: File = File(System.getProperty("user.home")), env: (String) -> String? = System::getenv): File =
+        env(name)?.takeIf { it.isNotBlank() }?.let(::File)?.takeIf { it.isAbsolute } ?: File(home, fallback)
+
     /** The XDG download folder ([userDir] of `DOWNLOAD`). */
     fun downloads(home: File = File(System.getProperty("user.home")), env: (String) -> String? = System::getenv): File =
         userDir("DOWNLOAD", "Downloads", home, env)
@@ -15,7 +24,7 @@ object XdgFolders {
      */
     fun userDir(name: String, fallback: String, home: File, env: (String) -> String?): File {
         env("XDG_${name}_DIR")?.takeIf { it.isNotBlank() }?.let { expanded(it, home) }?.let { return it }
-        val config = env("XDG_CONFIG_HOME")?.takeIf { it.isNotBlank() }?.let(::File) ?: File(home, ".config")
+        val config = base("XDG_CONFIG_HOME", ".config", home, env)
         val dirs = runCatching { File(config, "user-dirs.dirs").takeIf { it.isFile }?.readText() }.getOrNull()
         return userDirsEntry(dirs, name, home) ?: File(home, fallback)
     }
