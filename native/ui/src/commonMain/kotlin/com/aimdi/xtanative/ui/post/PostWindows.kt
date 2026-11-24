@@ -49,6 +49,13 @@ internal object PostPresses {
 /** The last mouse press on a card, for its tap to read as it opens the post. */
 internal class CardPresses {
     var last: PostPress = PostPress.TAP
+
+    /**
+     * [last], read once by the tap it belongs to: put back to a plain tap,
+     * so Enter on the card a Ctrl+click left focused opens the post here,
+     * not in another window.
+     */
+    fun take(): PostPress = last.also { last = PostPress.TAP }
 }
 
 /**

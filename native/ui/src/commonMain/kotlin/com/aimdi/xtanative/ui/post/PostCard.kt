@@ -176,7 +176,7 @@ fun PostCard(
             .recordedIn(picture)
             .opensInWindow(inWindow, presses)
             .opening(rememberDoubleTapLike(shown, scope.prefs, actions)) {
-                if (inWindow != null && presses.last == PostPress.TAP_IN_WINDOW) inWindow() else actions.openPost(shown.id)
+                if (presses.take() == PostPress.TAP_IN_WINDOW && inWindow != null) inWindow() else actions.openPost(shown.id)
             }
             .drawBehind {
                 val x = PostGeometry.RAIL_CENTER.dp.toPx()
