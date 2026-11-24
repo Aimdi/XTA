@@ -137,6 +137,20 @@ class SettingsTest {
     }
 
     @Test
+    fun theProxySettingsStayOnThisDevice() {
+        val settings = Settings()
+            .with(DesktopPrefs.proxyMode, ProxyMode.MANUAL).with(DesktopPrefs.proxyHost, "proxy.lan").with(DesktopPrefs.proxyPort, 3128)
+            .with(DesktopPrefs.proxyUser, "me").with(DesktopPrefs.proxyPassword, "pw").with(DesktopPrefs.proxyBypass, "nas.lan")
+            .with(DesktopPrefs.closeToTray, true)
+        val exported = settings.exported()!!
+        assertTrue(DesktopPrefs.closeToTray.key in exported, "the desktop's other settings still travel")
+        DesktopPrefs.proxy.forEach { assertFalse(it.key in exported, it.key) }
+        val restored = Settings().with(DesktopPrefs.proxyHost, "mine").restoring(mapOf(DesktopPrefs.proxyHost.key to JsonPrimitive("theirs"), DesktopPrefs.proxyMode.key to JsonPrimitive("none")))
+        assertEquals("mine", restored[DesktopPrefs.proxyHost])
+        assertEquals(ProxyMode.SYSTEM, restored[DesktopPrefs.proxyMode])
+    }
+
+    @Test
     fun aSubscriptionsOnlyExportCarriesTheAccountsKeptInPreferences() {
         val selected = exportSample().exported(includeSettings = false, includeSubscriptions = true)!!
         assertEquals(setOf("plugin.hackernews.follows", "plugin.websources.follows", "plugin.pixiv.group_subscriptions"), selected.keys)

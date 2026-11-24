@@ -8,6 +8,7 @@ import com.aimdi.xtanative.ui.downloads.DesktopFiles
 import com.aimdi.xtanative.ui.media.MpvEngine
 import com.aimdi.xtanative.ui.media.VideoCheck
 import com.aimdi.xtanative.ui.net.DesktopNetworkMonitor
+import com.aimdi.xtanative.ui.net.DesktopProxy
 import com.aimdi.xtanative.ui.speech.VoiceCheck
 import java.io.File
 import java.nio.file.Files
@@ -59,8 +60,9 @@ internal fun desktopApp(files: File = dataFolder()): DesktopApp {
     return DesktopApp(graph, plugins)
 }
 
-/** Starts the graph and the plugins, and does what CI's check asks of the store. */
+/** Starts the graph and the plugins, and does what CI's check asks of the store; the proxy the reader set is in place before anything is requested. */
 internal fun DesktopApp.start() {
+    DesktopProxy.follow(graph.settings)
     graph.start()
     plugins.start()
     plugins.startWith(ids("XTA_NATIVE_PLUGIN_INSTALL"), ids("XTA_NATIVE_PLUGIN_PIN"), ids("XTA_NATIVE_PLUGIN_UNINSTALL"))

@@ -61,7 +61,8 @@ class NoProxyRules private constructor(private val all: Boolean, private val nam
             return normalized(host)
         }
 
-        internal fun normalized(host: String): String = host.trim().removePrefix("[").removeSuffix("]").trimEnd('.').lowercase()
+        /** [host] as rules compare it: without brackets, a trailing dot or capitals. */
+        fun normalized(host: String): String = host.trim().removePrefix("[").removeSuffix("]").trimEnd('.').lowercase()
 
         private val IPV4 = Regex("""\d{1,3}(\.\d{1,3}){3}""")
         private val IPV6 = Regex("""[0-9a-f:.]+""")

@@ -246,3 +246,21 @@ enum class DeckWidth(override val stored: String, val dp: Int) : PrefChoice {
     MEDIUM("medium", 380),
     WIDE("wide", 460),
 }
+
+/** Where the desktop app's requests go (Settings › General › Network). */
+enum class ProxyMode(override val stored: String) : PrefChoice {
+    /** As the desktop says: the proxy environment variables, else the desktop's proxy portal. */
+    SYSTEM("system"),
+
+    /** Straight to every host, whatever the environment or desktop name. */
+    NONE("none"),
+
+    /** Through the proxy set beside it. */
+    MANUAL("manual"),
+}
+
+/** The kind of proxy set by hand. */
+enum class ProxyType(override val stored: String) : PrefChoice {
+    HTTP("http"),
+    SOCKS5("socks5"),
+}

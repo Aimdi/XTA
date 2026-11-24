@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.media
 
+import com.aimdi.xtanative.ui.net.MpvProxy
 import java.util.concurrent.atomic.AtomicLong
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +12,8 @@ import kotlinx.coroutines.withTimeoutOrNull
  * A libmpv player and where it stands ([state]). What the app asks of it
  * runs in order on the player's thread, where its state changes too, each
  * change reaching [onChange] there with the state before it. A source opens
- * with [open], which answers the number its state and frames know it by.
+ * with [open], which answers the number its state and frames know it by,
+ * and goes through the app's proxy ([MpvProxy]).
  */
 internal class MpvPlayer private constructor(options: List<Pair<String, String>>, video: Boolean, name: String) {
     private val mutable = MutableStateFlow(MpvState())
@@ -36,6 +38,7 @@ internal class MpvPlayer private constructor(options: List<Pair<String, String>>
             change { it.opening(load, startMs) }
             player.set("pause", !play)
             player.set("start", MpvOptions.start(startMs))
+            player.set("http-proxy", MpvProxy.option(url))
             val entry = player.command("loadfile", url, "replace")
             if (entry < 0) println("XTA Native: video: mpv did not open the source: ${MpvJni.errorText(entry.toInt())}")
             change { it.opened(load, entry) }

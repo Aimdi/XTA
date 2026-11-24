@@ -255,4 +255,18 @@ object DesktopPrefs : PrefSection() {
 
     /** How large everything in the windows is drawn (text, controls, pictures, the gaps between), one of [UI_SCALES]; any other value reads as 1.0. */
     val uiScale = real("desktop.ui_scale", 1.0, choices = UI_SCALES.toSet(), seeded = false)
+
+    /** Where requests go; the proxy below is only read in [ProxyMode.MANUAL]. All of these stay on this device ([SecretPrefs]). */
+    val proxyMode = choice("desktop.proxy.mode", ProxyMode.SYSTEM, ProxyMode.entries, seeded = false)
+    val proxyType = choice("desktop.proxy.type", ProxyType.HTTP, ProxyType.entries, seeded = false)
+    val proxyHost = text("desktop.proxy.host", "", seeded = false)
+    val proxyPort = whole("desktop.proxy.port", 0, seeded = false)
+    val proxyUser = text("desktop.proxy.username", "", seeded = false)
+    val proxyPassword = text("desktop.proxy.password", "", seeded = false)
+
+    /** Hosts that go straight past the proxy, as NO_PROXY lists them; loopback always does. */
+    val proxyBypass = text("desktop.proxy.bypass", "", seeded = false)
+
+    /** The proxy settings, which say how this device reaches the network: another device may sit on another one. */
+    val proxy: List<Pref<*>> = listOf(proxyMode, proxyType, proxyHost, proxyPort, proxyUser, proxyPassword, proxyBypass)
 }
