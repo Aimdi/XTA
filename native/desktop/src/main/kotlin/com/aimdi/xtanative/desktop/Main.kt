@@ -32,6 +32,7 @@ import coil3.SingletonImageLoader
 import com.aimdi.xtanative.store.settings.DesktopPrefs
 import com.aimdi.xtanative.ui.DesktopWindowTitle
 import com.aimdi.xtanative.ui.DesktopWindows
+import com.aimdi.xtanative.ui.LocalShowMainWindow
 import com.aimdi.xtanative.ui.OpenedWindow
 import com.aimdi.xtanative.ui.SecondaryWindow
 import com.aimdi.xtanative.ui.WindowTitles
@@ -58,6 +59,7 @@ import com.aimdi.xtanative.ui.saved.DesktopNotifications
 import com.aimdi.xtanative.ui.theme.DesktopColorScheme
 import java.awt.Dimension
 import java.awt.GraphicsEnvironment
+import java.awt.KeyboardFocusManager
 import java.awt.Toolkit
 import java.io.File
 import java.util.concurrent.ExecutionException
@@ -210,7 +212,14 @@ fun main(args: Array<String>) {
                 window.toFront()
                 window.requestFocus()
             }
-            CompositionLocalProvider(LocalUriHandler provides SystemBrowser) {
+            // What a post window asked of the plugins or the voice settings shows here, so the window comes up for it.
+            val showMain = remember(window) {
+                {
+                    val appActive = KeyboardFocusManager.getCurrentKeyboardFocusManager().activeWindow != null
+                    if (DesktopWindows.showsMain(visible && !state.isMinimized, window.isActive, appActive)) raises.tryEmit(Unit)
+                }
+            }
+            CompositionLocalProvider(LocalUriHandler provides SystemBrowser, LocalShowMainWindow provides showMain) {
                 Box(Modifier.fillMaxSize()) {
                     XtaNativeContent(graph, app.plugins)
                     // A download or offline save that ends while another window is in use is told by the desktop too.

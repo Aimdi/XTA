@@ -3,7 +3,9 @@ package com.aimdi.xtanative.ui
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class DesktopWindowsTest {
     @Test
@@ -26,5 +28,14 @@ class DesktopWindowsTest {
     fun theDesktopOpensWindows() {
         val open = windowOpener()
         assertNotNull(open)
+    }
+
+    @Test
+    fun theMainWindowComesUpForWhatAPostWindowAskedOnlyWhenNotInFrontAlready() {
+        assertTrue(DesktopWindows.showsMain(mainShown = true, mainActive = false, appActive = true), "behind the post window that asked")
+        assertTrue(DesktopWindows.showsMain(mainShown = false, mainActive = false, appActive = true), "hidden in the tray, or minimized")
+        assertFalse(DesktopWindows.showsMain(mainShown = true, mainActive = true, appActive = true), "in front already")
+        assertFalse(DesktopWindows.showsMain(mainShown = true, mainActive = false, appActive = false), "another program in use keeps its focus")
+        assertFalse(DesktopWindows.showsMain(mainShown = false, mainActive = false, appActive = false))
     }
 }

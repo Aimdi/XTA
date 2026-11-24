@@ -25,5 +25,14 @@ class SecondaryWindow(val route: String, val close: () -> Unit) {
 /** The window the screens are drawn in when it is a [SecondaryWindow]; null in the main window and on Android. */
 internal val LocalSecondaryWindow = staticCompositionLocalOf<SecondaryWindow?> { null }
 
+/**
+ * Brings the main window up (out of the tray too) when what a plugin or the
+ * reading-aloud bar asked for shows in it: its navigation, its sheets and the
+ * voice settings are the main window's alone, so asked from a post window
+ * they would show where the reader is not looking. The desktop's shell
+ * decides whether it is needed; nothing where there is one window (Android).
+ */
+val LocalShowMainWindow = staticCompositionLocalOf<() -> Unit> { {} }
+
 /** Opens a route in a [SecondaryWindow] of its own; null where the platform has only the one window (Android). */
 internal expect fun windowOpener(): ((route: String) -> Unit)?

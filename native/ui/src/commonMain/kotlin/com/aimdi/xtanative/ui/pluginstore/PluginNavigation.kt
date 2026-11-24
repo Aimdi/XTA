@@ -147,14 +147,28 @@ private class PluginCashtags(private val plugins: AppPlugins, private val runnin
  * its plugin opens as a card is opened as one.
  */
 @Composable
-fun AttachPluginNavigation(nav: NavHostController, x: LinkScreens, downloads: String, posts: PostActions? = null, cards: PluginCards? = null) {
+fun AttachPluginNavigation(
+    nav: NavHostController,
+    x: LinkScreens,
+    downloads: String,
+    posts: PostActions? = null,
+    cards: PluginCards? = null,
+    landed: () -> Unit = {},
+) {
     val plugins = LocalPlugins.current
     val links = LocalLinks.current
     val uri = LocalUriHandler.current
     val target = remember(nav, x, links, uri, downloads, posts, cards) { PluginNavTarget(nav, x, links, uri, downloads, posts, plugins, cards) }
-    DisposableEffect(plugins, target) {
-        plugins.navigator.attach(target)
-        onDispose { plugins.navigator.detach(target) }
+    // Each destination asked for, then [landed]: the screens it went to are this window's.
+    val attached = remember(target, landed) {
+        NavTarget { destination ->
+            target.go(destination)
+            landed()
+        }
+    }
+    DisposableEffect(plugins, attached) {
+        plugins.navigator.attach(attached)
+        onDispose { plugins.navigator.detach(attached) }
     }
     LaunchedEffect(plugins, target) {
         val start = plugins.openAtStart ?: return@LaunchedEffect

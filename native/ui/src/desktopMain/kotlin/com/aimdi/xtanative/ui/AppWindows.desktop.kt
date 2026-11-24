@@ -25,6 +25,15 @@ object DesktopWindows {
     fun close(window: OpenedWindow) {
         windows.update { it - window }
     }
+
+    /**
+     * Whether the main window comes up for what showed in it
+     * ([LocalShowMainWindow]): when it is hidden, minimized or behind while
+     * another of the app's windows is the one in use ([appActive]), as a post
+     * window that asked for it is. With another program in use the app takes
+     * no focus from it; in front already, nothing needs doing.
+     */
+    fun showsMain(mainShown: Boolean, mainActive: Boolean, appActive: Boolean): Boolean = appActive && !(mainShown && mainActive)
 }
 
 internal actual fun windowOpener(): ((route: String) -> Unit)? = DesktopWindows::open

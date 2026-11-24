@@ -362,9 +362,11 @@ fun XtaNativeRoot() {
     BindLinkScreens(linkScreens)
     if (secondary == null) {
         // Where a plugin asks to go lands here too (PLUGINS.md).
-        AttachPluginNavigation(nav, linkScreens, Routes.DOWNLOADS, actions, pluginCards)
+        val showMain = LocalShowMainWindow.current
+        AttachPluginNavigation(nav, linkScreens, Routes.DOWNLOADS, actions, pluginCards, landed = showMain)
         AttachPluginBackups()
-        OpenVoiceSettingsWhenAsked(nav)
+        OpenVoiceSettingsWhenAsked(nav, showMain)
+        ShowWhenPluginSheetOpens(showMain)
     }
     // Ctrl+click and a middle click on a post, and its menu's Open in new window, open it in a window of its own.
     val postWindows = remember { windowOpener()?.let { open -> { id: String -> open(Routes.post(id)) } } }
@@ -438,9 +440,21 @@ internal val NOT_FORWARD = setOf(Routes.ROOT, Routes.INTRO, Routes.IMPORT, Route
 
 /** The reading-aloud bar's "Voice settings" opens them over whatever screen is up. */
 @Composable
-private fun OpenVoiceSettingsWhenAsked(nav: NavHostController) {
+private fun OpenVoiceSettingsWhenAsked(nav: NavHostController, shown: () -> Unit) {
     val speech = LocalSpeech.current ?: return
-    LaunchedEffect(speech, nav) { speech.voiceSettingsAsked.collect { nav.navigate(Routes.SPEECH_SETTINGS) } }
+    LaunchedEffect(speech, nav) {
+        speech.voiceSettingsAsked.collect {
+            nav.navigate(Routes.SPEECH_SETTINGS)
+            shown()
+        }
+    }
+}
+
+/** [shown] each time a plugin's sheet opens: it shows over the main window's screens, wherever it was asked from ([LocalShowMainWindow]). */
+@Composable
+private fun ShowWhenPluginSheetOpens(shown: () -> Unit) {
+    val plugins = LocalPlugins.current
+    LaunchedEffect(plugins) { plugins.sheet.collect { if (it != null) shown() } }
 }
 
 /** What the screens are given to reach one another, and the pictures the opened posts are dragged off. */
