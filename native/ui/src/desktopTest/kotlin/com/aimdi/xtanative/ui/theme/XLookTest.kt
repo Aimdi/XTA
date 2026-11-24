@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.theme
 
+import androidx.compose.ui.graphics.Color
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.ThemeAccent
 import com.aimdi.xtanative.store.settings.ThemeBackground
@@ -88,5 +89,13 @@ class XLookTest {
     fun swatchesNameTheirPage() {
         assertEquals(null, XLook.swatch(ThemeBackground.SYSTEM))
         assertEquals(0xFF15202B, XLook.swatch(ThemeBackground.DIM))
+    }
+
+    @Test
+    fun aSheetsScrimDarkensThePageInEveryThemeAsADialogsDoes() {
+        for (background in listOf(ThemeBackground.LIGHT, ThemeBackground.DIM, ThemeBackground.LIGHTS_OUT)) {
+            val scheme = colorSchemeOf(XLook.scheme(XLook.tokens(settings(background), systemDark = true)))
+            assertEquals(Color.Black, scheme.scrim, background.name)
+        }
     }
 }

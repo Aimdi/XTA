@@ -29,9 +29,6 @@ internal val XtaTypography = Typography(
     labelMedium = TextStyle(fontSize = 13.sp, lineHeight = 16.sp),
 )
 
-
-private const val SCRIM_ON_DARK = 0xFF5B7083
-
 /** XTA's corners: a sheet's and a dialog's top is rounded as the app's own sheets are, not as wide as Material's. */
 internal val XtaShapes = Shapes(extraLarge = RoundedCornerShape(20.dp))
 
@@ -70,8 +67,9 @@ fun colorSchemeOf(scheme: XLookScheme): ColorScheme {
         error = Color(scheme.error),
         onError = Color(scheme.onError),
         errorContainer = Color(scheme.errorContainer),
-        // Behind a sheet: a dark page is washed grey-blue, as X washes it, so a sheet of the page's own colour stands out without a box.
-        scrim = if (scheme.isLight) Color.Black else Color(SCRIM_ON_DARK),
+        // Behind a sheet or the drawer: the page darkens, in every theme, as behind a dialog (Compose's own black scrim).
+        // X's grey-blue wash lightened Lights out's black page, which the reader keeps black on purpose.
+        scrim = Color.Black,
         onErrorContainer = Color(scheme.onErrorContainer),
     )
 }
