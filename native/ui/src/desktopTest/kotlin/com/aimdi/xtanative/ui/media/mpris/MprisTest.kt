@@ -96,6 +96,17 @@ class MprisTest {
         assertEquals(setOf("PlaybackStatus"), Mpris.changed(video, video.copy(playing = false)).keys)
     }
 
+    @Test
+    fun aJumpIsWhatTheTimeSinceDoesNotExplain() {
+        assertEquals(false, Mpris.jumped(video, elapsedMs = 1_000, positionMs = 6_000), "played on")
+        assertEquals(false, Mpris.jumped(video, elapsedMs = 250, positionMs = 6_400), "a late report")
+        assertEquals(true, Mpris.jumped(video, elapsedMs = 250, positionMs = 30_000), "the scrubber forward")
+        assertEquals(true, Mpris.jumped(video, elapsedMs = 250, positionMs = 1_000), "back")
+        assertEquals(true, Mpris.jumped(video.copy(positionMs = 59_900), elapsedMs = 200, positionMs = 0), "a loop to the start")
+        assertEquals(false, Mpris.jumped(video.copy(playing = false), elapsedMs = 60_000, positionMs = 5_000), "paused, time passes")
+        assertEquals(true, Mpris.jumped(video.copy(playing = false), elapsedMs = 60_000, positionMs = 20_000), "seeked while paused")
+    }
+
     /** A bus of the test's own (never the desktop's session bus), when dbus-daemon is installed. */
     private fun privateBus(): Pair<Process, File>? {
         val folder = Files.createTempDirectory("xta-dbus").toFile()
@@ -146,6 +157,48 @@ class MprisTest {
             service.clear("video")
             service.settle()
             assertEquals(false, owned())
+            client.close()
+        } finally {
+            daemon.destroy()
+            daemon.waitFor(5, TimeUnit.SECONDS)
+        }
+    }
+
+    @Test
+    fun anInAppSeekIsSignalledButPlayingOnIsNot() {
+        val (daemon, socket) = privateBus() ?: return println("no dbus-daemon: skipped")
+        try {
+            var clock = 0L
+            val service = MprisService({ DBusConnection.connect(socket) }, onMain = { it() }, clockMs = { clock })
+            val client = assertNotNull(DBusConnection.connect(socket))
+            val seeked = java.util.concurrent.LinkedBlockingQueue<Long>()
+            client.onSignal = { if (it.member == "Seeked") seeked += it.body.single() as Long }
+            client.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "AddMatch", "s", listOf("type='signal',interface='${Mpris.PLAYER}'"))
+            val binding = AudioSessionBinding(onPause = {}, onPlay = {}, onStop = {}, onSeek = {})
+            service.bind("video", title = "A video", artist = null, binding = binding)
+            service.update("video", playing = true, positionMs = 1_000, durationMs = 60_000)
+            service.settle()
+            clock += 500
+            service.update("video", playing = true, positionMs = 1_500, durationMs = 60_000)
+            clock += 500
+            service.update("video", playing = true, positionMs = 40_000, durationMs = 60_000)
+            service.settle()
+            assertEquals(40_000_000L, seeked.poll(3, TimeUnit.SECONDS), "the scrubber's seek")
+            clock += 500
+            service.update("video", playing = true, positionMs = 0, durationMs = 60_000)
+            service.settle()
+            assertEquals(0L, seeked.poll(3, TimeUnit.SECONDS), "the loop back to the start")
+            // A seek the controls ask for is signalled once, though the player reports the old place for a moment.
+            client.call(Mpris.NAME, Mpris.PATH, Mpris.PLAYER, "SetPosition", "ox", listOf(Mpris.trackId(MprisNow(track = 1)), 20_000_000L))
+            assertEquals(20_000_000L, seeked.poll(3, TimeUnit.SECONDS))
+            clock += 200
+            service.update("video", playing = true, positionMs = 600, durationMs = 60_000)
+            clock += 200
+            service.update("video", playing = true, positionMs = 20_000, durationMs = 60_000)
+            clock += 900
+            service.update("video", playing = true, positionMs = 20_900, durationMs = 60_000)
+            service.settle()
+            assertNull(seeked.poll(500, TimeUnit.MILLISECONDS), "nothing more: ${seeked.toList()}")
             client.close()
         } finally {
             daemon.destroy()

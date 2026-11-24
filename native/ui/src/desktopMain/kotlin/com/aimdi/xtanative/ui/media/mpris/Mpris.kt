@@ -104,6 +104,20 @@ object Mpris {
         return playerProperties(after).filter { (key, value) -> key != "Position" && old[key] != value }
     }
 
+    /** How far a position may stray from what the time since predicts before it counts as a seek. */
+    const val JUMP_MS = 1_500L
+
+    /**
+     * Whether [positionMs], reported [elapsedMs] after [before], jumped
+     * (the scrubber, a key, a loop back to the start) rather than played on:
+     * controls only learn of jumps through the Seeked signal, else their
+     * progress bars drift from what plays.
+     */
+    fun jumped(before: MprisNow, elapsedMs: Long, positionMs: Long): Boolean {
+        val expected = before.positionMs + if (before.playing) elapsedMs.coerceAtLeast(0) else 0
+        return kotlin.math.abs(positionMs - expected) > JUMP_MS
+    }
+
     /** The play/pause key: pause what plays and can pause, play what is paused and can play, else stop. */
     fun playPause(now: MprisNow): MprisAction = when {
         now.playing && now.canPause -> MprisAction.Pause
