@@ -45,16 +45,48 @@ install -m644 "$root/LICENSE" "$stage/$name/"
 install -m755 "$here/packaging/linux/install.sh" "$stage/$name/"
 install -Dm644 "$here/packaging/linux/com.aimdi.xtanative.desktop" "$stage/$name/share/applications/com.aimdi.xtanative.desktop"
 install -Dm644 "$here/packaging/linux/com.aimdi.xtanative.svg" "$stage/$name/share/icons/hicolor/scalable/apps/com.aimdi.xtanative.svg"
-install -Dm644 "$here/packaging/linux/com.aimdi.xtanative.metainfo.xml" "$stage/$name/share/metainfo/com.aimdi.xtanative.metainfo.xml"
+install -Dm644 "$here/packaging/linux/com.aimdi.xtanative-symbolic.svg" "$stage/$name/share/icons/hicolor/symbolic/apps/com.aimdi.xtanative-symbolic.svg"
+# The same drawing in pixels (rendered once from the SVG, packaging/linux/icons/), for
+# menus, docks and software centres that take no SVG. After a change to the SVG:
+#   for s in 48 64 128 256 512; do rsvg-convert -w $s -h $s com.aimdi.xtanative.svg -o icons/com.aimdi.xtanative-$s.png; done
+for size in 48 64 128 256 512; do
+  install -Dm644 "$here/packaging/linux/icons/com.aimdi.xtanative-$size.png" "$stage/$name/share/icons/hicolor/${size}x$size/apps/com.aimdi.xtanative.png"
+done
 
 # Same bytes for the same app: fixed order, owners and times.
 epoch=${SOURCE_DATE_EPOCH:-$(git -C "$root" log -1 --format=%ct)}
+
+# The release this is, as CI tags it: a release (MAJOR.MINOR.PATCH, native/VERSION) is
+# v<version>, a prerelease (the release's version with the run's number after it) native-<version>.
+if [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  tag=v$version release_type=stable
+else
+  tag=native-$version release_type=development
+fi
+# The AppStream data names this build's version and day in its <releases>, so it never
+# has to be kept up to date by hand.
+releases="  <releases>
+    <release version=\"$version\" date=\"$(date -u -d "@$epoch" +%F)\" type=\"$release_type\">
+      <url type=\"details\">https://github.com/$repo/releases/tag/$tag</url>
+    </release>
+  </releases>"
+metainfo="$stage/$name/share/metainfo/com.aimdi.xtanative.metainfo.xml"
+mkdir -p "$(dirname "$metainfo")"
+grep -q '^  <!-- @RELEASES@ -->$' "$here/packaging/linux/com.aimdi.xtanative.metainfo.xml" || {
+  echo "error: com.aimdi.xtanative.metainfo.xml has no <!-- @RELEASES@ --> line for the releases" >&2
+  exit 1
+}
+while IFS= read -r line; do
+  if [[ "$line" == '  <!-- @RELEASES@ -->' ]]; then printf '%s\n' "$releases"; else printf '%s\n' "$line"; fi
+done <"$here/packaging/linux/com.aimdi.xtanative.metainfo.xml" >"$metainfo"
+chmod 644 "$metainfo"
+
 tarball="$out/$name.tar.gz"
 tar --sort=name --owner=0 --group=0 --numeric-owner --mtime="@$epoch" \
   -C "$stage" -cf - "$name" | gzip -9n > "$tarball"
 
 sha=$(sha256sum "$tarball" | cut -d' ' -f1)
-sed -e "s/@PKGVER@/$version/g" -e "s/@SHA256@/$sha/g" -e "s|@REPO@|$repo|g" \
+sed -e "s/@PKGVER@/$version/g" -e "s/@SHA256@/$sha/g" -e "s|@REPO@|$repo|g" -e "s|@TAG@|$tag|g" \
   "$here/packaging/arch/PKGBUILD.in" > "$out/PKGBUILD"
 echo "Packaged $tarball ($sha), PKGBUILD for xta-native $version"
 

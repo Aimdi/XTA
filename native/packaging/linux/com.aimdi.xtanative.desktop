@@ -1,8 +1,94 @@
 [Desktop Entry]
 Type=Application
 Name=XTA Native
+# The brand stays as it is; what it is and the words a menu search finds are in each of the app's languages.
 GenericName=Feed reader
+GenericName[ar]=قارئ الخلاصات
+GenericName[be]=Чытач стужак
+GenericName[be@latin]=Čytač stužak
+GenericName[ca]=Lector de canals
+GenericName[cs]=Čtečka kanálů
+GenericName[de]=Feedreader
+GenericName[eo]=Fluolegilo
+GenericName[es]=Lector de fuentes
+GenericName[et]=Uudisvoo lugeja
+GenericName[eu]=Jario-irakurgailua
+GenericName[fr]=Lecteur de flux
+GenericName[hi]=फ़ीड रीडर
+GenericName[id]=Pembaca umpan
+GenericName[it]=Lettore di feed
+GenericName[ja]=フィードリーダー
+GenericName[ko]=피드 리더
+GenericName[nb]=Nyhetsleser
+GenericName[nl]=Feedlezer
+GenericName[pl]=Czytnik kanałów
+GenericName[pt]=Leitor de feeds
+GenericName[pt_BR]=Leitor de feeds
+GenericName[ro]=Cititor de fluxuri
+GenericName[ru]=Читалка лент
+GenericName[tr]=Akış okuyucu
+GenericName[uk]=Читалка стрічок
+GenericName[vi]=Trình đọc tin
+GenericName[zh_CN]=订阅源阅读器
+GenericName[zh_TW]=訂閱源閱讀器
 Comment=Private, read-only reader for X and other networks
+Comment[ar]=قارئ خاص للقراءة فقط لمنصة X والشبكات الأخرى
+Comment[be]=Прыватны чытач X і іншых сетак, толькі для чытання
+Comment[be@latin]=Pryvatny čytač X i inšych sietak, tolki dla čytannia
+Comment[ca]=Lector privat i només de lectura per a X i altres xarxes
+Comment[cs]=Soukromá čtečka X a dalších sítí, jen pro čtení
+Comment[de]=Privater Reader für X und andere Netzwerke, nur zum Lesen
+Comment[eo]=Privata, nurlega legilo por X kaj aliaj retoj
+Comment[es]=Lector privado y de solo lectura para X y otras redes
+Comment[et]=Privaatne ainult lugemiseks mõeldud lugeja X-i ja teiste võrgustike jaoks
+Comment[eu]=X eta beste sare batzuetarako irakurgailu pribatua, irakurtzeko soilik
+Comment[fr]=Lecteur privé en lecture seule pour X et d’autres réseaux
+Comment[hi]=X और अन्य नेटवर्क के लिए निजी, केवल पढ़ने वाला रीडर
+Comment[id]=Pembaca pribadi yang hanya membaca untuk X dan jaringan lain
+Comment[it]=Lettore privato in sola lettura per X e altre reti
+Comment[ja]=X などのネットワークを読むための、プライベートな閲覧専用リーダー
+Comment[ko]=X 및 기타 네트워크를 위한 비공개 읽기 전용 리더
+Comment[nb]=Privat leser for X og andre nettverk, kun for lesing
+Comment[nl]=Privé-lezer voor X en andere netwerken, alleen om te lezen
+Comment[pl]=Prywatny czytnik X i innych sieci, tylko do odczytu
+Comment[pt]=Leitor privado, só de leitura, para o X e outras redes
+Comment[pt_BR]=Leitor privado e somente leitura para o X e outras redes
+Comment[ro]=Cititor privat, doar pentru citire, pentru X și alte rețele
+Comment[ru]=Приватная читалка X и других сетей, только для чтения
+Comment[tr]=X ve diğer ağlar için gizli, salt okunur okuyucu
+Comment[uk]=Приватна читалка X та інших мереж, лише для читання
+Comment[vi]=Trình đọc riêng tư, chỉ để đọc, dành cho X và các mạng khác
+Comment[zh_CN]=私密、只读的 X 及其他网络阅读器
+Comment[zh_TW]=私密、唯讀的 X 及其他網路閱讀器
+Keywords=X;Twitter;Reader;Feed;News;Bluesky;Mastodon;Reddit;RSS;
+Keywords[ar]=X;Twitter;قارئ;خلاصات;أخبار;Bluesky;Mastodon;Reddit;RSS;
+Keywords[be]=X;Twitter;чытач;стужка;навіны;Bluesky;Mastodon;Reddit;RSS;
+Keywords[be@latin]=X;Twitter;čytač;stužka;naviny;Bluesky;Mastodon;Reddit;RSS;
+Keywords[ca]=X;Twitter;lector;canal;notícies;Bluesky;Mastodon;Reddit;RSS;
+Keywords[cs]=X;Twitter;čtečka;kanál;zprávy;Bluesky;Mastodon;Reddit;RSS;
+Keywords[de]=X;Twitter;Reader;Leser;Feed;Nachrichten;Bluesky;Mastodon;Reddit;RSS;
+Keywords[eo]=X;Twitter;legilo;fluo;novaĵoj;Bluesky;Mastodon;Reddit;RSS;
+Keywords[es]=X;Twitter;lector;fuente;feed;noticias;Bluesky;Mastodon;Reddit;RSS;
+Keywords[et]=X;Twitter;lugeja;voog;uudised;Bluesky;Mastodon;Reddit;RSS;
+Keywords[eu]=X;Twitter;irakurgailua;jarioa;albisteak;Bluesky;Mastodon;Reddit;RSS;
+Keywords[fr]=X;Twitter;lecteur;flux;actualités;Bluesky;Mastodon;Reddit;RSS;
+Keywords[hi]=X;Twitter;रीडर;फ़ीड;समाचार;Bluesky;Mastodon;Reddit;RSS;
+Keywords[id]=X;Twitter;pembaca;umpan;feed;berita;Bluesky;Mastodon;Reddit;RSS;
+Keywords[it]=X;Twitter;lettore;feed;notizie;Bluesky;Mastodon;Reddit;RSS;
+Keywords[ja]=X;Twitter;リーダー;フィード;ニュース;ツイッター;Bluesky;Mastodon;Reddit;RSS;
+Keywords[ko]=X;Twitter;리더;피드;뉴스;트위터;Bluesky;Mastodon;Reddit;RSS;
+Keywords[nb]=X;Twitter;leser;strøm;feed;nyheter;Bluesky;Mastodon;Reddit;RSS;
+Keywords[nl]=X;Twitter;lezer;feed;nieuws;Bluesky;Mastodon;Reddit;RSS;
+Keywords[pl]=X;Twitter;czytnik;kanał;wiadomości;Bluesky;Mastodon;Reddit;RSS;
+Keywords[pt]=X;Twitter;leitor;feed;notícias;Bluesky;Mastodon;Reddit;RSS;
+Keywords[pt_BR]=X;Twitter;leitor;feed;notícias;Bluesky;Mastodon;Reddit;RSS;
+Keywords[ro]=X;Twitter;cititor;flux;știri;Bluesky;Mastodon;Reddit;RSS;
+Keywords[ru]=X;Twitter;читалка;лента;новости;твиттер;Bluesky;Mastodon;Reddit;RSS;
+Keywords[tr]=X;Twitter;okuyucu;akış;haberler;Bluesky;Mastodon;Reddit;RSS;
+Keywords[uk]=X;Twitter;читалка;стрічка;новини;твіттер;Bluesky;Mastodon;Reddit;RSS;
+Keywords[vi]=X;Twitter;trình đọc;nguồn tin;tin tức;Bluesky;Mastodon;Reddit;RSS;
+Keywords[zh_CN]=X;Twitter;阅读器;订阅源;新闻;推特;Bluesky;Mastodon;Reddit;RSS;
+Keywords[zh_TW]=X;Twitter;閱讀器;訂閱源;新聞;推特;Bluesky;Mastodon;Reddit;RSS;
 # %U: `xta-native <url>` opens an X link (or a page a plugin reads) in the app; a link router (handlr, junction)
 # can send x.com links here. XTA claims no web scheme: it is no browser, and a link it hands
 # back to the browser within seconds is not taken again, so a router cannot loop.
@@ -10,8 +96,10 @@ Exec=xta-native %U
 Icon=com.aimdi.xtanative
 Terminal=false
 Categories=Network;News;
-Keywords=X;Twitter;Reader;Bluesky;Mastodon;Reddit;RSS;
 StartupWMClass=com-aimdi-xtanative-desktop-MainKt
+# One main window: a second start raises it (SingleInstance), so a menu offers no "New window".
+# The posts it opens in windows of their own come from inside the app, not from a launcher.
+SingleMainWindow=true
 Actions=new-search;
 
 # X's search page, which the app opens as its own search with the field ready to type in.

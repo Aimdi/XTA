@@ -5,7 +5,36 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT</project_license>
   <name>XTA Native</name>
+  <!-- The summary in each of the app's languages, as the desktop entry's Comment has it. -->
   <summary>Private, read-only reader for X and other networks</summary>
+  <summary xml:lang="ar">قارئ خاص للقراءة فقط لمنصة X والشبكات الأخرى</summary>
+  <summary xml:lang="be">Прыватны чытач X і іншых сетак, толькі для чытання</summary>
+  <summary xml:lang="be@latin">Pryvatny čytač X i inšych sietak, tolki dla čytannia</summary>
+  <summary xml:lang="ca">Lector privat i només de lectura per a X i altres xarxes</summary>
+  <summary xml:lang="cs">Soukromá čtečka X a dalších sítí, jen pro čtení</summary>
+  <summary xml:lang="de">Privater Reader für X und andere Netzwerke, nur zum Lesen</summary>
+  <summary xml:lang="eo">Privata, nurlega legilo por X kaj aliaj retoj</summary>
+  <summary xml:lang="es">Lector privado y de solo lectura para X y otras redes</summary>
+  <summary xml:lang="et">Privaatne ainult lugemiseks mõeldud lugeja X-i ja teiste võrgustike jaoks</summary>
+  <summary xml:lang="eu">X eta beste sare batzuetarako irakurgailu pribatua, irakurtzeko soilik</summary>
+  <summary xml:lang="fr">Lecteur privé en lecture seule pour X et d’autres réseaux</summary>
+  <summary xml:lang="hi">X और अन्य नेटवर्क के लिए निजी, केवल पढ़ने वाला रीडर</summary>
+  <summary xml:lang="id">Pembaca pribadi yang hanya membaca untuk X dan jaringan lain</summary>
+  <summary xml:lang="it">Lettore privato in sola lettura per X e altre reti</summary>
+  <summary xml:lang="ja">X などのネットワークを読むための、プライベートな閲覧専用リーダー</summary>
+  <summary xml:lang="ko">X 및 기타 네트워크를 위한 비공개 읽기 전용 리더</summary>
+  <summary xml:lang="nb">Privat leser for X og andre nettverk, kun for lesing</summary>
+  <summary xml:lang="nl">Privé-lezer voor X en andere netwerken, alleen om te lezen</summary>
+  <summary xml:lang="pl">Prywatny czytnik X i innych sieci, tylko do odczytu</summary>
+  <summary xml:lang="pt">Leitor privado, só de leitura, para o X e outras redes</summary>
+  <summary xml:lang="pt_BR">Leitor privado e somente leitura para o X e outras redes</summary>
+  <summary xml:lang="ro">Cititor privat, doar pentru citire, pentru X și alte rețele</summary>
+  <summary xml:lang="ru">Приватная читалка X и других сетей, только для чтения</summary>
+  <summary xml:lang="tr">X ve diğer ağlar için gizli, salt okunur okuyucu</summary>
+  <summary xml:lang="uk">Приватна читалка X та інших мереж, лише для читання</summary>
+  <summary xml:lang="vi">Trình đọc riêng tư, chỉ để đọc, dành cho X và các mạng khác</summary>
+  <summary xml:lang="zh_CN">私密、只读的 X 及其他网络阅读器</summary>
+  <summary xml:lang="zh_TW">私密、唯讀的 X 及其他網路閱讀器</summary>
   <description>
     <p>
       XTA Native is XTA, the private, read-oriented way to browse X. It reads X and other sources, such
@@ -24,10 +53,25 @@
   <launchable type="desktop-id">com.aimdi.xtanative.desktop</launchable>
   <url type="homepage">https://github.com/Aimdi/XTA</url>
   <url type="bugtracker">https://github.com/Aimdi/XTA/issues</url>
+  <url type="vcs-browser">https://github.com/Aimdi/XTA</url>
   <developer id="com.github.aimdi">
     <name>Aimdi</name>
   </developer>
   <provides>
     <binary>xta-native</binary>
   </provides>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+  <!-- The app posts, chats and shares nothing, and has no ads, purchases or trackers; what it shows is
+       the accounts and feeds the reader picks, as a browser or a feed reader shows. -->
+  <content_rating type="oars-1.1"/>
+  <!-- A light and a dark tint of the icon's blue, behind the icon's black square in software centres. -->
+  <branding>
+    <color type="primary" scheme_preference="light">#8ecdf8</color>
+    <color type="primary" scheme_preference="dark">#0f3d5c</color>
+  </branding>
+  <!-- native/tool/package_desktop.sh puts this build's <releases> here, from the version it packs. -->
+  <!-- @RELEASES@ -->
 </component>
