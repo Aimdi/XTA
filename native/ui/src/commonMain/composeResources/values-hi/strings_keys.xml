@@ -20,6 +20,7 @@
     <string name="keys_scroll_ends">ऊपर या अंत तक जाएँ</string>
     <string name="keys_move">बटनों और फ़ील्ड के बीच जाएँ</string>
     <string name="keys_text_size">बड़ा, छोटा या सामान्य टेक्स्ट</string>
+    <string name="keys_interface_size">बड़ा, छोटा या सामान्य इंटरफ़ेस</string>
     <string name="keys_full_screen">फ़ुल स्क्रीन</string>
     <string name="keys_video">फ़ुल स्क्रीन वीडियो: चलाएँ या रोकें, 10 सेकंड आगे-पीछे जाएँ</string>
     <string name="keys_video_more">फ़ुल-स्क्रीन वीडियो: म्यूट करें, शुरू से चलाएँ, फ़ुल स्क्रीन छोड़ें</string>

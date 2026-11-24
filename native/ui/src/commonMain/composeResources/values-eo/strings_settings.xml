@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Uzi la tutan ekranon: la horo, baterio kaj signalo supre estas kaŝitaj. Ŝovu malsupren de la supra rando por vidi ilin momente.</string>
     <string name="settings_text_scale">Tekstoskaligo</string>
     <string name="settings_text_scale_description">Adapti la tipara grandecon en la aplikaĵo</string>
+    <string name="settings_interface_scale">Grando de la interfaco</string>
+    <string name="settings_interface_scale_description">Pligrandigi aŭ malpligrandigi tekston, butonojn kaj bildojn kune</string>
     <string name="settings_disable_animations">Malŝalti animaciojn</string>
     <string name="settings_disable_animations_description">Malŝalti animaciojn en la aplikaĵo</string>
     <string name="settings_haptics">Haptika reago</string>

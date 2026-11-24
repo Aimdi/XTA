@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">使用整個螢幕：隱藏頂端的時間、電量和訊號。從頂端邊緣向下滑動可短暫查看。</string>
     <string name="settings_text_scale">文字大小</string>
     <string name="settings_text_scale_description">設定整個應用程式的文字大小</string>
+    <string name="settings_interface_scale">介面大小</string>
+    <string name="settings_interface_scale_description">同時放大或縮小文字、按鈕和圖片</string>
     <string name="settings_disable_animations">停用動畫效果？</string>
     <string name="settings_disable_animations_description">停用應用程式內的動畫效果</string>
     <string name="settings_haptics">觸感回饋</string>

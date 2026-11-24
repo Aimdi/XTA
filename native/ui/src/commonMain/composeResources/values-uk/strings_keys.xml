@@ -20,6 +20,7 @@
     <string name="keys_scroll_ends">На початок або в кінець</string>
     <string name="keys_move">Переходити між кнопками й полями</string>
     <string name="keys_text_size">Більший, менший або звичайний текст</string>
+    <string name="keys_interface_size">Більший, менший чи звичайний інтерфейс</string>
     <string name="keys_full_screen">Повноекранний режим</string>
     <string name="keys_video">Відео на весь екран: відтворити або призупинити, перемотати на 10 секунд</string>
     <string name="keys_video_more">Відео на весь екран: вимкнути звук, спочатку, вийти</string>

@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Korzystaj z całego ekranu: godzina, bateria i zasięg u góry są ukryte. Przesuń w dół od górnej krawędzi, aby je na chwilę zobaczyć.</string>
     <string name="settings_text_scale">Współczynnik skalowania tekstu</string>
     <string name="settings_text_scale_description">Dostosuj rozmiar czcionki w aplikacji</string>
+    <string name="settings_interface_scale">Rozmiar interfejsu</string>
+    <string name="settings_interface_scale_description">Powiększ lub pomniejsz jednocześnie tekst, przyciski i obrazy</string>
     <string name="settings_disable_animations">Wyłącz animacje</string>
     <string name="settings_disable_animations_description">Wyłącz animacje w aplikacji</string>
     <string name="settings_haptics">Wibracje przy dotyku</string>

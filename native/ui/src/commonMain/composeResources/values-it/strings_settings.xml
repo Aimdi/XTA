@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Usa tutto lo schermo: ora, batteria e segnale in alto vengono nascosti. Scorri verso il basso dal bordo superiore per vederli un momento.</string>
     <string name="settings_text_scale">Fattore di scala del testo</string>
     <string name="settings_text_scale_description">Regola la dimensione del testo nell'app</string>
+    <string name="settings_interface_scale">Dimensione dell’interfaccia</string>
+    <string name="settings_interface_scale_description">Ingrandisci o riduci insieme testo, pulsanti e immagini</string>
     <string name="settings_disable_animations">Disabilita animazioni</string>
     <string name="settings_disable_animations_description">Disabilita le animazioni nell'app</string>
     <string name="settings_haptics">Feedback aptico</string>

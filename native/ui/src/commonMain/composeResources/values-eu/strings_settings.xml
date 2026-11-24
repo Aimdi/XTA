@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Erabili pantaila osoa: goiko ordua, bateria eta seinalea ezkutatzen dira. Pasatu hatza goiko ertzetik behera une batez ikusteko.</string>
     <string name="settings_text_scale">Testuaren eskala-faktorea</string>
     <string name="settings_text_scale_description">Doitu letra-tamaina aplikazioan</string>
+    <string name="settings_interface_scale">Interfazearen tamaina</string>
+    <string name="settings_interface_scale_description">Testua, botoiak eta irudiak batera handitu edo txikitu</string>
     <string name="settings_disable_animations">Desgaitu animazioak</string>
     <string name="settings_disable_animations_description">Desgaitu animazioak aplikazioan</string>
     <string name="settings_haptics">Erantzun haptikoa</string>

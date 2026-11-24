@@ -20,6 +20,7 @@
     <string name="keys_scroll_ends">Başa veya sona git</string>
     <string name="keys_move">Düğmeler ve alanlar arasında gezin</string>
     <string name="keys_text_size">Daha büyük, daha küçük veya normal yazı</string>
+    <string name="keys_interface_size">Daha büyük, daha küçük veya normal arayüz</string>
     <string name="keys_full_screen">Tam ekran</string>
     <string name="keys_video">Tam ekran video: oynat veya duraklat, 10 saniye atla</string>
     <string name="keys_video_more">Tam ekran video: sesi kapat, baştan başlat, çık</string>

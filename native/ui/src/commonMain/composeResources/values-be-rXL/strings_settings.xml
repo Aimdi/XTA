@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Vykarystoŭvać uvieś ekran: čas, batareja i sihnał uviersie schavanyja. Praviadzicie ŭniz ad vierchniaha kraju, kab na momant ich ubačyć.</string>
     <string name="settings_text_scale">Kaeficyjent maštabavańnia tekstu</string>
     <string name="settings_text_scale_description">Naładzić pamier šryftu ŭ prahramie</string>
+    <string name="settings_interface_scale">Pamier interfiejsu</string>
+    <string name="settings_interface_scale_description">Pavialičvać ci pamianšać tekst, knopki i vyjavy razam</string>
     <string name="settings_disable_animations">Adkliučyć animacyi</string>
     <string name="settings_disable_animations_description">Adkliučyć animacyi ŭ prahramie</string>
     <string name="settings_haptics">Taktylny vodhuk</string>

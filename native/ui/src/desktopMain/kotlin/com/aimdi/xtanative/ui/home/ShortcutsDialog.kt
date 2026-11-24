@@ -33,6 +33,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_full_screen
 import com.aimdi.xtanative.ui.generated.resources.keys_go_home
 import com.aimdi.xtanative.ui.generated.resources.keys_help
 import com.aimdi.xtanative.ui.generated.resources.keys_home
+import com.aimdi.xtanative.ui.generated.resources.keys_interface_size
 import com.aimdi.xtanative.ui.generated.resources.keys_leave_selection
 import com.aimdi.xtanative.ui.generated.resources.keys_menu
 import com.aimdi.xtanative.ui.generated.resources.keys_move
@@ -124,6 +125,7 @@ object DesktopShortcuts {
         Shortcut(Res.string.keys_scroll_ends, listOf(listOf(KeyCap.Named(Res.string.keys_home)), listOf(KeyCap.Named(Res.string.keys_end)))),
         Shortcut(Res.string.keys_move, listOf(listOf(tab), listOf(shift, tab))),
         Shortcut(Res.string.keys_text_size, listOf(listOf(ctrl, sign("+")), listOf(ctrl, sign("−")), listOf(ctrl, sign("0")), listOf(ctrl, KeyCap.Named(Res.string.keys_wheel)))),
+        Shortcut(Res.string.keys_interface_size, listOf(listOf(ctrl, alt, sign("+")), listOf(ctrl, alt, sign("−")), listOf(ctrl, alt, sign("0")))),
         Shortcut(Res.string.keys_full_screen, listOf(listOf(sign("F11")))),
         Shortcut(Res.string.settings_title, listOf(listOf(ctrl, sign(",")))),
         Shortcut(Res.string.keys_video, listOf(listOf(space), listOf(sign("K")), listOf(sign("←")), listOf(sign("→")), listOf(sign("J")), listOf(sign("L")))),

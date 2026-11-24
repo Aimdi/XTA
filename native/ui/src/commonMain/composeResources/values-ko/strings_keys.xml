@@ -20,6 +20,7 @@
     <string name="keys_scroll_ends">맨 위 또는 맨 끝으로 이동</string>
     <string name="keys_move">버튼과 입력란 사이 이동</string>
     <string name="keys_text_size">글자 크게, 작게 또는 기본 크기</string>
+    <string name="keys_interface_size">인터페이스 크게, 작게 또는 기본 크기</string>
     <string name="keys_full_screen">전체 화면</string>
     <string name="keys_video">전체 화면 동영상: 재생 또는 일시정지, 10초 건너뛰기</string>
     <string name="keys_video_more">전체 화면 동영상: 음소거, 처음부터, 전체 화면 종료</string>

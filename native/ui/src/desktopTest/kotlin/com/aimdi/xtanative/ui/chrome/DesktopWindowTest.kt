@@ -20,6 +20,25 @@ class DesktopWindowTest {
     }
 
     @Test
+    fun theSmallestWindowGrowsWithTheInterfaceSizeButNeverPastTheScreen() {
+        assertEquals(360 to 560, SavedWindow.minimum(1.0))
+        assertEquals(720 to 1120, SavedWindow.minimum(2.0), "no screen known")
+        assertEquals(288 to 448, SavedWindow.minimum(0.8, 1920, 1080))
+        assertEquals(450 to 700, SavedWindow.minimum(1.25, 1920, 1080))
+        assertEquals(720 to 1050, SavedWindow.minimum(2.0, 1920, 1050), "a 1080p work area")
+        assertEquals(700 to 600, SavedWindow.minimum(2.0, 700, 600))
+    }
+
+    @Test
+    fun aPostWindowIsTheReadingColumnAtTheInterfaceSize() {
+        assertEquals(680 to 900, SavedWindow.postWindow(1.0))
+        assertEquals(680 to 700, SavedWindow.postWindow(1.0, 1600, 700))
+        assertEquals(1020 to 900, SavedWindow.postWindow(1.5, 1920, 1050))
+        assertEquals(1280 to 900, SavedWindow.postWindow(2.0, 1280, 1000), "never wider than the screen")
+        assertEquals(544 to 900, SavedWindow.postWindow(0.8))
+    }
+
+    @Test
     fun aDamagedFileKeepsTheFirstSizeButStillItsMaximizing() {
         assertEquals(SavedWindow(1100, 820, true), SavedWindow.parse("[window]\nwidth=0\nheight=700\nmaximized=true"))
         assertEquals(SavedWindow(1100, 820, false), SavedWindow.parse("[window]\nwidth=20000\nheight=700"))

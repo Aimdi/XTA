@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">화면 전체를 사용합니다. 위쪽의 시간, 배터리, 신호가 숨겨집니다. 위쪽 가장자리에서 아래로 쓸어내리면 잠시 볼 수 있습니다.</string>
     <string name="settings_text_scale">텍스트 배율</string>
     <string name="settings_text_scale_description">앱에서 글꼴 크기 조정</string>
+    <string name="settings_interface_scale">인터페이스 크기</string>
+    <string name="settings_interface_scale_description">텍스트, 버튼, 이미지를 함께 크게 또는 작게 합니다</string>
     <string name="settings_disable_animations">애니메이션 비활성화</string>
     <string name="settings_disable_animations_description">앱에서 애니메이션 비활성화</string>
     <string name="settings_haptics">햅틱 피드백</string>

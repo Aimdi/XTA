@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
+import com.aimdi.xtanative.store.settings.DesktopPrefs
 import com.aimdi.xtanative.ui.LocalSecondaryWindow
 import com.aimdi.xtanative.ui.chrome.AppClosing
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
@@ -149,10 +150,13 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             if (!actions.find()) openSearch()
             true
         }
-        DeskAction.TEXT_BIGGER, DeskAction.TEXT_SMALLER, DeskAction.TEXT_RESET -> {
+        DeskAction.TEXT_BIGGER, DeskAction.TEXT_SMALLER, DeskAction.TEXT_RESET, DeskAction.UI_BIGGER, DeskAction.UI_SMALLER, DeskAction.UI_RESET -> {
             scope.launch {
                 settingsStore.update { settings ->
-                    settings.with(AccessibilityPrefs.textScale, DesktopKeys.textScaled(settings[AccessibilityPrefs.textScale], action, TEXT_SCALES))
+                    when (action) {
+                        in UI_SIZES -> settings.with(DesktopPrefs.uiScale, DesktopKeys.uiScaled(settings[DesktopPrefs.uiScale], action, DesktopPrefs.UI_SCALES))
+                        else -> settings.with(AccessibilityPrefs.textScale, DesktopKeys.textScaled(settings[AccessibilityPrefs.textScale], action, TEXT_SCALES))
+                    }
                 }
                 // A field the new size lays out afresh (Search's, moving under its bar) loses the focus: the keys come back here.
                 delay(REFOCUS_AFTER_MS)
@@ -407,6 +411,9 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         }
     }
 }
+
+/** The keys' changes of the interface size rather than the text's. */
+private val UI_SIZES = setOf(DeskAction.UI_BIGGER, DeskAction.UI_SMALLER, DeskAction.UI_RESET)
 
 /** The text sizes the keys move between: the Accessibility slider's. */
 private val TEXT_SCALES = SettingsChoices.TEXT_SCALE_MIN.toDouble()..SettingsChoices.TEXT_SCALE_MAX.toDouble()

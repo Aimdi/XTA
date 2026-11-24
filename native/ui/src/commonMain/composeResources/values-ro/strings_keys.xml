@@ -20,6 +20,7 @@
     <string name="keys_scroll_ends">Mergi la început sau la sfârșit</string>
     <string name="keys_move">Treci de la un buton sau câmp la altul</string>
     <string name="keys_text_size">Text mai mare, mai mic sau normal</string>
+    <string name="keys_interface_size">Interfață mai mare, mai mică sau normală</string>
     <string name="keys_full_screen">Ecran complet</string>
     <string name="keys_video">Video pe ecran complet: redă sau pune pauză, sari 10 secunde</string>
     <string name="keys_video_more">Video pe tot ecranul: dezactivează sunetul, de la început, ieși</string>

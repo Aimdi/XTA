@@ -130,6 +130,7 @@ fun main(args: Array<String>) {
             tray.start()
         }
         val toTray by remember(graph) { graph.settings.observe(DesktopPrefs.closeToTray) }.collectAsState(initial = false)
+        val uiScale by remember(graph) { graph.settings.observe(DesktopPrefs.uiScale) }.collectAsState(initial = 1.0)
         val inTray by tray.shown.collectAsState()
         // `--minimized` starts hidden in the tray, once the tray shows the icon and Close to tray is on; else the window opens.
         var visible by remember { mutableStateOf(!startHidden) }
@@ -194,7 +195,8 @@ fun main(args: Array<String>) {
                 f11
             },
         ) {
-            LaunchedEffect(Unit) { window.minimumSize = Dimension(SavedWindow.MIN_WIDTH, SavedWindow.MIN_HEIGHT) }
+            // The smallest window grows with the interface size, as the layouts it keeps from overflowing do.
+            LaunchedEffect(uiScale) { window.minimumSize = minimumSize(uiScale) }
             // Each change once it has rested half a second, and the last one when the window closes, as XTA's window_state.cc.
             LaunchedEffect(state) {
                 snapshotFlow { Triple(state.placement, state.size, state.position) }
@@ -232,7 +234,7 @@ fun main(args: Array<String>) {
         // The posts opened in windows of their own (Ctrl+click, a middle click, the post menu's Open in new window).
         val others by DesktopWindows.opened.collectAsState()
         for (opened in others) {
-            key(opened.serial) { PostWindow(opened, app, name, quit, onQuitKey = { raises.tryEmit(Unit) }) }
+            key(opened.serial) { PostWindow(opened, app, name, uiScale, quit, onQuitKey = { raises.tryEmit(Unit) }) }
         }
     }
     runBlocking { withTimeoutOrNull(2_000) { starting.started().graph.awaitWrites() } }
@@ -242,16 +244,16 @@ fun main(args: Array<String>) {
 
 /**
  * A window of the app's own beside the main one, [opened] on a post, about
- * as wide as the reading column: closing it closes it alone, unless the app
+ * as wide as the reading column at the interface size [uiScale]: closing it closes it alone, unless the app
  * was asked to quit from it (Ctrl+Q, [onQuitKey] bringing the main window up
  * to ask), and only the main window keeps its size, the tray and the title
  * the bar shows for the app.
  */
 @Composable
-private fun ApplicationScope.PostWindow(opened: OpenedWindow, app: DesktopApp, name: String, quit: () -> Unit, onQuitKey: () -> Unit) {
+private fun ApplicationScope.PostWindow(opened: OpenedWindow, app: DesktopApp, name: String, uiScale: Double, quit: () -> Unit, onQuitKey: () -> Unit) {
     val secondary = remember(opened) { SecondaryWindow(opened.route) { DesktopWindows.close(opened) } }
     val part by secondary.titlePart.collectAsState()
-    val state = rememberWindowState(size = remember { postWindowSize() })
+    val state = rememberWindowState(size = remember { postWindowSize(uiScale) })
     Window(
         onCloseRequest = { if (AppQuit.taken()) quit() else secondary.close() },
         title = WindowTitles.title(part, name),
@@ -262,23 +264,26 @@ private fun ApplicationScope.PostWindow(opened: OpenedWindow, app: DesktopApp, n
             false
         },
     ) {
-        LaunchedEffect(Unit) { window.minimumSize = Dimension(SavedWindow.MIN_WIDTH, SavedWindow.MIN_HEIGHT) }
+        LaunchedEffect(uiScale) { window.minimumSize = minimumSize(uiScale) }
         CompositionLocalProvider(LocalUriHandler provides SystemBrowser) {
             XtaNativeContent(app.graph, app.plugins, secondary)
         }
     }
 }
 
-/** A post window's size: the reading column's width, and as tall as the screen allows up to a reading height. */
-private fun postWindowSize(): DpSize {
-    val height = screenArea()?.second?.let { minOf(it, POST_WINDOW_HEIGHT) } ?: POST_WINDOW_HEIGHT
-    return DpSize(POST_WINDOW_WIDTH.dp, height.dp)
+/** A post window's size at the interface size [scale] ([SavedWindow.postWindow]), on the primary screen's work area. */
+private fun postWindowSize(scale: Double): DpSize {
+    val area = screenArea()
+    val (width, height) = SavedWindow.postWindow(scale, area?.first ?: 0, area?.second ?: 0)
+    return DpSize(width.dp, height.dp)
 }
 
-/** About the reading column's width (HomeWide's widest column), with its margins. */
-private const val POST_WINDOW_WIDTH = 680
-
-private const val POST_WINDOW_HEIGHT = 900
+/** The smallest a window may be at the interface size [scale] ([SavedWindow.minimum]), on the primary screen's work area. */
+private fun minimumSize(scale: Double): Dimension {
+    val area = screenArea()
+    val (width, height) = SavedWindow.minimum(scale, area?.first ?: 0, area?.second ?: 0)
+    return Dimension(width, height)
+}
 
 /** How long `--minimized` waits for a tray to show the icon before it opens the window after all. */
 private const val TRAY_WAIT_MS = 4_000L

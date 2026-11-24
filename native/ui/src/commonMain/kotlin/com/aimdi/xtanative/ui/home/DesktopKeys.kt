@@ -40,6 +40,11 @@ enum class DeskAction {
     TEXT_SMALLER,
     TEXT_RESET,
 
+    /** The interface size a preset up, a preset down, or back to the desktop's own ([DesktopKeys.uiScaled]). */
+    UI_BIGGER,
+    UI_SMALLER,
+    UI_RESET,
+
     /** The list read moves a line, a screen, or to its top or end ([DesktopActions.scroll]). */
     LINE_UP,
     LINE_DOWN,
@@ -128,7 +133,8 @@ object DesktopKeys {
      * Ctrl+K and Ctrl+L, as a browser's go to its search and address bar,
      * do the same.
      * Ctrl with + (or =), - and 0 make the text bigger, smaller, or its
-     * size again, as a browser's zoom does, from a field too. F1, and ?
+     * size again, as a browser's zoom does, from a field too; with Ctrl+Alt
+     * they make the whole interface so (text, controls, pictures). F1, and ?
      * while nothing is being typed in, list these keys. Ctrl+, opens the
      * settings, and Ctrl+W closes what is open over the page (a sheet, a
      * menu), as a desktop app closes a document; it never goes back further.
@@ -195,6 +201,7 @@ object DesktopKeys {
             ctrl && !alt && key in TAB_KEYS -> if (somethingOpen) DeskAction.NONE else tabTurn(key, shift)
             key == DeskKey.TAB && !focusInside && !alt && !ctrl -> DeskAction.ENTER_PAGE
             ctrl && !alt && key in TEXT_KEYS -> textSize(key)
+            ctrl && alt && key in TEXT_KEYS -> interfaceSize(key)
             (key == DeskKey.F1 && !alt && !ctrl) || (key == DeskKey.QUESTION && !focusInside && !alt && !ctrl) ->
                 if (somethingOpen) DeskAction.NONE else DeskAction.SHOW_KEYS
             // Over an opened post (a card the page counts as open) too: going home leaves it with the rest.
@@ -301,6 +308,27 @@ object DesktopKeys {
         DeskKey.MINUS -> DeskAction.TEXT_SMALLER
         else -> DeskAction.TEXT_RESET
     }
+
+    private fun interfaceSize(key: DeskKey): DeskAction = when (key) {
+        DeskKey.PLUS -> DeskAction.UI_BIGGER
+        DeskKey.MINUS -> DeskAction.UI_SMALLER
+        else -> DeskAction.UI_RESET
+    }
+
+    /**
+     * The interface size [scale] after [action]: the next of [presets]
+     * (ascending) above it or the one below, staying at the ends; 1.0, the
+     * desktop's own, on reset; [scale] itself for any other action. A size
+     * between presets goes onto the nearest one that way.
+     */
+    fun uiScaled(scale: Double, action: DeskAction, presets: List<Double>): Double = when (action) {
+        DeskAction.UI_BIGGER -> presets.firstOrNull { it > scale + SCALE_SLACK } ?: presets.lastOrNull() ?: scale
+        DeskAction.UI_SMALLER -> presets.lastOrNull { it < scale - SCALE_SLACK } ?: presets.firstOrNull() ?: scale
+        DeskAction.UI_RESET -> 1.0
+        else -> scale
+    }
+
+    private const val SCALE_SLACK = 1e-6
 
     /** A step of the text size: the Accessibility slider's own. */
     const val TEXT_STEP = 0.05

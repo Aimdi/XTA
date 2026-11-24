@@ -20,6 +20,7 @@
     <string name="keys_scroll_ends">先頭または末尾へ移動</string>
     <string name="keys_move">ボタンや入力欄の間を移動</string>
     <string name="keys_text_size">文字を大きく、小さく、または標準に</string>
+    <string name="keys_interface_size">インターフェースを拡大・縮小・標準に戻す</string>
     <string name="keys_full_screen">全画面表示</string>
     <string name="keys_video">全画面の動画：再生または一時停止、10秒スキップ</string>
     <string name="keys_video_more">全画面動画: ミュート、最初から、全画面を終了</string>

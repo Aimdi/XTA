@@ -49,6 +49,18 @@ class SettingsTest {
     }
 
     @Test
+    fun theInterfaceSizeIsOneOfItsPresetsElseTheDesktopsOwn() {
+        assertEquals(1.0, Settings()[DesktopPrefs.uiScale])
+        assertEquals(1.25, Settings().with(DesktopPrefs.uiScale, 1.25)[DesktopPrefs.uiScale])
+        assertEquals(2.0, Settings(mapOf("desktop.ui_scale" to PrefValue.Whole(2)))[DesktopPrefs.uiScale], "a whole number is a preset too")
+        assertEquals(1.0, Settings(mapOf("desktop.ui_scale" to PrefValue.Real(1.3)))[DesktopPrefs.uiScale], "between presets")
+        assertEquals(1.0, Settings(mapOf("desktop.ui_scale" to PrefValue.Real(5.0)))[DesktopPrefs.uiScale], "past them")
+        assertEquals(1.0, Settings(mapOf("desktop.ui_scale" to PrefValue.Real(Double.NaN)))[DesktopPrefs.uiScale])
+        assertNull(DesktopPrefs.uiScale.seed, "nothing written until chosen")
+        assertEquals(DesktopPrefs.UI_SCALES.sorted(), DesktopPrefs.UI_SCALES)
+    }
+
+    @Test
     fun aDoubleTakesAWholeNumberAndStaysInItsRange() {
         val settings = Settings(
             mapOf(

@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">استخدام الشاشة كاملة: يُخفى الوقت والبطارية والإشارة في الأعلى. اسحب من الحافة العلوية إلى الأسفل لرؤيتها لحظة.</string>
     <string name="settings_text_scale">معامل مقياس النص</string>
     <string name="settings_text_scale_description">ضبط حجم الخط في التطبيق</string>
+    <string name="settings_interface_scale">حجم الواجهة</string>
+    <string name="settings_interface_scale_description">تكبير النصوص والأزرار والصور أو تصغيرها معًا</string>
     <string name="settings_disable_animations">تعطيل الرسوم المتحركة</string>
     <string name="settings_disable_animations_description">تعطيل الرسوم المتحركة في التطبيق</string>
     <string name="settings_haptics">الاهتزاز عند اللمس</string>

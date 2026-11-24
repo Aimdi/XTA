@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Využít celou obrazovku: čas, baterie a signál nahoře jsou skryté. Přejetím dolů od horního okraje je na chvíli zobrazíte.</string>
     <string name="settings_text_scale">Faktor měřítka textu</string>
     <string name="settings_text_scale_description">Upravit velikost písma v aplikaci</string>
+    <string name="settings_interface_scale">Velikost rozhraní</string>
+    <string name="settings_interface_scale_description">Zvětší nebo zmenší text, tlačítka i obrázky najednou</string>
     <string name="settings_disable_animations">Zakázat animace</string>
     <string name="settings_disable_animations_description">Zakázat animace v aplikaci</string>
     <string name="settings_haptics">Haptická odezva</string>

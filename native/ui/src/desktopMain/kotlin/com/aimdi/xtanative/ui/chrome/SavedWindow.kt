@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.chrome
 
 import androidx.compose.ui.window.WindowPlacement
 import java.io.File
+import kotlin.math.roundToInt
 
 /**
  * The desktop window's size, place and whether it was maximized, kept as
@@ -55,6 +56,32 @@ data class SavedWindow(val width: Int, val height: Int, val maximized: Boolean =
         /** The smallest window, which keeps the phone layouts from overflowing. */
         const val MIN_WIDTH = 360
         const val MIN_HEIGHT = 560
+
+        /**
+         * The smallest window at the interface size [scale] (DesktopPrefs.uiScale):
+         * [MIN_WIDTH] by [MIN_HEIGHT] grown or shrunk with it, as the layouts are,
+         * but never past a work area of [areaWidth] by [areaHeight] (0 or less:
+         * unknown), so a large size never asks for more than the screen has.
+         */
+        fun minimum(scale: Double, areaWidth: Int = 0, areaHeight: Int = 0): Pair<Int, Int> {
+            val width = (MIN_WIDTH * scale).roundToInt()
+            val height = (MIN_HEIGHT * scale).roundToInt()
+            return (if (areaWidth > 0) minOf(width, areaWidth) else width) to (if (areaHeight > 0) minOf(height, areaHeight) else height)
+        }
+
+        /**
+         * A post window's size at the interface size [scale]: about the
+         * reading column's width (HomeWide's widest, with its margins) grown
+         * with it, and as tall as a reading height; neither past a work area
+         * of [areaWidth] by [areaHeight] (0 or less: unknown).
+         */
+        fun postWindow(scale: Double, areaWidth: Int = 0, areaHeight: Int = 0): Pair<Int, Int> {
+            val width = (POST_WIDTH * scale).roundToInt()
+            return (if (areaWidth > 0) minOf(width, areaWidth) else width) to (if (areaHeight > 0) minOf(POST_HEIGHT, areaHeight) else POST_HEIGHT)
+        }
+
+        private const val POST_WIDTH = 680
+        private const val POST_HEIGHT = 900
 
         /** A first window, tall rather than wide: the layouts are a reading column. */
         val FIRST = SavedWindow(1100, 820)

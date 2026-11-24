@@ -52,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -308,17 +309,21 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
         // Swipes belong to the timelines: the drawer opens from the picker or a drag from the edge, and closes with a swipe too.
         gesturesEnabled = shell.drawer.isOpen,
         drawerContent = {
-            ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
-                AccountMenu(
-                    ui = parts.ui,
-                    routes = parts.routes,
-                    deckFits = deckFits,
-                    unread = unread,
-                    onGo = ::go,
-                    onGroup = { group -> openGroup(group, parts.routes, shell.drawer, scope) },
-                    onClose = { scope.launch { shell.drawer.close() } },
-                    onAvatar = { shell.sheet = HomeSheet.AVATAR },
-                )
+            // Made afresh at a new interface size (Ctrl+Alt with + −): the sheet keeps its width in pixels for the
+            // scale it grows by when dragged, so a closed one would otherwise peek in by the difference.
+            key(LocalDensity.current.density) {
+                ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
+                    AccountMenu(
+                        ui = parts.ui,
+                        routes = parts.routes,
+                        deckFits = deckFits,
+                        unread = unread,
+                        onGo = ::go,
+                        onGroup = { group -> openGroup(group, parts.routes, shell.drawer, scope) },
+                        onClose = { scope.launch { shell.drawer.close() } },
+                        onAvatar = { shell.sheet = HomeSheet.AVATAR },
+                    )
+                }
             }
         },
         content = { Box(Modifier.fillMaxSize().then(if (shell.wide) Modifier else Modifier.drawerEdge(shell.drawer))) { content() } },

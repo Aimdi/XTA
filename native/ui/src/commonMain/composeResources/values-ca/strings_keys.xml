@@ -20,6 +20,7 @@
     <string name="keys_scroll_ends">Ves al principi o al final</string>
     <string name="keys_move">Mou-te entre botons i camps</string>
     <string name="keys_text_size">Text més gran, més petit o normal</string>
+    <string name="keys_interface_size">Interfície més gran, més petita o normal</string>
     <string name="keys_full_screen">Pantalla completa</string>
     <string name="keys_video">Vídeo a pantalla completa: reprodueix o posa en pausa, salta 10 segons</string>
     <string name="keys_video_more">Vídeo a pantalla completa: silencia, torna a començar, surt</string>

@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Use the whole screen: the time, battery and signal at the top are hidden. Swipe down from the top edge to see them for a moment.</string>
     <string name="settings_text_scale">Text size</string>
     <string name="settings_text_scale_description">Set the text size for the entire app</string>
+    <string name="settings_interface_scale">Interface size</string>
+    <string name="settings_interface_scale_description">Make text, buttons and pictures larger or smaller together</string>
     <string name="settings_disable_animations">Disable animations?</string>
     <string name="settings_disable_animations_description">Disables animations within the app</string>
     <string name="settings_haptics">Haptic feedback</string>

@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Het hele scherm gebruiken: de tijd, batterij en ontvangst bovenaan worden verborgen. Veeg omlaag vanaf de bovenrand om ze even te zien.</string>
     <string name="settings_text_scale">Tekstschaalfactor</string>
     <string name="settings_text_scale_description">Lettergrootte in de app aanpassen</string>
+    <string name="settings_interface_scale">Grootte van de interface</string>
+    <string name="settings_interface_scale_description">Maak tekst, knoppen en afbeeldingen samen groter of kleiner</string>
     <string name="settings_disable_animations">Animaties uitschakelen</string>
     <string name="settings_disable_animations_description">Animaties in de app uitschakelen</string>
     <string name="settings_haptics">Haptische feedback</string>

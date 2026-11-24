@@ -21,6 +21,7 @@
     <string name="keys_scroll_ends">Go to the top or the end</string>
     <string name="keys_move">Move between buttons and fields</string>
     <string name="keys_text_size">Larger, smaller or normal text</string>
+    <string name="keys_interface_size">Larger, smaller or normal interface</string>
     <string name="keys_full_screen">Full screen</string>
     <string name="keys_video">Full-screen video: play or pause, skip 10 seconds</string>
     <string name="keys_video_more">Full-screen video: mute, start over, leave full screen</string>

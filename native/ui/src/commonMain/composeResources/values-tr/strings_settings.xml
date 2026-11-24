@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Tüm ekranı kullan: üstteki saat, pil ve sinyal gizlenir. Kısa bir süre görmek için üst kenardan aşağı kaydırın.</string>
     <string name="settings_text_scale">Metin ölçek faktörü</string>
     <string name="settings_text_scale_description">Uygulamadaki yazı tipi boyutunu ayarla</string>
+    <string name="settings_interface_scale">Arayüz boyutu</string>
+    <string name="settings_interface_scale_description">Metni, düğmeleri ve resimleri birlikte büyütün veya küçültün</string>
     <string name="settings_disable_animations">Animasyonları devre dışı bırak</string>
     <string name="settings_disable_animations_description">Uygulamadaki animasyonları devre dışı bırak</string>
     <string name="settings_haptics">Dokunsal geri bildirim</string>

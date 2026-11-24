@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Використовувати весь екран: час, заряд і сигнал угорі приховано. Проведіть униз від верхнього краю, щоб на мить їх побачити.</string>
     <string name="settings_text_scale">Коефіцієнт масштабування тексту</string>
     <string name="settings_text_scale_description">Налаштувати розмір шрифту в застосунку</string>
+    <string name="settings_interface_scale">Розмір інтерфейсу</string>
+    <string name="settings_interface_scale_description">Збільшувати чи зменшувати текст, кнопки й зображення разом</string>
     <string name="settings_disable_animations">Вимкнути анімації</string>
     <string name="settings_disable_animations_description">Вимкнути анімації в застосунку</string>
     <string name="settings_haptics">Тактильний відгук</string>

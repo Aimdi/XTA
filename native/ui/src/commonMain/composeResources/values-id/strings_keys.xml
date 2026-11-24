@@ -20,6 +20,7 @@
     <string name="keys_scroll_ends">Ke atas atau ke akhir</string>
     <string name="keys_move">Berpindah antar tombol dan kolom</string>
     <string name="keys_text_size">Teks lebih besar, lebih kecil, atau normal</string>
+    <string name="keys_interface_size">Antarmuka lebih besar, lebih kecil, atau normal</string>
     <string name="keys_full_screen">Layar penuh</string>
     <string name="keys_video">Video layar penuh: putar atau jeda, lompat 10 detik</string>
     <string name="keys_video_more">Video layar penuh: bisukan, mulai ulang, keluar</string>

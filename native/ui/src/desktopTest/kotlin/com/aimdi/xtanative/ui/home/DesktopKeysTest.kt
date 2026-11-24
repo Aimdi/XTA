@@ -429,8 +429,33 @@ class DesktopKeysTest {
         assertEquals(DeskAction.TEXT_RESET, action(DeskKey.ZERO, ctrl = true, canGoBack = false))
         listOf(DeskKey.PLUS, DeskKey.MINUS, DeskKey.ZERO).forEach { key ->
             assertEquals(DeskAction.NONE, action(key), "$key alone is typed")
-            assertEquals(DeskAction.NONE, action(key, ctrl = true, alt = true), "Ctrl+Alt+$key")
+            assertEquals(DeskAction.NONE, action(key, alt = true), "Alt+$key")
         }
+    }
+
+    @Test
+    fun ctrlAltPlusMinusAndZeroSizeTheWholeInterface() {
+        assertEquals(DeskAction.UI_BIGGER, action(DeskKey.PLUS, ctrl = true, alt = true))
+        assertEquals(DeskAction.UI_BIGGER, action(DeskKey.PLUS, ctrl = true, alt = true, shift = true), "Ctrl+Alt+Shift+= on a US keyboard")
+        assertEquals(DeskAction.UI_SMALLER, action(DeskKey.MINUS, ctrl = true, alt = true, focusInside = true), "from a field too")
+        assertEquals(DeskAction.UI_RESET, action(DeskKey.ZERO, ctrl = true, alt = true, open = true), "over a sheet too")
+        assertEquals(DeskAction.TEXT_BIGGER, action(DeskKey.PLUS, ctrl = true, shift = true), "Ctrl+Shift+= stays the text's")
+        assertEquals(DeskAction.TEXT_RESET, action(DeskKey.ZERO, ctrl = true))
+    }
+
+    @Test
+    fun theInterfaceSizeStepsThroughItsPresetsAndStaysAtTheEnds() {
+        val presets = listOf(0.8, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0)
+        assertEquals(1.1, DesktopKeys.uiScaled(1.0, DeskAction.UI_BIGGER, presets))
+        assertEquals(1.5, DesktopKeys.uiScaled(1.25, DeskAction.UI_BIGGER, presets))
+        assertEquals(0.9, DesktopKeys.uiScaled(1.0, DeskAction.UI_SMALLER, presets))
+        assertEquals(2.0, DesktopKeys.uiScaled(2.0, DeskAction.UI_BIGGER, presets), "never past the largest")
+        assertEquals(0.8, DesktopKeys.uiScaled(0.8, DeskAction.UI_SMALLER, presets), "never below the smallest")
+        assertEquals(1.25, DesktopKeys.uiScaled(1.2, DeskAction.UI_BIGGER, presets), "between presets goes onto the next")
+        assertEquals(1.1, DesktopKeys.uiScaled(1.2, DeskAction.UI_SMALLER, presets), "or the one before")
+        assertEquals(1.0, DesktopKeys.uiScaled(1.75, DeskAction.UI_RESET, presets))
+        assertEquals(1.75, DesktopKeys.uiScaled(1.75, DeskAction.TEXT_BIGGER, presets), "the text's keys leave it")
+        assertEquals(1.0, DesktopKeys.uiScaled(1.0, DeskAction.UI_BIGGER, emptyList()))
     }
 
     @Test

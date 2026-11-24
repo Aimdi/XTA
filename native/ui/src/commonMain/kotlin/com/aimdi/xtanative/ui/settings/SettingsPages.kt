@@ -72,11 +72,13 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login_description
 import com.aimdi.xtanative.ui.links.BrowserPickerRow
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.speech.VoiceSettingsSheet
 import com.aimdi.xtanative.ui.theme.Contrast
 import com.aimdi.xtanative.ui.theme.XLook
 import com.aimdi.xtanative.ui.theme.XLookTokens
 import com.aimdi.xtanative.ui.theme.systemAccent
+import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
@@ -561,6 +563,19 @@ internal fun AccessibilitySettings(title: String, vm: SettingsViewModel, focus: 
                 label = { String.format(Locale.ROOT, "%.2f", it) },
                 focused = focus == AccessibilityPrefs.textScale.key,
             ) { vm.set(AccessibilityPrefs.textScale, (it * 100).roundToInt() / 100.0) }
+            if (isDesktop) {
+                // As a browser's zoom: everything in the windows, text included, a preset larger or smaller (Ctrl+Alt with + − 0).
+                val language = currentLanguage()
+                val percent = remember(language) { NumberFormat.getPercentInstance(Locale.forLanguageTag(language)) }
+                ChoiceRow(
+                    stringResource(Res.string.settings_interface_scale),
+                    stringResource(Res.string.settings_interface_scale_description),
+                    DesktopPrefs.UI_SCALES,
+                    settings[DesktopPrefs.uiScale],
+                    label = { percent.format(it) },
+                    focused = focus == DesktopPrefs.uiScale.key,
+                ) { vm.set(DesktopPrefs.uiScale, it) }
+            }
             PrefSwitch(settings, AccessibilityPrefs.disableAnimations, stringResource(Res.string.settings_disable_animations), stringResource(Res.string.settings_disable_animations_description), vm, focus)
             if (!isDesktop) {
                 PrefSwitch(settings, AccessibilityPrefs.haptics, stringResource(Res.string.settings_haptics), stringResource(Res.string.settings_haptics_description), vm, focus)

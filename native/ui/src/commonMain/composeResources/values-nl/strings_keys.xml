@@ -20,6 +20,7 @@
     <string name="keys_scroll_ends">Naar het begin of het einde</string>
     <string name="keys_move">Tussen knoppen en velden bewegen</string>
     <string name="keys_text_size">Grotere, kleinere of normale tekst</string>
+    <string name="keys_interface_size">Grotere, kleinere of normale interface</string>
     <string name="keys_full_screen">Volledig scherm</string>
     <string name="keys_video">Video op volledig scherm: afspelen of pauzeren, 10 seconden verspringen</string>
     <string name="keys_video_more">Video op volledig scherm: dempen, opnieuw beginnen, verlaten</string>

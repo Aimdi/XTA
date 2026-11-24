@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Fes servir tota la pantalla: l'hora, la bateria i la cobertura de dalt queden amagades. Llisca cap avall des de la vora superior per veure-les un moment.</string>
     <string name="settings_text_scale">Factor d'escala del text</string>
     <string name="settings_text_scale_description">Ajusta la mida de la lletra a l'app</string>
+    <string name="settings_interface_scale">Mida de la interfície</string>
+    <string name="settings_interface_scale_description">Fes més grans o més petits alhora el text, els botons i les imatges</string>
     <string name="settings_disable_animations">Desactiva les animacions</string>
     <string name="settings_disable_animations_description">Desactiva les animacions a l'app</string>
     <string name="settings_haptics">Resposta hàptica</string>

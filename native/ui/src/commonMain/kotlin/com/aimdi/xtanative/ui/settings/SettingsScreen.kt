@@ -301,6 +301,7 @@ private val INDEX = listOf(
     Indexed(SettingsSection.THEME, ThemePrefs.hideNavigationOnScroll.key, Res.string.settings_hide_navigation, null),
     Indexed(SettingsSection.THEME, ThemePrefs.hideStatusBar.key, Res.string.settings_hide_status_bar, Res.string.settings_hide_status_bar_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.textScale.key, Res.string.settings_text_scale, Res.string.settings_text_scale_description),
+    Indexed(SettingsSection.ACCESSIBILITY, DesktopPrefs.uiScale.key, Res.string.settings_interface_scale, Res.string.settings_interface_scale_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.disableAnimations.key, Res.string.settings_disable_animations, Res.string.settings_disable_animations_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.haptics.key, Res.string.settings_haptics, Res.string.settings_haptics_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.tickerChart.key, Res.string.settings_ticker_chart, Res.string.settings_ticker_chart_description),
@@ -312,8 +313,8 @@ private val INDEX = listOf(
 /** The controls only Android has: the desktop's window takes no screenshot block, gives no haptics and has no status bar. */
 private val ANDROID_ONLY = setOf(GeneralPrefs.disableScreenshots.key, AccessibilityPrefs.haptics.key, ThemePrefs.hideStatusBar.key)
 
-/** The controls only the desktop has: its notifications and its tray. */
-private val DESKTOP_ONLY = setOf(DesktopPrefs.notifications.key, DesktopPrefs.closeToTray.key, START_AT_LOGIN_KEY)
+/** The controls only the desktop has: its notifications, its tray and its windows' interface size. */
+private val DESKTOP_ONLY = setOf(DesktopPrefs.notifications.key, DesktopPrefs.closeToTray.key, START_AT_LOGIN_KEY, DesktopPrefs.uiScale.key)
 
 /** Every control the search can find, in this platform's settings: the desktop has none of [ANDROID_ONLY], Android none of [DESKTOP_ONLY]. */
 @Composable

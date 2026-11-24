@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Usar o ecrã inteiro: a hora, a bateria e o sinal no topo ficam ocultos. Deslize para baixo a partir do topo para os ver por um momento.</string>
     <string name="settings_text_scale">Fator de escala do texto</string>
     <string name="settings_text_scale_description">Ajustar o tamanho da fonte na app</string>
+    <string name="settings_interface_scale">Tamanho da interface</string>
+    <string name="settings_interface_scale_description">Aumentar ou reduzir em conjunto o texto, os botões e as imagens</string>
     <string name="settings_disable_animations">Desativar animações</string>
     <string name="settings_disable_animations_description">Desativar animações na app</string>
     <string name="settings_haptics">Resposta tátil</string>

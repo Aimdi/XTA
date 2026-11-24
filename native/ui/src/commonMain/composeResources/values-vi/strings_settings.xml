@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Dùng toàn bộ màn hình: giờ, pin và sóng ở trên cùng được ẩn. Vuốt xuống từ cạnh trên để xem chúng trong chốc lát.</string>
     <string name="settings_text_scale">Kích thước chữ</string>
     <string name="settings_text_scale_description">Thiết lập kích thước chữ trong ứng dụng</string>
+    <string name="settings_interface_scale">Kích thước giao diện</string>
+    <string name="settings_interface_scale_description">Phóng to hoặc thu nhỏ cùng lúc chữ, nút và hình ảnh</string>
     <string name="settings_disable_animations">Vô hiệu hóa hiệu ứng </string>
     <string name="settings_disable_animations_description">Vô hiệu hóa hiệu ứng trong ứng dụng</string>
     <string name="settings_haptics">Phản hồi xúc giác</string>

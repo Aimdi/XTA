@@ -20,6 +20,7 @@
     <string name="keys_scroll_ends">Til toppen eller slutten</string>
     <string name="keys_move">Flytt mellom knapper og felt</string>
     <string name="keys_text_size">Større, mindre eller normal tekst</string>
+    <string name="keys_interface_size">Større, mindre eller normalt grensesnitt</string>
     <string name="keys_full_screen">Fullskjerm</string>
     <string name="keys_video">Video i fullskjerm: spill av eller sett på pause, hopp 10 sekunder</string>
     <string name="keys_video_more">Video i fullskjerm: demp, start på nytt, gå ut</string>

@@ -249,4 +249,10 @@ object DesktopPrefs : PrefSection() {
 
     /** Closing the window hides it to the tray's icon, while a tray shows it, instead of quitting. */
     val closeToTray = flag("desktop.close_to_tray", false, seeded = false)
+
+    /** The interface sizes offered, as a browser's zoom offers a few: 1.0 is the desktop's own. */
+    val UI_SCALES = listOf(0.8, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0)
+
+    /** How large everything in the windows is drawn (text, controls, pictures, the gaps between), one of [UI_SCALES]; any other value reads as 1.0. */
+    val uiScale = real("desktop.ui_scale", 1.0, choices = UI_SCALES.toSet(), seeded = false)
 }
