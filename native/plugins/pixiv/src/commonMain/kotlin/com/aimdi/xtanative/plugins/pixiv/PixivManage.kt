@@ -53,6 +53,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivTag
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -72,9 +73,9 @@ internal fun PixivFavoriteTagsScreen() {
         onBack = runtime.host::back,
         actions = {
             if (tags.isNotEmpty()) {
-                IconButton(onClick = { editing = !editing }) {
+                IconTip(pluginString(if (editing) Strings.search_favorite_tags_done else Strings.search_favorite_tags_edit)) { IconButton(onClick = { editing = !editing }) {
                     Icon(if (editing) Icons.Filled.Check else Icons.Filled.Edit, pluginString(if (editing) Strings.search_favorite_tags_done else Strings.search_favorite_tags_edit))
-                }
+                } }
             }
         },
     ) { padding ->
@@ -102,10 +103,10 @@ private fun FavoriteTagList(tags: List<PixivTag>, editing: Boolean) {
                         Row {
                             IconButton(onClick = { runtime.settings.update { PixivFavoriteTags.moved(it, index, index - 1) } }, enabled = index > 0) { Icon(Icons.Filled.KeyboardArrowUp, null) }
                             IconButton(onClick = { runtime.settings.update { PixivFavoriteTags.moved(it, index, index + 1) } }, enabled = index < tags.lastIndex) { Icon(Icons.Filled.KeyboardArrowDown, null) }
-                            IconButton(onClick = {
+                            IconTip(pluginString(Strings.search_favorite_remove)) { IconButton(onClick = {
                                 val remove = Strings.search_favorite_remove.get(language)
                                 sheets.ask.ask(remove, remove) { runtime.settings.update { PixivFavoriteTags.removed(it, tag.name) } }
-                            }) { Icon(Icons.Outlined.Delete, pluginString(Strings.search_favorite_remove)) }
+                            }) { Icon(Icons.Outlined.Delete, pluginString(Strings.search_favorite_remove)) } }
                         }
                     }
                 },
@@ -172,7 +173,7 @@ private fun TagField() {
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, autoCorrectEnabled = false),
         keyboardActions = KeyboardActions(onDone = { add() }),
-        trailingIcon = { IconButton(onClick = add) { Icon(Icons.Filled.Add, pluginString(Strings.mute_tag_add)) } },
+        trailingIcon = { IconTip(pluginString(Strings.mute_tag_add)) { IconButton(onClick = add) { Icon(Icons.Filled.Add, pluginString(Strings.mute_tag_add)) } } },
         modifier = Modifier.fillMaxWidth(),
     )
 }
@@ -207,7 +208,7 @@ private fun MuteGroup(title: String, icon: ImageVector, chips: List<MuteChip>, l
                     Icon(icon, null, Modifier.size(18.dp))
                     Spacer(Modifier.size(8.dp))
                     Text(chip.label, style = MaterialTheme.typography.labelLarge)
-                    IconButton(onClick = chip.unmute) { Icon(Icons.Filled.Close, pluginString(Strings.unmute), Modifier.size(18.dp)) }
+                    IconTip(pluginString(Strings.unmute)) { IconButton(onClick = chip.unmute) { Icon(Icons.Filled.Close, pluginString(Strings.unmute), Modifier.size(18.dp)) } }
                 }
             }
         }

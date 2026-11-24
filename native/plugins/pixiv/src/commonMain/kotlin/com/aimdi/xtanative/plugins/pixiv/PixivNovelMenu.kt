@@ -43,6 +43,7 @@ import com.aimdi.xtanative.networks.pixiv.pixivNovelSeriesUrl
 import com.aimdi.xtanative.networks.pixiv.pixivNovelUrl
 import com.aimdi.xtanative.networks.pixiv.pixivUserUrl
 import com.aimdi.xtanative.store.reading.ReadingAppearance
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -69,7 +70,7 @@ internal fun NovelMenu(novel: PixivNovel, content: PixivNovelContent?, onAppeara
                 headlineContent = { Text(user.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 supportingContent = { Text(pluginString(Strings.novel_author_novels)) },
                 leadingContent = { PixivAvatar(user.avatarUrl, user.name) },
-                trailingContent = { IconButton(onClick = { run { outside.share(pixivUserUrl(user.id)) } }, enabled = user.id != 0L) { Icon(Icons.Filled.Share, pluginString(Strings.novel_share_author)) } },
+                trailingContent = { IconTip(pluginString(Strings.novel_share_author)) { IconButton(onClick = { run { outside.share(pixivUserUrl(user.id)) } }, enabled = user.id != 0L) { Icon(Icons.Filled.Share, pluginString(Strings.novel_share_author)) } } },
                 modifier = Modifier.clickable(enabled = user.id != 0L) { run { runtime.openUser(user.id, "novels") } },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
             )

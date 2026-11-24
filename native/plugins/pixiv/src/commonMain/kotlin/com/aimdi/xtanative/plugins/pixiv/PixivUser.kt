@@ -57,6 +57,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivUserListKind
 import com.aimdi.xtanative.networks.pixiv.PixivUserProfile
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
@@ -142,7 +143,7 @@ private fun ProfileActions(scope: PixivProfileScope) {
     val language = currentLanguage()
     var open by remember { mutableStateOf(false) }
     val profile = scope.profile
-    IconButton(onClick = { outside.share(profile.url) }) { Icon(Icons.Filled.Share, pluginString(Strings.share_link)) }
+    IconTip(pluginString(Strings.share_link)) { IconButton(onClick = { outside.share(profile.url) }) { Icon(Icons.Filled.Share, pluginString(Strings.share_link)) } }
     Box {
         IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, null) }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {

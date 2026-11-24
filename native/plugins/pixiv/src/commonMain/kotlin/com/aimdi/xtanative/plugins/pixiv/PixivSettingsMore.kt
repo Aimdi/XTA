@@ -39,6 +39,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivImages
 import com.aimdi.xtanative.store.settings.PixivDetailLayout
 import com.aimdi.xtanative.store.settings.PixivImageQuality
 import com.aimdi.xtanative.store.settings.PixivPrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -202,7 +203,7 @@ private fun FileNameDialog(onClose: () -> Unit) {
                     singleLine = true,
                     isError = !hasPart,
                     supportingText = { Text(if (hasPart) pluginString(Strings.file_name_help) else pluginString(Strings.file_name_part_required, PixivNameToken.PART.token)) },
-                    trailingIcon = { IconButton(onClick = { value = TextFieldValue(PixivSaveNaming.DEFAULT_TEMPLATE, TextRange(PixivSaveNaming.DEFAULT_TEMPLATE.length)) }) { Icon(Icons.Filled.Refresh, pluginString(Strings.file_name_reset)) } },
+                    trailingIcon = { IconTip(pluginString(Strings.file_name_reset)) { IconButton(onClick = { value = TextFieldValue(PixivSaveNaming.DEFAULT_TEMPLATE, TextRange(PixivSaveNaming.DEFAULT_TEMPLATE.length)) }) { Icon(Icons.Filled.Refresh, pluginString(Strings.file_name_reset)) } } },
                     modifier = Modifier.fillMaxWidth(),
                 )
                 TokenChips(PixivNameToken.entries.map { it.token to tokenLabel(it) }) { token -> value = inserted(value, token) }
@@ -259,7 +260,7 @@ internal fun PixivCopyTemplateScreen() {
     PluginScaffold(
         title = pluginString(Strings.copy_template),
         onBack = runtime.host::back,
-        actions = { IconButton(onClick = { keep(TextFieldValue(fallback, TextRange(fallback.length))) }) { Icon(Icons.Filled.Refresh, pluginString(Strings.copy_template_reset)) } },
+        actions = { IconTip(pluginString(Strings.copy_template_reset)) { IconButton(onClick = { keep(TextFieldValue(fallback, TextRange(fallback.length))) }) { Icon(Icons.Filled.Refresh, pluginString(Strings.copy_template_reset)) } } },
     ) { padding ->
         Column(Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
             OutlinedTextField(value = value, onValueChange = keep, minLines = 4, modifier = Modifier.fillMaxWidth())

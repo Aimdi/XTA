@@ -53,6 +53,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivNovel
 import com.aimdi.xtanative.networks.pixiv.PixivUser
 import com.aimdi.xtanative.networks.pixiv.PixivUserPreview
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.addToGroupText
 import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -100,7 +101,7 @@ private fun ProfileGroupButton(label: String, named: Boolean, onClick: () -> Uni
             Text(label, maxLines = 1)
         }
     } else {
-        IconButton(onClick = onClick, modifier = Modifier.size(48.dp)) { Icon(PostIcons.People, label) }
+        IconTip(label) { IconButton(onClick = onClick, modifier = Modifier.size(48.dp)) { Icon(PostIcons.People, label) } }
     }
 }
 
@@ -108,7 +109,7 @@ private fun ProfileGroupButton(label: String, named: Boolean, onClick: () -> Uni
 @Composable
 internal fun GroupIconButton(user: PixivUser) {
     val runtime = LocalPixiv.current
-    IconButton(onClick = { runtime.addToGroup(user) }) { Icon(PostIcons.People, addToGroupText()) }
+    IconTip(addToGroupText()) { IconButton(onClick = { runtime.addToGroup(user) }) { Icon(PostIcons.People, addToGroupText()) } }
 }
 
 /**

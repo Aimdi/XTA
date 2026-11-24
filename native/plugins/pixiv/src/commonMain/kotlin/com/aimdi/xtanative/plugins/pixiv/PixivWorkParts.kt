@@ -55,6 +55,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivTag
 import com.aimdi.xtanative.networks.pixiv.PixivTagKind
 import com.aimdi.xtanative.networks.pixiv.PixivTagKinds
 import com.aimdi.xtanative.networks.pixiv.PixivUser
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.onContextClick
@@ -262,15 +263,15 @@ private fun SeriesBlock(series: PixivSeriesRef, state: PixivWorkState) {
     SeriesLink(series)
     val place = state.series ?: return
     Row(verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = { place.previous?.let(runtime::openWork) }, enabled = place.previous != null) {
+        IconTip(pluginString(Strings.series_previous)) { IconButton(onClick = { place.previous?.let(runtime::openWork) }, enabled = place.previous != null) {
             Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, pluginString(Strings.series_previous))
-        }
+        } }
         if (place.total > 0) {
             Text(pluginString(Strings.series_position, place.order, place.total.toInt()), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        IconButton(onClick = { place.next?.let(runtime::openWork) }, enabled = place.next != null) {
+        IconTip(pluginString(Strings.series_next)) { IconButton(onClick = { place.next?.let(runtime::openWork) }, enabled = place.next != null) {
             Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, pluginString(Strings.series_next))
-        }
+        } }
     }
 }
 

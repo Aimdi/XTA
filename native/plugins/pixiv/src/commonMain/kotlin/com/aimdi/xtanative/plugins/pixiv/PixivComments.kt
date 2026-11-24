@@ -47,6 +47,7 @@ import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.pixiv.PixivComment
 import com.aimdi.xtanative.networks.pixiv.PixivCommentPart
 import com.aimdi.xtanative.networks.pixiv.PixivCommentTarget
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -179,7 +180,7 @@ private fun CommentMenu(comment: PixivComment) {
     val language = currentLanguage()
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.comment_options)) }
+        IconTip(pluginString(Strings.comment_options)) { IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.comment_options)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             DropdownMenuItem(text = { Text(pluginString(Strings.comment_mute)) }, leadingIcon = { Icon(PixivIcons.VolumeOff, null) }, onClick = {
                 open = false

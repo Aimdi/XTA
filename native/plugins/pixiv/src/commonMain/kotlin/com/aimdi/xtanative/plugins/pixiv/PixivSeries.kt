@@ -46,6 +46,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivNovelChapter
 import com.aimdi.xtanative.networks.pixiv.PixivNovelSeries
 import com.aimdi.xtanative.networks.pixiv.PixivNovelSeriesPage
 import com.aimdi.xtanative.networks.pixiv.pixivNovelSeriesUrl
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -93,8 +94,8 @@ internal fun PixivSeriesScreen(id: Long) {
 @Composable
 private fun SeriesPageActions(url: String) {
     val outside = rememberOutside()
-    IconButton(onClick = { outside.share(url) }) { Icon(Icons.Filled.Share, pluginString(Strings.share_link)) }
-    IconButton(onClick = { outside.open(url) }) { Icon(SavedIcons.OpenInNew, pluginString(Strings.open_on_pixiv)) }
+    IconTip(pluginString(Strings.share_link)) { IconButton(onClick = { outside.share(url) }) { Icon(Icons.Filled.Share, pluginString(Strings.share_link)) } }
+    IconTip(pluginString(Strings.open_on_pixiv)) { IconButton(onClick = { outside.open(url) }) { Icon(SavedIcons.OpenInNew, pluginString(Strings.open_on_pixiv)) } }
 }
 
 /** A series' own title, as its header shows it over the creator. */

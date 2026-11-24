@@ -70,6 +70,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivImageQuality
 import com.aimdi.xtanative.networks.pixiv.PixivImages
 import com.aimdi.xtanative.store.downloads.OkHttpMediaHttp
 import com.aimdi.xtanative.store.settings.PixivPrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -111,16 +112,16 @@ private fun Reader(illust: PixivIllust, start: Int, verticalFirst: Boolean) {
         title = illust.title.ifEmpty { pluginString(Strings.title) },
         onBack = runtime.host::back,
         actions = {
-            IconButton(onClick = surface::changeDirection) {
+            IconTip(pluginString(if (vertical) Strings.read_horizontally else Strings.read_vertically)) { IconButton(onClick = surface::changeDirection) {
                 Icon(
                     if (vertical) Icons.AutoMirrored.Filled.KeyboardArrowRight else PixivIcons.ArrowDownward,
                     pluginString(if (vertical) Strings.read_horizontally else Strings.read_vertically),
                 )
-            }
+            } }
             SavePageButton(illust, surface.currentPage) { sheets.savePages(illust, listOf(surface.currentPage)) }
-            IconButton(onClick = { sheets.show(PixivSheet.PageActions(illust, surface.currentPage, surface)) }) {
+            IconTip(pluginString(Strings.more_actions)) { IconButton(onClick = { sheets.show(PixivSheet.PageActions(illust, surface.currentPage, surface)) }) {
                 Icon(Icons.Filled.MoreVert, pluginString(Strings.more_actions))
-            }
+            } }
         },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
@@ -346,7 +347,7 @@ private fun ReaderBar(pages: Int, surface: ReaderSurface, hd: Boolean, onHd: () 
     var scrub by remember { mutableStateOf<Float?>(null) }
     val shown = scrub?.toInt() ?: surface.page
     val commands: @Composable () -> Unit = {
-        IconButton(onClick = { onShare?.invoke() }, enabled = onShare != null) { Icon(Icons.Filled.Share, pluginString(Strings.share_image)) }
+        IconTip(pluginString(Strings.share_image)) { IconButton(onClick = { onShare?.invoke() }, enabled = onShare != null) { Icon(Icons.Filled.Share, pluginString(Strings.share_image)) } }
         IconToggleButton(checked = hd, onCheckedChange = { onHd() }) {
             Icon(PixivIcons.Hd, pluginString(Strings.original_quality), tint = if (hd) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
         }

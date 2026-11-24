@@ -37,6 +37,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivSpotlightArticle
 import com.aimdi.xtanative.networks.pixiv.Pixivision
 import com.aimdi.xtanative.networks.pixiv.PixivisionArticle
 import com.aimdi.xtanative.networks.pixiv.PixivisionWork
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
@@ -71,8 +72,8 @@ internal fun PixivisionArticleScreen(id: Long, language: String) {
         title = state.value?.title?.ifEmpty { null } ?: pluginString(Strings.pixivision_articles),
         onBack = runtime.host::back,
         actions = {
-            IconButton(onClick = { outside.share(url) }) { Icon(Icons.Filled.Share, pluginString(Strings.share_link)) }
-            IconButton(onClick = { outside.open(url) }) { Icon(SavedIcons.OpenInNew, pluginString(Strings.open_in_browser)) }
+            IconTip(pluginString(Strings.share_link)) { IconButton(onClick = { outside.share(url) }) { Icon(Icons.Filled.Share, pluginString(Strings.share_link)) } }
+            IconTip(pluginString(Strings.open_in_browser)) { IconButton(onClick = { outside.open(url) }) { Icon(SavedIcons.OpenInNew, pluginString(Strings.open_in_browser)) } }
         },
     ) { padding ->
         Box(Modifier.padding(padding).fillMaxSize()) {

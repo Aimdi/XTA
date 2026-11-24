@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.settings.PixivPrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -131,7 +132,7 @@ private fun AccountHeader(account: PixivAccount?, name: String?, signedIn: Boole
         headlineContent = { Text(shown, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         supportingContent = account?.takeIf { it.account.isNotEmpty() || it.isPremium }?.let { known -> { AccountDetails(known) } },
         leadingContent = { PixivAvatar(account?.avatarUrl, shown, size = 48.dp) },
-        trailingContent = { IconButton(onClick = onSwitch) { Icon(GroupIcons.PeopleOutlined, pluginString(Strings.switch_account)) } },
+        trailingContent = { IconTip(pluginString(Strings.switch_account)) { IconButton(onClick = onSwitch) { Icon(GroupIcons.PeopleOutlined, pluginString(Strings.switch_account)) } } },
         modifier = Modifier.clickable(onClick = onSwitch).padding(vertical = 4.dp),
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
@@ -191,12 +192,12 @@ internal fun PixivAccountList(onChanged: () -> Unit = {}) {
                 if (active) {
                     Icon(Icons.Filled.CheckCircle, pluginString(Strings.account_active), tint = MaterialTheme.colorScheme.primary)
                 } else {
-                    IconButton(onClick = {
+                    IconTip(pluginString(Strings.account_remove)) { IconButton(onClick = {
                         sheets.ask.ask(Strings.account_remove_question.get(language, account.displayName), Strings.account_remove.get(language)) {
                             PixivSession.remove(runtime, account)
                             onChanged()
                         }
-                    }) { Icon(Icons.Outlined.Delete, pluginString(Strings.account_remove)) }
+                    }) { Icon(Icons.Outlined.Delete, pluginString(Strings.account_remove)) } }
                 }
             },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent, headlineColor = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface),

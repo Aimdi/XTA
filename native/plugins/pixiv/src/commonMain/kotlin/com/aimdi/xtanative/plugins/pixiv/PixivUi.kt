@@ -59,6 +59,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivImages
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.Graphemes
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.common.rememberSwitchedHaptics
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -132,7 +133,7 @@ private enum class PicturePhase { LOADING, SHOWN, FAILED }
 /** A picture that did not load: a tap on the mark asks for it again, the rest of the tile still does what it does (pixiv_image.dart). */
 @Composable
 private fun PictureRetry(retry: () -> Unit) {
-    IconButton(onClick = retry) { Icon(Icons.Filled.Refresh, pluginString(Strings.retry), tint = MaterialTheme.colorScheme.onSurfaceVariant) }
+    IconTip(pluginString(Strings.retry)) { IconButton(onClick = retry) { Icon(Icons.Filled.Refresh, pluginString(Strings.retry), tint = MaterialTheme.colorScheme.onSurfaceVariant) } }
 }
 
 /** A creator's round picture, or the first letter of [name] when Pixiv sends none. */
