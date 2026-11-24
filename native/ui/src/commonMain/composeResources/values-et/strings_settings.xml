@@ -375,4 +375,17 @@
     <string name="settings_start_at_login_description">Avab rakenduse sisselogimisel; kui „Sulge salve“ on sees, ootab see salves</string>
     <string name="tray_show">Näita akent</string>
     <string name="tray_hide">Peida aken</string>
+    <string name="settings_proxy">Puhverserver</string>
+    <string name="settings_proxy_description">Kuidas rakendus selles seadmes internetti jõuab. Süsteem kasutab puhverserveri keskkonnamuutujaid, muidu töölaua puhverserveri seadeid</string>
+    <string name="settings_proxy_none">Puhverserverita</string>
+    <string name="settings_proxy_manual">Käsitsi</string>
+    <string name="settings_proxy_server">Puhverserver</string>
+    <string name="settings_proxy_server_unset">Määramata: midagi ei laadita, kuni see on määratud</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Videoid ei saa veel SOCKS5-puhverserveri kaudu esitada</string>
+    <string name="settings_proxy_host">Host</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Puhverserverita aadressid</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

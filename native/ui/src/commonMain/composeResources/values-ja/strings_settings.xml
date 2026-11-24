@@ -373,4 +373,17 @@
     <string name="settings_start_at_login_description">ログイン時にアプリを開きます。「閉じるとトレイに格納」がオンならトレイで待機します</string>
     <string name="tray_show">ウィンドウを表示</string>
     <string name="tray_hide">ウィンドウを隠す</string>
+    <string name="settings_proxy">プロキシ</string>
+    <string name="settings_proxy_description">このデバイスでアプリがインターネットにつながる方法。「システム」はプロキシの環境変数、なければデスクトップのプロキシ設定を使います</string>
+    <string name="settings_proxy_none">プロキシなし</string>
+    <string name="settings_proxy_manual">手動</string>
+    <string name="settings_proxy_server">プロキシサーバー</string>
+    <string name="settings_proxy_server_unset">未設定：設定するまで何も読み込まれません</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">動画はまだSOCKS5プロキシ経由で再生できません</string>
+    <string name="settings_proxy_host">ホスト</string>
+    <string name="settings_proxy_port">ポート</string>
+    <string name="settings_proxy_bypass">プロキシを使わない宛先</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

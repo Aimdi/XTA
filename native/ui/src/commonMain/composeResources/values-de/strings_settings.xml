@@ -375,4 +375,17 @@
     <string name="settings_start_at_login_description">Öffnet die App beim Anmelden; mit „In den Tray schließen“ wartet sie im Tray</string>
     <string name="tray_show">Fenster zeigen</string>
     <string name="tray_hide">Fenster ausblenden</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_description">Wie die App auf diesem Gerät ins Internet kommt. System nimmt die Proxy-Umgebungsvariablen, sonst die Proxy-Einstellungen des Desktops</string>
+    <string name="settings_proxy_none">Kein Proxy</string>
+    <string name="settings_proxy_manual">Manuell</string>
+    <string name="settings_proxy_server">Proxy-Server</string>
+    <string name="settings_proxy_server_unset">Nicht festgelegt: Nichts lädt, bis einer festgelegt ist</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Videos lassen sich noch nicht über einen SOCKS5-Proxy abspielen</string>
+    <string name="settings_proxy_host">Host</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Kein Proxy für</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

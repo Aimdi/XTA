@@ -375,4 +375,17 @@
     <string name="settings_start_at_login_description">लॉग इन करने पर ऐप खोलता है; ट्रे में बंद करें चालू हो तो यह ट्रे में रहता है</string>
     <string name="tray_show">विंडो दिखाएँ</string>
     <string name="tray_hide">विंडो छिपाएँ</string>
+    <string name="settings_proxy">प्रॉक्सी</string>
+    <string name="settings_proxy_description">इस डिवाइस पर ऐप इंटरनेट तक कैसे पहुँचता है। सिस्टम प्रॉक्सी के एनवायरनमेंट वेरिएबल लेता है, वरना डेस्कटॉप की प्रॉक्सी सेटिंग</string>
+    <string name="settings_proxy_none">कोई प्रॉक्सी नहीं</string>
+    <string name="settings_proxy_manual">मैन्युअल</string>
+    <string name="settings_proxy_server">प्रॉक्सी सर्वर</string>
+    <string name="settings_proxy_server_unset">सेट नहीं: सेट होने तक कुछ लोड नहीं होगा</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">वीडियो अभी SOCKS5 प्रॉक्सी से नहीं चल सकते</string>
+    <string name="settings_proxy_host">होस्ट</string>
+    <string name="settings_proxy_port">पोर्ट</string>
+    <string name="settings_proxy_bypass">इनके लिए प्रॉक्सी नहीं</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

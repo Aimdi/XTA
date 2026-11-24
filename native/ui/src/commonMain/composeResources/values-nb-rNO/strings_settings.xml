@@ -375,4 +375,17 @@
     <string name="settings_start_at_login_description">Åpner appen når du logger på; med Lukk til systemstatusfeltet venter den der</string>
     <string name="tray_show">Vis vindu</string>
     <string name="tray_hide">Skjul vindu</string>
+    <string name="settings_proxy">Mellomtjener</string>
+    <string name="settings_proxy_description">Hvordan appen når internett på denne enheten. System bruker miljøvariablene for mellomtjener, ellers skrivebordets innstillinger</string>
+    <string name="settings_proxy_none">Ingen mellomtjener</string>
+    <string name="settings_proxy_manual">Manuell</string>
+    <string name="settings_proxy_server">Mellomtjener</string>
+    <string name="settings_proxy_server_unset">Ikke angitt: ingenting lastes før den er angitt</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Videoer kan ikke spilles gjennom en SOCKS5-mellomtjener ennå</string>
+    <string name="settings_proxy_host">Vert</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Ingen mellomtjener for</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

@@ -373,4 +373,17 @@
     <string name="settings_start_at_login_description">Membuka aplikasi saat Anda masuk; dengan Tutup ke baki sistem aktif, aplikasi menunggu di baki</string>
     <string name="tray_show">Tampilkan jendela</string>
     <string name="tray_hide">Sembunyikan jendela</string>
+    <string name="settings_proxy">Proksi</string>
+    <string name="settings_proxy_description">Cara aplikasi menjangkau internet di perangkat ini. Sistem memakai variabel lingkungan proksi, jika tidak ada, pengaturan proksi desktop</string>
+    <string name="settings_proxy_none">Tanpa proksi</string>
+    <string name="settings_proxy_manual">Manual</string>
+    <string name="settings_proxy_server">Server proksi</string>
+    <string name="settings_proxy_server_unset">Belum diatur: tidak ada yang dimuat sampai diatur</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Video belum bisa diputar lewat proksi SOCKS5</string>
+    <string name="settings_proxy_host">Host</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Tanpa proksi untuk</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

@@ -373,4 +373,17 @@
     <string name="settings_start_at_login_description">로그인할 때 앱을 엽니다. ‘닫으면 트레이로’가 켜져 있으면 트레이에서 대기합니다</string>
     <string name="tray_show">창 보이기</string>
     <string name="tray_hide">창 숨기기</string>
+    <string name="settings_proxy">프록시</string>
+    <string name="settings_proxy_description">이 기기에서 앱이 인터넷에 연결하는 방법. 시스템은 프록시 환경 변수를, 없으면 데스크톱의 프록시 설정을 씁니다</string>
+    <string name="settings_proxy_none">프록시 없음</string>
+    <string name="settings_proxy_manual">수동</string>
+    <string name="settings_proxy_server">프록시 서버</string>
+    <string name="settings_proxy_server_unset">설정 안 됨: 설정할 때까지 아무것도 불러오지 않습니다</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">동영상은 아직 SOCKS5 프록시로 재생할 수 없습니다</string>
+    <string name="settings_proxy_host">호스트</string>
+    <string name="settings_proxy_port">포트</string>
+    <string name="settings_proxy_bypass">프록시 제외 대상</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

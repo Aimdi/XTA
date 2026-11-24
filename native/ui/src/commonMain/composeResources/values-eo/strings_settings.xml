@@ -375,4 +375,17 @@
     <string name="settings_start_at_login_description">Malfermas la aplikaĵon ĉe ensaluto; kun «Fermi al la pleto» ĝi atendas en la pleto</string>
     <string name="tray_show">Montri fenestron</string>
     <string name="tray_hide">Kaŝi fenestron</string>
+    <string name="settings_proxy">Prokurilo</string>
+    <string name="settings_proxy_description">Kiel la aplikaĵo atingas la interreton en ĉi tiu aparato. Sistemo uzas la mediajn variablojn de prokurilo, alie la agordojn de la labortablo</string>
+    <string name="settings_proxy_none">Sen prokurilo</string>
+    <string name="settings_proxy_manual">Permane</string>
+    <string name="settings_proxy_server">Prokurila servilo</string>
+    <string name="settings_proxy_server_unset">Ne agordita: nenio ŝargiĝas ĝis vi agordas ĝin</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Videoj ankoraŭ ne ludeblas tra SOCKS5-prokurilo</string>
+    <string name="settings_proxy_host">Gastiganto</string>
+    <string name="settings_proxy_port">Pordo</string>
+    <string name="settings_proxy_bypass">Sen prokurilo por</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

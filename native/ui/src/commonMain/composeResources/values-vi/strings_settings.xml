@@ -373,4 +373,17 @@
     <string name="settings_start_at_login_description">Mở ứng dụng khi bạn đăng nhập; khi bật Đóng xuống khay hệ thống, ứng dụng chờ trong khay</string>
     <string name="tray_show">Hiện cửa sổ</string>
     <string name="tray_hide">Ẩn cửa sổ</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_description">Cách ứng dụng ra internet trên thiết bị này. Hệ thống dùng biến môi trường proxy, nếu không có thì dùng cài đặt proxy của màn hình nền</string>
+    <string name="settings_proxy_none">Không dùng proxy</string>
+    <string name="settings_proxy_manual">Thủ công</string>
+    <string name="settings_proxy_server">Máy chủ proxy</string>
+    <string name="settings_proxy_server_unset">Chưa đặt: sẽ không tải gì cho đến khi đặt</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Video chưa phát được qua proxy SOCKS5</string>
+    <string name="settings_proxy_host">Máy chủ</string>
+    <string name="settings_proxy_port">Cổng</string>
+    <string name="settings_proxy_bypass">Không dùng proxy cho</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

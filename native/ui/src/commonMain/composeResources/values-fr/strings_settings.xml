@@ -377,4 +377,17 @@
     <string name="settings_start_at_login_description">Ouvre l’app à l’ouverture de session ; avec « Fermer dans la zone de notification », elle y attend</string>
     <string name="tray_show">Afficher la fenêtre</string>
     <string name="tray_hide">Masquer la fenêtre</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_description">Comment l’app accède à internet sur cet appareil. Système utilise les variables d’environnement du proxy, sinon les réglages proxy du bureau</string>
+    <string name="settings_proxy_none">Aucun proxy</string>
+    <string name="settings_proxy_manual">Manuel</string>
+    <string name="settings_proxy_server">Serveur proxy</string>
+    <string name="settings_proxy_server_unset">Non défini : rien ne se charge tant qu’il n’est pas défini</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Les vidéos ne peuvent pas encore passer par un proxy SOCKS5</string>
+    <string name="settings_proxy_host">Hôte</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Pas de proxy pour</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

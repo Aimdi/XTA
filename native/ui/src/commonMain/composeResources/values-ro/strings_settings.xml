@@ -377,4 +377,17 @@
     <string name="settings_start_at_login_description">Deschide aplicația la autentificare; cu Închide în zona de notificare activat, așteaptă acolo</string>
     <string name="tray_show">Arată fereastra</string>
     <string name="tray_hide">Ascunde fereastra</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_description">Cum ajunge aplicația la internet pe acest dispozitiv. Sistem folosește variabilele de mediu ale proxy-ului, altfel setările de proxy ale desktopului</string>
+    <string name="settings_proxy_none">Fără proxy</string>
+    <string name="settings_proxy_manual">Manual</string>
+    <string name="settings_proxy_server">Server proxy</string>
+    <string name="settings_proxy_server_unset">Nesetat: nu se încarcă nimic până nu setați unul</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Videoclipurile nu pot fi redate încă printr-un proxy SOCKS5</string>
+    <string name="settings_proxy_host">Gazdă</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Fără proxy pentru</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

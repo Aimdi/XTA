@@ -375,4 +375,17 @@
     <string name="settings_start_at_login_description">Aplikazioa irekitzen du saioa hastean; «Itxi erretilura» aktibatuta, erretiluan itxaroten du</string>
     <string name="tray_show">Erakutsi leihoa</string>
     <string name="tray_hide">Ezkutatu leihoa</string>
+    <string name="settings_proxy">Proxya</string>
+    <string name="settings_proxy_description">Aplikazioa nola iristen den internetera gailu honetan. Sistemak proxyaren ingurune-aldagaiak erabiltzen ditu, bestela mahaigaineko proxy-ezarpenak</string>
+    <string name="settings_proxy_none">Proxyrik gabe</string>
+    <string name="settings_proxy_manual">Eskuz</string>
+    <string name="settings_proxy_server">Proxy-zerbitzaria</string>
+    <string name="settings_proxy_server_unset">Ezarri gabe: ez da ezer kargatuko ezarri arte</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Bideoak ezin dira oraindik SOCKS5 proxy baten bidez erreproduzitu</string>
+    <string name="settings_proxy_host">Ostalaria</string>
+    <string name="settings_proxy_port">Ataka</string>
+    <string name="settings_proxy_bypass">Proxyrik gabe hauentzat</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

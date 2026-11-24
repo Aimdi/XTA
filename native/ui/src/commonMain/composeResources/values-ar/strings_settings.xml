@@ -383,4 +383,17 @@
     <string name="settings_start_at_login_description">يفتح التطبيق عند تسجيل الدخول؛ ومع تفعيل «الإغلاق إلى علبة النظام» ينتظر في العلبة</string>
     <string name="tray_show">إظهار النافذة</string>
     <string name="tray_hide">إخفاء النافذة</string>
+    <string name="settings_proxy">الوكيل</string>
+    <string name="settings_proxy_description">كيف يصل التطبيق إلى الإنترنت على هذا الجهاز. «النظام» يستخدم متغيرات بيئة الوكيل، وإلا فإعدادات الوكيل في سطح المكتب</string>
+    <string name="settings_proxy_none">بلا وكيل</string>
+    <string name="settings_proxy_manual">يدوي</string>
+    <string name="settings_proxy_server">خادم الوكيل</string>
+    <string name="settings_proxy_server_unset">غير مضبوط: لن يُحمَّل شيء حتى تضبطه</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">لا يمكن تشغيل الفيديو عبر وكيل SOCKS5 بعد</string>
+    <string name="settings_proxy_host">المضيف</string>
+    <string name="settings_proxy_port">المنفذ</string>
+    <string name="settings_proxy_bypass">بلا وكيل لـ</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

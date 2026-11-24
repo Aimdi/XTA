@@ -379,4 +379,17 @@
     <string name="settings_start_at_login_description">Adkryvaje prahramu pry ŭvachodzie; kali ŭklučana «Zhortvać u trej», jana čakaje ŭ trei</string>
     <string name="tray_show">Pakazać akno</string>
     <string name="tray_hide">Schavać akno</string>
+    <string name="settings_proxy">Proksi</string>
+    <string name="settings_proxy_description">Jak prahrama vychodzić u internet na hetaj pryladzie. «Sistema» biare zmiennyja asiaroddzia proksi, inakš nalady proksi pracoŭnaha stała</string>
+    <string name="settings_proxy_none">Biez proksi</string>
+    <string name="settings_proxy_manual">Uručnuju</string>
+    <string name="settings_proxy_server">Proksi-server</string>
+    <string name="settings_proxy_server_unset">Nie zadadzieny: ničoha nie zahruzicca, pakul jaho nie zadać</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Videa pakul nie prajhrajecca praz proksi SOCKS5</string>
+    <string name="settings_proxy_host">Chost</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Biez proksi dla</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

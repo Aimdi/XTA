@@ -375,4 +375,17 @@
     <string name="settings_start_at_login_description">Opent de app bij het aanmelden; met Sluiten naar systeemvak wacht hij in het systeemvak</string>
     <string name="tray_show">Venster tonen</string>
     <string name="tray_hide">Venster verbergen</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_description">Hoe de app op dit apparaat het internet bereikt. Systeem gebruikt de proxy-omgevingsvariabelen, anders de proxyinstellingen van het bureaublad</string>
+    <string name="settings_proxy_none">Geen proxy</string>
+    <string name="settings_proxy_manual">Handmatig</string>
+    <string name="settings_proxy_server">Proxyserver</string>
+    <string name="settings_proxy_server_unset">Niet ingesteld: er laadt niets tot er een is ingesteld</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Video’s kunnen nog niet via een SOCKS5-proxy worden afgespeeld</string>
+    <string name="settings_proxy_host">Host</string>
+    <string name="settings_proxy_port">Poort</string>
+    <string name="settings_proxy_bypass">Geen proxy voor</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

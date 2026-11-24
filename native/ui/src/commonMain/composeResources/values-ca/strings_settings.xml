@@ -377,4 +377,17 @@
     <string name="settings_start_at_login_description">Obre l’aplicació en iniciar la sessió; amb «Tanca a la safata» activat, espera a la safata</string>
     <string name="tray_show">Mostra la finestra</string>
     <string name="tray_hide">Amaga la finestra</string>
+    <string name="settings_proxy">Servidor intermediari</string>
+    <string name="settings_proxy_description">Com arriba l’app a internet en aquest dispositiu. Sistema fa servir les variables d’entorn del servidor intermediari o, si no n’hi ha, la configuració de l’escriptori</string>
+    <string name="settings_proxy_none">Sense servidor intermediari</string>
+    <string name="settings_proxy_manual">Manual</string>
+    <string name="settings_proxy_server">Servidor intermediari</string>
+    <string name="settings_proxy_server_unset">No definit: no es carrega res fins que en definiu un</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Els vídeos encara no es poden reproduir a través d’un servidor SOCKS5</string>
+    <string name="settings_proxy_host">Amfitrió</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Sense servidor intermediari per a</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

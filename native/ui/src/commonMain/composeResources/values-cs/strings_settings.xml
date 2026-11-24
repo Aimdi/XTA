@@ -379,4 +379,17 @@
     <string name="settings_start_at_login_description">Otevře aplikaci po přihlášení; se zapnutým „Zavírat do oznamovací oblasti“ čeká v oznamovací oblasti</string>
     <string name="tray_show">Zobrazit okno</string>
     <string name="tray_hide">Skrýt okno</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_description">Jak se aplikace na tomto zařízení připojuje k internetu. Systém použije proměnné prostředí proxy, jinak nastavení proxy v desktopu</string>
+    <string name="settings_proxy_none">Bez proxy</string>
+    <string name="settings_proxy_manual">Ručně</string>
+    <string name="settings_proxy_server">Proxy server</string>
+    <string name="settings_proxy_server_unset">Nenastaveno: nic se nenačte, dokud ho nenastavíte</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Videa zatím nelze přehrát přes proxy SOCKS5</string>
+    <string name="settings_proxy_host">Hostitel</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Bez proxy pro</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

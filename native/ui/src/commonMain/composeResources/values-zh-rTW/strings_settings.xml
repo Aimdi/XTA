@@ -373,4 +373,17 @@
     <string name="settings_start_at_login_description">登入時開啟應用程式；開啟「關閉時縮小至系統匣」時，會在系統匣中等待</string>
     <string name="tray_show">顯示視窗</string>
     <string name="tray_hide">隱藏視窗</string>
+    <string name="settings_proxy">代理伺服器</string>
+    <string name="settings_proxy_description">應用程式在此裝置上如何連上網際網路。「系統」使用代理伺服器環境變數，否則使用桌面的代理設定</string>
+    <string name="settings_proxy_none">不使用代理伺服器</string>
+    <string name="settings_proxy_manual">手動</string>
+    <string name="settings_proxy_server">代理伺服器</string>
+    <string name="settings_proxy_server_unset">未設定：設定之前不會載入任何內容</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">影片暫時無法透過 SOCKS5 代理伺服器播放</string>
+    <string name="settings_proxy_host">主機</string>
+    <string name="settings_proxy_port">連接埠</string>
+    <string name="settings_proxy_bypass">不使用代理伺服器的位址</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

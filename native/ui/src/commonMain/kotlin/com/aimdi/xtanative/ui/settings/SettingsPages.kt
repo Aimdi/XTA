@@ -127,6 +127,7 @@ internal fun GeneralSettings(title: String, vm: SettingsViewModel, focus: String
                         focused = focus == START_AT_LOGIN_KEY,
                     ) { on -> if (login.set(on)) startsAtLogin = on }
                 }
+                ProxyRows(settings, vm, focus)
             }
             BrowserPickerRow()
             PrefSwitch(settings, GeneralPrefs.cleanLinks, stringResource(Res.string.settings_clean_links), stringResource(Res.string.settings_clean_links_description), vm, focus)

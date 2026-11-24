@@ -377,4 +377,17 @@
     <string name="settings_start_at_login_description">Abre o app ao fazer login; com Fechar para a bandeja ativado, ele espera na bandeja</string>
     <string name="tray_show">Mostrar janela</string>
     <string name="tray_hide">Ocultar janela</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_description">Como o app chega à internet neste dispositivo. Sistema usa as variáveis de ambiente do proxy ou, se não houver, as configurações de proxy da área de trabalho</string>
+    <string name="settings_proxy_none">Sem proxy</string>
+    <string name="settings_proxy_manual">Manual</string>
+    <string name="settings_proxy_server">Servidor proxy</string>
+    <string name="settings_proxy_server_unset">Não definido: nada carrega até você definir um</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Os vídeos ainda não podem ser reproduzidos por um proxy SOCKS5</string>
+    <string name="settings_proxy_host">Host</string>
+    <string name="settings_proxy_port">Porta</string>
+    <string name="settings_proxy_bypass">Sem proxy para</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

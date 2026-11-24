@@ -379,4 +379,17 @@
     <string name="settings_start_at_login_description">Відкриває застосунок під час входу; якщо ввімкнено «Згортати в трей», він чекає в треї</string>
     <string name="tray_show">Показати вікно</string>
     <string name="tray_hide">Сховати вікно</string>
+    <string name="settings_proxy">Проксі</string>
+    <string name="settings_proxy_description">Як застосунок виходить в інтернет на цьому пристрої. «Система» бере змінні середовища проксі, інакше налаштування проксі робочого столу</string>
+    <string name="settings_proxy_none">Без проксі</string>
+    <string name="settings_proxy_manual">Вручну</string>
+    <string name="settings_proxy_server">Проксі-сервер</string>
+    <string name="settings_proxy_server_unset">Не задано: нічого не завантажиться, доки його не задано</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Відео поки що не відтворюється через проксі SOCKS5</string>
+    <string name="settings_proxy_host">Хост</string>
+    <string name="settings_proxy_port">Порт</string>
+    <string name="settings_proxy_bypass">Без проксі для</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

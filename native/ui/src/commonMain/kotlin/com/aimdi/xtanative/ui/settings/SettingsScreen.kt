@@ -63,6 +63,8 @@ import com.aimdi.xtanative.ui.common.ColumnScrollbar
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.settings_proxy
+import com.aimdi.xtanative.ui.generated.resources.settings_proxy_description
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login_description
 import com.aimdi.xtanative.ui.home.foundWithKeys
@@ -257,6 +259,7 @@ private val INDEX = listOf(
     Indexed(SettingsSection.GENERAL, DesktopPrefs.notifications.key, Res.string.settings_desktop_notifications, Res.string.settings_desktop_notifications_description),
     Indexed(SettingsSection.GENERAL, DesktopPrefs.closeToTray.key, Res.string.settings_close_to_tray, Res.string.settings_close_to_tray_description),
     Indexed(SettingsSection.GENERAL, START_AT_LOGIN_KEY, Res.string.settings_start_at_login, Res.string.settings_start_at_login_description),
+    Indexed(SettingsSection.GENERAL, DesktopPrefs.proxyMode.key, Res.string.settings_proxy, Res.string.settings_proxy_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.cleanLinks.key, Res.string.settings_clean_links, Res.string.settings_clean_links_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.disableScreenshots.key, Res.string.settings_disable_screenshots, Res.string.settings_disable_screenshots_hint),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.initialTab.key, Res.string.settings_default_tab, Res.string.settings_default_tab_description),
@@ -313,8 +316,8 @@ private val INDEX = listOf(
 /** The controls only Android has: the desktop's window takes no screenshot block, gives no haptics and has no status bar. */
 private val ANDROID_ONLY = setOf(GeneralPrefs.disableScreenshots.key, AccessibilityPrefs.haptics.key, ThemePrefs.hideStatusBar.key)
 
-/** The controls only the desktop has: its notifications, its tray and its windows' interface size. */
-private val DESKTOP_ONLY = setOf(DesktopPrefs.notifications.key, DesktopPrefs.closeToTray.key, START_AT_LOGIN_KEY, DesktopPrefs.uiScale.key)
+/** The controls only the desktop has: its notifications, its tray, its windows' interface size and its proxy. */
+private val DESKTOP_ONLY = setOf(DesktopPrefs.notifications.key, DesktopPrefs.closeToTray.key, START_AT_LOGIN_KEY, DesktopPrefs.uiScale.key, DesktopPrefs.proxyMode.key)
 
 /** Every control the search can find, in this platform's settings: the desktop has none of [ANDROID_ONLY], Android none of [DESKTOP_ONLY]. */
 @Composable

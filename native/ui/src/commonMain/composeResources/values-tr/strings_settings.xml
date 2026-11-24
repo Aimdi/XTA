@@ -375,4 +375,17 @@
     <string name="settings_start_at_login_description">Oturum açınca uygulamayı açar; Sistem tepsisine kapat açıksa tepside bekler</string>
     <string name="tray_show">Pencereyi göster</string>
     <string name="tray_hide">Pencereyi gizle</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_description">Uygulamanın bu cihazda internete nasıl ulaştığı. Sistem, proxy ortam değişkenlerini, yoksa masaüstünün proxy ayarlarını kullanır</string>
+    <string name="settings_proxy_none">Proxy yok</string>
+    <string name="settings_proxy_manual">Elle</string>
+    <string name="settings_proxy_server">Proxy sunucusu</string>
+    <string name="settings_proxy_server_unset">Ayarlanmadı: biri ayarlanana kadar hiçbir şey yüklenmez</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Videolar henüz bir SOCKS5 proxy üzerinden oynatılamıyor</string>
+    <string name="settings_proxy_host">Ana makine</string>
+    <string name="settings_proxy_port">Bağlantı noktası</string>
+    <string name="settings_proxy_bypass">Proxy kullanılmayacaklar</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>
