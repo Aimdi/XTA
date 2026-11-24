@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.ui.plugins
 
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,6 +9,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculateCentroid
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -39,34 +42,38 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
@@ -79,10 +86,10 @@ import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.ShowMediaTile
 import com.aimdi.xtanative.ui.common.mediaShown
-import com.aimdi.xtanative.ui.common.rememberPicture
-import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.onSecondaryClickAt
+import com.aimdi.xtanative.ui.common.rememberPicture
+import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.downloads.PluginDownloads
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -94,20 +101,29 @@ import com.aimdi.xtanative.ui.generated.resources.reader_link_share
 import com.aimdi.xtanative.ui.generated.resources.reader_media
 import com.aimdi.xtanative.ui.home.HoldsKeys
 import com.aimdi.xtanative.ui.media.GifCorner
+import com.aimdi.xtanative.ui.media.LocalViewerVideoKeys
+import com.aimdi.xtanative.ui.media.MOTION_FAST_MS
 import com.aimdi.xtanative.ui.media.MediaIcons
+import com.aimdi.xtanative.ui.media.PageKey
 import com.aimdi.xtanative.ui.media.ReaderIcons
+import com.aimdi.xtanative.ui.media.Shift
 import com.aimdi.xtanative.ui.media.SourceVideoPage
 import com.aimdi.xtanative.ui.media.TileCorner
 import com.aimdi.xtanative.ui.media.TileGif
 import com.aimdi.xtanative.ui.media.TileVideo
+import com.aimdi.xtanative.ui.media.VideoKey
 import com.aimdi.xtanative.ui.media.VideoQuality
 import com.aimdi.xtanative.ui.media.VideoRules
 import com.aimdi.xtanative.ui.media.VideoSource
 import com.aimdi.xtanative.ui.media.ViewerKey
+import com.aimdi.xtanative.ui.media.ViewerZoom
+import com.aimdi.xtanative.ui.media.pageKeyOf
 import com.aimdi.xtanative.ui.media.rememberVideoPlayers
 import com.aimdi.xtanative.ui.media.rememberViewerFileMenu
-import com.aimdi.xtanative.ui.media.viewerKeyOf
 import com.aimdi.xtanative.ui.post.PostIcons
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -227,8 +243,10 @@ private fun TileClip(item: MediaItem, poster: Any, modifier: Modifier) {
 
 /**
  * [items] full screen from [start], as the app's viewer shows X's: swipe
- * between them (or the arrow keys), pinch or double-tap a photo to zoom;
- * videos play, GIFs loop. A video may play another of the files its network
+ * between them (or the arrow keys), pinch, double-tap or wheel a photo to
+ * zoom (or + - and 0, the arrows then moving about it); videos play, GIFs
+ * loop, and a video shown has the viewer's player keys (Space or k, j, l,
+ * m, f, < >, 0 to 9). A video may play another of the files its network
  * offers: [qualities] holds, item by item, a video's files highest first,
  * named as the quality menu lists them ("720p"); one with more than one has
  * the menu and starts on [MediaItem.videoUrl]. The bar, as XTA's
@@ -256,21 +274,32 @@ fun MediaPager(
     val turn = { by: Int -> (pager.currentPage + by).takeIf { it in items.indices }?.let { page -> scope.launch { pager.turnTo(page, reduced) } } }
     // The desktop's right-click menu, Ctrl+C and Ctrl+S, as the app's own viewer has them.
     val fileMenu = rememberViewerFileMenu(snackbar, refocus = { runCatching { focus.requestFocus() } }) { items.getOrNull(pager.currentPage)?.let(PluginDownloads::viewerSave) }
+    // The zoom and pan keys for the photo shown, which pages' photos are zoomed in, and the video shown's keys, as the app's viewer has them.
+    val zoomKeys = remember { MutableSharedFlow<ViewerKey>(extraBufferCapacity = 8) }
+    val zoomedPages = remember { mutableStateMapOf<Int, Boolean>() }
+    val videoKeys = remember { MutableSharedFlow<VideoKey>(extraBufferCapacity = 8) }
     Box(
         Modifier
             .fillMaxSize()
             .background(Color.Black)
             .onKeyEvent { event ->
-                if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
-                when (val key = viewerKeyOf(event)) {
+                val shown = items.getOrNull(pager.currentPage)?.kind
+                val key = when (val pageKey = pageKeyOf(event, onVideo = shown == MediaItem.Kind.VIDEO || shown == MediaItem.Kind.GIF, zoomed = zoomedPages[pager.currentPage] == true)) {
+                    is PageKey.Video -> return@onKeyEvent true.also { videoKeys.tryEmit(pageKey.key) }
+                    is PageKey.Viewer -> pageKey.key
+                    PageKey.None -> return@onKeyEvent false
+                }
+                when (key) {
                     ViewerKey.PREVIOUS -> true.also { turn(-1) }
                     ViewerKey.NEXT -> true.also { turn(1) }
                     ViewerKey.FIRST -> true.also { turn(-pager.currentPage) }
                     ViewerKey.LAST -> true.also { turn(items.size - 1 - pager.currentPage) }
                     ViewerKey.CLOSE -> true.also { onClose() }
                     ViewerKey.COPY, ViewerKey.SAVE_AS -> fileMenu?.key(key) ?: false
-                    // Plugins' pictures zoom with the wheel and pinch only (ZoomableImage is plugin API).
-                    ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET, ViewerKey.PAN_LEFT, ViewerKey.PAN_RIGHT, ViewerKey.PAN_UP, ViewerKey.PAN_DOWN, ViewerKey.NONE -> false
+                    // The photo shown zooms and moves about, as the app's viewer's; a video's page leaves the keys alone.
+                    ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET, ViewerKey.PAN_LEFT, ViewerKey.PAN_RIGHT, ViewerKey.PAN_UP, ViewerKey.PAN_DOWN ->
+                        (shown == MediaItem.Kind.PHOTO).also { if (it) zoomKeys.tryEmit(key) }
+                    ViewerKey.NONE -> false
                 }
             }
             .focusRequester(focus)
@@ -287,8 +316,16 @@ fun MediaPager(
         HorizontalPager(state = pager, modifier = Modifier.fillMaxSize().then(pageMenu), key = { it }) { page ->
             val item = items[page]
             when (item.kind) {
-                MediaItem.Kind.PHOTO -> ZoomableImage(rememberPicture(item.imageUrl), item.alt, Modifier.fillMaxSize())
-                MediaItem.Kind.VIDEO, MediaItem.Kind.GIF -> QualityVideoPage(item, qualities.getOrNull(page).orEmpty(), active = pager.currentPage == page)
+                MediaItem.Kind.PHOTO -> ZoomingImage(
+                    rememberPicture(item.imageUrl),
+                    item.alt,
+                    Modifier.fillMaxSize(),
+                    zoomKeys = zoomKeys.takeIf { pager.currentPage == page },
+                    onZoomed = { zoomedPages[page] = it },
+                )
+                MediaItem.Kind.VIDEO, MediaItem.Kind.GIF -> CompositionLocalProvider(LocalViewerVideoKeys provides videoKeys) {
+                    QualityVideoPage(item, qualities.getOrNull(page).orEmpty(), active = pager.currentPage == page)
+                }
             }
         }
         IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose, modifier = Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopStart)) {
@@ -391,11 +428,14 @@ private fun QualityMenu(qualities: List<VideoQuality>, playing: String?, onChoos
 }
 
 /**
- * A picture fitted to its box that pinches and double-taps to zoom, as the
- * viewer's photos do: one finger pans only once zoomed, so a pager around it
- * still swipes. [model] is what Coil's AsyncImage loads (an address, or a
- * request with headers, [rememberImageRequest]); [onTap] and [onLongPress]
- * hear where the picture was touched, and [onState] how its load goes.
+ * A picture fitted to its box that zooms as the viewer's photos do: pinched
+ * or wheeled between one and four times (the wheel about the pointer), and a
+ * double tap toggles between the two around the point tapped; one finger (or
+ * the mouse) pans only once zoomed, so a pager around it still swipes, and a
+ * zoomed picture stays inside its box. [model] is what Coil's AsyncImage
+ * loads (an address, or a request with headers, [rememberImageRequest]);
+ * [onTap] and [onLongPress] hear where the picture was touched, and [onState]
+ * how its load goes.
  */
 @Composable
 fun ZoomableImage(
@@ -405,41 +445,114 @@ fun ZoomableImage(
     onTap: ((Offset) -> Unit)? = null,
     onLongPress: ((Offset) -> Unit)? = null,
     onState: ((AsyncImagePainter.State) -> Unit)? = null,
+) = ZoomingImage(model, contentDescription, modifier, onTap, onLongPress, onState)
+
+/**
+ * [ZoomableImage], and in [MediaPager] the zoom and pan keys too: [zoomKeys]
+ * ([ViewerKey.ZOOM_IN] and the rest) zoom about the middle and move a zoomed
+ * picture about, and [onZoomed] hears whether it is zoomed in, so the arrows
+ * pan rather than turn the page.
+ */
+@Composable
+internal fun ZoomingImage(
+    model: Any?,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    onTap: ((Offset) -> Unit)? = null,
+    onLongPress: ((Offset) -> Unit)? = null,
+    onState: ((AsyncImagePainter.State) -> Unit)? = null,
+    zoomKeys: Flow<ViewerKey>? = null,
+    onZoomed: (Boolean) -> Unit = {},
 ) {
-    var scale by remember { mutableFloatStateOf(1f) }
-    var offset by remember { mutableStateOf(Offset.Zero) }
+    var scale by remember { mutableFloatStateOf(ViewerZoom.MIN) }
+    var shift by remember { mutableStateOf(Shift.ZERO) }
+    var area by remember { mutableStateOf(IntSize.Zero) }
+    val motion = !LocalReducedMotion.current
+    val scope = rememberCoroutineScope()
+    val animation = remember { arrayOfNulls<Job>(1) }
+
+    fun animateTo(toScale: Float, toShift: Shift) {
+        animation[0]?.cancel()
+        val fromScale = scale
+        val fromShift = shift
+        animation[0] = scope.launch {
+            animate(0f, 1f, animationSpec = tween(if (motion) MOTION_FAST_MS else 0)) { t, _ ->
+                scale = fromScale + (toScale - fromScale) * t
+                shift = fromShift + (toShift - fromShift) * t
+            }
+        }
+    }
+
+    // The keys' zoom goes about the middle, eased as a double tap's; the arrows move a zoomed picture about.
+    LaunchedEffect(zoomKeys) {
+        zoomKeys?.collect { key ->
+            val width = area.width.toFloat()
+            val height = area.height.toFloat()
+            val to = ViewerZoom.keyed(scale, key)
+            when {
+                to != scale -> animateTo(to, if (ViewerZoom.zoomed(to)) ViewerZoom.shiftFor(Shift.ZERO, scale, shift, to, width, height) else Shift.ZERO)
+                ViewerZoom.zoomed(scale) -> animateTo(scale, ViewerZoom.panned(shift, scale, key, width, height))
+            }
+        }
+    }
+    val zoomedNow by rememberUpdatedState(onZoomed)
+    LaunchedEffect(Unit) { snapshotFlow { ViewerZoom.zoomed(scale) }.collect { zoomedNow(it) } }
+
     AsyncImage(
         model = model,
         contentDescription = contentDescription,
         contentScale = ContentScale.Fit,
         onState = onState,
         modifier = modifier
+            .onSizeChanged { area = it }
+            .clipToBounds()
             // A mouse gives no long press: its right-click does the same.
             .then(onLongPress?.let { Modifier.onSecondaryClickAt(action = it) } ?: Modifier)
+            // The mouse wheel zooms about the pointer, as a desktop's photo viewers do.
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        if (event.type != PointerEventType.Scroll) continue
+                        val change = event.changes.firstOrNull() ?: continue
+                        val to = ViewerZoom.wheeled(scale, change.scrollDelta.y)
+                        if (to != scale) {
+                            animation[0]?.cancel()
+                            val focus = Shift(change.position.x - size.width / 2f, change.position.y - size.height / 2f)
+                            shift = ViewerZoom.shiftFor(focus, scale, shift, to, size.width.toFloat(), size.height.toFloat())
+                            scale = to
+                        }
+                        change.consume()
+                    }
+                }
+            }
             .pointerInput(onTap, onLongPress) {
                 detectTapGestures(
                     onTap = onTap,
                     onLongPress = onLongPress,
                     onDoubleTap = { tap ->
-                        if (scale > 1f) {
-                            scale = 1f
-                            offset = Offset.Zero
-                        } else {
-                            scale = 2.5f
-                            offset = (Offset(size.width / 2f, size.height / 2f) - tap) * 1.5f
-                        }
+                        val focus = Shift(tap.x - size.width / 2f, tap.y - size.height / 2f)
+                        val to = ViewerZoom.doubleTapScale(if (ViewerZoom.zoomed(scale)) scale else ViewerZoom.MIN)
+                        animateTo(to, ViewerZoom.shiftFor(focus, scale, shift, to, size.width.toFloat(), size.height.toFloat()))
                     },
                 )
             }
             .pointerInput(Unit) {
-                // Two fingers zoom; one finger pans only once zoomed, so the pager still swipes.
+                // Two fingers zoom about their middle; one finger pans only once zoomed, so the pager still swipes.
                 awaitEachGesture {
                     awaitFirstDown(requireUnconsumed = false)
                     do {
                         val event = awaitPointerEvent()
-                        if (event.changes.size > 1 || scale > 1f) {
-                            scale = (scale * event.calculateZoom()).coerceIn(1f, 5f)
-                            offset = if (scale == 1f) Offset.Zero else offset + event.calculatePan()
+                        if (event.changes.count { it.pressed } > 1 || ViewerZoom.zoomed(scale)) {
+                            animation[0]?.cancel()
+                            val width = size.width.toFloat()
+                            val height = size.height.toFloat()
+                            val next = ViewerZoom.pinched(scale, event.calculateZoom()).coerceAtLeast(ViewerZoom.MIN)
+                            val centroid = event.calculateCentroid(useCurrent = true)
+                            val pan = event.calculatePan()
+                            val focus = if (centroid == Offset.Unspecified) Shift.ZERO else Shift(centroid.x - width / 2f, centroid.y - height / 2f)
+                            shift = ViewerZoom.bounds(focus - (focus - shift) * (next / scale) + Shift(pan.x, pan.y), next, width, height)
+                            scale = next
                             event.changes.forEach { if (it.positionChanged()) it.consume() }
                         }
                     } while (event.changes.any { it.pressed })
@@ -448,8 +561,8 @@ fun ZoomableImage(
             .graphicsLayer {
                 scaleX = scale
                 scaleY = scale
-                translationX = offset.x
-                translationY = offset.y
+                translationX = shift.x
+                translationY = shift.y
             },
     )
 }

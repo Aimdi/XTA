@@ -51,13 +51,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.isAltPressed
-import androidx.compose.ui.input.key.isCtrlPressed
-import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -201,18 +195,12 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
             .onKeyEvent { event ->
                 val shownKind = items.getOrNull(pager.currentPage)?.kind
                 val onVideo = shownKind == XMedia.Kind.VIDEO || shownKind == XMedia.Kind.GIF
-                // < > and the digits as typed, on any layout: the video's speed and its tenths.
-                val typed = typedChar(event)
-                if (typed != null) {
-                    val videoKey = if (onVideo) VideoKeys.onViewerPage(space = false, letter = null, modified = event.isCtrlPressed || event.isAltPressed, typed = typed) else VideoKey.NONE
-                    return@onKeyEvent (videoKey != VideoKey.NONE).also { if (it) videoKeys.tryEmit(videoKey) }
+                val key = when (val pageKey = pageKeyOf(event, onVideo, zoomed = zoomedPages[pager.currentPage] == true)) {
+                    is PageKey.Video -> return@onKeyEvent true.also { videoKeys.tryEmit(pageKey.key) }
+                    is PageKey.Viewer -> pageKey.key
+                    PageKey.None -> return@onKeyEvent false
                 }
-                if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
-                if (onVideo) {
-                    val videoKey = VideoKeys.onViewerPage(event.key == Key.Spacebar, PLAYER_LETTERS[event.key], event.isCtrlPressed || event.isAltPressed)
-                    if (videoKey != VideoKey.NONE) return@onKeyEvent true.also { videoKeys.tryEmit(videoKey) }
-                }
-                when (val key = viewerKeyOf(event, zoomed = zoomedPages[pager.currentPage] == true)) {
+                when (key) {
                     ViewerKey.PREVIOUS -> true.also { turn(-1) }
                     ViewerKey.NEXT -> true.also { turn(1) }
                     ViewerKey.FIRST -> true.also { turn(-pager.currentPage) }
