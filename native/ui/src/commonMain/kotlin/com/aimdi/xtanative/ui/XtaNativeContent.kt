@@ -21,6 +21,7 @@ import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.LocalXClient
 import com.aimdi.xtanative.ui.common.SwitchedHapticsFrame
 import com.aimdi.xtanative.ui.common.addPlatformPictureDecoders
+import com.aimdi.xtanative.ui.common.platformPictureDiskCache
 import com.aimdi.xtanative.ui.downloads.DownloadsFrame
 import com.aimdi.xtanative.ui.downloads.LocalPlatformFiles
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -97,9 +98,10 @@ private fun RootOrBroken(graph: AppGraph) {
 @Composable
 fun appName(): String = stringResource(Res.string.app_name)
 
-/** The one image loader of the process, which each shell installs: pictures fade in, the desktop shrinks them smoothly, and those cached too long ago go. */
+/** The one image loader of the process, which each shell installs: pictures fade in, the desktop shrinks them smoothly and caches them in the user's own cache folder, and those cached too long ago go. */
 fun appImageLoader(context: PlatformContext): ImageLoader = ImageLoader.Builder(context)
     .components { addPlatformPictureDecoders() }
+    .apply { platformPictureDiskCache()?.let { diskCache(it) } }
     .crossfade(true)
     .build()
     .also(::trimImageCache)
