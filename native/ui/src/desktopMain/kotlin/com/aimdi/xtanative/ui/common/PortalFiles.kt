@@ -73,6 +73,20 @@ object PortalFiles {
     /** Every Request.Response this connection may be sent; [PortalFileChooser] keeps its own by path. */
     const val MATCH = "type='signal',interface='$REQUEST',member='Response'"
 
+    /** The bus saying the portal's name changed hands: the portal asked went away (it crashed or was restarted). */
+    const val OWNER_MATCH = "type='signal',sender='${DBusConnection.BUS}',interface='${DBusConnection.BUS}',member='NameOwnerChanged',arg0='$PORTAL'"
+
+    /** The connection a NameOwnerChanged of the portal's name says lost it; null for any other signal or none. */
+    fun lostOwner(signal: DBusMessage): String? {
+        if (signal.sender != DBusConnection.BUS || signal.iface != DBusConnection.BUS || signal.member != "NameOwnerChanged") return null
+        if (signal.body.getOrNull(0) != PORTAL) return null
+        return (signal.body.getOrNull(1) as? String)?.takeIf { it.isNotEmpty() }
+    }
+
+    /** The unique name GetNameOwner answered; null for an error or none. */
+    fun owner(answer: DBusMessage?): String? =
+        answer?.takeIf { it.type == DBusType.METHOD_RETURN }?.body?.firstOrNull() as? String
+
     /** The first version whose OpenFile chooses folders and opens in a given one. */
     const val FOLDERS_SINCE = 3L
 
@@ -134,7 +148,9 @@ object PortalFiles {
  * Response signal is listened for before the call is made and kept by
  * path, so one sent before the call's answer, or for a handle an old
  * portal chose itself, is not lost. A chooser given up (the caller
- * cancelled, no answer in [callMs]) closes the portal's request.
+ * cancelled, no answer in [callMs]) closes the portal's request. A portal
+ * that goes away while its dialog is open (it crashed) ends the wait as
+ * no answer, so the chooser does not wait for ever and the next can open.
  */
 class PortalFileChooser(
     private val connect: () -> DBusConnection?,
@@ -154,8 +170,13 @@ class PortalFileChooser(
         val responses = Responses()
         bus.onSignal = responses::offer
         bus.onClosed = responses::end
+        // Listened for before the portal is reached (and perhaps started by it), so its going away is never missed.
+        blocking { bus.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "AddMatch", "s", listOf(PortalFiles.OWNER_MATCH), callMs) }
         val version = PortalFiles.version(blocking { bus.call(PortalFiles.PORTAL, PortalFiles.PATH, PortalFiles.PROPERTIES, "Get", "ss", listOf(PortalFiles.CHOOSER, "version"), callMs) })
         if (!PortalFiles.usable(version, ask)) return FileChoice.Unavailable
+        val owner = PortalFiles.owner(blocking { bus.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "GetNameOwner", "s", listOf(PortalFiles.PORTAL), callMs) })
+            ?: return FileChoice.Unavailable
+        responses.portal(owner)
         blocking { bus.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "AddMatch", "s", listOf(PortalFiles.MATCH), callMs) }
         val token = PortalFiles.token()
         val expected = PortalFiles.requestPath(bus.uniqueName.orEmpty(), token)
@@ -187,12 +208,29 @@ class PortalFileChooser(
     /** A blocking bus call the caller's cancelling interrupts (the call then answers null). */
     private suspend fun <T> blocking(call: () -> T): T = runInterruptible(Dispatchers.IO) { call() }
 
-    /** Response signals by request path, kept until asked for, and the end of the connection. */
+    /** Response signals by request path, kept until asked for, and the end of the connection or of the portal. */
     private class Responses {
         private val byPath = ConcurrentHashMap<String, CompletableDeferred<DBusMessage>>()
         private val ended = CompletableDeferred<Unit>()
 
+        /** The portal's connections that lost its name, read before the one asked was known. */
+        private val gone = ConcurrentHashMap.newKeySet<String>()
+
+        @Volatile
+        private var owner: String? = null
+
+        /** The portal asked is the connection [unique]: its going away ends the wait. */
+        fun portal(unique: String) {
+            owner = unique
+            if (unique in gone) end()
+        }
+
         fun offer(signal: DBusMessage) {
+            PortalFiles.lostOwner(signal)?.let { lost ->
+                gone += lost
+                if (lost == owner) end()
+                return
+            }
             if (signal.iface != PortalFiles.REQUEST || signal.member != "Response") return
             val path = signal.path ?: return
             byPath.computeIfAbsent(path) { CompletableDeferred() }.complete(signal)

@@ -102,17 +102,33 @@ class PortalFilesTest {
     }
 
     @Test
-    fun oneChooserOpensAtATime() = runBlocking {
+    fun aSecondChooserWaitsForTheFirstInsteadOfBackingOut() = runBlocking {
         val open = CompletableDeferred<Unit>()
         val release = CompletableDeferred<FileChoice>()
-        val chooser = FileChooser(portal = { _, _ -> open.complete(Unit); release.await() }, fallback = { _, _ -> null }, owner = { null })
-        val first = async(Dispatchers.Default) { chooser.choose(FileAsk("", FileAskKind.OPEN)) }
+        val asked = CopyOnWriteArrayList<String>()
+        val chooser = FileChooser(
+            portal = { ask, _ ->
+                asked += ask.title
+                if (ask.title == "first") {
+                    open.complete(Unit)
+                    release.await()
+                } else {
+                    FileChoice.Picked(File("/b"))
+                }
+            },
+            fallback = { _, _ -> null },
+            owner = { null },
+        )
+        val first = async(Dispatchers.Default) { chooser.choose(FileAsk("first", FileAskKind.OPEN)) }
         open.await()
-        assertNull(chooser.choose(FileAsk("", FileAskKind.OPEN)))
+        // A finished download asking where to go while another chooser is open: not thrown away as backed out.
+        val second = async(Dispatchers.Default) { chooser.choose(FileAsk("second", FileAskKind.SAVE)) }
+        Thread.sleep(100)
+        assertEquals(listOf("first"), asked, "one dialog at a time")
         release.complete(FileChoice.Picked(File("/a")))
         assertEquals(File("/a"), first.await())
-        val again = FileChooser(portal = { _, _ -> FileChoice.Picked(File("/b")) }, fallback = { _, _ -> null }, owner = { null })
-        assertEquals(File("/b"), again.choose(FileAsk("", FileAskKind.OPEN)))
+        assertEquals(File("/b"), second.await())
+        assertEquals(listOf("first", "second"), asked)
     }
 
     @Test
@@ -277,5 +293,29 @@ class PortalFilesTest {
                 assertEquals(listOf(handle), portal.closed)
             }
         }
+    }
+
+    @Test
+    fun aPortalThatGoesAwayWithItsDialogOpenEndsTheWait() = onBus { socket ->
+        val portal = FakePortal(socket, Mode.SILENT_DIALOG)
+        coroutineScope {
+            val asking = async(Dispatchers.IO) { PortalFileChooser({ DBusConnection.connect(socket) }, 5_000).ask(open, "") }
+            portal.opened.await()
+            Thread.sleep(200)
+            portal.close()
+            assertEquals(FileChoice.Unavailable, withTimeout(5_000) { asking.await() }, "the crashed portal no longer holds the chooser")
+        }
+    }
+
+    @Test
+    fun onlyTheNameOfThePortalLostByItsOwnerCounts() {
+        fun changed(name: String, old: String, new: String, sender: String = DBusConnection.BUS) = DBusMessage(
+            DBusType.SIGNAL, path = DBusConnection.BUS_PATH, iface = DBusConnection.BUS, member = "NameOwnerChanged",
+            sender = sender, signature = "sss", body = listOf(name, old, new),
+        )
+        assertEquals(":1.7", PortalFiles.lostOwner(changed(PortalFiles.PORTAL, ":1.7", "")))
+        assertNull(PortalFiles.lostOwner(changed(PortalFiles.PORTAL, "", ":1.7")), "started, not gone")
+        assertNull(PortalFiles.lostOwner(changed("org.example.Other", ":1.7", "")))
+        assertNull(PortalFiles.lostOwner(changed(PortalFiles.PORTAL, ":1.7", "", sender = ":1.9")), "only the bus says so")
     }
 }

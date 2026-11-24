@@ -6,21 +6,24 @@ import java.awt.FileDialog
 import java.awt.Frame
 import java.awt.Window
 import java.io.File
-import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.JFileChooser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 /**
  * One file chooser at a time: the desktop's portal ([portal]) first, so
  * GNOME's or KDE's own dialog opens over the reader's window; the app's
  * own ([fallback]) only where no portal could ask, never after the reader
- * closed the portal's. A second chooser asked for while one is open is
- * not opened (null), as the portal's dialog does not block the window.
+ * closed the portal's. A second chooser asked for while one is open waits
+ * for it to end and then opens, as the portal's dialog does not block the
+ * window: it is never answered as backed out (null), which would throw away
+ * what asked for it, such as a finished download waiting for its place.
  */
 class FileChooser(
     private val portal: suspend (FileAsk, String) -> FileChoice,
@@ -28,20 +31,15 @@ class FileChooser(
     private val owner: suspend () -> Window?,
     private val handle: (Window?) -> String = ParentWindow::handle,
 ) {
-    private val busy = AtomicBoolean(false)
+    private val turn = Mutex()
 
-    /** The file (or folder) the reader picked for [ask]; null when they backed out or a chooser is already open. */
-    suspend fun choose(ask: FileAsk): File? {
-        if (!busy.compareAndSet(false, true)) return null
-        return try {
-            val window = owner()
-            when (val choice = portal(ask, handle(window))) {
-                is FileChoice.Picked -> choice.file
-                FileChoice.Cancelled -> null
-                FileChoice.Unavailable -> fallback(ask, window)
-            }
-        } finally {
-            busy.set(false)
+    /** The file (or folder) the reader picked for [ask], once any chooser already open has ended; null when they backed out. */
+    suspend fun choose(ask: FileAsk): File? = turn.withLock {
+        val window = owner()
+        when (val choice = portal(ask, handle(window))) {
+            is FileChoice.Picked -> choice.file
+            FileChoice.Cancelled -> null
+            FileChoice.Unavailable -> fallback(ask, window)
         }
     }
 }
