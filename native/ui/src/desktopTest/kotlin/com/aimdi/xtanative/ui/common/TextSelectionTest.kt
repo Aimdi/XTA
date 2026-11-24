@@ -62,4 +62,23 @@ class TextSelectionTest {
         TextBlocks.remove(idle)
         assertFalse(TextBlocks.selectAllInFocused())
     }
+
+    @Test
+    fun aBlockInAWindowInTheBackgroundDoesNotTakeCtrlA() {
+        // Compose keeps the post window's block focused after the main window is raised.
+        var selected = ""
+        var postWindowFocused = true
+        val inPostWindow = TextBlock(focused = { true }, selectAll = { selected = "post" }).inWindow { postWindowFocused }
+        TextBlocks.add(inPostWindow)
+        try {
+            postWindowFocused = false
+            assertFalse(TextBlocks.selectAllInFocused())
+            assertEquals("", selected)
+            postWindowFocused = true
+            assertTrue(TextBlocks.selectAllInFocused())
+            assertEquals("post", selected)
+        } finally {
+            TextBlocks.remove(inPostWindow)
+        }
+    }
 }

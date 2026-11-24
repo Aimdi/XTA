@@ -12,6 +12,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.platform.LocalWindowInfo
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +34,10 @@ import kotlinx.coroutines.withContext
 internal class SelectingTextMenu(private val base: TextContextMenu) : TextContextMenu {
     @Composable
     override fun Area(textManager: TextContextMenu.TextManager, state: ContextMenuState, content: @Composable () -> Unit) {
-        val block = remember(textManager) { SelectionManagers.of(textManager) }
+        // Compose keeps a block's focus while its window is in the background, so the block
+        // has the keys only while its own window has them too: Ctrl+A in another window is that window's.
+        val window = LocalWindowInfo.current
+        val block = remember(textManager, window) { SelectionManagers.of(textManager)?.inWindow { window.isWindowFocused } }
         val manager = remember(textManager, block) { WithSelectAll(textManager, block) }
         val current by rememberUpdatedState(manager)
         OffersPrimarySelection { current }
@@ -50,7 +54,8 @@ internal class SelectingTextMenu(private val base: TextContextMenu) : TextContex
 /**
  * The read-only blocks of text on screen. Compose's block holds the keys
  * once clicked into but lets only Ctrl+C through to itself, and the window
- * reads Ctrl+A before it ([selectAllInFocused]).
+ * reads Ctrl+A before it ([selectAllInFocused]). The list is the whole app's:
+ * a block counts as focused only while its own window is ([TextBlock.inWindow]).
  */
 internal object TextBlocks {
     private val live = mutableListOf<TextBlock>()
@@ -72,7 +77,10 @@ internal object TextBlocks {
 }
 
 /** One read-only block of selectable text: whether it has the keys, and selecting all of it. */
-internal class TextBlock(val focused: () -> Boolean, val selectAll: () -> Unit)
+internal class TextBlock(val focused: () -> Boolean, val selectAll: () -> Unit) {
+    /** This block, having the keys only while [windowFocused] says its window has them. */
+    fun inWindow(windowFocused: () -> Boolean): TextBlock = TextBlock(focused = { windowFocused() && focused() }, selectAll = selectAll)
+}
 
 /**
  * [inner] with a Select all for a read-only [block], which Compose's own
