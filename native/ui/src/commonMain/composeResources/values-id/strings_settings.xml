@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Muat media secara manual</string>
     <string name="settings_load_manually_description">Gambar dan video tidak akan dimuat sampai Anda mengetuknya, untuk menghemat data seluler.</string>
     <string name="settings_save_bandwidth">Hemat bandwidth menggunakan gambar yang lebih kecil</string>
+    <string name="settings_save_data_mobile">Hemat data di jaringan seluler</string>
+    <string name="settings_save_data_mobile_description">Saat memakai data seluler atau jaringan Wi-Fi berkuota, gambar dimuat dengan kualitas lebih rendah, dan video serta GIF baru diputar setelah diketuk</string>
     <string name="settings_quality_low">Rendah</string>
     <string name="settings_quality_medium">Sedang</string>
     <string name="settings_quality_high">Tinggi</string>

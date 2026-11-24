@@ -105,6 +105,8 @@
     <string name="settings_load_manually">手动加载媒体</string>
     <string name="settings_load_manually_description">为节省移动数据，图片和视频在点按前不会加载。</string>
     <string name="settings_save_bandwidth">使用较小的图像以节省带宽</string>
+    <string name="settings_save_data_mobile">在移动网络下节省流量</string>
+    <string name="settings_save_data_mobile_description">使用移动数据或按流量计费的 Wi-Fi 网络时，图片以较低画质加载，视频和 GIF 需点按后才播放</string>
     <string name="settings_quality_low">低</string>
     <string name="settings_quality_medium">中</string>
     <string name="settings_quality_high">高</string>

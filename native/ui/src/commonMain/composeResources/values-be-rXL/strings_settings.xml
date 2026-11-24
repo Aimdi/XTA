@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Zahružać medyja ŭručnuju</string>
     <string name="settings_load_manually_description">Vyjavy i videa nie buduć zahružacca, pakul vy ich nie nacisniecie — kab ekanomić mabilny trafik.</string>
     <string name="settings_save_bandwidth">Ekanomcie miesca na ekranie, z vyjavami mienšaha pamieru</string>
+    <string name="settings_save_data_mobile">Ekanomić trafik u mabilnych sietkach</string>
+    <string name="settings_save_data_mobile_description">U mabilnaj sietcy abo praz Wi-Fi z abmiežavanym trafikam vyjavy zahružajucca ŭ nižejšaj jakasci, a videa i GIF prajhrajucca tolki pasla naciskannia</string>
     <string name="settings_quality_low">Nizkaja</string>
     <string name="settings_quality_medium">Siaredniaja</string>
     <string name="settings_quality_high">Vysokaja</string>

@@ -105,6 +105,8 @@
     <string name="settings_load_manually">मीडिया मैन्युअल रूप से लोड करें</string>
     <string name="settings_load_manually_description">मोबाइल डेटा बचाने के लिए छवियाँ और वीडियो तब तक लोड नहीं होंगे जब तक आप उन्हें टैप न करें।</string>
     <string name="settings_save_bandwidth">छोटी छवियों से बैंडविड्थ बचाएं</string>
+    <string name="settings_save_data_mobile">मोबाइल नेटवर्क पर डेटा बचाएं</string>
+    <string name="settings_save_data_mobile_description">मोबाइल डेटा या सीमित डेटा वाले वाई-फ़ाई नेटवर्क पर, तस्वीरें कम क्वालिटी में लोड होती हैं और वीडियो व GIF टैप करने पर ही चलते हैं</string>
     <string name="settings_quality_low">कम</string>
     <string name="settings_quality_medium">मध्यम</string>
     <string name="settings_quality_high">उच्च</string>

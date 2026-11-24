@@ -23,6 +23,8 @@ import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.common.LocalSessions
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.rememberLoadsManually
+import com.aimdi.xtanative.ui.media.LocalSavesMobileData
+import com.aimdi.xtanative.ui.media.rememberSavesMobileData
 import com.aimdi.xtanative.ui.saved.SharedKeep
 import kotlinx.coroutines.flow.StateFlow
 
@@ -100,7 +102,8 @@ private val LocalSharedReads = staticCompositionLocalOf<SharedReads?> { null }
  * of them, rather than by every card scrolled past: the reader's post
  * settings (a card outside a [PostScopeProvider], as in Home's feeds and
  * search, reads them from here), the settings and the session themselves
- * ([sharedSettings], [sharedSession]) and what is saved and liked on the
+ * ([sharedSettings], [sharedSession]), whether data is saved on a metered
+ * network now ([LocalSavesMobileData]) and what is saved and liked on the
  * device ([SharedKeep]).
  */
 @Composable
@@ -113,7 +116,8 @@ internal fun SharedPostPrefs(content: @Composable () -> Unit) {
     val sessions = LocalSessions.current
     val session = sessions.state.collectAsStateWithLifecycle()
     val reads = remember(store, settings, sessions, session) { SharedReads(store.state, settings, sessions, session) }
-    CompositionLocalProvider(LocalPostPrefs provides prefs, LocalSharedReads provides reads) { SharedKeep(content) }
+    val savesMobileData = rememberSavesMobileData(now?.get(MediaPrefs.saveDataOnMobile) == true)
+    CompositionLocalProvider(LocalPostPrefs provides prefs, LocalSharedReads provides reads, LocalSavesMobileData provides savesMobileData) { SharedKeep(content) }
 }
 
 /**

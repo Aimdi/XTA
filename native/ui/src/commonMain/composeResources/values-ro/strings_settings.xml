@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Încarcă manual conținutul media</string>
     <string name="settings_load_manually_description">Imaginile și videoclipurile se încarcă doar când le atingi, pentru a economisi date mobile.</string>
     <string name="settings_save_bandwidth">Economisiți lățimea de bandă cu imagini mai mici</string>
+    <string name="settings_save_data_mobile">Economisește date în rețelele mobile</string>
+    <string name="settings_save_data_mobile_description">Pe date mobile sau într-o rețea Wi-Fi contorizată, imaginile se încarcă la o calitate mai mică, iar videoclipurile și GIF-urile pornesc doar la atingere</string>
     <string name="settings_quality_low">Scăzută</string>
     <string name="settings_quality_medium">Medie</string>
     <string name="settings_quality_high">Ridicată</string>

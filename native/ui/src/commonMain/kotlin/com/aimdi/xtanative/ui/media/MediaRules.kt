@@ -253,8 +253,8 @@ object VideoRules {
 
     /**
      * Whether videos play by themselves: Settings › Media's Autoplay videos
-     * ([setting]), unless motion is reduced or the phone saves data (Android's
-     * Data Saver), as X holds its autoplay back then.
+     * ([setting]), unless motion is reduced or data is saved
+     * ([DataSaving.savesData]), as X holds its autoplay back then.
      */
     fun autoplays(setting: Boolean, reducedMotion: Boolean, dataSaver: Boolean): Boolean = setting && !reducedMotion && !dataSaver
 
@@ -340,6 +340,26 @@ data class ViewerMedia(val pages: List<ViewerPage>, val asIs: Boolean = false) {
         fun images(urls: List<String>, username: String, postId: String = "") =
             ViewerMedia(urls.mapIndexed { index, url -> ViewerPage(XMedia(XMedia.Kind.PHOTO, url, null, null), postId, username, index) }, asIs = true)
     }
+}
+
+/**
+ * When the app spends less data. Android's Data Saver has always held
+ * autoplay back; Settings › Media's "Save data on mobile networks" does the
+ * same on a metered network (mobile data, a metered hotspot), and there also
+ * keeps pictures small and GIFs still.
+ */
+object DataSaving {
+    /** The largest size a photo loads at while data is saved: the image quality the settings call Medium. */
+    val PHOTO_CAP = PhotoSize.SMALL
+
+    /** Whether the reader's own switch saves data now: only while it is on ([setting]) and the network is [metered]. */
+    fun onMeteredNetwork(setting: Boolean, metered: Boolean): Boolean = setting && metered
+
+    /** Whether videos wait for a tap: under Android's Data Saver ([systemDataSaver]), or the reader's switch on a metered network ([onMeteredNetwork]). */
+    fun savesData(systemDataSaver: Boolean, onMeteredNetwork: Boolean): Boolean = systemDataSaver || onMeteredNetwork
+
+    /** The size a photo loads at: [size], the reader's image quality, but no larger than [PHOTO_CAP] while [onMeteredNetwork]. */
+    fun photoSize(size: PhotoSize, onMeteredNetwork: Boolean): PhotoSize = if (onMeteredNetwork && size > PHOTO_CAP) PHOTO_CAP else size
 }
 
 /** Which file of a post's media the viewer saves and shares (_media.dart). */

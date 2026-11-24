@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Завантажувати медіа вручну</string>
     <string name="settings_load_manually_description">Зображення та відео завантажуватимуться лише після дотику, щоб заощаджувати мобільний трафік.</string>
     <string name="settings_save_bandwidth">Економте трафік за допомогою менших зображень</string>
+    <string name="settings_save_data_mobile">Заощаджувати трафік у мобільних мережах</string>
+    <string name="settings_save_data_mobile_description">У мобільній мережі або через Wi-Fi з лімітним підключенням зображення завантажуються в нижчій якості, а відео й GIF відтворюються лише після натискання</string>
     <string name="settings_quality_low">Низька</string>
     <string name="settings_quality_medium">Середня</string>
     <string name="settings_quality_high">Висока</string>

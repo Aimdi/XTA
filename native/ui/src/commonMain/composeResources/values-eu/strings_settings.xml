@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Kargatu multimedia eskuz</string>
     <string name="settings_load_manually_description">Irudiak eta bideoak ez dira kargatuko haiek ukitu arte, datu mugikorrak aurrezteko.</string>
     <string name="settings_save_bandwidth">Gorde banda-zabalera irudi txikiagoekin</string>
+    <string name="settings_save_data_mobile">Aurreztu datuak sare mugikorretan</string>
+    <string name="settings_save_data_mobile_description">Datu mugikorrekin edo datu-muga duen Wi-Fi sare batean, irudiak kalitate txikiagoan kargatzen dira, eta bideoak eta GIFak sakatutakoan soilik hasten dira</string>
     <string name="settings_quality_low">Baxua</string>
     <string name="settings_quality_medium">Ertaina</string>
     <string name="settings_quality_high">Altua</string>

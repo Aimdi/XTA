@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Medyayı elle yükle</string>
     <string name="settings_load_manually_description">Mobil veriden tasarruf etmek için görüntüler ve videolar siz dokunana kadar yüklenmez.</string>
     <string name="settings_save_bandwidth">Daha küçük görüntülerle bant genişliğinden tasarruf edin</string>
+    <string name="settings_save_data_mobile">Mobil ağlarda veri tasarrufu yap</string>
+    <string name="settings_save_data_mobile_description">Mobil veride veya kotalı bir Wi-Fi ağında görseller daha düşük kalitede yüklenir, videolar ve GIF'ler ise ancak dokunulduğunda oynatılır</string>
     <string name="settings_quality_low">Düşük</string>
     <string name="settings_quality_medium">Orta</string>
     <string name="settings_quality_high">Yüksek</string>

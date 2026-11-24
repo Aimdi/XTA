@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Ŝargi aŭdvidaĵojn permane</string>
     <string name="settings_load_manually_description">Bildoj kaj videoj ne ŝargiĝos ĝis vi tuŝos ilin, por ŝpari moldatumojn.</string>
     <string name="settings_save_bandwidth">Konservi bendlarĝon per pli malgrandaj bildoj</string>
+    <string name="settings_save_data_mobile">Ŝpari datumojn en poŝtelefonaj retoj</string>
+    <string name="settings_save_data_mobile_description">Per poŝtelefonaj datumoj aŭ en mezurata Wi-Fi-reto bildoj ŝargiĝas kun malpli alta kvalito, kaj videoj kaj GIF-oj atendas tuŝeton</string>
     <string name="settings_quality_low">Malalta</string>
     <string name="settings_quality_medium">Meza</string>
     <string name="settings_quality_high">Alta</string>

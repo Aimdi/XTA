@@ -82,7 +82,7 @@ internal fun TileVideo(
     val key = remember { Any() }
     var seen by remember { mutableStateOf(false) }
     var share by remember { mutableFloatStateOf(0f) }
-    val autoplay = VideoRules.autoplays(settings?.get(MediaPrefs.autoplay) == true, LocalReducedMotion.current, rememberDataSaver())
+    val autoplay = VideoRules.autoplays(settings?.get(MediaPrefs.autoplay) == true, LocalReducedMotion.current, DataSaving.savesData(rememberDataSaver(), savesMobileData()))
     val muteSetting = settings?.get(MediaPrefs.mute) ?: true
     val chosen by tiles.seen.chosen.collectAsState()
     ReportsSeen(tiles, key, share, reports = autoplay && tiles.shared)
@@ -156,8 +156,10 @@ internal fun TileGif(source: VideoSource?, poster: Any?, modifier: Modifier = Mo
     var share by remember { mutableFloatStateOf(0f) }
     var settled by remember { mutableStateOf(false) }
     val chosen by tiles.seen.chosen.collectAsState()
-    ReportsSeen(tiles, key, share, reports = tiles.shared && source != null)
-    val wanted = VideoRules.gifLoops(share, chosen === key, tiles.shared)
+    // While data is saved on a metered network a GIF stays its poster; a tap opens it.
+    val held = savesMobileData()
+    ReportsSeen(tiles, key, share, reports = tiles.shared && source != null && !held)
+    val wanted = !held && VideoRules.gifLoops(share, chosen === key, tiles.shared)
     LaunchedEffect(wanted) {
         settled = false
         if (!wanted) return@LaunchedEffect

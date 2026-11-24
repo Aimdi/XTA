@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Cargar los medios manualmente</string>
     <string name="settings_load_manually_description">Las imágenes y los vídeos solo se cargan al tocarlos, para ahorrar datos móviles.</string>
     <string name="settings_save_bandwidth">Ahorrar ancho de banda con imágenes más pequeñas</string>
+    <string name="settings_save_data_mobile">Ahorrar datos en redes móviles</string>
+    <string name="settings_save_data_mobile_description">Con datos móviles o en una red Wi-Fi de uso medido, las imágenes se cargan con menor calidad y los videos y GIF esperan a que los toques</string>
     <string name="settings_quality_low">Baja</string>
     <string name="settings_quality_medium">Media</string>
     <string name="settings_quality_high">Alta</string>

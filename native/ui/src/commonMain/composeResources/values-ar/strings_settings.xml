@@ -105,6 +105,8 @@
     <string name="settings_load_manually">تحميل الوسائط يدويًا</string>
     <string name="settings_load_manually_description">لن يتم تحميل الصور والفيديوهات إلا عند النقر عليها، لتوفير بيانات الجوّال.</string>
     <string name="settings_save_bandwidth">حفظ النطاق الترددي مع صور أصغر</string>
+    <string name="settings_save_data_mobile">توفير البيانات على شبكات الجوال</string>
+    <string name="settings_save_data_mobile_description">عند استخدام بيانات الجوال أو شبكة Wi-Fi محدودة البيانات، تُحمَّل الصور بجودة أقل ولا تُشغَّل الفيديوهات وصور GIF إلا عند النقر عليها</string>
     <string name="settings_quality_low">منخفضة</string>
     <string name="settings_quality_medium">متوسطة</string>
     <string name="settings_quality_high">عالية</string>

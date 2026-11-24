@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Media handmatig laden</string>
     <string name="settings_load_manually_description">Afbeeldingen en video's worden pas geladen als je erop tikt, om mobiele data te besparen.</string>
     <string name="settings_save_bandwidth">Bandbreedte besparen met kleinere afbeeldingen</string>
+    <string name="settings_save_data_mobile">Data besparen op mobiele netwerken</string>
+    <string name="settings_save_data_mobile_description">Bij mobiele data of een wifi-netwerk met datalimiet worden afbeeldingen in lagere kwaliteit geladen en starten video's en gifs pas als je erop tikt</string>
     <string name="settings_quality_low">Laag</string>
     <string name="settings_quality_medium">Gemiddeld</string>
     <string name="settings_quality_high">Hoog</string>

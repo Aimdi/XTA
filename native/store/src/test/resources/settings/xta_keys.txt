@@ -296,6 +296,7 @@ tweets.threaded_replies
 feed.collapse_boosts
 feed.collapse_boosts_default_off_v1
 media.grid_layout
+media.save_data_on_mobile
 api.endpoint_registry.enabled
 api.endpoint_registry.url
 api.endpoint_registry.cache

@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Ładuj multimedia ręcznie</string>
     <string name="settings_load_manually_description">Obrazy i filmy będą ładowane dopiero po dotknięciu, aby oszczędzać dane komórkowe.</string>
     <string name="settings_save_bandwidth">Oszczędzaj transfer dzięki mniejszym obrazom</string>
+    <string name="settings_save_data_mobile">Oszczędzaj dane w sieciach komórkowych</string>
+    <string name="settings_save_data_mobile_description">Przy danych komórkowych lub w sieci Wi-Fi z limitem danych obrazy wczytują się w niższej jakości, a filmy i GIF-y uruchamiają się dopiero po dotknięciu</string>
     <string name="settings_quality_low">Niska</string>
     <string name="settings_quality_medium">Średnia</string>
     <string name="settings_quality_high">Wysoka</string>

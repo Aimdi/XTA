@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Загружать медиа вручную</string>
     <string name="settings_load_manually_description">Изображения и видео будут загружаться только после нажатия, чтобы экономить мобильный трафик.</string>
     <string name="settings_save_bandwidth">Экономьте место на экране, с изображениями меньшего размера</string>
+    <string name="settings_save_data_mobile">Экономить трафик в мобильных сетях</string>
+    <string name="settings_save_data_mobile_description">В мобильной сети или через Wi-Fi с лимитным подключением изображения загружаются в более низком качестве, а видео и GIF воспроизводятся только после нажатия</string>
     <string name="settings_quality_low">Низкое</string>
     <string name="settings_quality_medium">Среднее</string>
     <string name="settings_quality_high">Высокое</string>

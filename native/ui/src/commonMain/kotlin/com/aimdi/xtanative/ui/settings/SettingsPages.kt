@@ -361,6 +361,9 @@ internal fun MediaSettings(title: String, vm: SettingsViewModel, focus: String?,
                 label = { qualityLabel(it) },
                 focused = focus == MediaPrefs.imageQuality.key,
             ) { vm.set(MediaPrefs.imageQuality, it) }
+            if (!isDesktop) {
+                PrefSwitch(settings, MediaPrefs.saveDataOnMobile, stringResource(Res.string.settings_save_data_mobile), stringResource(Res.string.settings_save_data_mobile_description), vm, focus)
+            }
             ChoiceRow(
                 stringResource(Res.string.settings_grid_columns),
                 stringResource(Res.string.settings_grid_columns_description),

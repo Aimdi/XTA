@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Medien manuell laden</string>
     <string name="settings_load_manually_description">Fotos und Videos werden erst beim Antippen geladen, um mobile Daten zu sparen.</string>
     <string name="settings_save_bandwidth">Datennutzung mittels kleinerer Auflösung sparen</string>
+    <string name="settings_save_data_mobile">Daten in Mobilfunknetzen sparen</string>
+    <string name="settings_save_data_mobile_description">Bei mobilen Daten oder in einem getakteten WLAN werden Bilder in geringerer Qualität geladen, Videos und GIFs starten erst nach dem Antippen</string>
     <string name="settings_quality_low">Niedrig</string>
     <string name="settings_quality_medium">Mittel</string>
     <string name="settings_quality_high">Hoch</string>

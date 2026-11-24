@@ -91,13 +91,13 @@ import org.jetbrains.compose.resources.stringResource
  */
 val LocalGalleryOpener = staticCompositionLocalOf<((MediaGallery, Int) -> Unit)?> { null }
 
-/** The size a post's photos are shown at, by Settings › Media's image quality (_media.dart). */
+/** The size a post's photos are shown at, by Settings › Media's image quality (_media.dart), smaller while data is saved on a metered network. */
 @Composable
 fun rememberPhotoSize(): PhotoSize {
     val store = LocalSettingsStore.current
     val shared = sharedSettings(store.state)
     val settings = if (shared != null) shared.value else store.state.collectAsState().value
-    return MediaFiles.viewerSize(settings?.get(MediaPrefs.imageQuality) ?: MediaQuality.MEDIUM)
+    return DataSaving.photoSize(MediaFiles.viewerSize(settings?.get(MediaPrefs.imageQuality) ?: MediaQuality.MEDIUM), savesMobileData())
 }
 
 /** The grid Settings › Media asks for: its layout and columns. */

@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Laadi meedia käsitsi</string>
     <string name="settings_load_manually_description">Pildid ja videod laaditakse alles pärast puudutamist, et säästa mobiilset andmesidet.</string>
     <string name="settings_save_bandwidth">Kasutades väiksemaid pildifaile säästad ribalaiust</string>
+    <string name="settings_save_data_mobile">Säästa andmemahtu mobiilivõrgus</string>
+    <string name="settings_save_data_mobile_description">Mobiilse andmeside või mahupõhise WiFi-võrgu kasutamisel laaditakse pildid madalama kvaliteediga ning videod ja GIF-id käivituvad alles puudutamisel</string>
     <string name="settings_quality_low">Madal</string>
     <string name="settings_quality_medium">Keskmine</string>
     <string name="settings_quality_high">Kõrge</string>

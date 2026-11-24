@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Carregar els mèdia manualment</string>
     <string name="settings_load_manually_description">Les imatges i els vídeos només es carreguen en tocar-los, per estalviar dades mòbils.</string>
     <string name="settings_save_bandwidth">Estalviar amplada de banda amb imatges més petites</string>
+    <string name="settings_save_data_mobile">Estalvia dades en xarxes mòbils</string>
+    <string name="settings_save_data_mobile_description">Amb dades mòbils o en una xarxa Wi-Fi d'ús mesurat, les imatges es carreguen amb menys qualitat i els vídeos i GIF esperen un toc per reproduir-se</string>
     <string name="settings_quality_low">Baixa</string>
     <string name="settings_quality_medium">Mitjana</string>
     <string name="settings_quality_high">Alta</string>

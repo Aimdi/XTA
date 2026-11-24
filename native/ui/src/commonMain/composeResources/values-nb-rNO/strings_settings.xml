@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Last inn medier manuelt</string>
     <string name="settings_load_manually_description">Bilder og videoer lastes ikke inn før du trykker på dem, for å spare mobildata.</string>
     <string name="settings_save_bandwidth">Spar båndbredde ved å bruke mindre bilder</string>
+    <string name="settings_save_data_mobile">Spar data på mobilnett</string>
+    <string name="settings_save_data_mobile_description">På mobildata eller et Wi-Fi-nettverk med forbruksmåling lastes bilder inn i lavere kvalitet, og videoer og GIF-er spilles først av når du trykker på dem</string>
     <string name="settings_quality_low">Lav</string>
     <string name="settings_quality_medium">Middels</string>
     <string name="settings_quality_high">Høy</string>

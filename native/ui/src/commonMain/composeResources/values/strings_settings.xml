@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Load media manually</string>
     <string name="settings_load_manually_description">Photos and videos won't load until you tap them, to save mobile data.</string>
     <string name="settings_save_bandwidth">Save bandwidth with smaller images</string>
+    <string name="settings_save_data_mobile">Save data on mobile networks</string>
+    <string name="settings_save_data_mobile_description">On mobile data or a metered Wi-Fi network, pictures load at a lower quality and videos and GIFs wait for a tap</string>
     <string name="settings_quality_low">Low</string>
     <string name="settings_quality_medium">Medium</string>
     <string name="settings_quality_high">High</string>

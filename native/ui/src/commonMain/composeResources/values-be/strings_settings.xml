@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Загружаць медыя ўручную</string>
     <string name="settings_load_manually_description">Выявы і відэа не будуць загружацца, пакуль вы іх не націснеце — каб эканоміць мабільны трафік.</string>
     <string name="settings_save_bandwidth">Эканомце месца на экране, з выявамі меншага памеру</string>
+    <string name="settings_save_data_mobile">Эканоміць трафік у мабільных сетках</string>
+    <string name="settings_save_data_mobile_description">У мабільнай сетцы або праз Wi-Fi з абмежаваным трафікам выявы загружаюцца ў ніжэйшай якасці, а відэа і GIF прайграюцца толькі пасля націскання</string>
     <string name="settings_quality_low">Нізкая</string>
     <string name="settings_quality_medium">Сярэдняя</string>
     <string name="settings_quality_high">Высокая</string>

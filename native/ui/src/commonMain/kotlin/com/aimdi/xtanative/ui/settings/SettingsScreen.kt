@@ -287,6 +287,7 @@ private val INDEX = listOf(
     Indexed(SettingsSection.POSTS, PostsPrefs.rememberReadingPosition.key, Res.string.settings_reading_position, Res.string.settings_reading_position_description),
     Indexed(SettingsSection.MEDIA, MediaPrefs.loadManually.key, Res.string.settings_load_manually, Res.string.settings_load_manually_description),
     Indexed(SettingsSection.MEDIA, MediaPrefs.imageQuality.key, Res.string.settings_image_quality, Res.string.settings_save_bandwidth),
+    Indexed(SettingsSection.MEDIA, MediaPrefs.saveDataOnMobile.key, Res.string.settings_save_data_mobile, Res.string.settings_save_data_mobile_description),
     Indexed(SettingsSection.MEDIA, MediaPrefs.gridColumns.key, Res.string.settings_grid_columns, Res.string.settings_grid_columns_description),
     Indexed(SettingsSection.MEDIA, MediaPrefs.gridLayout.key, Res.string.settings_media_layout, null),
     Indexed(SettingsSection.MEDIA, MediaPrefs.videoQuality.key, Res.string.settings_video_quality, Res.string.settings_video_quality_description),
@@ -317,8 +318,8 @@ private val INDEX = listOf(
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.swipeBackTilt.key, Res.string.settings_swipe_back_tilt, Res.string.settings_swipe_back_tilt_description),
 )
 
-/** The controls only Android has: the desktop's window takes no screenshot block, gives no haptics and has no status bar. */
-private val ANDROID_ONLY = setOf(GeneralPrefs.disableScreenshots.key, AccessibilityPrefs.haptics.key, ThemePrefs.hideStatusBar.key)
+/** The controls only Android has: the desktop's window takes no screenshot block, gives no haptics, has no status bar and no metered network. */
+private val ANDROID_ONLY = setOf(GeneralPrefs.disableScreenshots.key, AccessibilityPrefs.haptics.key, ThemePrefs.hideStatusBar.key, MediaPrefs.saveDataOnMobile.key)
 
 /** The controls only the desktop has: its notifications, its tray, its windows' interface size and its proxy. */
 private val DESKTOP_ONLY = setOf(DesktopPrefs.notifications.key, DesktopPrefs.closeToTray.key, START_AT_LOGIN_KEY, DesktopPrefs.uiScale.key, DesktopPrefs.proxyMode.key)

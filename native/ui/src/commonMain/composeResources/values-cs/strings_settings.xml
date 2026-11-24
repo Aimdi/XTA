@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Načítat média ručně</string>
     <string name="settings_load_manually_description">Obrázky a videa se načtou až po klepnutí, aby se šetřila mobilní data.</string>
     <string name="settings_save_bandwidth">Ušetřete data s menšími obrázky</string>
+    <string name="settings_save_data_mobile">Šetřit data v mobilních sítích</string>
+    <string name="settings_save_data_mobile_description">Na mobilních datech nebo na měřené síti Wi-Fi se obrázky načítají v nižší kvalitě a videa a GIFy se spustí až po klepnutí</string>
     <string name="settings_quality_low">Nízká</string>
     <string name="settings_quality_medium">Střední</string>
     <string name="settings_quality_high">Vysoká</string>

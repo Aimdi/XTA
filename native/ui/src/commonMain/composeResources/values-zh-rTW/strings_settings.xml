@@ -105,6 +105,8 @@
     <string name="settings_load_manually">手動載入媒體</string>
     <string name="settings_load_manually_description">為節省行動數據，圖片和影片在點按前不會載入。</string>
     <string name="settings_save_bandwidth">使用較小的圖片以節省頻寬</string>
+    <string name="settings_save_data_mobile">在行動網路下節省數據用量</string>
+    <string name="settings_save_data_mobile_description">使用行動數據或計量付費的 Wi-Fi 網路時，圖片會以較低畫質載入，影片和 GIF 需輕觸後才會播放</string>
     <string name="settings_quality_low">低</string>
     <string name="settings_quality_medium">中</string>
     <string name="settings_quality_high">高</string>

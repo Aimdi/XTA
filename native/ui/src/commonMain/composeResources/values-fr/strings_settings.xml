@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Charger les médias manuellement</string>
     <string name="settings_load_manually_description">Les images et les vidéos ne se chargent qu'une fois touchées, afin d'économiser les données mobiles.</string>
     <string name="settings_save_bandwidth">Économiser de la bande passante en chargeant des images plus petites</string>
+    <string name="settings_save_data_mobile">Économiser les données sur les réseaux mobiles</string>
+    <string name="settings_save_data_mobile_description">En données mobiles ou sur un réseau Wi-Fi limité, les images se chargent en qualité réduite et les vidéos et GIF ne se lancent qu'après un appui</string>
     <string name="settings_quality_low">Basse</string>
     <string name="settings_quality_medium">Moyenne</string>
     <string name="settings_quality_high">Élevée</string>

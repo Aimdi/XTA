@@ -178,6 +178,9 @@ object MediaPrefs : PrefSection() {
     val imageQuality = choice("media.size", MediaQuality.MEDIUM, MediaQuality.entries)
     val videoQuality = choice("media.video_quality", MediaQuality.MEDIUM, MediaQuality.entries)
 
+    /** On a metered network (mobile data, a metered hotspot) pictures load smaller and videos wait for a tap; Android only. */
+    val saveDataOnMobile = flag("media.save_data_on_mobile", false, seeded = false)
+
     /** Set once the old single quality has been split into image and video. */
     val qualitySplitMigrated = flag("media.quality_split_migrated", false)
     val gridColumns = whole("media.grid_columns", 3, choices = (1..5).toSet())

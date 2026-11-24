@@ -105,6 +105,8 @@
     <string name="settings_load_manually">メディアを手動で読み込む</string>
     <string name="settings_load_manually_description">モバイルデータを節約するため、画像や動画はタップするまで読み込まれません。</string>
     <string name="settings_save_bandwidth">小さい画像にすると通信容量を削減できます</string>
+    <string name="settings_save_data_mobile">モバイル通信時にデータを節約</string>
+    <string name="settings_save_data_mobile_description">モバイルデータ通信や従量制のWi-Fiでは、画像を低画質で読み込み、動画とGIFはタップするまで再生しません</string>
     <string name="settings_quality_low">低</string>
     <string name="settings_quality_medium">中</string>
     <string name="settings_quality_high">高</string>

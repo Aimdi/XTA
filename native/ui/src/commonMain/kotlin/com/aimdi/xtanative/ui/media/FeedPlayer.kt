@@ -14,13 +14,14 @@ import com.aimdi.xtanative.ui.common.LocalSettingsStore
  * at it ([turns]), an X video under XTA's controls ([TileVideo]), a GIF
  * looping ([TileGif]); a network's tile plays as an X video does
  * (`ui/plugins`' MediaTiles). [Video], a silent looping preview while
- * Autoplay videos is on and media loads by itself, stays for what calls it.
+ * Autoplay videos is on, media loads by itself and no data is saved on a
+ * metered network, stays for what calls it.
  */
 internal class FeedPlayer(val turns: PlayerTurns<VideoPlayer>) : InlinePlayer {
     @Composable
     override fun Video(url: String, modifier: Modifier) {
         val settings by LocalSettingsStore.current.state.collectAsStateWithLifecycle()
-        if (settings?.get(MediaPrefs.autoplay) != true || settings?.get(MediaPrefs.loadManually) == true) return
+        if (settings?.get(MediaPrefs.autoplay) != true || settings?.get(MediaPrefs.loadManually) == true || savesMobileData()) return
         LoopingVideo(turns, VideoSource.looping(url), poster = null, modifier)
     }
 

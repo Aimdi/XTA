@@ -105,6 +105,8 @@
     <string name="settings_load_manually">Tải phương tiện thủ công</string>
     <string name="settings_load_manually_description">Hình ảnh và video sẽ không tải cho đến khi bạn chạm vào, để tiết kiệm dữ liệu di động.</string>
     <string name="settings_save_bandwidth">Tiết kiệm dung lượng với dung lượng ảnh nhỏ hơn</string>
+    <string name="settings_save_data_mobile">Tiết kiệm dữ liệu trên mạng di động</string>
+    <string name="settings_save_data_mobile_description">Khi dùng dữ liệu di động hoặc mạng Wi-Fi có giới hạn dung lượng, ảnh được tải ở chất lượng thấp hơn, còn video và GIF chỉ phát khi bạn chạm vào</string>
     <string name="settings_quality_low">Thấp</string>
     <string name="settings_quality_medium">Trung bình</string>
     <string name="settings_quality_high">Cao</string>
