@@ -18,6 +18,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyFollow
 import com.aimdi.xtanative.networks.bluesky.BlueskyPost
 import com.aimdi.xtanative.networks.bluesky.BlueskyProfile
 import com.aimdi.xtanative.networks.bluesky.BlueskyQuoteSort
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedList
@@ -72,7 +73,7 @@ internal fun ActivityScreen(app: BlueskyApp, uri: String, url: String, quotes: B
         title = pluginString(if (quotes) Strings.quotes else Strings.reposted_by),
         onBack = app.host::back,
         actions = {
-            if (url.isNotEmpty()) IconButton(onClick = { outside(url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser)) }
+            if (url.isNotEmpty()) IconTip(pluginString(Strings.open_in_browser)) { IconButton(onClick = { outside(url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser)) } }
         },
     ) { padding ->
         val modifier = Modifier.padding(top = padding.calculateTopPadding())

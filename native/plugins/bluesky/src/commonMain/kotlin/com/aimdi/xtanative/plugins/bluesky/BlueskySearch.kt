@@ -56,6 +56,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyProfile
 import com.aimdi.xtanative.networks.bluesky.BlueskySearchKind
 import com.aimdi.xtanative.networks.bluesky.BlueskySearchRules
 import com.aimdi.xtanative.networks.bluesky.BlueskyUrls
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.MessageText
@@ -134,7 +135,7 @@ internal fun BlueskySearchScreen(app: BlueskyApp, initial: String, author: Strin
                 singleLine = true,
                 placeholder = { Text(pluginString(if (shownKind == BlueskySearchKind.PEOPLE) Strings.search_people_hint else Strings.search_link_hint)) },
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-                trailingIcon = { IconButton(onClick = { send(text) }) { Icon(Icons.AutoMirrored.Filled.ArrowForward, pluginString(Strings.search)) } },
+                trailingIcon = { IconTip(pluginString(Strings.search)) { IconButton(onClick = { send(text) }) { Icon(Icons.AutoMirrored.Filled.ArrowForward, pluginString(Strings.search)) } } },
                 keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { send(text) }),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp).focusRequester(field),

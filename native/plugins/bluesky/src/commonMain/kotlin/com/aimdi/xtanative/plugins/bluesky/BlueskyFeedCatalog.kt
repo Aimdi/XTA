@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.bluesky.BlueskyFeedGenerator
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.plugins.MessageText
@@ -74,7 +75,7 @@ internal fun FeedCatalogScreen(app: BlueskyApp) {
                 label = { Text(pluginString(Strings.search_feeds_hint)) },
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 trailingIcon = {
-                    IconButton(onClick = { feeds.searchCatalog(query) }) { Icon(Icons.AutoMirrored.Filled.ArrowForward, pluginString(Strings.search)) }
+                    IconTip(pluginString(Strings.search)) { IconButton(onClick = { feeds.searchCatalog(query) }) { Icon(Icons.AutoMirrored.Filled.ArrowForward, pluginString(Strings.search)) } }
                 },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { feeds.searchCatalog(query) }),

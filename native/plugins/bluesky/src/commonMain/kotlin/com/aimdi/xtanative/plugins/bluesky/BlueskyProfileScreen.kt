@@ -77,6 +77,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyProfileTab
 import com.aimdi.xtanative.networks.bluesky.BlueskySearchKind
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
@@ -161,8 +162,8 @@ internal fun BlueskyProfileScreen(app: BlueskyApp, actor: String) {
         onBack = app.host::back,
         actions = {
             if (shown != null) {
-                IconButton(onClick = { app.openSearch(author = shown.handle, kind = BlueskySearchKind.POSTS) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
-                IconButton(onClick = { share("https://bsky.app/profile/" + shown.handle) }) { Icon(Icons.Filled.Share, pluginString(Strings.share_link)) }
+                IconTip(pluginString(Strings.search)) { IconButton(onClick = { app.openSearch(author = shown.handle, kind = BlueskySearchKind.POSTS) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } }
+                IconTip(pluginString(Strings.share_link)) { IconButton(onClick = { share("https://bsky.app/profile/" + shown.handle) }) { Icon(Icons.Filled.Share, pluginString(Strings.share_link)) } }
             }
         },
     ) { padding ->

@@ -23,6 +23,7 @@ import com.aimdi.xtanative.networks.bluesky.Bluesky
 import com.aimdi.xtanative.networks.bluesky.BlueskyTab
 import com.aimdi.xtanative.networks.bluesky.BlueskyUrls
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFrame
@@ -94,7 +95,7 @@ private val BlueskyTab.icon: ImageVector
 private fun HomeBar(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> Unit, filters: ReaderFilter?) {
     if (LocalPluginClientBar.current != null) return ShellBar(app, tab, onTab, filters)
     PluginHomeTabs(BlueskyTab.entries, tab, onTab, icon = { it.icon }, label = { pluginString(it.label) }) {
-        IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
+        IconTip(pluginString(Strings.search)) { IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } }
         if (filters != null) FiltersButton(filters.first, filters.second)
         HomeMenu(app)
     }
@@ -110,7 +111,7 @@ private fun HomeBar(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> Uni
 private fun ShellBar(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> Unit, filters: ReaderFilter?) {
     var filtering by rememberSaveable { mutableStateOf(false) }
     PluginHomeTabs(emptyList()) {
-        IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
+        IconTip(pluginString(Strings.search)) { IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } }
         HomeMenu(app)
     }
     ShellFeeds(shellFeeds(app, tab, onTab), filter = filters?.let { ShellFilter(it.first.setCount() > 0) { filtering = true } })
