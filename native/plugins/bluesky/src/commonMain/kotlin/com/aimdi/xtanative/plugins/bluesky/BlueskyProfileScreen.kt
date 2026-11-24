@@ -89,6 +89,7 @@ import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedState
 import com.aimdi.xtanative.ui.plugins.PluginAvatar
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
@@ -171,10 +172,12 @@ internal fun BlueskyProfileScreen(app: BlueskyApp, actor: String) {
                 profile.load()
                 pages?.refresh()
             }
+            val bottom = PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp)
             PullToRefreshBox(isRefreshing = state.loading && shown != null, onRefresh = { refresh() }, modifier = Modifier.fillMaxSize()) {
-                LazyColumn(
+                // The media grid keeps the window's width; the other tabs read in the column.
+                PluginReadingColumn(bottom, list) { column -> LazyColumn(
                     state = list,
-                    contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp),
+                    contentPadding = if (tab == ProfileTab.MEDIA) bottom else column,
                     modifier = Modifier.fillMaxSize().swipeTabs(if (shown != null) ProfileTab.entries else emptyList(), tab) { tab = it },
                 ) {
                     item(key = "header") { Header(app, shown, actor, followed) }
@@ -192,7 +195,7 @@ internal fun BlueskyProfileScreen(app: BlueskyApp, actor: String) {
                             pages != null -> pagedRows(paged, pages, key = { it.uri }, problemText = { pluginString(errorText(it)) }, empty = noPosts) { post -> PostRow(app, post) }
                         }
                     }
-                }
+                } }
             }
         }
     }

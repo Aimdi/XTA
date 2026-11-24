@@ -321,7 +321,8 @@ private fun Landing(app: BlueskyApp, kind: BlueskySearchKind, onSearch: (String)
     val suggestions = rememberKept("bluesky-suggestions") { scope -> Suggestions(app, scope) }
     val suggested by suggestions.state.collectAsState()
     val follows by app.follows.state.collectAsState()
-    LazyColumn(Modifier.fillMaxSize()) {
+    val list = rememberLazyListState()
+    PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
         if (recent.isNotEmpty()) item(key = "recent") { RecentSearches(app, recent, onSearch) }
         if (kind == BlueskySearchKind.POSTS) {
             item(key = "hint") { Text(pluginString(Strings.search_link_hint), modifier = Modifier.padding(24.dp)) }
@@ -337,7 +338,7 @@ private fun Landing(app: BlueskyApp, kind: BlueskySearchKind, onSearch: (String)
                 PersonRow(app, person, follows.orEmpty().any { it.isOf(person.did) || it.isOf(person.handle) })
             }
         }
-    }
+    } }
 }
 
 @Composable
