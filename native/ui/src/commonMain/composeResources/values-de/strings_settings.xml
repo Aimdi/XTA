@@ -375,6 +375,7 @@
     <string name="settings_start_at_login_description">Öffnet die App beim Anmelden; mit „In den Tray schließen“ wartet sie im Tray</string>
     <string name="tray_show">Fenster zeigen</string>
     <string name="tray_hide">Fenster ausblenden</string>
+    <string name="tray_new_search">Neue Suche</string>
     <string name="settings_proxy">Proxy</string>
     <string name="settings_proxy_description">Wie die App auf diesem Gerät ins Internet kommt. System nimmt die Proxy-Umgebungsvariablen, sonst die Proxy-Einstellungen des Desktops</string>
     <string name="settings_proxy_none">Kein Proxy</string>

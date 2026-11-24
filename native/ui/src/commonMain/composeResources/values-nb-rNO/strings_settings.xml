@@ -375,6 +375,7 @@
     <string name="settings_start_at_login_description">Åpner appen når du logger på; med Lukk til systemstatusfeltet venter den der</string>
     <string name="tray_show">Vis vindu</string>
     <string name="tray_hide">Skjul vindu</string>
+    <string name="tray_new_search">Nytt søk</string>
     <string name="settings_proxy">Mellomtjener</string>
     <string name="settings_proxy_description">Hvordan appen når internett på denne enheten. System bruker miljøvariablene for mellomtjener, ellers skrivebordets innstillinger</string>
     <string name="settings_proxy_none">Ingen mellomtjener</string>

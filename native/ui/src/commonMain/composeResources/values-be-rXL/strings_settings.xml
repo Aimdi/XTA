@@ -379,6 +379,7 @@
     <string name="settings_start_at_login_description">Adkryvaje prahramu pry ŭvachodzie; kali ŭklučana «Zhortvać u trej», jana čakaje ŭ trei</string>
     <string name="tray_show">Pakazać akno</string>
     <string name="tray_hide">Schavać akno</string>
+    <string name="tray_new_search">Novy pošuk</string>
     <string name="settings_proxy">Proksi</string>
     <string name="settings_proxy_description">Jak prahrama vychodzić u internet na hetaj pryladzie. «Sistema» biare zmiennyja asiaroddzia proksi, inakš nalady proksi pracoŭnaha stała</string>
     <string name="settings_proxy_none">Biez proksi</string>

@@ -175,4 +175,21 @@ class MprisTest {
         assertNull(Mpris.metadata(reading)["mpris:artUrl"])
         assertNull(CachedArt.fileUrl(null))
     }
+
+    @Test
+    fun theTrayFollowsTheSessionAndPlaysOrPausesIt() {
+        val service = MprisService({ null }, onMain = { it() })
+        val asked = mutableListOf<String>()
+        assertNull(service.session.value)
+        service.playPause()
+        service.bind("A reading", null, AudioSessionBinding(onPlay = { asked += "play" }, onPause = { asked += "pause" }, onStop = { asked += "stop" }))
+        service.update(true, 0, null)
+        assertEquals(true, service.session.value?.playing)
+        service.playPause()
+        service.update(false, 0, null)
+        service.playPause()
+        assertEquals(listOf("pause", "play"), asked)
+        service.clear()
+        assertNull(service.session.value)
+    }
 }

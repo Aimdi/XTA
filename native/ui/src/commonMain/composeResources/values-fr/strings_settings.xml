@@ -377,6 +377,7 @@
     <string name="settings_start_at_login_description">Ouvre l’app à l’ouverture de session ; avec « Fermer dans la zone de notification », elle y attend</string>
     <string name="tray_show">Afficher la fenêtre</string>
     <string name="tray_hide">Masquer la fenêtre</string>
+    <string name="tray_new_search">Nouvelle recherche</string>
     <string name="settings_proxy">Proxy</string>
     <string name="settings_proxy_description">Comment l’app accède à internet sur cet appareil. Système utilise les variables d’environnement du proxy, sinon les réglages proxy du bureau</string>
     <string name="settings_proxy_none">Aucun proxy</string>

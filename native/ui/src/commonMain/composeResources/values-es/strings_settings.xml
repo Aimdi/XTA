@@ -377,6 +377,7 @@
     <string name="settings_start_at_login_description">Abre la app al iniciar sesión; con «Cerrar a la bandeja» activado, espera en la bandeja</string>
     <string name="tray_show">Mostrar ventana</string>
     <string name="tray_hide">Ocultar ventana</string>
+    <string name="tray_new_search">Nueva búsqueda</string>
     <string name="settings_proxy">Proxy</string>
     <string name="settings_proxy_description">Cómo llega la app a internet en este dispositivo. Sistema usa las variables de entorno del proxy o, si no hay, los ajustes de proxy del escritorio</string>
     <string name="settings_proxy_none">Sin proxy</string>

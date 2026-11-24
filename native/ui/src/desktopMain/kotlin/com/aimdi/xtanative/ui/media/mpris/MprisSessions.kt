@@ -6,6 +6,9 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.swing.SwingUtilities
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * The desktop's media session: while something is bound (a reading, a video
@@ -39,6 +42,23 @@ class MprisService(
     private var tried = false
     private var named = false
     private var told: MprisNow? = null
+
+    private val sessionNow = MutableStateFlow<MprisNow?>(null)
+
+    /** What is bound now, as the controls are told it; null while nothing is (the tray's Play/Pause follows it). */
+    val session: StateFlow<MprisNow?> = sessionNow.asStateFlow()
+
+    /** Plays or pauses what is bound, as a control's PlayPause does; nothing while nothing is bound. */
+    fun playPause() {
+        val (state, held) = synchronized(lock) { now to binding }
+        held ?: return
+        val act = when (Mpris.playPause(state)) {
+            MprisAction.Play -> held.onPlay
+            MprisAction.Pause -> held.onPause
+            else -> held.onStop
+        }
+        act?.let(onMain)
+    }
 
     override fun bind(title: String, artist: String?, binding: AudioSessionBinding) = bind(null, title, artist, binding)
 
@@ -98,6 +118,7 @@ class MprisService(
     }
 
     private fun schedule() {
+        sessionNow.value = synchronized(lock) { now.takeIf { binding != null } }
         runCatching { bus.execute(::reconcile) }
     }
 

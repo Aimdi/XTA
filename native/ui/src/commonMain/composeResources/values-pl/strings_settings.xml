@@ -379,6 +379,7 @@
     <string name="settings_start_at_login_description">Otwiera aplikację po zalogowaniu; z włączonym zamykaniem do zasobnika czeka w zasobniku</string>
     <string name="tray_show">Pokaż okno</string>
     <string name="tray_hide">Ukryj okno</string>
+    <string name="tray_new_search">Nowe wyszukiwanie</string>
     <string name="settings_proxy">Proxy</string>
     <string name="settings_proxy_description">Jak aplikacja łączy się z internetem na tym urządzeniu. System używa zmiennych środowiskowych proxy, a jeśli ich nie ma — ustawień proxy pulpitu</string>
     <string name="settings_proxy_none">Bez proxy</string>

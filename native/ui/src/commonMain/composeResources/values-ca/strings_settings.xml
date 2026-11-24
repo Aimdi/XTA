@@ -377,6 +377,7 @@
     <string name="settings_start_at_login_description">Obre l’aplicació en iniciar la sessió; amb «Tanca a la safata» activat, espera a la safata</string>
     <string name="tray_show">Mostra la finestra</string>
     <string name="tray_hide">Amaga la finestra</string>
+    <string name="tray_new_search">Cerca nova</string>
     <string name="settings_proxy">Servidor intermediari</string>
     <string name="settings_proxy_description">Com arriba l’app a internet en aquest dispositiu. Sistema fa servir les variables d’entorn del servidor intermediari o, si no n’hi ha, la configuració de l’escriptori</string>
     <string name="settings_proxy_none">Sense servidor intermediari</string>

@@ -373,6 +373,7 @@
     <string name="settings_start_at_login_description">Mở ứng dụng khi bạn đăng nhập; khi bật Đóng xuống khay hệ thống, ứng dụng chờ trong khay</string>
     <string name="tray_show">Hiện cửa sổ</string>
     <string name="tray_hide">Ẩn cửa sổ</string>
+    <string name="tray_new_search">Tìm kiếm mới</string>
     <string name="settings_proxy">Proxy</string>
     <string name="settings_proxy_description">Cách ứng dụng ra internet trên thiết bị này. Hệ thống dùng biến môi trường proxy, nếu không có thì dùng cài đặt proxy của màn hình nền</string>
     <string name="settings_proxy_none">Không dùng proxy</string>

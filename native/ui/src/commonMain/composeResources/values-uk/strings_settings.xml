@@ -379,6 +379,7 @@
     <string name="settings_start_at_login_description">Відкриває застосунок під час входу; якщо ввімкнено «Згортати в трей», він чекає в треї</string>
     <string name="tray_show">Показати вікно</string>
     <string name="tray_hide">Сховати вікно</string>
+    <string name="tray_new_search">Новий пошук</string>
     <string name="settings_proxy">Проксі</string>
     <string name="settings_proxy_description">Як застосунок виходить в інтернет на цьому пристрої. «Система» бере змінні середовища проксі, інакше налаштування проксі робочого столу</string>
     <string name="settings_proxy_none">Без проксі</string>

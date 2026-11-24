@@ -379,6 +379,7 @@
     <string name="settings_start_at_login_description">Открывает приложение при входе; если включено «Сворачивать в трей», оно ждёт в трее</string>
     <string name="tray_show">Показать окно</string>
     <string name="tray_hide">Скрыть окно</string>
+    <string name="tray_new_search">Новый поиск</string>
     <string name="settings_proxy">Прокси</string>
     <string name="settings_proxy_description">Как приложение выходит в интернет на этом устройстве. «Система» берёт переменные окружения прокси, иначе настройки прокси рабочего стола</string>
     <string name="settings_proxy_none">Без прокси</string>

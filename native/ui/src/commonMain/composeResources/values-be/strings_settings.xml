@@ -379,6 +379,7 @@
     <string name="settings_start_at_login_description">Адкрывае праграму пры ўваходзе; калі ўключана «Згортваць у трэй», яна чакае ў трэі</string>
     <string name="tray_show">Паказаць акно</string>
     <string name="tray_hide">Схаваць акно</string>
+    <string name="tray_new_search">Новы пошук</string>
     <string name="settings_proxy">Проксі</string>
     <string name="settings_proxy_description">Як праграма выходзіць у інтэрнэт на гэтай прыладзе. «Сістэма» бярэ зменныя асяроддзя проксі, інакш налады проксі працоўнага стала</string>
     <string name="settings_proxy_none">Без проксі</string>

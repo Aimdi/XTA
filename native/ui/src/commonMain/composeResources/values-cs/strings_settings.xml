@@ -379,6 +379,7 @@
     <string name="settings_start_at_login_description">Otevře aplikaci po přihlášení; se zapnutým „Zavírat do oznamovací oblasti“ čeká v oznamovací oblasti</string>
     <string name="tray_show">Zobrazit okno</string>
     <string name="tray_hide">Skrýt okno</string>
+    <string name="tray_new_search">Nové hledání</string>
     <string name="settings_proxy">Proxy</string>
     <string name="settings_proxy_description">Jak se aplikace na tomto zařízení připojuje k internetu. Systém použije proměnné prostředí proxy, jinak nastavení proxy v desktopu</string>
     <string name="settings_proxy_none">Bez proxy</string>

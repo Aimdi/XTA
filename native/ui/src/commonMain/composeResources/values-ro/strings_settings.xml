@@ -377,6 +377,7 @@
     <string name="settings_start_at_login_description">Deschide aplicația la autentificare; cu Închide în zona de notificare activat, așteaptă acolo</string>
     <string name="tray_show">Arată fereastra</string>
     <string name="tray_hide">Ascunde fereastra</string>
+    <string name="tray_new_search">Căutare nouă</string>
     <string name="settings_proxy">Proxy</string>
     <string name="settings_proxy_description">Cum ajunge aplicația la internet pe acest dispozitiv. Sistem folosește variabilele de mediu ale proxy-ului, altfel setările de proxy ale desktopului</string>
     <string name="settings_proxy_none">Fără proxy</string>

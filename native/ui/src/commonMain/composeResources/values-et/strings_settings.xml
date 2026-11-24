@@ -375,6 +375,7 @@
     <string name="settings_start_at_login_description">Avab rakenduse sisselogimisel; kui „Sulge salve“ on sees, ootab see salves</string>
     <string name="tray_show">Näita akent</string>
     <string name="tray_hide">Peida aken</string>
+    <string name="tray_new_search">Uus otsing</string>
     <string name="settings_proxy">Puhverserver</string>
     <string name="settings_proxy_description">Kuidas rakendus selles seadmes internetti jõuab. Süsteem kasutab puhverserveri keskkonnamuutujaid, muidu töölaua puhverserveri seadeid</string>
     <string name="settings_proxy_none">Puhverserverita</string>

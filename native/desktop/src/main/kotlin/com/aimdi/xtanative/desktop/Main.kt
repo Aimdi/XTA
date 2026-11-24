@@ -50,6 +50,7 @@ import com.aimdi.xtanative.ui.chrome.ScreenArea
 import com.aimdi.xtanative.ui.chrome.SingleInstance
 import com.aimdi.xtanative.ui.chrome.WindowCrash
 import com.aimdi.xtanative.ui.chrome.WindowFullscreen
+import com.aimdi.xtanative.ui.chrome.tray.StatusNotifier
 import com.aimdi.xtanative.ui.chrome.tray.TrayAction
 import com.aimdi.xtanative.ui.chrome.tray.TrayService
 import com.aimdi.xtanative.ui.chrome.tray.trayWords
@@ -163,11 +164,19 @@ fun main(args: Array<String>) {
             trayClicks.collect { action ->
                 when {
                     action == TrayAction.QUIT -> quit()
+                    // As the launcher's New search action: X's search, with the field ready to type in.
+                    action == TrayAction.NEW_SEARCH -> {
+                        DesktopIncomingLinks.hand(NEW_SEARCH_LINK, byReader = true)
+                        raises.tryEmit(Unit)
+                    }
+                    action == TrayAction.PLAY_PAUSE -> MprisSessions.service.playPause()
                     visible -> visible = false
                     else -> raises.tryEmit(Unit)
                 }
             }
         }
+        // The tray's Play/Pause, while something plays or is paused in the app.
+        LaunchedEffect(Unit) { MprisSessions.service.session.collect { tray.media(StatusNotifier.media(it)) } }
         if (startHidden) {
             LaunchedEffect(Unit) {
                 val hides = withTimeoutOrNull(TRAY_WAIT_MS) { tray.shown.first { it } } == true &&
@@ -298,6 +307,9 @@ private fun minimumSize(scale: Double): Dimension {
     val (width, height) = SavedWindow.minimum(scale, area?.first ?: 0, area?.second ?: 0)
     return Dimension(width, height)
 }
+
+/** What the tray's New search opens, as the .desktop file's New search action does. */
+private const val NEW_SEARCH_LINK = "https://x.com/search"
 
 /** How long `--minimized` waits for a tray to show the icon before it opens the window after all. */
 private const val TRAY_WAIT_MS = 4_000L

@@ -375,6 +375,7 @@
     <string name="settings_start_at_login_description">Opens the app when you log in; with Close to tray on, it waits in the tray</string>
     <string name="tray_show">Show window</string>
     <string name="tray_hide">Hide window</string>
+    <string name="tray_new_search">New search</string>
     <string name="settings_proxy">Proxy</string>
     <string name="settings_proxy_description">How the app reaches the internet on this device. System uses the proxy environment variables, else the desktop’s proxy settings</string>
     <string name="settings_proxy_none">No proxy</string>

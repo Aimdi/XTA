@@ -373,6 +373,7 @@
     <string name="settings_start_at_login_description">ログイン時にアプリを開きます。「閉じるとトレイに格納」がオンならトレイで待機します</string>
     <string name="tray_show">ウィンドウを表示</string>
     <string name="tray_hide">ウィンドウを隠す</string>
+    <string name="tray_new_search">新しい検索</string>
     <string name="settings_proxy">プロキシ</string>
     <string name="settings_proxy_description">このデバイスでアプリがインターネットにつながる方法。「システム」はプロキシの環境変数、なければデスクトップのプロキシ設定を使います</string>
     <string name="settings_proxy_none">プロキシなし</string>

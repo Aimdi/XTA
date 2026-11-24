@@ -4,6 +4,7 @@ import com.aimdi.xtanative.ui.media.mpris.DBusConnection
 import com.aimdi.xtanative.ui.media.mpris.DBusMessage
 import com.aimdi.xtanative.ui.media.mpris.DBusType
 import com.aimdi.xtanative.ui.media.mpris.DBusWire
+import com.aimdi.xtanative.ui.media.mpris.MprisNow
 import com.aimdi.xtanative.ui.media.mpris.ObjectPath
 import com.aimdi.xtanative.ui.media.mpris.Variant
 import java.io.File
@@ -12,12 +13,13 @@ import java.util.Collections
 import java.util.concurrent.TimeUnit
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class TrayTest {
-    private val words = TrayWords("XTA", "Show window", "Hide window", "Quit XTA")
+    private val words = TrayWords("XTA", "Show window", "Hide window", "Quit XTA", "New search", "Play", "Pause")
     private val shown = TrayNow(words, windowShown = true)
     private val pixmaps = listOf(listOf(1, 1, byteArrayOf(-1, 0, 0, -1)))
 
@@ -34,8 +36,9 @@ class TrayTest {
         assertEquals(Variant("s", "submenu"), (root as Map<*, *>)["children-display"])
         val labels = (children as List<*>).map { ((it as Variant).value as List<*>)[1] as Map<*, *> }
         assertEquals(Variant("s", "Hide window"), labels[0]["label"])
-        assertEquals(Variant("s", "separator"), labels[1]["type"])
-        assertEquals(Variant("s", "Quit XTA"), labels[2]["label"])
+        assertEquals(Variant("s", "New search"), labels[1]["label"])
+        assertEquals(Variant("s", "separator"), labels[2]["type"])
+        assertEquals(Variant("s", "Quit XTA"), labels[3]["label"])
         val hidden = StatusNotifier.answer(menu("GetProperty", "is", StatusNotifier.TOGGLE_ID, "label"), shown.copy(windowShown = false), "", pixmaps)
         assertEquals(listOf(Variant("s", "Show window")), hidden.body)
         // Depth 0: the root alone.
@@ -47,6 +50,11 @@ class TrayTest {
     fun clicksAskWhatTheirItemSays() {
         assertEquals(TrayAction.TOGGLE, StatusNotifier.answer(menu("Event", "isvu", 1, "clicked", Variant("i", 0), 0L), shown, "", pixmaps).action)
         assertEquals(TrayAction.QUIT, StatusNotifier.answer(menu("Event", "isvu", 3, "clicked", Variant("i", 0), 0L), shown, "", pixmaps).action)
+        assertEquals(TrayAction.NEW_SEARCH, StatusNotifier.answer(menu("Event", "isvu", StatusNotifier.SEARCH_ID, "clicked", Variant("i", 0), 0L), shown, "", pixmaps).action)
+        // The media item answers only while it is shown.
+        assertNull(StatusNotifier.answer(menu("Event", "isvu", StatusNotifier.MEDIA_ID, "clicked", Variant("i", 0), 0L), shown, "", pixmaps).action)
+        val playing = shown.copy(media = TrayMedia.PAUSE)
+        assertEquals(TrayAction.PLAY_PAUSE, StatusNotifier.answer(menu("Event", "isvu", StatusNotifier.MEDIA_ID, "clicked", Variant("i", 0), 0L), playing, "", pixmaps).action)
         assertNull(StatusNotifier.answer(menu("Event", "isvu", 3, "hovered", Variant("i", 0), 0L), shown, "", pixmaps).action)
         assertNull(StatusNotifier.answer(menu("Event", "isvu", 2, "clicked", Variant("i", 0), 0L), shown, "", pixmaps).action)
         val group = StatusNotifier.answer(menu("EventGroup", "a(isvu)", listOf(listOf(9, "clicked", Variant("i", 0), 0L), listOf(1, "clicked", Variant("i", 0), 0L))), shown, "", pixmaps)
@@ -215,5 +223,36 @@ class TrayTest {
             daemon.destroy()
             daemon.waitFor(5, TimeUnit.SECONDS)
         }
+    }
+
+    private fun labels(now: TrayNow): List<Any?> {
+        val (_, _, children) = StatusNotifier.answer(menu("GetLayout", "iias", 0, -1, emptyList<String>()), now, "", pixmaps).body[1] as List<*>
+        return (children as List<*>).map { (((it as Variant).value as List<*>)[1] as Map<*, *>).let { props -> props["label"] ?: props["type"] } }
+    }
+
+    @Test
+    fun theMediaItemPlaysOrPausesWhileTheAppHasASession() {
+        assertEquals(4, labels(shown).size)
+        assertEquals(Variant("s", "Pause"), labels(shown.copy(media = TrayMedia.PAUSE))[2])
+        assertEquals(Variant("s", "Play"), labels(shown.copy(media = TrayMedia.PLAY))[2])
+        assertEquals(Variant("s", "separator"), labels(shown.copy(media = TrayMedia.PLAY))[3])
+        assertNull(StatusNotifier.media(null))
+        assertEquals(TrayMedia.PAUSE, StatusNotifier.media(MprisNow(playing = true, canPlay = true, canPause = true)))
+        assertEquals(TrayMedia.PLAY, StatusNotifier.media(MprisNow(playing = false, canPlay = true, canPause = true)))
+        // A reading that can only stop offers no Play/Pause.
+        assertNull(StatusNotifier.media(MprisNow(playing = true)))
+    }
+
+    @Test
+    fun theMenuReadsRightToLeftInALanguageWrittenSo() {
+        val direction = { now: TrayNow ->
+            StatusNotifier.answer(call(StatusNotifier.MENU_PATH, StatusNotifier.PROPERTIES, "Get", "ss", StatusNotifier.MENU, "TextDirection"), now, "", pixmaps).body.single()
+        }
+        assertEquals(Variant("s", "ltr"), direction(shown))
+        assertEquals(Variant("s", "rtl"), direction(shown.copy(words = words.copy(rtl = true))))
+        assertTrue(StatusNotifier.rightToLeft("ar"))
+        assertTrue(StatusNotifier.rightToLeft("he"))
+        assertFalse(StatusNotifier.rightToLeft("de"))
+        assertFalse(StatusNotifier.rightToLeft(""))
     }
 }

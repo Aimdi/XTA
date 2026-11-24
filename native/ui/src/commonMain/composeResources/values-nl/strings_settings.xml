@@ -375,6 +375,7 @@
     <string name="settings_start_at_login_description">Opent de app bij het aanmelden; met Sluiten naar systeemvak wacht hij in het systeemvak</string>
     <string name="tray_show">Venster tonen</string>
     <string name="tray_hide">Venster verbergen</string>
+    <string name="tray_new_search">Nieuwe zoekopdracht</string>
     <string name="settings_proxy">Proxy</string>
     <string name="settings_proxy_description">Hoe de app op dit apparaat het internet bereikt. Systeem gebruikt de proxy-omgevingsvariabelen, anders de proxyinstellingen van het bureaublad</string>
     <string name="settings_proxy_none">Geen proxy</string>

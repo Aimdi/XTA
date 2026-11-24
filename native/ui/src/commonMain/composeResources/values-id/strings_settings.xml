@@ -373,6 +373,7 @@
     <string name="settings_start_at_login_description">Membuka aplikasi saat Anda masuk; dengan Tutup ke baki sistem aktif, aplikasi menunggu di baki</string>
     <string name="tray_show">Tampilkan jendela</string>
     <string name="tray_hide">Sembunyikan jendela</string>
+    <string name="tray_new_search">Pencarian baru</string>
     <string name="settings_proxy">Proksi</string>
     <string name="settings_proxy_description">Cara aplikasi menjangkau internet di perangkat ini. Sistem memakai variabel lingkungan proksi, jika tidak ada, pengaturan proksi desktop</string>
     <string name="settings_proxy_none">Tanpa proksi</string>

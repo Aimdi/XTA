@@ -375,6 +375,7 @@
     <string name="settings_start_at_login_description">लॉग इन करने पर ऐप खोलता है; ट्रे में बंद करें चालू हो तो यह ट्रे में रहता है</string>
     <string name="tray_show">विंडो दिखाएँ</string>
     <string name="tray_hide">विंडो छिपाएँ</string>
+    <string name="tray_new_search">नई खोज</string>
     <string name="settings_proxy">प्रॉक्सी</string>
     <string name="settings_proxy_description">इस डिवाइस पर ऐप इंटरनेट तक कैसे पहुँचता है। सिस्टम प्रॉक्सी के एनवायरनमेंट वेरिएबल लेता है, वरना डेस्कटॉप की प्रॉक्सी सेटिंग</string>
     <string name="settings_proxy_none">कोई प्रॉक्सी नहीं</string>

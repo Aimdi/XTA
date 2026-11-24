@@ -377,6 +377,7 @@
     <string name="settings_start_at_login_description">Abre a app ao iniciar sessão; com Fechar para a área de notificação ativo, fica lá à espera</string>
     <string name="tray_show">Mostrar janela</string>
     <string name="tray_hide">Ocultar janela</string>
+    <string name="tray_new_search">Nova pesquisa</string>
     <string name="settings_proxy">Proxy</string>
     <string name="settings_proxy_description">Como a app chega à internet neste dispositivo. Sistema usa as variáveis de ambiente do proxy ou, se não houver, as definições de proxy do ambiente de trabalho</string>
     <string name="settings_proxy_none">Sem proxy</string>

@@ -373,6 +373,7 @@
     <string name="settings_start_at_login_description">登录时打开应用；开启“关闭时最小化到托盘”时，它在托盘中等待</string>
     <string name="tray_show">显示窗口</string>
     <string name="tray_hide">隐藏窗口</string>
+    <string name="tray_new_search">新搜索</string>
     <string name="settings_proxy">代理</string>
     <string name="settings_proxy_description">应用在此设备上如何连接互联网。“系统”使用代理环境变量，否则使用桌面的代理设置</string>
     <string name="settings_proxy_none">不使用代理</string>

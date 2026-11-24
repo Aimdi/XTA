@@ -375,6 +375,7 @@
     <string name="settings_start_at_login_description">Aplikazioa irekitzen du saioa hastean; «Itxi erretilura» aktibatuta, erretiluan itxaroten du</string>
     <string name="tray_show">Erakutsi leihoa</string>
     <string name="tray_hide">Ezkutatu leihoa</string>
+    <string name="tray_new_search">Bilaketa berria</string>
     <string name="settings_proxy">Proxya</string>
     <string name="settings_proxy_description">Aplikazioa nola iristen den internetera gailu honetan. Sistemak proxyaren ingurune-aldagaiak erabiltzen ditu, bestela mahaigaineko proxy-ezarpenak</string>
     <string name="settings_proxy_none">Proxyrik gabe</string>

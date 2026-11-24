@@ -3,31 +3,52 @@ package com.aimdi.xtanative.ui.chrome.tray
 import androidx.compose.runtime.Composable
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.keys_quit
+import com.aimdi.xtanative.ui.generated.resources.reader_media_pause
+import com.aimdi.xtanative.ui.generated.resources.reader_media_play
 import com.aimdi.xtanative.ui.generated.resources.tray_hide
+import com.aimdi.xtanative.ui.generated.resources.tray_new_search
 import com.aimdi.xtanative.ui.generated.resources.tray_show
 import com.aimdi.xtanative.ui.media.mpris.DBusConnection
 import com.aimdi.xtanative.ui.media.mpris.DBusMessage
+import com.aimdi.xtanative.ui.media.mpris.MprisNow
 import com.aimdi.xtanative.ui.media.mpris.ObjectPath
 import com.aimdi.xtanative.ui.media.mpris.Variant
+import java.util.Locale
 import org.jetbrains.compose.resources.stringResource
 
-/** What the tray's icon and its menu say: the app's name and the menu's words, in the reader's language. */
+/** What the tray's icon and its menu say: the app's name and the menu's words, in the reader's language, and whether it is written right to left. */
 data class TrayWords(
     val title: String = "XTA Native",
     val show: String = "Show",
     val hide: String = "Hide",
     val quit: String = "Quit",
+    val newSearch: String = "New search",
+    val play: String = "Play",
+    val pause: String = "Pause",
+    val rtl: Boolean = false,
 )
 
 /** The tray's words in the reader's language, under the app's name [title]. */
 @Composable
-fun trayWords(title: String): TrayWords =
-    TrayWords(title, stringResource(Res.string.tray_show), stringResource(Res.string.tray_hide), stringResource(Res.string.keys_quit))
+fun trayWords(title: String): TrayWords = TrayWords(
+    title = title,
+    show = stringResource(Res.string.tray_show),
+    hide = stringResource(Res.string.tray_hide),
+    quit = stringResource(Res.string.keys_quit),
+    newSearch = stringResource(Res.string.tray_new_search),
+    play = stringResource(Res.string.reader_media_play),
+    pause = stringResource(Res.string.reader_media_pause),
+    rtl = StatusNotifier.rightToLeft(Locale.getDefault().language),
+)
 
-/** What the tray is shown of the app: its words, and whether the window is on screen. */
+/** What the menu's media item offers while something plays or is paused in the app (an MPRIS session): play it, or pause it. */
+enum class TrayMedia { PLAY, PAUSE }
+
+/** What the tray is shown of the app: its words, whether the window is on screen, and what the media item offers (none without a session). */
 data class TrayNow(
     val words: TrayWords = TrayWords(),
     val windowShown: Boolean = true,
+    val media: TrayMedia? = null,
     /** The menu's revision, which goes up each time its items change. */
     val revision: Long = 1,
 )
@@ -42,6 +63,12 @@ enum class TrayAction {
 
     /** The menu's Quit. */
     QUIT,
+
+    /** The menu's New search: X's search, as the launcher's New search action opens it. */
+    NEW_SEARCH,
+
+    /** The menu's Play or Pause, of what plays in the app now. */
+    PLAY_PAUSE,
 }
 
 /** The answer to one call: its reply's signature and body, or an error; with the [action] it asks for. */
@@ -56,7 +83,9 @@ data class TrayAnswer(
  * The tray icon, as plain decisions: a StatusNotifierItem (the
  * freedesktop/KDE tray specification Waybar, quickshell's bar, KDE and
  * GNOME's AppIndicator extension show) at [ITEM_PATH] and its
- * com.canonical.dbusmenu menu at [MENU_PATH]: Show or Hide, then Quit.
+ * com.canonical.dbusmenu menu at [MENU_PATH]: Show or Hide, New search,
+ * Play or Pause while something plays in the app, then Quit; laid out right
+ * to left in a language written so.
  * Each property and each call's answer is decided here; [TrayService]
  * carries them over the bus.
  */
@@ -75,12 +104,30 @@ object StatusNotifier {
     private const val UNKNOWN_INTERFACE = "org.freedesktop.DBus.Error.UnknownInterface"
     private const val INVALID_ARGS = "org.freedesktop.DBus.Error.InvalidArgs"
 
-    /** The menu's items: Show/Hide, a line, Quit; 0 is the root that holds them. */
+    /** The menu's items: Show/Hide, New search, Play/Pause, a line, Quit; 0 is the root that holds them. */
     const val ROOT_ID = 0
     const val TOGGLE_ID = 1
     const val LINE_ID = 2
     const val QUIT_ID = 3
-    private val ITEMS = listOf(TOGGLE_ID, LINE_ID, QUIT_ID)
+    const val SEARCH_ID = 4
+    const val MEDIA_ID = 5
+
+    /** The items shown while [now] stands, in order: the media item only while there is a session. */
+    fun items(now: TrayNow): List<Int> = listOfNotNull(TOGGLE_ID, SEARCH_ID, MEDIA_ID.takeIf { now.media != null }, LINE_ID, QUIT_ID)
+
+    /** The app's languages written right to left (of those it ships: Arabic; Hebrew, Persian and Urdu as well, should they come). */
+    private val RIGHT_TO_LEFT = setOf("ar", "he", "iw", "fa", "ur")
+
+    /** Whether [language] (an ISO 639 code) is written right to left. */
+    fun rightToLeft(language: String): Boolean = language.lowercase() in RIGHT_TO_LEFT
+
+    /** What the media item offers for the app's media [session]: Pause while it plays, Play while paused; nothing it could not do. */
+    fun media(session: MprisNow?): TrayMedia? = when {
+        session == null -> null
+        session.playing && session.canPause -> TrayMedia.PAUSE
+        !session.playing && session.canPlay -> TrayMedia.PLAY
+        else -> null
+    }
 
     /** The well-known name the item takes on the bus, as the specification asks: one per process. */
     fun busName(pid: Long) = "org.kde.StatusNotifierItem-$pid-1"
@@ -109,9 +156,9 @@ object StatusNotifier {
         "Menu" to Variant("o", ObjectPath(MENU_PATH)),
     )
 
-    fun menuProperties(): Map<String, Variant> = mapOf(
+    fun menuProperties(now: TrayNow): Map<String, Variant> = mapOf(
         "Version" to Variant("u", 3L),
-        "TextDirection" to Variant("s", "ltr"),
+        "TextDirection" to Variant("s", if (now.words.rtl) "rtl" else "ltr"),
         "Status" to Variant("s", "normal"),
         "IconThemePath" to Variant("as", emptyList<String>()),
     )
@@ -125,23 +172,31 @@ object StatusNotifier {
         TOGGLE_ID -> mapOf("label" to Variant("s", label(if (now.windowShown) now.words.hide else now.words.show)))
         LINE_ID -> mapOf("type" to Variant("s", "separator"))
         QUIT_ID -> mapOf("label" to Variant("s", label(now.words.quit)))
+        SEARCH_ID -> mapOf("label" to Variant("s", label(now.words.newSearch)))
+        MEDIA_ID -> when (now.media) {
+            null -> null
+            TrayMedia.PLAY -> mapOf("label" to Variant("s", label(now.words.play)))
+            TrayMedia.PAUSE -> mapOf("label" to Variant("s", label(now.words.pause)))
+        }
         else -> null
     }
 
     /** The layout under [id] as (ia{sv}av), its children [depth] deep (-1: all). */
     fun layout(id: Int, depth: Int, now: TrayNow): List<Any?>? {
         val props = itemOf(id, now) ?: return null
-        val children = if (id == ROOT_ID && depth != 0) ITEMS.map { Variant("(ia{sv}av)", layout(it, depth - 1, now)) } else emptyList()
+        val children = if (id == ROOT_ID && depth != 0) items(now).map { Variant("(ia{sv}av)", layout(it, depth - 1, now)) } else emptyList()
         return listOf(id, props, children)
     }
 
     private fun only(props: Map<String, Variant>, names: List<*>): Map<String, Variant> =
         if (names.isEmpty()) props else props.filterKeys { it in names }
 
-    /** What clicking menu item [id] asks. */
-    fun clicked(id: Int): TrayAction? = when (id) {
+    /** What clicking menu item [id] asks while [now] stands. */
+    fun clicked(id: Int, now: TrayNow): TrayAction? = when (id) {
         TOGGLE_ID -> TrayAction.TOGGLE
         QUIT_ID -> TrayAction.QUIT
+        SEARCH_ID -> TrayAction.NEW_SEARCH
+        MEDIA_ID -> TrayAction.PLAY_PAUSE.takeIf { now.media != null }
         else -> null
     }
 
@@ -161,7 +216,7 @@ object StatusNotifier {
         if (call.iface == PROPERTIES) {
             val all = when (args.getOrNull(0) as? String) {
                 ITEM -> itemProperties(now, iconName, pixmaps).takeIf { path == ITEM_PATH }
-                MENU -> menuProperties().takeIf { path == MENU_PATH }
+                MENU -> menuProperties(now).takeIf { path == MENU_PATH }
                 else -> null
             }
             return when (call.member) {
@@ -201,7 +256,7 @@ object StatusNotifier {
                 TrayAnswer("u(ia{sv}av)", listOf(now.revision, filtered))
             }
             "GetGroupProperties" -> {
-                val ids = (args.getOrNull(0) as? List<*>)?.filterIsInstance<Int>()?.takeIf { it.isNotEmpty() } ?: (listOf(ROOT_ID) + ITEMS)
+                val ids = (args.getOrNull(0) as? List<*>)?.filterIsInstance<Int>()?.takeIf { it.isNotEmpty() } ?: (listOf(ROOT_ID) + items(now))
                 val names = args.getOrNull(1) as? List<*> ?: emptyList<Any>()
                 TrayAnswer("a(ia{sv})", listOf(ids.mapNotNull { id -> itemOf(id, now)?.let { listOf(id, only(it, names)) } }))
             }
@@ -211,12 +266,12 @@ object StatusNotifier {
             }
             "Event" -> {
                 val id = (args.getOrNull(0) as? Int) ?: -1
-                TrayAnswer(action = clicked(id).takeIf { args.getOrNull(1) == "clicked" })
+                TrayAnswer(action = clicked(id, now).takeIf { args.getOrNull(1) == "clicked" })
             }
             "EventGroup" -> {
                 // Each (id, event, data, time); the first click in it is the one acted on.
                 val events = (args.getOrNull(0) as? List<*>).orEmpty().filterIsInstance<List<*>>()
-                val action = events.firstNotNullOfOrNull { event -> clicked((event.getOrNull(0) as? Int) ?: -1).takeIf { event.getOrNull(1) == "clicked" } }
+                val action = events.firstNotNullOfOrNull { event -> clicked((event.getOrNull(0) as? Int) ?: -1, now).takeIf { event.getOrNull(1) == "clicked" } }
                 val unknown = events.mapNotNull { event -> (event.getOrNull(0) as? Int)?.takeIf { itemOf(it, now) == null } }
                 TrayAnswer("ai", listOf(unknown), action = action)
             }

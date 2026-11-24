@@ -375,6 +375,7 @@
     <string name="settings_start_at_login_description">Malfermas la aplikaĵon ĉe ensaluto; kun «Fermi al la pleto» ĝi atendas en la pleto</string>
     <string name="tray_show">Montri fenestron</string>
     <string name="tray_hide">Kaŝi fenestron</string>
+    <string name="tray_new_search">Nova serĉo</string>
     <string name="settings_proxy">Prokurilo</string>
     <string name="settings_proxy_description">Kiel la aplikaĵo atingas la interreton en ĉi tiu aparato. Sistemo uzas la mediajn variablojn de prokurilo, alie la agordojn de la labortablo</string>
     <string name="settings_proxy_none">Sen prokurilo</string>
