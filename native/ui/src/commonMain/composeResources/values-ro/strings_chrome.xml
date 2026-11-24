@@ -5,6 +5,10 @@
     <string name="chrome_update_view_version">Vizualizați versiunea %1$s pe GitHub</string>
     <string name="chrome_update_view">Vizualizați pe GitHub</string>
     <string name="chrome_update_download">Descarcă</string>
+    <string name="chrome_update_install_package">Descarcă pachetul, apoi rulează asta în dosarul în care l-ai salvat:</string>
+    <string name="chrome_update_install_tarball">Descarcă arhiva, apoi rulează asta în dosarul în care ai salvat-o:</string>
+    <string name="chrome_update_copy">Copiază comanda</string>
+    <string name="chrome_update_skip">Omite această versiune</string>
     <string name="chrome_licences_legalese">Lansat sub Licența MIT</string>
     <plurals name="chrome_licences_count">
         <item quantity="one">%1$d licență</item>

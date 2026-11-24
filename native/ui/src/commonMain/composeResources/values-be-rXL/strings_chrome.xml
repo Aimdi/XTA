@@ -5,6 +5,10 @@
     <string name="chrome_update_view_version">Pahladzieć versiju %1$s na GitHub</string>
     <string name="chrome_update_view">Pahladzieć na GitHub</string>
     <string name="chrome_update_download">Sćahnuć</string>
+    <string name="chrome_update_install_package">Spampujcie pakiet, potym vykanajcie heta ŭ papcy, kudy vy jaho zachavali:</string>
+    <string name="chrome_update_install_tarball">Spampujcie archiŭ, potym vykanajcie heta ŭ papcy, kudy vy jaho zachavali:</string>
+    <string name="chrome_update_copy">Kapijavać kamandu</string>
+    <string name="chrome_update_skip">Prapuscić hetu versiju</string>
     <string name="chrome_licences_legalese">Apublikavana pad licenzijaj MIT</string>
     <plurals name="chrome_licences_count">
         <item quantity="one">%1$d licenzija</item>

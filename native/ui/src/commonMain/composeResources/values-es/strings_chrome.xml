@@ -5,6 +5,10 @@
     <string name="chrome_update_view_version">Ver la versión %1$s en GitHub</string>
     <string name="chrome_update_view">Ver en GitHub</string>
     <string name="chrome_update_download">Descargar</string>
+    <string name="chrome_update_install_package">Descarga el paquete y luego ejecuta esto en la carpeta donde lo guardaste:</string>
+    <string name="chrome_update_install_tarball">Descarga el archivo comprimido y luego ejecuta esto en la carpeta donde lo guardaste:</string>
+    <string name="chrome_update_copy">Copiar comando</string>
+    <string name="chrome_update_skip">Omitir esta versión</string>
     <string name="chrome_licences_legalese">Publicado bajo la Licencia MIT</string>
     <plurals name="chrome_licences_count">
         <item quantity="one">%1$d licencia</item>

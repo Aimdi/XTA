@@ -5,6 +5,10 @@
     <string name="chrome_update_view_version">GitHub에서 버전 %1$s 보기</string>
     <string name="chrome_update_view">GitHub에서 보기</string>
     <string name="chrome_update_download">다운로드</string>
+    <string name="chrome_update_install_package">패키지를 다운로드한 뒤 저장한 폴더에서 다음을 실행하세요:</string>
+    <string name="chrome_update_install_tarball">압축 파일을 다운로드한 뒤 저장한 폴더에서 다음을 실행하세요:</string>
+    <string name="chrome_update_copy">명령 복사</string>
+    <string name="chrome_update_skip">이 버전 건너뛰기</string>
     <string name="chrome_licences_legalese">MIT 라이선스에 따라 출시</string>
     <plurals name="chrome_licences_count">
         <item quantity="other">라이선스 %1$d개</item>

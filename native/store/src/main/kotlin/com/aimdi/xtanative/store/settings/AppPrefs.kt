@@ -240,6 +240,15 @@ object SpeechPrefs : PrefSection() {
 }
 
 /**
+ * What the app's update offer remembers, on Android and the desktop, which
+ * XTA never had: outside [XtaPrefs], as [DesktopPrefs] are.
+ */
+object UpdatePrefs : PrefSection() {
+    /** The release the reader chose to skip ("Skip this version"), by its tag; a newer one is offered again. */
+    val skippedTag = text("update.skipped_tag", "", seeded = false)
+}
+
+/**
  * The desktop app's own settings, which XTA never had: kept beside XTA's in
  * the same store, but outside [XtaPrefs] (no XTA backup or seed knows them).
  */

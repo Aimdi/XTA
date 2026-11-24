@@ -119,9 +119,36 @@ class NativeUpdatesTest {
     }
 
     @Test
-    fun theDesktopsPackageIsTheOneUnderOpt() {
-        assertEquals(UpdateFile.PACKAGE, NativeUpdates.desktopFile("/opt/xta-native/lib/runtime"))
-        assertEquals(UpdateFile.TARBALL, NativeUpdates.desktopFile("/home/reader/xta-native-desktop-0.1.47-linux-x64/lib/runtime"))
+    fun theDesktopsPackageIsTheOneUnderOptThatPacmanLists() {
+        val pacman = listOf("glibc-2.42-1", "xta-native-1.0.14.30-1", "zstd-1.5.7-2")
+        assertEquals(UpdateFile.PACKAGE, NativeUpdates.desktopFile("/opt/xta-native/lib/runtime", pacman))
+        assertEquals(UpdateFile.TARBALL, NativeUpdates.desktopFile("/home/reader/xta-native-desktop-0.1.47-linux-x64/lib/runtime", pacman))
+        assertEquals(UpdateFile.TARBALL, NativeUpdates.desktopFile("/opt/xta-native/lib/runtime", emptyList()), "copied to /opt by hand, or no pacman")
+        assertEquals(UpdateFile.TARBALL, NativeUpdates.desktopFile("/opt/xta-native/lib/runtime", listOf("xta-native-bin-1.0-1", "xta-native-git-r12.abc-1")), "another package of a like name")
+    }
+
+    @Test
+    fun theOfferSaysHowToInstallWhatItDownloads() {
+        assertEquals("sudo pacman -U ./xta-native-1.0.15-1-x86_64.pkg.tar.zst", NativeUpdates.installCommand(UpdateFile.PACKAGE, "xta-native-1.0.15-1-x86_64.pkg.tar.zst"))
+        assertEquals(
+            "tar -xzf xta-native-desktop-1.0.15-linux-x64.tar.gz && ./xta-native-desktop-1.0.15-linux-x64/install.sh",
+            NativeUpdates.installCommand(UpdateFile.TARBALL, "xta-native-desktop-1.0.15-linux-x64.tar.gz"),
+        )
+        assertNull(NativeUpdates.installCommand(UpdateFile.APK, "xta-native-1.0.15.apk"))
+        assertNull(NativeUpdates.installCommand(UpdateFile.PACKAGE, "xta-native-1;rm -rf ~.pkg.tar.zst"), "no shell in a name")
+        assertNull(NativeUpdates.installCommand(UpdateFile.PACKAGE, "xta-native-desktop-1.0.15-linux-x64.tar.gz"), "not the package")
+        val release = NativeRelease("v1.0.15", listOf(1, 0, 15), "p", mapOf("xta-native-1.0.15-1-x86_64.pkg.tar.zst" to "u1", "xta-native-desktop-1.0.15-linux-x64.tar.gz" to "u2"))
+        assertEquals("xta-native-1.0.15-1-x86_64.pkg.tar.zst", release.fileNameFor(UpdateFile.PACKAGE))
+        assertEquals("xta-native-desktop-1.0.15-linux-x64.tar.gz", release.fileNameFor(UpdateFile.TARBALL))
+        assertNull(release.fileNameFor(UpdateFile.APK))
+    }
+
+    @Test
+    fun aSkippedVersionIsNotOfferedAgainButANewerOneIs() {
+        val release = NativeRelease("v1.0.15", listOf(1, 0, 15), "p", emptyMap())
+        assertEquals(true, NativeUpdates.offered(release, ""))
+        assertEquals(false, NativeUpdates.offered(release, "v1.0.15"))
+        assertEquals(true, NativeUpdates.offered(release.copy(tag = "v1.0.16", version = listOf(1, 0, 16)), "v1.0.15"))
     }
 
     @Test

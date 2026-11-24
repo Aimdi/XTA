@@ -5,6 +5,10 @@
     <string name="chrome_update_view_version">在 GitHub 上檢視 %1$s 版本</string>
     <string name="chrome_update_view">在 GitHub 上檢視</string>
     <string name="chrome_update_download">下載</string>
+    <string name="chrome_update_install_package">下載套件，然後在儲存它的資料夾中執行：</string>
+    <string name="chrome_update_install_tarball">下載壓縮檔，然後在儲存它的資料夾中執行：</string>
+    <string name="chrome_update_copy">複製指令</string>
+    <string name="chrome_update_skip">略過此版本</string>
     <string name="chrome_licences_legalese">依 MIT 授權條款釋出</string>
     <plurals name="chrome_licences_count">
         <item quantity="other">%1$d 個授權</item>

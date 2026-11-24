@@ -5,6 +5,10 @@
     <string name="chrome_update_view_version">عرض الإصدار %1$s على GitHub</string>
     <string name="chrome_update_view">عرض على GitHub</string>
     <string name="chrome_update_download">تحميل</string>
+    <string name="chrome_update_install_package">نزّل الحزمة، ثم شغّل هذا الأمر في المجلد الذي حفظتها فيه:</string>
+    <string name="chrome_update_install_tarball">نزّل الأرشيف، ثم شغّل هذا الأمر في المجلد الذي حفظته فيه:</string>
+    <string name="chrome_update_copy">نسخ الأمر</string>
+    <string name="chrome_update_skip">تخطَّ هذا الإصدار</string>
     <string name="chrome_licences_legalese">منشور تحت رخصة الإم أي تي (MIT License)</string>
     <plurals name="chrome_licences_count">
         <item quantity="zero">ما مِن تراخيص</item>

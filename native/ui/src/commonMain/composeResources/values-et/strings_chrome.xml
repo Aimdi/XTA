@@ -5,6 +5,10 @@
     <string name="chrome_update_view_version">Vaata versiooni %1$s GitHubis</string>
     <string name="chrome_update_view">Vaata GitHubis</string>
     <string name="chrome_update_download">Laadi alla</string>
+    <string name="chrome_update_install_package">Laadi pakett alla ja käivita siis see kaustas, kuhu selle salvestasid:</string>
+    <string name="chrome_update_install_tarball">Laadi arhiiv alla ja käivita siis see kaustas, kuhu selle salvestasid:</string>
+    <string name="chrome_update_copy">Kopeeri käsk</string>
+    <string name="chrome_update_skip">Jäta see versioon vahele</string>
     <string name="chrome_licences_legalese">Avaldatud MIT litsentsi alusel</string>
     <plurals name="chrome_licences_count">
         <item quantity="one">%1$d litsents</item>

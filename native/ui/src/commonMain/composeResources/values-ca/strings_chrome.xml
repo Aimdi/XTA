@@ -5,6 +5,10 @@
     <string name="chrome_update_view_version">Visualitza la versió %1$s a GitHub</string>
     <string name="chrome_update_view">Visualitza a GitHub</string>
     <string name="chrome_update_download">Descarregar</string>
+    <string name="chrome_update_install_package">Baixa el paquet i després executa això a la carpeta on l'has desat:</string>
+    <string name="chrome_update_install_tarball">Baixa l'arxiu i després executa això a la carpeta on l'has desat:</string>
+    <string name="chrome_update_copy">Copia l'ordre</string>
+    <string name="chrome_update_skip">Omet aquesta versió</string>
     <string name="chrome_licences_legalese">Llançat sota la llicència MIT</string>
     <plurals name="chrome_licences_count">
         <item quantity="one">%1$d llicència</item>
