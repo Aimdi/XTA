@@ -50,22 +50,15 @@ class LikesStore(dir: StoreDir, private val clock: () -> Long = System::currentT
     }
 
     /** [unlike], answering the like with what was kept of the post, for [putBack]; null when it was not liked. */
-    suspend fun unlikeTaking(id: String): TakenLike? {
-        var taken: TakenLike? = null
-        kept.rewrite { likes ->
-            PutBack.taken(likes, { it.id == id }, { it.id })?.let { took ->
-                taken = took
-                likes.filterNot { it.id == id }
-            }
-        }
-        return taken
+    suspend fun unlikeTaking(id: String): TakenLike? = kept.editReading { likes, content ->
+        // Only this post's content is read, and the change is one line of the log.
+        val took = PutBack.taken(likes, { it.id == id }, { it.id }) ?: return@editReading Edit(likes, null)
+        Edit(likes.filterNot { it.id == id }, Taken(took.items.map { it.copy(content = content(it.id)) }, took.order))
     }
 
     /** Undoes [unlikeTaking]: the like back where it was, as liked then; false when it is liked again since. */
-    suspend fun putBack(taken: TakenLike): Boolean {
-        var done = false
-        kept.rewrite { likes -> PutBack.into(likes, taken) { it.id }?.also { done = true } }
-        return done
+    suspend fun putBack(taken: TakenLike): Boolean = kept.edit { likes ->
+        PutBack.into(likes, taken) { it.id }?.let { Edit(it, true, alsoFresh = taken.items.map(LikedPost::id)) } ?: Edit(likes, false)
     }
 
     /** Everything kept, for the backup. */

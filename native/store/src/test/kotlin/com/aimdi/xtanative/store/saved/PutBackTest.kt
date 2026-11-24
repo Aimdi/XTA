@@ -50,6 +50,39 @@ class PutBackTest {
     }
 
     @Test
+    fun aRemovalReadsOnlyWhatItTakesAndAppendsOneLineInsteadOfRewritingTheIndex() = runBlocking {
+        val dir = tempStore()
+        SavedStore(dir, clock = { time++ }).let { saved -> (1..50).forEach { saved.file("$it", null, content("$it")) } }
+        LikesStore(dir, clock = { time++ }).let { likes -> (1..50).forEach { likes.like("$it", null, content("$it")) } }
+        val saved = SavedStore(dir)
+        val likes = LikesStore(dir)
+        // Compacted once, so the log is short and the index is what a removal must leave alone.
+        val indexes = listOf("library", "likes").map { File(dir.root, "saved/$it.index.json") }
+        val logs = listOf("library", "likes").map { File(dir.root, "saved/$it.log") }
+        saved.index()
+        likes.index()
+        val indexBefore = indexes.map { it.readText() }
+        val logBefore = logs.map { if (it.isFile) it.readLines().count(String::isNotBlank) else 0 }
+
+        val took = saved.removeTaking(listOf("7"))!!
+        val unliked = likes.unlikeTaking("9")!!
+        assertEquals(content("7"), took.items.single().content)
+        assertEquals(content("9"), unliked.items.single().content)
+        assertNull(saved.state.value, "no other post's content was read")
+        assertNull(likes.state.value, "no other post's content was read")
+        assertEquals(indexBefore, indexes.map { it.readText() }, "the index was not rewritten")
+        assertEquals(logBefore.map { if (it == 0) 2 else it + 1 }, logs.map { it.readLines().count(String::isNotBlank) }, "one line each (after the log's head)")
+
+        assertTrue(saved.putBack(took))
+        assertTrue(likes.putBack(unliked))
+        assertNull(saved.state.value)
+        assertEquals(content("7"), SavedStore(dir).contentOf("7"), "its content is back on the disk")
+        assertEquals(content("9"), LikesStore(dir).contentOf("9"))
+        assertEquals((1..50).map { "$it" }.reversed(), SavedStore(dir).index().posts.map { it.id })
+        assertEquals((1..50).map { "$it" }.reversed(), LikesStore(dir).index().map { it.id })
+    }
+
+    @Test
     fun aRemovedPostWhoseFolderWasDeletedSinceComesBackUnfiled() = runBlocking {
         val saved = SavedStore(tempStore(), clock = { time++ }, newId = { "folder-${ids++}" })
         val art = saved.createFolder("Art")!!

@@ -91,24 +91,22 @@ class SavedStore(
 
     suspend fun remove(id: String) = remove(listOf(id))
 
-    /** [remove], answering what it took, content and all, for [putBack]; null when none of [ids] was saved. */
+    /**
+     * [remove], answering what it took, content and all, for [putBack]; null
+     * when none of [ids] was saved. Only the taken posts' contents are read,
+     * and the change is one line of the log, however many posts are saved.
+     */
     suspend fun removeTaking(ids: Collection<String>): TakenSaved? {
         val removed = ids.toSet()
-        var taken: TakenSaved? = null
-        kept.rewrite { library ->
-            PutBack.taken(library.posts, { it.id in removed }, { it.id })?.let { took ->
-                taken = took
-                library.copy(posts = library.posts.filterNot { it.id in removed })
-            }
+        return kept.editReading { library, content ->
+            val took = PutBack.taken(library.posts, { it.id in removed }, { it.id }) ?: return@editReading Edit(library, null)
+            Edit(library.copy(posts = library.posts.filterNot { it.id in removed }), Taken(took.items.map { it.copy(content = content(it.id)) }, took.order))
         }
-        return taken
     }
 
     /** Undoes [removeTaking]: the posts back where they were; false when one is saved again since, and nothing changes. */
-    suspend fun putBack(taken: TakenSaved): Boolean {
-        var done = false
-        kept.rewrite { library -> PutBack.saved(library, taken)?.also { done = true } }
-        return done
+    suspend fun putBack(taken: TakenSaved): Boolean = kept.edit { library ->
+        PutBack.saved(library, taken)?.let { Edit(it, true, alsoFresh = taken.items.map(SavedPost::id)) } ?: Edit(library, false)
     }
 
     /** A new folder named [name] (trimmed) after the others; null when the name is blank. */
