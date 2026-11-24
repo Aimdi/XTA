@@ -6,6 +6,7 @@
     <string name="keys_go_home">Quay về Trang chủ</string>
     <string name="keys_refresh">Làm mới</string>
     <string name="keys_search">Tìm kiếm</string>
+    <string name="keys_new">Ghi chú, nhóm hoặc ăng-ten mới, trên trang của nó</string>
     <string name="keys_recent_searches">Chọn một tìm kiếm gần đây từ ô tìm kiếm</string>
     <string name="keys_open_copied_link">Mở liên kết đã sao chép</string>
     <string name="keys_tabs">Thẻ tiếp theo hoặc trước đó</string>

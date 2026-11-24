@@ -6,6 +6,7 @@
     <string name="keys_go_home">Назад на головну</string>
     <string name="keys_refresh">Оновити</string>
     <string name="keys_search">Пошук</string>
+    <string name="keys_new">Нова нотатка, група або антена, на її сторінці</string>
     <string name="keys_recent_searches">Вибрати нещодавній пошук із поля пошуку</string>
     <string name="keys_open_copied_link">Відкрити скопійоване посилання</string>
     <string name="keys_tabs">Наступна або попередня вкладка</string>

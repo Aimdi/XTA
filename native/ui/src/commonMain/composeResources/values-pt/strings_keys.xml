@@ -6,6 +6,7 @@
     <string name="keys_go_home">Voltar ao início</string>
     <string name="keys_refresh">Atualizar</string>
     <string name="keys_search">Pesquisar</string>
+    <string name="keys_new">Nova nota, grupo ou antena, na sua página</string>
     <string name="keys_recent_searches">Escolher uma pesquisa recente a partir do campo de pesquisa</string>
     <string name="keys_open_copied_link">Abrir um link copiado</string>
     <string name="keys_tabs">Separador seguinte ou anterior</string>

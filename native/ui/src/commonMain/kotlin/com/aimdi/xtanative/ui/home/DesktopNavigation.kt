@@ -117,6 +117,21 @@ class DesktopActions(
     /** The search field shown on top takes the keyboard; false when the page has none. */
     fun find(): Boolean = finders.lastOrNull()?.second?.let { it(); true } ?: false
 
+    /** The New actions Ctrl+N opens, the last shown on top ([CreatesWithKeys]). */
+    private val creators = mutableListOf<Pair<Any, () -> Boolean>>()
+
+    internal fun addCreator(owner: Any, create: () -> Boolean) {
+        creators.removeAll { it.first === owner }
+        creators += owner to create
+    }
+
+    internal fun removeCreator(owner: Any) {
+        creators.removeAll { it.first === owner }
+    }
+
+    /** The New of the page shown opens; false when it has none, or none now (its editor already open). */
+    fun create(): Boolean = creators.lastOrNull()?.second?.invoke() ?: false
+
     /** The selections Ctrl+A, Delete and Esc work on, the last shown on top ([SelectsWithKeys]). */
     private val selections = mutableListOf<Pair<Any, KeySelection>>()
 
@@ -545,6 +560,22 @@ fun FindsWithKeys(find: () -> Unit) {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.addFinder(owner) { latest() } }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.removeFinder(owner) }
     DisposableEffect(actions) { onDispose { actions.removeFinder(owner) } }
+}
+
+/**
+ * Lets Ctrl+N ([DesktopKeys]) open the screen's own New while it is the one
+ * shown, as a desktop app's makes a new document: [create] opens it (a new
+ * note's editor, a new group's) and answers false when it did nothing, so the
+ * key goes on. Nothing off the desktop.
+ */
+@Composable
+fun CreatesWithKeys(create: () -> Boolean) {
+    val actions = LocalDesktopActions.current ?: return
+    val latest by rememberUpdatedState(create)
+    val owner = remember { Any() }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.addCreator(owner) { latest() } }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.removeCreator(owner) }
+    DisposableEffect(actions) { onDispose { actions.removeCreator(owner) } }
 }
 
 /**

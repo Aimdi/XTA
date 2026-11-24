@@ -75,6 +75,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_sort_applied
 import com.aimdi.xtanative.ui.generated.resources.groups_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.unable_to_load_the_group
 import com.aimdi.xtanative.ui.generated.resources.unable_to_refresh_the_subscriptions
+import com.aimdi.xtanative.ui.home.CreatesWithKeys
 import com.aimdi.xtanative.ui.home.FindsWithKeys
 import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
@@ -148,6 +149,10 @@ fun SubscriptionsScreen(navigation: SubscriptionsNavigation, onBack: (() -> Unit
     BackHandling(enabled = state.searching) { vm.closeSearch() }
     // Ctrl+F and / open the search; once open, its field takes them.
     if (!state.searching) FindsWithKeys(vm::openSearch)
+    // Ctrl+N makes a group, as the bar's + does on the Groups tab; the Subscriptions tab has no New.
+    CreatesWithKeys {
+        (state.tab == SubscriptionsTab.GROUPS && !state.searching && editing == null && !menu && !cleanup && picking == null).also { if (it) editing = Editing(null) }
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,

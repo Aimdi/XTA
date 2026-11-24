@@ -41,6 +41,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_post_link
 import com.aimdi.xtanative.ui.generated.resources.keys_post_menu
 import com.aimdi.xtanative.ui.generated.resources.keys_post_open
 import com.aimdi.xtanative.ui.generated.resources.keys_post_save
+import com.aimdi.xtanative.ui.generated.resources.keys_new
 import com.aimdi.xtanative.ui.generated.resources.keys_next_post
 import com.aimdi.xtanative.ui.generated.resources.keys_open_copied_link
 import com.aimdi.xtanative.ui.generated.resources.keys_page_down
@@ -98,7 +99,8 @@ object DesktopShortcuts {
         Shortcut(Res.string.keys_back, listOf(listOf(KeyCap.Named(Res.string.keys_esc)), listOf(alt, sign("←")), listOf(ctrl, sign("W")))),
         Shortcut(Res.string.keys_go_home, listOf(listOf(alt, KeyCap.Named(Res.string.keys_home)))),
         Shortcut(Res.string.keys_refresh, listOf(listOf(sign("F5")), listOf(ctrl, sign("R")))),
-        Shortcut(Res.string.keys_search, listOf(listOf(ctrl, sign("F")), listOf(sign("/")))),
+        Shortcut(Res.string.keys_search, listOf(listOf(ctrl, sign("F")), listOf(sign("/")), listOf(ctrl, sign("K")), listOf(ctrl, sign("L")))),
+        Shortcut(Res.string.keys_new, listOf(listOf(ctrl, sign("N")))),
         Shortcut(Res.string.keys_recent_searches, listOf(listOf(sign("↓")), listOf(sign("↑")))),
         Shortcut(Res.string.keys_open_copied_link, listOf(listOf(ctrl, sign("V")))),
         Shortcut(Res.string.keys_tabs, listOf(listOf(ctrl, tab), listOf(ctrl, shift, tab))),

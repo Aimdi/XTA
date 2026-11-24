@@ -6,6 +6,7 @@
     <string name="keys_go_home">Tagasi avalehele</string>
     <string name="keys_refresh">Värskenda</string>
     <string name="keys_search">Otsi</string>
+    <string name="keys_new">Uus märge, grupp või antenn, oma lehel</string>
     <string name="keys_recent_searches">Vali hiljutine otsing otsinguväljast</string>
     <string name="keys_open_copied_link">Ava kopeeritud link</string>
     <string name="keys_tabs">Järgmine või eelmine vahekaart</string>

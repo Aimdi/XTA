@@ -96,6 +96,7 @@ import com.aimdi.xtanative.ui.generated.resources.discover_ok
 import com.aimdi.xtanative.ui.generated.resources.discover_settings
 import com.aimdi.xtanative.ui.generated.resources.discover_show_menu
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
+import com.aimdi.xtanative.ui.home.CreatesWithKeys
 import com.aimdi.xtanative.ui.search.DiscoverIcons
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -115,6 +116,8 @@ fun AntennasScreen(openAntenna: (String) -> Unit, onBack: () -> Unit) {
     val antennas by vm.antennas.collectAsStateWithLifecycle()
     val state by vm.ui.collectAsStateWithLifecycle()
     val problem by vm.problem.collectAsStateWithLifecycle()
+    // Ctrl+N makes an antenna, as the round button does.
+    CreatesWithKeys { (state.editing == null && state.deleting == null).also { if (it) vm.edit() } }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {

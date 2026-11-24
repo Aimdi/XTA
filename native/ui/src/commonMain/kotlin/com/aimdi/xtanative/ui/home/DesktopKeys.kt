@@ -3,7 +3,7 @@ package com.aimdi.xtanative.ui.home
 import androidx.compose.ui.geometry.Offset
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, N, OTHER }
 
 enum class DeskAction {
     /** Out of the text field being typed in, as XTA's first Esc does. */
@@ -58,6 +58,9 @@ enum class DeskAction {
     /** Settings open, as Ctrl+, opens a desktop app's preferences. */
     OPEN_SETTINGS,
 
+    /** The page's own New opens ([DesktopActions.create]): a note in Saved, a group in Subscriptions, an antenna, as a desktop app's Ctrl+N makes a new document. */
+    CREATE,
+
     /** The page's selection takes every item shown, as a file manager's Ctrl+A does ([DesktopActions.selectAll]). */
     SELECT_ALL,
 
@@ -108,7 +111,9 @@ object DesktopKeys {
      * after a screen changes) moves it into the page, to its first control,
      * where Tab and Shift+Tab then go on from one to the next. Ctrl+F, even
      * from a field, and / while nothing is being typed in, go to the search,
-     * as a desktop app's do: the page's own field, else the app's search.
+     * as a desktop app's do: the page's own field, else the app's search;
+     * Ctrl+K and Ctrl+L, as a browser's go to its search and address bar,
+     * do the same.
      * Ctrl with + (or =), - and 0 make the text bigger, smaller, or its
      * size again, as a browser's zoom does, from a field too. F1, and ?
      * while nothing is being typed in, list these keys. Ctrl+, opens the
@@ -141,6 +146,9 @@ object DesktopKeys {
      * copies its link, and the Menu key and Shift+F10 open its ⋯ menu. Enter
      * leaves a button or tab that has the focus to press ([focusHeld]: one
      * the mouse clicked too), as in a browser.
+     * Ctrl+N, while nothing is being typed in and nothing is open over the
+     * page, makes something new where the page has a New of its own (a note
+     * in Saved, a group, an antenna), as a desktop app's makes a document.
      */
     fun action(
         key: DeskKey,
@@ -173,13 +181,14 @@ object DesktopKeys {
             // Over an opened post (a card the page counts as open) too: going home leaves it with the rest.
             key == DeskKey.HOME && alt && !ctrl && !shift -> DeskAction.GO_HOME
             key == DeskKey.V && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.OPEN_PASTED_LINK
-            (key == DeskKey.F && ctrl && !alt && !shift) || (key == DeskKey.SLASH && !focusInside && !alt && !ctrl) ->
+            (key in FIND_KEYS && ctrl && !alt && !shift) || (key == DeskKey.SLASH && !focusInside && !alt && !ctrl) ->
                 if (somethingOpen) DeskAction.NONE else DeskAction.FIND
             ctrl && !alt && !shift && !focusInside && (key == DeskKey.LEFT || key == DeskKey.RIGHT) -> when {
                 covered -> DeskAction.NONE
                 (key == DeskKey.RIGHT) != rtl -> DeskAction.NEXT_COLUMN
                 else -> DeskAction.PREVIOUS_COLUMN
             }
+            key == DeskKey.N && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.CREATE
             // In a field, Ctrl+A selects its text; Delete deletes a character there.
             key == DeskKey.A && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.SELECT_ALL
             key == DeskKey.DELETE && selecting && !focusInside && !alt && !ctrl && !shift -> if (somethingOpen) DeskAction.NONE else DeskAction.REMOVE_SELECTED
@@ -226,6 +235,9 @@ object DesktopKeys {
         DeskKey.L to DeskAction.LIKE_POST,
         DeskKey.B to DeskAction.SAVE_POST,
     )
+
+    /** The letters Ctrl takes to the search: F as a desktop app's find, K and L as a browser's search and address bar. */
+    private val FIND_KEYS = setOf(DeskKey.F, DeskKey.K, DeskKey.L)
 
     private val TAB_KEYS = setOf(DeskKey.TAB, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN)
 

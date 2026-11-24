@@ -6,6 +6,7 @@
     <string name="keys_go_home">Torna a l’inici</string>
     <string name="keys_refresh">Actualitza</string>
     <string name="keys_search">Cerca</string>
+    <string name="keys_new">Nota, grup o antena nova, a la seva pàgina</string>
     <string name="keys_recent_searches">Triar una cerca recent des del camp de cerca</string>
     <string name="keys_open_copied_link">Obre un enllaç copiat</string>
     <string name="keys_tabs">Pestanya següent o anterior</string>

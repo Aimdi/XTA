@@ -6,6 +6,7 @@
     <string name="keys_go_home">العودة إلى الرئيسية</string>
     <string name="keys_refresh">تحديث</string>
     <string name="keys_search">بحث</string>
+    <string name="keys_new">ملاحظة أو مجموعة أو هوائي جديد، في صفحته</string>
     <string name="keys_recent_searches">اختيار بحث حديث من حقل البحث</string>
     <string name="keys_open_copied_link">فتح رابط منسوخ</string>
     <string name="keys_tabs">علامة التبويب التالية أو السابقة</string>

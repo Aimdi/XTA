@@ -121,6 +121,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_tab_unfiled
 import com.aimdi.xtanative.ui.generated.resources.saved_title
 import com.aimdi.xtanative.ui.generated.resources.saved_write_note
 import com.aimdi.xtanative.ui.generated.resources.settings
+import com.aimdi.xtanative.ui.home.CreatesWithKeys
 import com.aimdi.xtanative.ui.home.FindsWithKeys
 import com.aimdi.xtanative.ui.home.SelectsWithKeys
 import com.aimdi.xtanative.ui.home.foundWithKeys
@@ -185,6 +186,8 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
         remove = { (dialog == null && view.removableByKeys).also { if (it) dialog = SavedDialog.RemoveSelected } },
         leave = { (dialog == null && view.selecting).also { if (it) vm.finishSelection() } },
     )
+    // Ctrl+N writes a note, as the round button does; not while selecting, where the button is put away.
+    CreatesWithKeys { (dialog == null && !view.selecting).also { if (it) dialog = SavedDialog.Compose(NoteTarget.Note()) } }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,

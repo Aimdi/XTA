@@ -190,6 +190,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             showKeys = true
             true
         }
+        DeskAction.CREATE -> actions.create()
         DeskAction.SELECT_ALL -> actions.selectAll()
         DeskAction.REMOVE_SELECTED -> actions.removeSelected()
         DeskAction.LEAVE_SELECTION -> actions.leaveSelection()
@@ -403,6 +404,7 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.B -> DeskKey.B
     Key.C -> DeskKey.C
     Key.F10 -> DeskKey.F10
+    Key.N -> DeskKey.N
     // Compose names no key for it: the Menu key is AWT's context-menu key.
     MENU_KEY -> DeskKey.MENU
     Key.Plus, Key.Equals, Key.NumPadAdd -> DeskKey.PLUS

@@ -6,6 +6,7 @@
     <string name="keys_go_home">Ana sayfaya dön</string>
     <string name="keys_refresh">Yenile</string>
     <string name="keys_search">Ara</string>
+    <string name="keys_new">Yeni not, grup veya anten, kendi sayfasında</string>
     <string name="keys_recent_searches">Arama alanından son aramalardan birini seç</string>
     <string name="keys_open_copied_link">Kopyalanan bağlantıyı aç</string>
     <string name="keys_tabs">Sonraki veya önceki sekme</string>

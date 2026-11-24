@@ -6,6 +6,7 @@
     <string name="keys_go_home">Zpět na domovskou stránku</string>
     <string name="keys_refresh">Obnovit</string>
     <string name="keys_search">Hledat</string>
+    <string name="keys_new">Nová poznámka, skupina nebo anténa, na její stránce</string>
     <string name="keys_recent_searches">Vybrat nedávné hledání z vyhledávacího pole</string>
     <string name="keys_open_copied_link">Otevřít zkopírovaný odkaz</string>
     <string name="keys_tabs">Další nebo předchozí karta</string>

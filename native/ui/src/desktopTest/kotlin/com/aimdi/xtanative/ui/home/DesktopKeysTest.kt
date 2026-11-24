@@ -287,6 +287,51 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun ctrlKAndCtrlLGoToTheSearchAsABrowsersDo() {
+        for (key in listOf(DeskKey.K, DeskKey.L)) {
+            assertEquals(DeskAction.FIND, action(key, ctrl = true), "$key")
+            assertEquals(DeskAction.FIND, action(key, ctrl = true, focusInside = true), "$key from a field, as Ctrl+F")
+            assertEquals(DeskAction.NONE, action(key, ctrl = true, open = true), "$key not under what is open")
+            assertEquals(DeskAction.NONE, action(key, ctrl = true, shift = true), "$key with Shift")
+            assertEquals(DeskAction.NONE, action(key, ctrl = true, alt = true), "$key with Alt")
+        }
+        // Alone they stay the reading keys.
+        assertEquals(DeskAction.PREVIOUS_ITEM, action(DeskKey.K))
+        assertEquals(DeskAction.LIKE_POST, action(DeskKey.L))
+    }
+
+    @Test
+    fun ctrlNMakesSomethingNewOutsideAFieldAndUnderNothingOpen() {
+        assertEquals(DeskAction.CREATE, action(DeskKey.N, ctrl = true))
+        assertEquals(DeskAction.CREATE, action(DeskKey.N, ctrl = true, canGoBack = false), "on Home's own pages too")
+        assertEquals(DeskAction.CREATE, action(DeskKey.N, ctrl = true, selecting = true), "the page decides; Saved declines while selecting")
+        assertEquals(DeskAction.NONE, action(DeskKey.N, ctrl = true, focusInside = true), "a field keeps its keys")
+        assertEquals(DeskAction.NONE, action(DeskKey.N, ctrl = true, open = true), "not under what is open over the page")
+        assertEquals(DeskAction.NONE, action(DeskKey.N, ctrl = true, shift = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.N, ctrl = true, alt = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.N))
+    }
+
+    @Test
+    fun theNewShownLastAnswersCtrlNAndOneThatDeclinesLetsTheKeyGo() {
+        val actions = DesktopActions()
+        val made = mutableListOf<String>()
+        assertFalse(actions.create(), "a page with no New: the key goes on")
+        val page = Any()
+        val layer = Any()
+        actions.addCreator(page) { made += "page"; true }
+        actions.addCreator(layer) { false }
+        assertFalse(actions.create(), "the page on top declines (its editor is open)")
+        actions.removeCreator(layer)
+        assertTrue(actions.create())
+        actions.addCreator(page) { made += "page again"; true }
+        assertTrue(actions.create())
+        assertEquals(listOf("page", "page again"), made)
+        actions.removeCreator(page)
+        assertFalse(actions.create(), "a screen resumed twice is listed once")
+    }
+
+    @Test
     fun slashIsTypedInAFieldAndNeitherKeyReachesUnderWhatIsOpen() {
         assertEquals(DeskAction.NONE, action(DeskKey.SLASH, focusInside = true))
         assertEquals(DeskAction.NONE, action(DeskKey.SLASH, ctrl = true))
