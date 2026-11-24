@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -41,6 +42,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.settings.PixivPrefs
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -78,7 +80,7 @@ internal fun MorePane(novels: Boolean, padding: PaddingValues, toTop: Int) {
     val scroll = rememberLazyListState()
     ListToTop(scroll, toTop)
     val signOut = rememberSignOut()
-    LazyColumn(state = scroll, contentPadding = padding) {
+    PluginReadingColumn(padding, scroll) { column -> LazyColumn(Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
         item(key = "account") { AccountHeader(PixivAccounts.active(settings), name, signedIn, onSignIn = { runtime.open(PixivRoute.SignIn) }, onSwitch = { switching = true }) }
         item(key = "rule") { HorizontalDivider() }
         items(moreEntries.filter { signedIn || !it.needsAccount }, key = { it.id }) { entry ->
@@ -86,7 +88,7 @@ internal fun MorePane(novels: Boolean, padding: PaddingValues, toTop: Int) {
         }
         item(key = "about") { ActionRow(pluginString(Strings.more_about), null, icon = Icons.Outlined.Info, subtitle = pluginString(Strings.plugin_description)) }
         if (signedIn) item(key = "sign-out") { ActionRow(pluginString(Strings.sign_out), { signOut(sheets.ask) }, icon = Icons.AutoMirrored.Filled.ExitToApp) }
-    }
+    } }
     if (switching) {
         AccountSwitcher(onClose = { switching = false }) {
             switching = false

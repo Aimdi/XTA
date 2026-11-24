@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -52,6 +53,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivTag
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.onContextClick
@@ -87,7 +89,8 @@ private fun FavoriteTagList(tags: List<PixivTag>, editing: Boolean) {
     val runtime = LocalPixiv.current
     val sheets = LocalPixivSheets.current
     val language = currentLanguage()
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 16.dp)) {
+    val list = rememberLazyListState()
+    PluginReadingColumn(PaddingValues(bottom = 16.dp), list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
         if (editing) item(key = "hint") { Text(pluginString(Strings.search_favorite_tags_edit_hint), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(16.dp)) }
         itemsIndexed(tags, key = { _, tag -> tag.name }) { index, tag ->
             ListItem(
@@ -110,7 +113,7 @@ private fun FavoriteTagList(tags: List<PixivTag>, editing: Boolean) {
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
             )
         }
-    }
+    } }
 }
 
 /** One muted thing as a chip: a tap unmutes it after asking, the cross at once, a long press copies what it can. */

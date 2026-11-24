@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.HorizontalDivider
@@ -198,7 +199,8 @@ private fun ProfileInfo(profile: PixivUserProfile) {
     val runtime = LocalPixiv.current
     val copy = rememberCopy()
     val rows = infoRows(profile, currentLanguage())
-    PluginReadingColumn(PaddingValues(top = 8.dp, bottom = 16.dp)) { column -> LazyColumn(Modifier.fillMaxSize(), contentPadding = column) {
+    val scroll = rememberLazyListState()
+    PluginReadingColumn(PaddingValues(top = 8.dp, bottom = 16.dp), scroll) { column -> LazyColumn(Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
         items(rows.size) { index ->
             val row = rows[index]
             InfoLine(row) { action ->
