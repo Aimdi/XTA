@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.instagram.InstagramPost
 import com.aimdi.xtanative.networks.instagram.InstagramProfile
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
@@ -76,7 +77,7 @@ internal fun InstagramProfileScreen(app: InstagramApp, handle: String) {
     PluginScaffold(
         title = "@$handle",
         onBack = app.host::back,
-        actions = { IconButton(onClick = { outside("https://www.instagram.com/$handle/") }) { Icon(PostIcons.OpenInNew, contentDescription = pluginString(Strings.open_on_site)) } },
+        actions = { IconTip(pluginString(Strings.open_on_site)) { IconButton(onClick = { outside("https://www.instagram.com/$handle/") }) { Icon(PostIcons.OpenInNew, contentDescription = pluginString(Strings.open_on_site)) } } },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             val profile = state.value

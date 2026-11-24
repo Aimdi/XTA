@@ -59,6 +59,7 @@ import com.aimdi.xtanative.networks.instagram.InstagramDiscovery
 import com.aimdi.xtanative.networks.instagram.InstagramPost
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.FeedSkeleton
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
@@ -127,7 +128,7 @@ internal fun InstagramHome(app: InstagramApp, frame: PluginFrame) {
 @Composable
 private fun ShellBar(app: InstagramApp, tab: InstagramTab, onTab: (InstagramTab) -> Unit, onSearch: () -> Unit) {
     PluginHomeTabs(emptyList()) {
-        IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search)) }
+        IconTip(pluginString(Strings.search)) { IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search)) } }
         ShellMenuButton { close ->
             DropdownMenuItem(text = { Text(pluginString(Strings.settings)) }, onClick = {
                 close()
@@ -151,8 +152,8 @@ private fun HomeBar(app: InstagramApp, tab: InstagramTab, onTab: (InstagramTab) 
                 )
             }
         }
-        IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search)) }
-        IconButton(onClick = app.host::openSettings) { Icon(Icons.Filled.Settings, contentDescription = pluginString(Strings.settings)) }
+        IconTip(pluginString(Strings.search)) { IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search)) } }
+        IconTip(pluginString(Strings.settings)) { IconButton(onClick = app.host::openSettings) { Icon(Icons.Filled.Settings, contentDescription = pluginString(Strings.settings)) } }
     }
 }
 
@@ -315,7 +316,7 @@ private fun LazyListScope.accountRows(app: InstagramApp, follows: List<com.aimdi
                 trailingContent = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box {
-                            IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = pluginString(Strings.more_options)) }
+                            IconTip(pluginString(Strings.more_options)) { IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = pluginString(Strings.more_options)) } }
                             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                                 DropdownMenuItem(text = { Text(pluginString(Strings.add_to_group)) }, onClick = { menu = false; app.addToGroup(follow.id) })
                                 DropdownMenuItem(text = { Text(pluginString(Strings.unfollow)) }, onClick = { menu = false; onUnfollow(follow.id) })
