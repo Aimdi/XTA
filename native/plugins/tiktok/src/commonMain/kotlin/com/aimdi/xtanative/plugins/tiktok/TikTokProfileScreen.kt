@@ -21,8 +21,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -43,6 +43,7 @@ import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedState
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
 import com.aimdi.xtanative.ui.plugins.RetryMessage
@@ -127,10 +128,10 @@ private fun ProfileList(app: TikTokApp, profile: TikTokProfile, posts: PagedItem
     val paged = posts?.state?.collectAsState()?.value
     val likes = remember(settings) { TikTokMarks.likes(settings).toSet() }
     if (posts != null && paged != null) ReadsMoreNearEnd(list, paged) { posts.more() }
-    LazyColumn(state = list, contentPadding = PaddingValues(bottom = 24.dp), modifier = Modifier.fillMaxSize()) {
+    PluginReadingColumn(PaddingValues(bottom = 24.dp), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         item(key = "header") { ProfileHeader(app, profile) }
         if (posts != null && paged != null) videoRows(app, paged, posts, likes)
-    }
+    } }
 }
 
 private fun LazyListScope.videoRows(app: TikTokApp, paged: PagedState<TikTokPost>, posts: PagedItems<TikTokPost>, likes: Set<String>) {

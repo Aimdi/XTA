@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -61,6 +62,7 @@ import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.WithSettings
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -174,7 +176,8 @@ private fun SearchBody(app: TikTokApp, model: TikTokSearchModel, settings: Setti
 private fun LandingList(app: TikTokApp, landing: TikTokLanding, suggestions: List<String>, settings: Settings, typed: String, padding: PaddingValues, run: (String) -> Unit) {
     val history = settings[TikTokPrefs.searchHistory]
     val direct = TikTokParser.handle(typed.trim())
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = padding) {
+    val list = rememberLazyListState()
+    PluginReadingColumn(padding, list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
         if (direct != null) {
             item(key = "direct") {
                 ListItem(
@@ -204,7 +207,7 @@ private fun LandingList(app: TikTokApp, landing: TikTokLanding, suggestions: Lis
                 )
             }
         }
-    }
+    } }
 }
 
 private const val SUGGESTED_SHOWN = 20
@@ -229,14 +232,15 @@ private fun FoundList(app: TikTokApp, found: TikTokFound, tab: FoundTab, suggest
     val page = found.page ?: return
     val likes = remember(settings) { TikTokMarks.likes(settings).toSet() }
     val empty = if (tab == FoundTab.PEOPLE) page.users.isEmpty() else page.posts.isEmpty()
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = padding) {
+    val list = rememberLazyListState()
+    PluginReadingColumn(padding, list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
         if (suggestions.isNotEmpty() && (tab == FoundTab.PEOPLE || empty)) item(key = "suggestions") { WordChips(pluginString(Strings.search), suggestions, run) }
         when {
             empty -> item(key = "empty") { Text(pluginString(Strings.search_empty), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(24.dp)) }
             tab == FoundTab.PEOPLE -> items(page.users, key = { "user:" + it.uniqueId }) { user -> UserRow(app, user) }
             else -> items(page.posts, key = { "post:" + it.id }) { post -> TikTokPostCard(app, post, post.id in likes) }
         }
-    }
+    } }
 }
 
 /** A person found: their picture, name and mark, handle and followers; a tap opens them. */

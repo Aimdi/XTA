@@ -54,6 +54,7 @@ import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginChipTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.PullToReload
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
@@ -148,14 +149,14 @@ private fun FollowingTab(app: TikTokApp, follows: List<TikTokSubscriptionRow>?, 
     val likes = remember(settings) { TikTokMarks.likes(settings).toSet() }
     // The pull covers the empty pane and the failure too, as XTA's RefreshIndicator wraps them.
     PullToRefreshBox(isRefreshing = state.loading && state.items.isNotEmpty(), onRefresh = { app.feed.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             when {
                 state.items.isNotEmpty() -> items(state.items, key = { it.id }) { post -> TikTokPostCard(app, post, post.id in likes) }
                 state.loading || !state.loaded || follows == null -> item(key = "loading") { FeedSkeleton() }
                 error != null -> item(key = "problem") { RetryMessage(pluginString(TikTokText.error(error)), { app.feed.refresh(force = true) }) }
                 else -> item(key = "empty") { NothingFollowed(app, hasAccounts = !follows.isNullOrEmpty(), PaddingValues()) }
             }
-        }
+        } }
     }
 }
 
@@ -191,7 +192,7 @@ private fun AccountsTab(app: TikTokApp, follows: List<TikTokSubscriptionRow>?, p
     var unfollowing by remember { mutableStateOf<String?>(null) }
     // A pull reads the accounts kept here again, over the list and over its empty pane, as XTA's RefreshIndicator does.
     PullToReload(reload = { app.follows.reload() }) {
-        LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             when {
                 follows == null -> item(key = "loading") { LoadingRow() }
                 follows.isEmpty() -> item(key = "empty") { NothingFollowed(app, hasAccounts = false, PaddingValues()) }
@@ -200,7 +201,7 @@ private fun AccountsTab(app: TikTokApp, follows: List<TikTokSubscriptionRow>?, p
                     items(follows, key = { it.id }) { follow -> AccountRow(app, follow) { unfollowing = follow.id } }
                 }
             }
-        }
+        } }
     }
     unfollowing?.let { handle ->
         UnfollowDialog(handle, onDismiss = { unfollowing = null }) {
