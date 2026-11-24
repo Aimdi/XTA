@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.aimdi.xtanative.ui.links.DraggedText
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.SystemFlavorMap
 import java.awt.datatransfer.Transferable
@@ -123,15 +124,20 @@ internal object LinkDragFlavors {
     }
 }
 
-/** A link as a drag hands it over: `text/uri-list` for browsers and file managers, plain text for editors and terminals. */
+/**
+ * A link as a drag hands it over: `text/uri-list` for browsers and file
+ * managers, plain text for editors and terminals, and the app's own mark
+ * ([DraggedText.FROM_APP]), so the window it came from does not take it back.
+ */
 internal class LinkTransfer(private val address: String) : Transferable {
-    override fun getTransferDataFlavors(): Array<DataFlavor> = arrayOf(LinkDragFlavors.uriList, DataFlavor.stringFlavor)
+    override fun getTransferDataFlavors(): Array<DataFlavor> = arrayOf(LinkDragFlavors.uriList, DataFlavor.stringFlavor, DraggedText.FROM_APP)
 
     override fun isDataFlavorSupported(flavor: DataFlavor): Boolean = transferDataFlavors.any { it.equals(flavor) }
 
     override fun getTransferData(flavor: DataFlavor): Any = when {
         flavor.equals(LinkDragFlavors.uriList) -> LinkDrags.uriList(address)
         flavor.equals(DataFlavor.stringFlavor) -> address
+        flavor.equals(DraggedText.FROM_APP) -> address
         else -> throw UnsupportedFlavorException(flavor)
     }
 }

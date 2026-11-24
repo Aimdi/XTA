@@ -49,4 +49,12 @@ class LinkDragsTest {
         assertEquals("https://x.com/a/status/2", transfer.getTransferData(DataFlavor.stringFlavor))
         assertFailsWith<UnsupportedFlavorException> { transfer.getTransferData(DataFlavor.javaFileListFlavor) }
     }
+
+    @Test
+    fun aLinkDraggedOutAndDroppedBackOnTheWindowIsNotTaken() {
+        val transfer = LinkTransfer("https://example.org/a")
+        assertTrue(com.aimdi.xtanative.ui.links.DraggedText.fromApp(transfer))
+        kotlin.test.assertFalse(com.aimdi.xtanative.ui.links.DraggedText.offered(transfer), "the frame does not start taking it")
+        assertNull(com.aimdi.xtanative.ui.links.DraggedText.read(transfer), "nor opens it on a drop")
+    }
 }
