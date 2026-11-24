@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">सहेजा गया: चुनना बंद करें</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">क्रम बदली जा सकने वाली सूची में पंक्ति को ऊपर या नीचे ले जाएँ (फ़ोकस वाली या पॉइंटर के नीचे वाली)</string>
+    <string name="keys_post_open">J और K से चुनी गई पोस्ट खोलें</string>
+    <string name="keys_post_like">इस डिवाइस पर उस पोस्ट को पसंद करें, या नापसंद करें</string>
+    <string name="keys_post_save">इस डिवाइस पर उस पोस्ट को सहेजें, या हटाएँ</string>
+    <string name="keys_post_link">उस पोस्ट का लिंक कॉपी करें</string>
+    <string name="keys_post_menu">उस पोस्ट का मेनू खोलें</string>
+    <string name="keys_menu">मेनू</string>
 </resources>

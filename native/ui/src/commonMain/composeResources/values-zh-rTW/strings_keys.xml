@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">已儲存：結束選取</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">在可重新排序的清單中上移或下移一列（有焦點的列或指標下的列）</string>
+    <string name="keys_post_open">開啟用 J 和 K 選取的貼文</string>
+    <string name="keys_post_like">在此裝置上喜歡該貼文，或取消喜歡</string>
+    <string name="keys_post_save">在此裝置上儲存該貼文，或取消儲存</string>
+    <string name="keys_post_link">複製該貼文的連結</string>
+    <string name="keys_post_menu">開啟該貼文的選單</string>
+    <string name="keys_menu">選單</string>
 </resources>

@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Gordeak: utzi hautatzeari</string>
     <string name="keys_delete">Supr</string>
     <string name="keys_move_row">Mugitu errenkada bat gora edo behera berrantola daitekeen zerrenda batean (fokua duena edo erakuslearen azpikoa)</string>
+    <string name="keys_post_open">Ireki J eta K tekletan dagoen argitalpena</string>
+    <string name="keys_post_like">Gustatu argitalpen hori gailu honetan, edo kendu</string>
+    <string name="keys_post_save">Gorde argitalpen hori gailu honetan, edo kendu</string>
+    <string name="keys_post_link">Kopiatu argitalpen horren esteka</string>
+    <string name="keys_post_menu">Ireki argitalpen horren menua</string>
+    <string name="keys_menu">Menua</string>
 </resources>

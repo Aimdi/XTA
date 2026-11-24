@@ -143,9 +143,25 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         DeskAction.LINE_UP, DeskAction.LINE_DOWN, DeskAction.SCREEN_UP, DeskAction.SCREEN_DOWN, DeskAction.TO_TOP, DeskAction.TO_END,
         DeskAction.NEXT_ITEM, DeskAction.PREVIOUS_ITEM ->
             actions.readList()?.let { list ->
-                scope.launch { list.moveFor(action, line) }
+                actions.unmarkPost()
+                scope.launch {
+                    val landed = list.moveFor(action, line)
+                    // Where j and k land, the post the keys then act on is marked.
+                    if (action == DeskAction.NEXT_ITEM || action == DeskAction.PREVIOUS_ITEM) actions.markPostIn(list, landed)
+                }
                 true
             } ?: false
+        // Not past a sheet open over the page, which holds no keys of its own.
+        DeskAction.OPEN_POST, DeskAction.LIKE_POST, DeskAction.SAVE_POST, DeskAction.COPY_POST_LINK, DeskAction.POST_MENU ->
+            !actions.sheetOpen() && actions.onPost { keys ->
+                when (action) {
+                    DeskAction.OPEN_POST -> keys.open()
+                    DeskAction.LIKE_POST -> keys.like()
+                    DeskAction.SAVE_POST -> keys.save()
+                    DeskAction.COPY_POST_LINK -> keys.copyLink()
+                    else -> keys.menu()
+                }
+            }
         // Read off the window's thread; Ctrl+V outside a field has nothing else to do, so the key is taken either way.
         DeskAction.OPEN_PASTED_LINK -> {
             scope.launch { PastedLinks.open() }
@@ -189,7 +205,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         val key = deskKey(event.key)
         val action = DesktopKeys.action(
             key, event.isAltPressed, event.isCtrlPressed, DesktopKeys.keysInside(focusInside, typing[0] > 0, clicked), canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed,
-            selecting = actions.selecting(), openIsRead = actions.openIsRead(),
+            selecting = actions.selecting(), openIsRead = actions.openIsRead(), focusHeld = focusInside,
         )
         // A search field's first Esc drops the recent search it highlighted; the next leaves the field.
         if (action == DeskAction.LEAVE_FIELD && actions.escapeInField()) {
@@ -306,8 +322,8 @@ private val LINE = 64.dp
 /** A screen's move leaves this much of what was read in view, as a browser's Page Down does. */
 private const val SCREEN_KEPT = 0.12f
 
-/** [action] done to the list, eased as the wheel's own moves are. */
-private suspend fun LazyListState.moveFor(action: DeskAction, line: Float) {
+/** [action] done to the list, eased as the wheel's own moves are; the item j or k went to, null for none. */
+private suspend fun LazyListState.moveFor(action: DeskAction, line: Float): Int? {
     val screen = layoutInfo.viewportSize.height * (1 - SCREEN_KEPT)
     when (action) {
         DeskAction.LINE_UP -> animateScrollBy(-line)
@@ -326,9 +342,11 @@ private suspend fun LazyListState.moveFor(action: DeskAction, line: Float) {
                 // Tabs in their own place before the step stick on the way, over the post's start: it comes out from under them.
                 val covered = DesktopKeys.coveredAfterStep(layoutInfo.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) }, index)
                 if (covered > 0) animateScrollBy(-covered.toFloat())
+                return index
             }
         else -> Unit
     }
+    return null
 }
 
 /** Longer than a screen's slide, by which time a screen that focuses a field has done so. */
@@ -339,6 +357,9 @@ private val TAB_DIGITS: Map<Key, Int> = mapOf(
     Key.One to 1, Key.Two to 2, Key.Three to 3, Key.Four to 4, Key.Five to 5, Key.Six to 6, Key.Seven to 7, Key.Eight to 8, Key.Nine to 9,
     Key.NumPad1 to 1, Key.NumPad2 to 2, Key.NumPad3 to 3, Key.NumPad4 to 4, Key.NumPad5 to 5, Key.NumPad6 to 6, Key.NumPad7 to 7, Key.NumPad8 to 8, Key.NumPad9 to 9,
 )
+
+/** The keyboard's Menu key, which opens a context menu. */
+private val MENU_KEY = Key(java.awt.event.KeyEvent.VK_CONTEXT_MENU)
 
 private fun deskKey(key: Key): DeskKey = when (key) {
     Key.Escape -> DeskKey.ESCAPE
@@ -365,6 +386,14 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.K -> DeskKey.K
     Key.A -> DeskKey.A
     Key.Delete -> DeskKey.DELETE
+    Key.Enter, Key.NumPadEnter -> DeskKey.ENTER
+    Key.O -> DeskKey.O
+    Key.L -> DeskKey.L
+    Key.B -> DeskKey.B
+    Key.C -> DeskKey.C
+    Key.F10 -> DeskKey.F10
+    // Compose names no key for it: the Menu key is AWT's context-menu key.
+    MENU_KEY -> DeskKey.MENU
     Key.Plus, Key.Equals, Key.NumPadAdd -> DeskKey.PLUS
     Key.Minus, Key.NumPadSubtract -> DeskKey.MINUS
     Key.Zero, Key.NumPad0 -> DeskKey.ZERO

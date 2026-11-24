@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Zachavanaje: skončyć vyłučennie</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Pieramiascić radok vyšej abo nižej u spisie, jaki možna pieraŭparadkavać (toj, što ŭ fokusie abo pad kursoram)</string>
+    <string name="keys_post_open">Adkryć dopis, na jakim stajać J i K</string>
+    <string name="keys_post_like">Upadabać hety dopis na hetaj pryladzie abo admianić</string>
+    <string name="keys_post_save">Zachavać hety dopis na hetaj pryladzie abo prybrać z zachavanych</string>
+    <string name="keys_post_link">Skapijavać spasyłku na hety dopis</string>
+    <string name="keys_post_menu">Adkryć mieniu hetaha dopisu</string>
+    <string name="keys_menu">Mieniu</string>
 </resources>

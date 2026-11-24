@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Збережено: завершити вибір</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Перемістити рядок вище або нижче у списку, який можна впорядкувати (той, що у фокусі, або під вказівником)</string>
+    <string name="keys_post_open">Відкрити допис, на якому стоять J і K</string>
+    <string name="keys_post_like">Вподобати цей допис на цьому пристрої або скасувати</string>
+    <string name="keys_post_save">Зберегти цей допис на цьому пристрої або прибрати зі збережених</string>
+    <string name="keys_post_link">Скопіювати посилання на цей допис</string>
+    <string name="keys_post_menu">Відкрити меню цього допису</string>
+    <string name="keys_menu">Меню</string>
 </resources>

@@ -723,4 +723,57 @@ class DesktopKeysTest {
         assertTrue(actions.stepColumn(-1))
         assertEquals("a", actions.chosenColumn)
     }
+
+    @Test
+    fun thePostTheReadingKeysAreOnIsActedOn() {
+        assertEquals(DeskAction.OPEN_POST, action(DeskKey.ENTER))
+        assertEquals(DeskAction.OPEN_POST, action(DeskKey.O))
+        assertEquals(DeskAction.LIKE_POST, action(DeskKey.L))
+        assertEquals(DeskAction.SAVE_POST, action(DeskKey.B))
+        assertEquals(DeskAction.COPY_POST_LINK, action(DeskKey.C, ctrl = true, shift = true))
+        assertEquals(DeskAction.POST_MENU, action(DeskKey.MENU))
+        assertEquals(DeskAction.POST_MENU, action(DeskKey.F10, shift = true))
+        // Beside the page (the Deck's detail) they still read; over it, not.
+        assertEquals(DeskAction.LIKE_POST, action(DeskKey.L, open = true, openIsRead = true))
+        listOf(DeskKey.ENTER, DeskKey.O, DeskKey.L, DeskKey.B, DeskKey.MENU).forEach { key ->
+            assertEquals(DeskAction.NONE, action(key, open = true), "$key under a sheet")
+            assertEquals(DeskAction.NONE, action(key, focusInside = true), "$key in a field")
+            assertEquals(DeskAction.NONE, action(key, alt = true), "$key with Alt")
+        }
+        assertEquals(DeskAction.NONE, action(DeskKey.C, ctrl = true, shift = true, focusInside = true), "a field copies its own text")
+        assertEquals(DeskAction.NONE, action(DeskKey.C, ctrl = true, shift = true, open = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.C, ctrl = true), "plain Ctrl+C is the selection's")
+        assertEquals(DeskAction.NONE, action(DeskKey.L, shift = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.F10), "F10 alone is not the menu")
+        // A button the mouse clicked keeps Enter to press, while the other keys read on.
+        val clicked = DesktopKeys.keysInside(focusInside = true, typing = false, clicked = true)
+        assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.ENTER, alt = false, ctrl = false, focusInside = clicked, canGoBack = true, focusHeld = true))
+        assertEquals(DeskAction.LIKE_POST, DesktopKeys.action(DeskKey.L, alt = false, ctrl = false, focusInside = clicked, canGoBack = true, focusHeld = true))
+    }
+
+    @Test
+    fun theCurrentPostIsTheFirstStartingUnderTheLine() {
+        fun item(index: Int, offset: Int, size: Int = 300) = DesktopKeys.ShownItem(index, offset, size)
+        // Posts at 0, 300 and 600: the first.
+        assertEquals(0, DesktopKeys.currentPost(listOf(item(0, 0), item(1, 300), item(2, 600)), listOf(0, 300, 600), end = 800))
+        // The first partly read above the top: the next one, whose start shows.
+        assertEquals(1, DesktopKeys.currentPost(listOf(item(0, -40), item(1, 260)), listOf(-40, 260), end = 800))
+        // A thread item of two posts, landed on by j: its first post, in any order drawn.
+        assertEquals(1, DesktopKeys.currentPost(listOf(item(3, 0, 500), item(4, 500)), listOf(250, 0, 500), end = 800))
+        // Tabs pinned over the list (48 px): the post just under them, not the one they cover.
+        val pinned = listOf(item(1, 0, 48), item(4, 48), item(5, 348))
+        assertEquals(1, DesktopKeys.currentPost(pinned, listOf(10, 48, 348), end = 800))
+        // One post taller than the view, read across: that one.
+        assertEquals(0, DesktopKeys.currentPost(listOf(item(2, -400, 2000)), listOf(-400, 1600), end = 800))
+        // A post laid out past the end of the view is not the one.
+        assertNull(DesktopKeys.currentPost(listOf(item(0, 0)), listOf(900), end = 800))
+        assertNull(DesktopKeys.currentPost(emptyList(), emptyList(), end = 800))
+    }
+
+    @Test
+    fun aStepMarksTheFirstPostOfTheItemItWentTo() {
+        // Item from 300 to 800 holds a thread of two posts (300, 550); one post before it, one after.
+        assertEquals(2, DesktopKeys.firstIn(300, 500, listOf(0, 550, 300, 800)))
+        assertNull(DesktopKeys.firstIn(300, 500, listOf(0, 800)), "a row without a post (a header)")
+    }
 }

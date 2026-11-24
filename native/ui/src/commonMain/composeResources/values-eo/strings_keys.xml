@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Konservitaĵoj: ĉesi elekti</string>
     <string name="keys_delete">Del</string>
     <string name="keys_move_row">Movi vicon supren aŭ suben en reordigebla listo (tiun kun la fokuso aŭ sub la musmontrilo)</string>
+    <string name="keys_post_open">Malfermi la afiŝon, ĉe kiu J kaj K haltis</string>
+    <string name="keys_post_like">Ŝati tiun afiŝon en ĉi tiu aparato, aŭ malŝati</string>
+    <string name="keys_post_save">Konservi tiun afiŝon en ĉi tiu aparato, aŭ malkonservi</string>
+    <string name="keys_post_link">Kopii la ligilon de tiu afiŝo</string>
+    <string name="keys_post_menu">Malfermi la menuon de tiu afiŝo</string>
+    <string name="keys_menu">Menuo</string>
 </resources>

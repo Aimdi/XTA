@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.home.ReadList
 import com.aimdi.xtanative.ui.home.movedByKeys
 
 /**
@@ -23,21 +24,21 @@ import com.aimdi.xtanative.ui.home.movedByKeys
  * window (reading_column.dart's ReadingColumn). The list itself still fills
  * the width, so the wheel and the scrollbar work across all of it. Given
  * the [list], the desktop's scrollbar stands at the window's end edge,
- * and the desktop's keys move it (Page Down, Space, Home …).
+ * and the desktop's keys move it (Page Down, Space, Home …) and act on the
+ * posts in it (Enter, l, b …).
  */
 @Composable
 fun WithReadingColumn(padding: PaddingValues, list: LazyListState? = null, content: @Composable (PaddingValues) -> Unit) {
     val direction = LocalLayoutDirection.current
     BoxWithConstraints(if (list != null) Modifier.movedByKeys(list) else Modifier) {
         val inset = ReadingColumn.inset(maxWidth.value).dp
-        content(
-            PaddingValues(
-                start = padding.calculateStartPadding(direction) + inset,
-                top = padding.calculateTopPadding(),
-                end = padding.calculateEndPadding(direction) + inset,
-                bottom = padding.calculateBottomPadding(),
-            ),
+        val column = PaddingValues(
+            start = padding.calculateStartPadding(direction) + inset,
+            top = padding.calculateTopPadding(),
+            end = padding.calculateEndPadding(direction) + inset,
+            bottom = padding.calculateBottomPadding(),
         )
+        if (list != null) ReadList(list) { content(column) } else content(column)
         if (list != null) {
             ListScrollbar(
                 list,

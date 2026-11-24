@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Đã lưu: thôi chọn</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Di chuyển một hàng lên hoặc xuống trong danh sách có thể sắp xếp lại (hàng đang được chọn hoặc dưới con trỏ)</string>
+    <string name="keys_post_open">Mở bài đăng đang chọn bằng J và K</string>
+    <string name="keys_post_like">Thích bài đăng đó trên thiết bị này, hoặc bỏ thích</string>
+    <string name="keys_post_save">Lưu bài đăng đó trên thiết bị này, hoặc bỏ lưu</string>
+    <string name="keys_post_link">Sao chép liên kết của bài đăng đó</string>
+    <string name="keys_post_menu">Mở menu của bài đăng đó</string>
+    <string name="keys_menu">Menu</string>
 </resources>

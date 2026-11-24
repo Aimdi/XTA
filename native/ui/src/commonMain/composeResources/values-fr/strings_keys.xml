@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Enregistré : quitter la sélection</string>
     <string name="keys_delete">Suppr</string>
     <string name="keys_move_row">Monter ou descendre une ligne dans une liste réordonnable (celle qui a le focus ou celle sous le pointeur)</string>
+    <string name="keys_post_open">Ouvrir la publication choisie avec J et K</string>
+    <string name="keys_post_like">Aimer cette publication sur cet appareil, ou ne plus l\'aimer</string>
+    <string name="keys_post_save">Enregistrer cette publication sur cet appareil, ou la retirer</string>
+    <string name="keys_post_link">Copier le lien de cette publication</string>
+    <string name="keys_post_menu">Ouvrir le menu de cette publication</string>
+    <string name="keys_menu">Menu</string>
 </resources>

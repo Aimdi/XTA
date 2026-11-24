@@ -1,0 +1,85 @@
+package com.aimdi.xtanative.ui.home
+
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+
+/**
+ * What the desktop's keys do to the post they are on ([DesktopKeys.action]):
+ * Enter and o [open] it, l [like]s it, b [save]s it, Ctrl+Shift+C copies
+ * its link ([copyLink]), the Menu key and Shift+F10 open its ⋯ [menu].
+ */
+class PostKeys(
+    val open: () -> Unit,
+    val like: () -> Unit,
+    val save: () -> Unit,
+    val copyLink: () -> Unit,
+    val menu: () -> Unit,
+)
+
+/** A post drawn in [list], where it is laid out ([place]) and what the keys do to it ([keys]). */
+class KeyedPost internal constructor(internal val list: LazyListState, keys: () -> PostKeys) {
+    private val latest = keys
+    internal var place: LayoutCoordinates? = null
+
+    /** What the keys do to it now. */
+    val keys: PostKeys get() = latest()
+}
+
+/** The list the reading keys move that what is drawn here is in ([ReadList]); null outside one, and off the desktop. */
+private val LocalReadList = staticCompositionLocalOf<LazyListState?> { null }
+
+/** [content] as drawn in [list], which the desktop's keys move: the posts in it are the ones they act on ([keyedPost]). */
+@Composable
+fun ReadList(list: LazyListState, content: @Composable () -> Unit) {
+    CompositionLocalProvider(LocalReadList provides list, content = content)
+}
+
+/**
+ * Lets the desktop's keys act on the post drawn here with [keys] once the
+ * reading keys are on it ([DesktopActions.currentPost]), and marks it,
+ * faintly, after j or k land on it. Nothing off the desktop, or outside a
+ * list the keys move ([ReadList]).
+ */
+@Composable
+fun Modifier.keyedPost(keys: PostKeys): Modifier {
+    val actions = LocalDesktopActions.current ?: return this
+    val list = LocalReadList.current ?: return this
+    val latest by rememberUpdatedState(keys)
+    val post = remember(list) { KeyedPost(list) { latest } }
+    DisposableEffect(actions, post) {
+        actions.addPost(post)
+        onDispose { actions.removePost(post) }
+    }
+    val marked by remember(actions, post) { derivedStateOf { actions.markedPost === post } }
+    val tint = MaterialTheme.colorScheme.primary
+    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    return onGloballyPositioned { post.place = it }.drawBehind {
+        if (!marked) return@drawBehind
+        drawRect(tint.copy(alpha = MARK_ALPHA))
+        val bar = MARK_BAR.toPx()
+        drawRect(tint, topLeft = Offset(if (rtl) size.width - bar else 0f, 0f), size = Size(bar, size.height))
+    }
+}
+
+/** How strongly the marked post is tinted: enough to find it, not enough to read it differently. */
+private const val MARK_ALPHA = 0.06f
+
+/** The bar along the marked post's start edge. */
+private val MARK_BAR = 3.dp

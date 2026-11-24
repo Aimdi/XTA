@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Избранное: завершить выбор</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Переместить строку выше или ниже в списке, который можно упорядочить (ту, что в фокусе, или под указателем)</string>
+    <string name="keys_post_open">Открыть пост, выбранный клавишами J и K</string>
+    <string name="keys_post_like">Лайкнуть этот пост на этом устройстве или убрать лайк</string>
+    <string name="keys_post_save">Сохранить этот пост на этом устройстве или убрать из сохранённых</string>
+    <string name="keys_post_link">Скопировать ссылку на этот пост</string>
+    <string name="keys_post_menu">Открыть меню этого поста</string>
+    <string name="keys_menu">Меню</string>
 </resources>

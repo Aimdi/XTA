@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Guardado: dejar de seleccionar</string>
     <string name="keys_delete">Supr</string>
     <string name="keys_move_row">Subir o bajar una fila en una lista que se puede reordenar (la que tiene el foco o la que está bajo el puntero)</string>
+    <string name="keys_post_open">Abrir la publicación en la que están J y K</string>
+    <string name="keys_post_like">Dar me gusta a esa publicación en este dispositivo, o quitarlo</string>
+    <string name="keys_post_save">Guardar esa publicación en este dispositivo, o quitarla</string>
+    <string name="keys_post_link">Copiar el enlace de esa publicación</string>
+    <string name="keys_post_menu">Abrir el menú de esa publicación</string>
+    <string name="keys_menu">Menú</string>
 </resources>

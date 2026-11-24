@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">保存ツイート: 選択を終了</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">並べ替えできるリストで行を上下に移動（フォーカスのある行、またはポインターの下の行）</string>
+    <string name="keys_post_open">J と K で選んだ投稿を開く</string>
+    <string name="keys_post_like">その投稿にこの端末でいいね、または取り消し</string>
+    <string name="keys_post_save">その投稿をこの端末に保存、または保存を解除</string>
+    <string name="keys_post_link">その投稿のリンクをコピー</string>
+    <string name="keys_post_menu">その投稿のメニューを開く</string>
+    <string name="keys_menu">メニュー</string>
 </resources>

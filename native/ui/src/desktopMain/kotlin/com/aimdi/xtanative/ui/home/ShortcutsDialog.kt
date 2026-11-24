@@ -33,8 +33,14 @@ import com.aimdi.xtanative.ui.generated.resources.keys_go_home
 import com.aimdi.xtanative.ui.generated.resources.keys_help
 import com.aimdi.xtanative.ui.generated.resources.keys_home
 import com.aimdi.xtanative.ui.generated.resources.keys_leave_selection
+import com.aimdi.xtanative.ui.generated.resources.keys_menu
 import com.aimdi.xtanative.ui.generated.resources.keys_move
 import com.aimdi.xtanative.ui.generated.resources.keys_move_row
+import com.aimdi.xtanative.ui.generated.resources.keys_post_like
+import com.aimdi.xtanative.ui.generated.resources.keys_post_link
+import com.aimdi.xtanative.ui.generated.resources.keys_post_menu
+import com.aimdi.xtanative.ui.generated.resources.keys_post_open
+import com.aimdi.xtanative.ui.generated.resources.keys_post_save
 import com.aimdi.xtanative.ui.generated.resources.keys_next_post
 import com.aimdi.xtanative.ui.generated.resources.keys_open_copied_link
 import com.aimdi.xtanative.ui.generated.resources.keys_page_down
@@ -101,6 +107,11 @@ object DesktopShortcuts {
         Shortcut(Res.string.keys_columns, listOf(listOf(ctrl, sign("←")), listOf(ctrl, sign("→")))),
         Shortcut(Res.string.keys_scroll_line, listOf(listOf(sign("↑")), listOf(sign("↓")))),
         Shortcut(Res.string.keys_next_post, listOf(listOf(sign("J")), listOf(sign("K")))),
+        Shortcut(Res.string.keys_post_open, listOf(listOf(sign("↵")), listOf(sign("O")))),
+        Shortcut(Res.string.keys_post_like, listOf(listOf(sign("L")))),
+        Shortcut(Res.string.keys_post_save, listOf(listOf(sign("B")))),
+        Shortcut(Res.string.keys_post_link, listOf(listOf(ctrl, shift, sign("C")))),
+        Shortcut(Res.string.keys_post_menu, listOf(listOf(KeyCap.Named(Res.string.keys_menu)), listOf(shift, sign("F10")))),
         Shortcut(
             Res.string.keys_scroll_screen,
             listOf(listOf(KeyCap.Named(Res.string.keys_page_up)), listOf(KeyCap.Named(Res.string.keys_page_down)), listOf(space), listOf(shift, space)),

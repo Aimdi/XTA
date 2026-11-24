@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Disimpan: berhenti memilih</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Pindahkan baris ke atas atau ke bawah dalam daftar yang bisa diurutkan ulang (yang sedang difokus atau di bawah penunjuk)</string>
+    <string name="keys_post_open">Buka postingan yang dipilih dengan J dan K</string>
+    <string name="keys_post_like">Sukai postingan itu di perangkat ini, atau batalkan</string>
+    <string name="keys_post_save">Simpan postingan itu di perangkat ini, atau hapus dari simpanan</string>
+    <string name="keys_post_link">Salin tautan postingan itu</string>
+    <string name="keys_post_menu">Buka menu postingan itu</string>
+    <string name="keys_menu">Menu</string>
 </resources>

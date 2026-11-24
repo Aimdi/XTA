@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Archiv: Auswahl beenden</string>
     <string name="keys_delete">Entf</string>
     <string name="keys_move_row">Eine Zeile in einer sortierbaren Liste nach oben oder unten verschieben (die fokussierte oder die unter dem Mauszeiger)</string>
+    <string name="keys_post_open">Den mit J und K gewählten Beitrag öffnen</string>
+    <string name="keys_post_like">Diesen Beitrag auf diesem Gerät liken oder nicht mehr</string>
+    <string name="keys_post_save">Diesen Beitrag auf diesem Gerät speichern oder nicht mehr</string>
+    <string name="keys_post_link">Link dieses Beitrags kopieren</string>
+    <string name="keys_post_menu">Menü dieses Beitrags öffnen</string>
+    <string name="keys_menu">Menü</string>
 </resources>

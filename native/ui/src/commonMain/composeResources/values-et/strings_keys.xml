@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Salvestatud: lõpeta valimine</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Liiguta ümberjärjestatavas loendis rida üles või alla (fookuses olevat või kursori all olevat)</string>
+    <string name="keys_post_open">Ava postitus, millel J ja K on</string>
+    <string name="keys_post_like">Märgi see postitus selles seadmes meeldivaks või eemalda märge</string>
+    <string name="keys_post_save">Salvesta see postitus selles seadmes või eemalda salvestus</string>
+    <string name="keys_post_link">Kopeeri selle postituse link</string>
+    <string name="keys_post_menu">Ava selle postituse menüü</string>
+    <string name="keys_menu">Menüü</string>
 </resources>

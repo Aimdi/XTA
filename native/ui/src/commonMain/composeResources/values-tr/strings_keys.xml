@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Kaydedilmiş: seçimi bitir</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Yeniden sıralanabilen bir listede satırı yukarı veya aşağı taşı (odaktaki ya da işaretçinin altındaki)</string>
+    <string name="keys_post_open">J ve K ile seçilen gönderiyi aç</string>
+    <string name="keys_post_like">O gönderiyi bu cihazda beğen veya beğeniyi geri al</string>
+    <string name="keys_post_save">O gönderiyi bu cihaza kaydet veya kayıttan çıkar</string>
+    <string name="keys_post_link">O gönderinin bağlantısını kopyala</string>
+    <string name="keys_post_menu">O gönderinin menüsünü aç</string>
+    <string name="keys_menu">Menü</string>
 </resources>

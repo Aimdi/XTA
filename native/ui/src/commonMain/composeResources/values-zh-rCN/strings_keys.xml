@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">书签：结束选择</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">在可重新排序的列表中上移或下移一行（有焦点的行或指针下的行）</string>
+    <string name="keys_post_open">打开用 J 和 K 选中的帖子</string>
+    <string name="keys_post_like">在此设备上喜欢该帖子，或取消喜欢</string>
+    <string name="keys_post_save">在此设备上保存该帖子，或取消保存</string>
+    <string name="keys_post_link">复制该帖子的链接</string>
+    <string name="keys_post_menu">打开该帖子的菜单</string>
+    <string name="keys_menu">菜单</string>
 </resources>

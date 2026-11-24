@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,6 +57,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_subscribers_only_of_auth
 import com.aimdi.xtanative.ui.generated.resources.posts_thread
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_view_quoted
+import com.aimdi.xtanative.ui.home.keyedPost
 import com.aimdi.xtanative.ui.media.LiveRooms
 import com.aimdi.xtanative.ui.media.LocalLivePlayer
 import com.aimdi.xtanative.ui.saved.KeepNotices
@@ -131,7 +133,8 @@ private val MediaBleed = 16.dp
  * reply line, the text and what the post carries, and the counts.
  * [continues] and [midThread] join it to the posts of its thread by a line
  * through the avatars. A tap opens it; with "Double-tap to like" on, a
- * double-tap likes it on this device. A right-click opens its ⋯ menu.
+ * double-tap likes it on this device. A right-click opens its ⋯ menu. On
+ * the desktop the keys act on it once the reading keys are on it ([keyedPost]).
  */
 @Composable
 fun PostCard(
@@ -150,10 +153,20 @@ fun PostCard(
     val railColor = MaterialTheme.colorScheme.outlineVariant
     val picture = rememberPostPicture()
     var menu by rememberSaveable(shown.id) { mutableStateOf(false) }
+    // Opened from the keyboard: at the post, not at the pointer.
+    var menuAtPost by remember(shown.id) { mutableStateOf(false) }
+    val keys = rememberPostKeys(post, actions) {
+        menuAtPost = true
+        menu = true
+    }
     Column(
         modifier
             .fillMaxWidth()
-            .onSecondaryClick { menu = true }
+            .keyedPost(keys)
+            .onSecondaryClick {
+                menuAtPost = false
+                menu = true
+            }
             .recordedIn(picture)
             .opening(rememberDoubleTapLike(shown, scope.prefs, actions)) { actions.openPost(shown.id) }
             .drawBehind {
@@ -198,10 +211,15 @@ fun PostCard(
                 // Translate and ⋯ at the end of the author line, reaching over the text under it as X's ⋯ does.
                 Row(Modifier.align(Alignment.TopEnd)) {
                     translation?.let { TranslateButton(it, scope) }
-                    HeaderButton(PostIcons.MoreHoriz, stringResource(Res.string.posts_more)) { menu = true }
+                    HeaderButton(PostIcons.MoreHoriz, stringResource(Res.string.posts_more)) {
+                        menuAtPost = false
+                        menu = true
+                    }
                 }
             }
-            if (menu) PostMenu(post, actions, onDismiss = { menu = false })
+            if (menu) {
+                CompositionLocalProvider(LocalMenuAtPost provides menuAtPost) { PostMenu(post, actions, onDismiss = { menu = false }) }
+            }
         }
     }
 }

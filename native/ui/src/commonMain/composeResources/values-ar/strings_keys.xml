@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">المحفوظ: إنهاء التحديد</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">تحريك صف لأعلى أو لأسفل في قائمة قابلة لإعادة الترتيب (الصف المحدد أو الذي تحت المؤشر)</string>
+    <string name="keys_post_open">فتح المنشور الذي انتقلت إليه بـ J وK</string>
+    <string name="keys_post_like">الإعجاب بذلك المنشور على هذا الجهاز أو إلغاء الإعجاب</string>
+    <string name="keys_post_save">حفظ ذلك المنشور على هذا الجهاز أو إلغاء حفظه</string>
+    <string name="keys_post_link">نسخ رابط ذلك المنشور</string>
+    <string name="keys_post_menu">فتح قائمة ذلك المنشور</string>
+    <string name="keys_menu">القائمة</string>
 </resources>

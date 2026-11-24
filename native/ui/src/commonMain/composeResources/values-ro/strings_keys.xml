@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Salvat: oprește selectarea</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Mută un rând în sus sau în jos într-o listă care se poate reordona (cel cu focus sau cel de sub cursor)</string>
+    <string name="keys_post_open">Deschide postarea pe care sunt J și K</string>
+    <string name="keys_post_like">Apreciază acea postare pe acest dispozitiv sau retrage aprecierea</string>
+    <string name="keys_post_save">Salvează acea postare pe acest dispozitiv sau scoate-o din salvate</string>
+    <string name="keys_post_link">Copiază linkul acelei postări</string>
+    <string name="keys_post_menu">Deschide meniul acelei postări</string>
+    <string name="keys_menu">Meniu</string>
 </resources>

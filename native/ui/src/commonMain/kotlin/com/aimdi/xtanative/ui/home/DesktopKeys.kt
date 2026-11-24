@@ -3,7 +3,7 @@ package com.aimdi.xtanative.ui.home
 import androidx.compose.ui.geometry.Offset
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, OTHER }
 
 enum class DeskAction {
     /** Out of the text field being typed in, as XTA's first Esc does. */
@@ -70,6 +70,21 @@ enum class DeskAction {
     /** The row of a reorderable list the pointer rests on moves a place up or down, as its drag would move it ([DesktopActions.moveRow]). */
     MOVE_ROW_UP,
     MOVE_ROW_DOWN,
+
+    /** The post the reading keys are on ([DesktopActions.currentPost]) opens, as a click on it does. */
+    OPEN_POST,
+
+    /** That post liked on this device, or no longer, as its heart does. */
+    LIKE_POST,
+
+    /** That post saved on this device, or no longer, as its bookmark does. */
+    SAVE_POST,
+
+    /** That post's link copied. */
+    COPY_POST_LINK,
+
+    /** That post's ⋯ menu opens, at the post, as the Menu key opens a desktop app's context menu. */
+    POST_MENU,
     NONE,
 }
 
@@ -119,6 +134,13 @@ object DesktopKeys {
      * over the page, move the row the pointer rests on in a list that is
      * otherwise reordered by dragging (a row with the focus moves itself,
      * [RowKeyMoves]).
+     * The post the reading keys are on ([DesktopActions.currentPost]) is
+     * acted on as on X's site, while nothing is being typed in and nothing is
+     * open over the page: Enter and o open it, l likes it on this device (or
+     * no longer), b saves it on this device (or no longer), Ctrl+Shift+C
+     * copies its link, and the Menu key and Shift+F10 open its ⋯ menu. Enter
+     * leaves a button or tab that has the focus to press ([focusHeld]: one
+     * the mouse clicked too), as in a browser.
      */
     fun action(
         key: DeskKey,
@@ -131,6 +153,7 @@ object DesktopKeys {
         shift: Boolean = false,
         selecting: Boolean = false,
         openIsRead: Boolean = false,
+        focusHeld: Boolean = focusInside,
     ): DeskAction {
         // Only what is open over the page stops the reading keys; a column opened beside it is read with them.
         val covered = somethingOpen && !openIsRead
@@ -165,7 +188,13 @@ object DesktopKeys {
                 key == DeskKey.UP -> DeskAction.MOVE_ROW_UP
                 else -> DeskAction.MOVE_ROW_DOWN
             }
+            key == DeskKey.C && ctrl && shift && !alt && !focusInside -> if (covered) DeskAction.NONE else DeskAction.COPY_POST_LINK
             focusInside || alt || ctrl -> DeskAction.NONE
+            (key == DeskKey.MENU && !shift) || (key == DeskKey.F10 && shift) -> if (covered) DeskAction.NONE else DeskAction.POST_MENU
+            key in POST_KEYS && !shift -> when {
+                covered || (key == DeskKey.ENTER && focusHeld) -> DeskAction.NONE
+                else -> POST_KEYS.getValue(key)
+            }
             key in SCROLL_KEYS -> if (covered) DeskAction.NONE else scroll(key, shift)
             (key == DeskKey.J || key == DeskKey.K) && !shift -> when {
                 covered -> DeskAction.NONE
@@ -190,6 +219,13 @@ object DesktopKeys {
     fun keysInside(focusInside: Boolean, typing: Boolean, clicked: Boolean): Boolean = focusInside && (typing || !clicked)
 
     private val SCROLL_KEYS = setOf(DeskKey.UP, DeskKey.DOWN, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN, DeskKey.SPACE, DeskKey.HOME, DeskKey.END)
+
+    private val POST_KEYS = mapOf(
+        DeskKey.ENTER to DeskAction.OPEN_POST,
+        DeskKey.O to DeskAction.OPEN_POST,
+        DeskKey.L to DeskAction.LIKE_POST,
+        DeskKey.B to DeskAction.SAVE_POST,
+    )
 
     private val TAB_KEYS = setOf(DeskKey.TAB, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN)
 
@@ -296,6 +332,25 @@ object DesktopKeys {
         val item = items.firstOrNull { it.index == index && it !== pinned } ?: return 0
         return (pinned.offset + pinned.size - item.offset).coerceAtLeast(0)
     }
+
+    /**
+     * Which of the posts drawn in a list is the one the reading keys are on,
+     * the list's items in view being [shown] and the posts starting at
+     * [tops] (in the items' offsets), the list's view ending at [end]: the
+     * first starting at or below the line a pinned header leaves (j and k
+     * leave a post's start there), else the one partly read across it. Null
+     * when no post is in view.
+     */
+    fun currentPost(shown: List<ShownItem>, tops: List<Int>, end: Int): Int? {
+        val pinned = pinnedOf(shown.sortedBy { it.index })
+        val line = pinned?.let { it.offset + it.size } ?: 0
+        val inView = tops.withIndex().filter { it.value < end }
+        return (inView.filter { it.value >= line - SLACK }.minByOrNull { it.value } ?: inView.filter { it.value < line }.maxByOrNull { it.value })?.index
+    }
+
+    /** Which of the posts starting at [tops] is the first in the item at [offset], [size] long; null when none is in it. */
+    fun firstIn(offset: Int, size: Int, tops: List<Int>): Int? =
+        tops.withIndex().filter { it.value >= offset - SLACK && it.value < offset + size }.minByOrNull { it.value }?.index
 
     /** The first item in view when it is pinned over the list: the items after it are not the next ones, or they overlap it. */
     private fun pinnedOf(items: List<ShownItem>): ShownItem? =

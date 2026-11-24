@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Uloženo: ukončit výběr</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Posunout řádek nahoru nebo dolů v seznamu, který jde přeskládat (ten se zaměřením nebo pod ukazatelem)</string>
+    <string name="keys_post_open">Otevřít příspěvek, na kterém stojí J a K</string>
+    <string name="keys_post_like">Označit příspěvek jako oblíbený na tomto zařízení, nebo zrušit</string>
+    <string name="keys_post_save">Uložit příspěvek na tomto zařízení, nebo uložení zrušit</string>
+    <string name="keys_post_link">Kopírovat odkaz na příspěvek</string>
+    <string name="keys_post_menu">Otevřít nabídku příspěvku</string>
+    <string name="keys_menu">Nabídka</string>
 </resources>

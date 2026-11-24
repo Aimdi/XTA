@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Zapisane: zakończ zaznaczanie</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Przesuń wiersz w górę lub w dół na liście, którą można przestawiać (ten z fokusem lub pod wskaźnikiem)</string>
+    <string name="keys_post_open">Otwórz wpis wybrany klawiszami J i K</string>
+    <string name="keys_post_like">Polub ten wpis na tym urządzeniu lub cofnij polubienie</string>
+    <string name="keys_post_save">Zapisz ten wpis na tym urządzeniu lub usuń z zapisanych</string>
+    <string name="keys_post_link">Kopiuj link do tego wpisu</string>
+    <string name="keys_post_menu">Otwórz menu tego wpisu</string>
+    <string name="keys_menu">Menu</string>
 </resources>

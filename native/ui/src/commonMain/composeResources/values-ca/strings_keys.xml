@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Desat: deixa de seleccionar</string>
     <string name="keys_delete">Supr</string>
     <string name="keys_move_row">Mou una fila amunt o avall en una llista que es pot reordenar (la que té el focus o la que és sota el punter)</string>
+    <string name="keys_post_open">Obre la publicació on són J i K</string>
+    <string name="keys_post_like">Marca aquesta publicació com a m'agrada en aquest dispositiu, o desmarca-la</string>
+    <string name="keys_post_save">Desa aquesta publicació en aquest dispositiu, o deixa de desar-la</string>
+    <string name="keys_post_link">Copia l'enllaç d'aquesta publicació</string>
+    <string name="keys_post_menu">Obre el menú d'aquesta publicació</string>
+    <string name="keys_menu">Menú</string>
 </resources>

@@ -18,6 +18,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalFocusManager
@@ -180,8 +181,78 @@ class DesktopActions(
     internal fun removeList(list: LazyListState) {
         lists -= list
         listColumns -= list
+        listPlaces -= list
         if (pointed === list) pointed = null
     }
+
+    /** Where each list on screen is laid out, so the posts drawn in it are placed against it ([currentPost]). */
+    private val listPlaces = mutableMapOf<LazyListState, LayoutCoordinates>()
+
+    internal fun placeList(list: LazyListState, place: LayoutCoordinates) {
+        listPlaces[list] = place
+    }
+
+    /** The posts drawn in the lists on screen, each with what the keys do to it ([keyedPost]). */
+    private val posts = mutableListOf<KeyedPost>()
+
+    internal fun addPost(post: KeyedPost) {
+        posts += post
+    }
+
+    internal fun removePost(post: KeyedPost) {
+        posts -= post
+        if (markedPost === post) markedPost = null
+    }
+
+    /**
+     * The post a step of j or k landed on, marked while the keyboard reads
+     * the list; null once the pointer moves or the list moves otherwise.
+     */
+    var markedPost: KeyedPost? by mutableStateOf(null)
+        private set
+
+    /**
+     * The post the reading keys are on: the one j or k last landed on while
+     * it is still marked, else the first whose start shows in the list they
+     * move, under a header pinned over it ([DesktopKeys.currentPost]).
+     */
+    fun currentPost(): KeyedPost? {
+        markedPost?.takeIf { it in posts && it.place?.isAttached == true }?.let { return it }
+        val list = readList() ?: return null
+        val (drawn, tops) = drawnPosts(list) ?: return null
+        val info = list.layoutInfo
+        val shown = info.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) }
+        return DesktopKeys.currentPost(shown, tops, info.viewportEndOffset)?.let(drawn::get)
+    }
+
+    /** The posts drawn in [list] and where each starts, in its items' offsets; null while the list is not laid out. */
+    private fun drawnPosts(list: LazyListState): Pair<List<KeyedPost>, List<Int>>? {
+        val frame = listPlaces[list]?.takeIf { it.isAttached } ?: return null
+        val drawn = posts.filter { it.list === list && it.place?.isAttached == true }
+        // From the window to the items' own offsets, which start under the list's padding.
+        val top = frame.positionInWindow().y - list.layoutInfo.viewportStartOffset
+        return drawn to drawn.map { (it.place!!.positionInWindow().y - top).toInt() }
+    }
+
+    /**
+     * After a step of j or k to item [index] of [list]: its first post is
+     * marked, even where the list could not bring it to the top (near its
+     * end); else the post the keys are on now.
+     */
+    internal fun markPostIn(list: LazyListState, index: Int?) {
+        markedPost = null
+        val item = list.layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }
+        val inItem = item?.let { shown -> drawnPosts(list)?.let { (drawn, tops) -> DesktopKeys.firstIn(shown.offset, shown.size, tops)?.let(drawn::get) } }
+        markedPost = inItem ?: currentPost()
+    }
+
+    /** The keyboard or the mouse moved the list some other way: no post is marked. */
+    internal fun unmarkPost() {
+        markedPost = null
+    }
+
+    /** [act] done to the post the reading keys are on; false when there is none. */
+    fun onPost(act: (PostKeys) -> Unit): Boolean = currentPost()?.let { act(it.keys); true } ?: false
 
     /** Where in the window the pointer last was: over a list ([point]), or anywhere ([pointerAt]). */
     private var pointer: Offset? = null
@@ -195,6 +266,7 @@ class DesktopActions(
      */
     internal fun point(list: LazyListState, at: Offset? = null) {
         if (!DesktopKeys.pointerMoved(pointer, at)) return
+        if (pointer != null) markedPost = null
         pointer = at
         pointed = list
         if (listColumns[list] != chosenColumn) chosenColumn = null
@@ -267,6 +339,7 @@ class DesktopActions(
     /** The page scrolled under the pointer (the wheel, a touchpad): the next list it rests over is pointed at, as after a move. */
     internal fun scrolled() {
         pointer = null
+        markedPost = null
     }
 
     /**
@@ -276,6 +349,7 @@ class DesktopActions(
      * list (a column's error page, a divider) does not take the keys.
      */
     internal fun pointerAt(at: Offset) {
+        if (pointer != null && DesktopKeys.pointerMoved(pointer, at)) markedPost = null
         pointer = at
     }
 
@@ -361,7 +435,10 @@ fun Modifier.movedByKeys(list: LazyListState): Modifier {
     }
     // Where the list stands in the window, so the pointer's place is known there and not only in the list.
     val origin = remember { arrayOf(Offset.Zero) }
-    return onGloballyPositioned { origin[0] = it.positionInWindow() }.pointerInput(actions, list) {
+    return onGloballyPositioned {
+        origin[0] = it.positionInWindow()
+        actions.placeList(list, it)
+    }.pointerInput(actions, list) {
         awaitPointerEventScope {
             while (true) {
                 val event = awaitPointerEvent(PointerEventPass.Initial)

@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Salvati: esci dalla selezione</string>
     <string name="keys_delete">Canc</string>
     <string name="keys_move_row">Sposta una riga su o giù in un elenco riordinabile (quella con il focus o quella sotto il puntatore)</string>
+    <string name="keys_post_open">Apri il post su cui sono J e K</string>
+    <string name="keys_post_like">Metti mi piace a quel post su questo dispositivo, o toglilo</string>
+    <string name="keys_post_save">Salva quel post su questo dispositivo, o toglilo dai salvati</string>
+    <string name="keys_post_link">Copia il link di quel post</string>
+    <string name="keys_post_menu">Apri il menu di quel post</string>
+    <string name="keys_menu">Menu</string>
 </resources>

@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Lagret: avslutt valg</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Flytt en rad opp eller ned i en liste du kan sortere om (den med fokus eller den under pekeren)</string>
+    <string name="keys_post_open">Åpne innlegget J og K står på</string>
+    <string name="keys_post_like">Lik det innlegget på denne enheten, eller fjern liker</string>
+    <string name="keys_post_save">Lagre det innlegget på denne enheten, eller fjern det</string>
+    <string name="keys_post_link">Kopier lenken til det innlegget</string>
+    <string name="keys_post_menu">Åpne menyen for det innlegget</string>
+    <string name="keys_menu">Meny</string>
 </resources>

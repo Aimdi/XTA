@@ -42,4 +42,10 @@
     <string name="keys_leave_selection">Salvo: parar de selecionar</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Mover uma linha para cima ou para baixo em uma lista reordenável (a que tem o foco ou a que está sob o ponteiro)</string>
+    <string name="keys_post_open">Abrir o post escolhido com J e K</string>
+    <string name="keys_post_like">Curtir esse post neste dispositivo, ou descurtir</string>
+    <string name="keys_post_save">Salvar esse post neste dispositivo, ou remover dos salvos</string>
+    <string name="keys_post_link">Copiar o link desse post</string>
+    <string name="keys_post_menu">Abrir o menu desse post</string>
+    <string name="keys_menu">Menu</string>
 </resources>
