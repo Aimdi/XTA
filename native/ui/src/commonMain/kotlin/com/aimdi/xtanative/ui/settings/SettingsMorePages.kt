@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -41,6 +42,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -68,6 +70,13 @@ import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.home.AccountMark
+import com.aimdi.xtanative.ui.home.RowSteps
+import com.aimdi.xtanative.ui.home.dragSlot
+import com.aimdi.xtanative.ui.home.rememberRowKeyMoves
+import com.aimdi.xtanative.ui.home.rememberSlotDrag
+import com.aimdi.xtanative.ui.home.rowMovedByKeys
+import com.aimdi.xtanative.ui.home.slotDragHandle
+import com.aimdi.xtanative.ui.home.slotViewport
 import com.aimdi.xtanative.ui.signin.forgetWebSessions
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -101,27 +110,44 @@ internal fun HomeSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
             }) { Icon(Icons.Outlined.Refresh, stringResource(Res.string.settings_reset_home_pages)) } }
         },
     ) { padding ->
-        SettingsList(padding) {
+        val scroll = rememberScrollState()
+        // A page's name dragged with the mouse moves it, as its arrows do; Alt+↑ and Alt+↓ too.
+        val slots = rememberSlotDrag(scroll, vertical = true)
+        val ids: List<Any> = pages.map { it.id }
+        val moves = rememberRowKeyMoves { id, up ->
+            RowSteps.step(ids, id, up)?.let { (from, to) -> save(HomePages.moved(pages, from, to)) } != null
+        }
+        SettingsList(padding, scroll, Modifier.slotViewport(slots)) {
             pages.forEachIndexed { index, page ->
-                Row(
-                    Modifier.fillMaxWidth().padding(start = 4.dp, end = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Checkbox(checked = page.selected, onCheckedChange = { on ->
-                        val next = HomePages.toggled(pages, page.id, on)
-                        if (next == null) scope.launch { snackbar.showSnackbar(minimum) } else save(next)
-                    })
-                    Text(
-                        homePageLabel(page.id) { group -> session.groups.firstOrNull { it.id == group }?.name },
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.weight(1f),
-                    )
-                    IconTip(stringResource(Res.string.settings_move_up)) { IconButton(onClick = { save(HomePages.moved(pages, index, index - 1)) }, enabled = index > 0) {
-                        Icon(Icons.Outlined.KeyboardArrowUp, stringResource(Res.string.settings_move_up))
-                    } }
-                    IconTip(stringResource(Res.string.settings_move_down)) { IconButton(onClick = { save(HomePages.moved(pages, index, index + 1)) }, enabled = index < pages.lastIndex) {
-                        Icon(Icons.Outlined.KeyboardArrowDown, stringResource(Res.string.settings_move_down))
-                    } }
+                key(page.id) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .rowMovedByKeys(moves, page.id)
+                            .dragSlot(slots, page.id, MaterialTheme.colorScheme.primary)
+                            .background(MaterialTheme.colorScheme.background)
+                            .padding(start = 4.dp, end = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(checked = page.selected, onCheckedChange = { on ->
+                            val next = HomePages.toggled(pages, page.id, on)
+                            if (next == null) scope.launch { snackbar.showSnackbar(minimum) } else save(next)
+                        })
+                        Text(
+                            homePageLabel(page.id) { group -> session.groups.firstOrNull { it.id == group }?.name },
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier
+                                .weight(1f)
+                                .slotDragHandle(slots, page.id, ids, mouseOnly = true) { from, to -> save(HomePages.moved(pages, from, to)) }
+                                .padding(vertical = 12.dp),
+                        )
+                        IconTip(stringResource(Res.string.settings_move_up)) { IconButton(onClick = { save(HomePages.moved(pages, index, index - 1)) }, enabled = index > 0) {
+                            Icon(Icons.Outlined.KeyboardArrowUp, stringResource(Res.string.settings_move_up))
+                        } }
+                        IconTip(stringResource(Res.string.settings_move_down)) { IconButton(onClick = { save(HomePages.moved(pages, index, index + 1)) }, enabled = index < pages.lastIndex) {
+                            Icon(Icons.Outlined.KeyboardArrowDown, stringResource(Res.string.settings_move_down))
+                        } }
+                    }
                 }
             }
         }

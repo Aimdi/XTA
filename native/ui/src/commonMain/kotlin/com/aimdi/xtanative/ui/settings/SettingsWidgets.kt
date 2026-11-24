@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.settings
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -114,12 +115,16 @@ internal fun SettingsPage(
 /** The widest a settings page grows. */
 private val SETTINGS_MAX_WIDTH = 840.dp
 
-/** The rows of a page, scrolling, with the desktop's scrollbar. */
+/** The rows of a page, scrolling by [scroll], with the desktop's scrollbar; [view] is on what they scroll in. */
 @Composable
-internal fun SettingsList(padding: PaddingValues, content: @Composable ColumnScope.() -> Unit) {
-    val scroll = rememberScrollState()
+internal fun SettingsList(
+    padding: PaddingValues,
+    scroll: ScrollState = rememberScrollState(),
+    view: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
     Box(Modifier.fillMaxSize().padding(padding)) {
-        Column(Modifier.fillMaxSize().verticalScrollByKeys(scroll).padding(bottom = 24.dp), content = content)
+        Column(Modifier.fillMaxSize().then(view).verticalScrollByKeys(scroll).padding(bottom = 24.dp), content = content)
         ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd))
     }
 }
