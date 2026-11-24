@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -87,7 +88,8 @@ internal fun HnStoryScreen(app: HnApp, id: Long) {
     ) { padding ->
         val rows = remember(thread, collapsed) { HnComment.visible(thread?.comments.orEmpty(), collapsed) }
         PullToRefreshBox(isRefreshing = state.loading && state.loaded, onRefresh = reader::refresh, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp)) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = column) {
+            val scroll = rememberLazyListState()
+            PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp), scroll) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
                 thread?.let { item(key = "lead") { Lead(app, it.story) } }
                 val error = state.error
                 when {

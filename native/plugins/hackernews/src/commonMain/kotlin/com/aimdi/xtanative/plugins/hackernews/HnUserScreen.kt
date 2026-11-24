@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +47,8 @@ internal fun HnUserScreen(app: HnApp, id: String) {
     val page = state.value
     PluginScaffold(title = id, onBack = app.host::back) { padding ->
         PullToRefreshBox(isRefreshing = state.loading && page != null, onRefresh = reader::refresh, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp)) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = column) {
+            val scroll = rememberLazyListState()
+            PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp), scroll) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
                 val error = state.error
                 when {
                     page == null && error != null -> item(key = "problem") { NetworkProblemView(problemOf(error), app.network, reader::refresh) }
