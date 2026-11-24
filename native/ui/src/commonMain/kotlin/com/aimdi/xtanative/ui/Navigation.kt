@@ -403,8 +403,9 @@ fun XtaNativeRoot() {
             {
                 forward.next()?.let { step ->
                     val open = { runCatching { nav.navigate(step.route) }.onFailure { forward.clear() }; Unit }
-                    // A post opens as a card over a picture of the screen, as it does when clicked.
-                    if (step.pattern == Routes.POST) backs.open(opening, open) else open()
+                    // A post opens as a card over a picture of the screen, as it does when clicked; one that
+                    // does not open (another still opening) leaves the step to go forward to.
+                    if (step.pattern == Routes.POST) backs.open(opening, abandoned = { forward.putBack(step) }, navigate = open) else open()
                     true
                 } ?: false
             }
@@ -427,8 +428,13 @@ private fun forwardStep(entry: NavBackStackEntry): ForwardRoutes.Step? {
     return ForwardRoutes.routeOf(pattern, args)?.let { ForwardRoutes.Step(it, pattern) }
 }
 
-/** Screens going forward never opens again: the app's setting up, and what only leads to the first screen. */
-private val NOT_FORWARD = setOf(Routes.ROOT, Routes.INTRO, Routes.IMPORT, Routes.SIGN_IN)
+/**
+ * Screens going forward never opens again: the app's setting up, what only
+ * leads to the first screen, and what does something as it is shown: the
+ * browser screen hands its page to the desktop's browser again, and a live
+ * room starts playing again.
+ */
+internal val NOT_FORWARD = setOf(Routes.ROOT, Routes.INTRO, Routes.IMPORT, Routes.SIGN_IN, Routes.BROWSER, Routes.LIVE)
 
 /** The reading-aloud bar's "Voice settings" opens them over whatever screen is up. */
 @Composable

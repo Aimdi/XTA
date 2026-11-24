@@ -124,4 +124,24 @@ class ForwardRoutesTest {
         assertEquals("search", ForwardRoutes.routeOf("search?q={q}", emptyMap()))
         assertNull(ForwardRoutes.routeOf("post/{id}", emptyMap()), "a path needs its argument")
     }
+
+    @Test
+    fun aStepThatDidNotOpenIsTheNextForwardAgain() {
+        val forward = opened()
+        forward.show("s", search, "h")
+        assertEquals(post, forward.next())
+        assertFalse(forward.canGoForward, "opening")
+        forward.putBack(post)
+        assertTrue(forward.canGoForward, "the post's card refused it: not lost, and forward is not stuck")
+        assertEquals(post, forward.next())
+        forward.show("p2", post, "s")
+        forward.putBack(post)
+        assertFalse(forward.canGoForward, "one that did open is not put back")
+    }
+
+    @Test
+    fun screensThatActAsTheyAreShownAreNeverOpenedAgain() {
+        assertTrue(Routes.BROWSER in NOT_FORWARD, "the browser screen would send its page to the browser again")
+        assertTrue(Routes.LIVE in NOT_FORWARD, "a live room would start playing again")
+    }
 }

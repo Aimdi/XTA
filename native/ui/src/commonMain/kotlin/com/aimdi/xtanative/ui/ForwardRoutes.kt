@@ -57,6 +57,13 @@ class ForwardRoutes(private val limit: Int = LIMIT) {
         }
     }
 
+    /** [step], taken by [next], did not open after all (the card it opens on refused it): it is the next forward again. */
+    fun putBack(step: Step) {
+        if (opening != step.pattern) return
+        steps.addLast(step)
+        opening = null
+    }
+
     /** Forgets every screen to go forward to. */
     fun clear() {
         steps.clear()
