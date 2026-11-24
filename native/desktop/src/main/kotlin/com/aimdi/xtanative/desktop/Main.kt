@@ -86,10 +86,15 @@ import kotlinx.coroutines.withTimeoutOrNull
  */
 @OptIn(FlowPreview::class)
 fun main(args: Array<String>) {
-    // `xta-native --help` and `--version`, as command-line programs answer them, before anything starts.
+    // `xta-native --help` and `--version`, as command-line programs answer them, and an unknown option refused, before anything starts.
     when (CommandLine.answer(args)) {
         CommandLine.Answer.HELP -> print(CommandLine.usage).also { exitProcess(0) }
         CommandLine.Answer.VERSION -> println(CommandLine.versionLine(System.getProperty("xtanative.version").orEmpty())).also { exitProcess(0) }
+        CommandLine.Answer.UNKNOWN -> {
+            System.err.println(CommandLine.unknownLine(CommandLine.unknownOption(args).orEmpty()))
+            System.err.print(CommandLine.usage)
+            exitProcess(CommandLine.USAGE_ERROR)
+        }
         CommandLine.Answer.RUN -> Unit
     }
     val files = dataFolder()
