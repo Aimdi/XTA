@@ -61,6 +61,17 @@ class SharedLinksTest {
     }
 
     @Test
+    fun onlyXsHostsAreReadAsXLinks() {
+        listOf(
+            "https://x.com/someone", "https://mobile.twitter.com/someone/status/1", "https://t.co/abc",
+            "https://d.fixupx.com/someone/status/1", "https://vxtwitter.com/someone/status/1", "https://www.pscp.tv/w/1abc",
+        ).forEach { assertTrue(SharedLinks.readsAsXLink(it), it) }
+        listOf(
+            "https://example.org/dropped", "https://x.com.evil.example/someone", "https://notfixupx.com/someone", "pixiv://illusts/1",
+        ).forEach { assertFalse(SharedLinks.readsAsXLink(it), it) }
+    }
+
+    @Test
     fun anotherNetworksLinkIsHandedToTheLinkOpenerCaptionAndAll() {
         listOf(
             "https://bsky.app/profile/reader.bsky.social/post/3k", "https://mastodon.social/@reader/111", "https://www.threads.net/@reader/post/C1",
