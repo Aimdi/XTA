@@ -30,6 +30,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.input.pointer.pointerInput
 import com.aimdi.xtanative.ui.common.BackHandling
+import com.aimdi.xtanative.ui.common.shortcutKey
 import com.aimdi.xtanative.ui.home.HoldsKeys
 
 /** A video full screen: its player, its shape, its Download, and what is done once it closes. */
@@ -173,7 +174,7 @@ private fun fullscreenKey(event: KeyEvent, playback: VideoPlayback, onClose: () 
         right = event.key == Key.DirectionRight,
         modified = event.isCtrlPressed || event.isAltPressed,
         back = event.key == Key.Back || (event.isAltPressed && event.key == Key.DirectionLeft),
-        letter = PLAYER_LETTERS[event.key],
+        letter = PLAYER_LETTERS[shortcutKey(event)],
         home = event.key == Key.MoveHome,
         end = event.key == Key.MoveEnd,
     )

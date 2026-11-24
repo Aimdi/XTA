@@ -78,6 +78,7 @@ import com.aimdi.xtanative.store.saved.NoteEditor
 import com.aimdi.xtanative.store.saved.NoteMedia
 import com.aimdi.xtanative.store.saved.SavedContent
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.shortcutKey
 import com.aimdi.xtanative.ui.downloads.PickedFile
 import com.aimdi.xtanative.ui.downloads.rememberClipboardPicture
 import com.aimdi.xtanative.ui.downloads.rememberFilePicker
@@ -194,10 +195,10 @@ fun NoteEditorDialog(
         Surface(
             Modifier.fillMaxSize().takesDroppedFiles(enabled = note != null && !state.busy, onDropped = dropped).onPreviewKeyEvent { event ->
                 val down = event.type == KeyEventType.KeyDown
-                val saves = down && NoteKeys.saves(event.key == Key.S, event.key == Key.Enter || event.key == Key.NumPadEnter, event.isCtrlPressed, event.isAltPressed || event.isShiftPressed)
+                val saves = down && NoteKeys.saves(shortcutKey(event) == Key.S, event.key == Key.Enter || event.key == Key.NumPadEnter, event.isCtrlPressed, event.isAltPressed || event.isShiftPressed)
                 if (saves && canSave && !state.busy) save()
                 // Ctrl+V with a picture on the clipboard (a screenshot) attaches it to a note; text still pastes into the field.
-                if (down && note != null && pastedPicture != null && !pasting && event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && event.key == Key.V) {
+                if (down && note != null && pastedPicture != null && !pasting && event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && shortcutKey(event) == Key.V) {
                     // One read at a time, however long Ctrl+V is held. Read first: only a picture starts attaching, which would keep
                     // the field from taking pasted text meanwhile; it waits for an attaching under way (a drop) rather than being lost.
                     pasting = true

@@ -8,24 +8,29 @@ import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
+import com.aimdi.xtanative.ui.common.shortcutKey
 
 /** [event] as the media viewer reads it ([ViewerKeys]), the photo shown [zoomed] in or not. */
-internal fun viewerKeyOf(event: KeyEvent, zoomed: Boolean = false): ViewerKey = ViewerKeys.of(
-    escape = event.key == Key.Escape,
-    left = event.key == Key.DirectionLeft,
-    right = event.key == Key.DirectionRight,
-    back = event.key == Key.Back || (event.isAltPressed && event.key == Key.DirectionLeft),
-    modified = event.isAltPressed || event.isCtrlPressed,
-    copy = event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && event.key == Key.C,
-    saveAs = event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && event.key == Key.S,
-    closeKey = event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && event.key == Key.W,
-    zoom = if (event.isAltPressed) ViewerKey.NONE else zoomKeyOf(event.key),
-    up = event.key == Key.DirectionUp,
-    down = event.key == Key.DirectionDown,
-    home = event.key == Key.MoveHome,
-    end = event.key == Key.MoveEnd,
-    zoomed = zoomed,
-)
+internal fun viewerKeyOf(event: KeyEvent, zoomed: Boolean = false): ViewerKey {
+    // Letters and 0 by where they sit when the layout names them otherwise ([shortcutKey]).
+    val pressed = shortcutKey(event)
+    return ViewerKeys.of(
+        escape = event.key == Key.Escape,
+        left = event.key == Key.DirectionLeft,
+        right = event.key == Key.DirectionRight,
+        back = event.key == Key.Back || (event.isAltPressed && event.key == Key.DirectionLeft),
+        modified = event.isAltPressed || event.isCtrlPressed,
+        copy = event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && pressed == Key.C,
+        saveAs = event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && pressed == Key.S,
+        closeKey = event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && pressed == Key.W,
+        zoom = if (event.isAltPressed) ViewerKey.NONE else zoomKeyOf(pressed),
+        up = event.key == Key.DirectionUp,
+        down = event.key == Key.DirectionDown,
+        home = event.key == Key.MoveHome,
+        end = event.key == Key.MoveEnd,
+        zoomed = zoomed,
+    )
+}
 
 /** + (or =), - and 0, on the main keys or the number pad: the photo's zoom. */
 private fun zoomKeyOf(key: Key): ViewerKey = when (key) {
@@ -59,7 +64,7 @@ internal fun pageKeyOf(event: KeyEvent, onVideo: Boolean, zoomed: Boolean): Page
     }
     if (event.type != KeyEventType.KeyDown) return PageKey.None
     if (onVideo) {
-        val key = VideoKeys.onViewerPage(event.key == Key.Spacebar, PLAYER_LETTERS[event.key], modified)
+        val key = VideoKeys.onViewerPage(event.key == Key.Spacebar, PLAYER_LETTERS[shortcutKey(event)], modified)
         if (key != VideoKey.NONE) return PageKey.Video(key)
     }
     val key = viewerKeyOf(event, zoomed)

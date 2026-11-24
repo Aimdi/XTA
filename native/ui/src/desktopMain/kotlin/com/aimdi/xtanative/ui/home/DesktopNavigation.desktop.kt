@@ -53,9 +53,11 @@ import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.store.settings.DesktopPrefs
 import com.aimdi.xtanative.ui.LocalSecondaryWindow
 import com.aimdi.xtanative.ui.chrome.AppClosing
+import com.aimdi.xtanative.ui.common.LayoutKeys
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.TextBlocks
 import com.aimdi.xtanative.ui.common.TextSelectionKeys
+import com.aimdi.xtanative.ui.common.shortcutKey
 import com.aimdi.xtanative.ui.links.PastedLinks
 import com.aimdi.xtanative.ui.links.takesDroppedLinks
 import com.aimdi.xtanative.ui.post.LinkHover
@@ -248,27 +250,30 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         // The character a key the window took types (Ctrl+= types =) is not typed into a field as well.
         // Its step is taken while Tab is down: what takes the focus later never takes it on.
         if (event.type == KeyEventType.KeyUp) tabbing[0] = null
+        if (event.type == KeyEventType.Unknown && LayoutKeys.ctrlTypesNothing(event.utf16CodePoint, event.isCtrlPressed, event.isAltPressed)) return true
         if (event.type != KeyEventType.KeyDown) return event.type != KeyEventType.KeyUp && keyTaken
         afterControl[0] = null
         // Tab moves the focus with the keyboard: where it lands keeps the keys, as before any click.
         if (event.key == Key.Tab) clicked = false
-        tabbing[0] = DesktopKeys.tabStep(deskKey(event.key), event.isShiftPressed, event.isCtrlPressed, event.isAltPressed)
+        // Letters and digits by where they sit when the layout names them otherwise ([shortcutKey]): Ctrl+1 on a French keyboard, j on a Russian one.
+        val pressed = shortcutKey(event)
+        tabbing[0] = DesktopKeys.tabStep(deskKey(pressed), event.isShiftPressed, event.isCtrlPressed, event.isAltPressed)
         // Ctrl and a digit go to that tab, as a browser's do, from a field too; not under something open over the page.
-        TAB_DIGITS[event.key]?.let { digit ->
+        TAB_DIGITS[pressed]?.let { digit ->
             if (event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && !actions.overlayHoldsKeys() && !actions.somethingOpen()) {
                 keyTaken = actions.jump(digit)
                 return keyTaken
             }
         }
         // Ctrl+A in the text block clicked into (an opened post, a bio, an article) selects all of its text, as in a field.
-        if (TextSelectionKeys.selectsAll(event.key, event.type, event.isCtrlPressed, event.isShiftPressed, event.isAltPressed, event.isMetaPressed) &&
+        if (TextSelectionKeys.selectsAll(pressed, event.type, event.isCtrlPressed, event.isShiftPressed, event.isAltPressed, event.isMetaPressed) &&
             TextBlocks.selectAllInFocused()
         ) {
             keyTaken = true
             return true
         }
         val canGoBack = nav.previousBackStackEntry != null
-        val key = deskKey(event.key)
+        val key = deskKey(pressed)
         val action = DesktopKeys.action(
             key, event.isAltPressed, event.isCtrlPressed, DesktopKeys.keysInside(focusInside, typing[0] > 0, clicked), canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed,
             selecting = actions.selecting(), openIsRead = actions.openIsRead(), focusHeld = focusInside,
