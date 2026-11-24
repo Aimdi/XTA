@@ -70,8 +70,12 @@ object PortalFiles {
     const val REQUEST = "org.freedesktop.portal.Request"
     const val PROPERTIES = "org.freedesktop.DBus.Properties"
 
-    /** Every Request.Response this connection may be sent; [PortalFileChooser] keeps its own by path. */
-    const val MATCH = "type='signal',interface='$REQUEST',member='Response'"
+    /**
+     * Every Request.Response the portal may send this connection;
+     * [PortalFileChooser] keeps its own by path. Only the portal's: any
+     * other program on the bus could send one naming a file of its choice.
+     */
+    const val MATCH = "type='signal',sender='$PORTAL',interface='$REQUEST',member='Response'"
 
     /** The bus saying the portal's name changed hands: the portal asked went away (it crashed or was restarted). */
     const val OWNER_MATCH = "type='signal',sender='${DBusConnection.BUS}',interface='${DBusConnection.BUS}',member='NameOwnerChanged',arg0='$PORTAL'"
@@ -82,6 +86,10 @@ object PortalFiles {
         if (signal.body.getOrNull(0) != PORTAL) return null
         return (signal.body.getOrNull(1) as? String)?.takeIf { it.isNotEmpty() }
     }
+
+    /** Whether [signal] is a Response the portal's connection, [owner], sent: no other's is believed. */
+    fun fromPortal(signal: DBusMessage, owner: String?): Boolean =
+        owner != null && signal.sender == owner && signal.iface == REQUEST && signal.member == "Response"
 
     /** The unique name GetNameOwner answered; null for an error or none. */
     fun owner(answer: DBusMessage?): String? =
@@ -147,7 +155,8 @@ object PortalFiles {
  * opens (GNOME's, KDE's), over the reader's window [ask] is given. The
  * Response signal is listened for before the call is made and kept by
  * path, so one sent before the call's answer, or for a handle an old
- * portal chose itself, is not lost. A chooser given up (the caller
+ * portal chose itself, is not lost; only one the portal's own connection
+ * sent is believed. A chooser given up (the caller
  * cancelled, no answer in [callMs]) closes the portal's request. A portal
  * that goes away while its dialog is open (it crashed) ends the wait as
  * no answer, so the chooser does not wait for ever and the next can open.
@@ -231,7 +240,7 @@ class PortalFileChooser(
                 if (lost == owner) end()
                 return
             }
-            if (signal.iface != PortalFiles.REQUEST || signal.member != "Response") return
+            if (!PortalFiles.fromPortal(signal, owner)) return
             val path = signal.path ?: return
             byPath.computeIfAbsent(path) { CompletableDeferred() }.complete(signal)
         }

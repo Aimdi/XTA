@@ -173,7 +173,7 @@ class PortalFilesTest {
             val token = ((call.body[2] as Map<*, *>)["handle_token"] as Variant).value as String
             val handle = if (mode == Mode.OLD_HANDLE) "${PortalFiles.PATH}/request/old/1" else PortalFiles.requestPath(call.sender!!, token)
             opened.complete(handle)
-            fun respond(code: Long) = bus.signal(handle, PortalFiles.REQUEST, "Response", "ua{sv}", listOf(code, mapOf("uris" to Variant("as", listOf("file:///tmp/picked.png")))))
+            fun respond(code: Long) = respond(handle, code)
             when (mode) {
                 Mode.NO_REPLY -> return
                 Mode.EARLY -> respond(0).also { bus.reply(call, "o", listOf(ObjectPath(handle))) }
@@ -190,6 +190,10 @@ class PortalFilesTest {
                 }
             }
         }
+
+        /** Sends [handle]'s Response: [code] with the picked file. */
+        fun respond(handle: String, code: Long) =
+            bus.signal(handle, PortalFiles.REQUEST, "Response", "ua{sv}", listOf(code, mapOf("uris" to Variant("as", listOf("file:///tmp/picked.png")))))
 
         override fun close() = bus.close()
     }
@@ -317,5 +321,38 @@ class PortalFilesTest {
         assertNull(PortalFiles.lostOwner(changed(PortalFiles.PORTAL, "", ":1.7")), "started, not gone")
         assertNull(PortalFiles.lostOwner(changed("org.example.Other", ":1.7", "")))
         assertNull(PortalFiles.lostOwner(changed(PortalFiles.PORTAL, ":1.7", "", sender = ":1.9")), "only the bus says so")
+    }
+
+    @Test
+    fun aResponseFromAnyoneButThePortalIsNotBelieved() = onBus { socket ->
+        FakePortal(socket, Mode.SILENT_DIALOG).use { portal ->
+            coroutineScope {
+                val asking = async(Dispatchers.IO) { PortalFileChooser({ DBusConnection.connect(socket) }, 5_000).ask(open, "") }
+                val handle = portal.opened.await()
+                val chooser = portal.asked.single().sender!!
+                // Another program on the bus sends the chooser a Response of its own, straight to it, naming its file.
+                DBusConnection.connect(socket)!!.use { other ->
+                    other.send(
+                        DBusMessage(
+                            DBusType.SIGNAL, path = handle, iface = PortalFiles.REQUEST, member = "Response", destination = chooser,
+                            signature = "ua{sv}", body = listOf(0L, mapOf("uris" to Variant("as", listOf("file:///tmp/planted.sh")))),
+                        ),
+                    )
+                    other.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "GetId")
+                }
+                Thread.sleep(300)
+                portal.respond(handle, 1)
+                assertEquals(FileChoice.Cancelled, withTimeout(5_000) { asking.await() }, "the portal's own answer, not the planted file")
+            }
+        }
+    }
+
+    @Test
+    fun onlyThePortalsOwnConnectionAnswers() {
+        val response = response(0, "file:///tmp/a.png").copy(sender = ":1.4")
+        assertTrue(PortalFiles.fromPortal(response, ":1.4"))
+        assertFalse(PortalFiles.fromPortal(response, ":1.5"))
+        assertFalse(PortalFiles.fromPortal(response, null), "before the portal is known, nothing is")
+        assertFalse(PortalFiles.fromPortal(response.copy(member = "Other"), ":1.4"))
     }
 }
