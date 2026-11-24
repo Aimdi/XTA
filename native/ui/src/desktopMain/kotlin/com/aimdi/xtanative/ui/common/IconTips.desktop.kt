@@ -22,6 +22,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.theme.KeyboardFocusLook
 
 /** How long the pointer rests before the label shows, as the desktop's own tooltips wait. */
 internal const val TIP_DELAY_MS = 600
@@ -67,13 +68,14 @@ private val RING_WIDTH = 2.dp
  * A ring round what the keyboard's focus is on. The button's own ripple
  * shows the focus too, but only from its second time: Compose makes the
  * ripple when the focus first arrives, after the focus was told, so Tab's
- * first stop on a button showed nothing.
+ * first stop on a button showed nothing. A focus a click gave shows no ring
+ * ([KeyboardFocusLook]), as the ripple shows it no more than faintly.
  */
 @Composable
 private fun Modifier.focusRing(): Modifier {
     var focused by remember { mutableStateOf(false) }
     val color = MaterialTheme.colorScheme.primary
-    return onFocusChanged { focused = it.hasFocus }.drawWithContent {
+    return onFocusChanged { focused = it.hasFocus && KeyboardFocusLook.keyboard }.drawWithContent {
         drawContent()
         if (!focused) return@drawWithContent
         val inset = RING_INSET.toPx()

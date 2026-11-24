@@ -25,18 +25,26 @@ private const val HOVER_ALPHA = 0.08f
  * keyboard's focus. Material's own focus (0.1, as faint as a press) is all a
  * Save or Cancel button showed when Tab reached it, hard to see on a filled
  * button; here the focus is three times that, well apart from the pointer
- * resting on it. The mouse does not focus a button, so only Tab shows it.
- * Material's buttons draw their own ripple and read only this, so it reaches
- * every button, in dialogs and sheets too.
+ * resting on it. A click focuses a button too, so this is only for a focus
+ * the keyboard moved ([KeyboardFocusLook]); a clicked one keeps
+ * [MouseRipples]. Material's buttons draw their own ripple and read only
+ * this, so it reaches every button, in dialogs and sheets too.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 internal val DesktopRipples = RippleConfiguration(
     rippleAlpha = RippleAlpha(pressedAlpha = 0.1f, focusedAlpha = 0.3f, draggedAlpha = 0.16f, hoveredAlpha = HOVER_ALPHA),
 )
 
+/** [DesktopRipples] for a focus a click gave: Material's own faint focus, as faint as the press. */
+@OptIn(ExperimentalMaterial3Api::class)
+internal val MouseRipples = RippleConfiguration(
+    rippleAlpha = RippleAlpha(pressedAlpha = 0.1f, focusedAlpha = 0.1f, draggedAlpha = 0.16f, hoveredAlpha = HOVER_ALPHA),
+)
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 internal actual fun ProvidePlatformLook(content: @Composable () -> Unit) {
+    KeyboardFocusLook.start()
     val colors = MaterialTheme.colorScheme
     val menus = remember(colors.surfaceContainer, colors.onSurface) {
         DefaultContextMenuRepresentation(
@@ -50,7 +58,9 @@ internal actual fun ProvidePlatformLook(content: @Composable () -> Unit) {
     CompositionLocalProvider(
         LocalContextMenuRepresentation provides menus,
         LocalTextContextMenu provides selecting,
-        LocalRippleConfiguration provides DesktopRipples,
+        // Read when the button's focus arrives, not when this composes: the
+        // click or Tab that moved it has already set the mode by then.
+        LocalRippleConfiguration providesComputed { if (KeyboardFocusLook.keyboard) DesktopRipples else MouseRipples },
         content = content,
     )
 }
