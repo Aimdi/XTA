@@ -1,8 +1,10 @@
 package com.aimdi.xtanative.plugins.substack
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -212,7 +214,8 @@ internal fun SubstackNoteScreen(app: SubstackApp, id: String) {
             }
         },
     ) { padding ->
-        LazyColumn(Modifier.fillMaxSize().padding(padding)) {
+        val list = rememberLazyListState()
+        Box(Modifier.fillMaxSize().padding(padding)) { PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
             if (note == null) {
                 item(key = "gone") { EmptyState(pluginString(Strings.notes_empty)) }
             } else {
@@ -221,6 +224,6 @@ internal fun SubstackNoteScreen(app: SubstackApp, id: String) {
                 }
                 note.publication?.let { publication -> item(key = "publication") { NotePublication(app, publication, Modifier.padding(16.dp)) } }
             }
-        }
+        } } }
     }
 }

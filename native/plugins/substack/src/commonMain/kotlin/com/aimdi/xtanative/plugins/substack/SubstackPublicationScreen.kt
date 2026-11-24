@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -179,7 +180,8 @@ internal fun SubstackPublicationScreen(app: SubstackApp, opened: SubstackPublica
     val error = page.error
     PluginScaffold(title = state.publication.displayName, onBack = app.host::back) { padding ->
         PullToRefreshBox(isRefreshing = page.loading && page.posts.isNotEmpty(), onRefresh = model::refresh, modifier = Modifier.fillMaxSize().padding(padding)) {
-            PluginReadingColumn(PaddingValues()) { column -> LazyColumn(Modifier.fillMaxSize(), contentPadding = column) {
+            val scroll = rememberLazyListState()
+            PluginReadingColumn(PaddingValues(), scroll) { column -> LazyColumn(Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
                 item(key = "hero") { Hero(app, model, state) { similar = true } }
                 item(key = "controls") { PublicationControls(model, state) }
                 when {

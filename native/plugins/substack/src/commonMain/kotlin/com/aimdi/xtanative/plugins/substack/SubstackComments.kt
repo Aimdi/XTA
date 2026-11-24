@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -58,6 +60,7 @@ import com.aimdi.xtanative.networks.substack.SubstackPostLink
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.plugins.LinkedText
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.TextRun
@@ -149,8 +152,9 @@ internal fun SubstackCommentsScreen(app: SubstackApp, link: SubstackPostLink, ke
 private fun Discussion(model: CommentsModel, state: CommentsModel.State) {
     val rows = state.rows
     val error = state.error
+    val list = rememberLazyListState()
     SelectionContainer {
-        LazyColumn(Modifier.fillMaxSize()) {
+        PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
             item(key = "title") { Text(model.post.title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)) }
             if (state.comments.isNotEmpty()) item(key = "controls") { CommentControls(model, state) }
             when {
@@ -160,7 +164,7 @@ private fun Discussion(model: CommentsModel, state: CommentsModel.State) {
             }
             if (state.loading && state.comments.isNotEmpty()) item(key = "reloading") { LinearProgressIndicator(Modifier.fillMaxWidth()) }
             items(rows, key = { "comment-" + it.comment.id }) { row -> CommentRow(row) { model.toggle(row.comment.id) } }
-        }
+        } }
     }
 }
 
