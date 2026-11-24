@@ -120,4 +120,8 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Ezin da hurrengo erantzunen orria kargatu</string>
     <string name="posts_unable_to_load_who_retweeted">Ezin da kargatu nork birtxiotu duen txio hau</string>
     <string name="posts_unable_to_load_more_retweets">Ezin da kargatu txio hau birtxiotu duten pertsona gehiago</string>
+    <plurals name="posts_replies_hidden">
+        <item quantity="one">Erantzun %1$d ezkutatuta</item>
+        <item quantity="other">%1$d erantzun ezkutatuta</item>
+    </plurals>
 </resources>

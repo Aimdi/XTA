@@ -126,4 +126,10 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Nepodařilo se načíst další stránku odpovědí</string>
     <string name="posts_unable_to_load_who_retweeted">Nepodařilo se načíst, kdo retweetnul tento tweet</string>
     <string name="posts_unable_to_load_more_retweets">Nepodařilo se načíst další lidi, kteří retweetnuli tento tweet</string>
+    <plurals name="posts_replies_hidden">
+        <item quantity="one">%1$d skrytá odpověď</item>
+        <item quantity="few">%1$d skryté odpovědi</item>
+        <item quantity="many">%1$d skryté odpovědi</item>
+        <item quantity="other">%1$d skrytých odpovědí</item>
+    </plurals>
 </resources>

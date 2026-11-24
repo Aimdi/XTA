@@ -126,4 +126,10 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Не вдається завантажити наступну сторінку відповідей</string>
     <string name="posts_unable_to_load_who_retweeted">Не вдається завантажити тих, хто ретвітнув цей твіт</string>
     <string name="posts_unable_to_load_more_retweets">Не вдається завантажити більше людей, які ретвітнули цей твіт</string>
+    <plurals name="posts_replies_hidden">
+        <item quantity="one">%1$d відповідь приховано</item>
+        <item quantity="few">%1$d відповіді приховано</item>
+        <item quantity="many">%1$d відповідей приховано</item>
+        <item quantity="other">%1$d відповіді приховано</item>
+    </plurals>
 </resources>

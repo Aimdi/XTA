@@ -120,4 +120,8 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Ne eblas ŝarĝi la sekvan paĝon de respondoj</string>
     <string name="posts_unable_to_load_who_retweeted">Ne eblas ŝarĝi, kiu repepis ĉi tiun pepon</string>
     <string name="posts_unable_to_load_more_retweets">Ne eblas ŝarĝi pliajn homojn, kiuj repepis ĉi tiun pepon</string>
+    <plurals name="posts_replies_hidden">
+        <item quantity="one">%1$d respondo kaŝita</item>
+        <item quantity="other">%1$d respondoj kaŝitaj</item>
+    </plurals>
 </resources>

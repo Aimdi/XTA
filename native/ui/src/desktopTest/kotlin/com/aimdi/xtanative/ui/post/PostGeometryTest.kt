@@ -102,4 +102,21 @@ class AuthorLineLayoutTest {
         assertTrue(center + badge / 2 > avatar)
         assertTrue(center + badge / 2 <= avatar + inset)
     }
+
+
+    @Test
+    fun theRailsTouchTargetIs48WideAboutTheAvatarsCentreOnEitherSide() {
+        val width = 360f
+        assertEquals(36f, PostGeometry.railX(width, rtl = false))
+        assertEquals(324f, PostGeometry.railX(width, rtl = true))
+        assertTrue(PostGeometry.onRail(12f, width, rtl = false))
+        assertTrue(PostGeometry.onRail(60f, width, rtl = false))
+        assertFalse(PostGeometry.onRail(11f, width, rtl = false))
+        // The text column, from 68 dp, keeps its presses: they open the post.
+        assertFalse(PostGeometry.onRail(PostGeometry.COLUMN_START, width, rtl = false))
+        assertTrue(PostGeometry.onRail(width - 36f, width, rtl = true))
+        assertFalse(PostGeometry.onRail(36f, width, rtl = true))
+        // A collapsed branch's small picture sits inside the avatar's own width, centred on the rail.
+        assertTrue(PostGeometry.COLLAPSED_AVATAR < PostGeometry.AVATAR_SIZE)
+    }
 }

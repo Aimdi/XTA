@@ -39,6 +39,8 @@ data class PostUi(
     val sort: ReplySort = ReplySort.RELEVANT,
     /** Zen mode's replies, shown once the reader held the reply button. */
     val repliesRevealed: Boolean = false,
+    /** The reply threads whose branch the reader collapsed in the threaded replies, by thread id; forgotten with the screen. */
+    val collapsed: Set<String> = emptySet(),
 ) {
     /** X answered for the post with nothing at all, which is how it answers for a deleted one. */
     val gone: Boolean get() = answered && focal == null
@@ -162,6 +164,9 @@ class PostViewModel(private val graph: AppGraph, private val id: String) : ViewM
     }
 
     fun revealReplies() = state.update { it.copy(repliesRevealed = true) }
+
+    /** Collapses the reply thread [threadId] with all under it, or opens it again ([ThreadTree.toggled]). */
+    fun toggleBranch(threadId: String) = state.update { it.copy(collapsed = ThreadTree.toggled(it.collapsed, threadId)) }
 
     private fun remember(conversation: XConversation) {
         graph.posts.remember(conversation.before.map { XThread(it.id, listOf(it)) } + listOfNotNull(conversation.focal?.let { XThread(it.id, listOf(it)) }) + conversation.replies)

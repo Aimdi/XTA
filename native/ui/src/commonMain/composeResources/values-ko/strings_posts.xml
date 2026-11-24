@@ -117,4 +117,7 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">다음 댓글 페이지를 불러올 수 없습니다</string>
     <string name="posts_unable_to_load_who_retweeted">이 트윗을 리트윗한 사람을 불러올 수 없습니다</string>
     <string name="posts_unable_to_load_more_retweets">이 트윗을 리트윗한 사람을 더 불러올 수 없습니다</string>
+    <plurals name="posts_replies_hidden">
+        <item quantity="other">답글 %1$d개 숨김</item>
+    </plurals>
 </resources>

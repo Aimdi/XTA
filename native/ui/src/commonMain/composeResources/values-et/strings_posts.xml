@@ -120,4 +120,8 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Vastuste järgmise lehe laadimine ei õnnestu</string>
     <string name="posts_unable_to_load_who_retweeted">Selle säutsu kordussäutsijate laadimine ei õnnestu</string>
     <string name="posts_unable_to_load_more_retweets">Rohkemate kordussäutsijate laadimine ei õnnestu</string>
+    <plurals name="posts_replies_hidden">
+        <item quantity="one">%1$d vastus peidetud</item>
+        <item quantity="other">%1$d vastust peidetud</item>
+    </plurals>
 </resources>

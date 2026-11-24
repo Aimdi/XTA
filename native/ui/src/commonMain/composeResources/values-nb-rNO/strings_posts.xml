@@ -120,4 +120,8 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Kan ikke laste inn neste side med svar</string>
     <string name="posts_unable_to_load_who_retweeted">Kan ikke laste inn hvem som har retweetet denne tweeten</string>
     <string name="posts_unable_to_load_more_retweets">Kan ikke laste inn flere som har retweetet denne tweeten</string>
+    <plurals name="posts_replies_hidden">
+        <item quantity="one">%1$d svar skjult</item>
+        <item quantity="other">%1$d svar skjult</item>
+    </plurals>
 </resources>

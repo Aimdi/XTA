@@ -120,4 +120,8 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">उत्तरों का अगला पृष्ठ लोड नहीं किया जा सका</string>
     <string name="posts_unable_to_load_who_retweeted">इस पोस्ट को रीट्वीट करने वालों को लोड नहीं किया जा सका</string>
     <string name="posts_unable_to_load_more_retweets">इस पोस्ट को रीट्वीट करने वाले और लोगों को लोड नहीं किया जा सका</string>
+    <plurals name="posts_replies_hidden">
+        <item quantity="one">%1$d जवाब छिपा है</item>
+        <item quantity="other">%1$d जवाब छिपे हैं</item>
+    </plurals>
 </resources>

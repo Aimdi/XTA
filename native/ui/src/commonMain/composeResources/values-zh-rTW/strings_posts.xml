@@ -118,4 +118,7 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">無法載入下一頁的回覆</string>
     <string name="posts_unable_to_load_who_retweeted">無法載入轉推此推文的使用者</string>
     <string name="posts_unable_to_load_more_retweets">無法載入更多轉推此推文的使用者</string>
+    <plurals name="posts_replies_hidden">
+        <item quantity="other">已隱藏 %1$d 則回覆</item>
+    </plurals>
 </resources>

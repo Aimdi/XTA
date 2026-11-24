@@ -35,6 +35,15 @@ object PostGeometry {
     /** The rail's centre, through the avatars'. */
     const val RAIL_CENTER = AVATAR_START + AVATAR_SIZE / 2
 
+    /** The author's picture in a collapsed reply branch's row, centred on the rail. */
+    const val COLLAPSED_AVATAR = 24f
+
+    /** The rail's centre from the left of a post [width] wide: from its right where the text runs right to left ([rtl]). */
+    fun railX(width: Float, rtl: Boolean): Float = if (rtl) width - RAIL_CENTER else RAIL_CENTER
+
+    /** Whether [x], from the left of a post [width] wide, is on the rail's touch target: [TOUCH_TARGET] wide about its centre. */
+    fun onRail(x: Float, width: Float, rtl: Boolean): Boolean = kotlin.math.abs(x - railX(width, rtl)) <= TOUCH_TARGET / 2
+
     /** Where the end of a header's last target is, from the column's end: past the post's own padding, at the screen's edge. */
     const val TRAILING_BLEED = END_PADDING
 

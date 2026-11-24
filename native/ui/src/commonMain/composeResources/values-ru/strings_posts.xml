@@ -126,4 +126,10 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Не удаётся загрузить следующую страницу ответов</string>
     <string name="posts_unable_to_load_who_retweeted">Не удаётся загрузить тех, кто ретвитнул этот твит</string>
     <string name="posts_unable_to_load_more_retweets">Не удаётся загрузить больше людей, которые ретвитнули этот твит</string>
+    <plurals name="posts_replies_hidden">
+        <item quantity="one">%1$d ответ скрыт</item>
+        <item quantity="few">%1$d ответа скрыто</item>
+        <item quantity="many">%1$d ответов скрыто</item>
+        <item quantity="other">%1$d ответа скрыто</item>
+    </plurals>
 </resources>

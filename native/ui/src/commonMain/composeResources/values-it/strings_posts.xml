@@ -120,4 +120,8 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Impossibile caricare la pagina successiva delle risposte</string>
     <string name="posts_unable_to_load_who_retweeted">Impossibile caricare chi ha ritwittato questo tweet</string>
     <string name="posts_unable_to_load_more_retweets">Impossibile caricare altre persone che hanno ritwittato questo tweet</string>
+    <plurals name="posts_replies_hidden">
+        <item quantity="one">%1$d risposta nascosta</item>
+        <item quantity="other">%1$d risposte nascoste</item>
+    </plurals>
 </resources>

@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -78,6 +79,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.PageFindState
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.TopJump
@@ -89,6 +91,7 @@ import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.topJump
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
+import com.aimdi.xtanative.ui.generated.resources.find_in_page
 import com.aimdi.xtanative.ui.generated.resources.post
 import com.aimdi.xtanative.ui.generated.resources.posts_continue_thread
 import com.aimdi.xtanative.ui.generated.resources.posts_more
@@ -107,8 +110,8 @@ import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_views_count
 import com.aimdi.xtanative.ui.generated.resources.posts_zen_replies
 import com.aimdi.xtanative.ui.home.FindInPage
-import com.aimdi.xtanative.ui.home.LocalDesktopActions
 import com.aimdi.xtanative.ui.home.keyedPost
+import com.aimdi.xtanative.ui.home.rememberPhoneFind
 import com.aimdi.xtanative.ui.speech.ReadAloudButton
 import com.aimdi.xtanative.ui.speech.SpeechTexts
 import kotlinx.coroutines.launch
@@ -142,16 +145,27 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
     }
     LaunchedEffect(nearEnd, state.replies.size) { if (nearEnd) vm.loadMore() }
 
-    // Ctrl+F finds in the post, what it answers and its replies (the desktop's find bar).
+    // Ctrl+F finds in the post, what it answers and its replies (the desktop's find bar); a phone opens the same bar from the top bar.
     val findPrefs = rememberPostPrefs()
-    // Only the desktop has a find bar: on Android nothing would read the blocks, and a long thread is not worked through for them.
-    val finds = LocalDesktopActions.current != null
+    val phoneFind = rememberPhoneFind()
+    // A long thread is worked through for its texts only where a bar reads them: on the desktop, and on a phone while its bar is open.
+    val finds = phoneFind?.open ?: true
     val findBlocks = remember(state, findPrefs, finds) {
         if (finds) ThreadFind.blocks(state, findPrefs.threadedReplies, !findPrefs.zen || state.repliesRevealed) else emptyList()
     }
     val titleScope = rememberCoroutineScope()
     val reduced = LocalReducedMotion.current
-    FindInPage(findBlocks, list) {
+    // A branch collapsed with its top scrolled past: its reply is brought to the top first, so the row it becomes is not lost above.
+    val toggleBranch: (String) -> Unit = remember(vm, list, titleScope) {
+        { threadId ->
+            val shown = list.layoutInfo.visibleItemsInfo.firstOrNull { it.key == ThreadTree.replyKey(threadId) }
+            titleScope.launch {
+                if (shown != null && shown.offset < 0) list.scrollToItem(shown.index)
+                vm.toggleBranch(threadId)
+            }
+        }
+    }
+    FindInPage(findBlocks, list, phoneFind) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -159,7 +173,10 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
                 // A tap on the title goes back to the opened post, as Home's goes back to the top.
                 title = { Text(stringResource(Res.string.post), Modifier.clip(RoundedCornerShape(12.dp)).clickable { titleScope.launch { list.scrollToPost(above, reduced) } }.padding(vertical = 8.dp)) },
                 navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
-                actions = { state.focal?.let { ListenToPost(it, state.replies) } },
+                actions = {
+                    phoneFind?.let { FindButton(it) }
+                    state.focal?.let { ListenToPost(it, state.replies) }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
@@ -192,7 +209,7 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
                     if (zenHidden) {
                         item(key = "zen") { ZenReplies(vm::revealReplies) }
                     } else {
-                        replyItems(state, actions, prefs.threadedReplies)
+                        replyItems(state, actions, prefs.threadedReplies, toggleBranch)
                         item(key = "footer") { ThreadEnd(state, vm) }
                     }
                 }
@@ -248,26 +265,42 @@ private fun Gap(reason: String?, screenName: String?, id: String, actions: PostA
     )
 }
 
-/** The replies: threads in X's order, or a tree with the deeper branches left to "Continue thread". */
-private fun LazyListScope.replyItems(state: PostUi, actions: PostActions, threaded: Boolean) {
+/** Find in the top bar of a phone's opened post: opens the find bar at the screen's foot, or closes it. */
+@Composable
+private fun FindButton(find: PageFindState) {
+    val label = stringResource(Res.string.find_in_page)
+    IconTip(label) { IconButton(onClick = { find.open = !find.open }) { Icon(Icons.Filled.Search, label) } }
+}
+
+/**
+ * The replies: threads in X's order, or a tree with the deeper branches left
+ * to "Continue thread", where a press on a reply's rail collapses its branch
+ * into one row and a tap on that row opens it again ([onToggle], by the
+ * reply thread's id).
+ */
+private fun LazyListScope.replyItems(state: PostUi, actions: PostActions, threaded: Boolean, onToggle: (String) -> Unit) {
     if (!threaded) {
         items(state.replies, key = { "reply-" + it.id }, contentType = { "thread" }) { thread -> ThreadRows(thread, actions) }
         return
     }
-    val rows = ThreadTree.rows(ThreadTree.nodes(state.replies))
-    items(rows, key = { row -> rowKey(row) }, contentType = { row -> if (row is ThreadRow.Reply) "thread" else "continue" }) { row ->
+    val rows = ThreadTree.rows(ThreadTree.nodes(state.replies), state.collapsed)
+    items(rows, key = { row -> ThreadTree.key(row) }, contentType = { row -> rowType(row) }) { row ->
         when (row) {
             is ThreadRow.Reply -> Box(Modifier.padding(start = (ThreadTree.indentLevels(row.visualDepth) * 40).dp)) {
-                ThreadRows(row.node.thread, actions)
+                val id = row.node.thread.id
+                val collapse = remember(id, onToggle) { { onToggle(id) } }
+                CompositionLocalProvider(LocalBranchCollapse provides collapse) { ThreadRows(row.node.thread, actions) }
             }
+            is ThreadRow.Collapsed -> CollapsedBranch(row) { onToggle(row.node.thread.id) }
             is ThreadRow.Continue -> ContinueThread(row, actions)
         }
     }
 }
 
-private fun rowKey(row: ThreadRow): String = when (row) {
-    is ThreadRow.Reply -> "reply-" + row.node.thread.id
-    is ThreadRow.Continue -> "continue-" + row.target.thread.id
+private fun rowType(row: ThreadRow): String = when (row) {
+    is ThreadRow.Reply -> "thread"
+    is ThreadRow.Collapsed -> "collapsed"
+    is ThreadRow.Continue -> "continue"
 }
 
 /** "Continue thread": the first reply past the depth cap, opened on a screen of its own. */

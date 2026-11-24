@@ -41,4 +41,20 @@ class ThreadFindTest {
         val zen = PostUi(focal = post("f"), replies = listOf(XThread("r", listOf(post("r")))), loading = false)
         assertEquals(listOf("f"), ThreadFind.blocks(zen, threaded = false, repliesShown = false).map { it.key })
     }
+
+
+    @Test
+    fun aCollapsedBranchIsOneRowAndItsTextsAreNotFound() {
+        fun reply(id: String, to: String) = XThread(id, listOf(XPost(id, XUser("u", "u", "U"), null, "text $id", replyToPostId = to)))
+        val state = PostUi(
+            focal = post("f"),
+            replies = listOf(reply("20", "f"), reply("21", "20"), reply("30", "f")),
+            loading = false,
+        )
+        assertEquals(listOf("f" to 0, "20" to 1, "21" to 2, "30" to 3), ThreadFind.blocks(state, threaded = true, repliesShown = true).map { it.key to it.item })
+        val collapsed = state.copy(collapsed = setOf("20"))
+        assertEquals(listOf("f" to 0, "30" to 2), ThreadFind.blocks(collapsed, threaded = true, repliesShown = true).map { it.key to it.item })
+        // Without the tree nothing collapses.
+        assertEquals(4, ThreadFind.blocks(collapsed, threaded = false, repliesShown = true).size)
+    }
 }

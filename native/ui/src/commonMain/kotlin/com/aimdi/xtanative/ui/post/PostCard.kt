@@ -33,6 +33,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
@@ -167,6 +168,8 @@ fun PostCard(
     val windows = LocalPostWindows.current
     val inWindow = windows?.let { open -> { open(shown.id) } }
     val presses = remember { CardPresses() }
+    // In an opened post's threaded replies, a press on the rail collapses the branch.
+    val collapse = LocalBranchCollapse.current
     Column(
         modifier
             .fillMaxWidth()
@@ -186,12 +189,18 @@ fun PostCard(
             ) {
                 if (presses.take() == PostPress.TAP_IN_WINDOW && inWindow != null) inWindow() else actions.openPost(shown.id)
             }
+            .collapsesBranch(collapse)
             .drawBehind {
-                val x = PostGeometry.RAIL_CENTER.dp.toPx()
+                val x = PostGeometry.railX(size.width.toDp().value, layoutDirection == LayoutDirection.Rtl).dp.toPx()
                 val width = PostGeometry.RAIL_WIDTH.dp.toPx()
                 val top = PostGeometry.AVATAR_TOP.dp.toPx()
+                val below = top + AvatarSize.toPx()
                 if (midThread) drawLine(railColor, Offset(x, 0f), Offset(x, top), width)
-                if (continues) drawLine(railColor, Offset(x, top + AvatarSize.toPx()), Offset(x, size.height), width)
+                when {
+                    continues -> drawLine(railColor, Offset(x, below), Offset(x, size.height), width)
+                    // A branch that can be collapsed shows the rail the reader presses, down to the post's foot.
+                    collapse != null -> drawLine(railColor, Offset(x, below + 4.dp.toPx()), Offset(x, size.height - 12.dp.toPx()), width)
+                }
             }
             .padding(start = RailStart, top = PostGeometry.COLUMN_TOP.dp, bottom = if (continues) 4.dp else 12.dp),
     ) {

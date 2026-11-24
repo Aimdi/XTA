@@ -126,4 +126,10 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Nie ŭdajecca zahruzić nastupnuju staronku adkazaŭ</string>
     <string name="posts_unable_to_load_who_retweeted">Nie atrymoŭvajecca zahruzić, chto retvitnuŭ hety tvit</string>
     <string name="posts_unable_to_load_more_retweets">Nie atrymoŭvajecca zahruzić bolš liudziej, jakija retvitnuli hety tvit</string>
+    <plurals name="posts_replies_hidden">
+        <item quantity="one">%1$d adkaz schavany</item>
+        <item quantity="few">%1$d adkazy schavanyja</item>
+        <item quantity="many">%1$d adkazaŭ schavana</item>
+        <item quantity="other">%1$d adkazu schavana</item>
+    </plurals>
 </resources>

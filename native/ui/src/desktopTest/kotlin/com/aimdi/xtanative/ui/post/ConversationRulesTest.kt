@@ -138,4 +138,68 @@ class ConversationRulesTest {
         assertEquals(setOf("41", "42"), nodes.map { it.thread.id }.toSet())
         assertEquals(2, nodes.size)
     }
+
+
+    @Test
+    fun aCollapsedReplyIsOneRowForItselfAndAllUnderIt() {
+        val a = XThread("20", listOf(post("20", replyToId = "10"), post("23", replyToId = "20")))
+        val a1 = thread(post("21", replyToId = "20"))
+        val a1x = thread(post("22", replyToId = "21"))
+        val a2 = thread(post("24", replyToId = "23"))
+        val b = thread(post("100", replyToId = "10"))
+        val nodes = ThreadTree.nodes(listOf(a, a1, a1x, a2, b))
+        val open = ThreadTree.rows(nodes)
+        assertEquals(listOf("reply-20", "reply-21", "continue-22", "reply-24", "reply-100"), open.map(ThreadTree::key))
+
+        val rows = ThreadTree.rows(nodes, collapsed = setOf("20"))
+        assertEquals(listOf("reply-20", "reply-100"), rows.map(ThreadTree::key), "the reply keeps its key, so the list stays at it")
+        val row = rows[0] as ThreadRow.Collapsed
+        assertEquals("20", row.node.thread.id)
+        assertEquals(1, row.visualDepth)
+        assertEquals(4, row.hidden, "its two posts and the two replies drawn under it; what Continue thread led to was not on the screen")
+        assertEquals(open.last(), rows.last(), "the next branch is as it was")
+        assertEquals(ThreadTree.replyKey("20"), ThreadTree.key(row))
+    }
+
+    @Test
+    fun aBranchCollapsesInsideAnOpenOneAndOpensAgainAsItWas() {
+        val a = thread(post("20", replyToId = "10"))
+        val a1 = thread(post("21", replyToId = "20"))
+        val a1x = thread(post("22", replyToId = "21"))
+        val a2 = thread(post("25", replyToId = "20"))
+        val nodes = ThreadTree.nodes(listOf(a, a1, a1x, a2))
+        val inner = ThreadTree.toggled(emptySet(), "21")
+        val rows = ThreadTree.rows(nodes, inner)
+        assertEquals(listOf("reply-20", "reply-21", "reply-25"), rows.map(ThreadTree::key), "its Continue thread goes with it")
+        val collapsed = rows[1] as ThreadRow.Collapsed
+        assertEquals(2, collapsed.visualDepth)
+        assertEquals(1, collapsed.hidden)
+        assertTrue((rows[0] as ThreadRow.Reply).connectBottom, "the collapsed row is still its answer")
+
+        // Collapsed inside a collapsed branch: the outer row stands for both, and opening it finds the inner one as left.
+        val both = ThreadTree.toggled(inner, "20")
+        assertEquals(3, (ThreadTree.rows(nodes, both).single() as ThreadRow.Collapsed).hidden)
+        assertEquals(rows, ThreadTree.rows(nodes, ThreadTree.toggled(both, "20")))
+        assertEquals(ThreadTree.rows(nodes), ThreadTree.rows(nodes, ThreadTree.toggled(inner, "21")))
+    }
+
+    @Test
+    fun collapsedBranchesTakeInWhatLoadsLaterAndIdsNotLoadedDoNothing() {
+        val a = thread(post("20", replyToId = "10"))
+        val b = thread(post("100", replyToId = "10"))
+        val collapsed = setOf("20", "gone")
+        val before = ThreadTree.rows(ThreadTree.nodes(listOf(a, b)), collapsed)
+        assertEquals(1, (before[0] as ThreadRow.Collapsed).hidden)
+        // The next page brings an answer to the collapsed reply, and another order of the same replies.
+        val later = ThreadTree.rows(ThreadTree.nodes(listOf(b, thread(post("26", replyToId = "20")), a)), collapsed)
+        assertEquals(before.map(ThreadTree::key), later.map(ThreadTree::key), "the list's keys do not move")
+        assertEquals(2, (later[0] as ThreadRow.Collapsed).hidden)
+        assertEquals(ThreadTree.rows(ThreadTree.nodes(listOf(b))), ThreadTree.rows(ThreadTree.nodes(listOf(b)), collapsed))
+    }
+
+    @Test
+    fun aCollapsedBranchCountsThePostsXWithheldInIt() {
+        val a = XThread("20", listOf(post("20", replyToId = "10")), listOf(XWithheld("27", null)))
+        assertEquals(2, (ThreadTree.rows(ThreadTree.nodes(listOf(a)), setOf("20")).single() as ThreadRow.Collapsed).hidden)
+    }
 }

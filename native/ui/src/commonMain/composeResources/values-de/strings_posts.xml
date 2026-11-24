@@ -120,4 +120,8 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Nächste Antworten können nicht geladen werden</string>
     <string name="posts_unable_to_load_who_retweeted">Wer diesen Tweet retweetet hat, kann nicht geladen werden</string>
     <string name="posts_unable_to_load_more_retweets">Weitere Personen, die diesen Tweet retweetet haben, können nicht geladen werden</string>
+    <plurals name="posts_replies_hidden">
+        <item quantity="one">%1$d Antwort ausgeblendet</item>
+        <item quantity="other">%1$d Antworten ausgeblendet</item>
+    </plurals>
 </resources>

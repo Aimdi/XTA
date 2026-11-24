@@ -3,12 +3,19 @@ package com.aimdi.xtanative.ui.home
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -44,8 +51,10 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.FindBlock
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalPageFind
@@ -66,36 +75,50 @@ import org.jetbrains.compose.resources.stringResource
  * [com.aimdi.xtanative.ui.common.foundIn]), "3 / 12" counts the matches,
  * Enter and F3 go to the next, Shift with them to the one before, and Esc
  * closes it, the keys going back to the page. In a lazy [list] the rows a
- * match is in are scrolled to first. Nothing off the desktop.
+ * match is in are scrolled to first.
+ *
+ * Off the desktop there are no such keys, and no bar unless the screen
+ * keeps one of its own to open, [phone] ([rememberPhoneFind]): then the same
+ * bar sits above the on-screen keyboard, whose search key goes to the next
+ * match, and Back closes it before it leaves the screen. On the desktop
+ * [phone] is null, so a page never has two bars.
  */
 @Composable
-fun FindInPage(blocks: List<FindBlock>, list: LazyListState? = null, content: @Composable () -> Unit) {
+fun FindInPage(blocks: List<FindBlock>, list: LazyListState? = null, phone: PageFindState? = null, content: @Composable () -> Unit) {
     val actions = LocalDesktopActions.current
-    if (actions == null) {
+    if (actions == null && phone == null) {
         content()
         return
     }
-    val find = remember { PageFindState() }
+    val find = phone?.takeIf { actions == null } ?: remember { PageFindState() }
     SideEffect { find.blocks = blocks }
     val field = remember { FocusRequester() }
     var typed by remember { mutableStateOf(TextFieldValue("")) }
     var asked by remember { mutableIntStateOf(0) }
     var inField by remember { mutableStateOf(false) }
+    // Opened again: what was typed is selected, to type over or to find again.
+    val ask = {
+        typed = typed.copy(selection = TextRange(0, typed.text.length))
+        asked++
+    }
     FindsInPageWithKeys(
         open = {
             find.open = true
-            // Opened again: what was typed is selected, to type over or to find again.
-            typed = typed.copy(selection = TextRange(0, typed.text.length))
-            asked++
+            ask()
         },
         step = { by -> find.open.also { if (it) find.step(by) } },
     )
+    if (actions == null) {
+        // The screen's own button opened it: the keyboard comes up in its field.
+        LaunchedEffect(find.open) { if (find.open) ask() }
+        BackHandling(enabled = find.open) { find.open = false }
+    }
     LaunchedEffect(asked) { if (asked > 0) runCatching { field.requestFocus() } }
     // Esc in the bar's field closes it; the frame then takes the keys, as from any field.
     val owner = remember { Any() }
     DisposableEffect(actions, find.open) {
-        if (find.open) actions.addFieldEscape(owner) { if (inField) find.open = false; false }
-        onDispose { actions.removeFieldEscape(owner) }
+        if (find.open) actions?.addFieldEscape(owner) { if (inField) find.open = false; false }
+        onDispose { actions?.removeFieldEscape(owner) }
     }
     val current = find.current
     LaunchedEffect(current, find.moves) {
@@ -103,7 +126,9 @@ fun FindInPage(blocks: List<FindBlock>, list: LazyListState? = null, content: @C
         if (list != null && list.layoutInfo.visibleItemsInfo.none { it.index == item }) list.scrollToItem(item)
     }
     Column(Modifier.fillMaxSize()) {
-        Box(Modifier.weight(1f)) { CompositionLocalProvider(LocalPageFind provides find, content = content) }
+        // The open bar stands on the system's navigation bar itself, so the page above it no longer keeps clear of that.
+        val above = if (find.open) Modifier.consumeWindowInsets(WindowInsets.navigationBars) else Modifier
+        Box(Modifier.weight(1f).then(above)) { CompositionLocalProvider(LocalPageFind provides find, content = content) }
         if (find.open) {
             FindBar(
                 find,
@@ -119,13 +144,23 @@ fun FindInPage(blocks: List<FindBlock>, list: LazyListState? = null, content: @C
     }
 }
 
+/**
+ * The find bar a phone's screen opens itself, with a button in its top bar
+ * ([FindInPage]'s `phone`); null on the desktop, where Ctrl+F opens the
+ * page's own. The screen reads its [PageFindState.open] to know when the
+ * page's texts are wanted.
+ */
+@Composable
+fun rememberPhoneFind(): PageFindState? = if (LocalDesktopActions.current != null) null else remember { PageFindState() }
+
 @Composable
 private fun FindBar(find: PageFindState, typed: TextFieldValue, onType: (TextFieldValue) -> Unit, field: Modifier, close: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     Surface(color = colors.surfaceContainer, modifier = Modifier.fillMaxWidth()) {
         Column {
             HorizontalDivider(color = colors.outlineVariant)
-            Row(Modifier.padding(start = 16.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+            // Above the on-screen keyboard and the system's navigation bar; neither is there on the desktop.
+            Row(Modifier.navigationBarsPadding().imePadding().padding(start = 16.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Filled.Search, null, tint = colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
                 val placeholder = stringResource(Res.string.find_in_page)
                 BasicTextField(
@@ -134,6 +169,9 @@ private fun FindBar(find: PageFindState, typed: TextFieldValue, onType: (TextFie
                     singleLine = true,
                     textStyle = MaterialTheme.typography.bodyLarge.copy(color = colors.onSurface),
                     cursorBrush = SolidColor(colors.primary),
+                    // The on-screen keyboard's search key goes to the next match, as Enter does.
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(onSearch = { find.step(1) }),
                     modifier = Modifier.weight(1f).padding(horizontal = 12.dp).then(field).onPreviewKeyEvent { event ->
                         val enter = event.key == Key.Enter || event.key == Key.NumPadEnter
                         if (enter && event.type == KeyEventType.KeyDown) find.step(if (event.isShiftPressed) -1 else 1)

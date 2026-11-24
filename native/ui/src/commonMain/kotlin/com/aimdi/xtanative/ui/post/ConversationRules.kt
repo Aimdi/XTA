@@ -142,6 +142,9 @@ sealed interface ThreadRow {
 
     /** "Continue thread": the first reply the depth cap leaves out, opened on its own screen. */
     data class Continue(val target: ThreadNode, val indentDepth: Int) : ThreadRow
+
+    /** A branch the reader collapsed, in one row in its reply's place: [node]'s author and the [hidden] replies it stands for. */
+    data class Collapsed(val node: ThreadNode, val visualDepth: Int, val hidden: Int) : ThreadRow
 }
 
 /**
@@ -178,14 +181,25 @@ object ThreadTree {
         return out
     }
 
-    /** [nodes] as rows: capped at [maxDepth], a "Continue thread" row in place of each deeper branch, the rails joined. */
-    fun rows(nodes: List<ThreadNode>, maxDepth: Int = MAX_DEPTH): List<ThreadRow> {
+    /**
+     * [nodes] as rows: capped at [maxDepth], a "Continue thread" row in place
+     * of each deeper branch, the rails joined. A reply whose thread id is in
+     * [collapsed] is one [ThreadRow.Collapsed] row standing for itself and
+     * all under it; ids of replies not loaded (yet, or any more) do nothing.
+     */
+    fun rows(nodes: List<ThreadNode>, collapsed: Set<String> = emptySet(), maxDepth: Int = MAX_DEPTH): List<ThreadRow> {
         val raw = ArrayList<ThreadRow>()
         var index = 0
         while (index < nodes.size) {
             val node = nodes[index]
             if (node.depth > maxDepth) {
                 index++
+                continue
+            }
+            if (node.thread.id in collapsed) {
+                val end = skipSubtree(nodes, index)
+                raw += ThreadRow.Collapsed(node, node.depth, hidden(nodes.subList(index, end), maxDepth))
+                index = end
                 continue
             }
             raw += ThreadRow.Reply(node, node.depth, connectTop = false, connectBottom = false)
@@ -198,9 +212,26 @@ object ThreadTree {
         }
         return raw.mapIndexed { at, row ->
             if (row !is ThreadRow.Reply) return@mapIndexed row
-            row.copy(connectTop = row.visualDepth > 0 && at > 0 && raw[at - 1] is ThreadRow.Reply, connectBottom = childBelow(row, at, raw))
+            row.copy(connectTop = row.visualDepth > 0 && at > 0 && raw[at - 1] !is ThreadRow.Continue, connectBottom = childBelow(row, at, raw))
         }
     }
+
+    /** The list key of [row]: a reply keeps its own whether it is drawn in full or collapsed, so the list stays at it. */
+    fun key(row: ThreadRow): String = when (row) {
+        is ThreadRow.Reply -> replyKey(row.node.thread.id)
+        is ThreadRow.Collapsed -> replyKey(row.node.thread.id)
+        is ThreadRow.Continue -> "continue-" + row.target.thread.id
+    }
+
+    /** The list key of the reply thread [id]'s row. */
+    fun replyKey(id: String): String = "reply-$id"
+
+    /** [collapsed] with the branch at the reply thread [id] collapsed, or opened again when it was. */
+    fun toggled(collapsed: Set<String>, id: String): Set<String> = if (id in collapsed) collapsed - id else collapsed + id
+
+    /** The replies a collapsed [branch] takes off the screen: its posts and withheld posts down to [maxDepth], what was drawn. */
+    private fun hidden(branch: List<ThreadNode>, maxDepth: Int): Int =
+        branch.filter { it.depth <= maxDepth }.sumOf { it.thread.posts.size + it.thread.withheld.size }
 
     /** Extra start inset of a reply at [depth]: answers to the opened post sit flush with it, deeper ones step in. */
     fun indentLevels(depth: Int): Int = (depth - 1).coerceAtLeast(0)
@@ -215,6 +246,7 @@ object ThreadTree {
     private fun childBelow(row: ThreadRow.Reply, at: Int, rows: List<ThreadRow>): Boolean = when (val next = rows.getOrNull(at + 1)) {
         is ThreadRow.Continue -> row.node.depth == next.indentDepth
         is ThreadRow.Reply -> next.node.depth > row.node.depth
+        is ThreadRow.Collapsed -> next.node.depth > row.node.depth
         null -> false
     }
 

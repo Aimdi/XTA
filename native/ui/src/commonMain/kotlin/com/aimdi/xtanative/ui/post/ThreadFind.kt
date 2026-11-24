@@ -29,7 +29,7 @@ object ThreadFind {
         if ((state.loading && state.replies.isEmpty()) || state.problem != null) item++
         if (!repliesShown) return blocks
         if (threaded) {
-            ThreadTree.rows(ThreadTree.nodes(state.replies)).forEach { row ->
+            ThreadTree.rows(ThreadTree.nodes(state.replies), state.collapsed).forEach { row ->
                 if (row is ThreadRow.Reply) row.node.thread.posts.forEach { blocks += of(it, item) }
                 item++
             }

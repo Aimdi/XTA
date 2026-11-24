@@ -120,4 +120,8 @@
     <string name="posts_translation_other">The translation didn't work. Try again.</string>
     <string name="posts_quote_unavailable">Could not retrieve quoted tweet</string>
     <string name="posts_no_text">The post did not contain any text. This is unexpected</string>
+    <plurals name="posts_replies_hidden">
+        <item quantity="one">%1$d reply hidden</item>
+        <item quantity="other">%1$d replies hidden</item>
+    </plurals>
 </resources>
