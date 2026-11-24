@@ -36,6 +36,7 @@ import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.ShellMenuButton
@@ -71,9 +72,9 @@ internal fun WebSourcesHome(app: WebSourcesApp, frame: PluginFrame) {
             else -> {
                 val list = rememberLazyListState()
                 ScrollsToTop(list, frame.toTop)
-                LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+                PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                     items(sources, key = { it.source.id }) { entry -> SourceRow(app, entry) }
-                }
+                } }
             }
         }
     }

@@ -40,6 +40,7 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginGridSkeleton
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.RetryRow
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
@@ -77,10 +78,10 @@ private fun Posts(app: WebSourcesApp, feed: WebSourceFeed, state: WebSourceFeedS
     val list = rememberLazyListState()
     ScrollsToTop(list, toTop)
     ReadsMoreNearEnd(list, items.size, feed::more)
-    LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+    PluginReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         items(items, key = { it.key }) { item -> WebSourceItemCard(feed.source, item, actions, read = item.key in read) }
         item(key = "footer") { Foot(feed, state) }
-    }
+    } }
 }
 
 /** The list's foot: the next page coming, or why it did not and a way to ask again. */
