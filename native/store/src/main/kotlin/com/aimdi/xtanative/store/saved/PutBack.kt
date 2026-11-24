@@ -13,8 +13,8 @@ typealias TakenSaved = Taken<SavedPost>
 /** A like taken back ([LikesStore.unlikeTaking]). */
 typealias TakenLike = Taken<LikedPost>
 
-/** A note deleted, with its files' bytes ([LocalPostsStore.deleteTaking]). */
-typealias TakenNote = Taken<LocalPost>
+/** A note deleted ([LocalPostsStore.deleteTaking]): the note, and where its files were set aside (null for none). */
+class TakenNote internal constructor(val note: Taken<LocalPost>, internal val parked: java.io.File?)
 
 /** A folder deleted ([SavedStore.deleteFolderTaking]): the folder as it was and the posts that were filed in it. */
 class TakenFolder internal constructor(val folder: SavedFolder, internal val members: Set<String>)

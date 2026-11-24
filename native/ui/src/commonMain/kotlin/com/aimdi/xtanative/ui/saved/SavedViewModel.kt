@@ -155,7 +155,7 @@ class SavedViewModel(private val graph: AppGraph) : ViewModel() {
 
     suspend fun setNote(id: String, note: String?) = graph.saved.setNote(id, note)
 
-    fun deleteNote(id: String) = graph.keep { SavedUndo.offer(graph.localPosts.deleteTaking(id), graph.localPosts::putBack) }
+    fun deleteNote(id: String) = graph.keep { SavedUndo.offer(graph.localPosts.deleteTaking(id), graph.localPosts::putBack, discard = { taken -> graph.keep { graph.localPosts.discard(taken) } }) }
 
     /** After a note is written: Notes opens, so the reader sees it. */
     fun showNotes() = view.update { if (it.tab == SavedTabs.NOTES) it else it.select(SavedTabs.NOTES) }

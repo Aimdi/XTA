@@ -31,4 +31,22 @@ class KeepNoticeUndoTest {
         SavedUndo.offer<String>(null) { error("nothing was taken") }
         assertEquals(KeepNotice.UndoFailed, KeepNotices.shown.value?.notice, "a removal that took nothing offers no undo")
     }
+
+    @Test
+    fun whatAnUndoHeldIsLetGoOnlyWhenTheNoticeGoesWithoutIt() {
+        var discarded = 0
+        SavedUndo.offer("note", { true }, discard = { discarded++ })
+        assertTrue(KeepNotices.undo(KeepNotices.shown.value, ::keepNow))
+        assertEquals(0, discarded, "undone: the files went back, nothing to let go")
+
+        SavedUndo.offer("note", { true }, discard = { discarded++ })
+        KeepNotices.hide(KeepNotices.shown.value!!)
+        assertEquals(1, discarded, "timed out")
+
+        SavedUndo.offer("note", { true }, discard = { discarded++ })
+        KeepNotices.show(KeepNotice.MediaSaved)
+        assertEquals(2, discarded, "replaced by another notice")
+        KeepNotices.hide(KeepNotices.shown.value!!)
+        assertEquals(2, discarded)
+    }
 }

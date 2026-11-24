@@ -96,7 +96,7 @@ fun NoteThreadScreen(rootId: String, actions: PostActions, onBack: () -> Unit) {
             onDismiss = { deleting = null },
         ) {
             deleting = null
-            graph.keep { SavedUndo.offer(graph.localPosts.deleteTaking(post.id), graph.localPosts::putBack) }
+            graph.keep { SavedUndo.offer(graph.localPosts.deleteTaking(post.id), graph.localPosts::putBack, discard = { taken -> graph.keep { graph.localPosts.discard(taken) } }) }
             if (post.id == rootId) onBack()
         }
     }

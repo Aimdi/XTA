@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.store.saved
 
+import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -111,5 +112,28 @@ class PutBackTest {
         assertContentEquals(byteArrayOf(1, 2, 3), notes.mediaFile(first.id, "photo").readBytes())
         assertFalse(notes.putBack(taken))
         assertNull(notes.deleteTaking("nope"))
+    }
+
+    @Test
+    fun aDeletedNotesFilesWaitAsideNotInMemoryAndGoWhenTheUndoDoes() = runBlocking {
+        val dir = tempStore()
+        val notes = LocalPostsStore(dir, clock = { time++ }, newId = { "note-${ids++}" })
+        notes.writeMedia("n1", "video", ByteArray(4096) { it.toByte() })
+        notes.save("clip", listOf(NoteMedia("video", "v.mp4", "video/mp4")), id = "n1")!!
+
+        val taken = notes.deleteTaking("n1")!!
+        assertTrue(taken.note.items.all { note -> note.media.all { it.data == null } }, "no bytes held by the undo")
+        assertFalse(notes.mediaFile("n1", "video").exists())
+        notes.discard(taken)
+        assertFalse(File(dir.root, "notes-undo").listFiles().orEmpty().any(), "discarded: nothing left aside")
+        assertTrue(notes.putBack(taken), "the note itself still comes back")
+        assertFalse(notes.mediaFile("n1", "video").exists())
+
+        notes.writeMedia("n2", "photo", byteArrayOf(7))
+        notes.save("left over", listOf(NoteMedia("photo", "p.png", "image/png")), id = "n2")!!
+        notes.deleteTaking("n2")!!
+        assertTrue(File(dir.root, "notes-undo").listFiles().orEmpty().isNotEmpty())
+        LocalPostsStore(dir).discardSetAside()
+        assertFalse(File(dir.root, "notes-undo").exists(), "the next start clears what an undo left aside")
     }
 }
