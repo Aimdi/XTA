@@ -73,7 +73,7 @@ internal fun ReaderPage(app: EhApp, open: EhOpenReader, page: Int, vertical: Boo
 /**
  * The page's picture: the original for a signed-in reader, the resample
  * when that fails, then the failure, with Retry and another image server.
- * Paged, it zooms; in the column, it is as wide as the screen.
+ * Paged, it zooms; in the column, it is as wide as the column lets it be.
  */
 @Composable
 private fun PagePicture(app: EhApp, open: EhOpenReader, image: EhImagePage, vertical: Boolean, onTap: (Offset) -> Unit, onHold: (Int) -> Unit) {
