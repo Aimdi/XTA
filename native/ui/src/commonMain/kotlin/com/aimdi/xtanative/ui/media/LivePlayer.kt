@@ -164,7 +164,7 @@ private fun LiveVideo(url: String, live: XLive, poster: @Composable () -> Unit) 
         val open: (() -> Unit)? = fullscreen?.let { screen ->
             {
                 kept.enteredFullscreen()
-                screen.open(FullscreenVideo(player, live.aspectRatio, onDownload = null, onClosed = kept::leftFullscreen))
+                screen.open(FullscreenVideo(player, live.aspectRatio, onDownload = null, live = true, onClosed = kept::leftFullscreen))
             }
         }
         VideoControls(player, VideoChrome(onFullscreen = open, live = true), Modifier.fillMaxSize())

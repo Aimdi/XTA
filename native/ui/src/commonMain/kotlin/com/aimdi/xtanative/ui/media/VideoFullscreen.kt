@@ -38,7 +38,14 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 /** A video full screen: its player, its shape, its Download, and what is done once it closes. */
-internal class FullscreenVideo(val player: VideoPlayer, val aspectRatio: Float, val onDownload: (() -> Unit)?, val onClosed: () -> Unit)
+internal class FullscreenVideo(
+    val player: VideoPlayer,
+    val aspectRatio: Float,
+    val onDownload: (() -> Unit)?,
+    /** A live stream: full screen it has a live stream's controls too (no speed, no hold for 2x). */
+    val live: Boolean = false,
+    val onClosed: () -> Unit,
+)
 
 /** The video full screen over the whole window, if any (video_fullscreen.dart's route): one at a time. */
 @Stable
@@ -117,6 +124,7 @@ private fun FullscreenLayer(video: FullscreenVideo, onClose: () -> Unit) {
         if (pip?.active != true) {
             val chrome = VideoChrome(
                 fullscreen = true,
+                live = video.live,
                 onFullscreen = onClose,
                 onPictureInPicture = pip?.let { { it.enter(video.aspectRatio) } },
                 fill = fill,
