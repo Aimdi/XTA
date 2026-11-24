@@ -30,6 +30,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.post.VerifiedBadges
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -47,7 +48,7 @@ fun PersonRow(user: XUser, onOpen: () -> Unit, modifier: Modifier = Modifier) {
         Avatar(user.largeAvatarUrl, 40.dp)
         Column(Modifier.weight(1f).padding(start = 12.dp, end = 4.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
+                TipText(
                     user.name,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
@@ -57,7 +58,7 @@ fun PersonRow(user: XUser, onOpen: () -> Unit, modifier: Modifier = Modifier) {
                 )
                 VerifiedBadges(user, 16.dp, Modifier.padding(start = 4.dp))
             }
-            Text(
+            TipText(
                 "@" + user.screenName,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

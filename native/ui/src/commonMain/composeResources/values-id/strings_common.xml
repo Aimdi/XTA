@@ -40,4 +40,9 @@
     <string name="problem_source_loading">Sumber ini masih dimuat. Postingan lain sudah bisa dibaca.</string>
     <string name="problem_saved_at">Menampilkan postingan yang disimpan pada %1$s</string>
     <string name="problem_saved_earlier">Menampilkan postingan yang disimpan sebelumnya</string>
+    <string name="files_filter_pictures">Gambar</string>
+    <string name="files_filter_media">Gambar dan video</string>
+    <string name="find_in_page">Cari di halaman</string>
+    <string name="find_previous_match">Kecocokan sebelumnya</string>
+    <string name="find_next_match">Kecocokan berikutnya</string>
 </resources>

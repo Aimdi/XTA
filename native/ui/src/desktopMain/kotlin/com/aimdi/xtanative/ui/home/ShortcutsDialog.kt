@@ -27,14 +27,25 @@ import com.aimdi.xtanative.ui.generated.resources.keys_columns
 import com.aimdi.xtanative.ui.generated.resources.keys_ctrl
 import com.aimdi.xtanative.ui.generated.resources.keys_delete
 import com.aimdi.xtanative.ui.generated.resources.keys_end
+import com.aimdi.xtanative.ui.generated.resources.keys_find_in_page
+import com.aimdi.xtanative.ui.generated.resources.keys_find_match
 import com.aimdi.xtanative.ui.generated.resources.keys_esc
+import com.aimdi.xtanative.ui.generated.resources.keys_forward
 import com.aimdi.xtanative.ui.generated.resources.keys_full_screen
 import com.aimdi.xtanative.ui.generated.resources.keys_go_home
 import com.aimdi.xtanative.ui.generated.resources.keys_help
 import com.aimdi.xtanative.ui.generated.resources.keys_home
+import com.aimdi.xtanative.ui.generated.resources.keys_interface_size
 import com.aimdi.xtanative.ui.generated.resources.keys_leave_selection
+import com.aimdi.xtanative.ui.generated.resources.keys_menu
 import com.aimdi.xtanative.ui.generated.resources.keys_move
 import com.aimdi.xtanative.ui.generated.resources.keys_move_row
+import com.aimdi.xtanative.ui.generated.resources.keys_post_like
+import com.aimdi.xtanative.ui.generated.resources.keys_post_link
+import com.aimdi.xtanative.ui.generated.resources.keys_post_menu
+import com.aimdi.xtanative.ui.generated.resources.keys_post_open
+import com.aimdi.xtanative.ui.generated.resources.keys_post_save
+import com.aimdi.xtanative.ui.generated.resources.keys_new
 import com.aimdi.xtanative.ui.generated.resources.keys_next_post
 import com.aimdi.xtanative.ui.generated.resources.keys_open_copied_link
 import com.aimdi.xtanative.ui.generated.resources.keys_page_down
@@ -51,6 +62,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_scroll_line
 import com.aimdi.xtanative.ui.generated.resources.keys_scroll_screen
 import com.aimdi.xtanative.ui.generated.resources.keys_search
 import com.aimdi.xtanative.ui.generated.resources.keys_select_all
+import com.aimdi.xtanative.ui.generated.resources.keys_undo
 import com.aimdi.xtanative.ui.generated.resources.keys_shift
 import com.aimdi.xtanative.ui.generated.resources.keys_space
 import com.aimdi.xtanative.ui.generated.resources.keys_tab
@@ -90,9 +102,13 @@ object DesktopShortcuts {
     val all: List<Shortcut> = listOf(
         Shortcut(Res.string.keys_help, listOf(listOf(sign("?")), listOf(sign("F1")))),
         Shortcut(Res.string.keys_back, listOf(listOf(KeyCap.Named(Res.string.keys_esc)), listOf(alt, sign("←")), listOf(ctrl, sign("W")))),
+        Shortcut(Res.string.keys_forward, listOf(listOf(alt, sign("→")))),
         Shortcut(Res.string.keys_go_home, listOf(listOf(alt, KeyCap.Named(Res.string.keys_home)))),
         Shortcut(Res.string.keys_refresh, listOf(listOf(sign("F5")), listOf(ctrl, sign("R")))),
-        Shortcut(Res.string.keys_search, listOf(listOf(ctrl, sign("F")), listOf(sign("/")))),
+        Shortcut(Res.string.keys_search, listOf(listOf(ctrl, sign("F")), listOf(sign("/")), listOf(ctrl, sign("K")), listOf(ctrl, sign("L")))),
+        Shortcut(Res.string.keys_find_in_page, listOf(listOf(ctrl, sign("F")))),
+        Shortcut(Res.string.keys_find_match, listOf(listOf(sign("F3")), listOf(shift, sign("F3")), listOf(sign("↵")), listOf(shift, sign("↵")))),
+        Shortcut(Res.string.keys_new, listOf(listOf(ctrl, sign("N")))),
         Shortcut(Res.string.keys_recent_searches, listOf(listOf(sign("↓")), listOf(sign("↑")))),
         Shortcut(Res.string.keys_open_copied_link, listOf(listOf(ctrl, sign("V")))),
         Shortcut(Res.string.keys_tabs, listOf(listOf(ctrl, tab), listOf(ctrl, shift, tab))),
@@ -101,6 +117,11 @@ object DesktopShortcuts {
         Shortcut(Res.string.keys_columns, listOf(listOf(ctrl, sign("←")), listOf(ctrl, sign("→")))),
         Shortcut(Res.string.keys_scroll_line, listOf(listOf(sign("↑")), listOf(sign("↓")))),
         Shortcut(Res.string.keys_next_post, listOf(listOf(sign("J")), listOf(sign("K")))),
+        Shortcut(Res.string.keys_post_open, listOf(listOf(sign("↵")), listOf(sign("O")))),
+        Shortcut(Res.string.keys_post_like, listOf(listOf(sign("L")))),
+        Shortcut(Res.string.keys_post_save, listOf(listOf(sign("B")))),
+        Shortcut(Res.string.keys_post_link, listOf(listOf(ctrl, shift, sign("C")))),
+        Shortcut(Res.string.keys_post_menu, listOf(listOf(KeyCap.Named(Res.string.keys_menu)), listOf(shift, sign("F10")))),
         Shortcut(
             Res.string.keys_scroll_screen,
             listOf(listOf(KeyCap.Named(Res.string.keys_page_up)), listOf(KeyCap.Named(Res.string.keys_page_down)), listOf(space), listOf(shift, space)),
@@ -108,6 +129,7 @@ object DesktopShortcuts {
         Shortcut(Res.string.keys_scroll_ends, listOf(listOf(KeyCap.Named(Res.string.keys_home)), listOf(KeyCap.Named(Res.string.keys_end)))),
         Shortcut(Res.string.keys_move, listOf(listOf(tab), listOf(shift, tab))),
         Shortcut(Res.string.keys_text_size, listOf(listOf(ctrl, sign("+")), listOf(ctrl, sign("−")), listOf(ctrl, sign("0")), listOf(ctrl, KeyCap.Named(Res.string.keys_wheel)))),
+        Shortcut(Res.string.keys_interface_size, listOf(listOf(ctrl, alt, sign("+")), listOf(ctrl, alt, sign("−")), listOf(ctrl, alt, sign("0")))),
         Shortcut(Res.string.keys_full_screen, listOf(listOf(sign("F11")))),
         Shortcut(Res.string.settings_title, listOf(listOf(ctrl, sign(",")))),
         Shortcut(Res.string.keys_video, listOf(listOf(space), listOf(sign("K")), listOf(sign("←")), listOf(sign("→")), listOf(sign("J")), listOf(sign("L")))),
@@ -118,6 +140,7 @@ object DesktopShortcuts {
         Shortcut(Res.string.keys_photo_move, listOf(listOf(sign("←")), listOf(sign("↑")), listOf(sign("→")), listOf(sign("↓")))),
         Shortcut(Res.string.keys_select_all, listOf(listOf(ctrl, sign("A")))),
         Shortcut(Res.string.keys_remove_selected, listOf(listOf(KeyCap.Named(Res.string.keys_delete)))),
+        Shortcut(Res.string.keys_undo, listOf(listOf(ctrl, sign("Z")))),
         Shortcut(Res.string.keys_leave_selection, listOf(listOf(KeyCap.Named(Res.string.keys_esc)))),
         Shortcut(Res.string.keys_move_row, listOf(listOf(alt, sign("↑")), listOf(alt, sign("↓")))),
         Shortcut(Res.string.keys_quit, listOf(listOf(ctrl, sign("Q")))),

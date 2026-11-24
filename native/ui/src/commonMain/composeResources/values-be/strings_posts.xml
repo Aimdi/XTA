@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Не знойдзена нікога, хто рэтвітнуў гэты твіт!</string>
     <string name="posts_no_saves">Пакуль няма захаваных пастоў — закладкі на гэтай прыладзе</string>
     <string name="posts_open_in_browser">Адкрыць у браўзеры</string>
+    <string name="posts_open_in_new_window">Адкрыць у новым акне</string>
     <string name="posts_open_on_web_archive">Адкрыць на web.archive.org</string>
     <string name="posts_open_post">Адкрыць пост</string>
     <string name="posts_page_not_found">Twitter кажа, што гэтая старонка не існуе, але гэта можа быць няпраўдай</string>

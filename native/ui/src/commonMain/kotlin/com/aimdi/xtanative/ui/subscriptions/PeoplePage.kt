@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -65,6 +66,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_search
 import com.aimdi.xtanative.ui.generated.resources.groups_show_in_main_feed
 import com.aimdi.xtanative.ui.generated.resources.groups_unsubscribe
 import com.aimdi.xtanative.ui.home.RowSteps
+import com.aimdi.xtanative.ui.home.pressDrag
 import com.aimdi.xtanative.ui.home.rememberRetappedList
 import com.aimdi.xtanative.ui.home.rememberRowKeyMoves
 import com.aimdi.xtanative.ui.home.rowMovedByKeys
@@ -136,7 +138,14 @@ private fun PeopleList(state: SubscriptionsUi, actions: PeopleActions, contentPa
             val reorder = if (!state.canDragPeople) {
                 Modifier
             } else {
-                Modifier.pointerInput(key, keys) {
+                // The mouse drags a row at once, as a desktop list's; a finger long-presses first, the list scrolling under a plain drag.
+                Modifier.pressDrag(
+                    key = key,
+                    mouseOnly = true,
+                    onStart = { drag.start(key, keys) },
+                    onMove = { by, _ -> drag.drag(by.y) },
+                    onEnd = { done -> if (done) drag.end()?.let { (from, to) -> actions.move(from, to) } else drag.cancel() },
+                ).pointerInput(key, keys) {
                     detectDragGesturesAfterLongPress(
                         onDragStart = { drag.start(key, keys) },
                         onDrag = { change, amount ->
@@ -183,12 +192,12 @@ private fun SubscriptionRowView(row: SubscriptionRow, actions: PeopleActions) {
         Spacer(Modifier.width(16.dp))
         Column(Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(row.name, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f, fill = false))
+                TipText(row.name, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f, fill = false))
                 if (row.verified) {
                     Icon(XIcons.Verified, contentDescription = null, tint = androidx.compose.ui.graphics.Color.Unspecified, modifier = Modifier.padding(start = 6.dp).size(14.dp))
                 }
             }
-            Text(
+            TipText(
                 subscriptionSubtitle(row),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

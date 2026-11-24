@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
@@ -74,7 +75,8 @@ internal fun FollowsHere() {
         PixivEmpty(pluginString(Strings.follows_here_empty))
         return
     }
-    PluginReadingColumn(PaddingValues()) { column -> LazyColumn(Modifier.fillMaxSize(), contentPadding = column) {
+    val scroll = rememberLazyListState()
+    PluginReadingColumn(PaddingValues(), scroll) { column -> LazyColumn(Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
         items(follows, key = { it.id }) { follow ->
             val user = follow.toUser()
             ListItem(

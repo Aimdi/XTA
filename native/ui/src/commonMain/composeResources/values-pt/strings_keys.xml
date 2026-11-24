@@ -3,9 +3,11 @@
     <string name="keys_title">Atalhos de teclado</string>
     <string name="keys_help">Mostrar estes atalhos</string>
     <string name="keys_back">Voltar ou fechar o que está aberto</string>
+    <string name="keys_forward">Avançar para o que deixou ao voltar</string>
     <string name="keys_go_home">Voltar ao início</string>
     <string name="keys_refresh">Atualizar</string>
     <string name="keys_search">Pesquisar</string>
+    <string name="keys_new">Nova nota, grupo, antena, coluna ou local de tendências, na respetiva página</string>
     <string name="keys_recent_searches">Escolher uma pesquisa recente a partir do campo de pesquisa</string>
     <string name="keys_open_copied_link">Abrir um link copiado</string>
     <string name="keys_tabs">Separador seguinte ou anterior</string>
@@ -18,6 +20,7 @@
     <string name="keys_scroll_ends">Ir para o início ou para o fim</string>
     <string name="keys_move">Mover entre botões e campos</string>
     <string name="keys_text_size">Texto maior, menor ou normal</string>
+    <string name="keys_interface_size">Interface maior, menor ou normal</string>
     <string name="keys_full_screen">Ecrã inteiro</string>
     <string name="keys_video">Vídeo em ecrã inteiro: reproduzir ou pausar, saltar 10 segundos</string>
     <string name="keys_video_more">Vídeo em ecrã inteiro: silenciar, recomeçar, sair</string>
@@ -39,7 +42,16 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Salvo: selecionar tudo o que é mostrado</string>
     <string name="keys_remove_selected">Salvo: remover os selecionados</string>
+    <string name="keys_undo">Anular o que acabou de ser removido ou eliminado, enquanto o aviso estiver visível</string>
     <string name="keys_leave_selection">Salvo: deixar de selecionar</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Mover uma linha para cima ou para baixo numa lista reordenável (a que tem o foco ou a que está sob o ponteiro)</string>
+    <string name="keys_post_open">Abrir a publicação onde estão J e K</string>
+    <string name="keys_post_like">Gostar dessa publicação neste dispositivo, ou deixar de gostar</string>
+    <string name="keys_post_save">Guardar essa publicação neste dispositivo, ou deixar de a guardar</string>
+    <string name="keys_post_link">Copiar a ligação dessa publicação</string>
+    <string name="keys_post_menu">Abrir o menu dessa publicação</string>
+    <string name="keys_menu">Menu</string>
+    <string name="keys_find_in_page">Procurar na publicação ou no artigo que está a ler</string>
+    <string name="keys_find_match">Correspondência seguinte ou anterior na barra de pesquisa</string>
 </resources>

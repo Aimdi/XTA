@@ -41,6 +41,7 @@ import coil3.compose.AsyncImagePainter
 import com.aimdi.xtanative.networks.ehviewer.EhImagePage
 import com.aimdi.xtanative.networks.ehviewer.EhPageSlot
 import com.aimdi.xtanative.ui.plugins.ZoomableImage
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberImageRequest
 
@@ -72,7 +73,7 @@ internal fun ReaderPage(app: EhApp, open: EhOpenReader, page: Int, vertical: Boo
 /**
  * The page's picture: the original for a signed-in reader, the resample
  * when that fails, then the failure, with Retry and another image server.
- * Paged, it zooms; in the column, it is as wide as the screen.
+ * Paged, it zooms; in the column, it is as wide as the column lets it be.
  */
 @Composable
 private fun PagePicture(app: EhApp, open: EhOpenReader, image: EhImagePage, vertical: Boolean, onTap: (Offset) -> Unit, onHold: (Int) -> Unit) {
@@ -111,7 +112,7 @@ private fun PagePicture(app: EhApp, open: EhOpenReader, image: EhImagePage, vert
                     contentDescription = null,
                     contentScale = ContentScale.FillWidth,
                     onState = onState,
-                    modifier = Modifier.fillMaxWidth().pointerInput(onTap) { detectTapGestures(onTap = onTap, onLongPress = { hold() }) },
+                    modifier = Modifier.fillMaxWidth().onContextClick { hold() }.pointerInput(onTap) { detectTapGestures(onTap = onTap, onLongPress = { hold() }) },
                 )
             } else {
                 ZoomableImage(request, contentDescription = null, modifier = Modifier.fillMaxSize(), onTap = onTap, onLongPress = { hold() }, onState = onState)
@@ -129,7 +130,7 @@ internal class PageFailure(val message: String, val onRetry: () -> Unit, val onO
 @Composable
 private fun PageStatus(page: Int, total: Int, vertical: Boolean, onTap: (Offset) -> Unit, onHold: () -> Unit, failure: PageFailure? = null) {
     val frame = if (vertical) Modifier.fillMaxWidth().aspectRatio(PAPER) else Modifier.fillMaxSize()
-    Box(frame.pointerInput(onTap) { detectTapGestures(onTap = onTap, onLongPress = { onHold() }) }, contentAlignment = Alignment.Center) {
+    Box(frame.onContextClick(onHold).pointerInput(onTap) { detectTapGestures(onTap = onTap, onLongPress = { onHold() }) }, contentAlignment = Alignment.Center) {
         Column(Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
             if (failure == null) {
                 CircularProgressIndicator(color = Muted, strokeWidth = 2.dp)

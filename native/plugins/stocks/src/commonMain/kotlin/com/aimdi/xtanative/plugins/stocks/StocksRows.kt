@@ -41,6 +41,7 @@ import com.aimdi.xtanative.networks.stocks.QuoteRows
 import com.aimdi.xtanative.networks.stocks.StockNumbers
 import com.aimdi.xtanative.networks.stocks.StockRowState
 import com.aimdi.xtanative.networks.stocks.TickerQuote
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.pluginString
 import java.time.Instant
 
@@ -181,7 +182,7 @@ internal fun RetryButton(onRetry: () -> Unit) {
     BoxWithConstraints(Modifier.padding(end = 8.dp)) {
         val label = pluginString(Strings.retry)
         if (LocalDensity.current.fontScale > 1.3f) {
-            IconButton(onClick = onRetry) { Icon(Icons.Default.Refresh, label, Modifier.size(20.dp)) }
+            IconTip(label) { IconButton(onClick = onRetry) { Icon(Icons.Default.Refresh, label, Modifier.size(20.dp)) } }
         } else {
             TextButton(onClick = onRetry) {
                 Icon(Icons.Default.Refresh, null, Modifier.size(18.dp))

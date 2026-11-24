@@ -90,8 +90,10 @@ import com.aimdi.xtanative.pluginhost.PluginStoreState
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.SearchPillShape
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.common.searchPillColors
 import com.aimdi.xtanative.ui.feed.ProvenanceColors
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -406,7 +408,7 @@ private fun InstalledBox(shown: InstalledPlugin, plugins: AppPlugins, locale: Lo
     ) {
         StoreMark(shown.running, name)
         Spacer(Modifier.width(10.dp))
-        Text(name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        TipText(name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
         val home = plugin?.homeTab != null
         InstalledMenu(
             pinned = shown.marks.pinned.takeIf { home },
@@ -474,7 +476,7 @@ private fun AvailableRow(state: PluginState, locale: Locale, actions: StoreActio
             title = name,
             subtitle = {
                 state.description(locale).takeIf { it.isNotBlank() }?.let {
-                    Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    TipText(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 }
                 offerStatus(status, locale)?.let { StatusLine(it, failed = status is PluginStatus.Failed) }
             },
@@ -513,7 +515,7 @@ private fun StoreTile(
                 leading()
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    TipText(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     subtitle()
                 }
             }
@@ -578,7 +580,7 @@ internal fun failureText(reason: PluginFailure): String = when (reason) {
 @Composable
 private fun StatusLine(text: String, failed: Boolean) {
     if (text.isEmpty()) return
-    Text(
+    TipText(
         text,
         style = MaterialTheme.typography.bodySmall,
         color = if (failed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
@@ -743,7 +745,7 @@ private fun UninstallDialog(name: String, onConfirm: () -> Unit, onDismiss: () -
         confirmButton = {
             TextButton(onClick = onConfirm) { Text(stringResource(Res.string.plugin_uninstall), color = MaterialTheme.colorScheme.error) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel)) } },
+        dismissButton = { TextButton(onClick = onDismiss, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.cancel)) } },
     )
 }
 

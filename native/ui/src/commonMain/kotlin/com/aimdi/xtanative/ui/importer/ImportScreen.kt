@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +47,7 @@ import com.aimdi.xtanative.ui.generated.resources.settings_import_from
 import com.aimdi.xtanative.ui.generated.resources.settings_import_read_positions
 import com.aimdi.xtanative.ui.generated.resources.settings_import_read_positions_description
 import com.aimdi.xtanative.ui.generated.resources.signin_add_account
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.settings.backupProblem
 import com.aimdi.xtanative.ui.settings.categoryLabel
 import com.aimdi.xtanative.ui.settings.shortDateTime
@@ -81,7 +81,7 @@ fun ImportScreen(onImported: () -> Unit, onSignIn: () -> Unit) {
     }
 
     Column(
-        Modifier.fillMaxSize().safeDrawingPadding().verticalScroll(rememberScrollState()).padding(24.dp),
+        Modifier.fillMaxSize().safeDrawingPadding().verticalScrollByKeys(rememberScrollState()).padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(stringResource(Res.string.app_name), style = MaterialTheme.typography.headlineMedium)

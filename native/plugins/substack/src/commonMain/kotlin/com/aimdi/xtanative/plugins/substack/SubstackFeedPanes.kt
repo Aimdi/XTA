@@ -143,7 +143,8 @@ private fun LazyListScope.pinnedToolbar(toolbar: @Composable () -> Unit) {
 
 @Composable
 private fun NoFollows(app: SubstackApp, frame: PluginFrame, discover: Boolean) {
-    PluginReadingColumn(frame.padding) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = column) {
+    val scroll = rememberLazyListState()
+    PluginReadingColumn(frame.padding, scroll) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
         item(key = "none") {
             EmptyState(
                 pluginString(Strings.empty),

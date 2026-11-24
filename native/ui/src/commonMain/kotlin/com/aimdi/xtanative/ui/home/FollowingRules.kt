@@ -67,11 +67,23 @@ object FollowingBar {
  * title menu sets before going back to Home): a timeline, by its tab's key.
  * Home takes the request once. And what Home asks of Discover (XTA's
  * SearchScopeStore): reached from a network's page on the bar, it searches
- * that network.
+ * that network. And Alt+Home's (a browser's home key): Home back at its
+ * start page, not on the bar's page last picked there (Saved, Discover…).
  */
 object HomeRequests {
     private val asked = MutableStateFlow<String?>(null)
     private val scope = MutableStateFlow<String?>(null)
+    private val startAsked = MutableStateFlow(false)
+
+    /** Whether Home is asked to show its start page, until it takes the request. */
+    val start: StateFlow<Boolean> = startAsked.asStateFlow()
+
+    fun toStart() {
+        startAsked.value = true
+    }
+
+    /** Taken: true when it was asked, so it is acted on once. */
+    fun startTaken(): Boolean = startAsked.compareAndSet(true, false)
 
     val tab: StateFlow<String?> = asked.asStateFlow()
 

@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonReplyOrder
 import com.aimdi.xtanative.networks.mastodon.MastodonReplyRow
 import com.aimdi.xtanative.networks.mastodon.MastodonThreadReader
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.scrollToTop
@@ -82,11 +83,11 @@ internal fun MastodonThreadScreen(app: MastodonApp, target: MastodonTarget) {
         title = pluginString(Strings.thread),
         onBack = app.host::back,
         actions = {
-            IconButton(onClick = {
+            IconTip(pluginString(Strings.thread_selected)) { IconButton(onClick = {
                 reader.focusSelected()
                 scope.launch { list.scrollToTop(reduced) }
-            }) { Icon(MastodonIcons.ToTop, pluginString(Strings.thread_selected)) }
-            IconButton(onClick = { openOutside(state.thread.status.url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser)) }
+            }) { Icon(MastodonIcons.ToTop, pluginString(Strings.thread_selected)) } }
+            IconTip(pluginString(Strings.open_in_browser)) { IconButton(onClick = { openOutside(state.thread.status.url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser)) } }
             BranchesMenu(state.thread.descendants.isNotEmpty(), reader::setAllExpanded)
         },
     ) { padding ->
@@ -227,7 +228,7 @@ private fun ReplyRow(app: MastodonApp, row: MastodonReplyRow, onToggle: (String)
 private fun BranchesMenu(enabled: Boolean, onExpand: (Boolean) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }, enabled = enabled) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more)) }
+        IconTip(pluginString(Strings.more)) { IconButton(onClick = { open = true }, enabled = enabled) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             DropdownMenuItem(text = { Text(pluginString(Strings.thread_expand_all)) }, onClick = {
                 open = false

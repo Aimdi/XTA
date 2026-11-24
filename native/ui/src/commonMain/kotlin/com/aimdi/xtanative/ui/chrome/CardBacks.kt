@@ -48,11 +48,16 @@ class CardBacks {
         ) { content() }
     }
 
-    /** Pictures the screens, then runs [navigate]: a picture that cannot be taken leaves the card on its dark stage. */
-    fun open(scope: CoroutineScope, navigate: () -> Unit) {
-        if (opening) return
+    /**
+     * Pictures the screens, then runs [navigate]: a picture that cannot be
+     * taken leaves the card on its dark stage. [abandoned] runs instead when
+     * nothing is navigated: another card still opening, or the picture's
+     * work cancelled.
+     */
+    fun open(scope: CoroutineScope, abandoned: () -> Unit = {}, navigate: () -> Unit) {
+        if (opening) return abandoned()
         opening = true
-        scope.launch {
+        val job = scope.launch {
             try {
                 pending = picture()
             } finally {
@@ -60,6 +65,7 @@ class CardBacks {
             }
             navigate()
         }
+        job.invokeOnCompletion { cause -> if (cause != null) abandoned() }
     }
 
     /** The picture under the screen of [entry], forgotten once that screen is gone for good. */

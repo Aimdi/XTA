@@ -26,6 +26,17 @@ class DesktopKeysTest {
     ) = DesktopKeys.action(key, alt, ctrl, focusInside, canGoBack, rtl, open, shift, selecting, openIsRead)
 
     @Test
+    fun tabStepsForwardAndShiftTabBackButCtrlOrAltTabIsNoStep() {
+        assertEquals(TabStep.FORWARD, DesktopKeys.tabStep(DeskKey.TAB, shift = false, ctrl = false, alt = false))
+        assertEquals(TabStep.BACKWARD, DesktopKeys.tabStep(DeskKey.TAB, shift = true, ctrl = false, alt = false))
+        assertNull(DesktopKeys.tabStep(DeskKey.TAB, shift = false, ctrl = true, alt = false), "Ctrl+Tab turns the tabs")
+        assertNull(DesktopKeys.tabStep(DeskKey.TAB, shift = true, ctrl = true, alt = false), "Ctrl+Shift+Tab turns them back")
+        assertNull(DesktopKeys.tabStep(DeskKey.TAB, shift = false, ctrl = false, alt = true), "Alt+Tab is the desktop's")
+        assertNull(DesktopKeys.tabStep(DeskKey.DOWN, shift = false, ctrl = false, alt = false))
+        assertNull(DesktopKeys.tabStep(DeskKey.OTHER, shift = true, ctrl = false, alt = false))
+    }
+
+    @Test
     fun aButtonClickedKeepsNoKeysButAFieldOrWhatTabReachedDoes() {
         assertFalse(DesktopKeys.keysInside(focusInside = false, typing = false, clicked = false), "the frame itself has them")
         assertFalse(DesktopKeys.keysInside(focusInside = true, typing = false, clicked = true), "a tab, chip or refresh button clicked")
@@ -119,6 +130,43 @@ class DesktopKeysTest {
         assertEquals(DeskAction.CLOSE, DesktopKeys.back(canGoBack = true, somethingOpen = true))
         assertEquals(DeskAction.BACK, DesktopKeys.back(canGoBack = true, somethingOpen = false))
         assertEquals(DeskAction.NONE, DesktopKeys.back(canGoBack = false, somethingOpen = false))
+    }
+
+    @Test
+    fun altRightGoesForwardFromAFieldAndOverAnOpenedPostToo() {
+        assertEquals(DeskAction.FORWARD, action(DeskKey.RIGHT, alt = true))
+        assertEquals(DeskAction.FORWARD, action(DeskKey.RIGHT, alt = true, focusInside = true), "as Alt+← does from a field")
+        assertEquals(DeskAction.FORWARD, action(DeskKey.RIGHT, alt = true, canGoBack = false))
+        assertEquals(DeskAction.FORWARD, action(DeskKey.RIGHT, alt = true, open = true), "an opened post is a card the page counts as open")
+        assertEquals(DeskAction.NONE, action(DeskKey.RIGHT, alt = true, shift = true))
+        assertEquals(DeskAction.NEXT_COLUMN, action(DeskKey.RIGHT, ctrl = true))
+    }
+
+    @Test
+    fun x11SideButtonsComeAsAwtButtonsSixAndSeven() {
+        assertEquals(SideButton.BACK, DesktopKeys.sideButton(6))
+        assertEquals(SideButton.FORWARD, DesktopKeys.sideButton(7))
+        listOf(1, 2, 3, 4, 5, 8).forEach { assertNull(DesktopKeys.sideButton(it), "button $it") }
+    }
+
+    @Test
+    fun noKeyOfATextFieldGoesBackOrForward() {
+        // Backspace deletes in a field; it is no back key, as browsers dropped it.
+        assertEquals(DeskAction.NONE, action(DeskKey.OTHER))
+        assertEquals(DeskAction.NONE, action(DeskKey.RIGHT, focusInside = true))
+    }
+
+    @Test
+    fun aSidewaysScrollOnX11IsNoBackOrForward() {
+        // X's 6 and 7 (a touchpad's sideways scroll) come as AWT's 4 and 5, which Compose calls back and forward.
+        assertNull(DesktopKeys.pressedSide(4, composeBack = true, composeForward = false))
+        assertNull(DesktopKeys.pressedSide(5, composeBack = false, composeForward = true))
+        assertEquals(SideButton.BACK, DesktopKeys.pressedSide(6, composeBack = false, composeForward = false))
+        assertEquals(SideButton.FORWARD, DesktopKeys.pressedSide(7, composeBack = false, composeForward = false))
+        assertNull(DesktopKeys.pressedSide(1, composeBack = false, composeForward = false))
+        // No AWT event: Compose's own flags.
+        assertEquals(SideButton.BACK, DesktopKeys.pressedSide(null, composeBack = true, composeForward = false))
+        assertEquals(SideButton.FORWARD, DesktopKeys.pressedSide(null, composeBack = false, composeForward = true))
     }
 
     @Test
@@ -278,12 +326,102 @@ class DesktopKeysTest {
     }
 
     @Test
-    fun ctrlFAndSlashGoToTheSearch() {
-        assertEquals(DeskAction.FIND, action(DeskKey.F, ctrl = true))
-        assertEquals(DeskAction.FIND, action(DeskKey.F, ctrl = true, focusInside = true), "Ctrl+F from another field")
-        assertEquals(DeskAction.FIND, action(DeskKey.F, ctrl = true, canGoBack = false), "on the first screen too")
+    fun ctrlFFindsInThePageAndSlashGoesToTheSearch() {
+        assertEquals(DeskAction.FIND_IN_PAGE, action(DeskKey.F, ctrl = true))
+        assertEquals(DeskAction.FIND_IN_PAGE, action(DeskKey.F, ctrl = true, focusInside = true), "Ctrl+F from another field")
+        assertEquals(DeskAction.FIND_IN_PAGE, action(DeskKey.F, ctrl = true, canGoBack = false), "on the first screen too")
+        assertEquals(DeskAction.FIND_IN_PAGE, action(DeskKey.F, ctrl = true, open = true, openIsRead = true), "over the opened post's card")
+        assertEquals(DeskAction.NONE, action(DeskKey.F, ctrl = true, open = true), "not under a sheet or menu")
+        assertEquals(DeskAction.NONE, action(DeskKey.F, ctrl = true, shift = true))
         assertEquals(DeskAction.FIND, action(DeskKey.SLASH))
         assertEquals(DeskAction.FIND, action(DeskKey.SLASH, shift = true), "Shift+7 on a German keyboard")
+    }
+
+    @Test
+    fun f3StepsTheFindBarFromItsFieldToo() {
+        assertEquals(DeskAction.FIND_NEXT, action(DeskKey.F3))
+        assertEquals(DeskAction.FIND_NEXT, action(DeskKey.F3, focusInside = true), "from the find bar's field")
+        assertEquals(DeskAction.FIND_PREVIOUS, action(DeskKey.F3, shift = true))
+        assertEquals(DeskAction.FIND_NEXT, action(DeskKey.F3, open = true, openIsRead = true), "over the opened post's card")
+        assertEquals(DeskAction.NONE, action(DeskKey.F3, open = true), "not under a sheet")
+        assertEquals(DeskAction.NONE, action(DeskKey.F3, ctrl = true))
+    }
+
+    @Test
+    fun aPageFinderTakesCtrlFAndF3AndTheLastShownIsOnTop() {
+        val actions = DesktopActions()
+        assertFalse(actions.findInPage(), "no find bar: Ctrl+F goes on to the search")
+        assertFalse(actions.findStep(1))
+        val opened = mutableListOf<String>()
+        var open = false
+        val post = Any()
+        actions.addPageFinder(post, PageFinder({ opened += "post"; open = true }, { open }))
+        assertFalse(actions.findStep(1), "F3 does nothing while the bar is closed")
+        assertTrue(actions.findInPage())
+        assertTrue(actions.findStep(-1))
+        val article = Any()
+        actions.addPageFinder(article, PageFinder({ opened += "article" }, { false }))
+        assertTrue(actions.findInPage())
+        assertEquals(listOf("post", "article"), opened)
+        actions.removePageFinder(article)
+        actions.removePageFinder(post)
+        assertFalse(actions.findInPage())
+    }
+
+    @Test
+    fun ctrlKAndCtrlLGoToTheSearchAsABrowsersDo() {
+        for (key in listOf(DeskKey.K, DeskKey.L)) {
+            assertEquals(DeskAction.FIND, action(key, ctrl = true), "$key")
+            assertEquals(DeskAction.FIND, action(key, ctrl = true, focusInside = true), "$key from a field, as Ctrl+F")
+            assertEquals(DeskAction.NONE, action(key, ctrl = true, open = true), "$key not under what is open")
+            assertEquals(DeskAction.NONE, action(key, ctrl = true, shift = true), "$key with Shift")
+            assertEquals(DeskAction.NONE, action(key, ctrl = true, alt = true), "$key with Alt")
+        }
+        // Alone they stay the reading keys.
+        assertEquals(DeskAction.PREVIOUS_ITEM, action(DeskKey.K))
+        assertEquals(DeskAction.LIKE_POST, action(DeskKey.L))
+    }
+
+    @Test
+    fun ctrlNMakesSomethingNewOutsideAFieldAndUnderNothingOpen() {
+        assertEquals(DeskAction.CREATE, action(DeskKey.N, ctrl = true))
+        assertEquals(DeskAction.CREATE, action(DeskKey.N, ctrl = true, canGoBack = false), "on Home's own pages too")
+        assertEquals(DeskAction.CREATE, action(DeskKey.N, ctrl = true, selecting = true), "the page decides; Saved declines while selecting")
+        assertEquals(DeskAction.NONE, action(DeskKey.N, ctrl = true, focusInside = true), "a field keeps its keys")
+        assertEquals(DeskAction.NONE, action(DeskKey.N, ctrl = true, open = true), "not under what is open over the page")
+        assertEquals(DeskAction.NONE, action(DeskKey.N, ctrl = true, shift = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.N, ctrl = true, alt = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.N))
+    }
+
+    @Test
+    fun ctrlZUndoesOutsideAFieldAndUnderNothingOpen() {
+        assertEquals(DeskAction.UNDO, action(DeskKey.Z, ctrl = true))
+        assertEquals(DeskAction.UNDO, action(DeskKey.Z, ctrl = true, selecting = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.Z, ctrl = true, focusInside = true), "a field undoes its typing")
+        assertEquals(DeskAction.NONE, action(DeskKey.Z, ctrl = true, open = true), "not under what is open over the page")
+        assertEquals(DeskAction.NONE, action(DeskKey.Z, ctrl = true, shift = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.Z, ctrl = true, alt = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.Z))
+    }
+
+    @Test
+    fun theNewShownLastAnswersCtrlNAndOneThatDeclinesLetsTheKeyGo() {
+        val actions = DesktopActions()
+        val made = mutableListOf<String>()
+        assertFalse(actions.create(), "a page with no New: the key goes on")
+        val page = Any()
+        val layer = Any()
+        actions.addCreator(page) { made += "page"; true }
+        actions.addCreator(layer) { false }
+        assertFalse(actions.create(), "the page on top declines (its editor is open)")
+        actions.removeCreator(layer)
+        assertTrue(actions.create())
+        actions.addCreator(page) { made += "page again"; true }
+        assertTrue(actions.create())
+        assertEquals(listOf("page", "page again"), made)
+        actions.removeCreator(page)
+        assertFalse(actions.create(), "a screen resumed twice is listed once")
     }
 
     @Test
@@ -325,8 +463,33 @@ class DesktopKeysTest {
         assertEquals(DeskAction.TEXT_RESET, action(DeskKey.ZERO, ctrl = true, canGoBack = false))
         listOf(DeskKey.PLUS, DeskKey.MINUS, DeskKey.ZERO).forEach { key ->
             assertEquals(DeskAction.NONE, action(key), "$key alone is typed")
-            assertEquals(DeskAction.NONE, action(key, ctrl = true, alt = true), "Ctrl+Alt+$key")
+            assertEquals(DeskAction.NONE, action(key, alt = true), "Alt+$key")
         }
+    }
+
+    @Test
+    fun ctrlAltPlusMinusAndZeroSizeTheWholeInterface() {
+        assertEquals(DeskAction.UI_BIGGER, action(DeskKey.PLUS, ctrl = true, alt = true))
+        assertEquals(DeskAction.UI_BIGGER, action(DeskKey.PLUS, ctrl = true, alt = true, shift = true), "Ctrl+Alt+Shift+= on a US keyboard")
+        assertEquals(DeskAction.UI_SMALLER, action(DeskKey.MINUS, ctrl = true, alt = true, focusInside = true), "from a field too")
+        assertEquals(DeskAction.UI_RESET, action(DeskKey.ZERO, ctrl = true, alt = true, open = true), "over a sheet too")
+        assertEquals(DeskAction.TEXT_BIGGER, action(DeskKey.PLUS, ctrl = true, shift = true), "Ctrl+Shift+= stays the text's")
+        assertEquals(DeskAction.TEXT_RESET, action(DeskKey.ZERO, ctrl = true))
+    }
+
+    @Test
+    fun theInterfaceSizeStepsThroughItsPresetsAndStaysAtTheEnds() {
+        val presets = listOf(0.8, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0)
+        assertEquals(1.1, DesktopKeys.uiScaled(1.0, DeskAction.UI_BIGGER, presets))
+        assertEquals(1.5, DesktopKeys.uiScaled(1.25, DeskAction.UI_BIGGER, presets))
+        assertEquals(0.9, DesktopKeys.uiScaled(1.0, DeskAction.UI_SMALLER, presets))
+        assertEquals(2.0, DesktopKeys.uiScaled(2.0, DeskAction.UI_BIGGER, presets), "never past the largest")
+        assertEquals(0.8, DesktopKeys.uiScaled(0.8, DeskAction.UI_SMALLER, presets), "never below the smallest")
+        assertEquals(1.25, DesktopKeys.uiScaled(1.2, DeskAction.UI_BIGGER, presets), "between presets goes onto the next")
+        assertEquals(1.1, DesktopKeys.uiScaled(1.2, DeskAction.UI_SMALLER, presets), "or the one before")
+        assertEquals(1.0, DesktopKeys.uiScaled(1.75, DeskAction.UI_RESET, presets))
+        assertEquals(1.75, DesktopKeys.uiScaled(1.75, DeskAction.TEXT_BIGGER, presets), "the text's keys leave it")
+        assertEquals(1.0, DesktopKeys.uiScaled(1.0, DeskAction.UI_BIGGER, emptyList()))
     }
 
     @Test
@@ -722,5 +885,123 @@ class DesktopKeysTest {
         assertSame(second, actions.readList())
         assertTrue(actions.stepColumn(-1))
         assertEquals("a", actions.chosenColumn)
+    }
+
+    @Test
+    fun thePostTheReadingKeysAreOnIsActedOn() {
+        assertEquals(DeskAction.OPEN_POST, action(DeskKey.ENTER))
+        assertEquals(DeskAction.OPEN_POST, action(DeskKey.O))
+        assertEquals(DeskAction.LIKE_POST, action(DeskKey.L))
+        assertEquals(DeskAction.SAVE_POST, action(DeskKey.B))
+        assertEquals(DeskAction.COPY_POST_LINK, action(DeskKey.C, ctrl = true, shift = true))
+        assertEquals(DeskAction.POST_MENU, action(DeskKey.MENU))
+        assertEquals(DeskAction.POST_MENU, action(DeskKey.F10, shift = true))
+        // Beside the page (the Deck's detail) they still read; over it, not.
+        assertEquals(DeskAction.LIKE_POST, action(DeskKey.L, open = true, openIsRead = true))
+        listOf(DeskKey.ENTER, DeskKey.O, DeskKey.L, DeskKey.B, DeskKey.MENU).forEach { key ->
+            assertEquals(DeskAction.NONE, action(key, open = true), "$key under a sheet")
+            assertEquals(DeskAction.NONE, action(key, focusInside = true), "$key in a field")
+            assertEquals(DeskAction.NONE, action(key, alt = true), "$key with Alt")
+        }
+        assertEquals(DeskAction.NONE, action(DeskKey.C, ctrl = true, shift = true, focusInside = true), "a field copies its own text")
+        assertEquals(DeskAction.NONE, action(DeskKey.C, ctrl = true, shift = true, open = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.C, ctrl = true), "plain Ctrl+C is the selection's")
+        assertEquals(DeskAction.NONE, action(DeskKey.L, shift = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.F10), "F10 alone is not the menu")
+        // A button the mouse clicked keeps Enter to press, while the other keys read on.
+        val clicked = DesktopKeys.keysInside(focusInside = true, typing = false, clicked = true)
+        assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.ENTER, alt = false, ctrl = false, focusInside = clicked, canGoBack = true, focusHeld = true))
+        assertEquals(DeskAction.LIKE_POST, DesktopKeys.action(DeskKey.L, alt = false, ctrl = false, focusInside = clicked, canGoBack = true, focusHeld = true))
+    }
+
+    @Test
+    fun theCurrentPostIsTheFirstStartingUnderTheLine() {
+        fun item(index: Int, offset: Int, size: Int = 300) = DesktopKeys.ShownItem(index, offset, size)
+        // Posts at 0, 300 and 600: the first.
+        assertEquals(0, DesktopKeys.currentPost(listOf(item(0, 0), item(1, 300), item(2, 600)), listOf(0, 300, 600), end = 800))
+        // The first partly read above the top: the next one, whose start shows.
+        assertEquals(1, DesktopKeys.currentPost(listOf(item(0, -40), item(1, 260)), listOf(-40, 260), end = 800))
+        // A thread item of two posts, landed on by j: its first post, in any order drawn.
+        assertEquals(1, DesktopKeys.currentPost(listOf(item(3, 0, 500), item(4, 500)), listOf(250, 0, 500), end = 800))
+        // Tabs pinned over the list (48 px): the post just under them, not the one they cover.
+        val pinned = listOf(item(1, 0, 48), item(4, 48), item(5, 348))
+        assertEquals(1, DesktopKeys.currentPost(pinned, listOf(10, 48, 348), end = 800))
+        // One post taller than the view, read across: that one.
+        assertEquals(0, DesktopKeys.currentPost(listOf(item(2, -400, 2000)), listOf(-400, 1600), end = 800))
+        // A post laid out past the end of the view is not the one.
+        assertNull(DesktopKeys.currentPost(listOf(item(0, 0)), listOf(900), end = 800))
+        assertNull(DesktopKeys.currentPost(emptyList(), emptyList(), end = 800))
+    }
+
+    @Test
+    fun aStepMarksTheFirstPostOfTheItemItWentTo() {
+        // Item from 300 to 800 holds a thread of two posts (300, 550); one post before it, one after.
+        assertEquals(2, DesktopKeys.firstIn(300, 500, listOf(0, 550, 300, 800)))
+        assertNull(DesktopKeys.firstIn(300, 500, listOf(0, 800)), "a row without a post (a header)")
+    }
+
+    @Test
+    fun atTheEndJAndKWalkThePostsLeftOneByOne() {
+        fun item(index: Int, offset: Int, size: Int = 200) = DesktopKeys.ShownItem(index, offset, size)
+        // The list at its end: items 6 to 9 in view, a post each, 7 marked (j landed there, below the top).
+        val shown = listOf(item(6, -100), item(7, 100), item(8, 300), item(9, 500))
+        val tops = listOf(-100, 100, 300, 500)
+        assertEquals(DesktopKeys.KeyStep.ToPost(2, 300), DesktopKeys.keyStep(shown, 10, tops, marked = 1, forward = true))
+        assertEquals(DesktopKeys.KeyStep.ToPost(3, 500), DesktopKeys.keyStep(shown, 10, tops, marked = 2, forward = true))
+        // The last post: nowhere to go, the mark stays (not back up to item 7 from the list's place).
+        assertNull(DesktopKeys.keyStep(shown, 10, tops, marked = 3, forward = true))
+        // k from there walks back the same way, past the top of the view as well.
+        assertEquals(DesktopKeys.KeyStep.ToPost(2, 300), DesktopKeys.keyStep(shown, 10, tops, marked = 3, forward = false))
+        assertEquals(DesktopKeys.KeyStep.ToPost(0, -100), DesktopKeys.keyStep(shown, 10, tops, marked = 1, forward = false))
+    }
+
+    @Test
+    fun aShortListThatCannotScrollStillWalksItsPosts() {
+        fun item(index: Int, offset: Int, size: Int = 200) = DesktopKeys.ShownItem(index, offset, size)
+        // An opened post (0) and two replies, all in view; the focal post marked at the top.
+        val shown = listOf(item(0, 0, 300), item(1, 300), item(2, 500), item(3, 700, 40))
+        val tops = listOf(0, 300, 500)
+        // j from the focal post: the first reply's item, as any step.
+        assertEquals(DesktopKeys.KeyStep.ToItem(1, 0), DesktopKeys.keyStep(shown, 4, tops, marked = 0, forward = true))
+        // The first reply marked but left below the top: on to the second, and k back to the focal one.
+        assertEquals(DesktopKeys.KeyStep.ToPost(2, 500), DesktopKeys.keyStep(shown, 4, tops, marked = 1, forward = true))
+        assertEquals(DesktopKeys.KeyStep.ToPost(0, 0), DesktopKeys.keyStep(shown, 4, tops, marked = 1, forward = false))
+        // At the very top k has nowhere to go.
+        assertNull(DesktopKeys.keyStep(shown, 4, tops, marked = 0, forward = false))
+    }
+
+    @Test
+    fun aMarkAtTheLineStepsByItemsSaveWithinAThread() {
+        fun item(index: Int, offset: Int, size: Int = 300) = DesktopKeys.ShownItem(index, offset, size)
+        // Item 2 a thread of two posts (0, 250), marked its first; item 3 after it.
+        val shown = listOf(item(2, 0, 500), item(3, 500), item(4, 800))
+        val tops = listOf(0, 250, 500, 800)
+        assertEquals(DesktopKeys.KeyStep.ToPost(1, 250), DesktopKeys.keyStep(shown, 9, tops, marked = 0, forward = true))
+        // A single-post item at the line: the ordinary item step.
+        val plain = listOf(item(2, 0), item(3, 300), item(4, 600))
+        assertEquals(DesktopKeys.KeyStep.ToItem(3, 0), DesktopKeys.keyStep(plain, 9, listOf(0, 300, 600), marked = 0, forward = true))
+        assertEquals(DesktopKeys.KeyStep.ToItem(1, 0), DesktopKeys.keyStep(plain, 9, listOf(0, 300, 600), marked = 0, forward = false))
+        // Nothing marked: from the list's place.
+        assertEquals(DesktopKeys.KeyStep.ToItem(3, 0), DesktopKeys.keyStep(plain, 9, listOf(0, 300, 600), marked = null, forward = true))
+        // Under pinned tabs (48 px): the line is theirs. At it, the next item goes under them.
+        val pinned = listOf(item(1, 0, 48), item(4, 48), item(5, 348))
+        assertEquals(DesktopKeys.KeyStep.ToItem(5, -48), DesktopKeys.keyStep(pinned, 6, listOf(48, 348, 500), marked = 0, forward = true))
+        // The list at its end, item 5's first post marked below them: on to its second.
+        assertEquals(DesktopKeys.KeyStep.ToPost(2, 452), DesktopKeys.keyStep(pinned, 6, listOf(48, 348, 500), marked = 1, forward = true))
+    }
+
+    @Test
+    fun aPostWindowClosesWithCtrlWAndEscOnItsFirstScreen() {
+        val escAtRoot = action(DeskKey.ESCAPE, canGoBack = false)
+        assertTrue(DesktopKeys.closesWindow(DeskKey.ESCAPE, alt = false, ctrl = false, shift = false, action = escAtRoot))
+        val escDeeper = action(DeskKey.ESCAPE, canGoBack = true)
+        assertFalse(DesktopKeys.closesWindow(DeskKey.ESCAPE, alt = false, ctrl = false, shift = false, action = escDeeper), "Esc goes back first")
+        val ctrlW = action(DeskKey.W, ctrl = true, canGoBack = true)
+        assertTrue(DesktopKeys.closesWindow(DeskKey.W, alt = false, ctrl = true, shift = false, action = ctrlW), "Ctrl+W closes it from any screen")
+        val ctrlWOverMenu = action(DeskKey.W, ctrl = true, open = true)
+        assertFalse(DesktopKeys.closesWindow(DeskKey.W, alt = false, ctrl = true, shift = false, action = ctrlWOverMenu), "what is open closes first")
+        assertFalse(DesktopKeys.closesWindow(DeskKey.W, alt = false, ctrl = false, shift = false, action = DeskAction.NONE), "w alone is a letter")
+        assertFalse(DesktopKeys.closesWindow(DeskKey.W, alt = false, ctrl = true, shift = true, action = DeskAction.NONE))
+        assertFalse(DesktopKeys.closesWindow(DeskKey.Q, alt = false, ctrl = true, shift = false, action = DeskAction.LEAVE_APP), "Ctrl+Q still quits")
     }
 }

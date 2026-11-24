@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.networks.substack.SubstackPublication
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.addToGroupText
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
@@ -173,7 +174,7 @@ internal fun LoadMoreRow(loading: Boolean, error: Throwable?, canLoadMore: Boole
 internal fun SheetHeading(title: String, onClose: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
-        IconButton(onClick = onClose) { Icon(Icons.Default.Close, pluginString(Strings.close)) }
+        IconTip(pluginString(Strings.close)) { IconButton(onClick = onClose) { Icon(Icons.Default.Close, pluginString(Strings.close)) } }
     }
 }
 

@@ -55,6 +55,7 @@ import com.aimdi.xtanative.networks.stocks.StockNumbers
 import com.aimdi.xtanative.networks.stocks.StockRowState
 import com.aimdi.xtanative.networks.stocks.TickerQuote
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import java.time.Instant
 import kotlin.math.max
@@ -106,6 +107,7 @@ private fun ReelEntry(identity: RowIdentity, quote: TickerQuote?, failed: Boolea
     Column(
         Modifier
             .heightIn(min = 48.dp)
+            .onContextClick(onLongPress)
             .combinedClickable(onClick = onTap, onLongClick = onLongPress)
             .clearAndSetSemantics {
                 contentDescription = label

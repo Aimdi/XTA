@@ -3,9 +3,11 @@
     <string name="keys_title">Dreceres de teclat</string>
     <string name="keys_help">Mostra aquestes dreceres</string>
     <string name="keys_back">Torna enrere o tanca el que és obert</string>
+    <string name="keys_forward">Torna endavant al que has deixat enrere</string>
     <string name="keys_go_home">Torna a l’inici</string>
     <string name="keys_refresh">Actualitza</string>
     <string name="keys_search">Cerca</string>
+    <string name="keys_new">Nota, grup, antena, columna o ubicació de tendències nova, a la seva pàgina</string>
     <string name="keys_recent_searches">Triar una cerca recent des del camp de cerca</string>
     <string name="keys_open_copied_link">Obre un enllaç copiat</string>
     <string name="keys_tabs">Pestanya següent o anterior</string>
@@ -18,6 +20,7 @@
     <string name="keys_scroll_ends">Ves al principi o al final</string>
     <string name="keys_move">Mou-te entre botons i camps</string>
     <string name="keys_text_size">Text més gran, més petit o normal</string>
+    <string name="keys_interface_size">Interfície més gran, més petita o normal</string>
     <string name="keys_full_screen">Pantalla completa</string>
     <string name="keys_video">Vídeo a pantalla completa: reprodueix o posa en pausa, salta 10 segons</string>
     <string name="keys_video_more">Vídeo a pantalla completa: silencia, torna a començar, surt</string>
@@ -39,7 +42,16 @@
     <string name="keys_end">Fi</string>
     <string name="keys_select_all">Desat: selecciona tot el que es mostra</string>
     <string name="keys_remove_selected">Desat: elimina els seleccionats</string>
+    <string name="keys_undo">Desfés el que s\'acaba d\'eliminar mentre se\'n vegi l\'avís</string>
     <string name="keys_leave_selection">Desat: deixa de seleccionar</string>
     <string name="keys_delete">Supr</string>
     <string name="keys_move_row">Mou una fila amunt o avall en una llista que es pot reordenar (la que té el focus o la que és sota el punter)</string>
+    <string name="keys_post_open">Obre la publicació on són J i K</string>
+    <string name="keys_post_like">Marca aquesta publicació com a m'agrada en aquest dispositiu, o desmarca-la</string>
+    <string name="keys_post_save">Desa aquesta publicació en aquest dispositiu, o deixa de desar-la</string>
+    <string name="keys_post_link">Copia l'enllaç d'aquesta publicació</string>
+    <string name="keys_post_menu">Obre el menú d'aquesta publicació</string>
+    <string name="keys_menu">Menú</string>
+    <string name="keys_find_in_page">Cerca a la publicació o l’article que llegeixes</string>
+    <string name="keys_find_match">Coincidència següent o anterior a la barra de cerca</string>
 </resources>

@@ -10,14 +10,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -32,6 +30,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.feed.FeedSort
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_catch_up_mode
@@ -47,6 +46,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_not_all_posts
 import com.aimdi.xtanative.ui.generated.resources.groups_popular
 import com.aimdi.xtanative.ui.generated.resources.groups_popular_description
 import com.aimdi.xtanative.ui.generated.resources.groups_recent
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -61,8 +61,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun FeedSettingsSheet(state: GroupFeedUi, actions: GroupSettingsActions, onCustom: () -> Unit, onDismiss: () -> Unit, following: Boolean = false) {
     var orders by rememberSaveable { mutableStateOf(false) }
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
-        Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 16.dp)) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
+        Column(Modifier.verticalScrollByKeys(rememberScrollState()).padding(bottom = 16.dp)) {
             Text(stringResource(Res.string.groups_filters), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp))
             Text(
                 stringResource(Res.string.groups_not_all_posts),

@@ -24,6 +24,7 @@ class PluginSurfaceTest {
         "com.aimdi.xtanative.ui.common.Graphemes",
         "com.aimdi.xtanative.ui.common.GridSkeleton",
         "com.aimdi.xtanative.ui.common.Hairline",
+        "com.aimdi.xtanative.ui.common.IconTip",
         "com.aimdi.xtanative.ui.common.LoadingRow",
         "com.aimdi.xtanative.ui.common.LocalReducedMotion",
         "com.aimdi.xtanative.ui.common.XIcons",

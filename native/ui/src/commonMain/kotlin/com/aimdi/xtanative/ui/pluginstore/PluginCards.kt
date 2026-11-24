@@ -21,7 +21,7 @@ class PluginCards(internal val backs: CardBacks, private val scope: CoroutineSco
     internal val sliding = SlidingBacks()
 
     /** Pictures the screens, then [navigate]s to the card. */
-    internal fun open(navigate: () -> Unit) = backs.open(scope, navigate)
+    internal fun open(navigate: () -> Unit) = backs.open(scope, navigate = navigate)
 
     companion object {
         /** The route of a plugin's card, for the app's transitions. */

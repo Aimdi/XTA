@@ -67,11 +67,20 @@ object SharedLinks {
     fun pixivId(text: String): String? = text.trim().takeIf { Regex("^\\d{1,12}$").matches(it) }
 
     /**
-     * Whether X's link reader should read [url], which no network opened: a
-     * Pixiv page should not, as X would take `pixiv.net/en/` for the profile
-     * `@en`; it goes to the browser instead.
+     * Whether X's link reader should read [url], which no network opened:
+     * only a link on X's hosts (or a mirror's, a short link's, Periscope's)
+     * should, as X's reader looks at the path alone and would take
+     * `pixiv.net/en/` for the profile `@en`, or any page dropped on the
+     * desktop window for a profile; those go to the browser instead.
      */
-    fun readsAsXLink(url: String): Boolean = WebLink.parse(url)?.let { !isPixivShare(it) } ?: true
+    fun readsAsXLink(url: String): Boolean = WebLink.parse(url)?.let { link -> link.scheme != "pixiv" && readsAsX(link.host) } ?: true
+
+    /** X's own hosts, its short links', Periscope's, and those of the mirrors (fxtwitter, vxtwitter, fixupx) with their subdomains. */
+    private fun readsAsX(host: String): Boolean =
+        host in shareHosts || host in periscopeHosts || mirrorDomains.any { host.endsWith(".$it") }
+
+    private val periscopeHosts = setOf("pscp.tv", "www.pscp.tv", "periscope.tv", "www.periscope.tv")
+    private val mirrorDomains = listOf("fxtwitter.com", "vxtwitter.com", "fixupx.com")
 
     /**
      * [appLink] with an X short link followed, one request at a time without

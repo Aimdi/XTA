@@ -57,6 +57,7 @@ import com.aimdi.xtanative.networks.substack.SubstackLoadedOptions
 import com.aimdi.xtanative.networks.substack.SubstackOrder
 import com.aimdi.xtanative.networks.substack.SubstackPost
 import com.aimdi.xtanative.networks.substack.SubstackPublication
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginPlural
@@ -84,10 +85,10 @@ internal fun ReadingToolbar(app: SubstackApp, state: HomeState, pane: HomePane, 
             }
         }
         if (feed.failed) {
-            IconButton(onClick = { failure = true }) { Icon(Icons.Outlined.Warning, failureLabel(feed.failedCount, feed.refreshError), tint = MaterialTheme.colorScheme.error) }
+            IconTip(failureLabel(feed.failedCount, feed.refreshError)) { IconButton(onClick = { failure = true }) { Icon(Icons.Outlined.Warning, failureLabel(feed.failedCount, feed.refreshError), tint = MaterialTheme.colorScheme.error) } }
         }
-        Marked(options.searching) { IconButton(onClick = { sheet = SEARCH }) { Icon(Icons.Default.Search, pluginString(Strings.search)) } }
-        Marked(SubstackHomeRules.filtered(options, filter)) { IconButton(onClick = { sheet = FILTERS }) { Icon(SubstackIcons.Tune, pluginString(Strings.filters)) } }
+        Marked(options.searching) { IconTip(pluginString(Strings.search)) { IconButton(onClick = { sheet = SEARCH }) { Icon(Icons.Default.Search, pluginString(Strings.search)) } } }
+        Marked(SubstackHomeRules.filtered(options, filter)) { IconTip(pluginString(Strings.filters)) { IconButton(onClick = { sheet = FILTERS }) { Icon(SubstackIcons.Tune, pluginString(Strings.filters)) } } }
     }
     when (sheet) {
         PICKER -> PublicationPicker(app, followed, feed.posts) { sheet = null }
@@ -153,13 +154,13 @@ internal fun LoadedControls(options: SubstackLoadedOptions, autofocus: Boolean, 
             onValueChange = { onChange(options.copy(query = it)) },
             placeholder = { Text(pluginString(Strings.loaded_search)) },
             leadingIcon = { Icon(Icons.Default.Search, null) },
-            trailingIcon = if (options.query.isEmpty()) null else ({ IconButton(onClick = { onChange(options.copy(query = "")) }) { Icon(Icons.Default.Clear, pluginString(Strings.clear_search)) } }),
+            trailingIcon = if (options.query.isEmpty()) null else ({ IconTip(pluginString(Strings.clear_search)) { IconButton(onClick = { onChange(options.copy(query = "")) }) { Icon(Icons.Default.Clear, pluginString(Strings.clear_search)) } } }),
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             modifier = Modifier.weight(1f).focusRequester(focus),
         )
         Box {
-            IconButton(onClick = { sorting = true }) { Icon(SubstackIcons.Sort, pluginString(Strings.sort)) }
+            IconTip(pluginString(Strings.sort)) { IconButton(onClick = { sorting = true }) { Icon(SubstackIcons.Sort, pluginString(Strings.sort)) } }
             DropdownMenu(expanded = sorting, onDismissRequest = { sorting = false }) {
                 SubstackOrder.entries.forEach { order ->
                     DropdownMenuItem(

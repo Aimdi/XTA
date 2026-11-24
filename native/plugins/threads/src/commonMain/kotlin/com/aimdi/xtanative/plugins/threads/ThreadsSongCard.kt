@@ -55,6 +55,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.media.rememberContinuityPlayers
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import kotlinx.coroutines.isActive
 
@@ -110,7 +111,7 @@ internal fun SongCard(music: ThreadsMusic, state: SongCardState, focal: Boolean,
     val cover = if (focal) 96.dp else 72.dp
     val shape = RoundedCornerShape(14.dp)
     val actions = when {
-        state.offers -> Modifier.combinedClickable(
+        state.offers -> Modifier.then(onPage?.let { Modifier.onContextClick(it) } ?: Modifier).combinedClickable(
             onClickLabel = label,
             onClick = onPress,
             onLongClickLabel = onPage?.let { pluginString(Strings.song_open_page) },

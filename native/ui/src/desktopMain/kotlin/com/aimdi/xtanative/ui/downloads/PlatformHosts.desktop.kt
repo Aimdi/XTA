@@ -12,34 +12,32 @@ import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.draganddrop.awtTransferable
 import com.aimdi.xtanative.store.saved.LocalPosts
-import java.awt.FileDialog
-import java.awt.Frame
+import com.aimdi.xtanative.ui.common.FileChoosers
+import com.aimdi.xtanative.ui.common.FileFilter
+import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.files_filter_media
+import com.aimdi.xtanative.ui.generated.resources.files_filter_pictures
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.stringResource
 
 /** The desktop's save dialog opens from the download itself: nothing to hold in the window. */
 @Composable
 internal actual fun PlatformFilesHost() = Unit
 
-/** The system's open dialog (GTK's on Linux), offering the pictures (and videos) it can attach. */
+/** The desktop's open dialog (its portal's, else GTK's), offering the pictures (and videos) it can attach. */
 @Composable
-internal actual fun rememberFilePicker(images: Boolean, title: String): suspend () -> PickedFile? =
-    remember(images, title) {
-        val open: suspend () -> PickedFile? = { pick(images, title) }
+internal actual fun rememberFilePicker(images: Boolean, title: String): suspend () -> PickedFile? {
+    val kinds = stringResource(if (images) Res.string.files_filter_pictures else Res.string.files_filter_media)
+    return remember(images, title, kinds) {
+        val filter = FileFilter(kinds, if (images) pictures else media)
+        val open: suspend () -> PickedFile? = { FileChoosers.open(title, filter)?.let { file -> withContext(Dispatchers.IO) { read(file) } } }
         open
     }
-
-private suspend fun pick(images: Boolean, title: String): PickedFile? = withContext(Dispatchers.IO) {
-    val dialog = FileDialog(null as Frame?, title, FileDialog.LOAD)
-    dialog.setFilenameFilter { _, name -> accepts(name, images) }
-    dialog.isVisible = true
-    val file = dialog.file?.let { File(dialog.directory.orEmpty(), it) }
-    dialog.dispose()
-    file?.let(::read)
 }
 
 private val pictures = setOf("png", "jpg", "jpeg")

@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.ui.signin
 
+import com.aimdi.xtanative.ui.common.dialogDefault
+import com.aimdi.xtanative.ui.common.tabLeavesField
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -41,6 +42,7 @@ import com.aimdi.xtanative.ui.generated.resources.signin_import_text
 import com.aimdi.xtanative.ui.generated.resources.signin_import_title
 import com.aimdi.xtanative.ui.generated.resources.signin_open_in_browser
 import com.aimdi.xtanative.ui.generated.resources.signin_username
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.settings.SettingsPage
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -76,7 +78,7 @@ private fun ImportOffer(screenName: String, onNo: () -> Unit, onYes: () -> Unit)
         onDismissRequest = onNo,
         title = { Text(stringResource(Res.string.signin_import_title)) },
         text = { Text(stringResource(Res.string.signin_import_text, screenName)) },
-        confirmButton = { TextButton(onClick = onYes) { Text(stringResource(Res.string.settings_yes)) } },
+        confirmButton = { TextButton(onClick = onYes, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.settings_yes)) } },
         dismissButton = { TextButton(onClick = onNo) { Text(stringResource(Res.string.settings_no)) } },
     )
 }
@@ -119,7 +121,7 @@ internal fun CookieSignInPage(onBack: () -> Unit, onSignedIn: (XAccount) -> Unit
     val cookies = XSignIn.pastedCookies(pasted)
     val screenName = XSignIn.screenNameOf(typed)
     SettingsPage(stringResource(Res.string.signin_add_account), onBack) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp)) {
+        Column(Modifier.fillMaxSize().padding(padding).verticalScrollByKeys(rememberScrollState()).padding(16.dp)) {
             Text(stringResource(Res.string.signin_cookie_help), style = MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = { links?.openOutside(XSignIn.BROWSER_LOGIN) }) {
@@ -145,7 +147,7 @@ internal fun CookieSignInPage(onBack: () -> Unit, onSignedIn: (XAccount) -> Unit
                 minLines = 2,
                 maxLines = 4,
                 keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().tabLeavesField(),
             )
             Spacer(Modifier.height(24.dp))
             Button(

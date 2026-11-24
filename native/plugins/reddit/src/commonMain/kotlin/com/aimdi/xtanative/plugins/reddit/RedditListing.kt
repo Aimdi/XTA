@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.reddit.RedditPost
 import com.aimdi.xtanative.ui.common.FeedSkeleton
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PagedItems
@@ -167,9 +168,9 @@ internal fun ListingScreen(app: RedditApp, listing: Listing) {
         onBack = app.host::back,
         actions = {
             if (listing is Listing.Subreddit) {
-                IconButton(onClick = { app.host.open(RedditRoutes.search(name)) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
-                IconButton(onClick = { about = true }) { Icon(Icons.Outlined.Info, pluginString(Strings.about_community)) }
-                IconButton(onClick = { app.addToGroup(name) }) { Icon(PostIcons.GroupAdd, pluginString(Strings.add_to_group)) }
+                IconTip(pluginString(Strings.search)) { IconButton(onClick = { app.host.open(RedditRoutes.search(name)) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } }
+                IconTip(pluginString(Strings.about_community)) { IconButton(onClick = { about = true }) { Icon(Icons.Outlined.Info, pluginString(Strings.about_community)) } }
+                IconTip(pluginString(Strings.add_to_group)) { IconButton(onClick = { app.addToGroup(name) }) { Icon(PostIcons.GroupAdd, pluginString(Strings.add_to_group)) } }
                 FollowButton(app, name)
             }
         },
@@ -197,9 +198,9 @@ internal fun FollowButton(app: RedditApp, subreddit: String) {
 internal fun FollowIconButton(app: RedditApp, subreddit: String) {
     val followed by app.followed.collectAsState()
     val following = followed.follows(subreddit)
-    IconButton(onClick = { app.follow(subreddit, !following) }) {
+    IconTip(pluginString(if (following) Strings.unsubscribe else Strings.subscribe)) { IconButton(onClick = { app.follow(subreddit, !following) }) {
         Icon(if (following) Icons.Filled.Check else Icons.Filled.Add, contentDescription = pluginString(if (following) Strings.unsubscribe else Strings.subscribe))
-    }
+    } }
 }
 
 /** The posts saved on this device, newest first. */

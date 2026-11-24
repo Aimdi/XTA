@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -32,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -70,6 +72,7 @@ import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.search.RecentSearchesBar
 import com.aimdi.xtanative.ui.search.pickedFromRecent
 import com.aimdi.xtanative.ui.search.rememberRecentPick
+import com.aimdi.xtanative.ui.settings.SETTINGS_MAX_WIDTH
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -162,8 +165,11 @@ fun PluginSettingsScreen(id: String, onBack: () -> Unit) {
     val title = plugin?.let { runCatching { it.settingsTitle(language) }.getOrNull() ?: it.title(language) } ?: id
     PluginScaffold(title = title, onBack = onBack) { padding ->
         val body = plugin?.settings
-        Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            if (body != null) SavesMediaOf(id) { body(PluginFrame(PaddingValues(bottom = padding.calculateBottomPadding()))) } else NotRunning()
+        // As the app's own settings pages: a readable column in a wide window, not rows across the screen.
+        Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()), contentAlignment = Alignment.TopCenter) {
+            Box(Modifier.widthIn(max = SETTINGS_MAX_WIDTH).fillMaxSize()) {
+                if (body != null) SavesMediaOf(id) { body(PluginFrame(PaddingValues(bottom = padding.calculateBottomPadding()))) } else NotRunning()
+            }
         }
     }
 }

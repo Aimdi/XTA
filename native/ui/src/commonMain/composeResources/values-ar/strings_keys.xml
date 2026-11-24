@@ -3,9 +3,11 @@
     <string name="keys_title">اختصارات لوحة المفاتيح</string>
     <string name="keys_help">عرض هذه الاختصارات</string>
     <string name="keys_back">الرجوع، أو إغلاق ما هو مفتوح</string>
+    <string name="keys_forward">التقدّم إلى ما رجعت منه</string>
     <string name="keys_go_home">العودة إلى الرئيسية</string>
     <string name="keys_refresh">تحديث</string>
     <string name="keys_search">بحث</string>
+    <string name="keys_new">ملاحظة أو مجموعة أو هوائي أو عمود أو مكان للرائج جديد، في صفحته</string>
     <string name="keys_recent_searches">اختيار بحث حديث من حقل البحث</string>
     <string name="keys_open_copied_link">فتح رابط منسوخ</string>
     <string name="keys_tabs">علامة التبويب التالية أو السابقة</string>
@@ -18,6 +20,7 @@
     <string name="keys_scroll_ends">الانتقال إلى الأعلى أو إلى النهاية</string>
     <string name="keys_move">التنقل بين الأزرار والحقول</string>
     <string name="keys_text_size">نص أكبر أو أصغر أو عادي</string>
+    <string name="keys_interface_size">واجهة أكبر أو أصغر أو عادية</string>
     <string name="keys_full_screen">ملء الشاشة</string>
     <string name="keys_video">فيديو بملء الشاشة: تشغيل أو إيقاف مؤقت، والتخطي 10 ثوانٍ</string>
     <string name="keys_video_more">فيديو بملء الشاشة: كتم الصوت، البدء من جديد، الخروج من ملء الشاشة</string>
@@ -39,7 +42,16 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">المحفوظ: تحديد كل ما يظهر</string>
     <string name="keys_remove_selected">المحفوظ: إزالة المحدد</string>
+    <string name="keys_undo">تراجع عمّا أُزيل أو حُذف للتو، ما دام إشعاره ظاهرًا</string>
     <string name="keys_leave_selection">المحفوظ: إنهاء التحديد</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">تحريك صف لأعلى أو لأسفل في قائمة قابلة لإعادة الترتيب (الصف المحدد أو الذي تحت المؤشر)</string>
+    <string name="keys_post_open">فتح المنشور الذي انتقلت إليه بـ J وK</string>
+    <string name="keys_post_like">الإعجاب بذلك المنشور على هذا الجهاز أو إلغاء الإعجاب</string>
+    <string name="keys_post_save">حفظ ذلك المنشور على هذا الجهاز أو إلغاء حفظه</string>
+    <string name="keys_post_link">نسخ رابط ذلك المنشور</string>
+    <string name="keys_post_menu">فتح قائمة ذلك المنشور</string>
+    <string name="keys_menu">القائمة</string>
+    <string name="keys_find_in_page">البحث في المنشور أو المقال الذي تقرؤه</string>
+    <string name="keys_find_match">التطابق التالي أو السابق في شريط البحث</string>
 </resources>

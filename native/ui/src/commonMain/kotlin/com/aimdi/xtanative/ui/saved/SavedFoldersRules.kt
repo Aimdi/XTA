@@ -53,19 +53,7 @@ sealed interface FolderRow {
  * Where a row dragged from [from] by [offset] pixels lands among rows of
  * [heights]: past each neighbour once more than half of it is crossed.
  */
-fun dropIndex(from: Int, offset: Float, heights: List<Int>): Int {
-    if (from !in heights.indices) return from
-    var target = from
-    var left = kotlin.math.abs(offset)
-    val step = if (offset > 0) 1 else -1
-    var next = from + step
-    while (offset != 0f && next in heights.indices && left > heights[next] / 2f) {
-        left -= heights[next]
-        target = next
-        next += step
-    }
-    return target
-}
+fun dropIndex(from: Int, offset: Float, heights: List<Int>): Int = com.aimdi.xtanative.ui.home.DragSlots.drop(from, offset, heights)
 
 /** What the device keeps of an X post: the post shown (the post reposted, for a repost), as XTA's tweet JSON. */
 data class Keepable(val id: String, val authorId: String?, val content: JsonElement) {

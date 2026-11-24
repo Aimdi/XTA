@@ -43,6 +43,7 @@ import com.aimdi.xtanative.networks.mastodon.MastodonTimeline
 import com.aimdi.xtanative.networks.mastodon.MastodonTimelineFilter
 import com.aimdi.xtanative.networks.mastodon.MastodonTimelineFilter.Content
 import com.aimdi.xtanative.networks.mastodon.MastodonTimelineFilter.Order
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginSwitchRow
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -81,10 +82,10 @@ internal fun FiltersButton(app: MastodonApp, timeline: MastodonTimeline) {
     val state by app.reader(timeline).state.collectAsState()
     val filter = app.filter(timeline, prefs, searched)
     var sheet by rememberSaveable { mutableStateOf(false) }
-    IconButton(onClick = { sheet = true }) {
+    IconTip(pluginString(Strings.filters)) { IconButton(onClick = { sheet = true }) {
         val set = filtersSet(filter)
         BadgedBox(badge = { if (set > 0) Badge { Text("$set") } }) { Icon(PostIcons.Tune, contentDescription = pluginString(Strings.filters)) }
-    }
+    } }
     if (sheet) FilterSheet(filter, sourceOf(timeline, state.instance), { app.setFilter(timeline, it) }) { sheet = false }
 }
 
@@ -101,7 +102,7 @@ private fun FilterSheet(filter: MastodonTimelineFilter, source: String?, onChang
                         Text(source, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                 }
-                IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, pluginString(Strings.close)) }
+                IconTip(pluginString(Strings.close)) { IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, pluginString(Strings.close)) } }
             }
             Text(pluginString(Strings.loaded_controls), style = MaterialTheme.typography.bodySmall)
             Spacer(Modifier.height(12.dp))
@@ -118,7 +119,7 @@ private fun FilterSheet(filter: MastodonTimelineFilter, source: String?, onChang
                 label = { Text(pluginString(Strings.loaded_search)) },
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 trailingIcon = {
-                    if (filter.query.isNotEmpty()) IconButton(onClick = { onChange(filter.copy(query = "")) }) { Icon(Icons.Filled.Clear, pluginString(Strings.clear_search)) }
+                    if (filter.query.isNotEmpty()) IconTip(pluginString(Strings.clear_search)) { IconButton(onClick = { onChange(filter.copy(query = "")) }) { Icon(Icons.Filled.Clear, pluginString(Strings.clear_search)) } }
                 },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),

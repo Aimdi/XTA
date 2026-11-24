@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Nie znaleziono nikogo, kto retweetnął tego tweeta!</string>
     <string name="posts_no_saves">Brak zapisanych — zakładki zostają na tym urządzeniu</string>
     <string name="posts_open_in_browser">Otwórz w przeglądarce</string>
+    <string name="posts_open_in_new_window">Otwórz w nowym oknie</string>
     <string name="posts_open_on_web_archive">Otwórz w web.archive.org</string>
     <string name="posts_open_post">Otwórz wpis</string>
     <string name="posts_page_not_found">Twitter twierdzi, że strona nie istnieje, ale to może nie być prawda</string>

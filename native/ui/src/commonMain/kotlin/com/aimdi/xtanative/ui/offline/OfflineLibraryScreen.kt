@@ -52,8 +52,10 @@ import com.aimdi.xtanative.store.offline.OfflineEntry
 import com.aimdi.xtanative.store.offline.OfflineStore
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.cancel
@@ -160,7 +162,7 @@ fun OfflineLibraryScreen(onBack: () -> Unit, openMedia: (id: String) -> Unit, op
             title = { Text(stringResource(Res.string.offline_clear_question)) },
             text = { Text(stringResource(Res.string.offline_clear_description)) },
             confirmButton = { Button(onClick = { clearing = false; scope.launch { store.clear() } }) { Text(stringResource(Res.string.offline_clear)) } },
-            dismissButton = { TextButton(onClick = { clearing = false }) { Text(stringResource(Res.string.cancel)) } },
+            dismissButton = { TextButton(onClick = { clearing = false }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.cancel)) } },
         )
     }
     revealing?.let { entry ->
@@ -168,7 +170,7 @@ fun OfflineLibraryScreen(onBack: () -> Unit, openMedia: (id: String) -> Unit, op
             onDismissRequest = { revealing = null },
             title = { Text(stringResource(Res.string.offline_sensitive_open)) },
             text = { Text(stringResource(Res.string.offline_sensitive_description)) },
-            confirmButton = { Button(onClick = { revealing = null; openMedia(entry.id) }) { Text(stringResource(Res.string.offline_show)) } },
+            confirmButton = { Button(onClick = { revealing = null; openMedia(entry.id) }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.offline_show)) } },
             dismissButton = { TextButton(onClick = { revealing = null }) { Text(stringResource(Res.string.cancel)) } },
         )
     }
@@ -208,7 +210,7 @@ private fun EntryRow(entry: OfflineEntry, onOpen: () -> Unit, onRemove: () -> Un
         )
         Spacer(Modifier.width(16.dp))
         Column(Modifier.weight(1f)) {
-            Text(entry.title, maxLines = 2, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyLarge)
+            TipText(entry.title, maxLines = 2, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyLarge)
             Text(
                 entry.source + "\n" + statusText(entry.availability) + " · " + OfflineRules.bytes(entry.bytes, locale) + "\n" + detailText(OfflineRules.detail(entry)),
                 style = MaterialTheme.typography.bodySmall,

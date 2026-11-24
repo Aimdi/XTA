@@ -56,6 +56,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyProfile
 import com.aimdi.xtanative.networks.bluesky.BlueskySearchKind
 import com.aimdi.xtanative.networks.bluesky.BlueskySearchRules
 import com.aimdi.xtanative.networks.bluesky.BlueskyUrls
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.MessageText
@@ -134,7 +135,7 @@ internal fun BlueskySearchScreen(app: BlueskyApp, initial: String, author: Strin
                 singleLine = true,
                 placeholder = { Text(pluginString(if (shownKind == BlueskySearchKind.PEOPLE) Strings.search_people_hint else Strings.search_link_hint)) },
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-                trailingIcon = { IconButton(onClick = { send(text) }) { Icon(Icons.AutoMirrored.Filled.ArrowForward, pluginString(Strings.search)) } },
+                trailingIcon = { IconTip(pluginString(Strings.search)) { IconButton(onClick = { send(text) }) { Icon(Icons.AutoMirrored.Filled.ArrowForward, pluginString(Strings.search)) } } },
                 keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { send(text) }),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp).focusRequester(field),
@@ -321,7 +322,8 @@ private fun Landing(app: BlueskyApp, kind: BlueskySearchKind, onSearch: (String)
     val suggestions = rememberKept("bluesky-suggestions") { scope -> Suggestions(app, scope) }
     val suggested by suggestions.state.collectAsState()
     val follows by app.follows.state.collectAsState()
-    LazyColumn(Modifier.fillMaxSize()) {
+    val list = rememberLazyListState()
+    PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
         if (recent.isNotEmpty()) item(key = "recent") { RecentSearches(app, recent, onSearch) }
         if (kind == BlueskySearchKind.POSTS) {
             item(key = "hint") { Text(pluginString(Strings.search_link_hint), modifier = Modifier.padding(24.dp)) }
@@ -337,7 +339,7 @@ private fun Landing(app: BlueskyApp, kind: BlueskySearchKind, onSearch: (String)
                 PersonRow(app, person, follows.orEmpty().any { it.isOf(person.did) || it.isOf(person.handle) })
             }
         }
-    }
+    } }
 }
 
 @Composable

@@ -12,6 +12,7 @@ import com.aimdi.xtanative.services.speech.VoiceEnginePackage
 import com.aimdi.xtanative.services.speech.VoiceEngines
 import com.aimdi.xtanative.services.speech.VoiceSynthesizer
 import com.aimdi.xtanative.ui.common.AppResources
+import com.aimdi.xtanative.ui.common.XdgFolders
 import com.aimdi.xtanative.ui.media.AudioSessionBinding
 import com.aimdi.xtanative.ui.media.MpvContinuityPlayer
 import com.aimdi.xtanative.ui.media.MpvEngine
@@ -68,8 +69,7 @@ private object DesktopSpeechSession : SpeechSession {
 }
 
 /** $[name], else [fallback] in the home folder. */
-private fun xdg(name: String, fallback: String): File =
-    System.getenv(name)?.takeIf { it.isNotBlank() }?.let(::File) ?: File(System.getProperty("user.home"), fallback)
+private fun xdg(name: String, fallback: String): File = XdgFolders.base(name, fallback)
 
 /** Downloaded voices on the desktop: the engine in [folder], clips in the user's cache, played as [DesktopClipPlayer] plays them. */
 private class DesktopSynthesis(private val folder: File) : VoiceSynthesis {

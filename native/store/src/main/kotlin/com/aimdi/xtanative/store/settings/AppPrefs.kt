@@ -240,6 +240,15 @@ object SpeechPrefs : PrefSection() {
 }
 
 /**
+ * What the app's update offer remembers, on Android and the desktop, which
+ * XTA never had: outside [XtaPrefs], as [DesktopPrefs] are.
+ */
+object UpdatePrefs : PrefSection() {
+    /** The release the reader chose to skip ("Skip this version"), by its tag; a newer one is offered again. */
+    val skippedTag = text("update.skipped_tag", "", seeded = false)
+}
+
+/**
  * The desktop app's own settings, which XTA never had: kept beside XTA's in
  * the same store, but outside [XtaPrefs] (no XTA backup or seed knows them).
  */
@@ -249,4 +258,24 @@ object DesktopPrefs : PrefSection() {
 
     /** Closing the window hides it to the tray's icon, while a tray shows it, instead of quitting. */
     val closeToTray = flag("desktop.close_to_tray", false, seeded = false)
+
+    /** The interface sizes offered, as a browser's zoom offers a few: 1.0 is the desktop's own. */
+    val UI_SCALES = listOf(0.8, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0)
+
+    /** How large everything in the windows is drawn (text, controls, pictures, the gaps between), one of [UI_SCALES]; any other value reads as 1.0. */
+    val uiScale = real("desktop.ui_scale", 1.0, choices = UI_SCALES.toSet(), seeded = false)
+
+    /** Where requests go; the proxy below is only read in [ProxyMode.MANUAL]. All of these stay on this device ([SecretPrefs]). */
+    val proxyMode = choice("desktop.proxy.mode", ProxyMode.SYSTEM, ProxyMode.entries, seeded = false)
+    val proxyType = choice("desktop.proxy.type", ProxyType.HTTP, ProxyType.entries, seeded = false)
+    val proxyHost = text("desktop.proxy.host", "", seeded = false)
+    val proxyPort = whole("desktop.proxy.port", 0, seeded = false)
+    val proxyUser = text("desktop.proxy.username", "", seeded = false)
+    val proxyPassword = text("desktop.proxy.password", "", seeded = false)
+
+    /** Hosts that go straight past the proxy, as NO_PROXY lists them; loopback always does. */
+    val proxyBypass = text("desktop.proxy.bypass", "", seeded = false)
+
+    /** The proxy settings, which say how this device reaches the network: another device may sit on another one. */
+    val proxy: List<Pref<*>> = listOf(proxyMode, proxyType, proxyHost, proxyPort, proxyUser, proxyPassword, proxyBypass)
 }

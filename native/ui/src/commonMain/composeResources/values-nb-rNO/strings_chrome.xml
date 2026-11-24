@@ -5,9 +5,14 @@
     <string name="chrome_update_view_version">Se versjon %1$s på GitHub</string>
     <string name="chrome_update_view">Se på GitHub</string>
     <string name="chrome_update_download">Last ned</string>
+    <string name="chrome_update_install_package">Last ned pakken, og kjør så dette i mappen du lagret den i:</string>
+    <string name="chrome_update_install_tarball">Last ned arkivet, og kjør så dette i mappen du lagret det i:</string>
+    <string name="chrome_update_copy">Kopier kommando</string>
+    <string name="chrome_update_skip">Hopp over denne versjonen</string>
     <string name="chrome_licences_legalese">Utgitt under MIT-lisensen</string>
     <plurals name="chrome_licences_count">
         <item quantity="one">%1$d lisens</item>
         <item quantity="other">%1$d lisenser</item>
     </plurals>
+    <string name="chrome_offline_bar">Frakoblet – viser lagrede kopier</string>
 </resources>

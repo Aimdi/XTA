@@ -37,7 +37,8 @@ private enum class MenuStep { MENU, NOTE, FOLDERS, GROUPS, CLOSED }
  * An X post's ⋯ sheet, in XTA's order (plugin_post_actions.dart, as
  * tweet_post_menu.dart opens it for an X post): save it on this device or
  * take it out, the note on it in Saved, Add to group for its author, Share
- * link, Save to folder…, Reposted by, Quotes and Open in browser. None of it
+ * link, Save to folder…, Reposted by, Quotes, Open in new window (on the
+ * desktop) and Open in browser. None of it
  * writes to X; what the running plugins add is in the post's share sheet,
  * where XTA has it.
  */
@@ -78,8 +79,10 @@ private fun MenuSheet(post: XPost, actions: PostActions, onDismiss: () -> Unit, 
             chooseFolder = { onStep(MenuStep.FOLDERS) },
         )
     }
+    val windows = LocalPostWindows.current
+    val inWindow = remember(windows, shown.id) { windows?.let { open -> { open(shown.id) } } }
     PostMenuSurface(onDismiss) {
-        PostMenuRows(menu, saved, handlers, onDone = { onStep(MenuStep.CLOSED) })
+        PostMenuRows(menu, saved, handlers, onDone = { onStep(MenuStep.CLOSED) }, newWindow = inWindow)
     }
 }
 

@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_boosts
 import com.aimdi.xtanative.ui.generated.resources.posts_collapse
@@ -93,9 +94,9 @@ private fun BoostCard(thread: XThread, actions: PostActions) {
     ) {
         Avatar(shown.author.largeAvatarUrl, 32.dp) { actions.openUser(shown.author.screenName, shown.author.id) }
         Column(Modifier.padding(start = 8.dp)) {
-            Text(shown.author.name, style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            TipText(shown.author.name, style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
             if (preview.isNotEmpty()) {
-                Text(preview, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                TipText(preview, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
         }
     }

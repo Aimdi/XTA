@@ -5,9 +5,14 @@
     <string name="chrome_update_view_version">Ikusi %1$s bertsioa GitHuben</string>
     <string name="chrome_update_view">Ikusi GitHuben</string>
     <string name="chrome_update_download">Deskargatu</string>
+    <string name="chrome_update_install_package">Deskargatu paketea, eta exekutatu hau gorde duzun karpetan:</string>
+    <string name="chrome_update_install_tarball">Deskargatu artxiboa, eta exekutatu hau gorde duzun karpetan:</string>
+    <string name="chrome_update_copy">Kopiatu komandoa</string>
+    <string name="chrome_update_skip">Saltatu bertsio hau</string>
     <string name="chrome_licences_legalese">MIT lizentziapean argitaratua</string>
     <plurals name="chrome_licences_count">
         <item quantity="one">%1$d lizentzia</item>
         <item quantity="other">%1$d lizentzia</item>
     </plurals>
+    <string name="chrome_offline_bar">Konexiorik gabe – gordetako kopiak erakusten</string>
 </resources>

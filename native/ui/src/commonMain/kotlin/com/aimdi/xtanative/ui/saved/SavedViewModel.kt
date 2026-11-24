@@ -125,16 +125,20 @@ class SavedViewModel(private val graph: AppGraph) : ViewModel() {
         finishSelection()
     }
 
+    /** The selected posts out of Saved, with an undo ([SavedUndo]). */
     fun removeSelected() {
         val ids = view.value.selected
-        graph.keep { graph.saved.remove(ids) }
+        graph.keep { SavedUndo.offer(graph.saved.removeTaking(ids), graph.saved::putBack) }
         finishSelection()
     }
 
-    /** A post long-pressed in the media grid, removed from the tab it is in. */
+    /** A post long-pressed in the media grid, removed from the tab it is in, with an undo. */
     fun removeFromGrid(id: String) {
         val likes = view.value.tab == SavedTabs.FAVORITES
-        graph.keep { if (likes) graph.likes.unlike(id) else graph.saved.remove(id) }
+        graph.keep {
+            if (likes) SavedUndo.offer(graph.likes.unlikeTaking(id), graph.likes::putBack)
+            else SavedUndo.offer(graph.saved.removeTaking(listOf(id)), graph.saved::putBack)
+        }
     }
 
     /** A new folder; [upload] is its upload switch when the dialog offered one. */
@@ -145,13 +149,13 @@ class SavedViewModel(private val graph: AppGraph) : ViewModel() {
 
     /** Deletes the folder (its posts stay saved, unfiled); a tab on it goes back to All. */
     fun deleteFolder(id: String) {
-        graph.keep { graph.saved.deleteFolder(id) }
+        graph.keep { SavedUndo.offer(graph.saved.deleteFolderTaking(id), graph.saved::putBack) }
         view.update { if (it.tab == id) it.select(SavedTabs.ALL) else it }
     }
 
     suspend fun setNote(id: String, note: String?) = graph.saved.setNote(id, note)
 
-    fun deleteNote(id: String) = graph.keep { graph.localPosts.delete(id) }
+    fun deleteNote(id: String) = graph.keep { SavedUndo.offer(graph.localPosts.deleteTaking(id), graph.localPosts::putBack, discard = { taken -> graph.keep { graph.localPosts.discard(taken) } }) }
 
     /** After a note is written: Notes opens, so the reader sees it. */
     fun showNotes() = view.update { if (it.tab == SavedTabs.NOTES) it else it.select(SavedTabs.NOTES) }

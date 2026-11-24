@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.booru.BooruQuery
 import com.aimdi.xtanative.networks.booru.BooruTagOperator
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 
@@ -78,7 +79,7 @@ private fun RelatedChip(tag: String, onAdd: () -> Unit, onExclude: () -> Unit) {
         shape = RoundedCornerShape(8.dp),
         color = Color.Transparent,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        modifier = Modifier.clip(RoundedCornerShape(8.dp)).combinedClickable(
+        modifier = Modifier.clip(RoundedCornerShape(8.dp)).onContextClick(onExclude).combinedClickable(
             onClick = onAdd,
             onClickLabel = pluginString(Strings.add_to_search),
             onLongClick = onExclude,

@@ -3,9 +3,11 @@
     <string name="keys_title">कीबोर्ड शॉर्टकट</string>
     <string name="keys_help">ये शॉर्टकट दिखाएँ</string>
     <string name="keys_back">वापस जाएँ, या जो खुला है उसे बंद करें</string>
+    <string name="keys_forward">आगे जाएँ, जहाँ से आप वापस आए थे</string>
     <string name="keys_go_home">होम पर वापस जाएँ</string>
     <string name="keys_refresh">रीफ़्रेश करें</string>
     <string name="keys_search">खोजें</string>
+    <string name="keys_new">नया नोट, समूह, एंटेना, कॉलम या ट्रेंड का स्थान, उसके पेज पर</string>
     <string name="keys_recent_searches">खोज फ़ील्ड से कोई हाल की खोज चुनें</string>
     <string name="keys_open_copied_link">कॉपी किया गया लिंक खोलें</string>
     <string name="keys_tabs">अगला या पिछला टैब</string>
@@ -18,6 +20,7 @@
     <string name="keys_scroll_ends">ऊपर या अंत तक जाएँ</string>
     <string name="keys_move">बटनों और फ़ील्ड के बीच जाएँ</string>
     <string name="keys_text_size">बड़ा, छोटा या सामान्य टेक्स्ट</string>
+    <string name="keys_interface_size">बड़ा, छोटा या सामान्य इंटरफ़ेस</string>
     <string name="keys_full_screen">फ़ुल स्क्रीन</string>
     <string name="keys_video">फ़ुल स्क्रीन वीडियो: चलाएँ या रोकें, 10 सेकंड आगे-पीछे जाएँ</string>
     <string name="keys_video_more">फ़ुल-स्क्रीन वीडियो: म्यूट करें, शुरू से चलाएँ, फ़ुल स्क्रीन छोड़ें</string>
@@ -39,7 +42,16 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">सहेजा गया: दिखाए गए सभी चुनें</string>
     <string name="keys_remove_selected">सहेजा गया: चुने हुए हटाएँ</string>
+    <string name="keys_undo">अभी हटाया या मिटाया गया वापस लाएँ, जब तक उसकी सूचना दिख रही है</string>
     <string name="keys_leave_selection">सहेजा गया: चुनना बंद करें</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">क्रम बदली जा सकने वाली सूची में पंक्ति को ऊपर या नीचे ले जाएँ (फ़ोकस वाली या पॉइंटर के नीचे वाली)</string>
+    <string name="keys_post_open">J और K से चुनी गई पोस्ट खोलें</string>
+    <string name="keys_post_like">इस डिवाइस पर उस पोस्ट को पसंद करें, या नापसंद करें</string>
+    <string name="keys_post_save">इस डिवाइस पर उस पोस्ट को सहेजें, या हटाएँ</string>
+    <string name="keys_post_link">उस पोस्ट का लिंक कॉपी करें</string>
+    <string name="keys_post_menu">उस पोस्ट का मेनू खोलें</string>
+    <string name="keys_menu">मेनू</string>
+    <string name="keys_find_in_page">जो पोस्ट या लेख आप पढ़ रहे हैं, उसमें खोजें</string>
+    <string name="keys_find_match">खोज पट्टी में अगला या पिछला मिलान</string>
 </resources>

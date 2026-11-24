@@ -2,14 +2,13 @@ package com.aimdi.xtanative.ui.article
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,6 +22,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -42,8 +42,11 @@ import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.ReadingPage
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.home.FindInPage
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.posts_article_on_x
 import com.aimdi.xtanative.ui.generated.resources.posts_open_in_browser
@@ -107,11 +110,14 @@ fun ArticleScreen(postId: String, actions: PostActions, onBack: () -> Unit) {
     val vm: ArticleViewModel = viewModel(key = "article-$postId") { ArticleViewModel(graph, postId) }
     val state by vm.ui.collectAsStateWithLifecycle()
     val article = state.article
+    // Ctrl+F finds in the article (the desktop's find bar).
+    val findBlocks = remember(article) { article?.let { ArticleLayout.findBlocks(it) }.orEmpty() }
+    FindInPage(findBlocks) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(article?.title ?: stringResource(Res.string.posts_article_on_x), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                title = { TipText(article?.title ?: stringResource(Res.string.posts_article_on_x), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
@@ -119,7 +125,7 @@ fun ArticleScreen(postId: String, actions: PostActions, onBack: () -> Unit) {
     ) { padding ->
         PostScopeProvider(focalId = postId) {
             val problem = state.problem
-            Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp)) {
+            ReadingPage(padding, PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
                 when {
                     article != null -> ArticleBody(article, actions, header = { state.post?.let { ArticleByline(it, actions) } })
                     state.loading -> LoadingRow()
@@ -128,6 +134,7 @@ fun ArticleScreen(postId: String, actions: PostActions, onBack: () -> Unit) {
                 }
             }
         }
+    }
     }
 }
 

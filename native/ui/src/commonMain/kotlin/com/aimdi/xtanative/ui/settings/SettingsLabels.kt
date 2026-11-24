@@ -76,6 +76,7 @@ internal fun backgroundLabel(background: ThemeBackground): String = stringResour
 @Composable
 internal fun accentLabel(accent: ThemeAccent): String = stringResource(
     when (accent) {
+        ThemeAccent.SYSTEM -> Res.string.settings_system
         ThemeAccent.BLUE -> Res.string.settings_colour_blue
         ThemeAccent.YELLOW -> Res.string.settings_colour_yellow
         ThemeAccent.PINK -> Res.string.settings_colour_pink

@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Erabili pantaila osoa: goiko ordua, bateria eta seinalea ezkutatzen dira. Pasatu hatza goiko ertzetik behera une batez ikusteko.</string>
     <string name="settings_text_scale">Testuaren eskala-faktorea</string>
     <string name="settings_text_scale_description">Doitu letra-tamaina aplikazioan</string>
+    <string name="settings_interface_scale">Interfazearen tamaina</string>
+    <string name="settings_interface_scale_description">Testua, botoiak eta irudiak batera handitu edo txikitu</string>
     <string name="settings_disable_animations">Desgaitu animazioak</string>
     <string name="settings_disable_animations_description">Desgaitu animazioak aplikazioan</string>
     <string name="settings_haptics">Erantzun haptikoa</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">XTA-ek erabiltzen duen software bikaina</string>
     <string name="settings_intro_again">Erakutsi sarrera berriro</string>
     <string name="settings_intro_again_description">Ikusi berriro lehen abioko txartelak.</string>
+    <string name="settings_open_logs">Ireki erregistroen karpeta</string>
     <string name="settings_ok">Ados</string>
     <string name="settings_diagnostics_copy">Kopiatu txostena</string>
     <string name="settings_diagnostics_copied">Diagnostikoa arbelera kopiatu da</string>
@@ -373,4 +376,18 @@
     <string name="settings_start_at_login_description">Aplikazioa irekitzen du saioa hastean; «Itxi erretilura» aktibatuta, erretiluan itxaroten du</string>
     <string name="tray_show">Erakutsi leihoa</string>
     <string name="tray_hide">Ezkutatu leihoa</string>
+    <string name="tray_new_search">Bilaketa berria</string>
+    <string name="settings_proxy">Proxya</string>
+    <string name="settings_proxy_description">Aplikazioa nola iristen den internetera gailu honetan. Sistemak proxyaren ingurune-aldagaiak erabiltzen ditu, bestela mahaigaineko proxy-ezarpenak</string>
+    <string name="settings_proxy_none">Proxyrik gabe</string>
+    <string name="settings_proxy_manual">Eskuz</string>
+    <string name="settings_proxy_server">Proxy-zerbitzaria</string>
+    <string name="settings_proxy_server_unset">Ezarri gabe: ez da ezer kargatuko ezarri arte</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Bideoak ezin dira oraindik SOCKS5 proxy baten bidez erreproduzitu</string>
+    <string name="settings_proxy_host">Ostalaria</string>
+    <string name="settings_proxy_port">Ataka</string>
+    <string name="settings_proxy_bypass">Proxyrik gabe hauentzat</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

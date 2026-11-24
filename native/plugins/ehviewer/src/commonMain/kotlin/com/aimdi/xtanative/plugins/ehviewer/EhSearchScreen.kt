@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -68,11 +69,13 @@ import com.aimdi.xtanative.networks.ehviewer.EhSearchState
 import com.aimdi.xtanative.networks.ehviewer.EhTag
 import com.aimdi.xtanative.store.settings.EhViewerPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.WithSettings
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -124,7 +127,7 @@ internal fun EhSearchScreen(app: EhApp, initial: String) = WithSettings(app.host
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                navigationIcon = { IconButton(onClick = app.host::back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) } },
+                navigationIcon = { IconTip(pluginString(Strings.back)) { IconButton(onClick = app.host::back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) } } },
                 title = {
                     TextField(
                         value = text,
@@ -134,7 +137,7 @@ internal fun EhSearchScreen(app: EhApp, initial: String) = WithSettings(app.host
                         },
                         singleLine = true,
                         placeholder = { Text(pluginString(Strings.search_hint)) },
-                        trailingIcon = { IconButton(onClick = { run(text.text) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } },
+                        trailingIcon = { IconTip(pluginString(Strings.search)) { IconButton(onClick = { run(text.text) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } } },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search, autoCorrectEnabled = false),
                         keyboardActions = KeyboardActions(onSearch = { run(text.text) }),
                         colors = TextFieldDefaults.colors(
@@ -251,7 +254,8 @@ private fun FilterRow(content: @Composable RowScope.() -> Unit) {
 /** The site's tags for the term being typed, in their namespaces' colours. */
 @Composable
 private fun Suggestions(tags: List<EhTag>, onPick: (EhTag) -> Unit) {
-    LazyColumn(Modifier.fillMaxSize()) {
+    val list = rememberLazyListState()
+    PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
         items(tags, key = { it.raw }) { tag ->
             ListItem(
                 headlineContent = { Text(tag.name, color = namespaceColor(tag.namespace) ?: MaterialTheme.colorScheme.onSurface) },
@@ -262,19 +266,20 @@ private fun Suggestions(tags: List<EhTag>, onPick: (EhTag) -> Unit) {
                 modifier = Modifier.clickable { onPick(tag) },
             )
         }
-    }
+    } }
 }
 
 /** The searches run before, newest first, each to run again or forget; all of them cleared at once. */
 @Composable
 private fun SearchHistory(app: EhApp, settings: Settings, onRun: (String) -> Unit) {
     val queries = settings[EhViewerPrefs.searchHistory]
-    LazyColumn(Modifier.fillMaxSize()) {
+    val list = rememberLazyListState()
+    PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
         if (queries.isNotEmpty()) {
             item(key = "title") {
                 ListItem(
                     headlineContent = { Text(pluginString(Strings.tab_history), style = MaterialTheme.typography.titleSmall) },
-                    trailingContent = { IconButton(onClick = app::clearSearches) { Icon(DiscoverIcons.DeleteSweep, pluginString(Strings.clear_history)) } },
+                    trailingContent = { IconTip(pluginString(Strings.clear_history)) { IconButton(onClick = app::clearSearches) { Icon(DiscoverIcons.DeleteSweep, pluginString(Strings.clear_history)) } } },
                     colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.background),
                 )
             }
@@ -283,12 +288,12 @@ private fun SearchHistory(app: EhApp, settings: Settings, onRun: (String) -> Uni
             ListItem(
                 headlineContent = { Text(query) },
                 leadingContent = { Icon(PostIcons.History, contentDescription = null) },
-                trailingContent = { IconButton(onClick = { app.forgetSearch(query) }) { Icon(Icons.Filled.Close, pluginString(Strings.delete)) } },
+                trailingContent = { IconTip(pluginString(Strings.delete)) { IconButton(onClick = { app.forgetSearch(query) }) { Icon(Icons.Filled.Close, pluginString(Strings.delete)) } } },
                 colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.background),
                 modifier = Modifier.clickable { onRun(query) },
             )
         }
-    }
+    } }
 }
 
 /** What the search found: a spinner while its first page loads, why it failed, that it found nothing, or the galleries. */

@@ -48,6 +48,7 @@ import com.aimdi.xtanative.networks.instagram.InstagramAuthor
 import com.aimdi.xtanative.networks.instagram.InstagramPost
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.longPressOver
@@ -190,9 +191,9 @@ private fun Footer(app: InstagramApp, post: InstagramPost) {
             Text(countText(post.likeCount), style = MaterialTheme.typography.labelMedium, color = tint, modifier = Modifier.padding(start = 4.dp))
         }
         Spacer(Modifier.weight(1f))
-        IconButton(onClick = { outside(post.url) }) { Icon(PostIcons.OpenInNew, contentDescription = pluginString(Strings.open_on_site), tint = muted, modifier = Modifier.size(20.dp)) }
-        IconButton(onClick = { if (!share(post.url)) app.host.tell(copied) }) {
+        IconTip(pluginString(Strings.open_on_site)) { IconButton(onClick = { outside(post.url) }) { Icon(PostIcons.OpenInNew, contentDescription = pluginString(Strings.open_on_site), tint = muted, modifier = Modifier.size(20.dp)) } }
+        IconTip(pluginString(Strings.share_link)) { IconButton(onClick = { if (!share(post.url)) app.host.tell(copied) }) {
             Icon(Icons.Filled.Share, contentDescription = pluginString(Strings.share_link), tint = muted, modifier = Modifier.size(20.dp))
-        }
+        } }
     }
 }

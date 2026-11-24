@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsPerson
 import com.aimdi.xtanative.networks.threads.ThreadsSuggestedAccount
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.pluginString
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -138,11 +139,13 @@ private fun SuggestedCard(app: ThreadsApp, person: ThreadsSuggestedAccount, foll
                 Spacer(Modifier.height(10.dp))
                 FollowHere(app, person, follows, handle)
             }
-            IconButton(
-                onClick = { app.dismissSuggested(person.handle) },
-                modifier = Modifier.align(Alignment.TopEnd).size(48.dp),
-            ) {
-                Icon(Icons.Filled.Close, contentDescription = pluginString(Strings.suggestion_hide, handle), modifier = Modifier.size(18.dp))
+            Box(Modifier.align(Alignment.TopEnd)) {
+                val hide = pluginString(Strings.suggestion_hide, handle)
+                IconTip(hide) {
+                    IconButton(onClick = { app.dismissSuggested(person.handle) }, modifier = Modifier.size(48.dp)) {
+                        Icon(Icons.Filled.Close, contentDescription = hide, modifier = Modifier.size(18.dp))
+                    }
+                }
             }
         }
     }

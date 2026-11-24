@@ -72,6 +72,7 @@ import com.aimdi.xtanative.core.x.search.XAdvancedSearch
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.community.CommunityRow
 import com.aimdi.xtanative.ui.feed.feedThreads
@@ -242,7 +243,7 @@ private fun SearchHeader(
                 },
                 title = {
                     if (separate) {
-                        Text(stringResource(Res.string.discover_search_x), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        TipText(stringResource(Res.string.discover_search_x), maxLines = 1, overflow = TextOverflow.Ellipsis)
                     } else {
                         field(Modifier.fillMaxWidth().padding(end = 8.dp))
                     }
@@ -455,7 +456,7 @@ private fun FilterStrip(chips: List<FilterChip>, onRemove: (XAdvancedSearch.Filt
                 InputChip(
                     selected = false,
                     onClick = { onRemove(chip.filter) },
-                    label = { Text(chipText(chip), maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 240.dp)) },
+                    label = { TipText(chipText(chip), maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 240.dp)) },
                     trailingIcon = { Icon(Icons.Filled.Close, contentDescription = stringResource(Res.string.discover_clear), modifier = Modifier.size(18.dp)) },
                 )
             }

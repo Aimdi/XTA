@@ -23,7 +23,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,6 +47,7 @@ import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.data.plugins.LocalNavigator
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ReadFailureSheet
 import com.aimdi.xtanative.ui.common.ReadRetries
@@ -230,7 +230,7 @@ private fun SourceChip(id: String, read: SourceRead, plugin: XtaPlugin?, onRetry
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CachedCopySheet(onDismiss: () -> Unit) {
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Text(stringResource(Res.string.problem_cached_content), modifier = Modifier.padding(16.dp))
     }
 }

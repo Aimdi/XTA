@@ -78,6 +78,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.TipText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -297,7 +298,7 @@ private fun <T> ReplyOrderRows(
                     horizontalArrangement = Arrangement.spacedBy(14.dp),
                 ) {
                     Icon(icon(option), null, tint = if (picked) colors.primary else colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
-                    Text(
+                    TipText(
                         label(option),
                         color = if (picked) colors.onSurface else colors.onSurface.copy(alpha = 0.85f),
                         fontSize = 16.sp,

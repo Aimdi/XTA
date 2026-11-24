@@ -9,11 +9,9 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.services.links.BrowserPicker
 import com.aimdi.xtanative.services.links.InstalledBrowser
 import com.aimdi.xtanative.services.links.LinkDestination
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -39,6 +38,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_links_in_app_descriptio
 import com.aimdi.xtanative.ui.generated.resources.reader_links_open_in
 import com.aimdi.xtanative.ui.generated.resources.reader_links_open_in_description
 import com.aimdi.xtanative.ui.generated.resources.reader_links_system
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.media.ReaderIcons
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,8 +75,8 @@ fun BrowserPickerRow(modifier: Modifier = Modifier) {
     }
 
     if (open) {
-        ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = { open = false }) {
-            Column(Modifier.verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) {
+        KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = { open = false }) {
+            Column(Modifier.verticalScrollByKeys(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) {
                 Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp)) {
                     Text(stringResource(Res.string.reader_links_open_in), style = MaterialTheme.typography.titleMedium)
                     Text(

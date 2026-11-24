@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">使用整个屏幕：隐藏顶部的时间、电量和信号。从顶部边缘向下滑动可短暂查看。</string>
     <string name="settings_text_scale">文字缩放比例</string>
     <string name="settings_text_scale_description">调整应用中的字体大小</string>
+    <string name="settings_interface_scale">界面大小</string>
+    <string name="settings_interface_scale_description">同时放大或缩小文字、按钮和图片</string>
     <string name="settings_disable_animations">禁用动画</string>
     <string name="settings_disable_animations_description">禁用应用中的动画</string>
     <string name="settings_haptics">触感反馈</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">XTA 所使用的伟大项目😇</string>
     <string name="settings_intro_again">再次显示引导</string>
     <string name="settings_intro_again_description">重新查看首次启动时的卡片。</string>
+    <string name="settings_open_logs">打开日志文件夹</string>
     <string name="settings_ok">确定</string>
     <string name="settings_diagnostics_copy">复制报告</string>
     <string name="settings_diagnostics_copied">诊断已复制到剪贴板</string>
@@ -371,4 +374,18 @@
     <string name="settings_start_at_login_description">登录时打开应用；开启“关闭时最小化到托盘”时，它在托盘中等待</string>
     <string name="tray_show">显示窗口</string>
     <string name="tray_hide">隐藏窗口</string>
+    <string name="tray_new_search">新搜索</string>
+    <string name="settings_proxy">代理</string>
+    <string name="settings_proxy_description">应用在此设备上如何连接互联网。“系统”使用代理环境变量，否则使用桌面的代理设置</string>
+    <string name="settings_proxy_none">不使用代理</string>
+    <string name="settings_proxy_manual">手动</string>
+    <string name="settings_proxy_server">代理服务器</string>
+    <string name="settings_proxy_server_unset">未设置：设置之前不会加载任何内容</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">视频暂时无法通过 SOCKS5 代理播放</string>
+    <string name="settings_proxy_host">主机</string>
+    <string name="settings_proxy_port">端口</string>
+    <string name="settings_proxy_bypass">不使用代理的地址</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

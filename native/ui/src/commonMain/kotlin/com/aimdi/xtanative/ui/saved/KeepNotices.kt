@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicLong
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.getAndUpdate
 
 /**
  * A line saving, liking, downloading or keeping something offline says at
@@ -71,8 +71,12 @@ sealed interface KeepNotice {
     /** Words already in the reader's language: a plugin's (how a post it sent to the reader's own server went), or a screen's own. */
     data class Said(val text: String, override val working: Boolean = false) : KeepNotice
 
-    /** "Changes saved" with XTA's undo (UndoHost): [undo] takes the change back, answering whether it could. */
-    class ChangesSaved(val undo: suspend () -> Boolean) : KeepNotice {
+    /**
+     * "Changes saved" with XTA's undo (UndoHost): [undo] takes the change back,
+     * answering whether it could; [ended] runs once the notice goes without
+     * its undo pressed (hidden or replaced), so what the undo held can go.
+     */
+    class ChangesSaved(val undo: suspend () -> Boolean, val ended: () -> Unit = {}) : KeepNotice {
         override val long get() = true
     }
 
@@ -103,7 +107,8 @@ object KeepNotices {
     val shown: StateFlow<ShownNotice?> = current.asStateFlow()
 
     fun show(notice: KeepNotice) {
-        current.value = ShownNotice(notice, serials.incrementAndGet())
+        val before = current.getAndUpdate { ShownNotice(notice, serials.incrementAndGet()) }
+        ended(before)
     }
 
     /** Says [text], already in the reader's language; nothing for a blank one. */
@@ -113,11 +118,30 @@ object KeepNotices {
 
     /** Hides [shown] if it is still the one showing: a newer notice stays. */
     fun hide(shown: ShownNotice) {
-        current.update { if (it?.serial == shown.serial) null else it }
+        if (current.compareAndSet(shown, null)) ended(shown)
+    }
+
+    /**
+     * Presses the Undo of [shown] (its button, or Ctrl+Z on the desktop): the
+     * notice goes and [keep] runs the undo, saying so when it could not be
+     * made. False when [shown] offers no undo.
+     */
+    fun undo(shown: ShownNotice?, keep: (suspend () -> Unit) -> Unit): Boolean {
+        val changed = shown?.notice as? KeepNotice.ChangesSaved ?: return false
+        // Gone with its undo pressed: what the undo holds is still needed, so not ended.
+        current.compareAndSet(shown, null)
+        keep { if (!changed.undo()) show(KeepNotice.UndoFailed) }
+        return true
     }
 
     /** Takes a working notice away, as XTA hides its working snack bar once the work is done. */
     fun endWorking() {
-        current.update { if (it?.notice?.working == true) null else it }
+        val before = current.getAndUpdate { if (it?.notice?.working == true) null else it }
+        if (before?.notice?.working == true) ended(before)
+    }
+
+    /** A "Changes saved" leaving without its undo pressed lets go of what the undo held. */
+    private fun ended(gone: ShownNotice?) {
+        (gone?.notice as? KeepNotice.ChangesSaved)?.ended?.invoke()
     }
 }

@@ -37,3 +37,9 @@ internal interface LoginStart {
 /** The desktop's [LoginStart]; null where there is none (Android, or a desktop build not started from its launcher). */
 @Composable
 internal expect fun rememberLoginStart(): LoginStart?
+
+/** The folder the app's log is kept in, to show under "Open logs folder"; null where the app keeps none (Android). */
+internal expect val logsFolder: String?
+
+/** Opens [logsFolder] in the desktop's file manager; false where it could not. */
+internal expect fun openLogsFolder(): Boolean

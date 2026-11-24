@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Korzystaj z całego ekranu: godzina, bateria i zasięg u góry są ukryte. Przesuń w dół od górnej krawędzi, aby je na chwilę zobaczyć.</string>
     <string name="settings_text_scale">Współczynnik skalowania tekstu</string>
     <string name="settings_text_scale_description">Dostosuj rozmiar czcionki w aplikacji</string>
+    <string name="settings_interface_scale">Rozmiar interfejsu</string>
+    <string name="settings_interface_scale_description">Powiększ lub pomniejsz jednocześnie tekst, przyciski i obrazy</string>
     <string name="settings_disable_animations">Wyłącz animacje</string>
     <string name="settings_disable_animations_description">Wyłącz animacje w aplikacji</string>
     <string name="settings_haptics">Wibracje przy dotyku</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">Całe świetne oprogramowanie używane przez Quackera</string>
     <string name="settings_intro_again">Pokaż wprowadzenie ponownie</string>
     <string name="settings_intro_again_description">Obejrzyj jeszcze raz karty z pierwszego uruchomienia.</string>
+    <string name="settings_open_logs">Otwórz folder dzienników</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Skopiuj raport</string>
     <string name="settings_diagnostics_copied">Diagnostyka skopiowana do schowka</string>
@@ -377,4 +380,18 @@
     <string name="settings_start_at_login_description">Otwiera aplikację po zalogowaniu; z włączonym zamykaniem do zasobnika czeka w zasobniku</string>
     <string name="tray_show">Pokaż okno</string>
     <string name="tray_hide">Ukryj okno</string>
+    <string name="tray_new_search">Nowe wyszukiwanie</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_description">Jak aplikacja łączy się z internetem na tym urządzeniu. System używa zmiennych środowiskowych proxy, a jeśli ich nie ma — ustawień proxy pulpitu</string>
+    <string name="settings_proxy_none">Bez proxy</string>
+    <string name="settings_proxy_manual">Ręcznie</string>
+    <string name="settings_proxy_server">Serwer proxy</string>
+    <string name="settings_proxy_server_unset">Nie ustawiono: nic się nie wczyta, dopóki go nie ustawisz</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Filmów nie da się jeszcze odtwarzać przez proxy SOCKS5</string>
+    <string name="settings_proxy_host">Host</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Bez proxy dla</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

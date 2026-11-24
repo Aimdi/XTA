@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">このツイートをリツイートした人は見つかりませんでした！</string>
     <string name="posts_no_saves">まだ保存がありません — ブックマークはこの端末に残ります</string>
     <string name="posts_open_in_browser">ブラウザで開く</string>
+    <string name="posts_open_in_new_window">新しいウィンドウで開く</string>
     <string name="posts_open_on_web_archive">web.archive.org で開く</string>
     <string name="posts_open_post">投稿を開く</string>
     <string name="posts_page_not_found">Twitterはページがないと表示しているが、本当ではないかもしれない</string>

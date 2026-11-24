@@ -110,6 +110,7 @@
     <string name="saved_quoted_unavailable">Sitert innlegg utilgjengelig</string>
     <string name="saved_note_thread">Notat</string>
     <string name="saved_long_press_hint">Tips: trykk og hold for å legge i en mappe</string>
+    <string name="saved_right_click_hint">Tips: høyreklikk for å legge i en mappe</string>
     <string name="saved_like">Lik på denne enheten</string>
     <string name="saved_unlike">Fjern likerklikk fra denne enheten</string>
     <string name="saved_save_here">Lagre på denne enheten</string>

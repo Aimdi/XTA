@@ -57,6 +57,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsPerson
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -100,9 +101,9 @@ private fun FollowingSheet(app: ThreadsApp, onAdd: () -> Unit, onDismiss: () -> 
                     leadingContent = { PluginAvatar(account.avatarUrl, account.name, account.handle, 40.dp) },
                     headlineContent = { Text("@" + account.handle, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     trailingContent = {
-                        IconButton(onClick = { unfollowing = account.handle }) {
+                        IconTip(pluginString(Strings.unfollow)) { IconButton(onClick = { unfollowing = account.handle }) {
                             Icon(ThreadsIcons.PersonRemove, contentDescription = pluginString(Strings.unfollow))
-                        }
+                        } }
                     },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     modifier = Modifier.clickable { onDismiss(); app.openProfile(account.handle) },
@@ -205,7 +206,7 @@ private fun MutedWords(options: ThreadsFeedOptions, onChange: (ThreadsFeedOption
                 keyboardActions = KeyboardActions(onDone = { add() }),
                 modifier = Modifier.weight(1f),
             )
-            IconButton(onClick = add) { Icon(Icons.Filled.Add, contentDescription = hint, tint = MaterialTheme.colorScheme.primary) }
+            IconTip(hint) { IconButton(onClick = add) { Icon(Icons.Filled.Add, contentDescription = hint, tint = MaterialTheme.colorScheme.primary) } }
         }
         if (options.mutedWords.isNotEmpty()) {
             FlowRow(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {

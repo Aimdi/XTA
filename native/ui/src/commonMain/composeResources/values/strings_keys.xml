@@ -4,9 +4,11 @@
     <string name="keys_title">Keyboard shortcuts</string>
     <string name="keys_help">Show these shortcuts</string>
     <string name="keys_back">Go back, or close what is open</string>
+    <string name="keys_forward">Go forward to what you went back from</string>
     <string name="keys_go_home">Back to Home</string>
     <string name="keys_refresh">Refresh</string>
     <string name="keys_search">Search</string>
+    <string name="keys_new">New note, group, antenna, column or trends location, on its page</string>
     <string name="keys_recent_searches">Pick a recent search from the search field</string>
     <string name="keys_open_copied_link">Open a copied link</string>
     <string name="keys_tabs">Next or previous tab</string>
@@ -19,6 +21,7 @@
     <string name="keys_scroll_ends">Go to the top or the end</string>
     <string name="keys_move">Move between buttons and fields</string>
     <string name="keys_text_size">Larger, smaller or normal text</string>
+    <string name="keys_interface_size">Larger, smaller or normal interface</string>
     <string name="keys_full_screen">Full screen</string>
     <string name="keys_video">Full-screen video: play or pause, skip 10 seconds</string>
     <string name="keys_video_more">Full-screen video: mute, start over, leave full screen</string>
@@ -40,7 +43,16 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Saved: select everything shown</string>
     <string name="keys_remove_selected">Saved: remove the selected</string>
+    <string name="keys_undo">Undo what was just removed or deleted, while its notice shows</string>
     <string name="keys_leave_selection">Saved: stop selecting</string>
     <string name="keys_delete">Del</string>
     <string name="keys_move_row">Move a row up or down in a list you can reorder (the one with the focus or under the pointer)</string>
+    <string name="keys_post_open">Open the post J and K are on</string>
+    <string name="keys_post_like">Like that post on this device, or unlike it</string>
+    <string name="keys_post_save">Save that post on this device, or unsave it</string>
+    <string name="keys_post_link">Copy the link of that post</string>
+    <string name="keys_post_menu">Open the menu of that post</string>
+    <string name="keys_menu">Menu</string>
+    <string name="keys_find_in_page">Find in the post or article you are reading</string>
+    <string name="keys_find_match">Next or previous match in the find bar</string>
 </resources>

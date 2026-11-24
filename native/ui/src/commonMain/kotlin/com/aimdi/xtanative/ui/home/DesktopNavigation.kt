@@ -1,6 +1,9 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -18,6 +21,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalFocusManager
@@ -80,10 +84,11 @@ class DesktopActions(
     /** False when no screen answers. */
     fun refresh(): Boolean = refreshing?.let { it(); true } ?: false
 
-    fun turn(by: Int): Boolean = turning?.let { it(by); true } ?: false
+    /** The screen's pages turned [by]; the post marked on the page left is marked no more. */
+    fun turn(by: Int): Boolean = turning?.let { markedPost = null; it(by); true } ?: false
 
     /** Ctrl and a digit: the screen's tab [digit] ([DesktopKeys.pageAt]); false when no screen answers. */
-    fun jump(digit: Int): Boolean = jumping?.let { it(digit); true } ?: false
+    fun jump(digit: Int): Boolean = jumping?.let { markedPost = null; it(digit); true } ?: false
 
     fun somethingOpen(): Boolean = open?.invoke() ?: false
 
@@ -94,9 +99,30 @@ class DesktopActions(
      */
     fun openIsRead(): Boolean = openRead?.invoke() == true && !sheetOpen()
 
+    /**
+     * What the going-back keys close: what the screen has open over it first
+     * ([DesktopShortcuts]), else the last of the states that close on Back
+     * ([addBack]).
+     */
     fun close() {
-        closing?.invoke()
+        val back = backs.lastOrNull()?.second
+        if (back == null || open?.invoke() == true) closing?.invoke() else back()
     }
+
+    /** The states the screen shown closes on Back ([com.aimdi.xtanative.ui.common.BackHandling]), the last enabled on top. */
+    private val backs = mutableListOf<Pair<Any, () -> Unit>>()
+
+    internal fun addBack(owner: Any, back: () -> Unit) {
+        backs.removeAll { it.first === owner }
+        backs += owner to back
+    }
+
+    internal fun removeBack(owner: Any) {
+        backs.removeAll { it.first === owner }
+    }
+
+    /** Whether a state the screen shown closes on Back is on (a search open in place, an earlier card to go back to): Esc, Alt+← and the back button close it. */
+    fun backOpen(): Boolean = backs.isNotEmpty()
 
     /** The search fields that Ctrl+F and / go to, the last shown on top ([FindsWithKeys]). */
     private val finders = mutableListOf<Pair<Any, () -> Unit>>()
@@ -112,6 +138,39 @@ class DesktopActions(
 
     /** The search field shown on top takes the keyboard; false when the page has none. */
     fun find(): Boolean = finders.lastOrNull()?.second?.let { it(); true } ?: false
+
+    /** The find bars Ctrl+F and F3 work, the last shown on top ([FindsInPageWithKeys]). */
+    private val pageFinders = mutableListOf<Pair<Any, PageFinder>>()
+
+    internal fun addPageFinder(owner: Any, finder: PageFinder) {
+        pageFinders.removeAll { it.first === owner }
+        pageFinders += owner to finder
+    }
+
+    internal fun removePageFinder(owner: Any) {
+        pageFinders.removeAll { it.first === owner }
+    }
+
+    /** The find bar of the page shown opens and takes the keyboard; false when the page has none. */
+    fun findInPage(): Boolean = pageFinders.lastOrNull()?.second?.let { it.open(); true } ?: false
+
+    /** F3: the open find bar goes to its next match, or [by] -1 the one before; false when none is open. */
+    fun findStep(by: Int): Boolean = pageFinders.lastOrNull()?.second?.step?.invoke(by) ?: false
+
+    /** The New actions Ctrl+N opens, the last shown on top ([CreatesWithKeys]). */
+    private val creators = mutableListOf<Pair<Any, () -> Boolean>>()
+
+    internal fun addCreator(owner: Any, create: () -> Boolean) {
+        creators.removeAll { it.first === owner }
+        creators += owner to create
+    }
+
+    internal fun removeCreator(owner: Any) {
+        creators.removeAll { it.first === owner }
+    }
+
+    /** The New of the page shown opens; false when it has none, or none now (its editor already open). */
+    fun create(): Boolean = creators.lastOrNull()?.second?.invoke() ?: false
 
     /** The selections Ctrl+A, Delete and Esc work on, the last shown on top ([SelectsWithKeys]). */
     private val selections = mutableListOf<Pair<Any, KeySelection>>()
@@ -167,21 +226,127 @@ class DesktopActions(
     /** Esc in a field: true when the field dropped something of its own, and keeps the keyboard for now. */
     internal fun escapeInField(): Boolean = fieldEscapes.asReversed().any { it.second() }
 
-    /** The lists on screen, in the order they came, the one the pointer was last over, and the column each is in ([ReadColumn]). */
-    private val lists = mutableListOf<LazyListState>()
-    private var pointed: LazyListState? = null
-    private val listColumns = mutableMapOf<LazyListState, Any>()
+    /**
+     * The lists on screen, in the order they came, the one the pointer was
+     * last over, and the column each is in ([ReadColumn]). A list is a lazy
+     * one ([LazyListState]) or a page that scrolls as a whole ([ScrollState]).
+     */
+    private val lists = mutableListOf<ScrollableState>()
+    private var pointed: ScrollableState? = null
+    private val listColumns = mutableMapOf<ScrollableState, Any>()
 
-    internal fun addList(list: LazyListState, column: Any? = null) {
+    internal fun addList(list: ScrollableState, column: Any? = null) {
         lists += list
         if (column != null) listColumns[list] = column
     }
 
-    internal fun removeList(list: LazyListState) {
+    internal fun removeList(list: ScrollableState) {
         lists -= list
         listColumns -= list
+        listPlaces -= list
         if (pointed === list) pointed = null
     }
+
+    /** Where each list on screen is laid out, so the posts drawn in it are placed against it ([currentPost]). */
+    private val listPlaces = mutableMapOf<ScrollableState, LayoutCoordinates>()
+
+    internal fun placeList(list: ScrollableState, place: LayoutCoordinates) {
+        listPlaces[list] = place
+    }
+
+    /** The posts drawn in the lists on screen, each with what the keys do to it ([keyedPost]). */
+    private val posts = mutableListOf<KeyedPost>()
+
+    internal fun addPost(post: KeyedPost) {
+        posts += post
+    }
+
+    internal fun removePost(post: KeyedPost) {
+        posts -= post
+        if (markedPost === post) markedPost = null
+    }
+
+    /**
+     * The post a step of j or k landed on, marked while the keyboard reads
+     * the list; null once the pointer moves or the list moves otherwise.
+     */
+    var markedPost: KeyedPost? by mutableStateOf(null)
+        private set
+
+    /**
+     * The post the reading keys are on: the one j or k last landed on while
+     * it is still marked, else the first whose start shows in the list they
+     * move, under a header pinned over it ([DesktopKeys.currentPost]).
+     */
+    fun currentPost(): KeyedPost? {
+        // Only a lazy list holds posts; a page that scrolls as a whole has none to act on.
+        val list = readList() as? LazyListState ?: return null
+        markedIn(list)?.let { return it }
+        val (drawn, tops) = drawnPosts(list) ?: return null
+        val info = list.layoutInfo
+        val shown = info.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) }
+        return DesktopKeys.currentPost(shown, tops, info.viewportEndOffset)?.let(drawn::get)
+    }
+
+    /**
+     * The post marked while it is still drawn in [list]: one marked in
+     * another column, or on a page turned away from, is not what the reading
+     * keys are on now.
+     */
+    internal fun markedIn(list: ScrollableState?): KeyedPost? =
+        markedPost?.takeIf { it.list === list && it in posts && it.place?.isAttached == true }
+
+    /** The posts drawn in [list] and where each starts, in its items' offsets; null while the list is not laid out. */
+    private fun drawnPosts(list: LazyListState): Pair<List<KeyedPost>, List<Int>>? {
+        val frame = listPlaces[list]?.takeIf { it.isAttached } ?: return null
+        val drawn = posts.filter { it.list === list && it.place?.isAttached == true }
+        // From the window to the items' own offsets, which start under the list's padding.
+        val top = frame.positionInWindow().y - list.layoutInfo.viewportStartOffset
+        return drawn to drawn.map { (it.place!!.positionInWindow().y - top).toInt() }
+    }
+
+    /**
+     * After a step of j or k to item [index] of [list]: its first post is
+     * marked, even where the list could not bring it to the top (near its
+     * end); else the post the keys are on now.
+     */
+    internal fun markPostIn(list: LazyListState, index: Int?) {
+        markedPost = null
+        val item = list.layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }
+        val inItem = item?.let { shown -> drawnPosts(list)?.let { (drawn, tops) -> DesktopKeys.firstIn(shown.offset, shown.size, tops)?.let(drawn::get) } }
+        markedPost = inItem ?: currentPost()
+    }
+
+    /**
+     * Where j ([forward]) or k takes [list] ([DesktopKeys.keyStep]): from
+     * the post marked in it, so near its end or start, where the list moves
+     * no further, the mark still goes on post by post. A step to a post drawn
+     * already names it ([KeyedStep.post]), to be marked once the list moved.
+     */
+    internal fun keyStep(list: LazyListState, forward: Boolean): KeyedStep? {
+        val info = list.layoutInfo
+        val shown = info.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) }
+        val (drawn, tops) = drawnPosts(list) ?: (emptyList<KeyedPost>() to emptyList())
+        val marked = markedIn(list)?.let { drawn.indexOf(it).takeIf { at -> at >= 0 } }
+        return when (val step = DesktopKeys.keyStep(shown, info.totalItemsCount, tops, marked, forward)) {
+            is DesktopKeys.KeyStep.ToItem -> KeyedStep(step, null)
+            is DesktopKeys.KeyStep.ToPost -> KeyedStep(step, drawn[step.post])
+            null -> null
+        }
+    }
+
+    /** [post] marked: j or k went on to it ([keyStep]). */
+    internal fun markPost(post: KeyedPost) {
+        markedPost = post
+    }
+
+    /** The keyboard or the mouse moved the list some other way: no post is marked. */
+    internal fun unmarkPost() {
+        markedPost = null
+    }
+
+    /** [act] done to the post the reading keys are on; false when there is none. */
+    fun onPost(act: (PostKeys) -> Unit): Boolean = currentPost()?.let { act(it.keys); true } ?: false
 
     /** Where in the window the pointer last was: over a list ([point]), or anywhere ([pointerAt]). */
     private var pointer: Offset? = null
@@ -193,9 +358,11 @@ class DesktopActions(
      * nothing: the event is the window's own, sent as what is under the
      * pointer moved (the Deck scrolled sideways to a chosen column).
      */
-    internal fun point(list: LazyListState, at: Offset? = null) {
+    internal fun point(list: ScrollableState, at: Offset? = null) {
         if (!DesktopKeys.pointerMoved(pointer, at)) return
+        if (pointer != null) markedPost = null
         pointer = at
+        if (pointed !== list) markedPost = null
         pointed = list
         if (listColumns[list] != chosenColumn) chosenColumn = null
         if (listColumns[list] != opened) opened = null
@@ -224,6 +391,7 @@ class DesktopActions(
         columnOrder = { emptyList() }
         chosenColumn = null
         opened = null
+        markedPost = null
     }
 
     /** The column just opened beside the others ([readOpened]); null once the pointer or Ctrl+← and Ctrl+→ go elsewhere. */
@@ -240,6 +408,7 @@ class DesktopActions(
     internal fun readOpened(column: Any) {
         opened = column
         chosenColumn = null
+        markedPost = null
         takeKeys()
     }
 
@@ -253,6 +422,7 @@ class DesktopActions(
         val index = DesktopKeys.columnStep(order.size, order.indexOf(current).takeIf { it >= 0 }, by) ?: return false
         chosenColumn = order[index]
         opened = null
+        markedPost = null
         return true
     }
 
@@ -267,6 +437,7 @@ class DesktopActions(
     /** The page scrolled under the pointer (the wheel, a touchpad): the next list it rests over is pointed at, as after a move. */
     internal fun scrolled() {
         pointer = null
+        markedPost = null
     }
 
     /**
@@ -276,6 +447,7 @@ class DesktopActions(
      * list (a column's error page, a divider) does not take the keys.
      */
     internal fun pointerAt(at: Offset) {
+        if (pointer != null && DesktopKeys.pointerMoved(pointer, at)) markedPost = null
         pointer = at
     }
 
@@ -338,7 +510,7 @@ class DesktopActions(
      * beside it). A column gone from the page (the Deck's detail closed)
      * counts as none chosen or opened.
      */
-    internal fun readList(): LazyListState? {
+    internal fun readList(): ScrollableState? {
         chosen()?.let { column -> return lists.lastOrNull { listColumns[it] == column } }
         opened?.takeIf { it in columnOrder() }?.let { column -> lists.lastOrNull { listColumns[it] == column }?.let { return it } }
         return pointed ?: lists.firstOrNull()
@@ -352,7 +524,28 @@ class DesktopActions(
  * it with its column. Nothing off the desktop.
  */
 @Composable
-fun Modifier.movedByKeys(list: LazyListState): Modifier {
+fun Modifier.movedByKeys(list: LazyListState): Modifier = keyMoved(list)
+
+/**
+ * A page that scrolls as a whole ([verticalScroll]) moved by the desktop's
+ * keys as a list is ([movedByKeys]): ↑ ↓, Page Up and Down, Space, Home and
+ * End, while nothing in it keeps the keys (a field, a slider, a dialog).
+ * Put it before the [verticalScroll] of the same [scroll]; or use
+ * [verticalScrollByKeys], which does both. Nothing off the desktop.
+ */
+@Composable
+fun Modifier.movedByKeys(scroll: ScrollState): Modifier = keyMoved(scroll)
+
+/** [verticalScroll] over [scroll], moved by the desktop's keys too ([movedByKeys]). */
+@Composable
+fun Modifier.verticalScrollByKeys(scroll: ScrollState): Modifier = movedByKeys(scroll).verticalScroll(scroll)
+
+@Composable
+private fun Modifier.keyMoved(list: ScrollableState): Modifier {
+    // In a sheet, its own keys move it ([sheetKeys]); the window's never reach it. A sheet over a video full screen has only the host's.
+    LocalSheetKeys.current?.let { sheet ->
+        if ((LocalDesktopActions.current ?: LocalDesktopActionsHost.current.actions) != null) return movedInSheet(sheet, list)
+    }
     val actions = LocalDesktopActions.current ?: return this
     val column = LocalReadColumn.current
     DisposableEffect(actions, list, column) {
@@ -361,7 +554,10 @@ fun Modifier.movedByKeys(list: LazyListState): Modifier {
     }
     // Where the list stands in the window, so the pointer's place is known there and not only in the list.
     val origin = remember { arrayOf(Offset.Zero) }
-    return onGloballyPositioned { origin[0] = it.positionInWindow() }.pointerInput(actions, list) {
+    return onGloballyPositioned {
+        origin[0] = it.positionInWindow()
+        actions.placeList(list, it)
+    }.pointerInput(actions, list) {
         awaitPointerEventScope {
             while (true) {
                 val event = awaitPointerEvent(PointerEventPass.Initial)
@@ -424,10 +620,19 @@ val LocalDesktopActionsHost = staticCompositionLocalOf { DesktopActionsHost() }
  * Going back the way a PC does it (XTA's DesktopNavigation): the mouse's back
  * button, Alt+← and Esc go back as Android's back gesture does, the first Esc
  * leaving a text field being typed in, and the screen on top answers
- * [DesktopActions]. Off the desktop it is [content] alone.
+ * [DesktopActions]; Alt+→ and the mouse's forward button call [goForward],
+ * false when there is nothing to go forward to. Off the desktop it is
+ * [content] alone.
  */
 @Composable
-expect fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, openHome: () -> Unit = {}, content: @Composable () -> Unit)
+expect fun DesktopNavigation(
+    nav: NavHostController,
+    openSearch: () -> Unit,
+    openSettings: () -> Unit,
+    openHome: () -> Unit = {},
+    goForward: () -> Boolean = { false },
+    content: @Composable () -> Unit,
+)
 
 /**
  * Lets Ctrl+F and / ([DesktopKeys]) go to the screen's own search while it is
@@ -443,6 +648,44 @@ fun FindsWithKeys(find: () -> Unit) {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.addFinder(owner) { latest() } }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.removeFinder(owner) }
     DisposableEffect(actions) { onDispose { actions.removeFinder(owner) } }
+}
+
+/** A page's find bar as the desktop's keys reach it: [open] it (Ctrl+F), or [step] it on (F3; false while it is closed). */
+class PageFinder(val open: () -> Unit, val step: (Int) -> Boolean)
+
+/**
+ * Lets Ctrl+F and F3 ([DesktopKeys]) work the screen's find bar while it is
+ * the one shown, as a browser's find in page: [open] opens it with the
+ * keyboard in its field, [step] goes to the next match or (-1) the one
+ * before, answering false while it is closed. / keeps going to the search.
+ * Nothing off the desktop.
+ */
+@Composable
+fun FindsInPageWithKeys(open: () -> Unit, step: (Int) -> Boolean) {
+    val actions = LocalDesktopActions.current ?: return
+    val latestOpen by rememberUpdatedState(open)
+    val latestStep by rememberUpdatedState(step)
+    val owner = remember { Any() }
+    val finder = remember { PageFinder({ latestOpen() }, { latestStep(it) }) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.addPageFinder(owner, finder) }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.removePageFinder(owner) }
+    DisposableEffect(actions) { onDispose { actions.removePageFinder(owner) } }
+}
+
+/**
+ * Lets Ctrl+N ([DesktopKeys]) open the screen's own New while it is the one
+ * shown, as a desktop app's makes a new document: [create] opens it (a new
+ * note's editor, a new group's) and answers false when it did nothing, so the
+ * key goes on. Nothing off the desktop.
+ */
+@Composable
+fun CreatesWithKeys(create: () -> Boolean) {
+    val actions = LocalDesktopActions.current ?: return
+    val latest by rememberUpdatedState(create)
+    val owner = remember { Any() }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.addCreator(owner) { latest() } }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.removeCreator(owner) }
+    DisposableEffect(actions) { onDispose { actions.removeCreator(owner) } }
 }
 
 /**
@@ -565,3 +808,6 @@ fun rememberLeaveField(): () -> Unit {
         }
     }
 }
+
+/** A step of j or k ([DesktopActions.keyStep]), and the post it goes to when that is one drawn already. */
+internal class KeyedStep(val step: DesktopKeys.KeyStep, val post: KeyedPost?)

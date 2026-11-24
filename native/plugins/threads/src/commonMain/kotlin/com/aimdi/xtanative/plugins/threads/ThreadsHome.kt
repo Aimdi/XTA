@@ -51,6 +51,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsFailure
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
@@ -117,7 +118,7 @@ private fun HomeBar(app: ThreadsApp, section: ThreadsSection, onSearch: () -> Un
     val shell = LocalPluginClientBar.current != null
     if (shell) ShellFeeds(ThreadsSection.entries, section, app::show, label = { pluginString(labelOf(it)) })
     PluginHomeTabs(if (shell) emptyList() else ThreadsSection.entries, section, app::show, icon = ::iconOf, label = { pluginString(labelOf(it)) }) {
-        IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search)) }
+        IconTip(pluginString(Strings.search)) { IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search)) } }
         HomeMenu(app, onAdd)
     }
 }

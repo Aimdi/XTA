@@ -56,6 +56,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivTrendTag
 import com.aimdi.xtanative.networks.pixiv.PixivUser
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /** Before a search: what to type, the recent searches, creators to look at (works only) and the tags trending now. */
@@ -117,7 +118,7 @@ private fun HistoryChip(label: String, icon: ImageVector? = null, onClick: () ->
         shape = RoundedCornerShape(8.dp),
         color = Color.Transparent,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        modifier = Modifier.clip(RoundedCornerShape(8.dp)).combinedClickable(onClick = onClick, onLongClick = onLongClick),
+        modifier = Modifier.clip(RoundedCornerShape(8.dp)).then(onLongClick?.let { Modifier.onContextClick(it) } ?: Modifier).combinedClickable(onClick = onClick, onLongClick = onLongClick),
     ) {
         Row(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             icon?.let {
@@ -190,9 +191,11 @@ private fun TrendingGrid(tags: List<PixivTrendTag>, onSearch: (String) -> Unit) 
 private fun TrendTile(tag: PixivTrendTag, onSearch: (String) -> Unit) {
     val runtime = LocalPixiv.current
     val illust = tag.illust
+    val openWork = illust?.let { { runtime.openWork(it) } }
     Box(
         Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(8.dp)).background(MaterialTheme.colorScheme.surfaceVariant)
-            .combinedClickable(onClick = { onSearch(tag.name) }, onLongClick = illust?.let { { runtime.openWork(it) } }),
+            .then(openWork?.let { Modifier.onContextClick(it) } ?: Modifier)
+            .combinedClickable(onClick = { onSearch(tag.name) }, onLongClick = openWork),
     ) {
         illust?.let { PixivPicture(it.thumbnailUrl, Modifier.fillMaxSize()) }
         Column(Modifier.align(Alignment.BottomCenter).fillMaxWidth().background(Color.Black.copy(alpha = 0.6f)).padding(horizontal = 6.dp, vertical = 4.dp)) {
@@ -212,7 +215,7 @@ internal fun TagSuggestion(tag: PixivTrendTag, onPick: () -> Unit, onCopy: () ->
         headlineContent = { Text(tag.name) },
         supportingContent = tag.translatedName?.let { { Text(it) } },
         leadingContent = { Icon(PixivIcons.Tag, null) },
-        modifier = Modifier.combinedClickable(onClick = onPick, onLongClick = onCopy),
+        modifier = Modifier.onContextClick(onCopy).combinedClickable(onClick = onPick, onLongClick = onCopy),
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }

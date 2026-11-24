@@ -32,10 +32,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.websources.InstalledWebSource
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.ShellMenuButton
@@ -54,7 +56,7 @@ internal fun WebSourcesHome(app: WebSourcesApp, frame: PluginFrame) {
         // XTA's chrome here has no tabs and, on Home, no title: Home names the plugin. Add source, then Settings.
         ReadingControlsBar {
             PluginHomeTabs(emptyList()) {
-                IconButton(onClick = app::openAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) }
+                IconTip(pluginString(Strings.add)) { IconButton(onClick = app::openAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) } }
                 ShellMenuButton { close ->
                     DropdownMenuItem(text = { Text(pluginString(Strings.settings)) }, onClick = {
                         close()
@@ -71,9 +73,9 @@ internal fun WebSourcesHome(app: WebSourcesApp, frame: PluginFrame) {
             else -> {
                 val list = rememberLazyListState()
                 ScrollsToTop(list, frame.toTop)
-                LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+                PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                     items(sources, key = { it.source.id }) { entry -> SourceRow(app, entry) }
-                }
+                } }
             }
         }
     }
@@ -115,5 +117,5 @@ private fun SourceRow(app: WebSourcesApp, entry: InstalledWebSource) {
 /** Back, as the app's bars draw it. */
 @Composable
 internal fun BackButton(app: WebSourcesApp) {
-    IconButton(onClick = app.host::back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) }
+    IconTip(pluginString(Strings.back)) { IconButton(onClick = app.host::back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) } }
 }

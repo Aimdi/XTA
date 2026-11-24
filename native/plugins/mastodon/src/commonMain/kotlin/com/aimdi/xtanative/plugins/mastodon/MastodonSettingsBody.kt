@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonInstances
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.NetworkPersonRow
 import com.aimdi.xtanative.ui.plugins.PluginFrame
@@ -70,7 +71,7 @@ internal fun MastodonSettingsBody(app: MastodonApp, frame: PluginFrame) {
         if (follows?.isEmpty() == true) item(key = "none") { Note(Strings.no_accounts, Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) }
         items(follows.orEmpty(), key = { "follow:" + it.acct }) { follow ->
             NetworkPersonRow(follow.name, follow.acct, follow.avatarUrl, { app.openProfile(follow.acct) }) {
-                IconButton(onClick = { app.unfollow(follow.acct) }) { Icon(Icons.Filled.Delete, pluginString(Strings.unfollow)) }
+                IconTip(pluginString(Strings.unfollow)) { IconButton(onClick = { app.unfollow(follow.acct) }) { Icon(Icons.Filled.Delete, pluginString(Strings.unfollow)) } }
             }
         }
     }
@@ -132,7 +133,7 @@ private suspend fun test(app: MastodonApp, typed: String): PluginText = try {
 private fun ExtraRow(instance: String, onDelete: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(instance, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-        IconButton(onClick = onDelete) { Icon(Icons.Filled.Delete, pluginString(Strings.delete)) }
+        IconTip(pluginString(Strings.delete)) { IconButton(onClick = onDelete) { Icon(Icons.Filled.Delete, pluginString(Strings.delete)) } }
     }
 }
 
@@ -151,7 +152,7 @@ private fun AddInstance(onAdd: (String) -> Unit) {
         onValueChange = { text = it },
         placeholder = { Text(pluginString(Strings.instance_hint)) },
         singleLine = true,
-        trailingIcon = { IconButton(onClick = add) { Icon(Icons.Filled.Add, pluginString(Strings.add_instance)) } },
+        trailingIcon = { IconTip(pluginString(Strings.add_instance)) { IconButton(onClick = add) { Icon(Icons.Filled.Add, pluginString(Strings.add_instance)) } } },
         keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, keyboardType = KeyboardType.Uri, imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { add() }),
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),

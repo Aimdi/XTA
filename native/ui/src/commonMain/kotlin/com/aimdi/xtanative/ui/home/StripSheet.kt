@@ -23,7 +23,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,6 +36,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
@@ -80,8 +81,8 @@ internal fun StripSheet(
     val moves = rememberRowKeyMoves { key, up ->
         (RowSteps.step(keys, key, up) != null).also { if (it) onStep(key as String, up) }
     }
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
-        LazyColumn(state = list, modifier = Modifier.fillMaxWidth().hoveredRowMovedByKeys(moves).padding(bottom = 16.dp)) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        LazyColumn(state = list, modifier = Modifier.fillMaxWidth().movedByKeys(list).hoveredRowMovedByKeys(moves).padding(bottom = 16.dp)) {
             item(key = "title") {
                 Column {
                     Text(stringResource(Res.string.home_strip_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 24.dp))
@@ -173,7 +174,7 @@ private fun NetworkRow(network: StripNetwork, networks: HomeNetworks, onClick: (
     ) {
         Box(Modifier.size(24.dp), contentAlignment = Alignment.Center) { networks.Mark(network.id, 24.dp) }
         Spacer(Modifier.width(16.dp))
-        Text(network.title, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        TipText(network.title, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
         controls()
     }
 }

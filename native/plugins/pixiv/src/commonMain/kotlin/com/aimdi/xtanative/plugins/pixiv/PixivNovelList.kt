@@ -226,15 +226,16 @@ private fun NovelHeart(novel: PixivNovel) {
     val marks by runtime.bookmarking.novels.state.collectAsState()
     val bookmarked = marks.on(novel.id, novel.isBookmarked)
     val busy = marks.isBusy(novel.id)
+    val privately = {
+        haptics.medium()
+        sheets.bookmarkPrivately(novel, haptics)
+    }
     Column(
-        Modifier.width(48.dp).clip(CircleShape).combinedClickable(
+        Modifier.width(48.dp).clip(CircleShape).then(if (busy) Modifier else Modifier.onContextClick(privately)).combinedClickable(
             enabled = !busy,
             onLongClickLabel = pluginString(Strings.novel_bookmark_private),
             onClick = { sheets.toggleBookmark(novel, haptics) },
-            onLongClick = {
-                haptics.medium()
-                sheets.bookmarkPrivately(novel, haptics)
-            },
+            onLongClick = privately,
         ).padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">使用整個螢幕：隱藏頂端的時間、電量和訊號。從頂端邊緣向下滑動可短暫查看。</string>
     <string name="settings_text_scale">文字大小</string>
     <string name="settings_text_scale_description">設定整個應用程式的文字大小</string>
+    <string name="settings_interface_scale">介面大小</string>
+    <string name="settings_interface_scale_description">同時放大或縮小文字、按鈕和圖片</string>
     <string name="settings_disable_animations">停用動畫效果？</string>
     <string name="settings_disable_animations_description">停用應用程式內的動畫效果</string>
     <string name="settings_haptics">觸感回饋</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">XTA 使用的所有優秀軟體</string>
     <string name="settings_intro_again">再次顯示導覽</string>
     <string name="settings_intro_again_description">重新查看首次啟動時的卡片。</string>
+    <string name="settings_open_logs">開啟記錄檔資料夾</string>
     <string name="settings_ok">確定</string>
     <string name="settings_diagnostics_copy">複製報告</string>
     <string name="settings_diagnostics_copied">診斷已複製到剪貼簿</string>
@@ -371,4 +374,18 @@
     <string name="settings_start_at_login_description">登入時開啟應用程式；開啟「關閉時縮小至系統匣」時，會在系統匣中等待</string>
     <string name="tray_show">顯示視窗</string>
     <string name="tray_hide">隱藏視窗</string>
+    <string name="tray_new_search">新搜尋</string>
+    <string name="settings_proxy">代理伺服器</string>
+    <string name="settings_proxy_description">應用程式在此裝置上如何連上網際網路。「系統」使用代理伺服器環境變數，否則使用桌面的代理設定</string>
+    <string name="settings_proxy_none">不使用代理伺服器</string>
+    <string name="settings_proxy_manual">手動</string>
+    <string name="settings_proxy_server">代理伺服器</string>
+    <string name="settings_proxy_server_unset">未設定：設定之前不會載入任何內容</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">影片暫時無法透過 SOCKS5 代理伺服器播放</string>
+    <string name="settings_proxy_host">主機</string>
+    <string name="settings_proxy_port">連接埠</string>
+    <string name="settings_proxy_bypass">不使用代理伺服器的位址</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

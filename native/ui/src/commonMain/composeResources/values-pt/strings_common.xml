@@ -40,4 +40,9 @@
     <string name="problem_source_loading">Esta fonte ainda está a carregar. As outras publicações estão disponíveis.</string>
     <string name="problem_saved_at">A mostrar publicações guardadas às %1$s</string>
     <string name="problem_saved_earlier">A mostrar publicações guardadas anteriormente</string>
+    <string name="files_filter_pictures">Imagens</string>
+    <string name="files_filter_media">Imagens e vídeos</string>
+    <string name="find_in_page">Procurar na página</string>
+    <string name="find_previous_match">Correspondência anterior</string>
+    <string name="find_next_match">Correspondência seguinte</string>
 </resources>

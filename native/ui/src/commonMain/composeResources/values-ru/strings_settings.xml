@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Использовать весь экран: время, заряд и сигнал вверху скрыты. Проведите вниз от верхнего края, чтобы ненадолго их увидеть.</string>
     <string name="settings_text_scale">Коэффициент масштабирования текста</string>
     <string name="settings_text_scale_description">Настроить размер шрифта в приложении</string>
+    <string name="settings_interface_scale">Размер интерфейса</string>
+    <string name="settings_interface_scale_description">Увеличивать или уменьшать текст, кнопки и изображения вместе</string>
     <string name="settings_disable_animations">Отключить анимации</string>
     <string name="settings_disable_animations_description">Отключить анимации в приложении</string>
     <string name="settings_haptics">Тактильная отдача</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">Всё замечательное программное обеспечение, используемое XTA</string>
     <string name="settings_intro_again">Показать введение снова</string>
     <string name="settings_intro_again_description">Ещё раз пройти карточки первого запуска.</string>
+    <string name="settings_open_logs">Открыть папку журналов</string>
     <string name="settings_ok">Ок</string>
     <string name="settings_diagnostics_copy">Скопировать отчёт</string>
     <string name="settings_diagnostics_copied">Диагностика скопирована в буфер обмена</string>
@@ -377,4 +380,18 @@
     <string name="settings_start_at_login_description">Открывает приложение при входе; если включено «Сворачивать в трей», оно ждёт в трее</string>
     <string name="tray_show">Показать окно</string>
     <string name="tray_hide">Скрыть окно</string>
+    <string name="tray_new_search">Новый поиск</string>
+    <string name="settings_proxy">Прокси</string>
+    <string name="settings_proxy_description">Как приложение выходит в интернет на этом устройстве. «Система» берёт переменные окружения прокси, иначе настройки прокси рабочего стола</string>
+    <string name="settings_proxy_none">Без прокси</string>
+    <string name="settings_proxy_manual">Вручную</string>
+    <string name="settings_proxy_server">Прокси-сервер</string>
+    <string name="settings_proxy_server_unset">Не задан: ничего не загрузится, пока он не задан</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Видео пока не воспроизводится через прокси SOCKS5</string>
+    <string name="settings_proxy_host">Хост</string>
+    <string name="settings_proxy_port">Порт</string>
+    <string name="settings_proxy_bypass">Без прокси для</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

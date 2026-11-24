@@ -27,7 +27,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -70,6 +69,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -102,6 +102,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_sort_suggest
 import com.aimdi.xtanative.ui.generated.resources.groups_sort_title
 import com.aimdi.xtanative.ui.generated.resources.groups_sort_ungrouped
 import com.aimdi.xtanative.ui.generated.resources.groups_undo
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -184,7 +185,7 @@ fun SortUngroupedScreen(onBack: () -> Unit, onSortOneByOne: (List<String>) -> Un
 @Composable
 private fun PlanBody(state: SortUi, modifier: Modifier, onSortOneByOne: () -> Unit) {
     val plan = state.plan
-    Column(modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(modifier.verticalScrollByKeys(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(stringResource(Res.string.groups_sort_description))
         Spacer(Modifier.height(12.dp))
         if (plan.isEmpty) {
@@ -347,8 +348,8 @@ fun UngroupedSorterScreen(accountIds: List<String>, openProfile: (String) -> Uni
 private fun AccountCard(row: SubscriptionRow, onOpen: () -> Unit) {
     Column(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         SubscriptionFace(row, 72.dp)
-        Text(row.name, style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 12.dp))
-        Text(subscriptionSubtitle(row), color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp))
+        TipText(row.name, style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 12.dp))
+        TipText(subscriptionSubtitle(row), color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp))
         TextButton(onClick = onOpen, modifier = Modifier.padding(top = 4.dp)) {
             Icon(GroupIcons.OpenInNew, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.groups_open_profile), modifier = Modifier.padding(start = 8.dp))
@@ -368,7 +369,7 @@ private fun GroupChips(state: SorterUi, onGroup: (String) -> Unit, onSeveral: ()
         state.groups.forEach { group ->
             AssistChip(
                 onClick = { onGroup(group.id) },
-                label = { Text(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 200.dp)) },
+                label = { TipText(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 200.dp)) },
                 leadingIcon = { GroupMark(group, 24.dp) },
             )
         }
@@ -389,7 +390,7 @@ private fun SorterEnd(sorter: SorterState, onSortSkipped: () -> Unit, onFinish: 
     val placed = sorter.placedCount
     val skipped = sorter.skipped.size
     Column(
-        modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
+        modifier.fillMaxSize().verticalScrollByKeys(rememberScrollState()).padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {

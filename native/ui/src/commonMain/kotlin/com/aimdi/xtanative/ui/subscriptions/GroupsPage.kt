@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.session.GroupBoard
 import com.aimdi.xtanative.store.settings.GroupsLayout
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_censored
@@ -223,13 +224,13 @@ private fun TileName(tile: GroupTile) {
             Icon(GroupIcons.VisibilityOffOutlined, contentDescription = null, tint = meta, modifier = Modifier.size(13.dp))
             Spacer(Modifier.width(4.dp))
         }
-        Text(tile.group.name, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+        TipText(tile.group.name, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
 private fun TileCount(count: String) {
-    Text(count, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    TipText(count, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
 /** The accent dot of a group with posts newer than its last read mark. */
@@ -357,10 +358,10 @@ private fun GroupListRow(tile: GroupTile, onOpen: () -> Unit, onEdit: () -> Unit
                     Icon(GroupIcons.VisibilityOffOutlined, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(6.dp))
                 }
-                Text(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyLarge)
+                TipText(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyLarge)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(count, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                TipText(count, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 if (tile.faces.isNotEmpty()) {
                     Spacer(Modifier.width(8.dp))
                     FaceCluster(tile.faces)

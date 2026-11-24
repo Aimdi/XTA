@@ -1,6 +1,6 @@
 package com.aimdi.xtanative.ui.plugins
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -82,7 +82,7 @@ private fun TimelineSwitch(settings: PluginSettings, title: String, description:
     val scope = rememberCoroutineScope()
     val turn: (Boolean) -> Unit = { value -> scope.launch { settings.setInHomeFeed(value) } }
     Row(
-        modifier.fillMaxWidth().clickable(role = Role.Switch) { turn(!on) }.padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier.fillMaxWidth().toggleable(value = on, role = Role.Switch, onValueChange = turn).padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         icon?.let { Icon(it, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(end = 16.dp)) }
@@ -90,6 +90,6 @@ private fun TimelineSwitch(settings: PluginSettings, title: String, description:
             Text(title, style = MaterialTheme.typography.bodyLarge)
             Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Switch(checked = on, onCheckedChange = turn)
+        Switch(checked = on, onCheckedChange = null)
     }
 }

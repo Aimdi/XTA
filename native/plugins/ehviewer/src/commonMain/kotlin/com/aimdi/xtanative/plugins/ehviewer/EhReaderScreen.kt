@@ -2,8 +2,11 @@ package com.aimdi.xtanative.plugins.ehviewer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -25,9 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import coil3.SingletonImageLoader
 import coil3.compose.LocalPlatformContext
 import com.aimdi.xtanative.networks.ehviewer.EhPageResolver
@@ -148,7 +155,7 @@ private fun PagedPages(app: EhApp, open: EhOpenReader, state: EhReaderState, onT
     }
 }
 
-/** One long column of pages, as a webtoon is read. */
+/** One long column of pages, as a webtoon is read: each up to [COLUMN_MAX_WIDTH] wide, centred in a wide window. */
 @Composable
 private fun ColumnPages(app: EhApp, open: EhOpenReader, state: EhReaderState, onTap: (Offset) -> Unit, onHold: (Int) -> Unit) {
     val list = rememberLazyListState(initialFirstVisibleItemIndex = state.page - 1)
@@ -156,7 +163,30 @@ private fun ColumnPages(app: EhApp, open: EhOpenReader, state: EhReaderState, on
     LaunchedEffect(state.jump) { if (list.firstVisibleItemIndex != state.page - 1) list.scrollToItem(state.page - 1) }
     LaunchedEffect(list) { snapshotFlow { pageInView(list, total) }.collect { open.model.observe(it) } }
     LazyColumn(state = list, modifier = Modifier.fillMaxSize()) {
-        items(total, key = { it }) { index -> ReaderPage(app, open, index + 1, vertical = true, onTap = onTap, onHold = onHold) }
+        items(total, key = { it }) { index ->
+            CentredPage(index + 1, onTap, onHold) { pageTap -> ReaderPage(app, open, index + 1, vertical = true, onTap = pageTap, onHold = onHold) }
+        }
+    }
+}
+
+/** The widest a page grows in the column: a wide window shows it centred, not blown up to the window's width. */
+private val COLUMN_MAX_WIDTH = 960.dp
+
+/**
+ * [page] of the column up to [COLUMN_MAX_WIDTH] and centred, a tap on it or
+ * beside it read across the whole reader's width ([EhReaderRules.tap]), as
+ * when the page filled it; [content] gets the page's tap, moved so.
+ */
+@Composable
+private fun CentredPage(page: Int, onTap: (Offset) -> Unit, onHold: (Int) -> Unit, content: @Composable ((Offset) -> Unit) -> Unit) {
+    var left by remember { mutableFloatStateOf(0f) }
+    Box(
+        Modifier.fillMaxWidth().pointerInput(onTap) { detectTapGestures(onTap = onTap, onLongPress = { onHold(page) }) },
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        Box(Modifier.widthIn(max = COLUMN_MAX_WIDTH).onPlaced { left = it.positionInParent().x }) {
+            content { offset -> onTap(offset + Offset(left, 0f)) }
+        }
     }
 }
 

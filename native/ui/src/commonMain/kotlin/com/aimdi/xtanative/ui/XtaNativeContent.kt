@@ -7,7 +7,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import coil3.ImageLoader
 import coil3.PlatformContext
+import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.request.crossfade
+import com.aimdi.xtanative.core.net.AppProxy
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.LocalPostCache
@@ -21,6 +23,7 @@ import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.LocalXClient
 import com.aimdi.xtanative.ui.common.SwitchedHapticsFrame
 import com.aimdi.xtanative.ui.common.addPlatformPictureDecoders
+import com.aimdi.xtanative.ui.common.platformPictureDiskCache
 import com.aimdi.xtanative.ui.downloads.DownloadsFrame
 import com.aimdi.xtanative.ui.downloads.LocalPlatformFiles
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -38,6 +41,7 @@ import com.aimdi.xtanative.ui.saved.LocalKeeper
 import com.aimdi.xtanative.ui.settings.trimImageCache
 import com.aimdi.xtanative.ui.speech.SpeechBarScaffold
 import com.aimdi.xtanative.ui.theme.XtaTheme
+import okhttp3.Dispatcher
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -45,10 +49,12 @@ import org.jetbrains.compose.resources.stringResource
  * in XTA's theme, their links opening the way XTA opens them and their media
  * saved through the downloads, with the reading-aloud bar under them, a video
  * full screen over them all, and [plugins]' tabs and screens among them.
+ * A [window] of the app's own beside its main one starts on its screen.
  */
 @Composable
-fun XtaNativeContent(graph: AppGraph, plugins: AppPlugins) {
+fun XtaNativeContent(graph: AppGraph, plugins: AppPlugins, window: SecondaryWindow? = null) {
     CompositionLocalProvider(
+        LocalSecondaryWindow provides window,
         LocalGraph provides graph,
         // The narrow parts, for what reads one or two of them rather than the whole graph.
         LocalSettingsStore provides graph.settings,
@@ -95,9 +101,20 @@ private fun RootOrBroken(graph: AppGraph) {
 @Composable
 fun appName(): String = stringResource(Res.string.app_name)
 
-/** The one image loader of the process, which each shell installs: pictures fade in, the desktop shrinks them smoothly, and those cached too long ago go. */
+/**
+ * The one image loader of the process, which each shell installs: pictures come over [AppProxy]'s client (the
+ * proxy the reader set) with a dispatcher of their own, fade in, the desktop shrinks them smoothly and caches them
+ * in the user's own cache folder, and those cached too long ago go.
+ */
 fun appImageLoader(context: PlatformContext): ImageLoader = ImageLoader.Builder(context)
-    .components { addPlatformPictureDecoders() }
+    .components {
+        add(OkHttpNetworkFetcherFactory(callFactory = { pictureClient }))
+        addPlatformPictureDecoders()
+    }
+    .apply { platformPictureDiskCache()?.let { diskCache(it) } }
     .crossfade(true)
     .build()
     .also(::trimImageCache)
+
+/** The pictures' client: [AppProxy]'s, built when the first picture loads. */
+private val pictureClient by lazy { AppProxy.client.newBuilder().dispatcher(Dispatcher()).build() }

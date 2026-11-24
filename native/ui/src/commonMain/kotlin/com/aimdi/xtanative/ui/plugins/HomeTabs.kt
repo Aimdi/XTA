@@ -51,6 +51,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 
 /**
@@ -277,7 +278,7 @@ fun PluginSectionPicker(tabs: List<PluginHomeTab>, color: Color, modifier: Modif
             Icon(current?.icon ?: Icons.Filled.Menu, contentDescription = null, tint = color, modifier = Modifier.size(20.dp))
             if (!iconOnly) {
                 Spacer(Modifier.width(8.dp))
-                Text(
+                TipText(
                     current?.label.orEmpty(),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
@@ -330,7 +331,7 @@ internal fun PluginStandaloneBar(
         val tabs = content?.tabs?.value.orEmpty()
         if (tabs.isEmpty()) {
             BarMark(title, mark)
-            Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f).padding(horizontal = 8.dp))
+            TipText(title, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f).padding(horizontal = 8.dp))
         } else {
             BoxWithConstraints(Modifier.weight(1f)) {
                 val keepsMark = content?.markGivesWay != true || PluginTabFit.keepsMark(tabs.size, maxWidth.value)

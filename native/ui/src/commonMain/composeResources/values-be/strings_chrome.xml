@@ -5,6 +5,10 @@
     <string name="chrome_update_view_version">Паглядзець версію %1$s на GitHub</string>
     <string name="chrome_update_view">Паглядзець на GitHub</string>
     <string name="chrome_update_download">Спампаваць</string>
+    <string name="chrome_update_install_package">Спампуйце пакет, потым выканайце гэта ў папцы, куды вы яго захавалі:</string>
+    <string name="chrome_update_install_tarball">Спампуйце архіў, потым выканайце гэта ў папцы, куды вы яго захавалі:</string>
+    <string name="chrome_update_copy">Капіяваць каманду</string>
+    <string name="chrome_update_skip">Прапусціць гэту версію</string>
     <string name="chrome_licences_legalese">Апублікавана пад ліцэнзіяй MIT</string>
     <plurals name="chrome_licences_count">
         <item quantity="one">%1$d ліцэнзія</item>
@@ -12,4 +16,5 @@
         <item quantity="many">%1$d ліцэнзій</item>
         <item quantity="other">%1$d ліцэнзіі</item>
     </plurals>
+    <string name="chrome_offline_bar">Па-за сеткай – паказваюцца захаваныя копіі</string>
 </resources>

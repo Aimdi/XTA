@@ -116,6 +116,7 @@
     <string name="saved_quoted_unavailable">Cytavany post niedastupny</string>
     <string name="saved_note_thread">Natatka</string>
     <string name="saved_long_press_hint">Parada: doŭhi nacisk, kab zmiascić u tečku</string>
+    <string name="saved_right_click_hint">Parada: nacisnicie pravaj knopkaj myšy, kab zmiascić u tečku</string>
     <string name="saved_like">Padabajecca na hetaj pryladzie</string>
     <string name="saved_unlike">Prybrać «padabajecca» z hetaj prylady</string>
     <string name="saved_save_here">Zachavać na hetaj pryladzie</string>

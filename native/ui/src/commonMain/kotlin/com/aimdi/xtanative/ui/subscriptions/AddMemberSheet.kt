@@ -21,7 +21,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -43,7 +42,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_add_member_failed
@@ -52,6 +53,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_no_results
 import com.aimdi.xtanative.ui.generated.resources.groups_ok
 import com.aimdi.xtanative.ui.generated.resources.groups_search
 import com.aimdi.xtanative.ui.generated.resources.groups_search_failed
+import com.aimdi.xtanative.ui.home.rememberSheetList
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.pluginstore.PluginMark
@@ -92,7 +94,7 @@ fun AddMemberSheet(actions: GroupActions, onDone: (Set<String>) -> Unit) {
         }
     }
 
-    ModalBottomSheet(onDismissRequest = { onDone(state.added) }, sheetState = sheet, containerColor = MaterialTheme.colorScheme.background) {
+    KeyedSheet(onDismissRequest = { onDone(state.added) }, sheetState = sheet, containerColor = MaterialTheme.colorScheme.background) {
         Column(Modifier.fillMaxHeight(0.85f).imePadding().padding(horizontal = 16.dp)) {
             OutlinedTextField(
                 value = state.query,
@@ -130,7 +132,7 @@ private fun Results(state: AddMemberUi, rows: List<FollowableRow>, onAdd: (XUser
         )
         return
     }
-    LazyColumn {
+    LazyColumn(state = rememberSheetList()) {
         items(rows, key = { "row:" + it.key }) { row -> NetworkRow(row, added = row.key in state.addedRows, enabled = !state.adding, onFollow) }
         when {
             state.failed -> item(key = "failed") { Text(stringResource(Res.string.groups_search_failed), modifier = Modifier.padding(24.dp)) }
@@ -150,8 +152,8 @@ private fun Results(state: AddMemberUi, rows: List<FollowableRow>, onAdd: (XUser
                 ) {
                     Avatar(user.avatarUrl, 40.dp)
                     Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
-                        Text(user.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text("@${user.screenName}", maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        TipText(user.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        TipText("@${user.screenName}", maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Icon(if (added) Icons.Filled.Check else Icons.Filled.Add, contentDescription = null)
                 }
@@ -177,8 +179,8 @@ private fun NetworkRow(row: FollowableRow, added: Boolean, enabled: Boolean, onF
     ) {
         PluginMark(owner, network, 40.dp)
         Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
-            Text(row.label, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(network, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            TipText(row.label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            TipText(network, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Icon(if (added) Icons.Filled.Check else Icons.Filled.Add, contentDescription = null)
     }

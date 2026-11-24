@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -51,6 +52,7 @@ import com.aimdi.xtanative.networks.hackernews.HnTextLink
 import com.aimdi.xtanative.networks.hackernews.HnThreadReader
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.plugins.LinkedText
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
@@ -80,14 +82,15 @@ internal fun HnStoryScreen(app: HnApp, id: Long) {
         title = pluginString(Strings.comments),
         onBack = app.host::back,
         actions = {
-            if (url != null) IconButton(onClick = { app.host.openLink(url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_article)) }
+            if (url != null) IconTip(pluginString(Strings.open_article)) { IconButton(onClick = { app.host.openLink(url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_article)) } }
             // The story's sheet, as a long press on its row opens it: Saved, its note, its page shared or opened.
-            thread?.story?.let { story -> IconButton(onClick = { app.openMenu(story) }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) } }
+            thread?.story?.let { story -> IconTip(pluginString(Strings.more_options)) { IconButton(onClick = { app.openMenu(story) }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) } } }
         },
     ) { padding ->
         val rows = remember(thread, collapsed) { HnComment.visible(thread?.comments.orEmpty(), collapsed) }
         PullToRefreshBox(isRefreshing = state.loading && state.loaded, onRefresh = reader::refresh, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp)) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = column) {
+            val scroll = rememberLazyListState()
+            PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp), scroll) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
                 thread?.let { item(key = "lead") { Lead(app, it.story) } }
                 val error = state.error
                 when {

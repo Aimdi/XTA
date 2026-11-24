@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.settings.RedditFeedMode
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFrame
@@ -136,7 +137,7 @@ private fun ShellBar(app: RedditApp, home: RedditHomeSource, followed: List<Stri
     }
     val feeds = modes + communities
     PluginHomeTabs(emptyList()) {
-        IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search_hint)) }
+        IconTip(pluginString(Strings.search_hint)) { IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search_hint)) } }
         HomeMenu(app, choices, account)
     }
     ShellFeeds(feeds, ShellFilter(active = RedditHomeChrome.sortChanged(choices)) { sorting = true })
@@ -166,8 +167,8 @@ private fun HomeBar(app: RedditApp, home: RedditHomeSource, communities: List<St
         if (communities.isNotEmpty()) CommunitiesMenu(app, communities, home)
         RedditHomeChrome.actions.forEach { action ->
             when (action) {
-                RedditHomeChrome.Action.SEARCH -> IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search_hint)) }
-                RedditHomeChrome.Action.SORT -> IconButton(onClick = { sorting = true }) { Icon(sortIcon(choices.sort), contentDescription = pluginString(Strings.sort)) }
+                RedditHomeChrome.Action.SEARCH -> IconTip(pluginString(Strings.search_hint)) { IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search_hint)) } }
+                RedditHomeChrome.Action.SORT -> IconTip(pluginString(Strings.sort)) { IconButton(onClick = { sorting = true }) { Icon(sortIcon(choices.sort), contentDescription = pluginString(Strings.sort)) } }
                 RedditHomeChrome.Action.MENU -> HomeMenu(app, choices)
             }
         }
@@ -316,13 +317,13 @@ private fun Modifier.underlined(shown: Boolean, color: Color): Modifier = if (!s
 private fun CommunitiesMenu(app: RedditApp, names: List<String>, home: RedditHomeSource) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) {
+        IconTip(pluginString(Strings.followed_communities)) { IconButton(onClick = { open = true }) {
             Icon(
                 RedditGlyphs.FilterAlt,
                 contentDescription = pluginString(Strings.followed_communities),
                 tint = if (home.viewingSubreddit) MaterialTheme.colorScheme.primary else LocalContentColor.current,
             )
-        }
+        } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             names.forEach { name ->
                 val selected = home.isSelected(name)

@@ -48,7 +48,8 @@ install_entry() {
 
 uninstall_entry() {
   rm -f "$data/applications/$app.desktop" "$data/metainfo/$app.metainfo.xml"
-  for icon in "$data"/icons/hicolor/*/apps/"$app".svg; do
+  # The SVG, the PNG of each size and the symbolic icon.
+  for icon in "$data"/icons/hicolor/*/apps/"$app".svg "$data"/icons/hicolor/*/apps/"$app".png "$data"/icons/hicolor/*/apps/"$app"-symbolic.svg; do
     rm -f "$icon"
   done
   refresh_caches

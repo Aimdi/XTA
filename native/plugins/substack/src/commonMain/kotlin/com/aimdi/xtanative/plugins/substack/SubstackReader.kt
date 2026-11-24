@@ -53,6 +53,7 @@ import com.aimdi.xtanative.networks.substack.SubstackReading
 import com.aimdi.xtanative.networks.substack.SubstackSpeakFrom
 import com.aimdi.xtanative.networks.substack.SubstackWebPage
 import com.aimdi.xtanative.store.settings.SubstackPrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.offline.OfflineArticleAction
 import com.aimdi.xtanative.ui.plugins.ArticleReaderControls
@@ -263,9 +264,9 @@ private fun ReaderActions(app: SubstackApp, model: ReaderModel, state: ReaderMod
     val canSpeak = state.content !is ReaderContent.Empty && post.title.isNotBlank()
     var voices by remember { mutableStateOf(false) }
     if (!post.bodyHtml.isNullOrBlank()) OfflineArticleAction(SubstackOffline.articleOf(post))
-    IconButton(onClick = { app.launch { app.saves.toggle(post) } }) {
+    IconTip(pluginString(if (saved) Strings.unsave else Strings.save)) { IconButton(onClick = { app.launch { app.saves.toggle(post) } }) {
         Icon(if (saved) SubstackIcons.Bookmark else SubstackIcons.BookmarkBorder, pluginString(if (saved) Strings.unsave else Strings.save))
-    }
+    } }
     if (canSpeak) ReadAloudButton(post.title, { state.speakText })
     ReaderMenu(app, model, state, canSpeak, web, onSheet) { voices = true }
     if (voices) VoiceSettingsSheet { voices = false }
@@ -298,7 +299,7 @@ private fun ReaderMenu(app: SubstackApp, model: ReaderModel, state: ReaderModel.
         }
     }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Default.MoreVert, pluginString(Strings.more_options)) }
+        IconTip(pluginString(Strings.more_options)) { IconButton(onClick = { open = true }) { Icon(Icons.Default.MoreVert, pluginString(Strings.more_options)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) { items.forEach { it() } }
     }
 }

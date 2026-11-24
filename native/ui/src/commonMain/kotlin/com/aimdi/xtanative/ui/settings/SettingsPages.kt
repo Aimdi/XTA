@@ -72,9 +72,13 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login_description
 import com.aimdi.xtanative.ui.links.BrowserPickerRow
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.speech.VoiceSettingsSheet
 import com.aimdi.xtanative.ui.theme.Contrast
+import com.aimdi.xtanative.ui.theme.XLook
 import com.aimdi.xtanative.ui.theme.XLookTokens
+import com.aimdi.xtanative.ui.theme.systemAccent
+import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
@@ -123,6 +127,7 @@ internal fun GeneralSettings(title: String, vm: SettingsViewModel, focus: String
                         focused = focus == START_AT_LOGIN_KEY,
                     ) { on -> if (login.set(on)) startsAtLogin = on }
                 }
+                ProxyRows(settings, vm, focus)
             }
             BrowserPickerRow()
             PrefSwitch(settings, GeneralPrefs.cleanLinks, stringResource(Res.string.settings_clean_links), stringResource(Res.string.settings_clean_links_description), vm, focus)
@@ -295,6 +300,8 @@ internal fun PostsSettings(title: String, vm: SettingsViewModel, focus: String?,
             stringResource(Res.string.settings_apply_all_description),
             stringResource(Res.string.settings_yes),
             stringResource(Res.string.settings_no),
+            // It drops every per-account choice: Enter answers No.
+            confirmIsDefault = false,
             onDismiss = { confirmAll = false },
         ) {
             confirmAll = false
@@ -513,23 +520,28 @@ internal fun BackgroundPicker(selected: ThemeBackground, modifier: Modifier = Mo
     }
 }
 
-/** X's six accents, each a disc; the chosen one carries a check. */
+/**
+ * X's six accents, each a disc, and on the desktop System, drawn in the
+ * desktop's accent colour as it is now; the chosen one carries a check.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun AccentPicker(selected: ThemeAccent, modifier: Modifier = Modifier, onSelect: (ThemeAccent) -> Unit) {
+    val desktopAccent = systemAccent()
     FlowRow(modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        ThemeAccent.entries.forEach { accent ->
+        XLook.offeredAccents(isDesktop, selected).forEach { accent ->
             val chosen = accent == selected
+            val argb = XLook.accentArgb(accent, desktopAccent)
             Column(
                 Modifier.width(64.dp).clip(RoundedCornerShape(12.dp)).clickable { onSelect(accent) }.padding(vertical = 6.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(
-                    Modifier.size(32.dp).clip(CircleShape).background(Color(accent.argb))
+                    Modifier.size(32.dp).clip(CircleShape).background(Color(argb))
                         .border(if (chosen) 2.dp else 0.dp, if (chosen) MaterialTheme.colorScheme.onBackground else Color.Transparent, CircleShape),
                     contentAlignment = Alignment.Center,
                 ) {
-                    if (chosen) Icon(Icons.Outlined.Check, null, tint = Color(Contrast.foreground(accent.argb)), modifier = Modifier.size(18.dp))
+                    if (chosen) Icon(Icons.Outlined.Check, null, tint = Color(Contrast.foreground(argb)), modifier = Modifier.size(18.dp))
                 }
                 Text(accentLabel(accent), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp), maxLines = 1)
             }
@@ -554,6 +566,19 @@ internal fun AccessibilitySettings(title: String, vm: SettingsViewModel, focus: 
                 label = { String.format(Locale.ROOT, "%.2f", it) },
                 focused = focus == AccessibilityPrefs.textScale.key,
             ) { vm.set(AccessibilityPrefs.textScale, (it * 100).roundToInt() / 100.0) }
+            if (isDesktop) {
+                // As a browser's zoom: everything in the windows, text included, a preset larger or smaller (Ctrl+Alt with + − 0).
+                val language = currentLanguage()
+                val percent = remember(language) { NumberFormat.getPercentInstance(Locale.forLanguageTag(language)) }
+                ChoiceRow(
+                    stringResource(Res.string.settings_interface_scale),
+                    stringResource(Res.string.settings_interface_scale_description),
+                    DesktopPrefs.UI_SCALES,
+                    settings[DesktopPrefs.uiScale],
+                    label = { percent.format(it) },
+                    focused = focus == DesktopPrefs.uiScale.key,
+                ) { vm.set(DesktopPrefs.uiScale, it) }
+            }
             PrefSwitch(settings, AccessibilityPrefs.disableAnimations, stringResource(Res.string.settings_disable_animations), stringResource(Res.string.settings_disable_animations_description), vm, focus)
             if (!isDesktop) {
                 PrefSwitch(settings, AccessibilityPrefs.haptics, stringResource(Res.string.settings_haptics), stringResource(Res.string.settings_haptics_description), vm, focus)

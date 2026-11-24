@@ -39,7 +39,10 @@ import coil3.compose.AsyncImage
 import com.aimdi.xtanative.services.links.LinkPreview
 import com.aimdi.xtanative.services.links.LinkPreviewLayout
 import com.aimdi.xtanative.services.links.LinkPreviews
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.onSecondaryClickIf
+import com.aimdi.xtanative.ui.post.dragsLink
 
 private val CardShape = RoundedCornerShape(16.dp)
 private val TileSize = 56.dp
@@ -71,6 +74,9 @@ fun LinkPreviewCard(
             .fillMaxWidth()
             .clip(CardShape)
             .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CardShape)
+            // Dragged with the mouse, the card drags its link out, as a browser's link does.
+            .dragsLink(url)
+            .onSecondaryClickIf(onLongPress)
             .combinedClickable(onClick = onTap, onLongClick = onLongPress)
             .clearAndSetSemantics {
                 contentDescription = "$domain, $shown"
@@ -145,9 +151,9 @@ private fun PreviewTile(image: String?) {
 private fun PreviewTexts(domain: String, title: String, description: String?, titleLines: Int, modifier: Modifier) {
     val secondary = MaterialTheme.colorScheme.onSurfaceVariant
     Column(modifier) {
-        Text(domain, style = MaterialTheme.typography.bodySmall, color = secondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        TipText(domain, style = MaterialTheme.typography.bodySmall, color = secondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Spacer(Modifier.height(2.dp))
-        Text(
+        TipText(
             title,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
@@ -157,7 +163,7 @@ private fun PreviewTexts(domain: String, title: String, description: String?, ti
         val summary = description?.trim().orEmpty()
         if (summary.isNotEmpty()) {
             Spacer(Modifier.height(4.dp))
-            Text(summary, style = MaterialTheme.typography.bodySmall, color = secondary, maxLines = 3, overflow = TextOverflow.Ellipsis)
+            TipText(summary, style = MaterialTheme.typography.bodySmall, color = secondary, maxLines = 3, overflow = TextOverflow.Ellipsis)
         }
     }
 }

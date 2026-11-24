@@ -45,6 +45,7 @@ import com.aimdi.xtanative.store.backup.TikTokSubscriptionRow
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.swipeTabs
@@ -54,6 +55,7 @@ import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginChipTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.PullToReload
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
@@ -114,7 +116,7 @@ private class HomeActions(val search: () -> Unit, val settings: () -> Unit)
 @Composable
 private fun ShellBar(app: TikTokApp, tab: TikTokTab, onTab: (TikTokTab) -> Unit) {
     PluginHomeTabs(emptyList()) {
-        IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
+        IconTip(pluginString(Strings.search)) { IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } }
         ShellMenuButton { close ->
             DropdownMenuItem(text = { Text(pluginString(Strings.settings)) }, onClick = {
                 close()
@@ -129,8 +131,8 @@ private fun ShellBar(app: TikTokApp, tab: TikTokTab, onTab: (TikTokTab) -> Unit)
 private fun TabRow(tab: TikTokTab, onTab: (TikTokTab) -> Unit, actions: HomeActions?) {
     PluginChipTabs(TikTokTab.entries, tab, onTab, icon = { tabLook(it).first }, label = { pluginString(tabLook(it).second) }) {
         if (actions != null) {
-            IconButton(onClick = actions.search) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
-            IconButton(onClick = actions.settings) { Icon(Icons.Filled.Settings, pluginString(Strings.settings)) }
+            IconTip(pluginString(Strings.search)) { IconButton(onClick = actions.search) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } }
+            IconTip(pluginString(Strings.settings)) { IconButton(onClick = actions.settings) { Icon(Icons.Filled.Settings, pluginString(Strings.settings)) } }
         }
     }
 }
@@ -148,14 +150,14 @@ private fun FollowingTab(app: TikTokApp, follows: List<TikTokSubscriptionRow>?, 
     val likes = remember(settings) { TikTokMarks.likes(settings).toSet() }
     // The pull covers the empty pane and the failure too, as XTA's RefreshIndicator wraps them.
     PullToRefreshBox(isRefreshing = state.loading && state.items.isNotEmpty(), onRefresh = { app.feed.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             when {
                 state.items.isNotEmpty() -> items(state.items, key = { it.id }) { post -> TikTokPostCard(app, post, post.id in likes) }
                 state.loading || !state.loaded || follows == null -> item(key = "loading") { FeedSkeleton() }
                 error != null -> item(key = "problem") { RetryMessage(pluginString(TikTokText.error(error)), { app.feed.refresh(force = true) }) }
                 else -> item(key = "empty") { NothingFollowed(app, hasAccounts = !follows.isNullOrEmpty(), PaddingValues()) }
             }
-        }
+        } }
     }
 }
 
@@ -191,7 +193,7 @@ private fun AccountsTab(app: TikTokApp, follows: List<TikTokSubscriptionRow>?, p
     var unfollowing by remember { mutableStateOf<String?>(null) }
     // A pull reads the accounts kept here again, over the list and over its empty pane, as XTA's RefreshIndicator does.
     PullToReload(reload = { app.follows.reload() }) {
-        LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             when {
                 follows == null -> item(key = "loading") { LoadingRow() }
                 follows.isEmpty() -> item(key = "empty") { NothingFollowed(app, hasAccounts = false, PaddingValues()) }
@@ -200,7 +202,7 @@ private fun AccountsTab(app: TikTokApp, follows: List<TikTokSubscriptionRow>?, p
                     items(follows, key = { it.id }) { follow -> AccountRow(app, follow) { unfollowing = follow.id } }
                 }
             }
-        }
+        } }
     }
     unfollowing?.let { handle ->
         UnfollowDialog(handle, onDismiss = { unfollowing = null }) {
@@ -232,7 +234,7 @@ private fun AccountRow(app: TikTokApp, follow: TikTokSubscriptionRow, onUnfollow
             supportingContent = { Text("@${follow.id}", maxLines = 1, overflow = TextOverflow.Ellipsis) },
             trailingContent = {
                 Box {
-                    IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) }
+                    IconTip(pluginString(Strings.more_options)) { IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) } }
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                         DropdownMenuItem(text = { Text(pluginString(Strings.add_to_group)) }, onClick = { menu = false; app.addToGroup(follow) })
                         DropdownMenuItem(text = { Text(pluginString(Strings.unfollow)) }, onClick = { menu = false; onUnfollow() })

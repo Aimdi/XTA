@@ -53,6 +53,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPaging
 import com.aimdi.xtanative.networks.threads.ThreadsPeopleList
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
@@ -214,7 +215,7 @@ private fun SearchBox(typed: String, onType: (String) -> Unit) {
         placeholder = { Text(pluginString(Strings.search)) },
         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
         trailingIcon = if (typed.isEmpty()) null else {
-            { IconButton(onClick = { onType("") }) { Icon(Icons.Filled.Close, contentDescription = pluginString(Strings.clear)) } }
+            { IconTip(pluginString(Strings.clear)) { IconButton(onClick = { onType("") }) { Icon(Icons.Filled.Close, contentDescription = pluginString(Strings.clear)) } } }
         },
         keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Search),
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),

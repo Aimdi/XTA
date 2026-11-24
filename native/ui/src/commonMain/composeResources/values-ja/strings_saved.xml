@@ -107,6 +107,7 @@
     <string name="saved_quoted_unavailable">引用ポストは利用できません</string>
     <string name="saved_note_thread">メモ</string>
     <string name="saved_long_press_hint">ヒント: 長押しでフォルダーに保存できます</string>
+    <string name="saved_right_click_hint">ヒント: 右クリックでフォルダーに保存できます</string>
     <string name="saved_like">この端末でいいね</string>
     <string name="saved_unlike">この端末のいいねを取り消す</string>
     <string name="saved_save_here">この端末に保存</string>

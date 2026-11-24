@@ -5,8 +5,13 @@
     <string name="chrome_update_view_version">在 GitHub 上查看版本 %1$s</string>
     <string name="chrome_update_view">在 GitHub 上查看</string>
     <string name="chrome_update_download">下载</string>
+    <string name="chrome_update_install_package">下载软件包，然后在保存它的文件夹中运行：</string>
+    <string name="chrome_update_install_tarball">下载压缩包，然后在保存它的文件夹中运行：</string>
+    <string name="chrome_update_copy">复制命令</string>
+    <string name="chrome_update_skip">跳过此版本</string>
     <string name="chrome_licences_legalese">以 MIT 许可证发布</string>
     <plurals name="chrome_licences_count">
         <item quantity="other">%1$d 份许可</item>
     </plurals>
+    <string name="chrome_offline_bar">离线 – 正在显示已保存的副本</string>
 </resources>

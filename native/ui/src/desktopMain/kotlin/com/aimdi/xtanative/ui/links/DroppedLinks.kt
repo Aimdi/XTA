@@ -40,11 +40,22 @@ internal object DroppedLinks {
 internal object DraggedText {
     private val URI_LIST: DataFlavor? = runCatching { DataFlavor("text/uri-list;class=java.lang.String") }.getOrNull()
 
-    /** Whether [transfer] offers text of either kind. */
-    fun offered(transfer: Transferable): Boolean = flavors(transfer).isNotEmpty()
+    /**
+     * Marks a drag the app itself started (a link dragged out of a post): one
+     * dropped back on the window is no link handed in, which would open it
+     * (in the browser, for a link the app does not show) when the reader
+     * only let go of it short of another window.
+     */
+    val FROM_APP: DataFlavor = DataFlavor("application/x-xta-native-drag;class=java.lang.String")
 
-    /** The text [transfer] holds, the address list first; null for none. */
-    fun read(transfer: Transferable): String? = flavors(transfer).firstNotNullOfOrNull { flavor ->
+    /** Whether [transfer] offers text of either kind, and comes from outside the app. */
+    fun offered(transfer: Transferable): Boolean = !fromApp(transfer) && flavors(transfer).isNotEmpty()
+
+    /** Whether the app started the drag of [transfer] ([FROM_APP]). */
+    fun fromApp(transfer: Transferable): Boolean = runCatching { transfer.isDataFlavorSupported(FROM_APP) }.getOrDefault(false)
+
+    /** The text [transfer] holds, the address list first; null for none, and for a drag of the app's own. */
+    fun read(transfer: Transferable): String? = if (fromApp(transfer)) null else flavors(transfer).firstNotNullOfOrNull { flavor ->
         runCatching { transfer.getTransferData(flavor) as? String }.getOrNull()?.takeIf { it.isNotBlank() }
     }
 

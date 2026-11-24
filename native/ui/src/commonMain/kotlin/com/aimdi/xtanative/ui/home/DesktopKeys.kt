@@ -1,9 +1,16 @@
 package com.aimdi.xtanative.ui.home
 
 import androidx.compose.ui.geometry.Offset
+import kotlin.math.abs
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, N, Z, F3, OTHER }
+
+/** A mouse's side buttons: back and forward, as in a browser. */
+enum class SideButton { BACK, FORWARD }
+
+/** A step of the keyboard's focus walk ([DesktopKeys.tabStep]). */
+enum class TabStep { FORWARD, BACKWARD }
 
 enum class DeskAction {
     /** Out of the text field being typed in, as XTA's first Esc does. */
@@ -12,6 +19,9 @@ enum class DeskAction {
     /** What the page has open (a side menu) closes first. */
     CLOSE,
     BACK,
+
+    /** The screen the last back left opens again, as a browser's forward does (Alt+→, the mouse's forward button). */
+    FORWARD,
     REFRESH,
     PREVIOUS_PAGE,
     NEXT_PAGE,
@@ -25,10 +35,22 @@ enum class DeskAction {
     /** The page's own search field takes the keyboard, else the search opens ([DesktopActions.find]). */
     FIND,
 
+    /** The page's find bar opens ([DesktopActions.findInPage]), else as [FIND] while nothing is open over the page. */
+    FIND_IN_PAGE,
+
+    /** The open find bar goes to its next match, or the one before ([DesktopActions.findStep]). */
+    FIND_NEXT,
+    FIND_PREVIOUS,
+
     /** The reader's text size a step up, a step down, or back to the system's ([DesktopKeys.textScaled]). */
     TEXT_BIGGER,
     TEXT_SMALLER,
     TEXT_RESET,
+
+    /** The interface size a preset up, a preset down, or back to the desktop's own ([DesktopKeys.uiScaled]). */
+    UI_BIGGER,
+    UI_SMALLER,
+    UI_RESET,
 
     /** The list read moves a line, a screen, or to its top or end ([DesktopActions.scroll]). */
     LINE_UP,
@@ -58,6 +80,9 @@ enum class DeskAction {
     /** Settings open, as Ctrl+, opens a desktop app's preferences. */
     OPEN_SETTINGS,
 
+    /** The page's own New opens ([DesktopActions.create]): a note in Saved, a group in Subscriptions, an antenna, as a desktop app's Ctrl+N makes a new document. */
+    CREATE,
+
     /** The page's selection takes every item shown, as a file manager's Ctrl+A does ([DesktopActions.selectAll]). */
     SELECT_ALL,
 
@@ -67,9 +92,27 @@ enum class DeskAction {
     /** The page stops selecting, as Esc does in a file manager ([DesktopActions.leaveSelection]). */
     LEAVE_SELECTION,
 
+    /** The change the notice at the foot of the window offers to undo is taken back, as its Undo does ([com.aimdi.xtanative.ui.saved.KeepNotices.undo]). */
+    UNDO,
+
     /** The row of a reorderable list the pointer rests on moves a place up or down, as its drag would move it ([DesktopActions.moveRow]). */
     MOVE_ROW_UP,
     MOVE_ROW_DOWN,
+
+    /** The post the reading keys are on ([DesktopActions.currentPost]) opens, as a click on it does. */
+    OPEN_POST,
+
+    /** That post liked on this device, or no longer, as its heart does. */
+    LIKE_POST,
+
+    /** That post saved on this device, or no longer, as its bookmark does. */
+    SAVE_POST,
+
+    /** That post's link copied. */
+    COPY_POST_LINK,
+
+    /** That post's ⋯ menu opens, at the post, as the Menu key opens a desktop app's context menu. */
+    POST_MENU,
     NONE,
 }
 
@@ -93,9 +136,15 @@ object DesktopKeys {
      * after a screen changes) moves it into the page, to its first control,
      * where Tab and Shift+Tab then go on from one to the next. Ctrl+F, even
      * from a field, and / while nothing is being typed in, go to the search,
-     * as a desktop app's do: the page's own field, else the app's search.
+     * as a desktop app's do: the page's own field, else the app's search;
+     * Ctrl+K and Ctrl+L, as a browser's go to its search and address bar,
+     * do the same. On a page with a find bar (an opened post, an article)
+     * Ctrl+F opens it instead, as a browser finds in its page, over the
+     * opened post's card too; F3 and Shift+F3 go to its next match and the
+     * one before.
      * Ctrl with + (or =), - and 0 make the text bigger, smaller, or its
-     * size again, as a browser's zoom does, from a field too. F1, and ?
+     * size again, as a browser's zoom does, from a field too; with Ctrl+Alt
+     * they make the whole interface so (text, controls, pictures). F1, and ?
      * while nothing is being typed in, list these keys. Ctrl+, opens the
      * settings, and Ctrl+W closes what is open over the page (a sheet, a
      * menu), as a desktop app closes a document; it never goes back further.
@@ -119,6 +168,24 @@ object DesktopKeys {
      * over the page, move the row the pointer rests on in a list that is
      * otherwise reordered by dragging (a row with the focus moves itself,
      * [RowKeyMoves]).
+     * The post the reading keys are on ([DesktopActions.currentPost]) is
+     * acted on as on X's site, while nothing is being typed in and nothing is
+     * open over the page: Enter and o open it, l likes it on this device (or
+     * no longer), b saves it on this device (or no longer), Ctrl+Shift+C
+     * copies its link, and the Menu key and Shift+F10 open its ⋯ menu. Enter
+     * leaves a button or tab that has the focus to press ([focusHeld]: one
+     * the mouse clicked too), as in a browser.
+     * Ctrl+N, while nothing is being typed in and nothing is open over the
+     * page, makes something new where the page has a New of its own (a note
+     * in Saved, a group, an antenna), as a desktop app's makes a document.
+     * Ctrl+Z, while nothing is being typed in (where it undoes the typing)
+     * and nothing is open over the page, presses the Undo of the notice at
+     * the foot of the window (posts removed from Saved, a folder or a note
+     * deleted, accounts unfollowed), as a desktop app undoes its last change.
+     * A state of the page that Back closes ([backOpen]: a search open in
+     * place, an earlier card to go back to) is closed by Esc, Alt+← and the
+     * Back key before they go back; it covers nothing, so the other keys go
+     * on as they were.
      */
     fun action(
         key: DeskKey,
@@ -131,13 +198,17 @@ object DesktopKeys {
         shift: Boolean = false,
         selecting: Boolean = false,
         openIsRead: Boolean = false,
+        focusHeld: Boolean = focusInside,
+        backOpen: Boolean = false,
     ): DeskAction {
         // Only what is open over the page stops the reading keys; a column opened beside it is read with them.
         val covered = somethingOpen && !openIsRead
         return when {
             key == DeskKey.ESCAPE && focusInside -> DeskAction.LEAVE_FIELD
             key == DeskKey.ESCAPE && selecting && !somethingOpen -> DeskAction.LEAVE_SELECTION
-            key == DeskKey.ESCAPE || key == DeskKey.BACK || (key == DeskKey.LEFT && alt) -> back(canGoBack, somethingOpen)
+            key == DeskKey.ESCAPE || key == DeskKey.BACK || (key == DeskKey.LEFT && alt) -> back(canGoBack, somethingOpen || backOpen)
+            // Over an opened post (a card the page counts as open) too, as Alt+Home.
+            key == DeskKey.RIGHT && alt && !ctrl && !shift -> DeskAction.FORWARD
             key == DeskKey.F5 || (key == DeskKey.R && ctrl) -> DeskAction.REFRESH
             key == DeskKey.Q && ctrl && !alt -> DeskAction.LEAVE_APP
             key == DeskKey.W && ctrl && !alt && !shift -> if (somethingOpen) DeskAction.CLOSE else DeskAction.NONE
@@ -145,18 +216,28 @@ object DesktopKeys {
             ctrl && !alt && key in TAB_KEYS -> if (somethingOpen) DeskAction.NONE else tabTurn(key, shift)
             key == DeskKey.TAB && !focusInside && !alt && !ctrl -> DeskAction.ENTER_PAGE
             ctrl && !alt && key in TEXT_KEYS -> textSize(key)
+            ctrl && alt && key in TEXT_KEYS -> interfaceSize(key)
             (key == DeskKey.F1 && !alt && !ctrl) || (key == DeskKey.QUESTION && !focusInside && !alt && !ctrl) ->
                 if (somethingOpen) DeskAction.NONE else DeskAction.SHOW_KEYS
             // Over an opened post (a card the page counts as open) too: going home leaves it with the rest.
             key == DeskKey.HOME && alt && !ctrl && !shift -> DeskAction.GO_HOME
             key == DeskKey.V && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.OPEN_PASTED_LINK
-            (key == DeskKey.F && ctrl && !alt && !shift) || (key == DeskKey.SLASH && !focusInside && !alt && !ctrl) ->
+            // Ctrl+F finds in the page (a post, an article) as a browser's does, also over the opened post's card; / is the search's.
+            key == DeskKey.F && ctrl && !alt && !shift -> if (covered) DeskAction.NONE else DeskAction.FIND_IN_PAGE
+            key == DeskKey.F3 && !alt && !ctrl -> when {
+                covered -> DeskAction.NONE
+                shift -> DeskAction.FIND_PREVIOUS
+                else -> DeskAction.FIND_NEXT
+            }
+            (key in FIND_KEYS && ctrl && !alt && !shift) || (key == DeskKey.SLASH && !focusInside && !alt && !ctrl) ->
                 if (somethingOpen) DeskAction.NONE else DeskAction.FIND
             ctrl && !alt && !shift && !focusInside && (key == DeskKey.LEFT || key == DeskKey.RIGHT) -> when {
                 covered -> DeskAction.NONE
                 (key == DeskKey.RIGHT) != rtl -> DeskAction.NEXT_COLUMN
                 else -> DeskAction.PREVIOUS_COLUMN
             }
+            key == DeskKey.N && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.CREATE
+            key == DeskKey.Z && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.UNDO
             // In a field, Ctrl+A selects its text; Delete deletes a character there.
             key == DeskKey.A && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.SELECT_ALL
             key == DeskKey.DELETE && selecting && !focusInside && !alt && !ctrl && !shift -> if (somethingOpen) DeskAction.NONE else DeskAction.REMOVE_SELECTED
@@ -165,7 +246,13 @@ object DesktopKeys {
                 key == DeskKey.UP -> DeskAction.MOVE_ROW_UP
                 else -> DeskAction.MOVE_ROW_DOWN
             }
+            key == DeskKey.C && ctrl && shift && !alt && !focusInside -> if (covered) DeskAction.NONE else DeskAction.COPY_POST_LINK
             focusInside || alt || ctrl -> DeskAction.NONE
+            (key == DeskKey.MENU && !shift) || (key == DeskKey.F10 && shift) -> if (covered) DeskAction.NONE else DeskAction.POST_MENU
+            key in POST_KEYS && !shift -> when {
+                covered || (key == DeskKey.ENTER && focusHeld) -> DeskAction.NONE
+                else -> POST_KEYS.getValue(key)
+            }
             key in SCROLL_KEYS -> if (covered) DeskAction.NONE else scroll(key, shift)
             (key == DeskKey.J || key == DeskKey.K) && !shift -> when {
                 covered -> DeskAction.NONE
@@ -179,6 +266,35 @@ object DesktopKeys {
     }
 
     /**
+     * What [key] does to the list of a sheet open over the window
+     * ([SheetKeys]): ↑ ↓, Page Up and Down, Space (with Shift, up), Home and
+     * End move it, as the page's under it; nothing with Ctrl or Alt held,
+     * nor any other key.
+     */
+    fun sheetScroll(key: DeskKey, shift: Boolean, ctrl: Boolean, alt: Boolean): DeskAction = when {
+        ctrl || alt || key !in SCROLL_KEYS -> DeskAction.NONE
+        shift && key != DeskKey.SPACE -> DeskAction.NONE
+        else -> scroll(key, shift)
+    }
+
+    /**
+     * Which way a Tab press walks the controls: forward, or back with Shift;
+     * null for anything else (Ctrl+Tab and Alt+Tab turn tabs or windows).
+     *
+     * Compose walks them in the order they are placed, and a Material
+     * scaffold places its page before its top bar: Tab from the bar's last
+     * button runs off the end and wraps to the window's frame. The frame
+     * then hands the same step on ([DesktopNavigation]), into the page, so
+     * the walk goes bar, page, bar, as the eye reads it, with no stop that
+     * shows nothing.
+     */
+    fun tabStep(key: DeskKey, shift: Boolean, ctrl: Boolean, alt: Boolean): TabStep? = when {
+        key != DeskKey.TAB || ctrl || alt -> null
+        shift -> TabStep.BACKWARD
+        else -> TabStep.FORWARD
+    }
+
+    /**
      * Whether what has the focus inside the page ([focusInside]) keeps the
      * keys from [action]: a field being typed in ([typing]), or anything the
      * keyboard moved the focus to (Tab), where Space and Enter press it. A
@@ -189,7 +305,33 @@ object DesktopKeys {
      */
     fun keysInside(focusInside: Boolean, typing: Boolean, clicked: Boolean): Boolean = focusInside && (typing || !clicked)
 
+    /**
+     * Whether the scrolling [action] goes first to the control the mouse
+     * clicked, which holds the focus ([focusHeld]), and moves the page only
+     * when that control leaves the key unused: on a page that scrolls as a
+     * whole ([wholePage]: Settings and its sections), a slider takes its
+     * arrows, Home and End, a switch's row its Space. On a lazy list (a
+     * timeline, the Deck) a clicked button, tab or chip leaves the reading
+     * keys to the list at once ([keysInside]).
+     */
+    fun controlFirst(action: DeskAction, focusHeld: Boolean, wholePage: Boolean): Boolean =
+        focusHeld && wholePage && action in PAGE_SCROLLS
+
+    private val PAGE_SCROLLS = setOf(
+        DeskAction.LINE_UP, DeskAction.LINE_DOWN, DeskAction.SCREEN_UP, DeskAction.SCREEN_DOWN, DeskAction.TO_TOP, DeskAction.TO_END,
+    )
+
     private val SCROLL_KEYS = setOf(DeskKey.UP, DeskKey.DOWN, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN, DeskKey.SPACE, DeskKey.HOME, DeskKey.END)
+
+    private val POST_KEYS = mapOf(
+        DeskKey.ENTER to DeskAction.OPEN_POST,
+        DeskKey.O to DeskAction.OPEN_POST,
+        DeskKey.L to DeskAction.LIKE_POST,
+        DeskKey.B to DeskAction.SAVE_POST,
+    )
+
+    /** The letters Ctrl takes to the search: F as a desktop app's find, K and L as a browser's search and address bar. */
+    private val FIND_KEYS = setOf(DeskKey.K, DeskKey.L)
 
     private val TAB_KEYS = setOf(DeskKey.TAB, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN)
 
@@ -200,6 +342,27 @@ object DesktopKeys {
         DeskKey.MINUS -> DeskAction.TEXT_SMALLER
         else -> DeskAction.TEXT_RESET
     }
+
+    private fun interfaceSize(key: DeskKey): DeskAction = when (key) {
+        DeskKey.PLUS -> DeskAction.UI_BIGGER
+        DeskKey.MINUS -> DeskAction.UI_SMALLER
+        else -> DeskAction.UI_RESET
+    }
+
+    /**
+     * The interface size [scale] after [action]: the next of [presets]
+     * (ascending) above it or the one below, staying at the ends; 1.0, the
+     * desktop's own, on reset; [scale] itself for any other action. A size
+     * between presets goes onto the nearest one that way.
+     */
+    fun uiScaled(scale: Double, action: DeskAction, presets: List<Double>): Double = when (action) {
+        DeskAction.UI_BIGGER -> presets.firstOrNull { it > scale + SCALE_SLACK } ?: presets.lastOrNull() ?: scale
+        DeskAction.UI_SMALLER -> presets.lastOrNull { it < scale - SCALE_SLACK } ?: presets.firstOrNull() ?: scale
+        DeskAction.UI_RESET -> 1.0
+        else -> scale
+    }
+
+    private const val SCALE_SLACK = 1e-6
 
     /** A step of the text size: the Accessibility slider's own. */
     const val TEXT_STEP = 0.05
@@ -233,6 +396,31 @@ object DesktopKeys {
         DeskKey.END -> DeskAction.TO_END
         else -> DeskAction.SCREEN_DOWN
     }
+
+    /**
+     * Where a page that scrolls as a whole (a verticalScroll's ScrollState)
+     * stands after [action], from [value] of [max]: a [line] for ↑ and ↓, a
+     * [viewport] less [kept] of it for a screen (some of what was read stays
+     * in view, as a browser's Page Down leaves), its start or end for Home
+     * and End, never past either. Null when [action] does not move such a
+     * page (j and k: it has no items).
+     */
+    fun scrolledTo(action: DeskAction, value: Int, max: Int, viewport: Int, line: Float, kept: Float = SCREEN_KEPT): Int? {
+        val screen = (viewport * (1 - kept)).toInt().coerceAtLeast(1)
+        val target = when (action) {
+            DeskAction.LINE_UP -> value - line.toInt()
+            DeskAction.LINE_DOWN -> value + line.toInt()
+            DeskAction.SCREEN_UP -> value - screen
+            DeskAction.SCREEN_DOWN -> value + screen
+            DeskAction.TO_TOP -> 0
+            DeskAction.TO_END -> max
+            else -> return null
+        }
+        return target.coerceIn(0, max.coerceAtLeast(0))
+    }
+
+    /** How much of a screen's move stays in view after it ([scrolledTo]), as a browser's Page Down keeps a little. */
+    const val SCREEN_KEPT = 0.12f
 
     /** Going back: what is open closes first; the keys never leave the first screen. */
     fun back(canGoBack: Boolean, somethingOpen: Boolean): DeskAction = when {
@@ -285,6 +473,43 @@ object DesktopKeys {
         return target to -line
     }
 
+    /** Where j or k takes a list ([keyStep]): to an item's start ([itemStep]), or on to a post already drawn, the list moving [by] that far as it can. */
+    sealed interface KeyStep {
+        data class ToItem(val index: Int, val offset: Int) : KeyStep
+        data class ToPost(val post: Int, val by: Int) : KeyStep
+    }
+
+    /**
+     * Where j ([forward]) or k goes from the post [marked] among those drawn
+     * at [tops] (the items' offsets) in a list of [count] items, [shown] in
+     * view. A marked post at the line (under any pinned header) steps by
+     * items ([itemStep]), except to the next post of its own item (a thread's
+     * next post). One the list could not bring to the line, being at its end
+     * or its start, steps to the next drawn post, or the one before, so every
+     * post there is reached one by one while the list moves as far as it can.
+     * Null where there is nowhere to go: the mark stays. Without a mark, the
+     * step goes from the list's place ([itemStep]).
+     */
+    fun keyStep(shown: List<ShownItem>, count: Int, tops: List<Int>, marked: Int?, forward: Boolean): KeyStep? {
+        val item = itemStep(shown, count, forward)?.let { (index, offset) -> KeyStep.ToItem(index, offset) }
+        val top = marked?.let(tops::getOrNull) ?: return item
+        val items = shown.sortedBy { it.index }
+        val line = pinnedOf(items)?.let { it.offset + it.size } ?: 0
+        val target = tops.withIndex().let { all ->
+            if (forward) all.filter { it.value > top + SLACK }.minByOrNull { it.value } else all.filter { it.value < top - SLACK }.maxByOrNull { it.value }
+        }
+        fun itemOf(at: Int) = items.firstOrNull { at >= it.offset - SLACK && at < it.offset + it.size }?.index
+        val home = itemOf(top)
+        val atLine = abs(top - line) <= SLACK
+        if (target != null && (!atLine || item == null || (home != null && itemOf(target.value) == home))) {
+            return KeyStep.ToPost(target.index, target.value - line)
+        }
+        if (item == null) return null
+        // An item step that would take the mark back the way it came (the list at its end) is none.
+        if (!atLine && home != null && (if (forward) item.index <= home else item.index >= home)) return null
+        return item
+    }
+
     /**
      * How far the start of item [index] sits under a header pinned over the
      * list in [shown], after a step: a header in its own place before the
@@ -296,6 +521,25 @@ object DesktopKeys {
         val item = items.firstOrNull { it.index == index && it !== pinned } ?: return 0
         return (pinned.offset + pinned.size - item.offset).coerceAtLeast(0)
     }
+
+    /**
+     * Which of the posts drawn in a list is the one the reading keys are on,
+     * the list's items in view being [shown] and the posts starting at
+     * [tops] (in the items' offsets), the list's view ending at [end]: the
+     * first starting at or below the line a pinned header leaves (j and k
+     * leave a post's start there), else the one partly read across it. Null
+     * when no post is in view.
+     */
+    fun currentPost(shown: List<ShownItem>, tops: List<Int>, end: Int): Int? {
+        val pinned = pinnedOf(shown.sortedBy { it.index })
+        val line = pinned?.let { it.offset + it.size } ?: 0
+        val inView = tops.withIndex().filter { it.value < end }
+        return (inView.filter { it.value >= line - SLACK }.minByOrNull { it.value } ?: inView.filter { it.value < line }.maxByOrNull { it.value })?.index
+    }
+
+    /** Which of the posts starting at [tops] is the first in the item at [offset], [size] long; null when none is in it. */
+    fun firstIn(offset: Int, size: Int, tops: List<Int>): Int? =
+        tops.withIndex().filter { it.value >= offset - SLACK && it.value < offset + size }.minByOrNull { it.value }?.index
 
     /** The first item in view when it is pinned over the list: the items after it are not the next ones, or they overlap it. */
     private fun pinnedOf(items: List<ShownItem>): ShownItem? =
@@ -314,6 +558,43 @@ object DesktopKeys {
         digit in 1..8 -> (digit - 1).takeIf { it < count }
         else -> null
     }
+
+    /**
+     * The side button an AWT mouse [button] is, where Compose does not see it:
+     * on X11, X's buttons 8 and 9 (back, forward) come as AWT's 6 and 7, after
+     * the wheel's 4 to 7. Null for any other button.
+     */
+    fun sideButton(button: Int): SideButton? = when (button) {
+        X11_BACK -> SideButton.BACK
+        X11_FORWARD -> SideButton.FORWARD
+        else -> null
+    }
+
+    /**
+     * The side button a press is: from AWT's [awtButton] where the press
+     * came through AWT, and only from it, since on X11 a sideways scroll
+     * (X's buttons 6 and 7: a touchpad, a tilting wheel) comes as AWT's 4
+     * and 5, which Compose reports as back and forward ([composeBack],
+     * [composeForward]); those count only where there is no AWT event.
+     */
+    fun pressedSide(awtButton: Int?, composeBack: Boolean, composeForward: Boolean): SideButton? = when {
+        awtButton != null -> sideButton(awtButton)
+        composeBack -> SideButton.BACK
+        composeForward -> SideButton.FORWARD
+        else -> null
+    }
+
+    private const val X11_BACK = 6
+    private const val X11_FORWARD = 7
+
+    /**
+     * Whether [key] closes a window of the app's own beside its main one
+     * (a post opened in a new window) where it does nothing else ([action]
+     * none): Ctrl+W, as a browser's closes its window's last tab, and Esc on
+     * its first screen. The main window never closes so.
+     */
+    fun closesWindow(key: DeskKey, alt: Boolean, ctrl: Boolean, shift: Boolean, action: DeskAction): Boolean =
+        action == DeskAction.NONE && !alt && !shift && ((key == DeskKey.ESCAPE && !ctrl) || (key == DeskKey.W && ctrl))
 
     /** The mouse's back button: as the keys, but on the first screen it closes the app, as XTA's goes back from Home. */
     fun mouseBack(canGoBack: Boolean, somethingOpen: Boolean): DeskAction =

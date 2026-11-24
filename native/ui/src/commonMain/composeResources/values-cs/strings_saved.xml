@@ -116,6 +116,7 @@
     <string name="saved_quoted_unavailable">Citovaný příspěvek není dostupný</string>
     <string name="saved_note_thread">Poznámka</string>
     <string name="saved_long_press_hint">Tip: podržením zařadíte příspěvek do složky</string>
+    <string name="saved_right_click_hint">Tip: kliknutím pravým tlačítkem zařadíte příspěvek do složky</string>
     <string name="saved_like">Líbí se na tomto zařízení</string>
     <string name="saved_unlike">Odebrat like z tohoto zařízení</string>
     <string name="saved_save_here">Uložit na toto zařízení</string>

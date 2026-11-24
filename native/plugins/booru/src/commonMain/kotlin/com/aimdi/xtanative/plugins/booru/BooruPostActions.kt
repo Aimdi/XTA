@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.networks.booru.BooruPost
 import com.aimdi.xtanative.store.settings.BooruPrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -34,7 +35,7 @@ private enum class PostMenu { SHARE, COPY_LINK, COPY_TAGS, COPY_PROMPT, HOST, SO
  */
 @Composable
 internal fun PostActions(app: BooruApp, viewer: ViewerState, post: BooruPost) {
-    IconButton(onClick = { app.download(post) }) { Icon(GroupIcons.FileDownloadOutlined, pluginString(Strings.download)) }
+    IconTip(pluginString(Strings.download)) { IconButton(onClick = { app.download(post) }) { Icon(GroupIcons.FileDownloadOutlined, pluginString(Strings.download)) } }
     SaveButton(app, post)
     PostMenuButton(app, viewer, post)
 }
@@ -45,12 +46,12 @@ private fun SaveButton(app: BooruApp, post: BooruPost) {
     val archived by app.host.saved.collectAsState()
     val archive = remember(post) { BooruArchive.of(post) }
     val saved = archive.id in archived
-    IconButton(onClick = { app.host.toggleSaved(archive) }) {
+    IconTip(pluginString(if (saved) Strings.unsave_from_this_device else Strings.save_on_this_device)) { IconButton(onClick = { app.host.toggleSaved(archive) }) {
         Icon(
             if (saved) BooruIcons.Bookmark else BooruIcons.BookmarkBorder,
             pluginString(if (saved) Strings.unsave_from_this_device else Strings.save_on_this_device),
         )
-    }
+    } }
 }
 
 @Composable
@@ -73,7 +74,7 @@ private fun PostMenuButton(app: BooruApp, viewer: ViewerState, post: BooruPost) 
         }
     }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) }
+        IconTip(pluginString(Strings.more_options)) { IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             MenuRow(Icons.Filled.Share, pluginString(Strings.share_link)) { run(PostMenu.SHARE) }
             MenuRow(XIcons.Link, pluginString(Strings.copy_link)) { run(PostMenu.COPY_LINK) }

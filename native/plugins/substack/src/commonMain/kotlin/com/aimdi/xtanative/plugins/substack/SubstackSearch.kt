@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.substack
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -49,6 +51,7 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.PluginSearchHistory
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -88,17 +91,18 @@ private fun SearchBody(app: SubstackApp, trimmed: String, frame: PluginFrame, se
     val direct = trimmed.isNotEmpty() && SubstackHosts.postRef(trimmed) != null
     var tab by rememberSaveable { mutableStateOf(0) }
     val notices = rememberNotices()
+    val list = rememberLazyListState()
     WithNotices(notices) {
         Column(Modifier.fillMaxSize()) {
             if (!direct) SearchTabs(tab) { tab = it }
-            LazyColumn(Modifier.weight(1f).swipeTabs(tab, if (direct) 0 else 2) { tab = it }, contentPadding = frame.padding) {
+            Box(Modifier.weight(1f)) { PluginReadingColumn(frame.padding, list) { column -> LazyColumn(Modifier.fillMaxSize().swipeTabs(tab, if (direct) 0 else 2) { tab = it }, state = list, contentPadding = column) {
                 when {
                     direct -> item(key = "direct") { DirectPost(app, trimmed, notices) }
                     trimmed.isEmpty() -> landing(app, tab, notices, send)
                     tab == 0 -> item(key = "publications-$trimmed") { PublicationResults(app, trimmed, notices) }
                     else -> item(key = "posts-$trimmed") { PostResults(app, trimmed) }
                 }
-            }
+            } } }
         }
     }
 }

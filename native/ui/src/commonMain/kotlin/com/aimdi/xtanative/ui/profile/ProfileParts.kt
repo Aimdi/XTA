@@ -1,5 +1,8 @@
 package com.aimdi.xtanative.ui.profile
 
+import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.tabLeavesField
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
@@ -26,7 +28,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -67,6 +68,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_profile_note_title
 import com.aimdi.xtanative.ui.generated.resources.posts_quiet_account
 import com.aimdi.xtanative.ui.generated.resources.posts_quiet_account_description
 import com.aimdi.xtanative.ui.generated.resources.posts_quiet_account_off
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostIcons
 import org.jetbrains.compose.resources.pluralStringResource
@@ -80,8 +82,8 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun FeedSettingsSheet(state: ProfileUi, follow: FollowUi, vm: ProfileViewModel, onDismiss: () -> Unit) {
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
-        Column(Modifier.verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        Column(Modifier.verticalScrollByKeys(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
             Text(stringResource(Res.string.posts_filters), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
             SwitchRow(stringResource(Res.string.posts_hide_retweets), stringResource(Res.string.posts_hide_retweets_description), state.repostsHidden, vm::hideReposts)
             SwitchRow(stringResource(Res.string.posts_hide_replies), stringResource(Res.string.posts_hide_replies_description), state.repliesHidden, vm::hideReplies)
@@ -152,7 +154,7 @@ private fun RowScope.NoteInline(note: String, onEdit: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(if (empty) Icons.Filled.Add else Icons.Filled.Edit, null, tint = color, modifier = Modifier.size(14.dp))
-        Text(
+        TipText(
             if (empty) stringResource(Res.string.posts_profile_note_short) else note,
             color = color,
             fontStyle = if (empty) FontStyle.Normal else FontStyle.Italic,
@@ -168,7 +170,7 @@ private fun RowScope.NoteInline(note: String, onEdit: () -> Unit) {
 @Composable
 internal fun NoteSheet(note: String, onSave: (String) -> Unit, onDismiss: () -> Unit) {
     var text by rememberSaveable { mutableStateOf(note) }
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(stringResource(Res.string.posts_profile_note_title), style = MaterialTheme.typography.titleMedium)
             Text(stringResource(Res.string.posts_profile_note_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -178,7 +180,7 @@ internal fun NoteSheet(note: String, onSave: (String) -> Unit, onDismiss: () -> 
                 placeholder = { Text(stringResource(Res.string.posts_profile_note_hint)) },
                 minLines = 3,
                 maxLines = 8,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().tabLeavesField(),
             )
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 Button(onClick = { onSave(text) }) { Text(stringResource(Res.string.posts_profile_note_save)) }
@@ -199,7 +201,7 @@ internal fun FollowedByLine(followedBy: FollowedBy, onOpen: () -> Unit) {
                 }
             }
         }
-        Text(
+        TipText(
             label,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -225,8 +227,8 @@ private fun followedByText(followedBy: FollowedBy): String? = when (val label = 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun FollowedBySheet(followedBy: FollowedBy, actions: PostActions, onDismiss: () -> Unit) {
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
-        Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 24.dp)) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        Column(Modifier.verticalScrollByKeys(rememberScrollState()).padding(bottom = 24.dp)) {
             Text(stringResource(Res.string.posts_followed_by_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             followedBy.followers.forEach { member ->
                 Row(
@@ -238,7 +240,7 @@ internal fun FollowedBySheet(followedBy: FollowedBy, actions: PostActions, onDis
                 ) {
                     Avatar(member.avatarUrl, 40.dp)
                     Column(Modifier.padding(start = 12.dp)) {
-                        Text(member.name, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        TipText(member.name, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         Text("@" + member.screenName, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
                     }
                 }

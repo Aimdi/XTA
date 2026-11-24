@@ -2,6 +2,7 @@ package com.aimdi.xtanative.plugins.instagram
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.instagram.InstagramPost
 import com.aimdi.xtanative.networks.instagram.InstagramProfile
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
@@ -43,6 +45,7 @@ import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedState
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
@@ -74,7 +77,7 @@ internal fun InstagramProfileScreen(app: InstagramApp, handle: String) {
     PluginScaffold(
         title = "@$handle",
         onBack = app.host::back,
-        actions = { IconButton(onClick = { outside("https://www.instagram.com/$handle/") }) { Icon(PostIcons.OpenInNew, contentDescription = pluginString(Strings.open_on_site)) } },
+        actions = { IconTip(pluginString(Strings.open_on_site)) { IconButton(onClick = { outside("https://www.instagram.com/$handle/") }) { Icon(PostIcons.OpenInNew, contentDescription = pluginString(Strings.open_on_site)) } } },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             val profile = state.value
@@ -95,10 +98,10 @@ private fun ProfileBody(app: InstagramApp, model: InstagramProfileModel, profile
     val list = rememberLazyListState()
     if (profile.isPrivate) {
         PullToRefreshBox(isRefreshing = refreshing, onRefresh = { model.profile.load() }, modifier = Modifier.fillMaxSize()) {
-            LazyColumn(state = list, modifier = Modifier.fillMaxSize()) {
+            PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                 item(key = "header") { Header(app, profile) }
                 item(key = "private") { MessageText(pluginString(Strings.profile_private)) }
-            }
+            } }
         }
         return
     }
@@ -109,10 +112,10 @@ private fun ProfileBody(app: InstagramApp, model: InstagramProfileModel, profile
     val settings by app.prefs.collectAsState()
     ReadsMoreNearEnd(list, paged) { pages.more() }
     PullToRefreshBox(isRefreshing = refreshing, onRefresh = { model.profile.load(); pages.refresh() }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             item(key = "header") { Header(app, profile) }
             posts(app, pages, paged, guest = !app.hasSession(settings))
-        }
+        } }
     }
 }
 

@@ -28,6 +28,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonPost
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.NetworkBookmark
@@ -36,6 +37,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.PostCover
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -130,9 +132,9 @@ private fun EngagementRow(app: MastodonApp, post: MastodonPost, hideCounts: Bool
         CountButton(XIcons.Repost, post.reblogsCount, Strings.reposted_by, hideCounts, onClick = { app.openReposts(post) }, onLongClick = { app.openQuotes(post) })
         CountButton(XIcons.Like, post.favouritesCount, Strings.likes, hideCounts, onClick = onOpen)
         NetworkBookmark(archive)
-        IconButton(onClick = { openOutside(post.url) }, modifier = Modifier.size(40.dp)) {
+        IconTip(pluginString(Strings.open_in_browser)) { IconButton(onClick = { openOutside(post.url) }, modifier = Modifier.size(40.dp)) {
             Icon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
-        }
+        } }
     }
 }
 
@@ -145,6 +147,7 @@ private fun CountButton(icon: ImageVector, count: Long, label: PluginText, hideC
         Modifier
             .heightIn(min = 40.dp)
             .clip(RoundedCornerShape(20.dp))
+            .then(onLongClick?.let { Modifier.onContextClick(it) } ?: Modifier)
             .combinedClickable(onClickLabel = name, role = Role.Button, onClick = onClick, onLongClick = onLongClick)
             .padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,

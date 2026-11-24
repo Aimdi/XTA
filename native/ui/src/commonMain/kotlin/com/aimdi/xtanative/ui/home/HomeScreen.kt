@@ -52,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -65,6 +66,7 @@ import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.CenteredPage
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberLiveEdges
 import com.aimdi.xtanative.ui.common.rememberScreenReaderOn
 import com.aimdi.xtanative.ui.feed.MediaModes
@@ -281,7 +283,7 @@ private fun HomeSidebar(parts: HomeParts, shell: HomeShellState, page: BarPage, 
             pages = {
                 itemsIndexed(ui.bar, key = { _, barPage -> "page-" + barPage.id }) { index, barPage ->
                     NavigationDrawerItem(
-                        label = { Text(barLabel(barPage, ui), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        label = { TipText(barLabel(barPage, ui), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                         selected = barPage == page,
                         onClick = { barTapped(shell, ui, index) },
                         icon = { BarPageIcon(barPage, barPage == page, ui, parts.networks) },
@@ -307,17 +309,21 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
         // Swipes belong to the timelines: the drawer opens from the picker or a drag from the edge, and closes with a swipe too.
         gesturesEnabled = shell.drawer.isOpen,
         drawerContent = {
-            ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
-                AccountMenu(
-                    ui = parts.ui,
-                    routes = parts.routes,
-                    deckFits = deckFits,
-                    unread = unread,
-                    onGo = ::go,
-                    onGroup = { group -> openGroup(group, parts.routes, shell.drawer, scope) },
-                    onClose = { scope.launch { shell.drawer.close() } },
-                    onAvatar = { shell.sheet = HomeSheet.AVATAR },
-                )
+            // Made afresh at a new interface size (Ctrl+Alt with + −): the sheet keeps its width in pixels for the
+            // scale it grows by when dragged, so a closed one would otherwise peek in by the difference.
+            key(LocalDensity.current.density) {
+                ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
+                    AccountMenu(
+                        ui = parts.ui,
+                        routes = parts.routes,
+                        deckFits = deckFits,
+                        unread = unread,
+                        onGo = ::go,
+                        onGroup = { group -> openGroup(group, parts.routes, shell.drawer, scope) },
+                        onClose = { scope.launch { shell.drawer.close() } },
+                        onAvatar = { shell.sheet = HomeSheet.AVATAR },
+                    )
+                }
             }
         },
         content = { Box(Modifier.fillMaxSize().then(if (shell.wide) Modifier else Modifier.drawerEdge(shell.drawer))) { content() } },
@@ -437,7 +443,7 @@ private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: I
             val extras = takeover.on(BarPage.Network(id))?.split?.more.orEmpty()
             Column {
                 TopAppBar(
-                    title = { Text(ui.networks.firstOrNull { it.id == id }?.title ?: id, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    title = { TipText(ui.networks.firstOrNull { it.id == id }?.title ?: id, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     actions = {
                         // Off Home's Feed there is no plugin sheet: the plugin's own entries stay its ⋮ ([ShellMenuButton]).
                         PluginActions(client)
@@ -504,6 +510,14 @@ private fun TakeRequests(shell: HomeShellState, ui: HomeUi) {
         HomeRequests.taken(key)
         if (BarPage.Feed in ui.bar) shell.show(BarPage.Feed)
         if (ui.tabs.any { it.key == key }) shell.shownKey = key
+    }
+    // Alt+Home: the page Home starts on (Settings › Home's first page), not the one last picked on the bar or sidebar.
+    val toStart by HomeRequests.start.collectAsStateWithLifecycle()
+    LaunchedEffect(toStart) {
+        if (!HomeRequests.startTaken()) return@LaunchedEffect
+        shell.sheet = null
+        shell.layer = null
+        shell.show(HomeBar.startPage(ui.bar, ui.initialBarIndex))
     }
 }
 

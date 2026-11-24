@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.networks.mastodon.MastodonFollow
 import com.aimdi.xtanative.networks.mastodon.MastodonTimeline
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
@@ -133,7 +134,7 @@ private fun SectionBar(app: MastodonApp, selected: MastodonTimeline, onSelect: (
     if (shell) ShellFeeds(MastodonTimeline.entries, selected, onSelect, label = { pluginString(it.label()) })
     PluginHomeTabs(if (shell) emptyList() else MastodonTimeline.entries, selected, onSelect, icon = { it.icon() }, label = { pluginString(it.label()) }) {
         extras()
-        IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
+        IconTip(pluginString(Strings.search)) { IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } }
         MoreMenu(app)
     }
 }
@@ -158,7 +159,7 @@ private fun FollowingMenu(people: Boolean, onSelect: (Boolean) -> Unit, onAdd: (
     var open by remember { mutableStateOf(false) }
     val shown = pluginString(if (people) Strings.accounts else Strings.posts)
     Box {
-        IconButton(onClick = { open = true }) { Icon(if (people) PostIcons.People else MastodonIcons.Stream, shown) }
+        IconTip(shown) { IconButton(onClick = { open = true }) { Icon(if (people) PostIcons.People else MastodonIcons.Stream, shown) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             listOf(false to Strings.posts, true to Strings.accounts).forEach { (choice, text) ->
                 DropdownMenuItem(

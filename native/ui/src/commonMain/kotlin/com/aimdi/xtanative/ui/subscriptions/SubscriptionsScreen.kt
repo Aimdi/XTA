@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.subscriptions
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -75,6 +76,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_sort_applied
 import com.aimdi.xtanative.ui.generated.resources.groups_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.unable_to_load_the_group
 import com.aimdi.xtanative.ui.generated.resources.unable_to_refresh_the_subscriptions
+import com.aimdi.xtanative.ui.home.CreatesWithKeys
 import com.aimdi.xtanative.ui.home.FindsWithKeys
 import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
@@ -148,6 +150,10 @@ fun SubscriptionsScreen(navigation: SubscriptionsNavigation, onBack: (() -> Unit
     BackHandling(enabled = state.searching) { vm.closeSearch() }
     // Ctrl+F and / open the search; once open, its field takes them.
     if (!state.searching) FindsWithKeys(vm::openSearch)
+    // Ctrl+N makes a group, as the bar's + does on the Groups tab; the Subscriptions tab has no New.
+    CreatesWithKeys {
+        (state.tab == SubscriptionsTab.GROUPS && !state.searching && editing == null && !menu && !cleanup && picking == null).also { if (it) editing = Editing(null) }
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -287,7 +293,8 @@ private fun Header(
 @Composable
 private fun HeaderTab(icon: ImageVector, label: String, selected: Boolean, onClick: () -> Unit) {
     val color = if (selected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant
-    Box(Modifier.fillMaxHeight().selectable(selected = selected, role = Role.Tab, onClick = onClick).padding(horizontal = 12.dp)) {
+    // As wide as its label: the line under the chosen tab fills only that, never the bar, leaving room for the other tab.
+    Box(Modifier.fillMaxHeight().width(IntrinsicSize.Max).selectable(selected = selected, role = Role.Tab, onClick = onClick).padding(horizontal = 12.dp)) {
         Row(Modifier.align(Alignment.Center), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
             Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))

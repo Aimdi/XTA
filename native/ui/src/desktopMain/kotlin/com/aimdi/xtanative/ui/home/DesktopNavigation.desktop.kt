@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,7 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isAltPressed
 import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -36,6 +38,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isBackPressed
 import androidx.compose.ui.input.pointer.isCtrlPressed
+import androidx.compose.ui.input.pointer.isForwardPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
@@ -47,11 +50,23 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
+import com.aimdi.xtanative.store.settings.DesktopPrefs
+import com.aimdi.xtanative.ui.LocalSecondaryWindow
 import com.aimdi.xtanative.ui.chrome.AppClosing
+import com.aimdi.xtanative.ui.common.LayoutKeys
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.TextBlocks
+import com.aimdi.xtanative.ui.common.TextSelectionKeys
+import com.aimdi.xtanative.ui.common.shortcutKey
 import com.aimdi.xtanative.ui.links.PastedLinks
 import com.aimdi.xtanative.ui.links.takesDroppedLinks
+import com.aimdi.xtanative.ui.post.LinkHover
+import com.aimdi.xtanative.ui.post.LinkHoverPill
+import com.aimdi.xtanative.ui.post.LocalLinkHover
+import com.aimdi.xtanative.ui.saved.KeepNotices
+import com.aimdi.xtanative.ui.saved.LocalKeeper
 import com.aimdi.xtanative.ui.settings.SettingsChoices
+import java.awt.event.MouseEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -62,10 +77,11 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, openHome: () -> Unit, content: @Composable () -> Unit) {
+actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, openHome: () -> Unit, goForward: () -> Boolean, content: @Composable () -> Unit) {
     val focus = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val settingsStore = LocalSettingsStore.current
+    val keeper = LocalKeeper.current
     val scope = rememberCoroutineScope()
     var hasFocus by remember { mutableStateOf(false) }
     var focusInside by remember { mutableStateOf(false) }
@@ -75,7 +91,11 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     var clicked by remember { mutableStateOf(false) }
     // Whether the window took the last key pressed, so the character it types goes nowhere.
     var keyTaken by remember { mutableStateOf(false) }
+    // The page's scroll for the key pressed, once the clicked control under it has left the key unused ([DesktopKeys.controlFirst]).
+    val afterControl = remember { arrayOfNulls<DeskAction>(1) }
     var showKeys by remember { mutableStateOf(false) }
+    // The Tab step being taken, until the next key: should it wrap to the frame, the frame hands it on ([DesktopKeys.tabStep]).
+    val tabbing = remember { arrayOfNulls<TabStep>(1) }
     // A frame later: what gives the keys back is still leaving when it asks. The frame takes them only if
     // nothing in the page has since (a screen that focuses its field as it opens keeps it).
     // A sheet swapped for another in the same frame closes before the next opens: by the time the frame
@@ -104,6 +124,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         onDispose { if (host.actions === actions) host.actions = null }
     }
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    // A window of its own beside the main one closes with Ctrl+W, Esc and the back button on its first screen; the main window asks to quit.
+    val closeWindow = LocalSecondaryWindow.current?.close
     val line = with(LocalDensity.current) { LINE.toPx() }
 
     fun act(action: DeskAction): Boolean = when (action) {
@@ -116,6 +138,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             true
         }
         DeskAction.BACK -> nav.popBackStack()
+        DeskAction.FORWARD -> goForward()
         DeskAction.REFRESH -> actions.refresh()
         DeskAction.PREVIOUS_PAGE -> actions.turn(-1)
         DeskAction.NEXT_PAGE -> actions.turn(1)
@@ -129,10 +152,21 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             if (!actions.find()) openSearch()
             true
         }
-        DeskAction.TEXT_BIGGER, DeskAction.TEXT_SMALLER, DeskAction.TEXT_RESET -> {
+        // Over the opened post's card, only its own find bar: the search stays for the page under it.
+        DeskAction.FIND_IN_PAGE -> when {
+            actions.findInPage() -> true
+            actions.somethingOpen() -> false
+            else -> act(DeskAction.FIND)
+        }
+        DeskAction.FIND_NEXT -> actions.findStep(1)
+        DeskAction.FIND_PREVIOUS -> actions.findStep(-1)
+        DeskAction.TEXT_BIGGER, DeskAction.TEXT_SMALLER, DeskAction.TEXT_RESET, DeskAction.UI_BIGGER, DeskAction.UI_SMALLER, DeskAction.UI_RESET -> {
             scope.launch {
                 settingsStore.update { settings ->
-                    settings.with(AccessibilityPrefs.textScale, DesktopKeys.textScaled(settings[AccessibilityPrefs.textScale], action, TEXT_SCALES))
+                    when (action) {
+                        in UI_SIZES -> settings.with(DesktopPrefs.uiScale, DesktopKeys.uiScaled(settings[DesktopPrefs.uiScale], action, DesktopPrefs.UI_SCALES))
+                        else -> settings.with(AccessibilityPrefs.textScale, DesktopKeys.textScaled(settings[AccessibilityPrefs.textScale], action, TEXT_SCALES))
+                    }
                 }
                 // A field the new size lays out afresh (Search's, moving under its bar) loses the focus: the keys come back here.
                 delay(REFOCUS_AFTER_MS)
@@ -142,10 +176,47 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         }
         DeskAction.LINE_UP, DeskAction.LINE_DOWN, DeskAction.SCREEN_UP, DeskAction.SCREEN_DOWN, DeskAction.TO_TOP, DeskAction.TO_END,
         DeskAction.NEXT_ITEM, DeskAction.PREVIOUS_ITEM ->
-            actions.readList()?.let { list ->
-                scope.launch { list.moveFor(action, line) }
-                true
-            } ?: false
+            when (val list = actions.readList()) {
+                is LazyListState -> {
+                    if (action == DeskAction.NEXT_ITEM || action == DeskAction.PREVIOUS_ITEM) {
+                        // From the post marked: where nothing is left to go to, the mark stays.
+                        actions.keyStep(list, action == DeskAction.NEXT_ITEM)?.let { keyed ->
+                            actions.unmarkPost()
+                            scope.launch {
+                                when (val step = keyed.step) {
+                                    is DesktopKeys.KeyStep.ToPost -> {
+                                        list.animateScrollBy(step.by.toFloat())
+                                        keyed.post?.let(actions::markPost)
+                                    }
+                                    // Where j and k land, the post the keys then act on is marked.
+                                    is DesktopKeys.KeyStep.ToItem -> actions.markPostIn(list, list.stepTo(step))
+                                }
+                            }
+                        }
+                    } else {
+                        actions.unmarkPost()
+                        scope.launch { list.moveFor(action, line) }
+                    }
+                    true
+                }
+                is ScrollState -> DesktopKeys.scrolledTo(action, list.value, list.maxValue, list.viewportSize, line)?.let { target ->
+                    actions.unmarkPost()
+                    scope.launch { list.moveTo(action, target) }
+                    true
+                } ?: false
+                else -> false
+            }
+        // Not past a sheet open over the page, which holds no keys of its own.
+        DeskAction.OPEN_POST, DeskAction.LIKE_POST, DeskAction.SAVE_POST, DeskAction.COPY_POST_LINK, DeskAction.POST_MENU ->
+            !actions.sheetOpen() && actions.onPost { keys ->
+                when (action) {
+                    DeskAction.OPEN_POST -> keys.open()
+                    DeskAction.LIKE_POST -> keys.like()
+                    DeskAction.SAVE_POST -> keys.save()
+                    DeskAction.COPY_POST_LINK -> keys.copyLink()
+                    else -> keys.menu()
+                }
+            }
         // Read off the window's thread; Ctrl+V outside a field has nothing else to do, so the key is taken either way.
         DeskAction.OPEN_PASTED_LINK -> {
             scope.launch { PastedLinks.open() }
@@ -165,6 +236,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             showKeys = true
             true
         }
+        DeskAction.CREATE -> actions.create()
+        DeskAction.UNDO -> KeepNotices.undo(KeepNotices.shown.value, keeper::keep)
         DeskAction.SELECT_ALL -> actions.selectAll()
         DeskAction.REMOVE_SELECTED -> actions.removeSelected()
         DeskAction.LEAVE_SELECTION -> actions.leaveSelection()
@@ -175,26 +248,53 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
 
     fun onKey(event: KeyEvent): Boolean {
         // The character a key the window took types (Ctrl+= types =) is not typed into a field as well.
+        // Its step is taken while Tab is down: what takes the focus later never takes it on.
+        if (event.type == KeyEventType.KeyUp) tabbing[0] = null
+        if (event.type == KeyEventType.Unknown && LayoutKeys.ctrlTypesNothing(event.utf16CodePoint, event.isCtrlPressed, event.isAltPressed)) return true
         if (event.type != KeyEventType.KeyDown) return event.type != KeyEventType.KeyUp && keyTaken
+        afterControl[0] = null
         // Tab moves the focus with the keyboard: where it lands keeps the keys, as before any click.
         if (event.key == Key.Tab) clicked = false
+        // Letters and digits by where they sit when the layout names them otherwise ([shortcutKey]): Ctrl+1 on a French keyboard, j on a Russian one.
+        val pressed = shortcutKey(event)
+        tabbing[0] = DesktopKeys.tabStep(deskKey(pressed), event.isShiftPressed, event.isCtrlPressed, event.isAltPressed)
         // Ctrl and a digit go to that tab, as a browser's do, from a field too; not under something open over the page.
-        TAB_DIGITS[event.key]?.let { digit ->
+        TAB_DIGITS[pressed]?.let { digit ->
             if (event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && !actions.overlayHoldsKeys() && !actions.somethingOpen()) {
                 keyTaken = actions.jump(digit)
                 return keyTaken
             }
         }
+        // Ctrl+A in the text block clicked into (an opened post, a bio, an article) selects all of its text, as in a field.
+        if (TextSelectionKeys.selectsAll(pressed, event.type, event.isCtrlPressed, event.isShiftPressed, event.isAltPressed, event.isMetaPressed) &&
+            TextBlocks.selectAllInFocused()
+        ) {
+            keyTaken = true
+            return true
+        }
         val canGoBack = nav.previousBackStackEntry != null
-        val key = deskKey(event.key)
+        val key = deskKey(pressed)
         val action = DesktopKeys.action(
             key, event.isAltPressed, event.isCtrlPressed, DesktopKeys.keysInside(focusInside, typing[0] > 0, clicked), canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed,
-            selecting = actions.selecting(), openIsRead = actions.openIsRead(),
+            selecting = actions.selecting(), openIsRead = actions.openIsRead(), focusHeld = focusInside, backOpen = actions.backOpen(),
         )
         // A search field's first Esc drops the recent search it highlighted; the next leaves the field.
         if (action == DeskAction.LEAVE_FIELD && actions.escapeInField()) {
             keyTaken = true
             return true
+        }
+        if (closeWindow != null && !actions.overlayHoldsKeys() &&
+            DesktopKeys.closesWindow(key, event.isAltPressed, event.isCtrlPressed, event.isShiftPressed, action)
+        ) {
+            keyTaken = true
+            closeWindow()
+            return true
+        }
+        // A slider or switch clicked on a page that scrolls as a whole has the key first; the page scrolls only if it went unused.
+        if (!actions.overlayHoldsKeys() && DesktopKeys.controlFirst(action, focusHeld = focusInside, wholePage = actions.readList() is ScrollState)) {
+            afterControl[0] = action
+            keyTaken = false
+            return false
         }
         // The media viewer's Esc closes it at once, rather than first taking the focus from it as from a field; Ctrl+Q still quits.
         keyTaken = !(actions.overlayHoldsKeys() && action != DeskAction.LEAVE_APP) && act(action)
@@ -202,8 +302,15 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     }
 
     // A / or ? is the character typed, on any layout (Shift+7 on a German one), and only one no field has typed reaches here.
+    // A scrolling key the clicked control left unused comes back here too, and moves the page ([afterControl]).
     fun onTyped(event: KeyEvent): Boolean {
-        if (event.type == KeyEventType.KeyDown || event.type == KeyEventType.KeyUp) return false
+        if (event.type == KeyEventType.KeyDown) {
+            val action = afterControl[0] ?: return false
+            afterControl[0] = null
+            keyTaken = act(action)
+            return keyTaken
+        }
+        if (event.type == KeyEventType.KeyUp) return false
         val key = when (event.utf16CodePoint) {
             '/'.code -> DeskKey.SLASH
             '?'.code -> DeskKey.QUESTION
@@ -215,7 +322,9 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     }
 
     val frameOrigin = remember { arrayOf(Offset.Zero) }
-    CompositionLocalProvider(LocalDesktopActions provides actions) {
+    // This window's link under the pointer, its address shown in a pill at the frame's foot.
+    val linkHover = remember { LinkHover() }
+    CompositionLocalProvider(LocalDesktopActions provides actions, LocalLinkHover provides linkHover) {
         Box(
             Modifier
                 .fillMaxSize()
@@ -227,7 +336,10 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                             val event = awaitPointerEvent(PointerEventPass.Final)
                             if (event.type == PointerEventType.Scroll) actions.scrolled()
                             if (event.type == PointerEventType.Move || event.type == PointerEventType.Enter) {
-                                event.changes.firstOrNull()?.let { actions.pointerAt(frameOrigin[0] + it.position) }
+                                event.changes.firstOrNull()?.let {
+                                    actions.pointerAt(frameOrigin[0] + it.position)
+                                    linkHover.moved(it.position)
+                                }
                             }
                         }
                     }
@@ -237,9 +349,20 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                     awaitPointerEventScope {
                         while (true) {
                             val event = awaitPointerEvent(PointerEventPass.Initial)
-                            if (event.type == PointerEventType.Press) clicked = true
-                            if (event.type == PointerEventType.Press && event.buttons.isBackPressed) {
-                                act(DesktopKeys.mouseBack(nav.previousBackStackEntry != null, actions.somethingOpen()))
+                            if (event.type == PointerEventType.Press) {
+                                clicked = true
+                                tabbing[0] = null
+                                // On X11 the side buttons come as AWT's 6 and 7, which Compose does not name; its back and forward
+                                // (AWT's 4 and 5) are a sideways scroll there, and are not taken for them ([DesktopKeys.pressedSide]).
+                                val awtButton = (event.nativeEvent as? MouseEvent)?.button
+                                when (DesktopKeys.pressedSide(awtButton, event.buttons.isBackPressed, event.buttons.isForwardPressed)) {
+                                    SideButton.BACK -> {
+                                        val back = DesktopKeys.mouseBack(nav.previousBackStackEntry != null, actions.somethingOpen() || actions.backOpen())
+                                        if (back == DeskAction.LEAVE_APP && closeWindow != null) closeWindow() else act(back)
+                                    }
+                                    SideButton.FORWARD -> act(DeskAction.FORWARD)
+                                    null -> Unit
+                                }
                             }
                             // Ctrl and the wheel size the text, as Ctrl and +/- do; the page under it does not scroll meanwhile.
                             // Over the media viewer the wheel is its own (zoom).
@@ -262,6 +385,13 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                     if (hasFocus && !state.hasFocus) actions.keysToFrame()
                     hasFocus = state.hasFocus
                     focusInside = state.hasFocus && !state.isFocused
+                    // Tab ran off the end of the page's order and wrapped to the frame, which shows nothing:
+                    // the same step goes on, once, after the move that brought it here is done.
+                    val step = tabbing[0]
+                    if (state.isFocused && step != null) {
+                        tabbing[0] = null
+                        scope.launch { focusManager.moveFocus(if (step == TabStep.FORWARD) FocusDirection.Next else FocusDirection.Previous) }
+                    }
                 }
                 .focusRequester(focus)
                 .focusable(),
@@ -276,6 +406,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             }) {
                 content()
             }
+            LinkHoverPill(linkHover)
         }
     }
     if (showKeys) {
@@ -294,6 +425,9 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     }
 }
 
+/** The keys' changes of the interface size rather than the text's. */
+private val UI_SIZES = setOf(DeskAction.UI_BIGGER, DeskAction.UI_SMALLER, DeskAction.UI_RESET)
+
 /** The text sizes the keys move between: the Accessibility slider's. */
 private val TEXT_SCALES = SettingsChoices.TEXT_SCALE_MIN.toDouble()..SettingsChoices.TEXT_SCALE_MAX.toDouble()
 
@@ -301,14 +435,11 @@ private val TEXT_SCALES = SettingsChoices.TEXT_SCALE_MIN.toDouble()..SettingsCho
 private const val REFOCUS_AFTER_MS = 50L
 
 /** How far ↑ and ↓ move a list: about a line of a post and a half. */
-private val LINE = 64.dp
+internal val LINE = 64.dp
 
-/** A screen's move leaves this much of what was read in view, as a browser's Page Down does. */
-private const val SCREEN_KEPT = 0.12f
-
-/** [action] done to the list, eased as the wheel's own moves are. */
-private suspend fun LazyListState.moveFor(action: DeskAction, line: Float) {
-    val screen = layoutInfo.viewportSize.height * (1 - SCREEN_KEPT)
+/** [action] done to the list, eased as the wheel's own moves are (j and k: [stepTo]). */
+internal suspend fun LazyListState.moveFor(action: DeskAction, line: Float) {
+    val screen = layoutInfo.viewportSize.height * (1 - DesktopKeys.SCREEN_KEPT)
     when (action) {
         DeskAction.LINE_UP -> animateScrollBy(-line)
         DeskAction.LINE_DOWN -> animateScrollBy(line)
@@ -316,19 +447,22 @@ private suspend fun LazyListState.moveFor(action: DeskAction, line: Float) {
         DeskAction.SCREEN_DOWN -> animateScrollBy(screen)
         DeskAction.TO_TOP -> scrollToItem(0)
         DeskAction.TO_END -> layoutInfo.totalItemsCount.takeIf { it > 0 }?.let { scrollToItem(it - 1) }
-        DeskAction.NEXT_ITEM, DeskAction.PREVIOUS_ITEM ->
-            DesktopKeys.itemStep(
-                layoutInfo.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) },
-                layoutInfo.totalItemsCount,
-                action == DeskAction.NEXT_ITEM,
-            )?.let { (index, offset) ->
-                animateScrollToItem(index, offset)
-                // Tabs in their own place before the step stick on the way, over the post's start: it comes out from under them.
-                val covered = DesktopKeys.coveredAfterStep(layoutInfo.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) }, index)
-                if (covered > 0) animateScrollBy(-covered.toFloat())
-            }
         else -> Unit
     }
+}
+
+/** j or k's [step] to an item's start ([DesktopKeys.itemStep]), eased as the wheel's own moves are; the item it went to. */
+private suspend fun LazyListState.stepTo(step: DesktopKeys.KeyStep.ToItem): Int {
+    animateScrollToItem(step.index, step.offset)
+    // Tabs in their own place before the step stick on the way, over the post's start: it comes out from under them.
+    val covered = DesktopKeys.coveredAfterStep(layoutInfo.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) }, step.index)
+    if (covered > 0) animateScrollBy(-covered.toFloat())
+    return step.index
+}
+
+/** A page that scrolls as a whole to [target] ([DesktopKeys.scrolledTo]): at once to its start or end, as a list's Home and End go; eased otherwise. */
+internal suspend fun ScrollState.moveTo(action: DeskAction, target: Int) {
+    if (action == DeskAction.TO_TOP || action == DeskAction.TO_END) scrollTo(target) else animateScrollTo(target)
 }
 
 /** Longer than a screen's slide, by which time a screen that focuses a field has done so. */
@@ -340,7 +474,10 @@ private val TAB_DIGITS: Map<Key, Int> = mapOf(
     Key.NumPad1 to 1, Key.NumPad2 to 2, Key.NumPad3 to 3, Key.NumPad4 to 4, Key.NumPad5 to 5, Key.NumPad6 to 6, Key.NumPad7 to 7, Key.NumPad8 to 8, Key.NumPad9 to 9,
 )
 
-private fun deskKey(key: Key): DeskKey = when (key) {
+/** The keyboard's Menu key, which opens a context menu. */
+private val MENU_KEY = Key(java.awt.event.KeyEvent.VK_CONTEXT_MENU)
+
+internal fun deskKey(key: Key): DeskKey = when (key) {
     Key.Escape -> DeskKey.ESCAPE
     Key.DirectionLeft -> DeskKey.LEFT
     Key.DirectionRight -> DeskKey.RIGHT
@@ -358,6 +495,7 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.Q -> DeskKey.Q
     Key.F -> DeskKey.F
     Key.F1 -> DeskKey.F1
+    Key.F3 -> DeskKey.F3
     Key.Comma -> DeskKey.COMMA
     Key.W -> DeskKey.W
     Key.J -> DeskKey.J
@@ -365,6 +503,16 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.K -> DeskKey.K
     Key.A -> DeskKey.A
     Key.Delete -> DeskKey.DELETE
+    Key.Enter, Key.NumPadEnter -> DeskKey.ENTER
+    Key.O -> DeskKey.O
+    Key.L -> DeskKey.L
+    Key.B -> DeskKey.B
+    Key.C -> DeskKey.C
+    Key.F10 -> DeskKey.F10
+    Key.N -> DeskKey.N
+    Key.Z -> DeskKey.Z
+    // Compose names no key for it: the Menu key is AWT's context-menu key.
+    MENU_KEY -> DeskKey.MENU
     Key.Plus, Key.Equals, Key.NumPadAdd -> DeskKey.PLUS
     Key.Minus, Key.NumPadSubtract -> DeskKey.MINUS
     Key.Zero, Key.NumPad0 -> DeskKey.ZERO

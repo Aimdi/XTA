@@ -80,6 +80,8 @@ import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.common.problemText
 import com.aimdi.xtanative.ui.feed.PluginPostRow
 import com.aimdi.xtanative.ui.feed.SourcedPost
@@ -175,7 +177,7 @@ fun GroupDiscoveryScreen(groupId: String, actions: PostActions, onBack: () -> Un
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Res.string.groups_discover) + " · " + name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                title = { TipText(stringResource(Res.string.groups_discover) + " · " + name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
@@ -337,7 +339,7 @@ private fun FailureRow(source: String, problem: Problem, onRetry: () -> Unit) {
         SourceMark(source, plugins, 16.dp)
         Column(Modifier.weight(1f).padding(start = 8.dp)) {
             Text(stringResource(Res.string.groups_discovery_partial), style = MaterialTheme.typography.bodySmall)
-            Text(why, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            TipText(why, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
         TextButton(onClick = onRetry) { Text(stringResource(Res.string.groups_retry)) }
     }
@@ -372,7 +374,7 @@ private fun InfoDialog(onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.groups_discover)) },
         text = { Text(stringResource(Res.string.groups_discovery_description)) },
-        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.close)) } },
+        confirmButton = { TextButton(onClick = onDismiss, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.close)) } },
     )
 }
 
@@ -415,7 +417,7 @@ private fun CandidateRow(candidate: Candidate, state: DiscoveryUi, open: Boolean
             RowMenu(candidate, rows, openProfile)
         }
         reasonText(candidate, plugins)?.let { reason ->
-            Text(
+            TipText(
                 reason,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -452,7 +454,7 @@ private fun rememberOpenProfile(candidate: Candidate, rows: RowActions): () -> U
 private fun Identity(candidate: Candidate, plugins: Map<String, XtaPlugin>, added: Boolean, modifier: Modifier) {
     Column(modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
+            TipText(
                 candidate.name.ifEmpty { candidate.handle },
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
@@ -463,7 +465,7 @@ private fun Identity(candidate: Candidate, plugins: Map<String, XtaPlugin>, adde
             SourceMark(candidate.source, plugins, 14.dp)
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
+            TipText(
                 "@" + candidate.handle,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -540,7 +542,7 @@ private fun Snippet(candidate: Candidate, onToggle: () -> Unit) {
         return
     }
     val label = stringResource(Res.string.groups_discovery_show_post)
-    Text(
+    TipText(
         snippet,
         style = MaterialTheme.typography.bodyMedium,
         maxLines = 2,

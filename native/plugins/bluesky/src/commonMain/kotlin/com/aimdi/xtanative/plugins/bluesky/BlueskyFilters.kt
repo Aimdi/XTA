@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.bluesky.BlueskyReaderFilter
 import com.aimdi.xtanative.networks.bluesky.BlueskyReading
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
@@ -90,10 +91,10 @@ private val BlueskyReaderFilter.Content.label: PluginText
 @Composable
 internal fun FiltersButton(filter: BlueskyReaderFilter, onChange: (BlueskyReaderFilter) -> Unit) {
     var sheet by rememberSaveable { mutableStateOf(false) }
-    IconButton(onClick = { sheet = true }) {
+    IconTip(pluginString(Strings.filters)) { IconButton(onClick = { sheet = true }) {
         val set = filter.setCount()
         BadgedBox(badge = { if (set > 0) Badge { Text("$set") } }) { Icon(PostIcons.Tune, contentDescription = pluginString(Strings.filters)) }
-    }
+    } }
     if (sheet) FiltersSheet(filter, onChange) { sheet = false }
 }
 
@@ -105,7 +106,7 @@ internal fun FiltersSheet(filter: BlueskyReaderFilter, onChange: (BlueskyReaderF
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(pluginString(Strings.filters), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
-                IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, pluginString(Strings.close)) }
+                IconTip(pluginString(Strings.close)) { IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, pluginString(Strings.close)) } }
             }
             NoteText(pluginString(Strings.loaded_controls))
             Text(pluginString(Strings.sort_posts), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 12.dp))
@@ -117,7 +118,7 @@ internal fun FiltersSheet(filter: BlueskyReaderFilter, onChange: (BlueskyReaderF
                 label = { Text(pluginString(Strings.loaded_search)) },
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 trailingIcon = {
-                    if (filter.query.isNotEmpty()) IconButton(onClick = { onChange(filter.copy(query = "")) }) { Icon(Icons.Filled.Clear, pluginString(Strings.clear_search)) }
+                    if (filter.query.isNotEmpty()) IconTip(pluginString(Strings.clear_search)) { IconButton(onClick = { onChange(filter.copy(query = "")) }) { Icon(Icons.Filled.Clear, pluginString(Strings.clear_search)) } }
                 },
                 modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
             )

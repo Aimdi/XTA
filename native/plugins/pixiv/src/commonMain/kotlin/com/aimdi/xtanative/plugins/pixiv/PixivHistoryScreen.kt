@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivNovel
 import com.aimdi.xtanative.store.settings.PixivPrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -46,10 +47,10 @@ internal fun PixivHistoryScreen(initial: PixivKind) {
         title = pluginString(Strings.history),
         onBack = runtime.host::back,
         actions = {
-            IconButton(onClick = {
+            IconTip(pluginString(Strings.history_clear)) { IconButton(onClick = {
                 val question = if (kind == PixivKind.NOVEL) Strings.history_novels_clear_question else Strings.history_clear_question
                 sheets.ask.ask(question.get(language), Strings.history_clear.get(language)) { runtime.launch { history.clear() } }
-            }) { Icon(SavedIcons.DeleteSweep, pluginString(Strings.history_clear)) }
+            }) { Icon(SavedIcons.DeleteSweep, pluginString(Strings.history_clear)) } }
         },
     ) { padding ->
         Column(Modifier.padding(padding).fillMaxSize()) {

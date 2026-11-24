@@ -53,9 +53,11 @@ import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import com.aimdi.xtanative.networks.booru.BooruTagCategory
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.links.LocalLinks
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /** What the reader chose, once the app's settings are read. */
@@ -89,9 +91,9 @@ internal fun BooruImage(url: String, modifier: Modifier = Modifier, contentScale
         when {
             !failed -> Unit
             url.isEmpty() -> Icon(BooruIcons.BrokenImage, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
-            else -> IconButton(onClick = { attempt++ }) {
+            else -> IconTip(pluginString(Strings.retry)) { IconButton(onClick = { attempt++ }) {
                 Icon(BooruIcons.BrokenImage, contentDescription = pluginString(Strings.retry), tint = MaterialTheme.colorScheme.outline)
-            }
+            } }
         }
     }
 }
@@ -160,6 +162,7 @@ internal fun TagChip(
                 .clip(shape)
                 .background(fill)
                 .border(1.dp, border, shape)
+                .then(onLongClick?.let { Modifier.onContextClick(it) } ?: Modifier)
                 .combinedClickable(onClick = onClick, onLongClick = onLongClick, onLongClickLabel = longClickLabel)
                 .let { if (description != null) it.semantics { contentDescription = description } else it }
                 .padding(horizontal = 8.dp, vertical = 6.dp),

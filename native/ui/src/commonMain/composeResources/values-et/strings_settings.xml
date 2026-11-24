@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Kasuta kogu ekraani: kellaaeg, aku ja levi üleval on peidetud. Nende hetkeks nägemiseks pühi ülaservast alla.</string>
     <string name="settings_text_scale">Teksti skaleerimistegur</string>
     <string name="settings_text_scale_description">Kohandage rakenduses fondi suurust</string>
+    <string name="settings_interface_scale">Liidese suurus</string>
+    <string name="settings_interface_scale_description">Muuda tekst, nupud ja pildid korraga suuremaks või väiksemaks</string>
     <string name="settings_disable_animations">Keela animatsioonid</string>
     <string name="settings_disable_animations_description">Keela animatsioonid rakenduses</string>
     <string name="settings_haptics">Haptiline tagasiside</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">Kõik suurepärane tarkvara, mida XTA kasutab</string>
     <string name="settings_intro_again">Näita sissejuhatust uuesti</string>
     <string name="settings_intro_again_description">Vaata esimese käivituse kaardid uuesti läbi.</string>
+    <string name="settings_open_logs">Ava logide kaust</string>
     <string name="settings_ok">Sobib</string>
     <string name="settings_diagnostics_copy">Kopeeri aruanne</string>
     <string name="settings_diagnostics_copied">Diagnostika kopeeriti lõikelauale</string>
@@ -373,4 +376,18 @@
     <string name="settings_start_at_login_description">Avab rakenduse sisselogimisel; kui „Sulge salve“ on sees, ootab see salves</string>
     <string name="tray_show">Näita akent</string>
     <string name="tray_hide">Peida aken</string>
+    <string name="tray_new_search">Uus otsing</string>
+    <string name="settings_proxy">Puhverserver</string>
+    <string name="settings_proxy_description">Kuidas rakendus selles seadmes internetti jõuab. Süsteem kasutab puhverserveri keskkonnamuutujaid, muidu töölaua puhverserveri seadeid</string>
+    <string name="settings_proxy_none">Puhverserverita</string>
+    <string name="settings_proxy_manual">Käsitsi</string>
+    <string name="settings_proxy_server">Puhverserver</string>
+    <string name="settings_proxy_server_unset">Määramata: midagi ei laadita, kuni see on määratud</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Videoid ei saa veel SOCKS5-puhverserveri kaudu esitada</string>
+    <string name="settings_proxy_host">Host</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Puhverserverita aadressid</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

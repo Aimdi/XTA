@@ -110,6 +110,7 @@
     <string name="saved_quoted_unavailable">Citita afiŝo maldisponebla</string>
     <string name="saved_note_thread">Noto</string>
     <string name="saved_long_press_hint">Konsileto: longe premu por meti en dosierujon</string>
+    <string name="saved_right_click_hint">Konsileto: dekstre alklaku por meti en dosierujon</string>
     <string name="saved_like">Ŝati en ĉi tiu aparato</string>
     <string name="saved_unlike">Forigi ŝaton el ĉi tiu aparato</string>
     <string name="saved_save_here">Konservi en ĉi tiu aparato</string>

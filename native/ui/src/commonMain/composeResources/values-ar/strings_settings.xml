@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">استخدام الشاشة كاملة: يُخفى الوقت والبطارية والإشارة في الأعلى. اسحب من الحافة العلوية إلى الأسفل لرؤيتها لحظة.</string>
     <string name="settings_text_scale">معامل مقياس النص</string>
     <string name="settings_text_scale_description">ضبط حجم الخط في التطبيق</string>
+    <string name="settings_interface_scale">حجم الواجهة</string>
+    <string name="settings_interface_scale_description">تكبير النصوص والأزرار والصور أو تصغيرها معًا</string>
     <string name="settings_disable_animations">تعطيل الرسوم المتحركة</string>
     <string name="settings_disable_animations_description">تعطيل الرسوم المتحركة في التطبيق</string>
     <string name="settings_haptics">الاهتزاز عند اللمس</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">كل البرمجيات الرائعة التي يستخدمها فريتر</string>
     <string name="settings_intro_again">عرض المقدمة مجددًا</string>
     <string name="settings_intro_again_description">إعادة عرض بطاقات التشغيل الأول.</string>
+    <string name="settings_open_logs">فتح مجلد السجلات</string>
     <string name="settings_ok">تمام</string>
     <string name="settings_diagnostics_copy">نسخ التقرير</string>
     <string name="settings_diagnostics_copied">تم نسخ التشخيص إلى الحافظة</string>
@@ -381,4 +384,18 @@
     <string name="settings_start_at_login_description">يفتح التطبيق عند تسجيل الدخول؛ ومع تفعيل «الإغلاق إلى علبة النظام» ينتظر في العلبة</string>
     <string name="tray_show">إظهار النافذة</string>
     <string name="tray_hide">إخفاء النافذة</string>
+    <string name="tray_new_search">بحث جديد</string>
+    <string name="settings_proxy">الوكيل</string>
+    <string name="settings_proxy_description">كيف يصل التطبيق إلى الإنترنت على هذا الجهاز. «النظام» يستخدم متغيرات بيئة الوكيل، وإلا فإعدادات الوكيل في سطح المكتب</string>
+    <string name="settings_proxy_none">بلا وكيل</string>
+    <string name="settings_proxy_manual">يدوي</string>
+    <string name="settings_proxy_server">خادم الوكيل</string>
+    <string name="settings_proxy_server_unset">غير مضبوط: لن يُحمَّل شيء حتى تضبطه</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">لا يمكن تشغيل الفيديو عبر وكيل SOCKS5 بعد</string>
+    <string name="settings_proxy_host">المضيف</string>
+    <string name="settings_proxy_port">المنفذ</string>
+    <string name="settings_proxy_bypass">بلا وكيل لـ</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

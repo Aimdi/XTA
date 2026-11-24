@@ -1,5 +1,8 @@
 package com.aimdi.xtanative.ui.saved
 
+import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.dialogDefault
+import com.aimdi.xtanative.ui.common.tabLeavesField
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -76,6 +79,7 @@ import com.aimdi.xtanative.store.saved.NoteEditor
 import com.aimdi.xtanative.store.saved.NoteMedia
 import com.aimdi.xtanative.store.saved.SavedContent
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.shortcutKey
 import com.aimdi.xtanative.ui.downloads.PickedFile
 import com.aimdi.xtanative.ui.downloads.rememberClipboardPicture
 import com.aimdi.xtanative.ui.downloads.rememberFilePicker
@@ -192,10 +196,10 @@ fun NoteEditorDialog(
         Surface(
             Modifier.fillMaxSize().takesDroppedFiles(enabled = note != null && !state.busy, onDropped = dropped).onPreviewKeyEvent { event ->
                 val down = event.type == KeyEventType.KeyDown
-                val saves = down && NoteKeys.saves(event.key == Key.S, event.key == Key.Enter || event.key == Key.NumPadEnter, event.isCtrlPressed, event.isAltPressed || event.isShiftPressed)
+                val saves = down && NoteKeys.saves(shortcutKey(event) == Key.S, event.key == Key.Enter || event.key == Key.NumPadEnter, event.isCtrlPressed, event.isAltPressed || event.isShiftPressed)
                 if (saves && canSave && !state.busy) save()
                 // Ctrl+V with a picture on the clipboard (a screenshot) attaches it to a note; text still pastes into the field.
-                if (down && note != null && pastedPicture != null && !pasting && event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && event.key == Key.V) {
+                if (down && note != null && pastedPicture != null && !pasting && event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed && shortcutKey(event) == Key.V) {
                     // One read at a time, however long Ctrl+V is held. Read first: only a picture starts attaching, which would keep
                     // the field from taking pasted text meanwhile; it waits for an attaching under way (a drop) rather than being lost.
                     pasting = true
@@ -244,7 +248,7 @@ fun NoteEditorDialog(
                                     focusedIndicatorColor = Color.Transparent,
                                     unfocusedIndicatorColor = Color.Transparent,
                                 ),
-                                modifier = Modifier.fillMaxWidth().focusRequester(focus),
+                                modifier = Modifier.fillMaxWidth().focusRequester(focus).tabLeavesField(),
                             )
                             if (state.media.isNotEmpty()) {
                                 MediaStrip(editor.postId ?: newId, state.media, enabled = !state.busy) { editor.removeMedia(it) }
@@ -275,7 +279,7 @@ fun NoteEditorDialog(
                         scope.launch { if (editor.discard()) onDismiss() }
                     }) { Text(stringResource(Res.string.saved_discard)) }
                 },
-                dismissButton = { TextButton(onClick = { confirming = false }) { Text(stringResource(Res.string.cancel)) } },
+                dismissButton = { TextButton(onClick = { confirming = false }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.cancel)) } },
             )
         }
     }
@@ -328,7 +332,7 @@ private fun EditorBar(title: String, busy: Boolean, saving: Boolean, canSave: Bo
     Row(Modifier.fillMaxWidth().padding(start = 8.dp, end = 16.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose, enabled = !busy) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } }
         Spacer(Modifier.width(8.dp))
-        Text(title, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        TipText(title, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
         Spacer(Modifier.width(8.dp))
         Button(onClick = onSave, enabled = !busy && canSave, modifier = Modifier.heightIn(min = 44.dp)) {
             if (saving) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
@@ -398,7 +402,7 @@ private fun QuotedPreview(content: SavedContent) {
     val post = content.xPost ?: return
     val shape = RoundedCornerShape(16.dp)
     Column(Modifier.fillMaxWidth().padding(top = 12.dp).clip(shape).border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape).padding(12.dp)) {
-        Text(post.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        TipText(post.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Text("@" + post.author.screenName, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(post.text, maxLines = 6, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 4.dp))
     }

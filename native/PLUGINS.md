@@ -323,7 +323,9 @@ for a long press over a whole card, its tappable parts included, `swipeTabs`
 for tabs that turn with a sideways swipe, a picture's marks as XTA draws
 them: `MediaBadge`, `AltBadge` with `AltTextDialog`, and `ShowMediaTile`
 with `mediaShown` for Settings › Media's "Load media manually",
-`rememberCopyContract` for a contract address copied whole, and
+`rememberCopyContract` for a contract address copied whole, `IconTip`, an
+icon button's label shown beside the pointer on the desktop (the label its
+icon already gives screen readers), and
 `rememberSwitchedHaptics`, the haptics behind the reader's Haptic feedback
 switch, which a sheet's own window needs: everywhere else
 `LocalHapticFeedback` is behind it already) is there too: its avatar asks

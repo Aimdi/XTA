@@ -3,9 +3,11 @@
     <string name="keys_title">Sneltoetsen</string>
     <string name="keys_help">Deze sneltoetsen tonen</string>
     <string name="keys_back">Terug, of sluiten wat open is</string>
+    <string name="keys_forward">Vooruit naar waar je vandaan terugging</string>
     <string name="keys_go_home">Terug naar Start</string>
     <string name="keys_refresh">Vernieuwen</string>
     <string name="keys_search">Zoeken</string>
+    <string name="keys_new">Nieuwe notitie, groep, antenne, kolom of trendlocatie, op de eigen pagina</string>
     <string name="keys_recent_searches">Een recente zoekopdracht kiezen vanuit het zoekveld</string>
     <string name="keys_open_copied_link">Gekopieerde link openen</string>
     <string name="keys_tabs">Volgend of vorig tabblad</string>
@@ -18,6 +20,7 @@
     <string name="keys_scroll_ends">Naar het begin of het einde</string>
     <string name="keys_move">Tussen knoppen en velden bewegen</string>
     <string name="keys_text_size">Grotere, kleinere of normale tekst</string>
+    <string name="keys_interface_size">Grotere, kleinere of normale interface</string>
     <string name="keys_full_screen">Volledig scherm</string>
     <string name="keys_video">Video op volledig scherm: afspelen of pauzeren, 10 seconden verspringen</string>
     <string name="keys_video_more">Video op volledig scherm: dempen, opnieuw beginnen, verlaten</string>
@@ -39,7 +42,16 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Opgeslagen: alles wat getoond wordt selecteren</string>
     <string name="keys_remove_selected">Opgeslagen: geselecteerde verwijderen</string>
+    <string name="keys_undo">Zojuist verwijderde ongedaan maken, zolang de melding te zien is</string>
     <string name="keys_leave_selection">Opgeslagen: selecteren stoppen</string>
     <string name="keys_delete">Del</string>
     <string name="keys_move_row">Een rij omhoog of omlaag zetten in een lijst die je kunt herschikken (die met de focus of die onder de aanwijzer)</string>
+    <string name="keys_post_open">De post openen waar J en K op staan</string>
+    <string name="keys_post_like">Die post leuk vinden op dit apparaat, of niet meer</string>
+    <string name="keys_post_save">Die post bewaren op dit apparaat, of niet meer</string>
+    <string name="keys_post_link">De link van die post kopiëren</string>
+    <string name="keys_post_menu">Het menu van die post openen</string>
+    <string name="keys_menu">Menu</string>
+    <string name="keys_find_in_page">Zoeken in het bericht of artikel dat je leest</string>
+    <string name="keys_find_match">Volgende of vorige overeenkomst in de zoekbalk</string>
 </resources>

@@ -40,6 +40,7 @@ import com.aimdi.xtanative.ui.article.ArticleScreen
 import com.aimdi.xtanative.ui.chrome.CardBacks
 import com.aimdi.xtanative.ui.chrome.CloseOnBack
 import com.aimdi.xtanative.ui.chrome.ConfirmClose
+import com.aimdi.xtanative.ui.chrome.OfflineFrame
 import com.aimdi.xtanative.ui.chrome.SwipeBackCard
 import com.aimdi.xtanative.ui.chrome.UpdateCheck
 import com.aimdi.xtanative.ui.common.CenteredPage
@@ -81,6 +82,7 @@ import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.pluginstore.PluginCards
 import com.aimdi.xtanative.ui.pluginstore.PluginSheetHost
 import com.aimdi.xtanative.ui.pluginstore.pluginScreens
+import com.aimdi.xtanative.ui.post.LocalPostWindows
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostScreen
 import com.aimdi.xtanative.ui.post.QuotesScreen
@@ -279,6 +281,9 @@ private class ScreenMotion(private val reduced: State<Boolean>) {
  * The app's screens, from Home, or the intro's cards on a first launch. With
  * no X account, XTA's "You are not logged in" asks once a launch; Cancel
  * leaves the app to X as a guest and the plugins.
+ * In a [SecondaryWindow], from that window's screen, with none of what the
+ * main window alone does (asking to sign in or before closing, the update
+ * check, the plugins' navigation and backups, the voice settings asked).
  */
 @Composable
 fun XtaNativeRoot() {
@@ -292,8 +297,13 @@ fun XtaNativeRoot() {
         Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
         return
     }
-    val start = remember { if (IntroFlow.opensOn(prefs, hasAccounts = loaded.accounts.isNotEmpty())) Routes.INTRO else Routes.HOME }
-    var askSignIn by rememberSaveable { mutableStateOf(SignInReminder.launch.ask(loaded.accounts.isNotEmpty(), onIntro = start == Routes.INTRO)) }
+    val secondary = LocalSecondaryWindow.current
+    val start = remember {
+        secondary?.route ?: if (IntroFlow.opensOn(prefs, hasAccounts = loaded.accounts.isNotEmpty())) Routes.INTRO else Routes.HOME
+    }
+    var askSignIn by rememberSaveable {
+        mutableStateOf(secondary == null && SignInReminder.launch.ask(loaded.accounts.isNotEmpty(), onIntro = start == Routes.INTRO))
+    }
     val nav = rememberNavController()
     val links = LocalLinks.current
     val backs = remember { CardBacks() }
@@ -351,10 +361,16 @@ fun XtaNativeRoot() {
         )
     }
     BindLinkScreens(linkScreens)
-    // Where a plugin asks to go lands here too (PLUGINS.md).
-    AttachPluginNavigation(nav, linkScreens, Routes.DOWNLOADS, actions, pluginCards)
-    AttachPluginBackups()
-    OpenVoiceSettingsWhenAsked(nav)
+    if (secondary == null) {
+        // Where a plugin asks to go lands here too (PLUGINS.md).
+        val showMain = LocalShowMainWindow.current
+        AttachPluginNavigation(nav, linkScreens, Routes.DOWNLOADS, actions, pluginCards, landed = showMain)
+        AttachPluginBackups()
+        OpenVoiceSettingsWhenAsked(nav, showMain)
+        ShowWhenPluginSheetOpens(showMain)
+    }
+    // Ctrl+click and a middle click on a post, and its menu's Open in new window, open it in a window of its own.
+    val postWindows = remember { windowOpener()?.let { open -> { id: String -> open(Routes.post(id)) } } }
 
     // A grid's tiles open the viewer over everything it has loaded (media_grid_lightbox.dart).
     val galleries = remember(nav) { { gallery: MediaGallery, at: Int -> nav.navigate(Routes.gallery(Galleries.put(gallery), at, gallery.pages().getOrNull(at))) } }
@@ -362,7 +378,12 @@ fun XtaNativeRoot() {
     val problems = remember(nav) {
         ProblemActions(addAccount = { nav.navigate(Routes.SIGN_IN) }, diagnostics = { nav.navigate(SettingsRoutes.of(SettingsSection.DIAGNOSTICS)) })
     }
-    CompositionLocalProvider(LocalGalleryOpener provides galleries, LocalProblemActions provides problems, LocalLivePlayer provides livePlayer) {
+    CompositionLocalProvider(
+        LocalGalleryOpener provides galleries,
+        LocalProblemActions provides problems,
+        LocalLivePlayer provides livePlayer,
+        LocalPostWindows provides postWindows,
+    ) {
         // Ctrl+F and / on a screen with no search of its own open the search, its field ready: not over the
         // intro, the sign-in or an import, not over a plugin's pages (they keep their own keys), and not a
         // second search over one still opening.
@@ -372,22 +393,77 @@ fun XtaNativeRoot() {
         val openSettings = remember(nav) {
             { if (!nav.popBackStack(Routes.SETTINGS, inclusive = false) && SearchKeys.opensSettingsOver(nav.currentDestination?.route)) nav.navigate(Routes.SETTINGS) }
         }
-        // Alt+Home goes back to Home, as a browser's goes to its home page; nothing where Home is not below.
-        val openHome = remember(nav) { { nav.popBackStack(Routes.HOME, inclusive = false); Unit } }
-        DesktopNavigation(nav, openSearch, openSettings, openHome) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) }
+        // Alt+Home goes back to Home, as a browser's goes to its home page, and to Home's start page there (not
+        // Saved or another page last picked on its bar); nothing where Home is not below.
+        val openHome = remember(nav) {
+            {
+                if (runCatching { nav.getBackStackEntry(Routes.HOME) }.isSuccess) {
+                    nav.popBackStack(Routes.HOME, inclusive = false)
+                    HomeRequests.toStart()
+                }
+            }
+        }
+        // Alt+→ and the mouse's forward button open again what going back left, as a browser's forward does.
+        val forward = remember(nav) { ForwardRoutes() }
+        LaunchedEffect(nav, forward) {
+            nav.currentBackStackEntryFlow.collect { entry ->
+                forward.shown(entry.id, entry.destination.route.orEmpty(), forwardStep(entry), nav.previousBackStackEntry?.id)
+            }
+        }
+        val goForward = remember(nav, forward, backs, opening) {
+            {
+                forward.next()?.let { step ->
+                    val open = { runCatching { nav.navigate(step.route) }.onFailure { forward.clear() }; Unit }
+                    // A post opens as a card over a picture of the screen, as it does when clicked; one that
+                    // does not open (another still opening) leaves the step to go forward to.
+                    if (step.pattern == Routes.POST) backs.open(opening, abandoned = { forward.putBack(step) }, navigate = open) else open()
+                    true
+                } ?: false
+            }
+        }
+        DesktopNavigation(nav, openSearch, openSettings, openHome, goForward) { OfflineFrame { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) } }
     }
     if (askSignIn) {
         NotLoggedInDialog(onImportBackup = { nav.navigate(Routes.IMPORT) }, onLogin = { nav.navigate(Routes.SIGN_IN) }, onDismiss = { askSignIn = false })
     }
-    ConfirmClose()
-    UpdateCheck()
+    if (secondary == null) {
+        ConfirmClose()
+        UpdateCheck()
+    }
 }
+
+/** What opens [entry] again going forward: its route with its arguments filled in; null where they cannot be, or it is a step of setting up. */
+private fun forwardStep(entry: NavBackStackEntry): ForwardRoutes.Step? {
+    val pattern = entry.destination.route?.takeIf { it !in NOT_FORWARD } ?: return null
+    val args = entry.arguments?.read { toMap() }.orEmpty()
+    return ForwardRoutes.routeOf(pattern, args)?.let { ForwardRoutes.Step(it, pattern) }
+}
+
+/**
+ * Screens going forward never opens again: the app's setting up, what only
+ * leads to the first screen, and what does something as it is shown: the
+ * browser screen hands its page to the desktop's browser again, and a live
+ * room starts playing again.
+ */
+internal val NOT_FORWARD = setOf(Routes.ROOT, Routes.INTRO, Routes.IMPORT, Routes.SIGN_IN, Routes.BROWSER, Routes.LIVE)
 
 /** The reading-aloud bar's "Voice settings" opens them over whatever screen is up. */
 @Composable
-private fun OpenVoiceSettingsWhenAsked(nav: NavHostController) {
+private fun OpenVoiceSettingsWhenAsked(nav: NavHostController, shown: () -> Unit) {
     val speech = LocalSpeech.current ?: return
-    LaunchedEffect(speech, nav) { speech.voiceSettingsAsked.collect { nav.navigate(Routes.SPEECH_SETTINGS) } }
+    LaunchedEffect(speech, nav) {
+        speech.voiceSettingsAsked.collect {
+            nav.navigate(Routes.SPEECH_SETTINGS)
+            shown()
+        }
+    }
+}
+
+/** [shown] each time a plugin's sheet opens: it shows over the main window's screens, wherever it was asked from ([LocalShowMainWindow]). */
+@Composable
+private fun ShowWhenPluginSheetOpens(shown: () -> Unit) {
+    val plugins = LocalPlugins.current
+    LaunchedEffect(plugins) { plugins.sheet.collect { if (it != null) shown() } }
 }
 
 /** What the screens are given to reach one another, and the pictures the opened posts are dragged off. */
@@ -401,8 +477,8 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
     all.backs.Recorded { ScreenHost(nav, start, all, motion) }
     // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved).
     KeepHost()
-    // The sheets plugins open over the screens: a post's folders, its note, its menu, an account's groups.
-    PluginSheetHost()
+    // The sheets plugins open over the screens: a post's folders, its note, its menu, an account's groups. The main window's alone, so each shows once.
+    if (LocalSecondaryWindow.current == null) PluginSheetHost()
 }
 
 @Composable
@@ -468,8 +544,10 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             popExitTransition = motion.cardExit,
         ) { entry ->
             val canLeave = remember(entry.id) { nav.previousBackStackEntry != null }
-            SwipeBackCard(all.backs.claim(entry), canLeave, leave = { nav.popIfOn(entry) }) { back ->
-                PostScreen(entry.text("id").orEmpty(), actions, onBack = back, startMedia = entry.arguments?.read { getIntOrNull("media") } ?: 0)
+            // The post a window of its own was opened on: its back arrow closes that window.
+            val closeWindow = LocalSecondaryWindow.current?.close?.takeIf { !canLeave }
+            SwipeBackCard(all.backs.claim(entry), canLeave, leave = { nav.popIfOn(entry) }, readsOpen = true) { back ->
+                PostScreen(entry.text("id").orEmpty(), actions, onBack = closeWindow ?: back, startMedia = entry.arguments?.read { getIntOrNull("media") } ?: 0)
             }
         }
         composable(

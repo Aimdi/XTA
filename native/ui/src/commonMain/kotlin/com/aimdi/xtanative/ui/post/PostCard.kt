@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +40,7 @@ import com.aimdi.xtanative.services.links.XLinks
 import com.aimdi.xtanative.ui.article.ArticlePreviewCard
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.fullTimeText
@@ -56,6 +58,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_subscribers_only_of_auth
 import com.aimdi.xtanative.ui.generated.resources.posts_thread
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_view_quoted
+import com.aimdi.xtanative.ui.home.keyedPost
 import com.aimdi.xtanative.ui.media.LiveRooms
 import com.aimdi.xtanative.ui.media.LocalLivePlayer
 import com.aimdi.xtanative.ui.saved.KeepNotices
@@ -131,7 +134,9 @@ private val MediaBleed = 16.dp
  * reply line, the text and what the post carries, and the counts.
  * [continues] and [midThread] join it to the posts of its thread by a line
  * through the avatars. A tap opens it; with "Double-tap to like" on, a
- * double-tap likes it on this device. A right-click opens its ⋯ menu.
+ * double-tap likes it on this device. A right-click opens its ⋯ menu; on
+ * the desktop, Ctrl+click and a middle click open it in a new window. On
+ * the desktop the keys act on it once the reading keys are on it ([keyedPost]).
  */
 @Composable
 fun PostCard(
@@ -150,12 +155,29 @@ fun PostCard(
     val railColor = MaterialTheme.colorScheme.outlineVariant
     val picture = rememberPostPicture()
     var menu by rememberSaveable(shown.id) { mutableStateOf(false) }
+    // Opened from the keyboard: at the post, not at the pointer.
+    var menuAtPost by remember(shown.id) { mutableStateOf(false) }
+    val keys = rememberPostKeys(post, actions) {
+        menuAtPost = true
+        menu = true
+    }
+    // Ctrl+click and a middle click open the post in a window of its own, on the desktop.
+    val windows = LocalPostWindows.current
+    val inWindow = windows?.let { open -> { open(shown.id) } }
+    val presses = remember { CardPresses() }
     Column(
         modifier
             .fillMaxWidth()
-            .onSecondaryClick { menu = true }
+            .keyedPost(keys)
+            .onSecondaryClick {
+                menuAtPost = false
+                menu = true
+            }
             .recordedIn(picture)
-            .opening(rememberDoubleTapLike(shown, scope.prefs, actions)) { actions.openPost(shown.id) }
+            .opensInWindow(inWindow, presses)
+            .opening(rememberDoubleTapLike(shown, scope.prefs, actions)) {
+                if (presses.take() == PostPress.TAP_IN_WINDOW && inWindow != null) inWindow() else actions.openPost(shown.id)
+            }
             .drawBehind {
                 val x = PostGeometry.RAIL_CENTER.dp.toPx()
                 val width = PostGeometry.RAIL_WIDTH.dp.toPx()
@@ -198,10 +220,15 @@ fun PostCard(
                 // Translate and ⋯ at the end of the author line, reaching over the text under it as X's ⋯ does.
                 Row(Modifier.align(Alignment.TopEnd)) {
                     translation?.let { TranslateButton(it, scope) }
-                    HeaderButton(PostIcons.MoreHoriz, stringResource(Res.string.posts_more)) { menu = true }
+                    HeaderButton(PostIcons.MoreHoriz, stringResource(Res.string.posts_more)) {
+                        menuAtPost = false
+                        menu = true
+                    }
                 }
             }
-            if (menu) PostMenu(post, actions, onDismiss = { menu = false })
+            if (menu) {
+                CompositionLocalProvider(LocalMenuAtPost provides menuAtPost) { PostMenu(post, actions, onDismiss = { menu = false }) }
+            }
         }
     }
 }
@@ -263,12 +290,14 @@ internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, siz
 internal fun PostAuthor(post: XPost, scope: PostScope, actions: PostActions, modifier: Modifier = Modifier, avatarUrl: String? = post.author.largeAvatarUrl) {
     val full = fullTimeText(post.createdAt)
     val time = if (scope.prefs.absoluteTimestamps) full else agoText(post.createdAt)
+    // Dragging the time drags the post's address out, as the time on X's site links the post.
+    val link = PostView.url(post, scope.prefs)
     if (PostView.showsAuthor(post, scope.prefs, scope.profileScreenName)) {
         // The full date and time where the pointer rests on a short one, as on X's site (a tooltip on the desktop; nothing on Android).
         val card = AuthorLineCard(post.author, avatarUrl) { actions.openUser(post.author.screenName, post.author.id) }
-        AuthorLine(post.author.name, post.author.screenName, time, post.author.verified, modifier, timeTip = full, card = card)
+        AuthorLine(post.author.name, post.author.screenName, time, post.author.verified, modifier, timeTip = full, card = card, timeLink = link)
     } else {
-        Text(time, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = modifier)
+        Text(time, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = modifier.dragsLink(link))
     }
 }
 
@@ -282,7 +311,7 @@ internal fun ReplyingTo(screenName: String, replyToId: String?, actions: PostAct
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Text("@$screenName", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        TipText("@$screenName", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 
@@ -370,7 +399,7 @@ fun QuotedPost(post: XPost, actions: PostActions, modifier: Modifier = Modifier)
                 }
                 PostAuthor(post, scope, actions, Modifier.weight(1f), avatarUrl = post.author.avatarUrl)
             }
-            if (post.article == null) ExpandablePostText(post, actions, Modifier.padding(top = 4.dp))
+            if (post.article == null) ExpandablePostText(post, actions, Modifier.padding(top = 4.dp), findKey = quoteFindKey(post.id))
             PostAttachments(post, scope, actions, gap = 8.dp, quoted = true)
         }
     }

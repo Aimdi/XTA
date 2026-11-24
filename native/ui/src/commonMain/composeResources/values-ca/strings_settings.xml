@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Fes servir tota la pantalla: l'hora, la bateria i la cobertura de dalt queden amagades. Llisca cap avall des de la vora superior per veure-les un moment.</string>
     <string name="settings_text_scale">Factor d'escala del text</string>
     <string name="settings_text_scale_description">Ajusta la mida de la lletra a l'app</string>
+    <string name="settings_interface_scale">Mida de la interfície</string>
+    <string name="settings_interface_scale_description">Fes més grans o més petits alhora el text, els botons i les imatges</string>
     <string name="settings_disable_animations">Desactiva les animacions</string>
     <string name="settings_disable_animations_description">Desactiva les animacions a l'app</string>
     <string name="settings_haptics">Resposta hàptica</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">Tot el genial programari utilitzat per XTA</string>
     <string name="settings_intro_again">Torna a mostrar la introducció</string>
     <string name="settings_intro_again_description">Torna a veure les targetes del primer inici.</string>
+    <string name="settings_open_logs">Obre la carpeta de registres</string>
     <string name="settings_ok">D'acord</string>
     <string name="settings_diagnostics_copy">Copia l'informe</string>
     <string name="settings_diagnostics_copied">Diagnòstic copiat al porta-retalls</string>
@@ -375,4 +378,18 @@
     <string name="settings_start_at_login_description">Obre l’aplicació en iniciar la sessió; amb «Tanca a la safata» activat, espera a la safata</string>
     <string name="tray_show">Mostra la finestra</string>
     <string name="tray_hide">Amaga la finestra</string>
+    <string name="tray_new_search">Cerca nova</string>
+    <string name="settings_proxy">Servidor intermediari</string>
+    <string name="settings_proxy_description">Com arriba l’app a internet en aquest dispositiu. Sistema fa servir les variables d’entorn del servidor intermediari o, si no n’hi ha, la configuració de l’escriptori</string>
+    <string name="settings_proxy_none">Sense servidor intermediari</string>
+    <string name="settings_proxy_manual">Manual</string>
+    <string name="settings_proxy_server">Servidor intermediari</string>
+    <string name="settings_proxy_server_unset">No definit: no es carrega res fins que en definiu un</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Els vídeos encara no es poden reproduir a través d’un servidor SOCKS5</string>
+    <string name="settings_proxy_host">Amfitrió</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Sense servidor intermediari per a</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

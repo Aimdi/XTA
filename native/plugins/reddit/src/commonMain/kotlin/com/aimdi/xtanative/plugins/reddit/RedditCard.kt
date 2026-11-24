@@ -162,7 +162,7 @@ private fun CardFooter(app: RedditApp, post: RedditPost) {
 private fun FooterAction(icon: ImageVector, label: String?, description: String, tint: Color? = null, onLongClick: (() -> Unit)? = null, onClick: () -> Unit) {
     val colour = tint ?: MaterialTheme.colorScheme.onSurfaceVariant
     Row(
-        Modifier.heightIn(min = 40.dp).clip(RoundedCornerShape(20.dp)).combinedClickable(onClick = onClick, onLongClick = onLongClick).padding(horizontal = 8.dp),
+        Modifier.heightIn(min = 40.dp).clip(RoundedCornerShape(20.dp)).then(onLongClick?.let { Modifier.onContextClick(it) } ?: Modifier).combinedClickable(onClick = onClick, onLongClick = onLongClick).padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(icon, contentDescription = description, tint = colour, modifier = Modifier.size(18.dp))

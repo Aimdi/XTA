@@ -1,40 +1,28 @@
 package com.aimdi.xtanative.ui.settings
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import com.aimdi.xtanative.ui.chrome.AppLog
+import com.aimdi.xtanative.ui.chrome.LogsFolder
+import com.aimdi.xtanative.ui.common.FileChoosers
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.settings_download_path
 import com.aimdi.xtanative.ui.generated.resources.settings_export
-import java.awt.FileDialog
-import java.awt.Frame
 import java.io.File
-import javax.swing.JFileChooser
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 
 internal actual val isDesktop: Boolean = true
 
-/** The system's save dialog, in ~/Downloads first. */
+/** The desktop's save dialog, in the downloads folder first. */
 @Composable
 internal actual fun rememberBackupSaver(onSaved: (String?) -> Unit): (fileName: String, text: String) -> Unit {
     val title = stringResource(Res.string.settings_export)
-    val scope = rememberCoroutineScope()
     return { fileName, text ->
-        val dialog = FileDialog(null as Frame?, title, FileDialog.SAVE)
-        File(System.getProperty("user.home"), "Downloads").takeIf { it.isDirectory }?.let { dialog.directory = it.path }
-        dialog.file = fileName
-        dialog.isVisible = true
-        val chosen = dialog.files.firstOrNull()
-        dialog.dispose()
-        if (chosen == null) {
-            onSaved(null)
-        } else {
-            scope.launch {
-                val saved = withContext(Dispatchers.IO) { runCatching { chosen.writeText(text) }.isSuccess }
-                onSaved(if (saved) chosen.name else null)
-            }
+        FileChoosers.launch {
+            val chosen = FileChoosers.save(title, fileName)
+            val saved = chosen != null && withContext(Dispatchers.IO) { runCatching { chosen.writeText(text) }.isSuccess }
+            onSaved(chosen?.name?.takeIf { saved })
         }
     }
 }
@@ -44,14 +32,15 @@ internal actual fun rememberBackupSaver(onSaved: (String?) -> Unit): (fileName: 
 internal actual fun rememberFolderPicker(onPicked: (stored: String, name: String) -> Unit): () -> Unit {
     val title = stringResource(Res.string.settings_download_path)
     return {
-        val chooser = JFileChooser().apply {
-            dialogTitle = title
-            fileSelectionMode = JFileChooser.DIRECTORIES_ONLY
-            currentDirectory = File(System.getProperty("user.home"))
-        }
-        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            chooser.selectedFile?.let { onPicked(it.absolutePath, it.name) }
+        FileChoosers.launch {
+            FileChoosers.folder(title, File(System.getProperty("user.home")))?.let { onPicked(it.absolutePath, it.name) }
         }
     }
 }
 
+
+/** The log [AppLog] keeps, in `$XDG_STATE_HOME/xta-native/logs`. */
+internal actual val logsFolder: String? get() = AppLog.folder().path
+
+/** Through xdg-open, the folder handed as one argument. */
+internal actual fun openLogsFolder(): Boolean = LogsFolder.open()

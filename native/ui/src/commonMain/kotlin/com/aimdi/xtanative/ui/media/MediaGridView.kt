@@ -60,6 +60,7 @@ import com.aimdi.xtanative.store.settings.MediaQuality
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.MediaBadge
 import com.aimdi.xtanative.ui.common.ShowMediaTile
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.datePattern
 import com.aimdi.xtanative.ui.common.mediaShown
@@ -222,7 +223,7 @@ private fun BroadcastSlice(grid: MediaGridRows, slice: MasonrySlice) {
                 .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, shape),
         ) {
             GridTile(item, index, grid, Modifier.fillMaxWidth().aspectRatio(look.aspectOf(item)), read = true)
-            Text(
+            TipText(
                 item.excerpt ?: type,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,

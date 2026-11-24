@@ -3,9 +3,11 @@
     <string name="keys_title">キーボードショートカット</string>
     <string name="keys_help">このショートカット一覧を表示</string>
     <string name="keys_back">戻る、または開いているものを閉じる</string>
+    <string name="keys_forward">戻る前の画面に進む</string>
     <string name="keys_go_home">ホームに戻る</string>
     <string name="keys_refresh">更新</string>
     <string name="keys_search">検索</string>
+    <string name="keys_new">新しいメモ・グループ・アンテナ・列・トレンドの場所（それぞれのページで）</string>
     <string name="keys_recent_searches">検索欄から最近の検索を選ぶ</string>
     <string name="keys_open_copied_link">コピーしたリンクを開く</string>
     <string name="keys_tabs">次または前のタブ</string>
@@ -18,6 +20,7 @@
     <string name="keys_scroll_ends">先頭または末尾へ移動</string>
     <string name="keys_move">ボタンや入力欄の間を移動</string>
     <string name="keys_text_size">文字を大きく、小さく、または標準に</string>
+    <string name="keys_interface_size">インターフェースを拡大・縮小・標準に戻す</string>
     <string name="keys_full_screen">全画面表示</string>
     <string name="keys_video">全画面の動画：再生または一時停止、10秒スキップ</string>
     <string name="keys_video_more">全画面動画: ミュート、最初から、全画面を終了</string>
@@ -39,7 +42,16 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">保存ツイート: 表示中をすべて選択</string>
     <string name="keys_remove_selected">保存ツイート: 選択したものを削除</string>
+    <string name="keys_undo">削除した直後に元に戻す（通知が表示されている間）</string>
     <string name="keys_leave_selection">保存ツイート: 選択を終了</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">並べ替えできるリストで行を上下に移動（フォーカスのある行、またはポインターの下の行）</string>
+    <string name="keys_post_open">J と K で選んだ投稿を開く</string>
+    <string name="keys_post_like">その投稿にこの端末でいいね、または取り消し</string>
+    <string name="keys_post_save">その投稿をこの端末に保存、または保存を解除</string>
+    <string name="keys_post_link">その投稿のリンクをコピー</string>
+    <string name="keys_post_menu">その投稿のメニューを開く</string>
+    <string name="keys_menu">メニュー</string>
+    <string name="keys_find_in_page">読んでいるポストや記事の中を検索</string>
+    <string name="keys_find_match">検索バーで次または前の一致へ</string>
 </resources>

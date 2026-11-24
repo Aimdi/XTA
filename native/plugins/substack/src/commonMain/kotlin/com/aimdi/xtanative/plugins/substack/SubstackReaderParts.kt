@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.substack.SubstackHighlights
 import com.aimdi.xtanative.networks.substack.SubstackPassage
 import com.aimdi.xtanative.networks.substack.SubstackPost
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.plugins.rememberShareText
@@ -100,7 +101,7 @@ private fun ContentsSheet(content: ReaderContent.Article, find: Boolean, onDismi
                 onValueChange = { query = it.take(200) },
                 placeholder = { Text(pluginString(Strings.search)) },
                 leadingIcon = { Icon(Icons.Default.Search, null) },
-                trailingIcon = { IconButton(onClick = { query = "" }) { Icon(Icons.Default.Clear, pluginString(Strings.clear_search)) } },
+                trailingIcon = { IconTip(pluginString(Strings.clear_search)) { IconButton(onClick = { query = "" }) { Icon(Icons.Default.Clear, pluginString(Strings.clear_search)) } } },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth().padding(16.dp).focusRequester(focus),
             )
@@ -139,7 +140,7 @@ private fun HighlightsSheet(app: SubstackApp, post: SubstackPost, onDismiss: () 
                     items(quotes, key = { it }) { quote ->
                         Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 4.dp, top = 4.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                             Text(quote, fontStyle = FontStyle.Italic, modifier = Modifier.weight(1f))
-                            IconButton(onClick = { app.launch { app.highlights.remove(post, quote) } }) { Icon(Icons.Outlined.Delete, pluginString(Strings.highlight_remove)) }
+                            IconTip(pluginString(Strings.highlight_remove)) { IconButton(onClick = { app.launch { app.highlights.remove(post, quote) } }) { Icon(Icons.Outlined.Delete, pluginString(Strings.highlight_remove)) } }
                         }
                     }
                 }

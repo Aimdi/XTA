@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Fant ingen som har retweetet denne tweeten!</string>
     <string name="posts_no_saves">Ingen lagrede innlegg ennå — bokmerker blir på denne enheten</string>
     <string name="posts_open_in_browser">Åpne i nettleser</string>
+    <string name="posts_open_in_new_window">Åpne i nytt vindu</string>
     <string name="posts_open_on_web_archive">Åpne på web.archive.org</string>
     <string name="posts_open_post">Åpne innlegg</string>
     <string name="posts_page_not_found">Siden ble ikke funnet</string>

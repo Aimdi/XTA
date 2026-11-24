@@ -235,6 +235,8 @@ class AppGraph(
             if (mockX == null) scope.launch { crashReporter.sendKept() }
         }
         scope.launch { sessions.load() }
+        // Files a deleted note's undo set aside, left by the last run: no undo is offered any more.
+        scope.launch { runCatching { localPosts.discardSetAside() } }
         scope.launch {
             try {
                 settings.load()

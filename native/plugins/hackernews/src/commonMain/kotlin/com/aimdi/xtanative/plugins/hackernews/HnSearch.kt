@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -46,7 +47,8 @@ internal class HnSearch(private val app: HnApp) : PluginSearch() {
     override fun Landing(frame: PluginFrame, send: (String) -> Unit) {
         val settings by app.host.settings.state.collectAsState()
         val history = settings?.get(HackerNewsPrefs.searchHistory).orEmpty()
-        PluginReadingColumn(frame.padding) { column -> LazyColumn(Modifier.fillMaxSize(), contentPadding = column) {
+        val scroll = rememberLazyListState()
+        PluginReadingColumn(frame.padding, scroll) { column -> LazyColumn(Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
             items(history, key = { it }) { query -> PluginRecentSearchRow(query, onClick = { send(query) }) }
         } }
     }
@@ -57,7 +59,8 @@ internal class HnSearch(private val app: HnApp) : PluginSearch() {
 /** XTA's Hacker News settings (hn_settings.dart): its mark, and that nothing reaches Hacker News but reading. */
 @Composable
 internal fun HnSettingsBody(frame: PluginFrame) {
-    PluginReadingColumn(frame.padding) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = column) {
+    val scroll = rememberLazyListState()
+    PluginReadingColumn(frame.padding, scroll) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
         item(key = "blurb") {
             Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 32.dp), verticalArrangement = Arrangement.spacedBy(16.dp), horizontalAlignment = Alignment.Start) {
                 Icon(PostIcons.Forum, contentDescription = null, tint = HnBrand, modifier = Modifier.size(40.dp))

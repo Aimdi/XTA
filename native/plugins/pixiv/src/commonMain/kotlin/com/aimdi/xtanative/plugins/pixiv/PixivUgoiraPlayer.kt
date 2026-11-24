@@ -39,6 +39,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivImages
 import com.aimdi.xtanative.store.downloads.OkHttpMediaHttp
 import com.aimdi.xtanative.store.settings.PixivPrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginProgress
 import com.aimdi.xtanative.ui.plugins.pluginString
 import java.io.ByteArrayOutputStream
@@ -88,17 +89,22 @@ private fun BoxScope.UgoiraControl(phase: UgoiraPhase, onTap: () -> Unit) {
         UgoiraPhase.LOADING -> Box(Modifier.align(Alignment.Center).size(64.dp).then(scrim), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(color = Color.White, modifier = Modifier.size(32.dp))
         }
-        UgoiraPhase.PLAYING -> IconButton(onClick = onTap, modifier = Modifier.align(Alignment.BottomEnd).padding(8.dp).then(scrim)) {
-            Icon(PixivIcons.Pause, pluginString(Strings.ugoira_pause), tint = Color.White)
+        // The tip's box takes the place in the player; the button keeps its look inside it.
+        UgoiraPhase.PLAYING -> Box(Modifier.align(Alignment.BottomEnd)) {
+            IconTip(pluginString(Strings.ugoira_pause)) {
+                IconButton(onClick = onTap, modifier = Modifier.padding(8.dp).then(scrim)) {
+                    Icon(PixivIcons.Pause, pluginString(Strings.ugoira_pause), tint = Color.White)
+                }
+            }
         }
-        else -> IconButton(onClick = onTap, modifier = Modifier.align(Alignment.Center).size(64.dp).then(scrim)) {
+        else -> Box(Modifier.align(Alignment.Center)) {
             val failed = phase == UgoiraPhase.FAILED
-            Icon(
-                if (failed) Icons.Filled.Refresh else Icons.Filled.PlayArrow,
-                pluginString(if (failed) Strings.retry else Strings.ugoira_play),
-                tint = Color.White,
-                modifier = Modifier.size(32.dp),
-            )
+            val label = pluginString(if (failed) Strings.retry else Strings.ugoira_play)
+            IconTip(label) {
+                IconButton(onClick = onTap, modifier = Modifier.size(64.dp).then(scrim)) {
+                    Icon(if (failed) Icons.Filled.Refresh else Icons.Filled.PlayArrow, label, tint = Color.White, modifier = Modifier.size(32.dp))
+                }
+            }
         }
     }
 }

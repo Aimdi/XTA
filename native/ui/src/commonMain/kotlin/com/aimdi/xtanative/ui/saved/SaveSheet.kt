@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
@@ -32,7 +31,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -64,6 +62,8 @@ import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedLibrary
 import com.aimdi.xtanative.store.settings.SavedPrefs
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -79,6 +79,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_sheet_no_match
 import com.aimdi.xtanative.ui.generated.resources.saved_sheet_not_saved
 import com.aimdi.xtanative.ui.generated.resources.saved_sheet_title
 import com.aimdi.xtanative.ui.generated.resources.saved_sheet_unfiled
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -99,8 +100,8 @@ fun SaveSheet(item: Keepable, onDismiss: () -> Unit) {
         keeper.saved.index()
         keeper.settings.load()
     }
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
-        val loaded = library ?: return@ModalBottomSheet
+    KeyedSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
+        val loaded = library ?: return@KeyedSheet
         SheetBody(item, loaded, settings?.get(SavedPrefs.stickyFolderEnabled) == true)
     }
 }
@@ -131,7 +132,7 @@ private fun SheetBody(item: Keepable, library: SavedLibrary, remembering: Boolea
             }
         }
         SheetSearch(view.query, onChange = { view = view.search(it) }, Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 6.dp))
-        Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
+        Column(Modifier.weight(1f, fill = false).verticalScrollByKeys(rememberScrollState()).padding(horizontal = 16.dp)) {
             if (SaveSheetView.labelShown(chips)) SectionLabel(sectionText(chips.section))
             if (chips.canCreate) {
                 CreateRow(stringResource(Res.string.saved_sheet_create, view.query.trim())) {
@@ -210,7 +211,7 @@ private fun CreateRow(label: String, onClick: () -> Unit) {
             Icon(Icons.Filled.Add, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
         }
         Spacer(Modifier.width(12.dp))
-        Text(label, color = MaterialTheme.colorScheme.primary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 3, overflow = TextOverflow.Ellipsis)
+        TipText(label, color = MaterialTheme.colorScheme.primary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 3, overflow = TextOverflow.Ellipsis)
     }
 }
 
@@ -230,7 +231,7 @@ private fun FolderChip(folder: SavedFolder, selected: Boolean, onClick: () -> Un
                     Icon(SavedIcons.Folder, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
                 }
                 Spacer(Modifier.width(8.dp))
-                Text(folder.name, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 15.sp)
+                TipText(folder.name, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 15.sp)
                 if (selected) {
                     Spacer(Modifier.width(6.dp))
                     Icon(Icons.Filled.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
@@ -281,7 +282,7 @@ private fun StatusLine(status: SaveStatus) {
             modifier = Modifier.size(20.dp),
         )
         Spacer(Modifier.width(10.dp))
-        Text(
+        TipText(
             when (status) {
                 SaveStatus.NotSaved -> stringResource(Res.string.saved_sheet_not_saved)
                 SaveStatus.Unfiled -> stringResource(Res.string.saved_sheet_unfiled)

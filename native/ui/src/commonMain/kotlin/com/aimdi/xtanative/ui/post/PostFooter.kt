@@ -29,7 +29,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -57,9 +56,12 @@ import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.services.ai.TranslationStatus
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSessions
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.common.onSecondaryClick
+import com.aimdi.xtanative.ui.common.onSecondaryClickIf
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_add_to_group
@@ -248,6 +250,7 @@ internal fun HeaderButton(
         Modifier
             .size(PostGeometry.TOUCH_TARGET.dp)
             .clip(CircleShape)
+            .onSecondaryClickIf(onLongClick)
             .combinedClickable(role = Role.Button, onClick = onClick, onLongClick = onLongClick)
             .semantics { contentDescription = label },
         contentAlignment = if (glyphTop) Alignment.TopCenter else Alignment.Center,
@@ -372,6 +375,7 @@ private fun BadgeDisc(avatar: Dp, subscribe: String, addToGroup: String, onFollo
         Modifier
             .offset(at, at)
             .size(target)
+            .onSecondaryClick(onMore)
             .combinedClickable(
                 interactionSource = null,
                 indication = ripple(bounded = false, radius = disc.dp),
@@ -396,7 +400,7 @@ private fun BadgeDisc(avatar: Dp, subscribe: String, addToGroup: String, onFollo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SubscribeSheet(onSubscribe: () -> Unit, onGroups: () -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp)) {
             MenuRow(GroupIcons.PersonAdd, stringResource(Res.string.posts_subscribe), onSubscribe)
             MenuRow(PostIcons.GroupAdd, stringResource(Res.string.posts_add_to_group), onGroups)

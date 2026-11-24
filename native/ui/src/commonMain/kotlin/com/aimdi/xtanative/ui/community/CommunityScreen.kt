@@ -51,6 +51,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.datePattern
@@ -112,7 +113,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
                 navigationIcon = {
                     IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
                 },
-                title = { Text(state.community?.name.orEmpty(), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                title = { TipText(state.community?.name.orEmpty(), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
@@ -197,7 +198,7 @@ fun CommunityRow(community: XCommunity, onOpen: () -> Unit) {
             }
         }
         Column(Modifier.weight(1f).padding(start = 16.dp)) {
-            Text(community.name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            TipText(community.name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(memberCount(community), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
@@ -232,7 +233,7 @@ private fun CommunityHeader(community: XCommunity, onMembers: () -> Unit) {
                 Text(topic, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             CommunityPage.description(community)?.let { description ->
-                Text(description, maxLines = 3, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 8.dp))
+                TipText(description, maxLines = 3, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 8.dp))
             }
         }
         Row(

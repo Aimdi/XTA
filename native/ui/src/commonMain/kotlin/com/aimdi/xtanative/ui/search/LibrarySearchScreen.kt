@@ -55,6 +55,7 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -178,9 +179,9 @@ private fun ElsewhereChips(query: String, open: (LibraryTarget) -> Unit) {
 @Composable
 private fun ResultRow(result: LibraryDocument, onClick: () -> Unit) {
     ListItem(
-        headlineContent = { Text(result.title, maxLines = 2, overflow = TextOverflow.Ellipsis) },
+        headlineContent = { TipText(result.title, maxLines = 2, overflow = TextOverflow.Ellipsis) },
         supportingContent = {
-            Text(kindLabel(result.kind) + " · " + LibrarySearch.preview(result.text), maxLines = 3, overflow = TextOverflow.Ellipsis)
+            TipText(kindLabel(result.kind) + " · " + LibrarySearch.preview(result.text), maxLines = 3, overflow = TextOverflow.Ellipsis)
         },
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.background),
         modifier = Modifier.clickable(onClick = onClick),

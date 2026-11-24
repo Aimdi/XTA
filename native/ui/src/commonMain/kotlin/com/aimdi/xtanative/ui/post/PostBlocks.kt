@@ -46,6 +46,7 @@ import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.parse.XText
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_article_on_x
 import com.aimdi.xtanative.ui.generated.resources.posts_community_notes
@@ -185,7 +186,7 @@ internal fun ArticleLinkCard(onClick: () -> Unit, modifier: Modifier = Modifier)
             ) {
                 Icon(PostIcons.Article, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
             }
-            Text(
+            TipText(
                 stringResource(Res.string.posts_article_on_x),
                 style = MaterialTheme.typography.titleSmall,
                 maxLines = 2,
@@ -252,7 +253,7 @@ internal fun GrokShareCard(share: XGrokShare, post: XPost, actions: PostActions,
         Column(Modifier.padding(12.dp)) {
             Row(Modifier.fillMaxWidth()) {
                 Spacer(Modifier.weight(0.2f))
-                Text(
+                TipText(
                     share.question,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -298,7 +299,7 @@ internal fun ContextRow(icon: ImageVector, text: String, onClick: (() -> Unit)? 
     ) {
         Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(14.dp))
         Spacer(Modifier.width(12.dp))
-        Text(
+        TipText(
             text,
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,

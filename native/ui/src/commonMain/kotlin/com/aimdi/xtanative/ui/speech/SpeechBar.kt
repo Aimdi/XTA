@@ -42,6 +42,7 @@ import com.aimdi.xtanative.services.speech.Tts
 import com.aimdi.xtanative.services.speech.TtsFailureAction
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_dismiss
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_get_sherpa
@@ -121,7 +122,7 @@ private fun ReadingRow(playback: SpeechPlayback, speech: AppSpeech) {
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(stringResource(Res.string.reader_speech_playing), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
-            playback.title?.let { Text(it, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+            playback.title?.let { TipText(it, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis) }
         }
         IconTip(stringResource(Res.string.reader_speech_stop)) { IconButton(onClick = { speech.stop() }) { Icon(ReaderIcons.StopCircle, stringResource(Res.string.reader_speech_stop)) } }
     }

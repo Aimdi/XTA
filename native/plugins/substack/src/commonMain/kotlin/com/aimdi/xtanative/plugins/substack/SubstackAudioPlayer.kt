@@ -32,6 +32,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.media.rememberAudioSessions
 import com.aimdi.xtanative.ui.media.rememberContinuityPlayers
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -89,7 +90,7 @@ internal fun SubstackAudioPlayer(app: SubstackApp, url: String, title: String) {
 
 @Composable
 private fun PlayButton(loading: Boolean, failed: Boolean, playing: Boolean, title: String, onClick: () -> Unit) {
-    IconButton(onClick = onClick, enabled = !loading) {
+    IconTip(if (failed) pluginString(Strings.retry) else title) { IconButton(onClick = onClick, enabled = !loading) {
         when {
             loading -> CircularProgressIndicator(Modifier.size(28.dp), strokeWidth = 2.dp)
             else -> Icon(
@@ -99,14 +100,14 @@ private fun PlayButton(loading: Boolean, failed: Boolean, playing: Boolean, titl
                 tint = MaterialTheme.colorScheme.primary,
             )
         }
-    }
+    } }
 }
 
 /** The row of a desktop without libmpv: the episode in the browser. */
 @Composable
 private fun RowScope.OutsidePlayer(url: String, title: String) {
     val outside = rememberOpenOutside()
-    IconButton(onClick = { outside(url) }) { Icon(SubstackIcons.PlayCircle, title, Modifier.size(34.dp), tint = MaterialTheme.colorScheme.primary) }
+    IconTip(title) { IconButton(onClick = { outside(url) }) { Icon(SubstackIcons.PlayCircle, title, Modifier.size(34.dp), tint = MaterialTheme.colorScheme.primary) } }
     Text(title, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
     TextButton(onClick = { outside(url) }) {
         Icon(SubstackIcons.OpenInNew, null, Modifier.padding(end = 4.dp).size(18.dp))

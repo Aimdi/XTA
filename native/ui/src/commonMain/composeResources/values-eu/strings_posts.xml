@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Ez da inor aurkitu txio hau birtxiotu duenik!</string>
     <string name="posts_no_saves">Oraindik ez dago gordetakorik — laster-markak gailu honetan geratzen dira</string>
     <string name="posts_open_in_browser">Ireki nabigatzailean</string>
+    <string name="posts_open_in_new_window">Ireki leiho berrian</string>
     <string name="posts_open_on_web_archive">Ireki web.archive.org-en</string>
     <string name="posts_open_post">Ireki argitalpena</string>
     <string name="posts_page_not_found">Twitterrek dio orria ez dela existitzen, baina baliteke hori egia ez izatea</string>

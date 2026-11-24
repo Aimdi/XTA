@@ -6,6 +6,9 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.swing.SwingUtilities
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * The desktop's media session: while something is bound (a reading, a video
@@ -17,6 +20,7 @@ import javax.swing.SwingUtilities
 class MprisService(
     private val connect: () -> DBusConnection?,
     private val onMain: (() -> Unit) -> Unit = { SwingUtilities.invokeLater(it) },
+    private val clockMs: () -> Long = { System.nanoTime() / 1_000_000 },
 ) : AudioSessions {
     /** The app's name, as the controls show it. */
     @Volatile
@@ -34,11 +38,37 @@ class MprisService(
     private var now = MprisNow()
     private var tracks = 0L
 
+    /** When the last position came ([clockMs]); null until the bound thing reports one. */
+    private var reportedAt: Long? = null
+
+    /** Jumps are not told until then: a seek the controls asked for is on its way. */
+    private var quietUntil = 0L
+
+    /** Where the position jumped to (an in-app seek, a loop back to the start), for a Seeked signal still to send. */
+    private var seekedTo: Long? = null
+
     private val bus: ExecutorService = Executors.newSingleThreadExecutor { task -> Thread(task, "xta-native-mpris").apply { isDaemon = true } }
     private var connection: DBusConnection? = null
     private var tried = false
     private var named = false
     private var told: MprisNow? = null
+
+    private val sessionNow = MutableStateFlow<MprisNow?>(null)
+
+    /** What is bound now, as the controls are told it; null while nothing is (the tray's Play/Pause follows it). */
+    val session: StateFlow<MprisNow?> = sessionNow.asStateFlow()
+
+    /** Plays or pauses what is bound, as a control's PlayPause does; nothing while nothing is bound. */
+    fun playPause() {
+        val (state, held) = synchronized(lock) { now to binding }
+        held ?: return
+        val act = when (Mpris.playPause(state)) {
+            MprisAction.Play -> held.onPlay
+            MprisAction.Pause -> held.onPause
+            else -> held.onStop
+        }
+        act?.let(onMain)
+    }
 
     override fun bind(title: String, artist: String?, binding: AudioSessionBinding) = bind(null, title, artist, binding)
 
@@ -48,6 +78,8 @@ class MprisService(
             this.owner = owner
             this.binding = binding
             now = Mpris.offered(MprisNow(track = ++tracks, title = title, artist = artist, artUrl = artUrl), binding)
+            reportedAt = null
+            seekedTo = null
         }
         schedule()
     }
@@ -59,8 +91,12 @@ class MprisService(
         val tell = synchronized(lock) {
             if (binding == null || (owner != null && this.owner !== owner)) return
             val before = now
+            val at = clockMs()
             now = now.copy(playing = playing, positionMs = positionMs.coerceAtLeast(0), durationMs = durationMs)
-            Mpris.changed(before, now).isNotEmpty()
+            val jumped = reportedAt?.let { last -> at >= quietUntil && Mpris.jumped(before, at - last, now.positionMs) } == true
+            reportedAt = at
+            if (jumped) seekedTo = now.positionMs
+            jumped || Mpris.changed(before, now).isNotEmpty()
         }
         if (tell) schedule()
     }
@@ -98,12 +134,13 @@ class MprisService(
     }
 
     private fun schedule() {
+        sessionNow.value = synchronized(lock) { now.takeIf { binding != null } }
         runCatching { bus.execute(::reconcile) }
     }
 
     /** On the bus's thread: the bus told what is bound now: the name taken or given back, and what changed. */
     private fun reconcile() {
-        val (bound, state) = synchronized(lock) { (binding != null) to now }
+        val (bound, state, seeked) = synchronized(lock) { Triple(binding != null, now, seekedTo).also { seekedTo = null } }
         if (!bound && !named) return
         val bus = connected() ?: return
         when {
@@ -121,6 +158,7 @@ class MprisService(
                 val changed = Mpris.changed(told ?: MprisNow(), state)
                 told = state
                 if (changed.isNotEmpty()) bus.signal(Mpris.PATH, Mpris.PROPERTIES, "PropertiesChanged", "sa{sv}as", listOf(Mpris.PLAYER, changed, emptyList<String>()))
+                seeked?.let { bus.signal(Mpris.PATH, Mpris.PLAYER, "Seeked", "x", listOf(it * 1000)) }
             }
         }
     }
@@ -157,7 +195,14 @@ class MprisService(
             MprisAction.Stop -> bound?.onStop?.let(onMain)
             is MprisAction.Seek -> {
                 val seek = bound?.onSeek ?: return
-                synchronized(lock) { if (binding === bound) now = now.copy(positionMs = action.positionMs) }
+                synchronized(lock) {
+                    if (binding === bound) {
+                        now = now.copy(positionMs = action.positionMs)
+                        // The player still reports where it was for a moment: that is no jump of its own.
+                        quietUntil = clockMs() + SEEK_SETTLE_MS
+                        reportedAt = null
+                    }
+                }
                 onMain { seek(action.positionMs) }
                 bus.signal(Mpris.PATH, Mpris.PLAYER, "Seeked", "x", listOf(action.positionMs * 1000))
             }
@@ -169,6 +214,9 @@ class MprisService(
         const val DO_NOT_QUEUE = 4L
         const val PRIMARY_OWNER = 1L
         const val ALREADY_OWNER = 4L
+
+        /** How long after a seek the controls asked for the player's reports are not taken for jumps. */
+        const val SEEK_SETTLE_MS = 1_000L
     }
 }
 

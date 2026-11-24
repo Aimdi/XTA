@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.core.x.parse.XText
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_followers
@@ -115,7 +116,7 @@ internal fun AuthorCardBody(user: XUser, avatarUrl: String?, onOpen: () -> Unit)
             // The picture the post already loaded, so the card asks for nothing new.
             Avatar(avatarUrl, 56.dp, Modifier.padding(bottom = 6.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
+                TipText(
                     facts.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
@@ -129,9 +130,9 @@ internal fun AuthorCardBody(user: XUser, avatarUrl: String?, onOpen: () -> Unit)
                     Icon(Icons.Filled.Lock, stringResource(Res.string.posts_private_profile), tint = grey, modifier = Modifier.padding(start = 4.dp).size(16.dp))
                 }
             }
-            Text("@" + facts.handle, style = MaterialTheme.typography.bodyMedium, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            TipText("@" + facts.handle, style = MaterialTheme.typography.bodyMedium, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis)
             facts.bio?.let {
-                Text(it, style = MaterialTheme.typography.bodyMedium, maxLines = AuthorCard.BIO_LINES, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 6.dp))
+                TipText(it, style = MaterialTheme.typography.bodyMedium, maxLines = AuthorCard.BIO_LINES, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 6.dp))
             }
             if (facts.following != null || facts.followers != null) {
                 Row(Modifier.padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {

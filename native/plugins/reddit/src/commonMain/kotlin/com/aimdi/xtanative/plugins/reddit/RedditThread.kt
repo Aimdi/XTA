@@ -46,12 +46,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.networks.reddit.RedditPost
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
@@ -83,7 +85,7 @@ internal fun ThreadScreen(app: RedditApp, route: RedditRoute.Thread) {
     PluginScaffold(
         title = "r/" + state.post.subreddit,
         onBack = app.host::back,
-        actions = { IconButton(onClick = { sheet = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) } },
+        actions = { IconTip(pluginString(Strings.more_options)) { IconButton(onClick = { sheet = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) } } },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             PullToRefreshBox(isRefreshing = state.refreshing, onRefresh = thread::load, modifier = Modifier.fillMaxSize()) {
@@ -227,12 +229,12 @@ private fun PostActions(app: RedditApp, post: RedditPost, comments: Int, onComme
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = { share(RedditThreadRules.postUrl(post)) }) {
+            IconTip(pluginString(Strings.share_link)) { IconButton(onClick = { share(RedditThreadRules.postUrl(post)) }) {
                 Icon(Icons.Outlined.Share, contentDescription = pluginString(Strings.share_link), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
-            }
+            } }
             // A tap saves on this device or takes it out; a long press picks its folder, as XTA's RedditThreadSaveButton.
             Box(
-                Modifier.size(48.dp).clip(CircleShape).combinedClickable(role = Role.Button, onClick = { app.toggleSaved(post) }, onLongClick = { app.chooseFolder(post) }),
+                Modifier.size(48.dp).clip(CircleShape).onContextClick { app.chooseFolder(post) }.combinedClickable(role = Role.Button, onClick = { app.toggleSaved(post) }, onLongClick = { app.chooseFolder(post) }),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(

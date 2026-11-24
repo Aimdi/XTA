@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -51,11 +52,13 @@ import com.aimdi.xtanative.networks.instagram.InstagramParser
 import com.aimdi.xtanative.networks.instagram.InstagramSearchUser
 import com.aimdi.xtanative.store.settings.InstagramPrefs
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -90,7 +93,8 @@ private fun DiscoverResults(app: InstagramApp, query: String, frame: PluginFrame
     val state by fetch.state.collectAsState()
     val users = state.value
     val handle = InstagramParser.handle(query)
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = frame.padding) {
+    val list = rememberLazyListState()
+    PluginReadingColumn(frame.padding, list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
         handle?.let { item(key = "handle") { HandleRow(it) { app.openProfile(it) } } }
         when {
             users == null && state.problem != null -> item(key = "problem") { RetryMessage(pluginString(InstagramFailures.of(state.problem)), onRetry = { fetch.load() }) }
@@ -98,7 +102,7 @@ private fun DiscoverResults(app: InstagramApp, query: String, frame: PluginFrame
             users.isEmpty() -> item(key = "none") { EmptyPane(Icons.Filled.Search, pluginString(Strings.search_empty)) }
             else -> people(users) { app.openProfile(it) }
         }
-    }
+    } }
 }
 
 /** "@handle — Open profile". */
@@ -188,7 +192,7 @@ internal fun InstagramSearchSheet(app: InstagramApp, initial: String?, onDismiss
                 singleLine = true,
                 placeholder = { Text(pluginString(Strings.search_hint)) },
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-                trailingIcon = { IconButton(onClick = { run(text) }) { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = pluginString(Strings.search)) } },
+                trailingIcon = { IconTip(pluginString(Strings.search)) { IconButton(onClick = { run(text) }) { Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = pluginString(Strings.search)) } } },
                 keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { run(text) }),
                 modifier = Modifier.fillMaxWidth(),

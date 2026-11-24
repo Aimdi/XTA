@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Het hele scherm gebruiken: de tijd, batterij en ontvangst bovenaan worden verborgen. Veeg omlaag vanaf de bovenrand om ze even te zien.</string>
     <string name="settings_text_scale">Tekstschaalfactor</string>
     <string name="settings_text_scale_description">Lettergrootte in de app aanpassen</string>
+    <string name="settings_interface_scale">Grootte van de interface</string>
+    <string name="settings_interface_scale_description">Maak tekst, knoppen en afbeeldingen samen groter of kleiner</string>
     <string name="settings_disable_animations">Animaties uitschakelen</string>
     <string name="settings_disable_animations_description">Animaties in de app uitschakelen</string>
     <string name="settings_haptics">Haptische feedback</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">Alle geweldige software gebruikt door XTA</string>
     <string name="settings_intro_again">Introductie opnieuw tonen</string>
     <string name="settings_intro_again_description">Bekijk de kaarten van de eerste start opnieuw.</string>
+    <string name="settings_open_logs">Logmap openen</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Rapport kopiëren</string>
     <string name="settings_diagnostics_copied">Diagnose gekopieerd naar het klembord</string>
@@ -373,4 +376,18 @@
     <string name="settings_start_at_login_description">Opent de app bij het aanmelden; met Sluiten naar systeemvak wacht hij in het systeemvak</string>
     <string name="tray_show">Venster tonen</string>
     <string name="tray_hide">Venster verbergen</string>
+    <string name="tray_new_search">Nieuwe zoekopdracht</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_description">Hoe de app op dit apparaat het internet bereikt. Systeem gebruikt de proxy-omgevingsvariabelen, anders de proxyinstellingen van het bureaublad</string>
+    <string name="settings_proxy_none">Geen proxy</string>
+    <string name="settings_proxy_manual">Handmatig</string>
+    <string name="settings_proxy_server">Proxyserver</string>
+    <string name="settings_proxy_server_unset">Niet ingesteld: er laadt niets tot er een is ingesteld</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Video’s kunnen nog niet via een SOCKS5-proxy worden afgespeeld</string>
+    <string name="settings_proxy_host">Host</string>
+    <string name="settings_proxy_port">Poort</string>
+    <string name="settings_proxy_bypass">Geen proxy voor</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

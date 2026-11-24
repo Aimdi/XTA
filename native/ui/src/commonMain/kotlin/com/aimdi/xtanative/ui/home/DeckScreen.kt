@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +37,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -74,7 +74,9 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.DeckWidth
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -142,6 +144,8 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     val toTop = remember { mutableStateMapOf<String, Int>() }
     var refreshedAll by remember { mutableIntStateOf(0) }
     var adding by remember { mutableStateOf(false) }
+    // Ctrl+N adds a column, as the bar's + does.
+    CreatesWithKeys { (!adding).also { if (it) adding = true } }
     // The detail beside the columns closes first at Esc, but covers nothing: the reading keys move it, and Ctrl+→ reaches it.
     DesktopShortcuts(refresh = { refreshedAll++ }, turn = {}, isOpen = { detail.open }, close = { detail.back() }, readsOpen = { detail.open })
     ReadColumns(columns.map { it.id } + listOfNotNull(DetailColumn.takeIf { detail.open }))
@@ -172,21 +176,33 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
                     EmptyDeck { adding = true }
                 } else {
                     val each = DeckColumns.width(maxWidth.value, columns.size, width.dp.toFloat()).dp
-                    Row(Modifier.fillMaxHeight().horizontalScroll(rememberScrollState())) {
+                    val scroll = rememberScrollState()
+                    // A column's header dragged with the mouse moves it, the deck scrolling at its edges and Esc putting it back.
+                    val slots = rememberSlotDrag(scroll, vertical = false)
+                    val shownIds: List<Any> = columns.map { it.id }
+                    val background = MaterialTheme.colorScheme.background
+                    Row(Modifier.fillMaxHeight().slotViewport(slots).horizontalScroll(scroll)) {
                         columns.forEachIndexed { index, column ->
-                            if (index > 0) VerticalDivider()
                             key(column.id) {
                                 val place = ColumnPlace(first = index == 0, last = index == columns.lastIndex)
+                                val handle = Modifier.slotDragHandle(slots, column.id, shownIds, mouseOnly = true) { _, to ->
+                                    val beside = shownIds[to]
+                                    edit { ids -> ids.indexOf(column.id).let { from -> DeckColumns.moved(ids, from, ids.indexOf(beside) - from) } }
+                                }
                                 val calls = ColumnCalls(
                                     onTitle = { toTop[column.id] = (toTop[column.id] ?: 0) + 1 },
                                     onMove = { by -> edit { DeckColumns.moved(it, index, by) } },
                                     onRemove = { edit { ids -> ids - column.id } },
+                                    handle = handle,
                                 )
-                                ReadColumn(column.id) {
-                                    DeckColumnView(
-                                        column, labelOf(column, groups, available), place, calls, toTop[column.id] ?: 0, refreshedAll,
-                                        columnActions, Modifier.width(each).fillMaxHeight().chosenMark(chosen == column.id),
-                                    )
+                                Row(Modifier.fillMaxHeight().dragSlot(slots, column.id, MaterialTheme.colorScheme.primary).background(background)) {
+                                    if (index > 0) VerticalDivider()
+                                    ReadColumn(column.id) {
+                                        DeckColumnView(
+                                            column, labelOf(column, groups, available), place, calls, toTop[column.id] ?: 0, refreshedAll,
+                                            columnActions, Modifier.width(each).fillMaxHeight().chosenMark(chosen == column.id),
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -233,10 +249,11 @@ private val CHOSEN_MARK = 3.dp
 internal class ColumnPlace(val first: Boolean, val last: Boolean)
 
 /**
- * What a column's header does: its title back to the top, its menu moving it by a place or taking it off.
+ * What a column's header does: its title back to the top, its menu moving it by a place or taking it off,
+ * and the mouse dragging it by the header to another place ([handle]).
  * Home's own columns ([HomeWide]) follow its timelines and have no such [menu].
  */
-internal class ColumnCalls(val onTitle: () -> Unit, val onMove: (by: Int) -> Unit = {}, val onRemove: () -> Unit = {}, val menu: Boolean = true)
+internal class ColumnCalls(val onTitle: () -> Unit, val onMove: (by: Int) -> Unit = {}, val onRemove: () -> Unit = {}, val menu: Boolean = true, val handle: Modifier = Modifier)
 
 /** A column of the deck: its header over its timeline, read again on its own and with every column ([refreshedAll]). */
 @Composable
@@ -295,8 +312,8 @@ private fun NetworkColumn(id: String, label: String, place: ColumnPlace, calls: 
 /** A column's first row: its name (back to the top), [extra] (a network's own search and menu), Refresh, and its menu. */
 @Composable
 private fun ColumnHeader(label: String, place: ColumnPlace, calls: ColumnCalls, onRefresh: () -> Unit, extra: @Composable RowScope.() -> Unit = {}) {
-    Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(start = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(
+    Row(Modifier.fillMaxWidth().then(calls.handle).heightIn(min = 48.dp).padding(start = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+        TipText(
             label,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
@@ -406,13 +423,13 @@ private fun AddColumnSheet(choices: List<DeckColumn>, networks: HomeNetworks, on
     val session by LocalGraph.current.sessions.state.collectAsStateWithLifecycle()
     val available by networks.available.collectAsStateWithLifecycle()
     val groups = session?.groups.orEmpty()
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Text(
             stringResource(Res.string.home_deck_add),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
         )
-        LazyColumn(Modifier.fillMaxWidth().navigationBarsPadding()) {
+        LazyColumn(Modifier.fillMaxWidth().navigationBarsPadding(), state = rememberSheetList()) {
             items(choices, key = { it.id }) { column ->
                 Row(
                     Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable { onPick(column) }.padding(horizontal = 24.dp),
@@ -422,7 +439,7 @@ private fun AddColumnSheet(choices: List<DeckColumn>, networks: HomeNetworks, on
                     Box(Modifier.size(24.dp), contentAlignment = Alignment.Center) {
                         (column as? DeckColumn.Network)?.let { networks.Mark(it.networkId, 24.dp) }
                     }
-                    Text(labelOf(column, groups, available), style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    TipText(labelOf(column, groups, available), style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }
         }

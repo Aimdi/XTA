@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Utiliser tout l'écran : l'heure, la batterie et le réseau en haut sont masqués. Balayez vers le bas depuis le bord supérieur pour les voir un instant.</string>
     <string name="settings_text_scale">Taille du texte</string>
     <string name="settings_text_scale_description">Ajuster la taille du texte dans l'application</string>
+    <string name="settings_interface_scale">Taille de l’interface</string>
+    <string name="settings_interface_scale_description">Agrandir ou réduire ensemble le texte, les boutons et les images</string>
     <string name="settings_disable_animations">Désactiver les animations</string>
     <string name="settings_disable_animations_description">Désactiver les animations dans l'application</string>
     <string name="settings_haptics">Retour haptique</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">Tous les excellents logiciels utilisés par XTA</string>
     <string name="settings_intro_again">Revoir l'introduction</string>
     <string name="settings_intro_again_description">Réaffiche les cartes du premier lancement.</string>
+    <string name="settings_open_logs">Ouvrir le dossier des journaux</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Copier le rapport</string>
     <string name="settings_diagnostics_copied">Diagnostic copié dans le presse-papiers</string>
@@ -375,4 +378,18 @@
     <string name="settings_start_at_login_description">Ouvre l’app à l’ouverture de session ; avec « Fermer dans la zone de notification », elle y attend</string>
     <string name="tray_show">Afficher la fenêtre</string>
     <string name="tray_hide">Masquer la fenêtre</string>
+    <string name="tray_new_search">Nouvelle recherche</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_description">Comment l’app accède à internet sur cet appareil. Système utilise les variables d’environnement du proxy, sinon les réglages proxy du bureau</string>
+    <string name="settings_proxy_none">Aucun proxy</string>
+    <string name="settings_proxy_manual">Manuel</string>
+    <string name="settings_proxy_server">Serveur proxy</string>
+    <string name="settings_proxy_server_unset">Non défini : rien ne se charge tant qu’il n’est pas défini</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Les vidéos ne peuvent pas encore passer par un proxy SOCKS5</string>
+    <string name="settings_proxy_host">Hôte</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Pas de proxy pour</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

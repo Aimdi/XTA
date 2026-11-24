@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,12 +32,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XTrendPlace
 import com.aimdi.xtanative.core.x.model.XTrendPlaces
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_find_the_available_trend_locations
 import com.aimdi.xtanative.ui.generated.resources.discover_country
+import com.aimdi.xtanative.ui.home.rememberSheetList
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -55,12 +57,12 @@ internal fun PlacesSheet(vm: TrendsViewModel, places: XTrendPlaces, onDismiss: (
         vm.add(place)
         onDismiss()
     }
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         val problem = picker.problem
         when {
             picker.loading -> LoadingRow()
             problem != null -> ProblemView(problem, vm::loadPlaces, context = stringResource(Res.string.problem_unable_to_find_the_available_trend_locations))
-            else -> LazyColumn(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+            else -> LazyColumn(Modifier.fillMaxWidth().padding(horizontal = 8.dp), state = rememberSheetList()) {
                 picker.rows.forEach { row ->
                     when (row) {
                         is PlaceRow.Place -> item(key = row.key) { PlaceItem(row.place, TrendPlacesLogic.isShown(places, row.place)) { pick(row.place) } }
@@ -89,7 +91,7 @@ private fun CountryItem(name: String, expanded: Boolean, onClick: () -> Unit) {
         Modifier.fillMaxWidth().heightIn(min = 52.dp).clickable(onClick = onClick).padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        TipText(name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
         Icon(if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown, contentDescription = null)
     }
 }
@@ -108,7 +110,7 @@ private fun PlaceItem(place: XTrendPlace, shown: Boolean, indent: Boolean = fals
             .heightIn(min = 48.dp)
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
-        Text(place.name, color = if (shown) colors.onPrimary else colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        TipText(place.name, color = if (shown) colors.onPrimary else colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
         if (place.isCountry) {
             Text(
                 stringResource(Res.string.discover_country),

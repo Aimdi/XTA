@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -69,9 +70,11 @@ import com.aimdi.xtanative.networks.pixiv.PixivImageQuality
 import com.aimdi.xtanative.networks.pixiv.PixivImages
 import com.aimdi.xtanative.store.downloads.OkHttpMediaHttp
 import com.aimdi.xtanative.store.settings.PixivPrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -109,16 +112,16 @@ private fun Reader(illust: PixivIllust, start: Int, verticalFirst: Boolean) {
         title = illust.title.ifEmpty { pluginString(Strings.title) },
         onBack = runtime.host::back,
         actions = {
-            IconButton(onClick = surface::changeDirection) {
+            IconTip(pluginString(if (vertical) Strings.read_horizontally else Strings.read_vertically)) { IconButton(onClick = surface::changeDirection) {
                 Icon(
                     if (vertical) Icons.AutoMirrored.Filled.KeyboardArrowRight else PixivIcons.ArrowDownward,
                     pluginString(if (vertical) Strings.read_horizontally else Strings.read_vertically),
                 )
-            }
+            } }
             SavePageButton(illust, surface.currentPage) { sheets.savePages(illust, listOf(surface.currentPage)) }
-            IconButton(onClick = { sheets.show(PixivSheet.PageActions(illust, surface.currentPage, surface)) }) {
+            IconTip(pluginString(Strings.more_actions)) { IconButton(onClick = { sheets.show(PixivSheet.PageActions(illust, surface.currentPage, surface)) }) {
                 Icon(Icons.Filled.MoreVert, pluginString(Strings.more_actions))
-            }
+            } }
         },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
@@ -219,8 +222,9 @@ internal class ReaderSurface(private val pages: Int, start: Int, private val fli
 }
 
 /**
- * Every page down one column at the screen's width, the last one clear of the
- * bar; the page most on screen is the page. The column zooms as one.
+ * Every page down one column at the screen's width, up to [COLUMN_MAX_WIDTH]
+ * and centred in a wide window, the last one clear of the bar; the page most
+ * on screen is the page. The column zooms as one.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -241,18 +245,20 @@ private fun ColumnPages(illust: PixivIllust, urls: List<String>, surface: Reader
     LazyColumn(
         state = list,
         contentPadding = PaddingValues(bottom = underBar),
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize().onSizeChanged { size = it }.zoomsColumn(zoom),
     ) {
         items(urls.size, key = { "page-$it" }) { index ->
+            val actions = {
+                haptics.medium()
+                sheets.show(PixivSheet.PageActions(illust, index, surface))
+            }
             PixivPicture(
                 urls[index],
-                Modifier.fillMaxWidth().aspectRatio(illust.aspectRatio.toFloat().coerceIn(0.2f, 5f)).combinedClickable(
+                Modifier.widthIn(max = COLUMN_MAX_WIDTH).fillMaxWidth().aspectRatio(illust.aspectRatio.toFloat().coerceIn(0.2f, 5f)).onContextClick(actions).combinedClickable(
                     onClick = {},
                     onDoubleClick = { zoom.toggle(size) },
-                    onLongClick = {
-                        haptics.medium()
-                        sheets.show(PixivSheet.PageActions(illust, index, surface))
-                    },
+                    onLongClick = actions,
                 ),
                 ContentScale.FillWidth,
                 contentDescription = pluginString(Strings.page_of, index + 1, urls.size),
@@ -262,6 +268,9 @@ private fun ColumnPages(illust: PixivIllust, urls: List<String>, surface: Reader
         }
     }
 }
+
+/** The widest a page grows in the column: a wide window shows it centred, not blown up to the window's width. */
+private val COLUMN_MAX_WIDTH = 960.dp
 
 private fun visibleHeight(offset: Int, size: Int, end: Int): Int = (minOf(offset + size, end) - maxOf(offset, 0)).coerceAtLeast(0)
 
@@ -292,6 +301,7 @@ internal fun ZoomablePage(url: String, onLoaded: (() -> Unit)? = null, onLongPre
     var offset by remember { mutableStateOf(Offset.Zero) }
     Box(
         Modifier.fillMaxSize()
+            .onContextClick(onLongPress)
             .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = { onLongPress() },
@@ -337,7 +347,7 @@ private fun ReaderBar(pages: Int, surface: ReaderSurface, hd: Boolean, onHd: () 
     var scrub by remember { mutableStateOf<Float?>(null) }
     val shown = scrub?.toInt() ?: surface.page
     val commands: @Composable () -> Unit = {
-        IconButton(onClick = { onShare?.invoke() }, enabled = onShare != null) { Icon(Icons.Filled.Share, pluginString(Strings.share_image)) }
+        IconTip(pluginString(Strings.share_image)) { IconButton(onClick = { onShare?.invoke() }, enabled = onShare != null) { Icon(Icons.Filled.Share, pluginString(Strings.share_image)) } }
         IconToggleButton(checked = hd, onCheckedChange = { onHd() }) {
             Icon(PixivIcons.Hd, pluginString(Strings.original_quality), tint = if (hd) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
         }

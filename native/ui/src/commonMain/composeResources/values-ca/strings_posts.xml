@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">No s'ha trobat ningú que hagi retuitat aquest tuit!</string>
     <string name="posts_no_saves">Encara no hi ha publicacions desades — les adreces d’interès es queden aquí</string>
     <string name="posts_open_in_browser">Obre al navegador</string>
+    <string name="posts_open_in_new_window">Obre en una finestra nova</string>
     <string name="posts_open_on_web_archive">Obre a web.archive.org</string>
     <string name="posts_open_post">Obre la publicació</string>
     <string name="posts_page_not_found">Twitter diu que la pàgina no existeix, però pot ser que no sigui veritat</string>

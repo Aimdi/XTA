@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.booru.BooruPost
 import com.aimdi.xtanative.ui.common.GridSkeleton
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -150,7 +151,7 @@ private fun RefreshNotice(error: Throwable, feed: BooruFeed, modifier: Modifier)
                 Text(pluginString(Strings.showing_earlier), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             TextButton(onClick = { feed.refresh() }) { Text(pluginString(Strings.retry)) }
-            IconButton(onClick = feed::dismissRefreshFailure) { Icon(Icons.Filled.Close, pluginString(Strings.dismiss)) }
+            IconTip(pluginString(Strings.dismiss)) { IconButton(onClick = feed::dismissRefreshFailure) { Icon(Icons.Filled.Close, pluginString(Strings.dismiss)) } }
         }
     }
 }

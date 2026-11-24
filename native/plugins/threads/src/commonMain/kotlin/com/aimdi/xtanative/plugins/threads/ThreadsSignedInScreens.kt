@@ -5,6 +5,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,6 +58,7 @@ import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RetryMessage
@@ -98,7 +100,7 @@ private fun OwnFeedList(app: ThreadsApp, feed: ThreadsOwnFeed) {
     val state = rememberLazyListState()
     ReadsMoreNear(state, model.more, more)
     PullToRefreshBox(isRefreshing = first.loading && first.value != null, onRefresh = { model.first.load(force = true) }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = state, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(PaddingValues(), state) { column -> LazyColumn(state = state, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             when (body) {
                 ThreadsPeopleView.Body.PROBLEM -> item(key = "problem") {
                     RetryMessage(ThreadsFailures.ownList(first.problem, currentLanguage()), onRetry = { model.first.load(force = true) })
@@ -108,7 +110,7 @@ private fun OwnFeedList(app: ThreadsApp, feed: ThreadsOwnFeed) {
                 else -> item(key = "empty") { MessageText(pluginString(ThreadsSignedInRules.empty(feed))) }
             }
             if (body == ThreadsPeopleView.Body.PEOPLE) sessionMoreFoot("own", more, model.more::loadMore) { model.more.retry() }
-        }
+        } }
     }
 }
 
@@ -169,7 +171,7 @@ private fun ActivityList(app: ThreadsApp, filter: ThreadsActivityFilter) {
     val state = rememberLazyListState()
     ReadsMoreNear(state, model.more, more)
     PullToRefreshBox(isRefreshing = first.loading && first.value != null, onRefresh = { model.first.load(force = true) }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = state, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(PaddingValues(), state) { column -> LazyColumn(state = state, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             when (body) {
                 ThreadsPeopleView.Body.PROBLEM -> item(key = "problem") {
                     RetryMessage(ThreadsFailures.ownList(first.problem, currentLanguage()), onRetry = { model.first.load(force = true) })
@@ -182,7 +184,7 @@ private fun ActivityList(app: ThreadsApp, filter: ThreadsActivityFilter) {
             if (body == ThreadsPeopleView.Body.PEOPLE || (filter.kind != null && first.value != null && first.problem == null)) {
                 sessionMoreFoot("activity", more, model.more::loadMore) { model.more.retry() }
             }
-        }
+        } }
     }
 }
 

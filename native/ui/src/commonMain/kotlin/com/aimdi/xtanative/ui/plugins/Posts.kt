@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -56,11 +57,13 @@ import com.aimdi.xtanative.data.plugins.keepable
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.RollingCount
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
+import com.aimdi.xtanative.ui.common.onSecondaryClickIf
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.pinned
 import com.aimdi.xtanative.ui.generated.resources.plugin_post_hide
@@ -102,7 +105,7 @@ fun LinkedText(
     val linkColor = MaterialTheme.colorScheme.primary
     val text = remember(runs, linkColor, onMention, onTag) { annotated(runs, linkColor, onMention, onTag) }
     if (text.isEmpty()) return
-    Text(text, modifier = modifier, style = style, color = MaterialTheme.colorScheme.onSurface, maxLines = maxLines, overflow = TextOverflow.Ellipsis)
+    TipText(text, modifier = modifier, style = style, color = MaterialTheme.colorScheme.onSurface, maxLines = maxLines, overflow = TextOverflow.Ellipsis)
 }
 
 private fun annotated(runs: List<TextRun>, linkColor: Color, onMention: (String) -> Unit, onTag: (String) -> Unit): AnnotatedString =
@@ -316,7 +319,7 @@ fun NetworkFocalPost(post: NetworkPost, actions: NetworkPostActions, modifier: M
             Avatar(post.avatarUrl, 44.dp) { actions.openAuthor(post) }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f).clickable { actions.openAuthor(post) }) {
-                Text(post.authorName, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                TipText(post.authorName, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text("@" + post.authorHandle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
@@ -324,7 +327,10 @@ fun NetworkFocalPost(post: NetworkPost, actions: NetworkPostActions, modifier: M
         post.title?.let { PostTitle(it, Modifier.padding(top = 12.dp), MaterialTheme.typography.titleLarge) }
         CoverLine(post, revealed) { revealed = !revealed }
         if (!post.textCovered(revealed)) {
-            LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 12.dp), style = TextStyle(fontSize = 17.sp, lineHeight = 24.sp))
+            // Selectable, as the app's opened X post is.
+            SelectionContainer(Modifier.padding(top = 12.dp)) {
+                LinkedText(post.text, actions.openMention, actions.openTag, style = TextStyle(fontSize = 17.sp, lineHeight = 24.sp))
+            }
         }
         // The opened post is the screen under the browser: going back to it is closing the browser.
         Attachments(post, actions, revealed, onToggle = { revealed = !revealed }, gap = 12.dp, playing = false, opensPost = false)
@@ -365,8 +371,8 @@ private fun QuotedNetworkPost(post: NetworkPost, actions: NetworkPostActions, mo
             .clickable { actions.open(post) }
             .padding(12.dp),
     ) {
-        Text(post.authorName, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        Text("@" + post.authorHandle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        TipText(post.authorName, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        TipText("@" + post.authorHandle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         post.title?.let { PostTitle(it, Modifier.padding(top = 4.dp)) }
         CoverLine(post, revealed, extras.cover) { revealed = !revealed }
         if (!post.textCovered(revealed)) {
@@ -470,7 +476,7 @@ private fun ContextLine(icon: ImageVector, text: String, onClick: (() -> Unit)? 
     Row(tappable.padding(start = 24.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(14.dp))
         Spacer(Modifier.width(12.dp))
-        Text(
+        TipText(
             text,
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
@@ -486,7 +492,7 @@ private fun ContextLine(icon: ImageVector, text: String, onClick: (() -> Unit)? 
 private fun ReplyLine(handle: String, onClick: () -> Unit) {
     Row(Modifier.padding(top = 2.dp)) {
         Text(stringResource(Res.string.replying_to) + " ", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(
+        TipText(
             "@$handle",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary,
@@ -560,7 +566,7 @@ internal fun CountButton(
     onClick: (() -> Unit)?,
 ) {
     val clickable = if (onClick != null) {
-        Modifier.clip(CircleShape).combinedClickable(role = Role.Button, onClick = onClick, onLongClick = onLongClick).padding(4.dp)
+        Modifier.clip(CircleShape).onSecondaryClickIf(onLongClick).combinedClickable(role = Role.Button, onClick = onClick, onLongClick = onLongClick).padding(4.dp)
     } else {
         Modifier
     }

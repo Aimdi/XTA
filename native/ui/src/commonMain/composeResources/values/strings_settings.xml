@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Use the whole screen: the time, battery and signal at the top are hidden. Swipe down from the top edge to see them for a moment.</string>
     <string name="settings_text_scale">Text size</string>
     <string name="settings_text_scale_description">Set the text size for the entire app</string>
+    <string name="settings_interface_scale">Interface size</string>
+    <string name="settings_interface_scale_description">Make text, buttons and pictures larger or smaller together</string>
     <string name="settings_disable_animations">Disable animations?</string>
     <string name="settings_disable_animations_description">Disables animations within the app</string>
     <string name="settings_haptics">Haptic feedback</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">All the great software used by XTA</string>
     <string name="settings_intro_again">Show intro again</string>
     <string name="settings_intro_again_description">Replay the first-launch cards.</string>
+    <string name="settings_open_logs">Open logs folder</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Copy report</string>
     <string name="settings_diagnostics_copied">Diagnostics copied to the clipboard</string>
@@ -373,4 +376,18 @@
     <string name="settings_start_at_login_description">Opens the app when you log in; with Close to tray on, it waits in the tray</string>
     <string name="tray_show">Show window</string>
     <string name="tray_hide">Hide window</string>
+    <string name="tray_new_search">New search</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_description">How the app reaches the internet on this device. System uses the proxy environment variables, else the desktop’s proxy settings</string>
+    <string name="settings_proxy_none">No proxy</string>
+    <string name="settings_proxy_manual">Manual</string>
+    <string name="settings_proxy_server">Proxy server</string>
+    <string name="settings_proxy_server_unset">Not set: nothing loads until one is set</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Videos can’t play through a SOCKS5 proxy yet</string>
+    <string name="settings_proxy_host">Host</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">No proxy for</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

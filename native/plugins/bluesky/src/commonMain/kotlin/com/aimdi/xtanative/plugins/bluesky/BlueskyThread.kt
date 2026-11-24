@@ -55,6 +55,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyReplies
 import com.aimdi.xtanative.networks.bluesky.BlueskyReplyRow
 import com.aimdi.xtanative.networks.bluesky.BlueskyReplySort
 import com.aimdi.xtanative.networks.bluesky.BlueskyThread
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.XIcons
@@ -102,12 +103,12 @@ internal fun BlueskyThreadScreen(app: BlueskyApp, target: PostTarget) {
         title = pluginString(Strings.thread),
         onBack = app.host::back,
         actions = {
-            IconButton(onClick = {
+            IconTip(pluginString(Strings.back_to_selected)) { IconButton(onClick = {
                 thread.closeContext()
                 scope.launch { list.scrollToTop(reduced) }
-            }) { Icon(PostIcons.ArrowUpward, pluginString(Strings.back_to_selected)) }
+            }) { Icon(PostIcons.ArrowUpward, pluginString(Strings.back_to_selected)) } }
             val outside = rememberOpenOutside()
-            state.thread?.post?.let { post -> IconButton(onClick = { outside(post.url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser)) } }
+            state.thread?.post?.let { post -> IconTip(pluginString(Strings.open_in_browser)) { IconButton(onClick = { outside(post.url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser)) } } }
             BranchesMenu(enabled = rows.isNotEmpty() || state.collapsed.isNotEmpty()) { expand -> thread.setAllExpanded(expand, order) }
         },
     ) { padding ->
@@ -237,7 +238,7 @@ internal fun <T> SortMenu(chosen: T, choices: List<T>, look: (T) -> Pair<PluginT
 private fun BranchesMenu(enabled: Boolean, onExpand: (Boolean) -> Unit) {
     var open by rememberSaveable { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }, enabled = enabled) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) }
+        IconTip(pluginString(Strings.more_options)) { IconButton(onClick = { open = true }, enabled = enabled) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             DropdownMenuItem(text = { Text(pluginString(Strings.expand_all)) }, onClick = {
                 open = false

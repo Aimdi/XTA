@@ -90,6 +90,7 @@ fun AltBadge(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier
             .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+            .onSecondaryClick(onClick)
             .combinedClickable(role = Role.Button, onClickLabel = title, onClick = onClick, onLongClick = onClick)
             .semantics { contentDescription = title }
             .padding(8.dp),
@@ -106,7 +107,7 @@ fun AltTextDialog(description: String, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.media_alt_title)) },
         text = { SelectionContainer { Text(description.trim()) } },
-        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.reader_ok)) } },
+        confirmButton = { TextButton(onClick = onDismiss, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.reader_ok)) } },
     )
 }
 
@@ -130,6 +131,6 @@ fun ShowMediaTile(what: String, icon: ImageVector, onShow: () -> Unit, modifier:
         verticalArrangement = Arrangement.spacedBy(if (compact) 4.dp else 8.dp, Alignment.CenterVertically),
     ) {
         Icon(icon, contentDescription = null, tint = muted)
-        Text(label, style = MaterialTheme.typography.bodySmall, color = muted, textAlign = TextAlign.Center, maxLines = 3, overflow = TextOverflow.Ellipsis)
+        TipText(label, style = MaterialTheme.typography.bodySmall, color = muted, textAlign = TextAlign.Center, maxLines = 3, overflow = TextOverflow.Ellipsis)
     }
 }

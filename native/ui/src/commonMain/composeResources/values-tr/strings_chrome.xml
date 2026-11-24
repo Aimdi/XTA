@@ -5,9 +5,14 @@
     <string name="chrome_update_view_version">GitHub'da %1$s sürümünü görüntüle</string>
     <string name="chrome_update_view">GitHub'da görüntüle</string>
     <string name="chrome_update_download">İndir</string>
+    <string name="chrome_update_install_package">Paketi indirin, ardından kaydettiğiniz klasörde şunu çalıştırın:</string>
+    <string name="chrome_update_install_tarball">Arşivi indirin, ardından kaydettiğiniz klasörde şunu çalıştırın:</string>
+    <string name="chrome_update_copy">Komutu kopyala</string>
+    <string name="chrome_update_skip">Bu sürümü atla</string>
     <string name="chrome_licences_legalese">MIT Lisansı altında yayınlandı</string>
     <plurals name="chrome_licences_count">
         <item quantity="one">%1$d lisans</item>
         <item quantity="other">%1$d lisans</item>
     </plurals>
+    <string name="chrome_offline_bar">Çevrimdışı – kaydedilmiş kopyalar gösteriliyor</string>
 </resources>

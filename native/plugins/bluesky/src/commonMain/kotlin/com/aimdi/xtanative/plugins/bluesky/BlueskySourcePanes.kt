@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -146,7 +147,8 @@ internal fun ListsPane(app: BlueskyApp, frame: PluginFrame) {
         }
     }
     if (selected == null) {
-        PluginReadingColumn(frame.padding) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = column) {
+        val scroll = rememberLazyListState()
+        PluginReadingColumn(frame.padding, scroll) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
             header()
             item(key = "none") { MessageText(pluginString(Strings.lists_empty)) }
         } }

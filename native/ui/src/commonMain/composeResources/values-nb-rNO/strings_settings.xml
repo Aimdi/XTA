@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Bruk hele skjermen: klokken, batteriet og signalet øverst skjules. Sveip ned fra øverste kant for å se dem et øyeblikk.</string>
     <string name="settings_text_scale">Tekstskalafaktor</string>
     <string name="settings_text_scale_description">Juster skriftstørrelsen i appen</string>
+    <string name="settings_interface_scale">Størrelse på grensesnittet</string>
+    <string name="settings_interface_scale_description">Gjør tekst, knapper og bilder større eller mindre samtidig</string>
     <string name="settings_disable_animations">Deaktiver animasjoner</string>
     <string name="settings_disable_animations_description">Deaktiver animasjoner i appen</string>
     <string name="settings_haptics">Haptisk tilbakemelding</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">All den flotte programvaren som brukes av XTA</string>
     <string name="settings_intro_again">Vis introduksjonen igjen</string>
     <string name="settings_intro_again_description">Se kortene fra første oppstart på nytt.</string>
+    <string name="settings_open_logs">Åpne loggmappen</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Kopier rapporten</string>
     <string name="settings_diagnostics_copied">Diagnostikk kopiert til utklippstavlen</string>
@@ -373,4 +376,18 @@
     <string name="settings_start_at_login_description">Åpner appen når du logger på; med Lukk til systemstatusfeltet venter den der</string>
     <string name="tray_show">Vis vindu</string>
     <string name="tray_hide">Skjul vindu</string>
+    <string name="tray_new_search">Nytt søk</string>
+    <string name="settings_proxy">Mellomtjener</string>
+    <string name="settings_proxy_description">Hvordan appen når internett på denne enheten. System bruker miljøvariablene for mellomtjener, ellers skrivebordets innstillinger</string>
+    <string name="settings_proxy_none">Ingen mellomtjener</string>
+    <string name="settings_proxy_manual">Manuell</string>
+    <string name="settings_proxy_server">Mellomtjener</string>
+    <string name="settings_proxy_server_unset">Ikke angitt: ingenting lastes før den er angitt</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Videoer kan ikke spilles gjennom en SOCKS5-mellomtjener ennå</string>
+    <string name="settings_proxy_host">Vert</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Ingen mellomtjener for</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

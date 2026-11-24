@@ -31,7 +31,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -66,6 +65,8 @@ import com.aimdi.xtanative.core.feed.LanguageAction
 import com.aimdi.xtanative.core.feed.MutedKeyword
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -259,7 +260,7 @@ private fun MutedWords(keywords: List<MutedKeyword>, actions: GroupSettingsActio
                 InputChip(
                     selected = false,
                     onClick = { editing = keyword },
-                    label = { Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    label = { TipText(label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     avatar = {
                         Icon(
                             if (keyword.action == KeywordAction.FOLD) GroupIcons.UnfoldMore else GroupIcons.VisibilityOffOutlined,
@@ -275,7 +276,7 @@ private fun MutedWords(keywords: List<MutedKeyword>, actions: GroupSettingsActio
         }
     }
     editing?.let { keyword ->
-        ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = { editing = null }, containerColor = MaterialTheme.colorScheme.background) {
+        KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = { editing = null }, containerColor = MaterialTheme.colorScheme.background) {
             Column(Modifier.padding(bottom = 16.dp)) {
                 OptionRow(GroupIcons.VisibilityOffOutlined, stringResource(Res.string.groups_filter_hide)) {
                     editing = null
@@ -354,8 +355,8 @@ private fun CapRow(account: FollowedAccount, cap: Int?, onClick: () -> Unit) {
     Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Avatar(account.avatarUrl, 36.dp)
         Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
-            Text(account.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text("@${account.screenName}", maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            TipText(account.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            TipText("@${account.screenName}", maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Text(cap?.toString() ?: stringResource(Res.string.groups_quiet_account_off), color = if (cap == null) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary)
     }

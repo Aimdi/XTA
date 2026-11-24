@@ -77,6 +77,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyProfileTab
 import com.aimdi.xtanative.networks.bluesky.BlueskySearchKind
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
@@ -89,6 +90,7 @@ import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedState
 import com.aimdi.xtanative.ui.plugins.PluginAvatar
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
@@ -160,8 +162,8 @@ internal fun BlueskyProfileScreen(app: BlueskyApp, actor: String) {
         onBack = app.host::back,
         actions = {
             if (shown != null) {
-                IconButton(onClick = { app.openSearch(author = shown.handle, kind = BlueskySearchKind.POSTS) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
-                IconButton(onClick = { share("https://bsky.app/profile/" + shown.handle) }) { Icon(Icons.Filled.Share, pluginString(Strings.share_link)) }
+                IconTip(pluginString(Strings.search)) { IconButton(onClick = { app.openSearch(author = shown.handle, kind = BlueskySearchKind.POSTS) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } }
+                IconTip(pluginString(Strings.share_link)) { IconButton(onClick = { share("https://bsky.app/profile/" + shown.handle) }) { Icon(Icons.Filled.Share, pluginString(Strings.share_link)) } }
             }
         },
     ) { padding ->
@@ -171,10 +173,12 @@ internal fun BlueskyProfileScreen(app: BlueskyApp, actor: String) {
                 profile.load()
                 pages?.refresh()
             }
+            val bottom = PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp)
             PullToRefreshBox(isRefreshing = state.loading && shown != null, onRefresh = { refresh() }, modifier = Modifier.fillMaxSize()) {
-                LazyColumn(
+                // The media grid keeps the window's width; the other tabs read in the column.
+                PluginReadingColumn(bottom, list) { column -> LazyColumn(
                     state = list,
-                    contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp),
+                    contentPadding = if (tab == ProfileTab.MEDIA) bottom else column,
                     modifier = Modifier.fillMaxSize().swipeTabs(if (shown != null) ProfileTab.entries else emptyList(), tab) { tab = it },
                 ) {
                     item(key = "header") { Header(app, shown, actor, followed) }
@@ -192,7 +196,7 @@ internal fun BlueskyProfileScreen(app: BlueskyApp, actor: String) {
                             pages != null -> pagedRows(paged, pages, key = { it.uri }, problemText = { pluginString(errorText(it)) }, empty = noPosts) { post -> PostRow(app, post) }
                         }
                     }
-                }
+                } }
             }
         }
     }

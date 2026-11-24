@@ -45,6 +45,7 @@ import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -149,12 +150,13 @@ internal fun ProfileCount(n: Long, label: PluginText, exact: Boolean, onOpen: ((
     val word = pluginString(label)
     val tappable = exact && full != rounded
     val showList = pluginString(Strings.show_list)
+    val toggle = if (tappable) { { whole = !whole } } else null
     val tap = when {
-        onOpen != null -> Modifier.heightIn(min = 48.dp).combinedClickable(
+        onOpen != null -> Modifier.heightIn(min = 48.dp).then(toggle?.let { Modifier.onContextClick(it) } ?: Modifier).combinedClickable(
             role = Role.Button,
             onClickLabel = showList,
             onClick = onOpen,
-            onLongClick = if (tappable) { { whole = !whole } } else null,
+            onLongClick = toggle,
         )
         tappable -> Modifier.heightIn(min = 48.dp).clickable(role = Role.Button) { whole = !whole }
         else -> Modifier.heightIn(min = 48.dp)

@@ -10,9 +10,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.chrome_confirm_close
 import com.aimdi.xtanative.ui.generated.resources.settings_are_you_sure
@@ -59,7 +61,7 @@ fun ConfirmClose() {
             TextButton(onClick = {
                 asking = false
                 close()
-            }) { Text(stringResource(Res.string.settings_yes)) }
+            }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.settings_yes)) }
         },
     )
 }
@@ -71,5 +73,5 @@ fun ConfirmClose() {
  */
 @Composable
 fun CloseOnBack(enabled: Boolean) {
-    BackHandling(enabled = enabled) { AppClosing.ask() }
+    BackHandling(enabled = enabled, byKeys = false) { AppClosing.ask() }
 }

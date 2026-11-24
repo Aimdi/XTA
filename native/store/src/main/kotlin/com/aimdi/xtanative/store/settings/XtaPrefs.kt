@@ -47,7 +47,8 @@ object SecretPrefs {
         // The pages saved to this device's storage, which another device does not have.
         PixivPrefs.downloadIndex,
         EhViewerPrefs.cookies, TikTokPrefs.cookies, InstagramPrefs.cookies,
-    ).mapTo(HashSet()) { it.key }
+    // How this device reaches the network, which another device need not share.
+    ).plus(DesktopPrefs.proxy).mapTo(HashSet()) { it.key }
 
     /**
      * Each address a secret is sent to, with the secrets sent there. A backup

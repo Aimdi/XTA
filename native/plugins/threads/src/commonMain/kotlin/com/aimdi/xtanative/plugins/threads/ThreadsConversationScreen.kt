@@ -58,6 +58,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsReplyRow
 import com.aimdi.xtanative.networks.threads.ThreadsReplyThread
 import com.aimdi.xtanative.networks.threads.ThreadsThreadView
 import com.aimdi.xtanative.networks.threads.attempt
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.Fetched
@@ -159,13 +160,13 @@ internal fun ThreadsConversationScreen(app: ThreadsApp, route: ThreadsRoute.Post
 /** The bar's switch between an author's thread read as one article ([ThreadsArticleView]) and the conversation with its replies. */
 @Composable
 private fun ArticleSwitch(reading: Boolean, onSwitch: () -> Unit) {
-    IconButton(onClick = onSwitch) {
+    IconTip(pluginString(if (reading) Strings.show_conversation else Strings.read_as_article)) { IconButton(onClick = onSwitch) {
         if (reading) {
             Icon(PostIcons.Forum, contentDescription = pluginString(Strings.show_conversation))
         } else {
             Icon(PostIcons.Article, contentDescription = pluginString(Strings.read_as_article))
         }
-    }
+    } }
 }
 
 @Composable
@@ -173,8 +174,8 @@ private fun ThreadActions(app: ThreadsApp, url: String) {
     val share = rememberShareText()
     val outside = rememberOpenOutside()
     val copied = Strings.link_copied.get(currentLanguage())
-    IconButton(onClick = { if (!share(url)) app.notices.tell(copied) }) { Icon(Icons.Filled.Share, contentDescription = pluginString(Strings.share_link)) }
-    IconButton(onClick = { outside(url) }) { Icon(PostIcons.OpenInNew, contentDescription = pluginString(Strings.open_in_browser)) }
+    IconTip(pluginString(Strings.share_link)) { IconButton(onClick = { if (!share(url)) app.notices.tell(copied) }) { Icon(Icons.Filled.Share, contentDescription = pluginString(Strings.share_link)) } }
+    IconTip(pluginString(Strings.open_in_browser)) { IconButton(onClick = { outside(url) }) { Icon(PostIcons.OpenInNew, contentDescription = pluginString(Strings.open_in_browser)) } }
 }
 
 /** The conversation's list; a picture opened in it is viewed among all the pictures shown in it. */

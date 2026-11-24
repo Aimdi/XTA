@@ -47,8 +47,12 @@ internal interface KeptShape<T : Any, P : Any, X> {
     fun legacy(root: J): T?
 }
 
-/** What one change makes of the posts: [fresh] is the id of the post whose content it sets, to what that post now carries. */
-internal class Edit<T, R>(val next: T, val result: R, val fresh: String? = null)
+/**
+ * What one change makes of the posts: [fresh] is the id of the post whose
+ * content it sets, to what that post now carries; [alsoFresh] the ids of
+ * more such posts (those an undo puts back).
+ */
+internal class Edit<T, R>(val next: T, val result: R, val fresh: String? = null, val alsoFresh: Collection<String> = emptyList())
 
 /**
  * Posts kept on the device so that one like, save, note or move writes about
@@ -113,10 +117,12 @@ internal class KeptPosts<T : Any, P : Any, X>(dir: StoreDir, private val name: S
     suspend fun whole(): T = locked { wholeNow() }
 
     /** The content kept of post [id], read from its own file; null when none is. */
-    suspend fun content(id: String): JsonElement? = locked {
+    suspend fun content(id: String): JsonElement? = locked { contentNow(id) }
+
+    private fun contentNow(id: String): JsonElement? {
         val now = loaded()
         val known = wholeState.value?.let { all -> shape.posts(all).firstOrNull { shape.id(it) == id } }
-        when {
+        return when {
             known != null -> shape.content(known)
             id in now.stored -> readContent(id)
             else -> null
@@ -136,6 +142,19 @@ internal class KeptPosts<T : Any, P : Any, X>(dir: StoreDir, private val name: S
         edit.result
     }
 
+    /**
+     * [edit], where [change] may also read the content kept of a post (each
+     * read from its own file, as [content]): what a removal takes for its
+     * undo, without reading every post's.
+     */
+    suspend fun <R> editReading(change: (T, content: (String) -> JsonElement?) -> Edit<T, R>): R = locked {
+        val old = loaded()
+        val before = bareState.value!!
+        val edit = change(before, ::contentNow)
+        if (edit.next !== before) commit(old, edit)
+        edit.result
+    }
+
     /** A change that needs or replaces everything: [merge] gets every post with its content and gives what to keep, null for no change. */
     suspend fun rewrite(merge: (T) -> T?) = locked {
         val before = wholeNow()
@@ -149,21 +168,19 @@ internal class KeptPosts<T : Any, P : Any, X>(dir: StoreDir, private val name: S
 
     private fun <R> commit(old: Kept<P, X>, edit: Edit<T, R>) {
         val given = shape.posts(edit.next)
-        val fresh = edit.fresh
-        val freshPost = fresh?.let { id -> given.firstOrNull { shape.id(it) == id } }
-        val freshContent = freshPost?.let(shape::content)
+        val freshIds = (listOfNotNull(edit.fresh) + edit.alsoFresh).toSet()
+        // The fresh posts that are there, each with the content it now carries (null: none kept).
+        val fresh: Map<String, JsonElement?> = given.filter { shape.id(it) in freshIds }.associate { shape.id(it) to shape.content(it) }
         val posts = given.map { if (shape.content(it) == null) it else shape.withContent(it, null) }
         val ids = posts.mapTo(HashSet()) { shape.id(it) }
         val stored = old.stored.filterTo(HashSet()) { it in ids }
-        if (fresh != null && freshPost != null) {
-            if (freshContent != null) stored += fresh else stored -= fresh
-        }
+        fresh.forEach { (id, content) -> if (content != null) stored += id else stored -= id }
         val next = Kept(posts, shape.extra(edit.next), stored)
-        val wholeNext = wholeState.value?.let { all -> wholeAfter(old, all, next, fresh.takeIf { freshPost != null }, freshContent) }
+        val wholeNext = wholeState.value?.let { all -> wholeAfter(old, all, next, fresh) }
         if (legacyPending) {
             persistWhole(wholeNext ?: wholeOf(next), null)
         } else {
-            if (fresh != null && freshContent != null) contentFile(fresh).replaceWith(freshContent.toString())
+            fresh.forEach { (id, content) -> if (content != null) contentFile(id).replaceWith(content.toString()) }
             persist(old, next)
             old.stored.filter { it !in stored }.forEach { contentFile(it).delete() }
         }
@@ -177,13 +194,13 @@ internal class KeptPosts<T : Any, P : Any, X>(dir: StoreDir, private val name: S
     }
 
     /** [all] after a change, keeping the instance of every post the change left alone, so what was worked out of it stays. */
-    private fun wholeAfter(old: Kept<P, X>, all: T, next: Kept<P, X>, fresh: String?, freshContent: JsonElement?): T {
+    private fun wholeAfter(old: Kept<P, X>, all: T, next: Kept<P, X>, fresh: Map<String, JsonElement?>): T {
         val was = old.posts.zip(shape.posts(all)).associateBy { shape.id(it.first) }
         return shape.of(next.posts.map { post ->
             val id = shape.id(post)
             val pair = was[id]
             when {
-                id == fresh -> shape.withContent(post, freshContent)
+                id in fresh -> shape.withContent(post, fresh[id])
                 pair == null -> post
                 pair.first === post -> pair.second
                 else -> shape.withContent(post, shape.content(pair.second))

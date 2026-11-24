@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import org.jetbrains.compose.resources.stringResource
@@ -32,7 +33,7 @@ fun PluginScaffold(
     modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
-) = PluginScaffold({ Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) }, onBack, modifier, actions, content)
+) = PluginScaffold({ TipText(title, maxLines = 1, overflow = TextOverflow.Ellipsis) }, onBack, modifier, actions, content)
 
 /**
  * [PluginScaffold] with a title of the plugin's own drawing, where XTA's bar

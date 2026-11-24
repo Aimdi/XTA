@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -64,7 +65,9 @@ import com.aimdi.xtanative.networks.pixiv.PixivLinks
 import com.aimdi.xtanative.networks.pixiv.PixivSearchKind
 import com.aimdi.xtanative.networks.pixiv.PixivTrendTag
 import com.aimdi.xtanative.networks.pixiv.Pixivision
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -115,7 +118,7 @@ internal fun PixivSearchBody(kind: PixivSearchKind, initial: String, padding: Pa
     var byImage by rememberSaveable { mutableStateOf(false) }
     Column(Modifier.fillMaxSize()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            onBack?.let { IconButton(onClick = it) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) } }
+            onBack?.let { IconTip(pluginString(Strings.back)) { IconButton(onClick = it) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) } } }
             Box(Modifier.weight(1f)) {
                 SearchField(kind, text, autofocus = !embedded && initial.isEmpty(), onChange = { value ->
                     if (value.text != text.text) model.type(value.text)
@@ -212,9 +215,9 @@ private fun SearchField(
         keyboardActions = KeyboardActions(onSearch = { onSubmit() }),
         trailingIcon = {
             Row {
-                IconButton(onClick = { scope.launch { clipboard.getClipEntry()?.plainText()?.let(onPaste) } }) { Icon(PixivIcons.ContentPaste, pluginString(Strings.search_paste)) }
-                if (kind.isWorks) IconButton(onClick = onImageSearch) { Icon(PixivIcons.ImageSearch, pluginString(Strings.saucenao_title)) }
-                IconButton(onClick = onSubmit) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
+                IconTip(pluginString(Strings.search_paste)) { IconButton(onClick = { scope.launch { clipboard.getClipEntry()?.plainText()?.let(onPaste) } }) { Icon(PixivIcons.ContentPaste, pluginString(Strings.search_paste)) } }
+                if (kind.isWorks) IconTip(pluginString(Strings.saucenao_title)) { IconButton(onClick = onImageSearch) { Icon(PixivIcons.ImageSearch, pluginString(Strings.saucenao_title)) } }
+                IconTip(pluginString(Strings.search)) { IconButton(onClick = onSubmit) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } }
             }
         },
         colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent, unfocusedContainerColor = Color.Transparent),
@@ -307,7 +310,8 @@ private fun SearchPicker(view: PixivSearchView, kind: PixivSearchKind, onPick: (
     val runtime = LocalPixiv.current
     val copy = rememberCopy()
     val language = currentLanguage()
-    LazyColumn(Modifier.fillMaxSize()) {
+    val list = rememberLazyListState()
+    PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
         view.numericId?.let { id ->
             items(shortcuts(kind, id, language), key = { "id-" + it.first }) { (label, ref) ->
                 ShortcutRow(shortcutIcon(ref), label) { runtime.open(PixivRoutes.routeOf(ref)) }
@@ -317,7 +321,7 @@ private fun SearchPicker(view: PixivSearchView, kind: PixivSearchKind, onPick: (
         items(view.suggestions, key = { "tag-" + it.name }) { tag ->
             TagSuggestion(tag, onPick = { onPick(tag) }, onCopy = { copy(tag.name, Strings.search_tag_copied) })
         }
-    }
+    } }
 }
 
 /** Open the artwork, the creator or the Pixivision article an id names; for novels, the novel, the series or the creator. */

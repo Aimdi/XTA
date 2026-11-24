@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Không tìm thấy ai đã đăng lại bài viết này!</string>
     <string name="posts_no_saves">Chưa có bài lưu — dấu trang ở lại trên thiết bị này</string>
     <string name="posts_open_in_browser">Mở trong trình duyệt</string>
+    <string name="posts_open_in_new_window">Mở trong cửa sổ mới</string>
     <string name="posts_open_on_web_archive">Mở trên web.archive.org</string>
     <string name="posts_open_post">Mở bài đăng</string>
     <string name="posts_page_not_found">X đã không tìm thấy bài này, có lẽ vậy</string>

@@ -81,6 +81,7 @@ import com.aimdi.xtanative.store.saved.SavedSource
 import com.aimdi.xtanative.store.saved.SavedTabs
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.ReadingColumn
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -121,6 +122,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_tab_unfiled
 import com.aimdi.xtanative.ui.generated.resources.saved_title
 import com.aimdi.xtanative.ui.generated.resources.saved_write_note
 import com.aimdi.xtanative.ui.generated.resources.settings
+import com.aimdi.xtanative.ui.home.CreatesWithKeys
 import com.aimdi.xtanative.ui.home.FindsWithKeys
 import com.aimdi.xtanative.ui.home.SelectsWithKeys
 import com.aimdi.xtanative.ui.home.foundWithKeys
@@ -185,6 +187,8 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
         remove = { (dialog == null && view.removableByKeys).also { if (it) dialog = SavedDialog.RemoveSelected } },
         leave = { (dialog == null && view.selecting).also { if (it) vm.finishSelection() } },
     )
+    // Ctrl+N writes a note, as the round button does; not while selecting, where the button is put away.
+    CreatesWithKeys { (dialog == null && !view.selecting).also { if (it) dialog = SavedDialog.Compose(NoteTarget.Note()) } }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -319,7 +323,7 @@ private fun TitleBar(notice: SavedNotice, onBack: (() -> Unit)?, searchable: Boo
         },
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
+                TipText(
                     stringResource(Res.string.saved_title),
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
@@ -520,7 +524,7 @@ private fun TabChip(label: String, selected: Boolean, trailing: ImageVector?, on
             .padding(horizontal = 10.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
+        TipText(
             label,
             fontSize = 13.sp,
             fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,

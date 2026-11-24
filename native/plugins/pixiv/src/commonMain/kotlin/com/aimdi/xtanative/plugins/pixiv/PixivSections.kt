@@ -57,6 +57,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivSpotlightArticle
 import com.aimdi.xtanative.networks.pixiv.PixivWatchlistSeries
 import com.aimdi.xtanative.networks.pixiv.Pixivision
 import com.aimdi.xtanative.store.settings.PixivPrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -206,8 +207,8 @@ internal fun rankingLabel(mode: PixivRankingMode): String = Strings.get(PixivRan
 private fun DateControls(date: LocalDate?, onDate: (LocalDate?) -> Unit) {
     var picking by remember { mutableStateOf(false) }
     if (date != null) Text(dateText(date.atStartOfDay().toInstant(ZoneOffset.UTC)), style = MaterialTheme.typography.labelMedium, maxLines = 1)
-    IconButton(onClick = { picking = true }) { Icon(Icons.Filled.DateRange, pluginString(Strings.ranking_pick_date)) }
-    if (date != null) IconButton(onClick = { onDate(null) }) { Icon(Icons.Filled.Close, pluginString(Strings.ranking_back_to_today)) }
+    IconTip(pluginString(Strings.ranking_pick_date)) { IconButton(onClick = { picking = true }) { Icon(Icons.Filled.DateRange, pluginString(Strings.ranking_pick_date)) } }
+    if (date != null) IconTip(pluginString(Strings.ranking_back_to_today)) { IconButton(onClick = { onDate(null) }) { Icon(Icons.Filled.Close, pluginString(Strings.ranking_back_to_today)) } }
     if (!picking) return
     val today = LocalDate.now()
     val first = LocalDate.of(2007, 9, 13)
@@ -282,7 +283,7 @@ internal fun FavoritesSection(model: PixivHomeModel, view: PixivHomeView, paddin
                     onClick = { picking = true },
                     label = { Text(tagLabel(view.tag), maxLines = 1) },
                     leadingIcon = { Icon(PixivIcons.Label, null, Modifier.size(18.dp)) },
-                    trailingIcon = view.tag?.let { { IconButton(onClick = { model.favorites(view.favorites, null) }, modifier = Modifier.size(24.dp)) { Icon(Icons.Filled.Close, pluginString(Strings.bookmark_tag_clear), Modifier.size(16.dp)) } } },
+                    trailingIcon = view.tag?.let { { IconTip(pluginString(Strings.bookmark_tag_clear)) { IconButton(onClick = { model.favorites(view.favorites, null) }, modifier = Modifier.size(24.dp)) { Icon(Icons.Filled.Close, pluginString(Strings.bookmark_tag_clear), Modifier.size(16.dp)) } } } },
                 )
             }
         }

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -52,8 +53,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivTag
+import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -69,9 +73,9 @@ internal fun PixivFavoriteTagsScreen() {
         onBack = runtime.host::back,
         actions = {
             if (tags.isNotEmpty()) {
-                IconButton(onClick = { editing = !editing }) {
+                IconTip(pluginString(if (editing) Strings.search_favorite_tags_done else Strings.search_favorite_tags_edit)) { IconButton(onClick = { editing = !editing }) {
                     Icon(if (editing) Icons.Filled.Check else Icons.Filled.Edit, pluginString(if (editing) Strings.search_favorite_tags_done else Strings.search_favorite_tags_edit))
-                }
+                } }
             }
         },
     ) { padding ->
@@ -86,7 +90,8 @@ private fun FavoriteTagList(tags: List<PixivTag>, editing: Boolean) {
     val runtime = LocalPixiv.current
     val sheets = LocalPixivSheets.current
     val language = currentLanguage()
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 16.dp)) {
+    val list = rememberLazyListState()
+    PluginReadingColumn(PaddingValues(bottom = 16.dp), list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
         if (editing) item(key = "hint") { Text(pluginString(Strings.search_favorite_tags_edit_hint), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(16.dp)) }
         itemsIndexed(tags, key = { _, tag -> tag.name }) { index, tag ->
             ListItem(
@@ -98,10 +103,10 @@ private fun FavoriteTagList(tags: List<PixivTag>, editing: Boolean) {
                         Row {
                             IconButton(onClick = { runtime.settings.update { PixivFavoriteTags.moved(it, index, index - 1) } }, enabled = index > 0) { Icon(Icons.Filled.KeyboardArrowUp, null) }
                             IconButton(onClick = { runtime.settings.update { PixivFavoriteTags.moved(it, index, index + 1) } }, enabled = index < tags.lastIndex) { Icon(Icons.Filled.KeyboardArrowDown, null) }
-                            IconButton(onClick = {
+                            IconTip(pluginString(Strings.search_favorite_remove)) { IconButton(onClick = {
                                 val remove = Strings.search_favorite_remove.get(language)
                                 sheets.ask.ask(remove, remove) { runtime.settings.update { PixivFavoriteTags.removed(it, tag.name) } }
-                            }) { Icon(Icons.Outlined.Delete, pluginString(Strings.search_favorite_remove)) }
+                            }) { Icon(Icons.Outlined.Delete, pluginString(Strings.search_favorite_remove)) } }
                         }
                     }
                 },
@@ -109,7 +114,7 @@ private fun FavoriteTagList(tags: List<PixivTag>, editing: Boolean) {
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
             )
         }
-    }
+    } }
 }
 
 /** One muted thing as a chip: a tap unmutes it after asking, the cross at once, a long press copies what it can. */
@@ -168,7 +173,7 @@ private fun TagField() {
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, autoCorrectEnabled = false),
         keyboardActions = KeyboardActions(onDone = { add() }),
-        trailingIcon = { IconButton(onClick = add) { Icon(Icons.Filled.Add, pluginString(Strings.mute_tag_add)) } },
+        trailingIcon = { IconTip(pluginString(Strings.mute_tag_add)) { IconButton(onClick = add) { Icon(Icons.Filled.Add, pluginString(Strings.mute_tag_add)) } } },
         modifier = Modifier.fillMaxWidth(),
     )
 }
@@ -189,20 +194,21 @@ private fun MuteGroup(title: String, icon: ImageVector, chips: List<MuteChip>, l
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         chips.forEach { chip ->
             val shape = RoundedCornerShape(8.dp)
+            val copyChip = chip.copy?.let { text -> { copy(text, Strings.copied) } }
             Surface(
                 shape = shape,
                 color = Color.Transparent,
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                modifier = Modifier.clip(shape).combinedClickable(
+                modifier = Modifier.clip(shape).then(copyChip?.let { Modifier.onContextClick(it) } ?: Modifier).combinedClickable(
                     onClick = { sheets.ask.ask(Strings.unmute_question.get(language, chip.label), Strings.unmute.get(language), chip.unmute) },
-                    onLongClick = chip.copy?.let { text -> { copy(text, Strings.copied) } },
+                    onLongClick = copyChip,
                 ),
             ) {
                 Row(Modifier.padding(start = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(icon, null, Modifier.size(18.dp))
                     Spacer(Modifier.size(8.dp))
                     Text(chip.label, style = MaterialTheme.typography.labelLarge)
-                    IconButton(onClick = chip.unmute) { Icon(Icons.Filled.Close, pluginString(Strings.unmute), Modifier.size(18.dp)) }
+                    IconTip(pluginString(Strings.unmute)) { IconButton(onClick = chip.unmute) { Icon(Icons.Filled.Close, pluginString(Strings.unmute), Modifier.size(18.dp)) } }
                 }
             }
         }

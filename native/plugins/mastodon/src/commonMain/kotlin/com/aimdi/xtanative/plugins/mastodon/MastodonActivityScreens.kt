@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonPost
 import com.aimdi.xtanative.networks.mastodon.MastodonProfile
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.NetworkPersonRow
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
@@ -86,7 +87,7 @@ private fun <T : Any> ActivityScreen(
     PluginScaffold(
         title = pluginString(title),
         onBack = app.host::back,
-        actions = { IconButton(onClick = { openOutside(url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser)) } },
+        actions = { IconTip(pluginString(Strings.open_in_browser)) { IconButton(onClick = { openOutside(url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser)) } } },
     ) { padding ->
         PullToRefreshBox(isRefreshing = paged.loading && paged.loaded, onRefresh = pages::refresh, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp), list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {

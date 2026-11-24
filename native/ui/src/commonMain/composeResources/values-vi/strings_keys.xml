@@ -3,9 +3,11 @@
     <string name="keys_title">Phím tắt</string>
     <string name="keys_help">Hiện các phím tắt này</string>
     <string name="keys_back">Quay lại, hoặc đóng mục đang mở</string>
+    <string name="keys_forward">Tiến tới mục bạn vừa quay lại từ đó</string>
     <string name="keys_go_home">Quay về Trang chủ</string>
     <string name="keys_refresh">Làm mới</string>
     <string name="keys_search">Tìm kiếm</string>
+    <string name="keys_new">Ghi chú, nhóm, ăng-ten, cột hoặc địa điểm xu hướng mới, trên trang của nó</string>
     <string name="keys_recent_searches">Chọn một tìm kiếm gần đây từ ô tìm kiếm</string>
     <string name="keys_open_copied_link">Mở liên kết đã sao chép</string>
     <string name="keys_tabs">Thẻ tiếp theo hoặc trước đó</string>
@@ -18,6 +20,7 @@
     <string name="keys_scroll_ends">Lên đầu hoặc xuống cuối</string>
     <string name="keys_move">Di chuyển giữa các nút và ô nhập</string>
     <string name="keys_text_size">Chữ lớn hơn, nhỏ hơn hoặc bình thường</string>
+    <string name="keys_interface_size">Giao diện lớn hơn, nhỏ hơn hoặc bình thường</string>
     <string name="keys_full_screen">Toàn màn hình</string>
     <string name="keys_video">Video toàn màn hình: phát hoặc tạm dừng, tua 10 giây</string>
     <string name="keys_video_more">Video toàn màn hình: tắt tiếng, phát lại từ đầu, thoát</string>
@@ -39,7 +42,16 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Đã lưu: chọn tất cả mục đang hiện</string>
     <string name="keys_remove_selected">Đã lưu: xóa các mục đã chọn</string>
+    <string name="keys_undo">Hoàn tác mục vừa xóa, khi thông báo của nó còn hiện</string>
     <string name="keys_leave_selection">Đã lưu: thôi chọn</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Di chuyển một hàng lên hoặc xuống trong danh sách có thể sắp xếp lại (hàng đang được chọn hoặc dưới con trỏ)</string>
+    <string name="keys_post_open">Mở bài đăng đang chọn bằng J và K</string>
+    <string name="keys_post_like">Thích bài đăng đó trên thiết bị này, hoặc bỏ thích</string>
+    <string name="keys_post_save">Lưu bài đăng đó trên thiết bị này, hoặc bỏ lưu</string>
+    <string name="keys_post_link">Sao chép liên kết của bài đăng đó</string>
+    <string name="keys_post_menu">Mở menu của bài đăng đó</string>
+    <string name="keys_menu">Menu</string>
+    <string name="keys_find_in_page">Tìm trong bài đăng hoặc bài viết bạn đang đọc</string>
+    <string name="keys_find_match">Kết quả tiếp theo hoặc trước đó trong thanh tìm kiếm</string>
 </resources>

@@ -49,6 +49,18 @@ class SettingsTest {
     }
 
     @Test
+    fun theInterfaceSizeIsOneOfItsPresetsElseTheDesktopsOwn() {
+        assertEquals(1.0, Settings()[DesktopPrefs.uiScale])
+        assertEquals(1.25, Settings().with(DesktopPrefs.uiScale, 1.25)[DesktopPrefs.uiScale])
+        assertEquals(2.0, Settings(mapOf("desktop.ui_scale" to PrefValue.Whole(2)))[DesktopPrefs.uiScale], "a whole number is a preset too")
+        assertEquals(1.0, Settings(mapOf("desktop.ui_scale" to PrefValue.Real(1.3)))[DesktopPrefs.uiScale], "between presets")
+        assertEquals(1.0, Settings(mapOf("desktop.ui_scale" to PrefValue.Real(5.0)))[DesktopPrefs.uiScale], "past them")
+        assertEquals(1.0, Settings(mapOf("desktop.ui_scale" to PrefValue.Real(Double.NaN)))[DesktopPrefs.uiScale])
+        assertNull(DesktopPrefs.uiScale.seed, "nothing written until chosen")
+        assertEquals(DesktopPrefs.UI_SCALES.sorted(), DesktopPrefs.UI_SCALES)
+    }
+
+    @Test
     fun aDoubleTakesAWholeNumberAndStaysInItsRange() {
         val settings = Settings(
             mapOf(
@@ -122,6 +134,20 @@ class SettingsTest {
         assertFalse("ai.api_key" in exported)
         assertFalse("plugin.booru.site_credentials_api_key" in exported)
         assertEquals(JsonPrimitive("""["author"]"""), exported["plugin.hackernews.follows"])
+    }
+
+    @Test
+    fun theProxySettingsStayOnThisDevice() {
+        val settings = Settings()
+            .with(DesktopPrefs.proxyMode, ProxyMode.MANUAL).with(DesktopPrefs.proxyHost, "proxy.lan").with(DesktopPrefs.proxyPort, 3128)
+            .with(DesktopPrefs.proxyUser, "me").with(DesktopPrefs.proxyPassword, "pw").with(DesktopPrefs.proxyBypass, "nas.lan")
+            .with(DesktopPrefs.closeToTray, true)
+        val exported = settings.exported()!!
+        assertTrue(DesktopPrefs.closeToTray.key in exported, "the desktop's other settings still travel")
+        DesktopPrefs.proxy.forEach { assertFalse(it.key in exported, it.key) }
+        val restored = Settings().with(DesktopPrefs.proxyHost, "mine").restoring(mapOf(DesktopPrefs.proxyHost.key to JsonPrimitive("theirs"), DesktopPrefs.proxyMode.key to JsonPrimitive("none")))
+        assertEquals("mine", restored[DesktopPrefs.proxyHost])
+        assertEquals(ProxyMode.SYSTEM, restored[DesktopPrefs.proxyMode])
     }
 
     @Test

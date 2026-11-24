@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.hackernews.HnStory
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.plugins.onContextClick
@@ -71,13 +72,13 @@ internal fun HnStoryRow(app: HnApp, story: HnStory, rank: Int? = null) {
                 Text(pluginPlural(Strings.comment_count, story.commentCount, story.commentCount))
             }
             val liked = kept.isLiked(story)
-            IconButton(onClick = { app.toggleLike(story) }) {
+            IconTip(pluginString(if (liked) Strings.unlike else Strings.like)) { IconButton(onClick = { app.toggleLike(story) }) {
                 Icon(if (liked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder, pluginString(if (liked) Strings.unlike else Strings.like), modifier = Modifier.size(20.dp))
-            }
+            } }
             val saved = kept.isSaved(story)
-            IconButton(onClick = { app.toggleSaved(story) }) {
+            IconTip(pluginString(if (saved) Strings.unsave else Strings.save)) { IconButton(onClick = { app.toggleSaved(story) }) {
                 Icon(if (saved) SavedIcons.Bookmark else SavedIcons.BookmarkBorder, pluginString(if (saved) Strings.unsave else Strings.save), modifier = Modifier.size(20.dp))
-            }
+            } }
         }
         Hairline()
     }

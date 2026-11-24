@@ -47,6 +47,7 @@ import com.aimdi.xtanative.store.downloads.DownloadStatus
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -172,7 +173,7 @@ private fun DownloadRowView(entry: DownloadEntry, onCancel: () -> Unit, onRetry:
             modifier = Modifier.padding(top = 4.dp, end = 12.dp).size(22.dp),
         )
         Column(Modifier.weight(1f)) {
-            Text(entry.fileName, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            TipText(entry.fileName, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
             Spacer(Modifier.size(3.dp))
             Text(statusText(entry.status), style = MaterialTheme.typography.bodySmall)
             if (row.showsProgress) {

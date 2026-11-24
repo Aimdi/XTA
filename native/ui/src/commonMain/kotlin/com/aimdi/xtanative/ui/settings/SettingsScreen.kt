@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.automirrored.outlined.List
@@ -64,9 +63,12 @@ import com.aimdi.xtanative.ui.common.ColumnScrollbar
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.settings_proxy
+import com.aimdi.xtanative.ui.generated.resources.settings_proxy_description
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login_description
 import com.aimdi.xtanative.ui.home.foundWithKeys
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.intro.IntroFlow
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.launch
@@ -115,7 +117,7 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: (
         val scroll = rememberScrollState()
         Box(Modifier.fillMaxSize().padding(padding)) {
         ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd))
-        Column(Modifier.settingsRows().verticalScroll(scroll).padding(bottom = 24.dp)) {
+        Column(Modifier.verticalScrollByKeys(scroll).padding(bottom = 24.dp)) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
@@ -210,6 +212,10 @@ private fun AboutRows(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snackb
     NavigationRow(stringResource(Res.string.settings_licenses), stringResource(Res.string.settings_licenses_description), Icons.AutoMirrored.Outlined.List) {
         onOpen(SettingsRoutes.LICENCES)
     }
+    // The desktop's log, for a bug report: where it is, opened in the file manager.
+    logsFolder?.let { folder ->
+        NavigationRow(stringResource(Res.string.settings_open_logs), folder, Icons.Outlined.Build, chevron = false) { openLogsFolder() }
+    }
     NavigationRow(stringResource(Res.string.settings_intro_again), stringResource(Res.string.settings_intro_again_description), Icons.Outlined.Refresh, chevron = false) {
         vm.graph.keep {
             vm.graph.settings.update(IntroFlow::again)
@@ -257,6 +263,7 @@ private val INDEX = listOf(
     Indexed(SettingsSection.GENERAL, DesktopPrefs.notifications.key, Res.string.settings_desktop_notifications, Res.string.settings_desktop_notifications_description),
     Indexed(SettingsSection.GENERAL, DesktopPrefs.closeToTray.key, Res.string.settings_close_to_tray, Res.string.settings_close_to_tray_description),
     Indexed(SettingsSection.GENERAL, START_AT_LOGIN_KEY, Res.string.settings_start_at_login, Res.string.settings_start_at_login_description),
+    Indexed(SettingsSection.GENERAL, DesktopPrefs.proxyMode.key, Res.string.settings_proxy, Res.string.settings_proxy_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.cleanLinks.key, Res.string.settings_clean_links, Res.string.settings_clean_links_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.disableScreenshots.key, Res.string.settings_disable_screenshots, Res.string.settings_disable_screenshots_hint),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.initialTab.key, Res.string.settings_default_tab, Res.string.settings_default_tab_description),
@@ -301,6 +308,7 @@ private val INDEX = listOf(
     Indexed(SettingsSection.THEME, ThemePrefs.hideNavigationOnScroll.key, Res.string.settings_hide_navigation, null),
     Indexed(SettingsSection.THEME, ThemePrefs.hideStatusBar.key, Res.string.settings_hide_status_bar, Res.string.settings_hide_status_bar_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.textScale.key, Res.string.settings_text_scale, Res.string.settings_text_scale_description),
+    Indexed(SettingsSection.ACCESSIBILITY, DesktopPrefs.uiScale.key, Res.string.settings_interface_scale, Res.string.settings_interface_scale_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.disableAnimations.key, Res.string.settings_disable_animations, Res.string.settings_disable_animations_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.haptics.key, Res.string.settings_haptics, Res.string.settings_haptics_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.tickerChart.key, Res.string.settings_ticker_chart, Res.string.settings_ticker_chart_description),
@@ -312,8 +320,8 @@ private val INDEX = listOf(
 /** The controls only Android has: the desktop's window takes no screenshot block, gives no haptics and has no status bar. */
 private val ANDROID_ONLY = setOf(GeneralPrefs.disableScreenshots.key, AccessibilityPrefs.haptics.key, ThemePrefs.hideStatusBar.key)
 
-/** The controls only the desktop has: its notifications and its tray. */
-private val DESKTOP_ONLY = setOf(DesktopPrefs.notifications.key, DesktopPrefs.closeToTray.key, START_AT_LOGIN_KEY)
+/** The controls only the desktop has: its notifications, its tray, its windows' interface size and its proxy. */
+private val DESKTOP_ONLY = setOf(DesktopPrefs.notifications.key, DesktopPrefs.closeToTray.key, START_AT_LOGIN_KEY, DesktopPrefs.uiScale.key, DesktopPrefs.proxyMode.key)
 
 /** Every control the search can find, in this platform's settings: the desktop has none of [ANDROID_ONLY], Android none of [DESKTOP_ONLY]. */
 @Composable

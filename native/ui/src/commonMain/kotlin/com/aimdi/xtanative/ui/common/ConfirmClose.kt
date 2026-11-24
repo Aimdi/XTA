@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -29,7 +30,7 @@ fun ConfirmCloseOnBack(enabled: Boolean = true) {
     val confirms by settingsStore.observe(GeneralPrefs.confirmClose).collectAsStateWithLifecycle(settingsStore.state.value?.get(GeneralPrefs.confirmClose) ?: true)
     var asking by remember { mutableStateOf(false) }
     val close = rememberCloseApp()
-    BackHandling(enabled = enabled && confirms) { asking = true }
+    BackHandling(enabled = enabled && confirms, byKeys = false) { asking = true }
     if (asking) {
         AlertDialog(
             onDismissRequest = { asking = false },
@@ -39,7 +40,7 @@ fun ConfirmCloseOnBack(enabled: Boolean = true) {
                 TextButton(onClick = {
                     asking = false
                     close()
-                }) { Text(stringResource(Res.string.settings_yes)) }
+                }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.settings_yes)) }
             },
             dismissButton = { TextButton(onClick = { asking = false }) { Text(stringResource(Res.string.settings_no)) } },
         )

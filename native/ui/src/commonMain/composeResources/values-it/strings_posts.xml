@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Nessuno ha ritwittato questo tweet!</string>
     <string name="posts_no_saves">Nessun post salvato — i segnalibri restano su questo dispositivo</string>
     <string name="posts_open_in_browser">Apri nel browser</string>
+    <string name="posts_open_in_new_window">Apri in una nuova finestra</string>
     <string name="posts_open_on_web_archive">Apri su web.archive.org</string>
     <string name="posts_open_post">Apri il post</string>
     <string name="posts_page_not_found">Twitter dice che la pagina non esiste, ma potrebbe non essere vero</string>

@@ -76,6 +76,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemRow
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
@@ -100,6 +101,9 @@ import com.aimdi.xtanative.ui.generated.resources.posts_unable_to_load_the_tweet
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_views_count
 import com.aimdi.xtanative.ui.generated.resources.posts_zen_replies
+import com.aimdi.xtanative.ui.home.FindInPage
+import com.aimdi.xtanative.ui.home.LocalDesktopActions
+import com.aimdi.xtanative.ui.home.keyedPost
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -130,6 +134,14 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
     }
     LaunchedEffect(nearEnd, state.replies.size) { if (nearEnd) vm.loadMore() }
 
+    // Ctrl+F finds in the post, what it answers and its replies (the desktop's find bar).
+    val findPrefs = rememberPostPrefs()
+    // Only the desktop has a find bar: on Android nothing would read the blocks, and a long thread is not worked through for them.
+    val finds = LocalDesktopActions.current != null
+    val findBlocks = remember(state, findPrefs, finds) {
+        if (finds) ThreadFind.blocks(state, findPrefs.threadedReplies, !findPrefs.zen || state.repliesRevealed) else emptyList()
+    }
+    FindInPage(findBlocks, list) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -175,6 +187,7 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
             }
         }
         }
+    }
     }
 }
 
@@ -346,11 +359,24 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
     val translation = rememberPostTranslation(shown, scope)
     val drawn = translation?.shown ?: shown
     var menu by rememberSaveable(shown.id) { mutableStateOf(false) }
+    // Opened from the keyboard: at the post, not at the pointer.
+    var menuAtPost by remember(shown.id) { mutableStateOf(false) }
+    // The desktop's keys act on it as on a reply (l, b, Ctrl+Shift+C, the Menu key); it is open already, so Enter leaves it.
+    val keys = rememberPostKeys(post, actions, openable = false) {
+        menuAtPost = true
+        menu = true
+    }
     val article = remember(shown) { ArticleLayout.fullArticle(shown) }
     val picture = rememberPostPicture()
-    Column(Modifier.fillMaxWidth().recordedIn(picture).padding(horizontal = 16.dp, vertical = 12.dp)) {
+    Column(Modifier.fillMaxWidth().keyedPost(keys).recordedIn(picture).padding(horizontal = 16.dp, vertical = 12.dp)) {
         // A right-click on the author line opens the ⋯ menu; the text under it keeps the desktop's own copy menu.
-        Row(Modifier.onSecondaryClick { menu = true }, verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            Modifier.onSecondaryClick {
+                menuAtPost = false
+                menu = true
+            },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             PostAvatar(shown, scope, actions, 44.dp)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
@@ -358,7 +384,7 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(Modifier.weight(1f, fill = false)) {
                             AuthorHoverCard(shown.author, shown.author.largeAvatarUrl, { actions.openUser(shown.author.screenName, shown.author.id) }) {
-                                Text(shown.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                TipText(shown.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             }
                         }
                         if (shown.author.verified) {
@@ -369,7 +395,10 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
                 }
             }
             translation?.let { TranslateButton(it, scope, glyphTop = false) }
-            HeaderButton(PostIcons.MoreHoriz, stringResource(Res.string.posts_more), glyphTop = false) { menu = true }
+            HeaderButton(PostIcons.MoreHoriz, stringResource(Res.string.posts_more), glyphTop = false) {
+                menuAtPost = false
+                menu = true
+            }
         }
         PostView.replyingTo(shown, quoted = false, midThread = false)?.let { ReplyingTo(it, shown.replyToPostId, actions) }
         if (PostView.textMissing(shown)) {
@@ -395,7 +424,9 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
         if (article == null) PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture)
     }
     Hairline()
-    if (menu) PostMenu(post, actions, onDismiss = { menu = false })
+    if (menu) {
+        CompositionLocalProvider(LocalMenuAtPost provides menuAtPost) { PostMenu(post, actions, onDismiss = { menu = false }) }
+    }
 }
 
 /**
@@ -412,7 +443,7 @@ private fun FocalMetaLine(post: XPost, prefs: PostPrefs, order: ReplyOrder?, pic
     if (time.isEmpty() && viewsLabel == null && order == null) return
     val number = views?.let { countText(it) }
     Row(Modifier.fillMaxWidth().padding(top = if (order == null) 12.dp else 2.dp), verticalAlignment = Alignment.CenterVertically) {
-    Text(
+    TipText(
         buildAnnotatedString {
             append(time)
             if (time.isNotEmpty() && viewsLabel != null) append(" · ")
@@ -431,7 +462,8 @@ private fun FocalMetaLine(post: XPost, prefs: PostPrefs, order: ReplyOrder?, pic
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.weight(1f),
+        // Dragging the line drags the post's address out, as its time on X's site links the post.
+        modifier = Modifier.weight(1f).dragsLink(PostView.url(post, prefs)),
     )
     if (order != null) ReplyOrderChip(order, picture)
     }

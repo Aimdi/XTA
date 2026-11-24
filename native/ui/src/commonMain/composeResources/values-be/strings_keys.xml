@@ -3,9 +3,11 @@
     <string name="keys_title">Спалучэнні клавіш</string>
     <string name="keys_help">Паказаць гэтыя спалучэнні</string>
     <string name="keys_back">Назад або закрыць адкрытае</string>
+    <string name="keys_forward">Наперад да таго, адкуль вярнуліся</string>
     <string name="keys_go_home">Назад на галоўную</string>
     <string name="keys_refresh">Абнавіць</string>
     <string name="keys_search">Пошук</string>
+    <string name="keys_new">Новая нататка, група, антэна, слупок або месца трэндаў, на яго старонцы</string>
     <string name="keys_recent_searches">Выбраць нядаўні пошук з поля пошуку</string>
     <string name="keys_open_copied_link">Адкрыць скапіяваную спасылку</string>
     <string name="keys_tabs">Наступная або папярэдняя ўкладка</string>
@@ -18,6 +20,7 @@
     <string name="keys_scroll_ends">На пачатак або ў канец</string>
     <string name="keys_move">Пераходзіць паміж кнопкамі і палямі</string>
     <string name="keys_text_size">Большы, меншы або звычайны тэкст</string>
+    <string name="keys_interface_size">Большы, меншы ці звычайны інтэрфейс</string>
     <string name="keys_full_screen">Поўнаэкранны рэжым</string>
     <string name="keys_video">Відэа на ўвесь экран: прайграць або прыпыніць, перамясціцца на 10 секунд</string>
     <string name="keys_video_more">Відэа на ўвесь экран: адключыць гук, пачаць спачатку, выйсці</string>
@@ -39,7 +42,16 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Захаванае: вылучыць усё паказанае</string>
     <string name="keys_remove_selected">Захаванае: выдаліць вылучанае</string>
+    <string name="keys_undo">Адрабіць толькі што выдаленае, пакуль бачна яго паведамленне</string>
     <string name="keys_leave_selection">Захаванае: скончыць вылучэнне</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Перамясціць радок вышэй або ніжэй у спісе, які можна пераўпарадкаваць (той, што ў фокусе або пад курсорам)</string>
+    <string name="keys_post_open">Адкрыць допіс, на якім стаяць J і K</string>
+    <string name="keys_post_like">Упадабаць гэты допіс на гэтай прыладзе або адмяніць</string>
+    <string name="keys_post_save">Захаваць гэты допіс на гэтай прыладзе або прыбраць з захаваных</string>
+    <string name="keys_post_link">Скапіяваць спасылку на гэты допіс</string>
+    <string name="keys_post_menu">Адкрыць меню гэтага допісу</string>
+    <string name="keys_menu">Меню</string>
+    <string name="keys_find_in_page">Пошук у допісе або артыкуле, які вы чытаеце</string>
+    <string name="keys_find_match">Наступны або папярэдні вынік у радку пошуку</string>
 </resources>

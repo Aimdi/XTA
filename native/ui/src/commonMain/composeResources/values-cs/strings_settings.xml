@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Využít celou obrazovku: čas, baterie a signál nahoře jsou skryté. Přejetím dolů od horního okraje je na chvíli zobrazíte.</string>
     <string name="settings_text_scale">Faktor měřítka textu</string>
     <string name="settings_text_scale_description">Upravit velikost písma v aplikaci</string>
+    <string name="settings_interface_scale">Velikost rozhraní</string>
+    <string name="settings_interface_scale_description">Zvětší nebo zmenší text, tlačítka i obrázky najednou</string>
     <string name="settings_disable_animations">Zakázat animace</string>
     <string name="settings_disable_animations_description">Zakázat animace v aplikaci</string>
     <string name="settings_haptics">Haptická odezva</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">Všechen úžasný software používaný Quackerem</string>
     <string name="settings_intro_again">Zobrazit úvod znovu</string>
     <string name="settings_intro_again_description">Znovu projít karty z prvního spuštění.</string>
+    <string name="settings_open_logs">Otevřít složku s protokoly</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Zkopírovat hlášení</string>
     <string name="settings_diagnostics_copied">Diagnostika zkopírována do schránky</string>
@@ -377,4 +380,18 @@
     <string name="settings_start_at_login_description">Otevře aplikaci po přihlášení; se zapnutým „Zavírat do oznamovací oblasti“ čeká v oznamovací oblasti</string>
     <string name="tray_show">Zobrazit okno</string>
     <string name="tray_hide">Skrýt okno</string>
+    <string name="tray_new_search">Nové hledání</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_description">Jak se aplikace na tomto zařízení připojuje k internetu. Systém použije proměnné prostředí proxy, jinak nastavení proxy v desktopu</string>
+    <string name="settings_proxy_none">Bez proxy</string>
+    <string name="settings_proxy_manual">Ručně</string>
+    <string name="settings_proxy_server">Proxy server</string>
+    <string name="settings_proxy_server_unset">Nenastaveno: nic se nenačte, dokud ho nenastavíte</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Videa zatím nelze přehrát přes proxy SOCKS5</string>
+    <string name="settings_proxy_host">Hostitel</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Bez proxy pro</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

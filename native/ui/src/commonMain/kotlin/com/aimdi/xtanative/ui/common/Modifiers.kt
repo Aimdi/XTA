@@ -16,6 +16,7 @@ import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerType
+import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 
@@ -36,10 +37,12 @@ fun Modifier.longPressOver(accepts: (Offset) -> Boolean = { true }, onLongPress:
     val haptics = rememberSwitchedHaptics()
     val takes by rememberUpdatedState(accepts)
     val press by rememberUpdatedState(onLongPress)
-    pointerInput(Unit) {
+    // A mouse gives no long press: its right-click does the same, where [accepts] takes it.
+    onSecondaryClickAt({ takes(it) }) { press(it) }.pointerInput(Unit) {
         awaitEachGesture {
             val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
-            if (!takes(down.position)) return@awaitEachGesture
+            // The right button held is no long press: its press already ran [onLongPress] once.
+            if (!LongPresses.counts(down.type, currentEvent.buttons.isPrimaryPressed) || !takes(down.position)) return@awaitEachGesture
             // Released, moved away or taken by a scroll before the timeout: nothing of this press is ours.
             val ended = withTimeoutOrNull(viewConfiguration.longPressTimeoutMillis) { waitForUpOrCancellation(PointerEventPass.Initial) ?: down }
             if (ended != null) return@awaitEachGesture
@@ -48,6 +51,12 @@ fun Modifier.longPressOver(accepts: (Offset) -> Boolean = { true }, onLongPress:
             consumeUntilUp()
         }
     }
+}
+
+/** Which presses a long press is timed for ([longPressOver]). */
+internal object LongPresses {
+    /** A touch, a pen's, or the mouse's primary button; not its right or middle one, whose press is a click of its own. */
+    fun counts(type: PointerType, primaryPressed: Boolean): Boolean = type != PointerType.Mouse || primaryPressed
 }
 
 /** The rest of a press taken, so that nothing under it acts on it. */
@@ -67,6 +76,20 @@ private suspend fun AwaitPointerEventScope.consumeUntilUp() {
  */
 fun Modifier.onSecondaryClick(action: () -> Unit): Modifier = composed {
     val latest by rememberUpdatedState(action)
+    onSecondaryClickAt { latest() }
+}
+
+/** [onSecondaryClick] for a long press that may be missing: nothing when [action] is null. */
+fun Modifier.onSecondaryClickIf(action: (() -> Unit)?): Modifier = if (action == null) this else onSecondaryClick(action)
+
+/**
+ * [onSecondaryClick] with where it was pressed, for a long press that hears
+ * where (a cashtag in a post's text, a spot on a picture). A press
+ * [accepts] turns down is left to what is around this.
+ */
+fun Modifier.onSecondaryClickAt(accepts: (Offset) -> Boolean = { true }, action: (Offset) -> Unit): Modifier = composed {
+    val takes by rememberUpdatedState(accepts)
+    val latest by rememberUpdatedState(action)
     pointerInput(Unit) {
         awaitPointerEventScope {
             while (true) {
@@ -75,7 +98,8 @@ fun Modifier.onSecondaryClick(action: () -> Unit): Modifier = composed {
                 val event = awaitPointerEvent(PointerEventPass.Main)
                 val press = event.changes.firstOrNull() ?: continue
                 // A mouse only: a stylus's barrel button counts as a secondary button on Android.
-                if (event.type == PointerEventType.Press && press.type == PointerType.Mouse && event.buttons.isSecondaryPressed && SecondaryPresses.take(press.uptimeMillis)) latest()
+                val right = event.type == PointerEventType.Press && press.type == PointerType.Mouse && event.buttons.isSecondaryPressed
+                if (SecondaryPresses.opens(right, { takes(press.position) }, press.uptimeMillis)) latest(press.position)
             }
         }
     }
@@ -87,4 +111,12 @@ internal object SecondaryPresses {
 
     /** Whether the press at [uptime] is still free, taking it if so. */
     fun take(uptime: Long): Boolean = (uptime != taken).also { taken = uptime }
+
+    /**
+     * Whether a press opens this one's menu: a right-click ([right]) that this
+     * one [accepts] where it lands (asked of right-clicks only) and that no
+     * menu inside it took first. One turned down stays free for the menus
+     * around it.
+     */
+    fun opens(right: Boolean, accepts: () -> Boolean, uptime: Long): Boolean = right && accepts() && take(uptime)
 }

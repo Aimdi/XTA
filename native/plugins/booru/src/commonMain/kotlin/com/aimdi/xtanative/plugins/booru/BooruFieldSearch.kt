@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.booru.BooruQuery
 import com.aimdi.xtanative.networks.booru.BooruTagSuggestion
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -79,7 +80,7 @@ private fun QueryRow(app: BooruApp, state: BooruSearchState, onDownload: () -> U
             }
         }
         SaveSearchButton(app, state.text)
-        IconButton(onClick = onDownload) { Icon(BooruIcons.DownloadAll, pluginString(Strings.download_all)) }
+        IconTip(pluginString(Strings.download_all)) { IconButton(onClick = onDownload) { Icon(BooruIcons.DownloadAll, pluginString(Strings.download_all)) } }
     }
 }
 

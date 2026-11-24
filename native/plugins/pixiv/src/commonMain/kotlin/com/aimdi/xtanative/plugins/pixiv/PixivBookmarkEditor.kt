@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivBookmarkDetail
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.pluginString
 import kotlinx.coroutines.CancellationException
@@ -159,7 +160,7 @@ private fun TagField(draft: PixivBookmarkDraft, known: List<String>, onChange: (
         singleLine = true,
         placeholder = { Text(pluginString(Strings.bookmark_tag_hint)) },
         trailingIcon = {
-            IconButton(onClick = { onChange(draft.withTyped()) }) { Icon(Icons.Filled.Add, pluginString(Strings.bookmark_tag_add)) }
+            IconTip(pluginString(Strings.bookmark_tag_add)) { IconButton(onClick = { onChange(draft.withTyped()) }) { Icon(Icons.Filled.Add, pluginString(Strings.bookmark_tag_add)) } }
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { onChange(draft.withTyped()) }),

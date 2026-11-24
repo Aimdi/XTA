@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Gunakan seluruh layar: jam, baterai, dan sinyal di atas disembunyikan. Geser ke bawah dari tepi atas untuk melihatnya sebentar.</string>
     <string name="settings_text_scale">Faktor skala teks</string>
     <string name="settings_text_scale_description">Sesuaikan ukuran font di aplikasi</string>
+    <string name="settings_interface_scale">Ukuran antarmuka</string>
+    <string name="settings_interface_scale_description">Perbesar atau perkecil teks, tombol, dan gambar sekaligus</string>
     <string name="settings_disable_animations">Nonaktifkan animasi</string>
     <string name="settings_disable_animations_description">Nonaktifkan animasi di aplikasi</string>
     <string name="settings_haptics">Umpan balik haptik</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">Semua perangkat lunak hebat yang digunakan oleh XTA</string>
     <string name="settings_intro_again">Tampilkan perkenalan lagi</string>
     <string name="settings_intro_again_description">Putar ulang kartu saat pertama kali dibuka.</string>
+    <string name="settings_open_logs">Buka folder log</string>
     <string name="settings_ok">Oke</string>
     <string name="settings_diagnostics_copy">Salin laporan</string>
     <string name="settings_diagnostics_copied">Diagnostik disalin ke papan klip</string>
@@ -371,4 +374,18 @@
     <string name="settings_start_at_login_description">Membuka aplikasi saat Anda masuk; dengan Tutup ke baki sistem aktif, aplikasi menunggu di baki</string>
     <string name="tray_show">Tampilkan jendela</string>
     <string name="tray_hide">Sembunyikan jendela</string>
+    <string name="tray_new_search">Pencarian baru</string>
+    <string name="settings_proxy">Proksi</string>
+    <string name="settings_proxy_description">Cara aplikasi menjangkau internet di perangkat ini. Sistem memakai variabel lingkungan proksi, jika tidak ada, pengaturan proksi desktop</string>
+    <string name="settings_proxy_none">Tanpa proksi</string>
+    <string name="settings_proxy_manual">Manual</string>
+    <string name="settings_proxy_server">Server proksi</string>
+    <string name="settings_proxy_server_unset">Belum diatur: tidak ada yang dimuat sampai diatur</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Video belum bisa diputar lewat proksi SOCKS5</string>
+    <string name="settings_proxy_host">Host</string>
+    <string name="settings_proxy_port">Port</string>
+    <string name="settings_proxy_bypass">Tanpa proksi untuk</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

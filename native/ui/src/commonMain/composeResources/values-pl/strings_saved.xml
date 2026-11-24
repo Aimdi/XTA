@@ -116,6 +116,7 @@
     <string name="saved_quoted_unavailable">Cytowany post niedostępny</string>
     <string name="saved_note_thread">Notatka</string>
     <string name="saved_long_press_hint">Wskazówka: przytrzymaj, aby zapisać w folderze</string>
+    <string name="saved_right_click_hint">Wskazówka: kliknij prawym przyciskiem, aby zapisać w folderze</string>
     <string name="saved_like">Polub na tym urządzeniu</string>
     <string name="saved_unlike">Usuń polubienie z tego urządzenia</string>
     <string name="saved_save_here">Zapisz na tym urządzeniu</string>

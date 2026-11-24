@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Tidak ditemukan siapa pun yang mencuit ulang cuitan ini!</string>
     <string name="posts_no_saves">Belum ada yang disimpan — markah tetap di perangkat ini</string>
     <string name="posts_open_in_browser">Buka di browser</string>
+    <string name="posts_open_in_new_window">Buka di jendela baru</string>
     <string name="posts_open_on_web_archive">Buka di web.archive.org</string>
     <string name="posts_open_post">Buka postingan</string>
     <string name="posts_page_not_found">Twitter mengatakan halaman ini tidak ada, tetapi mungkin itu tidak benar</string>

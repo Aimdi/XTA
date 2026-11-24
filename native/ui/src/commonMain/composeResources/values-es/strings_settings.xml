@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Usar toda la pantalla: la hora, la batería y la cobertura de arriba quedan ocultas. Desliza hacia abajo desde el borde superior para verlas un momento.</string>
     <string name="settings_text_scale">Factor de escala del texto</string>
     <string name="settings_text_scale_description">Ajustar el tamaño de fuente en la app</string>
+    <string name="settings_interface_scale">Tamaño de la interfaz</string>
+    <string name="settings_interface_scale_description">Agranda o reduce a la vez el texto, los botones y las imágenes</string>
     <string name="settings_disable_animations">Desactivar animaciones</string>
     <string name="settings_disable_animations_description">Desactivar animaciones en la app</string>
     <string name="settings_haptics">Respuesta háptica</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">Todo el software excelente utilizado por XTA</string>
     <string name="settings_intro_again">Volver a mostrar la introducción</string>
     <string name="settings_intro_again_description">Vuelve a ver las tarjetas del primer inicio.</string>
+    <string name="settings_open_logs">Abrir carpeta de registros</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Copiar el informe</string>
     <string name="settings_diagnostics_copied">Diagnóstico copiado al portapapeles</string>
@@ -375,4 +378,18 @@
     <string name="settings_start_at_login_description">Abre la app al iniciar sesión; con «Cerrar a la bandeja» activado, espera en la bandeja</string>
     <string name="tray_show">Mostrar ventana</string>
     <string name="tray_hide">Ocultar ventana</string>
+    <string name="tray_new_search">Nueva búsqueda</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_description">Cómo llega la app a internet en este dispositivo. Sistema usa las variables de entorno del proxy o, si no hay, los ajustes de proxy del escritorio</string>
+    <string name="settings_proxy_none">Sin proxy</string>
+    <string name="settings_proxy_manual">Manual</string>
+    <string name="settings_proxy_server">Servidor proxy</string>
+    <string name="settings_proxy_server_unset">Sin definir: no se carga nada hasta que definas uno</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Los vídeos aún no se pueden reproducir a través de un proxy SOCKS5</string>
+    <string name="settings_proxy_host">Host</string>
+    <string name="settings_proxy_port">Puerto</string>
+    <string name="settings_proxy_bypass">Sin proxy para</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

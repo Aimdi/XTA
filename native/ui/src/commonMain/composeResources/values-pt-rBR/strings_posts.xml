@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Ninguém que tenha retweetado este tweet foi encontrado!</string>
     <string name="posts_no_saves">Nenhum salvo ainda — os favoritos ficam neste dispositivo</string>
     <string name="posts_open_in_browser">Abrir no navegador</string>
+    <string name="posts_open_in_new_window">Abrir em nova janela</string>
     <string name="posts_open_on_web_archive">Abrir no web.archive.org</string>
     <string name="posts_open_post">Abrir publicação</string>
     <string name="posts_page_not_found">Twitter diz que a página não existe, mas isso pode não ser verdade</string>

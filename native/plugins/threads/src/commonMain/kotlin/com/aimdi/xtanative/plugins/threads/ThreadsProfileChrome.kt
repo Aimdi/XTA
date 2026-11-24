@@ -75,6 +75,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.networks.threads.ThreadsProfileAbout
 import com.aimdi.xtanative.networks.threads.attempt
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.plugins.AddToGroupIcon
 import com.aimdi.xtanative.ui.plugins.MediaItem
@@ -128,7 +129,7 @@ internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, onFilt
                     PluginAvatar(face, profile.displayName, profile.username, FaceSize, onClick = openPicture)
                 }
                 Spacer(Modifier.weight(1f))
-                IconButton(onClick = onFilters) { Icon(PostIcons.Tune, contentDescription = pluginString(Strings.filters_and_groups)) }
+                IconTip(pluginString(Strings.filters_and_groups)) { IconButton(onClick = onFilters) { Icon(PostIcons.Tune, contentDescription = pluginString(Strings.filters_and_groups)) } }
                 ProfileFollowButton(app, profile)
             }
         }
@@ -373,14 +374,14 @@ internal fun ContentToggles(
         Row(Modifier.selectableGroup(), horizontalArrangement = Arrangement.spacedBy(8.dp)) { ContentChoices(options, selected, onSelect) }
         if (grid != null) {
             Spacer(Modifier.weight(1f))
-            IconButton(onClick = { onGrid(!grid) }, modifier = Modifier.size(48.dp)) {
+            IconTip(pluginString(if (grid) Strings.media_as_list else Strings.media_as_grid)) { IconButton(onClick = { onGrid(!grid) }, modifier = Modifier.size(48.dp)) {
                 Icon(
                     if (grid) ThreadsIcons.ViewAgenda else ThreadsIcons.GridView,
                     contentDescription = pluginString(if (grid) Strings.media_as_list else Strings.media_as_grid),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp),
                 )
-            }
+            } }
         }
     }
 }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AssistChip
@@ -73,7 +74,8 @@ private fun SearchLanding(app: MastodonApp, frame: PluginFrame) {
     val state by trends.state.collectAsState()
     val follows by app.follows.state.collectAsState()
     val error = state.error
-    PluginReadingColumn(frame.padding) { column -> LazyColumn(Modifier.fillMaxSize(), contentPadding = column) {
+    val scroll = rememberLazyListState()
+    PluginReadingColumn(frame.padding, scroll) { column -> LazyColumn(Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
         followed(app, follows.orEmpty().take(FOLLOWED_SHOWN))
         when {
             state.loading -> item(key = "loading") { LoadingRow() }
@@ -146,16 +148,23 @@ private fun MastodonSearchTab.label(): PluginText = when (this) {
 private fun SearchPane(app: MastodonApp, state: MastodonSearchReader.State, frame: PluginFrame) {
     val results = state.results
     when (state.tab) {
-        MastodonSearchTab.ACCOUNTS -> if (results.accounts.isEmpty()) MessageText(pluginString(Strings.no_results)) else LazyColumn(contentPadding = frame.padding) {
+        MastodonSearchTab.ACCOUNTS -> if (results.accounts.isEmpty()) MessageText(pluginString(Strings.no_results)) else ResultList(frame) {
             items(results.accounts, key = { it.acct }) { profile ->
                 NetworkPersonRow(profile.displayName.ifEmpty { profile.acct }, profile.acct, profile.avatarUrl, { app.openProfile(profile.acct) })
             }
         }
-        MastodonSearchTab.POSTS -> if (results.posts.isEmpty()) MessageText(pluginString(Strings.no_posts)) else LazyColumn(contentPadding = frame.padding) {
+        MastodonSearchTab.POSTS -> if (results.posts.isEmpty()) MessageText(pluginString(Strings.no_posts)) else ResultList(frame) {
             items(results.posts, key = { it.url }) { post -> MastodonPostRow(app, post) }
         }
         MastodonSearchTab.HASHTAGS -> if (results.tags.isEmpty()) MessageText(pluginString(Strings.no_hashtags)) else TagChips(app, results.tags)
     }
+}
+
+/** A tab's results in the reading column, with the desktop's scrollbar and reading keys. */
+@Composable
+private fun ResultList(frame: PluginFrame, content: LazyListScope.() -> Unit) {
+    val list = rememberLazyListState()
+    PluginReadingColumn(frame.padding, list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column, content = content) }
 }
 
 /** Hashtags as chips, each opening its timeline. */

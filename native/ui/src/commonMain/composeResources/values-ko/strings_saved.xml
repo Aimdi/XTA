@@ -107,6 +107,7 @@
     <string name="saved_quoted_unavailable">인용된 게시물을 사용할 수 없음</string>
     <string name="saved_note_thread">메모</string>
     <string name="saved_long_press_hint">팁: 길게 눌러 폴더에 저장하세요</string>
+    <string name="saved_right_click_hint">팁: 마우스 오른쪽 버튼을 클릭해 폴더에 저장하세요</string>
     <string name="saved_like">이 기기에 마음에 들어요</string>
     <string name="saved_unlike">이 기기에서 마음에 들어요 취소</string>
     <string name="saved_save_here">이 기기에 저장</string>

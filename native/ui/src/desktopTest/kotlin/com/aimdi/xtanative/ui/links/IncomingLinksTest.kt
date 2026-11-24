@@ -101,6 +101,13 @@ class IncomingLinksTest {
     }
 
     @Test
+    fun aPageOffXDroppedOnTheWindowGoesToTheWebNotToAProfile() {
+        assertEquals(IncomingStep.Outside("https://example.org/dropped"), step("https://example.org/dropped"))
+        assertEquals(IncomingStep.Outside("https://example.org/someone/status/1"), step("https://example.org/someone/status/1"))
+        assertEquals(IncomingStep.Screen(XLink.Profile("dropped"), "https://x.com/dropped"), step("https://x.com/dropped"))
+    }
+
+    @Test
     fun xsSearchPageAndAHashtagOpenTheAppsSearch() {
         assertEquals(IncomingStep.Search(""), step("https://x.com/search"))
         assertEquals(IncomingStep.Search("kotlin compose"), step("https://twitter.com/search?q=kotlin+compose&src=typed_query"))

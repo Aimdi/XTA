@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.subscriptions
 
+import com.aimdi.xtanative.ui.common.tabLeavesField
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
@@ -63,6 +63,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_list_not_found
 import com.aimdi.xtanative.ui.generated.resources.groups_list_url_or_id
 import com.aimdi.xtanative.ui.generated.resources.groups_unable_to_import
 import com.aimdi.xtanative.ui.generated.resources.groups_username
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import org.jetbrains.compose.resources.stringResource
 
 /** Importing the public following of the handles pasted (_import.dart). */
@@ -85,7 +86,7 @@ fun ImportFollowingScreen(onBack: () -> Unit, onSortUngrouped: () -> Unit) {
                 Text(stringResource(if (state.invalid) Res.string.groups_import_handles_none else Res.string.groups_import_handles_helper))
             },
             isError = state.invalid,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().tabLeavesField(),
         )
         Progress(state.run, onSortUngrouped)
     }
@@ -144,7 +145,7 @@ private fun ImportScaffold(
         // The form in the reading column's width, centred in a wide window.
         Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
             Column(
-                Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp).fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp),
+                Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp).fillMaxSize().verticalScrollByKeys(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) { content() }
         }

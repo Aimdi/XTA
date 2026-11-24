@@ -5,8 +5,13 @@
     <string name="chrome_update_view_version">Lihat versi %1$s di GitHub</string>
     <string name="chrome_update_view">Lihat di GitHub</string>
     <string name="chrome_update_download">Unduh</string>
+    <string name="chrome_update_install_package">Unduh paketnya, lalu jalankan ini di folder tempat Anda menyimpannya:</string>
+    <string name="chrome_update_install_tarball">Unduh arsipnya, lalu jalankan ini di folder tempat Anda menyimpannya:</string>
+    <string name="chrome_update_copy">Salin perintah</string>
+    <string name="chrome_update_skip">Lewati versi ini</string>
     <string name="chrome_licences_legalese">Dirilis di bawah Lisensi MIT</string>
     <plurals name="chrome_licences_count">
         <item quantity="other">%1$d lisensi</item>
     </plurals>
+    <string name="chrome_offline_bar">Luring – menampilkan salinan tersimpan</string>
 </resources>

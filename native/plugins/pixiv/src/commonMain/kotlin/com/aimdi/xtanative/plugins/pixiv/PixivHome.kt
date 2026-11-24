@@ -53,6 +53,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivSearchKind
 import com.aimdi.xtanative.networks.pixiv.PixivUserListKind
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
@@ -119,13 +120,13 @@ private fun HomeChrome(view: PixivHomeView, onTab: (PixivTab) -> Unit, onMode: (
     // Its own "more" (the account, About) joins Home's More where the tabs take the bottom bar.
     val tabs = PixivTab.entries.map { tab -> PluginHomeTab(tabIcon(tab), pluginString(tabLabel(tab)), view.tab == tab, { onTab(tab) }, joinsMore = tab == PixivTab.MORE) }
     PluginHomeTabs(tabs, markGivesWay = true) {
-        IconButton(onClick = onMode) {
+        IconTip(pluginString(if (view.novels) Strings.mode_illusts else Strings.mode_novels)) { IconButton(onClick = onMode) {
             Icon(
                 if (view.novels) PostIcons.Image else PixivIcons.MenuBook,
                 pluginString(if (view.novels) Strings.mode_illusts else Strings.mode_novels),
                 tint = if (view.novels) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
             )
-        }
+        } }
     }
 }
 
@@ -176,7 +177,7 @@ private fun HomeSection(model: PixivHomeModel, view: PixivHomeView, padding: Pad
         if (!shell) ChipRow {
             Chip(pluginString(Strings.tab_following), view.source == PixivHomeSource.FOLLOWING, { model.showSource(PixivHomeSource.FOLLOWING) })
             if (view.source == PixivHomeSource.FOLLOWING) RestrictMenu(view.restrict, model::restrict)
-            IconButton(onClick = { runtime.open(PixivRoute.Users(PixivUserListKind.FOLLOWING, 0)) }) { Icon(PostIcons.People, pluginString(Strings.following)) }
+            IconTip(pluginString(Strings.following)) { IconButton(onClick = { runtime.open(PixivRoute.Users(PixivUserListKind.FOLLOWING, 0)) }) { Icon(PostIcons.People, pluginString(Strings.following)) } }
             Chip(pluginString(Strings.tab_recommended), view.source == PixivHomeSource.RECOMMENDED, { model.showSource(PixivHomeSource.RECOMMENDED) })
             Chip(pluginString(Strings.tab_manga), view.source == PixivHomeSource.MANGA, { model.showSource(PixivHomeSource.MANGA) })
             Chip(pluginString(Strings.tab_watchlist), view.source == PixivHomeSource.WATCHLIST, { model.showSource(PixivHomeSource.WATCHLIST) })
@@ -245,13 +246,13 @@ private fun RestrictMenu(restrict: PixivFollowRestrict, onPick: (PixivFollowRest
         PixivFollowRestrict.DEVICE to Strings.follow_restrict_device,
     )
     Box {
-        IconButton(onClick = { open = true }) {
+        IconTip(pluginString(labels.first { it.first == restrict }.second)) { IconButton(onClick = { open = true }) {
             Icon(
                 restrictIcon(restrict),
                 pluginString(labels.first { it.first == restrict }.second),
                 tint = if (restrict == PixivFollowRestrict.ALL) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
             )
-        }
+        } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             labels.forEach { (value, label) ->
                 DropdownMenuItem(

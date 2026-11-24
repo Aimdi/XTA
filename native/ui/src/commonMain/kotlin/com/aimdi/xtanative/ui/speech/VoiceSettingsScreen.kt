@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.ui.speech
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -27,7 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -56,7 +55,9 @@ import com.aimdi.xtanative.services.speech.VoiceInstall
 import com.aimdi.xtanative.services.util.formatByteSize
 import com.aimdi.xtanative.ui.common.CenteredPage
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_back
@@ -96,6 +97,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_voices_note
 import com.aimdi.xtanative.ui.generated.resources.reader_voices_synthesis_missing
 import com.aimdi.xtanative.ui.generated.resources.reader_voices_use
 import com.aimdi.xtanative.ui.generated.resources.reader_voices_use_description
+import com.aimdi.xtanative.ui.home.rememberSheetList
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.media.ReaderIcons
 import org.jetbrains.compose.resources.stringResource
@@ -133,7 +135,7 @@ private val SETTINGS_EXTRA = 120.dp
 @Composable
 fun VoiceSettingsSheet(onDismiss: () -> Unit) {
     val vm = voiceSettingsViewModel()
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
+    KeyedSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
         Column(Modifier.fillMaxHeight(0.8f)) {
             Text(stringResource(Res.string.reader_speech_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             VoiceSettingsList(vm, PaddingValues(bottom = 8.dp), Modifier.weight(1f))
@@ -155,7 +157,7 @@ private fun voiceSettingsViewModel(): VoiceSettingsViewModel {
 private fun VoiceSettingsList(vm: VoiceSettingsViewModel, padding: PaddingValues, modifier: Modifier) {
     val ui by vm.ui.collectAsStateWithLifecycle()
     val parts = rememberSpeechParts()
-    LazyColumn(modifier, contentPadding = padding) {
+    LazyColumn(modifier, state = rememberSheetList(), contentPadding = padding) {
         offlineVoices(ui, vm, parts)
         if (parts.systemVoices == null) {
             item(key = "no-engine") {
@@ -350,7 +352,7 @@ private fun DownloadRow(
                     onDelete()
                 }) { Text(stringResource(Res.string.reader_delete)) }
             },
-            dismissButton = { TextButton(onClick = { confirm = false }) { Text(stringResource(Res.string.reader_cancel)) } },
+            dismissButton = { TextButton(onClick = { confirm = false }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.reader_cancel)) } },
         )
     }
 }
@@ -385,12 +387,15 @@ private fun Note(text: String) {
 
 @Composable
 private fun SwitchRow(title: String, description: String, checked: Boolean, onChange: (Boolean) -> Unit) {
-    Row(Modifier.fillMaxWidth().clickable { onChange(!checked) }.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        Modifier.fillMaxWidth().toggleable(value = checked, role = Role.Switch, onValueChange = onChange).padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Column(Modifier.weight(1f).padding(end = 12.dp)) {
             Text(title, style = MaterialTheme.typography.bodyLarge)
             Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Switch(checked = checked, onCheckedChange = onChange)
+        Switch(checked = checked, onCheckedChange = null)
     }
 }
 

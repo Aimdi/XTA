@@ -69,10 +69,11 @@ import kotlinx.coroutines.flow.first
  * anywhere or only the edge, and whether it tilts; reduced motion moves it
  * flat and at once. [leave] takes its screen away, once, when it has gone;
  * [content] is handed the back that slides it out. Nothing moves when there
- * is nothing to go back to ([canLeave] false).
+ * is nothing to go back to ([canLeave] false). [readsOpen]: the page on it
+ * is read with the desktop's reading keys, as an opened post's is.
  */
 @Composable
-fun SwipeBackCard(behind: ImageBitmap?, canLeave: Boolean, leave: () -> Unit, content: @Composable (back: () -> Unit) -> Unit) {
+fun SwipeBackCard(behind: ImageBitmap?, canLeave: Boolean, leave: () -> Unit, readsOpen: Boolean = false, content: @Composable (back: () -> Unit) -> Unit) {
     val settings by LocalSettingsStore.current.state.collectAsStateWithLifecycle()
     val reducedSetting = LocalReducedMotion.current
     var systemStill by remember { mutableStateOf(false) }
@@ -101,7 +102,9 @@ fun SwipeBackCard(behind: ImageBitmap?, canLeave: Boolean, leave: () -> Unit, co
     }
     if (canLeave) {
         CardBackGesture(enabled = true, events = card.backEvents)
-        DesktopShortcuts(refresh = {}, turn = {}, isOpen = { true }, close = back)
+        // Esc slides the card back as what is open. An opened post's page is read with the keys all the same (j and k,
+        // Enter, l, b …); a plugin's card keeps them for its own controls (a player, a reader).
+        DesktopShortcuts(refresh = {}, turn = {}, isOpen = { true }, close = back, readsOpen = { readsOpen })
     }
     card.gestures = gestureEdges()
     val page = MaterialTheme.colorScheme.background.luminance()

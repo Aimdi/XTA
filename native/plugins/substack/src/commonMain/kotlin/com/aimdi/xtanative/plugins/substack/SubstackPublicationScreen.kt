@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -59,6 +60,7 @@ import com.aimdi.xtanative.networks.substack.SubstackOrder
 import com.aimdi.xtanative.networks.substack.SubstackPublication
 import com.aimdi.xtanative.networks.substack.SubstackPublicationFilter
 import com.aimdi.xtanative.networks.substack.SubstackRecommendation
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
@@ -179,7 +181,8 @@ internal fun SubstackPublicationScreen(app: SubstackApp, opened: SubstackPublica
     val error = page.error
     PluginScaffold(title = state.publication.displayName, onBack = app.host::back) { padding ->
         PullToRefreshBox(isRefreshing = page.loading && page.posts.isNotEmpty(), onRefresh = model::refresh, modifier = Modifier.fillMaxSize().padding(padding)) {
-            PluginReadingColumn(PaddingValues()) { column -> LazyColumn(Modifier.fillMaxSize(), contentPadding = column) {
+            val scroll = rememberLazyListState()
+            PluginReadingColumn(PaddingValues(), scroll) { column -> LazyColumn(Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
                 item(key = "hero") { Hero(app, model, state) { similar = true } }
                 item(key = "controls") { PublicationControls(model, state) }
                 when {
@@ -300,7 +303,7 @@ private fun PublicationControls(model: PublicationModel, state: PublicationModel
             onValueChange = { query = it; model.search(it) },
             placeholder = { Text(pluginString(Strings.search_publication)) },
             leadingIcon = { Icon(Icons.Default.Search, null) },
-            trailingIcon = if (query.isEmpty()) null else ({ IconButton(onClick = { query = ""; model.search("") }) { Icon(Icons.Default.Clear, pluginString(Strings.clear_search)) } }),
+            trailingIcon = if (query.isEmpty()) null else ({ IconTip(pluginString(Strings.clear_search)) { IconButton(onClick = { query = ""; model.search("") }) { Icon(Icons.Default.Clear, pluginString(Strings.clear_search)) } } }),
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )

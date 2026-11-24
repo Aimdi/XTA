@@ -41,6 +41,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivNovelSpan
 import com.aimdi.xtanative.store.reading.ReadingAppearance
 import com.aimdi.xtanative.ui.common.Graphemes
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /** One block of a novel's text in the reader's text size and spacing; [jump] goes to a page of it. */
@@ -122,18 +123,22 @@ private fun NovelPicture(picture: PixivNovelPicture?, onOpen: ((PixivRuntime) ->
     val sheets = LocalPixivSheets.current
     val haptics = rememberHaptics()
     val open = onOpen ?: picture?.let { shown -> { r: PixivRuntime -> r.open(PixivRoute.Picture(r.shelf.put(shown.saveUrl))) } }
+    val save = {
+        haptics.medium()
+        picture?.let { sheets.saveImage(it.saveUrl) }
+        Unit
+    }
     PixivPicture(
         picture?.url,
-        Modifier.fillMaxWidth().heightIn(min = 120.dp).padding(vertical = 8.dp).clip(RoundedCornerShape(8.dp)).combinedClickable(
-            enabled = picture != null,
-            onClickLabel = pluginString(if (onOpen != null) Strings.novel_image_open else Strings.novel_image_view),
-            onClick = { open?.invoke(runtime) },
-            onLongClickLabel = pluginString(Strings.novel_image_save),
-            onLongClick = {
-                haptics.medium()
-                picture?.let { sheets.saveImage(it.saveUrl) }
-            },
-        ),
+        Modifier.fillMaxWidth().heightIn(min = 120.dp).padding(vertical = 8.dp).clip(RoundedCornerShape(8.dp))
+            .then(if (picture != null) Modifier.onContextClick(save) else Modifier)
+            .combinedClickable(
+                enabled = picture != null,
+                onClickLabel = pluginString(if (onOpen != null) Strings.novel_image_open else Strings.novel_image_view),
+                onClick = { open?.invoke(runtime) },
+                onLongClickLabel = pluginString(Strings.novel_image_save),
+                onLongClick = save,
+            ),
         contentScale = ContentScale.FillWidth,
         contentDescription = pluginString(Strings.novel_image),
     )

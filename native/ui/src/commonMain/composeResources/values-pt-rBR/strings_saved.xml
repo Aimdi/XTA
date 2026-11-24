@@ -110,6 +110,7 @@
     <string name="saved_quoted_unavailable">Publicação citada indisponível</string>
     <string name="saved_note_thread">Nota</string>
     <string name="saved_long_press_hint">Dica: mantenha pressionado para salvar em uma pasta</string>
+    <string name="saved_right_click_hint">Dica: clique com o botão direito para salvar em uma pasta</string>
     <string name="saved_like">Curtir neste dispositivo</string>
     <string name="saved_unlike">Remover curtida deste dispositivo</string>
     <string name="saved_save_here">Salvar neste dispositivo</string>

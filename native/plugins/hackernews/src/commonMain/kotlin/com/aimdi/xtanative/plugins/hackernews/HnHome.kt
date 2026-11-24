@@ -37,6 +37,7 @@ import com.aimdi.xtanative.networks.hackernews.HnFollowingReader
 import com.aimdi.xtanative.networks.hackernews.HnStory
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
@@ -105,7 +106,7 @@ internal fun HnHome(app: HnApp, frame: PluginFrame) {
     Column(Modifier.fillMaxSize()) {
         ReadingControlsBar {
             PluginHomeTabs(HnTab.entries, tab, { tab = it }, icon = { it.icon }, label = { pluginString(it.label) }, accent = HnBrand) {
-                IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
+                IconTip(pluginString(Strings.search)) { IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } }
                 ShellMenuButton { close ->
                     DropdownMenuItem(text = { Text(pluginString(Strings.settings)) }, onClick = {
                         close()

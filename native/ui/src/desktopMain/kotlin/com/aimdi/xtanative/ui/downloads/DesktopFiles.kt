@@ -3,11 +3,10 @@ package com.aimdi.xtanative.ui.downloads
 import com.aimdi.xtanative.store.downloads.DownloadCancellation
 import com.aimdi.xtanative.store.downloads.DownloadEntry
 import com.aimdi.xtanative.store.downloads.SharedDownloadFolder
+import com.aimdi.xtanative.ui.common.FileChoosers
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.downloads_choose_location
 import java.awt.Desktop
-import java.awt.FileDialog
-import java.awt.Frame
 import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
@@ -61,20 +60,9 @@ class DesktopFiles(
         opened || runCatching { ProcessBuilder("xdg-open", file.path).start(); true }.getOrDefault(false)
     }
 
-    /** The system's save dialog, opening in the downloads folder with [name] filled in; null when the reader backs out. */
-    private suspend fun ask(name: String): File? {
-        val title = getString(Res.string.downloads_choose_location)
-        return withContext(Dispatchers.IO) {
-            val start = DesktopFolders.downloads(home, env)
-            val dialog = FileDialog(null as Frame?, title, FileDialog.SAVE)
-            if (start.isDirectory) dialog.directory = start.path
-            dialog.file = name
-            dialog.isVisible = true
-            val chosen = dialog.file?.let { File(dialog.directory ?: start.path, it) }
-            dialog.dispose()
-            chosen
-        }
-    }
+    /** The desktop's save dialog, opening in the downloads folder with [name] filled in; null when the reader backs out. */
+    private suspend fun ask(name: String): File? =
+        FileChoosers.save(getString(Res.string.downloads_choose_location), name, DesktopFolders.downloads(home, env))
 
     private fun write(file: File, target: File, cancellation: DownloadCancellation): String {
         try {

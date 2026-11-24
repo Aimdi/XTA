@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonTagReader
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
@@ -43,7 +44,7 @@ internal fun MastodonTagScreen(app: MastodonApp, name: String) {
     PluginScaffold(
         title = "#" + name.removePrefix("#"),
         onBack = app.host::back,
-        actions = { IconButton(onClick = reader::refresh) { Icon(Icons.Filled.Refresh, pluginString(Strings.retry)) } },
+        actions = { IconTip(pluginString(Strings.retry)) { IconButton(onClick = reader::refresh) { Icon(Icons.Filled.Refresh, pluginString(Strings.retry)) } } },
     ) { padding ->
         PullToRefreshBox(isRefreshing = state.loading && state.posts.isNotEmpty(), onRefresh = reader::refresh, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp), list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {

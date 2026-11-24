@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">Dùng toàn bộ màn hình: giờ, pin và sóng ở trên cùng được ẩn. Vuốt xuống từ cạnh trên để xem chúng trong chốc lát.</string>
     <string name="settings_text_scale">Kích thước chữ</string>
     <string name="settings_text_scale_description">Thiết lập kích thước chữ trong ứng dụng</string>
+    <string name="settings_interface_scale">Kích thước giao diện</string>
+    <string name="settings_interface_scale_description">Phóng to hoặc thu nhỏ cùng lúc chữ, nút và hình ảnh</string>
     <string name="settings_disable_animations">Vô hiệu hóa hiệu ứng </string>
     <string name="settings_disable_animations_description">Vô hiệu hóa hiệu ứng trong ứng dụng</string>
     <string name="settings_haptics">Phản hồi xúc giác</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">Tất cả phần mềm tuyệt vời được XTA sử dụng</string>
     <string name="settings_intro_again">Hiện lại phần giới thiệu</string>
     <string name="settings_intro_again_description">Xem lại các thẻ khi mở lần đầu.</string>
+    <string name="settings_open_logs">Mở thư mục nhật ký</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Sao chép báo cáo</string>
     <string name="settings_diagnostics_copied">Đã sao chép chẩn đoán vào bảng nhớ tạm</string>
@@ -371,4 +374,18 @@
     <string name="settings_start_at_login_description">Mở ứng dụng khi bạn đăng nhập; khi bật Đóng xuống khay hệ thống, ứng dụng chờ trong khay</string>
     <string name="tray_show">Hiện cửa sổ</string>
     <string name="tray_hide">Ẩn cửa sổ</string>
+    <string name="tray_new_search">Tìm kiếm mới</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_description">Cách ứng dụng ra internet trên thiết bị này. Hệ thống dùng biến môi trường proxy, nếu không có thì dùng cài đặt proxy của màn hình nền</string>
+    <string name="settings_proxy_none">Không dùng proxy</string>
+    <string name="settings_proxy_manual">Thủ công</string>
+    <string name="settings_proxy_server">Máy chủ proxy</string>
+    <string name="settings_proxy_server_unset">Chưa đặt: sẽ không tải gì cho đến khi đặt</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">Video chưa phát được qua proxy SOCKS5</string>
+    <string name="settings_proxy_host">Máy chủ</string>
+    <string name="settings_proxy_port">Cổng</string>
+    <string name="settings_proxy_bypass">Không dùng proxy cho</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

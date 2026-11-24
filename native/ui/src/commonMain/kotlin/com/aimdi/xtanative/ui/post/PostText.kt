@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +37,7 @@ import com.aimdi.xtanative.core.x.parse.XText
 import com.aimdi.xtanative.networks.AddressPiece
 import com.aimdi.xtanative.networks.CryptoAddresses
 import com.aimdi.xtanative.ui.common.clickableNoRipple
+import com.aimdi.xtanative.ui.common.foundIn
 import com.aimdi.xtanative.ui.common.rememberCopyContract
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_show_more
@@ -100,7 +102,7 @@ fun RunsText(
     topic?.let { TopicSheet(it) { topic = null } }
     Text(
         text,
-        modifier = modifier.tagPresses(text, layout) { topic = it }.linkMiddleClicks(text, layout, actions.openInBrowser),
+        modifier = modifier.tagPresses(text, layout) { topic = it }.linkMiddleClicks(text, layout, actions.openInBrowser).linkDrags(text, layout),
         style = style,
         color = MaterialTheme.colorScheme.onSurface,
         maxLines = maxLines,
@@ -122,6 +124,7 @@ fun ExpandablePostText(
     style: TextStyle = MaterialTheme.typography.bodyMedium,
     maxLines: Int? = POST_TEXT_MAX_LINES,
     selectable: Boolean = false,
+    findKey: Any? = post.id,
 ) {
     val runs = remember(post) { XText.runs(post) }
     val linkColor = MaterialTheme.colorScheme.primary
@@ -132,22 +135,26 @@ fun ExpandablePostText(
     var expanded by remember(post.id, post.text) { mutableStateOf(false) }
     var folds by remember(post.id, post.text, maxLines) { mutableStateOf(false) }
     val clipped = maxLines != null && !expanded
+    val found = foundIn(findKey, text)
+    // The find bar's match shown is in the folded part: the text unfolds, as Show more does.
+    LaunchedEffect(found.holdsCurrent) { if (found.holdsCurrent) expanded = true }
     val laidOut = remember { TextLayoutHolder() }
     var topic by remember { mutableStateOf<String?>(null) }
     topic?.let { TopicSheet(it) { topic = null } }
     Column(modifier.animateContentSize()) {
         val drawn: @Composable () -> Unit = {
             Text(
-                text,
+                found.text,
                 style = style,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = if (clipped) maxLines!! else Int.MAX_VALUE,
                 overflow = TextOverflow.Clip,
                 onTextLayout = { layout ->
                     laidOut.take(layout)
+                    found.laidOut(layout)
                     if (clipped && layout.hasVisualOverflow) folds = true
                 },
-                modifier = (if (clipped && folds) Modifier.fadingBottom() else Modifier).tagPresses(text, laidOut) { topic = it }.linkMiddleClicks(text, laidOut, actions.openInBrowser),
+                modifier = (if (clipped && folds) Modifier.fadingBottom() else Modifier).tagPresses(text, laidOut) { topic = it }.linkMiddleClicks(text, laidOut, actions.openInBrowser).linkDrags(text, laidOut).then(found.modifier),
             )
         }
         if (selectable) SelectionContainer { drawn() } else drawn()
@@ -162,6 +169,9 @@ fun ExpandablePostText(
         }
     }
 }
+
+/** The find bar's key of the text of quoted post [id] ([QuotedPost], [ThreadFind]), apart from the post's own where it is shown too. */
+internal fun quoteFindKey(id: String): String = "quote-$id"
 
 /** The last lines of a folded text fading out, as XTA's ShaderMask fades them. */
 private fun Modifier.fadingBottom(): Modifier = graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }

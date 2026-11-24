@@ -3,9 +3,11 @@
     <string name="keys_title">Tastenkürzel</string>
     <string name="keys_help">Diese Tastenkürzel zeigen</string>
     <string name="keys_back">Zurück, oder Geöffnetes schließen</string>
+    <string name="keys_forward">Vorwärts zu dem, von dem du zurückgegangen bist</string>
     <string name="keys_go_home">Zurück zum Start</string>
     <string name="keys_refresh">Aktualisieren</string>
     <string name="keys_search">Suchen</string>
+    <string name="keys_new">Neu: Notiz, Gruppe, Antenne, Spalte oder Trend-Ort, auf der jeweiligen Seite</string>
     <string name="keys_recent_searches">Eine letzte Suche aus dem Suchfeld wählen</string>
     <string name="keys_open_copied_link">Kopierten Link öffnen</string>
     <string name="keys_tabs">Nächster oder vorheriger Tab</string>
@@ -18,6 +20,7 @@
     <string name="keys_scroll_ends">Zum Anfang oder zum Ende</string>
     <string name="keys_move">Zwischen Schaltflächen und Feldern wechseln</string>
     <string name="keys_text_size">Größere, kleinere oder normale Schrift</string>
+    <string name="keys_interface_size">Größere, kleinere oder normale Oberfläche</string>
     <string name="keys_full_screen">Vollbild</string>
     <string name="keys_video">Video im Vollbild: abspielen oder pausieren, 10 Sekunden springen</string>
     <string name="keys_video_more">Video im Vollbild: stummschalten, von vorn, Vollbild verlassen</string>
@@ -39,7 +42,16 @@
     <string name="keys_end">Ende</string>
     <string name="keys_select_all">Archiv: alles Gezeigte auswählen</string>
     <string name="keys_remove_selected">Archiv: Ausgewählte entfernen</string>
+    <string name="keys_undo">Gerade Entferntes oder Gelöschtes zurückholen, solange der Hinweis zu sehen ist</string>
     <string name="keys_leave_selection">Archiv: Auswahl beenden</string>
     <string name="keys_delete">Entf</string>
     <string name="keys_move_row">Eine Zeile in einer sortierbaren Liste nach oben oder unten verschieben (die fokussierte oder die unter dem Mauszeiger)</string>
+    <string name="keys_post_open">Den mit J und K gewählten Beitrag öffnen</string>
+    <string name="keys_post_like">Diesen Beitrag auf diesem Gerät liken oder nicht mehr</string>
+    <string name="keys_post_save">Diesen Beitrag auf diesem Gerät speichern oder nicht mehr</string>
+    <string name="keys_post_link">Link dieses Beitrags kopieren</string>
+    <string name="keys_post_menu">Menü dieses Beitrags öffnen</string>
+    <string name="keys_menu">Menü</string>
+    <string name="keys_find_in_page">Im gerade gelesenen Beitrag oder Artikel suchen</string>
+    <string name="keys_find_match">Nächster oder vorheriger Treffer in der Suchleiste</string>
 </resources>

@@ -170,6 +170,8 @@
     <string name="settings_hide_status_bar_description">画面全体を使います。上部の時刻・電池・電波を隠します。上端から下にスワイプすると一時的に表示されます。</string>
     <string name="settings_text_scale">文字サイズ</string>
     <string name="settings_text_scale_description">アプリ全体で使用する文字サイズを設定</string>
+    <string name="settings_interface_scale">インターフェースの大きさ</string>
+    <string name="settings_interface_scale_description">文字、ボタン、画像をまとめて拡大・縮小します</string>
     <string name="settings_disable_animations">アニメーションを無効化</string>
     <string name="settings_disable_animations_description">アプリ内でアニメーションを無効にする</string>
     <string name="settings_haptics">触覚フィードバック</string>
@@ -316,6 +318,7 @@
     <string name="settings_licenses_description">Quackerで使用する偉大なソフトウェア</string>
     <string name="settings_intro_again">イントロをもう一度表示</string>
     <string name="settings_intro_again_description">初回起動時のカードをもう一度見る。</string>
+    <string name="settings_open_logs">ログフォルダーを開く</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">レポートをコピー</string>
     <string name="settings_diagnostics_copied">診断をクリップボードにコピーしました</string>
@@ -371,4 +374,18 @@
     <string name="settings_start_at_login_description">ログイン時にアプリを開きます。「閉じるとトレイに格納」がオンならトレイで待機します</string>
     <string name="tray_show">ウィンドウを表示</string>
     <string name="tray_hide">ウィンドウを隠す</string>
+    <string name="tray_new_search">新しい検索</string>
+    <string name="settings_proxy">プロキシ</string>
+    <string name="settings_proxy_description">このデバイスでアプリがインターネットにつながる方法。「システム」はプロキシの環境変数、なければデスクトップのプロキシ設定を使います</string>
+    <string name="settings_proxy_none">プロキシなし</string>
+    <string name="settings_proxy_manual">手動</string>
+    <string name="settings_proxy_server">プロキシサーバー</string>
+    <string name="settings_proxy_server_unset">未設定：設定するまで何も読み込まれません</string>
+    <string name="settings_proxy_type_http">HTTP</string>
+    <string name="settings_proxy_type_socks">SOCKS5</string>
+    <string name="settings_proxy_socks_videos">動画はまだSOCKS5プロキシ経由で再生できません</string>
+    <string name="settings_proxy_host">ホスト</string>
+    <string name="settings_proxy_port">ポート</string>
+    <string name="settings_proxy_bypass">プロキシを使わない宛先</string>
+    <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
 </resources>

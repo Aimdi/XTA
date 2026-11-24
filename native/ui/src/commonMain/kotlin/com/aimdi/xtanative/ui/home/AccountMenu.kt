@@ -43,7 +43,9 @@ import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.app_name
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -141,6 +143,7 @@ private fun AccountHeader(account: XAccount?, onClose: (() -> Unit)?, onAvatar: 
     Column(
         Modifier
             .fillMaxWidth()
+            .onSecondaryClick(onAvatar)
             .combinedClickable(
                 onClickLabel = stringResource(Res.string.settings),
                 onLongClickLabel = stringResource(Res.string.settings_avatar_title),
@@ -190,7 +193,7 @@ private fun GroupRow(group: FollowGroup, unread: Boolean, onClick: () -> Unit) {
     ) {
         UnreadDot(unread) { GroupMark(group, 40.dp) }
         Column(Modifier.weight(1f)) {
-            Text(group.name, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            TipText(group.name, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
             Text(
                 pluralStringResource(Res.plurals.home_group_members, group.memberIds.size, group.memberIds.size),
                 style = MaterialTheme.typography.bodySmall,

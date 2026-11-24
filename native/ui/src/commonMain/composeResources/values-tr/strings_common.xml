@@ -40,4 +40,9 @@
     <string name="problem_source_loading">Bu kaynak hâlâ yükleniyor. Diğer gönderiler okunabilir.</string>
     <string name="problem_saved_at">%1$s tarihinde kaydedilen gönderiler gösteriliyor</string>
     <string name="problem_saved_earlier">Daha önce kaydedilen gönderiler gösteriliyor</string>
+    <string name="files_filter_pictures">Resimler</string>
+    <string name="files_filter_media">Resimler ve videolar</string>
+    <string name="find_in_page">Sayfada bul</string>
+    <string name="find_previous_match">Önceki eşleşme</string>
+    <string name="find_next_match">Sonraki eşleşme</string>
 </resources>

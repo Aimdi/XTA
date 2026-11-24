@@ -110,6 +110,7 @@
     <string name="saved_quoted_unavailable">Zitierter Beitrag nicht verfügbar</string>
     <string name="saved_note_thread">Notiz</string>
     <string name="saved_long_press_hint">Tipp: Lange drücken, um in einen Ordner einzusortieren</string>
+    <string name="saved_right_click_hint">Tipp: Rechtsklick, um in einen Ordner einzusortieren</string>
     <string name="saved_like">Auf diesem Gerät liken</string>
     <string name="saved_unlike">Like von diesem Gerät entfernen</string>
     <string name="saved_save_here">Auf diesem Gerät speichern</string>

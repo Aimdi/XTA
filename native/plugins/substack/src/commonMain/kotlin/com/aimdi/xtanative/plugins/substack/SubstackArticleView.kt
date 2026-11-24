@@ -7,6 +7,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -56,6 +57,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -73,10 +75,10 @@ import com.aimdi.xtanative.networks.substack.SubstackTextBlock
 import com.aimdi.xtanative.networks.substack.SubstackWebOnlyBlock
 import com.aimdi.xtanative.store.settings.SubstackColumnWidth
 import com.aimdi.xtanative.store.settings.SubstackReaderFont
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import java.io.File
-import androidx.compose.ui.unit.TextUnit
 
 /** How the reader sets an article: its font and column (the plugin's settings) and the type every reader shares. */
 @Immutable
@@ -116,13 +118,14 @@ internal fun ArticleList(
 ) {
     val body = MaterialTheme.typography.bodyLarge.copy(fontSize = look.fontSize.sp, lineHeight = (look.fontSize * look.lineHeight).sp, fontFamily = look.family)
     val column = Modifier.fillMaxWidth().wrapContentWidth().padding(horizontal = 20.dp).widthIn(max = look.columnWidth).fillMaxWidth()
-    LazyColumn(state = list, modifier = modifier.fillMaxSize()) {
+    // Its own column width (Appearance), so only the keys and the scrollbar of the reading column.
+    PluginReadingColumn(PaddingValues(), list) { _ -> LazyColumn(state = list, modifier = modifier.fillMaxSize()) {
         item(key = "header") { ArticleHeader(post, readMinutes, column.pressed(-1, taps).padding(top = 16.dp, bottom = 24.dp)) }
         itemsIndexed(blocks, key = { index, _ -> "block-$index" }) { index, block ->
             Box(column.pressed(index, taps).padding(bottom = 16.dp)) { BlockView(block, body, highlights, keptImages, post.canonicalUrl, taps) }
         }
         item(key = "footer") { ArticleFooter(post, preview, body, taps, column.padding(bottom = 48.dp)) }
-    }
+    } }
 }
 
 /** Tells [taps] of each press on block [index], seen before the selection takes it. */

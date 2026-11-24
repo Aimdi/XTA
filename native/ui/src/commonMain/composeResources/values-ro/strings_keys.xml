@@ -3,9 +3,11 @@
     <string name="keys_title">Comenzi rapide de la tastatură</string>
     <string name="keys_help">Arată aceste comenzi rapide</string>
     <string name="keys_back">Înapoi sau închide ce este deschis</string>
+    <string name="keys_forward">Înainte la ce ai părăsit mergând înapoi</string>
     <string name="keys_go_home">Înapoi la Acasă</string>
     <string name="keys_refresh">Reîmprospătează</string>
     <string name="keys_search">Caută</string>
+    <string name="keys_new">Notiță, grup, antenă, coloană sau locație de tendințe nouă, pe pagina sa</string>
     <string name="keys_recent_searches">Alege o căutare recentă din câmpul de căutare</string>
     <string name="keys_open_copied_link">Deschide un link copiat</string>
     <string name="keys_tabs">Fila următoare sau anterioară</string>
@@ -18,6 +20,7 @@
     <string name="keys_scroll_ends">Mergi la început sau la sfârșit</string>
     <string name="keys_move">Treci de la un buton sau câmp la altul</string>
     <string name="keys_text_size">Text mai mare, mai mic sau normal</string>
+    <string name="keys_interface_size">Interfață mai mare, mai mică sau normală</string>
     <string name="keys_full_screen">Ecran complet</string>
     <string name="keys_video">Video pe ecran complet: redă sau pune pauză, sari 10 secunde</string>
     <string name="keys_video_more">Video pe tot ecranul: dezactivează sunetul, de la început, ieși</string>
@@ -39,7 +42,16 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Salvat: selectează tot ce se vede</string>
     <string name="keys_remove_selected">Salvat: elimină cele selectate</string>
+    <string name="keys_undo">Anulează ce tocmai a fost eliminat sau șters, cât timp se vede notificarea</string>
     <string name="keys_leave_selection">Salvat: oprește selectarea</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Mută un rând în sus sau în jos într-o listă care se poate reordona (cel cu focus sau cel de sub cursor)</string>
+    <string name="keys_post_open">Deschide postarea pe care sunt J și K</string>
+    <string name="keys_post_like">Apreciază acea postare pe acest dispozitiv sau retrage aprecierea</string>
+    <string name="keys_post_save">Salvează acea postare pe acest dispozitiv sau scoate-o din salvate</string>
+    <string name="keys_post_link">Copiază linkul acelei postări</string>
+    <string name="keys_post_menu">Deschide meniul acelei postări</string>
+    <string name="keys_menu">Meniu</string>
+    <string name="keys_find_in_page">Caută în postarea sau articolul pe care îl citești</string>
+    <string name="keys_find_match">Potrivirea următoare sau anterioară din bara de căutare</string>
 </resources>

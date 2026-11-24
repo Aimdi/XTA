@@ -66,6 +66,7 @@ import com.aimdi.xtanative.networks.reddit.normaliseSubreddit
 import com.aimdi.xtanative.store.settings.RedditPrefs
 import com.aimdi.xtanative.store.settings.RedditSort as StoredSort
 import com.aimdi.xtanative.store.settings.RedditTimeFilter as StoredWindow
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
@@ -312,7 +313,7 @@ private fun CommunityTile(app: RedditApp, name: String, onOpen: () -> Unit) {
         supportingContent = { about?.subscribers?.let { FollowersLine(it) } ?: Spacer(Modifier.height(16.dp)) },
         leadingContent = { SubredditAvatar(app, name, 44.dp, known = RedditAboutIcon.of(about != null, about?.iconUrl)) },
         trailingContent = {
-            IconButton(onClick = { app.follow(name, follow = false) }) { Icon(Icons.Outlined.Delete, contentDescription = pluginString(Strings.delete)) }
+            IconTip(pluginString(Strings.delete)) { IconButton(onClick = { app.follow(name, follow = false) }) { Icon(Icons.Outlined.Delete, contentDescription = pluginString(Strings.delete)) } }
         },
         modifier = Modifier.clickable(onClick = onOpen),
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),

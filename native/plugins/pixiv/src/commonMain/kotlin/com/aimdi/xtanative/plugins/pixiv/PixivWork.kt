@@ -61,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.store.settings.PixivPrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
@@ -206,13 +207,13 @@ private fun WorkActions(illust: PixivIllust, page: Int, sheets: PixivSheets) {
     val haptics = rememberHaptics()
     val marks by runtime.bookmarking.works.state.collectAsState()
     val bookmarked = marks.on(illust.id, illust.isBookmarked)
-    IconButton(onClick = { sheets.toggleBookmark(illust, haptics) }, enabled = !marks.isBusy(illust.id)) {
+    IconTip(pluginString(if (bookmarked) Strings.unbookmark else Strings.bookmark)) { IconButton(onClick = { sheets.toggleBookmark(illust, haptics) }, enabled = !marks.isBusy(illust.id)) {
         Icon(
             if (bookmarked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
             pluginString(if (bookmarked) Strings.unbookmark else Strings.bookmark),
             tint = if (bookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
         )
-    }
+    } }
     SavePageButton(illust, page) { sheets.savePages(illust, listOf(page)) }
     WorkMenu(illust, sheets)
 }
@@ -221,13 +222,13 @@ private fun WorkActions(illust: PixivIllust, page: Int, sheets: PixivSheets) {
 @Composable
 internal fun SavePageButton(illust: PixivIllust, page: Int, onClick: () -> Unit) {
     val saved = PixivSavedPages.key(illust.id, page) in PixivSavedPages.of(pixivSettings())
-    IconButton(onClick = onClick) {
+    IconTip(pluginString(if (saved) Strings.download_page_saved else Strings.download_page)) { IconButton(onClick = onClick) {
         Icon(
             if (saved) Icons.Filled.Done else SavedIcons.Download,
             pluginString(if (saved) Strings.download_page_saved else Strings.download_page),
             tint = if (saved) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
         )
-    }
+    } }
 }
 
 /** The work's ⋯ menu (pixiv_detail_menu.dart); More actions opens the shared post sheet, as XTA's does. */
@@ -239,7 +240,7 @@ private fun WorkMenu(illust: PixivIllust, sheets: PixivSheets) {
     val outside = rememberOutside()
     val settings = pixivSettings()
     val language = currentLanguage()
-    IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_actions)) }
+    IconTip(pluginString(Strings.more_actions)) { IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_actions)) } }
     DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
         PixivWorkMenu.of(illust).forEach { entry ->
             val (label, icon) = when (entry) {

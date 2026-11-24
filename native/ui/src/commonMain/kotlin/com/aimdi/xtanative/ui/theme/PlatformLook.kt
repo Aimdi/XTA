@@ -22,3 +22,11 @@ internal expect fun systemPrefersDark(): Boolean
  */
 @Composable
 internal expect fun systemReducesMotion(): Boolean
+
+/**
+ * The system's accent colour as opaque ARGB, for the "System" accent: the
+ * desktop's, as its settings portal says and followed as it changes; null
+ * where nothing says, and on Android, which has no dynamic colour here.
+ */
+@Composable
+internal expect fun systemAccent(): Long?

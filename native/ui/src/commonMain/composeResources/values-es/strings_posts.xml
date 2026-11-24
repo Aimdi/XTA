@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">No se encontró a nadie que retuiteara este tweet!</string>
     <string name="posts_no_saves">Aún no hay guardados: los marcadores se quedan en este dispositivo</string>
     <string name="posts_open_in_browser">Abrir en el navegador</string>
+    <string name="posts_open_in_new_window">Abrir en una ventana nueva</string>
     <string name="posts_open_on_web_archive">Abrir en web.archive.org</string>
     <string name="posts_open_post">Abrir publicación</string>
     <string name="posts_page_not_found">X dice que la página no existe, pero puede que no sea cierto</string>

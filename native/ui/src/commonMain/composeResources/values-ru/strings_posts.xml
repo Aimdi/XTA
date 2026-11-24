@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Не найдено никого, кто ретвитнул этот твит!</string>
     <string name="posts_no_saves">Пока нет сохранённых — закладки остаются на этом устройстве</string>
     <string name="posts_open_in_browser">Открыть в браузере</string>
+    <string name="posts_open_in_new_window">Открыть в новом окне</string>
     <string name="posts_open_on_web_archive">Открыть на web.archive.org</string>
     <string name="posts_open_post">Открыть пост</string>
     <string name="posts_page_not_found">Twiiter говорит, что эта страница не существует, но это может оказаться неправдой</string>

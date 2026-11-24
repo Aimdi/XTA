@@ -3,9 +3,11 @@
     <string name="keys_title">Spałučenni kłaviš</string>
     <string name="keys_help">Pakazać hetyja spałučenni</string>
     <string name="keys_back">Nazad abo zakryć adkrytaje</string>
+    <string name="keys_forward">Napierad da taho, adkul viarnulisia</string>
     <string name="keys_go_home">Nazad na hałoŭnuju</string>
     <string name="keys_refresh">Abnavić</string>
     <string name="keys_search">Pošuk</string>
+    <string name="keys_new">Novaja natatka, hrupa, antena, słupok abo miesca trendaŭ, na jaho staroncy</string>
     <string name="keys_recent_searches">Vybrać niadaŭni pošuk z pola pošuku</string>
     <string name="keys_open_copied_link">Adkryć skapijavanuju spasyłku</string>
     <string name="keys_tabs">Nastupnaja abo papiaredniaja ŭkładka</string>
@@ -18,6 +20,7 @@
     <string name="keys_scroll_ends">Na pačatak abo ŭ kaniec</string>
     <string name="keys_move">Pierachodzić pamiž knopkami i palami</string>
     <string name="keys_text_size">Bolšy, mienšy abo zvyčajny tekst</string>
+    <string name="keys_interface_size">Bolšy, mienšy ci zvyčajny interfiejs</string>
     <string name="keys_full_screen">Poŭnaekranny režym</string>
     <string name="keys_video">Videa na ŭvieś ekran: prajhrać abo prypynić, pieramiascicca na 10 siekund</string>
     <string name="keys_video_more">Videa na ŭvieś ekran: adkliučyć huk, pačać spačatku, vyjsci</string>
@@ -39,7 +42,16 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Zachavanaje: vyłučyć usio pakazanaje</string>
     <string name="keys_remove_selected">Zachavanaje: vydalić vyłučanaje</string>
+    <string name="keys_undo">Adrabić tolki što vydalenaje, pakul bačna jaho paviedamlennie</string>
     <string name="keys_leave_selection">Zachavanaje: skončyć vyłučennie</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Pieramiascić radok vyšej abo nižej u spisie, jaki možna pieraŭparadkavać (toj, što ŭ fokusie abo pad kursoram)</string>
+    <string name="keys_post_open">Adkryć dopis, na jakim stajać J i K</string>
+    <string name="keys_post_like">Upadabać hety dopis na hetaj pryladzie abo admianić</string>
+    <string name="keys_post_save">Zachavać hety dopis na hetaj pryladzie abo prybrać z zachavanych</string>
+    <string name="keys_post_link">Skapijavać spasyłku na hety dopis</string>
+    <string name="keys_post_menu">Adkryć mieniu hetaha dopisu</string>
+    <string name="keys_menu">Mieniu</string>
+    <string name="keys_find_in_page">Pošuk u dopisie abo artykule, jaki vy čytajecie</string>
+    <string name="keys_find_match">Nastupny abo papiaredni vynik u radku pošuku</string>
 </resources>

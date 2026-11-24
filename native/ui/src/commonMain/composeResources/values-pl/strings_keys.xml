@@ -3,9 +3,11 @@
     <string name="keys_title">Skróty klawiszowe</string>
     <string name="keys_help">Pokaż te skróty</string>
     <string name="keys_back">Wstecz lub zamknij to, co otwarte</string>
+    <string name="keys_forward">Dalej, do tego, z czego wróciłeś</string>
     <string name="keys_go_home">Wróć do strony głównej</string>
     <string name="keys_refresh">Odśwież</string>
     <string name="keys_search">Szukaj</string>
+    <string name="keys_new">Nowa notatka, grupa, antena, kolumna lub lokalizacja trendów, na swojej stronie</string>
     <string name="keys_recent_searches">Wybierz ostatnie wyszukiwanie z pola wyszukiwania</string>
     <string name="keys_open_copied_link">Otwórz skopiowany link</string>
     <string name="keys_tabs">Następna lub poprzednia karta</string>
@@ -18,6 +20,7 @@
     <string name="keys_scroll_ends">Na początek lub na koniec</string>
     <string name="keys_move">Przechodź między przyciskami i polami</string>
     <string name="keys_text_size">Większy, mniejszy lub zwykły tekst</string>
+    <string name="keys_interface_size">Większy, mniejszy lub zwykły interfejs</string>
     <string name="keys_full_screen">Pełny ekran</string>
     <string name="keys_video">Wideo na pełnym ekranie: odtwórz lub wstrzymaj, przeskocz 10 sekund</string>
     <string name="keys_video_more">Wideo na pełnym ekranie: wycisz, od początku, wyjdź</string>
@@ -39,7 +42,16 @@
     <string name="keys_end">End</string>
     <string name="keys_select_all">Zapisane: zaznacz wszystko, co widać</string>
     <string name="keys_remove_selected">Zapisane: usuń zaznaczone</string>
+    <string name="keys_undo">Cofnij to, co właśnie usunięto, dopóki widać powiadomienie</string>
     <string name="keys_leave_selection">Zapisane: zakończ zaznaczanie</string>
     <string name="keys_delete">Delete</string>
     <string name="keys_move_row">Przesuń wiersz w górę lub w dół na liście, którą można przestawiać (ten z fokusem lub pod wskaźnikiem)</string>
+    <string name="keys_post_open">Otwórz wpis wybrany klawiszami J i K</string>
+    <string name="keys_post_like">Polub ten wpis na tym urządzeniu lub cofnij polubienie</string>
+    <string name="keys_post_save">Zapisz ten wpis na tym urządzeniu lub usuń z zapisanych</string>
+    <string name="keys_post_link">Kopiuj link do tego wpisu</string>
+    <string name="keys_post_menu">Otwórz menu tego wpisu</string>
+    <string name="keys_menu">Menu</string>
+    <string name="keys_find_in_page">Szukaj w czytanym wpisie lub artykule</string>
+    <string name="keys_find_match">Następne lub poprzednie wystąpienie na pasku wyszukiwania</string>
 </resources>

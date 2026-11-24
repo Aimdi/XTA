@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.store.backup
 
+import com.aimdi.xtanative.core.net.AppProxy
 import com.aimdi.xtanative.store.StoreDir
 import java.io.IOException
 import java.security.MessageDigest
@@ -214,7 +215,7 @@ class StoredWebDavBaselines(dir: StoreDir) : WebDavBaselines {
 }
 
 /** The requests over OkHttp, each given up after 30 seconds. */
-class OkHttpWebDav(client: OkHttpClient = OkHttpClient()) : WebDavHttp {
+class OkHttpWebDav(client: OkHttpClient = AppProxy.client) : WebDavHttp {
     private val client = client.newBuilder().callTimeout(30, TimeUnit.SECONDS).build()
 
     override suspend fun send(method: String, url: HttpUrl, headers: Map<String, String>, body: String?): WebDavResponse =

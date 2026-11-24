@@ -195,4 +195,13 @@ class SwipeBackMathTest {
         assertTrue(spring.offsetAt(0.02f).x > 40f)
         assertEquals(CardVec(600f, 0f), spring.velocityAt(0f))
     }
+
+    @Test
+    fun aCardWithNoWidthYetLiesFlat() {
+        // A new window's first layout is 0 wide: its post card is drawn before it has a size, and NaN corners crashed it.
+        val pose = SwipeBack.slidePose(0f, CardSize(0f, 0f), closing = false, mirrored = false)
+        assertEquals(0f, pose.lift)
+        assertEquals(0f, pose.uncovered)
+        assertEquals(0f, SwipeBack.cardRadius(pose.lift))
+    }
 }

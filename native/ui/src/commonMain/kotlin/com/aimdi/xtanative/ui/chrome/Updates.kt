@@ -36,6 +36,9 @@ data class NativeRelease(
 ) {
     /** The address of the file that updates an install of [file], or null when this release has none. */
     fun fileFor(file: UpdateFile): String? = files.entries.firstOrNull { file.names(it.key) }?.value
+
+    /** The name of the file that updates an install of [file] (`xta-native-1.0.15-1-x86_64.pkg.tar.zst`), or null when this release has none. */
+    fun fileNameFor(file: UpdateFile): String? = files.keys.firstOrNull { file.names(it) }
 }
 
 /**
@@ -102,8 +105,41 @@ object NativeUpdates {
         return compare(latest.version.dropLast(1), installed.dropLast(1)) > 0
     }
 
-    /** What updates a desktop install whose Java runtime is at [javaHome]: the package's own place, else the tarball. */
-    fun desktopFile(javaHome: String): UpdateFile = if (javaHome.startsWith(PACKAGE_HOME)) UpdateFile.PACKAGE else UpdateFile.TARBALL
+    /** Where pacman keeps one folder per installed package, `<name>-<version>-<release>`. */
+    const val PACMAN_LOCAL = "/var/lib/pacman/local"
+
+    /** pacman's folder for the installed xta-native package (`xta-native-1.0.14-1`), not another whose name only starts so. */
+    private val PACKAGE_ENTRY = Regex("""^xta-native-\d[^-]*-[^-]+$""")
+
+    /** A file name a command can carry unquoted. */
+    private val SAFE_NAME = Regex("""^[A-Za-z0-9][A-Za-z0-9._+-]*$""")
+
+    /**
+     * What updates a desktop install whose Java runtime is at [javaHome]:
+     * the Arch package where the app runs from the package's own place and
+     * pacman has it installed ([pacmanLocal], the names in [PACMAN_LOCAL]),
+     * else the tarball. Reading a folder's names is cheap; `pacman -Qo` is not.
+     */
+    fun desktopFile(javaHome: String, pacmanLocal: List<String>): UpdateFile =
+        if (javaHome.startsWith(PACKAGE_HOME) && pacmanLocal.any { PACKAGE_ENTRY.matches(it) }) UpdateFile.PACKAGE else UpdateFile.TARBALL
+
+    /**
+     * The command that installs [fileName], run in the folder it was saved
+     * to: pacman for the package; for the tarball, unpacking it and its own
+     * install.sh, which puts it in the menu. Null for the APK, which Android
+     * installs itself, and for a name no shell should be handed.
+     */
+    fun installCommand(file: UpdateFile, fileName: String): String? {
+        if (!SAFE_NAME.matches(fileName) || !file.names(fileName)) return null
+        return when (file) {
+            UpdateFile.APK -> null
+            UpdateFile.PACKAGE -> "sudo pacman -U ./$fileName"
+            UpdateFile.TARBALL -> "tar -xzf $fileName && ./${fileName.removeSuffix(".tar.gz")}/install.sh"
+        }
+    }
+
+    /** Whether [release] is still offered, the reader having skipped [skippedTag] ("Skip this version"): a newer one is. */
+    fun offered(release: NativeRelease, skippedTag: String): Boolean = release.tag != skippedTag.trim()
 
     /**
      * Reads the releases and says which one to offer this install of [file]

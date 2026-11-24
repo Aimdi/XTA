@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Nu s-a găsit nimeni care a retweetat acest tweet!</string>
     <string name="posts_no_saves">Nimic salvat încă — semnele de carte rămân pe acest dispozitiv</string>
     <string name="posts_open_in_browser">Deschide în browser</string>
+    <string name="posts_open_in_new_window">Deschide într-o fereastră nouă</string>
     <string name="posts_open_on_web_archive">Deschide pe web.archive.org</string>
     <string name="posts_open_post">Deschide postarea</string>
     <string name="posts_page_not_found">X spune că pagina nu există, dar poate că nu este adevărat</string>

@@ -59,6 +59,9 @@ class TrayService(
     /** Whether the window is on screen, which the menu's Show/Hide follows. */
     fun windowShown(shown: Boolean) = change { it.copy(windowShown = shown) }
 
+    /** What the menu's media item offers now; none takes it away. */
+    fun media(media: TrayMedia?) = change { it.copy(media = media) }
+
     private fun change(how: (TrayNow) -> TrayNow) {
         val (before, after) = synchronized(lock) {
             val before = now

@@ -53,6 +53,7 @@ import com.aimdi.xtanative.store.saved.NoteMedia
 import com.aimdi.xtanative.store.saved.SavedContent
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.downloads.LocalPlatformFiles
@@ -160,7 +161,7 @@ fun NoteTile(
 @Composable
 private fun CompactQuote(text: String, onOpen: (() -> Unit)?) {
     val shape = RoundedCornerShape(16.dp)
-    Text(
+    TipText(
         text.ifEmpty { stringResource(Res.string.saved_show_more) },
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
@@ -231,7 +232,7 @@ fun NoteMediaBlock(postId: String, media: List<NoteMedia>, modifier: Modifier = 
             ) {
                 Icon(if (file.isVideo) SavedIcons.Videocam else SavedIcons.AttachMedia, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(12.dp))
-                Text(file.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                TipText(file.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
     }
