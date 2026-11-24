@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -175,21 +176,33 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
                     EmptyDeck { adding = true }
                 } else {
                     val each = DeckColumns.width(maxWidth.value, columns.size, width.dp.toFloat()).dp
-                    Row(Modifier.fillMaxHeight().horizontalScroll(rememberScrollState())) {
+                    val scroll = rememberScrollState()
+                    // A column's header dragged with the mouse moves it, the deck scrolling at its edges and Esc putting it back.
+                    val slots = rememberSlotDrag(scroll, vertical = false)
+                    val shownIds: List<Any> = columns.map { it.id }
+                    val background = MaterialTheme.colorScheme.background
+                    Row(Modifier.fillMaxHeight().slotViewport(slots).horizontalScroll(scroll)) {
                         columns.forEachIndexed { index, column ->
-                            if (index > 0) VerticalDivider()
                             key(column.id) {
                                 val place = ColumnPlace(first = index == 0, last = index == columns.lastIndex)
+                                val handle = Modifier.slotDragHandle(slots, column.id, shownIds, mouseOnly = true) { _, to ->
+                                    val beside = shownIds[to]
+                                    edit { ids -> ids.indexOf(column.id).let { from -> DeckColumns.moved(ids, from, ids.indexOf(beside) - from) } }
+                                }
                                 val calls = ColumnCalls(
                                     onTitle = { toTop[column.id] = (toTop[column.id] ?: 0) + 1 },
                                     onMove = { by -> edit { DeckColumns.moved(it, index, by) } },
                                     onRemove = { edit { ids -> ids - column.id } },
+                                    handle = handle,
                                 )
-                                ReadColumn(column.id) {
-                                    DeckColumnView(
-                                        column, labelOf(column, groups, available), place, calls, toTop[column.id] ?: 0, refreshedAll,
-                                        columnActions, Modifier.width(each).fillMaxHeight().chosenMark(chosen == column.id),
-                                    )
+                                Row(Modifier.fillMaxHeight().dragSlot(slots, column.id, MaterialTheme.colorScheme.primary).background(background)) {
+                                    if (index > 0) VerticalDivider()
+                                    ReadColumn(column.id) {
+                                        DeckColumnView(
+                                            column, labelOf(column, groups, available), place, calls, toTop[column.id] ?: 0, refreshedAll,
+                                            columnActions, Modifier.width(each).fillMaxHeight().chosenMark(chosen == column.id),
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -236,10 +249,11 @@ private val CHOSEN_MARK = 3.dp
 internal class ColumnPlace(val first: Boolean, val last: Boolean)
 
 /**
- * What a column's header does: its title back to the top, its menu moving it by a place or taking it off.
+ * What a column's header does: its title back to the top, its menu moving it by a place or taking it off,
+ * and the mouse dragging it by the header to another place ([handle]).
  * Home's own columns ([HomeWide]) follow its timelines and have no such [menu].
  */
-internal class ColumnCalls(val onTitle: () -> Unit, val onMove: (by: Int) -> Unit = {}, val onRemove: () -> Unit = {}, val menu: Boolean = true)
+internal class ColumnCalls(val onTitle: () -> Unit, val onMove: (by: Int) -> Unit = {}, val onRemove: () -> Unit = {}, val menu: Boolean = true, val handle: Modifier = Modifier)
 
 /** A column of the deck: its header over its timeline, read again on its own and with every column ([refreshedAll]). */
 @Composable
@@ -298,7 +312,7 @@ private fun NetworkColumn(id: String, label: String, place: ColumnPlace, calls: 
 /** A column's first row: its name (back to the top), [extra] (a network's own search and menu), Refresh, and its menu. */
 @Composable
 private fun ColumnHeader(label: String, place: ColumnPlace, calls: ColumnCalls, onRefresh: () -> Unit, extra: @Composable RowScope.() -> Unit = {}) {
-    Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(start = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().then(calls.handle).heightIn(min = 48.dp).padding(start = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         TipText(
             label,
             style = MaterialTheme.typography.titleMedium,
