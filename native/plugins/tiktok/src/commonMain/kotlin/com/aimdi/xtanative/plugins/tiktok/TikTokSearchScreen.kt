@@ -58,6 +58,7 @@ import com.aimdi.xtanative.networks.tiktok.TikTokParser
 import com.aimdi.xtanative.networks.tiktok.TikTokSearchUser
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.TikTokPrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.NoticeHost
@@ -94,7 +95,7 @@ internal fun TikTokSearchScreen(app: TikTokApp, initial: String) = WithSettings(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                navigationIcon = { IconButton(onClick = app.host::back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) } },
+                navigationIcon = { IconTip(pluginString(Strings.back)) { IconButton(onClick = app.host::back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) } } },
                 title = {
                     TextField(
                         value = text,
@@ -105,7 +106,7 @@ internal fun TikTokSearchScreen(app: TikTokApp, initial: String) = WithSettings(
                         singleLine = true,
                         placeholder = { Text(pluginString(Strings.search_hint)) },
                         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-                        trailingIcon = { IconButton(onClick = { run(text.text) }) { Icon(Icons.AutoMirrored.Filled.ArrowForward, pluginString(Strings.search)) } },
+                        trailingIcon = { IconTip(pluginString(Strings.search)) { IconButton(onClick = { run(text.text) }) { Icon(Icons.AutoMirrored.Filled.ArrowForward, pluginString(Strings.search)) } } },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                         keyboardActions = KeyboardActions(onSearch = { run(text.text) }),
                         modifier = Modifier.fillMaxWidth().padding(end = 8.dp).focusRequester(focus),

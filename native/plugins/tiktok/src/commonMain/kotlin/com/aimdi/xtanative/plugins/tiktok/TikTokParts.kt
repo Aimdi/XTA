@@ -48,6 +48,7 @@ import coil3.compose.AsyncImage
 import com.aimdi.xtanative.networks.tiktok.TikTokPost
 import com.aimdi.xtanative.ui.common.Graphemes
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
@@ -132,9 +133,9 @@ private fun CardActions(app: TikTokApp, post: TikTokPost, liked: Boolean) {
             Text(countText(post.diggCount), color = tint, modifier = Modifier.padding(start = 6.dp))
         }
         Spacer(Modifier.weight(1f))
-        IconButton(onClick = { if (!share(post.url)) app.host.tell(copied) }) {
+        IconTip(pluginString(Strings.share_link)) { IconButton(onClick = { if (!share(post.url)) app.host.tell(copied) }) {
             Icon(Icons.Filled.Share, pluginString(Strings.share_link), tint = muted)
-        }
+        } }
     }
 }
 

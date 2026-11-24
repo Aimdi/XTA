@@ -36,6 +36,7 @@ import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.tiktok.TikTokPost
 import com.aimdi.xtanative.networks.tiktok.TikTokProfile
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.Fetch
@@ -106,7 +107,7 @@ internal fun TikTokProfileScreen(app: TikTokApp, route: TikTokRoute.Profile) = W
         title = profile?.displayName ?: "@${route.handle}",
         onBack = app.host::back,
         actions = {
-            if (profile != null) IconButton(onClick = { openOutside(profile.url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_on_site)) }
+            if (profile != null) IconTip(pluginString(Strings.open_on_site)) { IconButton(onClick = { openOutside(profile.url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_on_site)) } }
         },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
