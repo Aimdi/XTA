@@ -100,6 +100,7 @@ import com.aimdi.xtanative.ui.generated.resources.discover_trends_empty
 import com.aimdi.xtanative.ui.generated.resources.discover_trends_unable
 import com.aimdi.xtanative.ui.generated.resources.saved_search_library
 import com.aimdi.xtanative.ui.generated.resources.saved_source_x
+import com.aimdi.xtanative.ui.home.CreatesWithKeys
 import com.aimdi.xtanative.ui.home.HomeRequests
 import com.aimdi.xtanative.ui.home.RetapsToTop
 import com.aimdi.xtanative.ui.home.foundWithKeys
@@ -165,6 +166,8 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
         if (plugins.any { it.id == id }) vm.select(id)
     }
     var picking by rememberSaveable { mutableStateOf(false) }
+    // Ctrl+N adds a place, as the + below does; a plugin's search has none.
+    CreatesWithKeys { (plugin == null && !picking).also { if (it) picking = true } }
     // An empty bar takes focus instead of searching for nothing; a plugin's results show under the bar.
     val searched = { query: String? ->
         if (query == null) {

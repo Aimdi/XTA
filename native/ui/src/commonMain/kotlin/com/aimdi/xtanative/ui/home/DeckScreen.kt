@@ -142,6 +142,8 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     val toTop = remember { mutableStateMapOf<String, Int>() }
     var refreshedAll by remember { mutableIntStateOf(0) }
     var adding by remember { mutableStateOf(false) }
+    // Ctrl+N adds a column, as the bar's + does.
+    CreatesWithKeys { (!adding).also { if (it) adding = true } }
     // The detail beside the columns closes first at Esc, but covers nothing: the reading keys move it, and Ctrl+→ reaches it.
     DesktopShortcuts(refresh = { refreshedAll++ }, turn = {}, isOpen = { detail.open }, close = { detail.back() }, readsOpen = { detail.open })
     ReadColumns(columns.map { it.id } + listOfNotNull(DetailColumn.takeIf { detail.open }))
