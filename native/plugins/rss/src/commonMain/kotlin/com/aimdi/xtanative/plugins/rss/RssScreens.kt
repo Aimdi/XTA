@@ -13,13 +13,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -104,7 +105,8 @@ internal fun RssFeedScreen(app: RssApp, feed: RssFeed) {
                     if (shown.isEmpty()) {
                         PullableEmpty(RssIcons.Feed, pluginString(Strings.empty), PluginFrame(PaddingValues()))
                     } else {
-                        PluginReadingColumn(PaddingValues()) { column -> LazyColumn(Modifier.fillMaxSize(), contentPadding = column) {
+                        val scroll = rememberLazyListState()
+                        PluginReadingColumn(PaddingValues(), scroll) { column -> LazyColumn(Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
                             items(shown, key = { it.id }) { item -> RssItemCard(item, unread = item.id !in read, onOpen = { app.openItem(item) }, showSource = false) }
                         } }
                     }

@@ -217,7 +217,8 @@ internal fun PullableEmpty(icon: ImageVector, message: String, frame: PluginFram
 /** [content] in a list of its own, so that a pull over it reads again. */
 @Composable
 internal fun Pullable(frame: PluginFrame, content: @Composable () -> Unit) {
-    PluginReadingColumn(frame.padding) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = column) {
+    val scroll = rememberLazyListState()
+    PluginReadingColumn(frame.padding, scroll) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
         item { content() }
     } }
 }
