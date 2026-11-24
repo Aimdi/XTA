@@ -167,7 +167,7 @@ private fun LiveVideo(url: String, live: XLive, poster: @Composable () -> Unit) 
                 screen.open(FullscreenVideo(player, live.aspectRatio, onDownload = null, onClosed = kept::leftFullscreen))
             }
         }
-        VideoControls(player, VideoChrome(onFullscreen = open), Modifier.fillMaxSize())
+        VideoControls(player, VideoChrome(onFullscreen = open, live = true), Modifier.fillMaxSize())
         PosterUntilStarted(state, Modifier.fillMaxSize(), poster = poster)
         MuteCorner(state.muted, onToggle = { toggleMute(player, state.muted) }, Modifier.align(Alignment.BottomEnd))
     }

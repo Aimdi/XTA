@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +34,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.shortcutKey
 import com.aimdi.xtanative.ui.home.HoldsKeys
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 /** A video full screen: its player, its shape, its Download, and what is done once it closes. */
 internal class FullscreenVideo(val player: VideoPlayer, val aspectRatio: Float, val onDownload: (() -> Unit)?, val onClosed: () -> Unit)
@@ -86,6 +90,14 @@ private fun FullscreenLayer(video: FullscreenVideo, onClose: () -> Unit) {
     // Its own Esc closes it; it holds the keys.
     BackHandling(enabled = true, byKeys = false, onBack = onClose)
     PausesWhenLeft(player)
+    // A video playing full screen goes on in its floating window when the app is left; a paused one does not.
+    val playing by remember(player) { player.state.map { it.playing }.distinctUntilChanged() }.collectAsState(player.state.value.playing)
+    if (pip != null) {
+        DisposableEffect(pip, playing, video.aspectRatio) {
+            pip.leavesInto(video.aspectRatio.takeIf { playing })
+            onDispose { pip.leavesInto(null) }
+        }
+    }
     var fill by remember { mutableStateOf(false) }
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
@@ -123,6 +135,13 @@ internal interface PictureInPicture {
 
     /** Shrinks the app into a floating window shaped like a video of [aspectRatio]; false when the phone refuses. */
     fun enter(aspectRatio: Float): Boolean
+
+    /**
+     * Whether leaving the app (Home, a swipe up) shrinks it into the floating
+     * window by itself, shaped like a video of [aspectRatio]; null turns
+     * that off. Nothing where the platform cannot (before Android 12).
+     */
+    fun leavesInto(aspectRatio: Float?) {}
 }
 
 /**

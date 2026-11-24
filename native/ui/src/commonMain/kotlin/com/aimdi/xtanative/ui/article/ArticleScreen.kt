@@ -57,6 +57,8 @@ import com.aimdi.xtanative.ui.post.PostFooter
 import com.aimdi.xtanative.ui.post.PostScopeProvider
 import com.aimdi.xtanative.ui.post.PostView
 import com.aimdi.xtanative.ui.post.rememberPostPrefs
+import com.aimdi.xtanative.ui.speech.ReadAloudButton
+import com.aimdi.xtanative.ui.speech.SpeechTexts
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -119,6 +121,7 @@ fun ArticleScreen(postId: String, actions: PostActions, onBack: () -> Unit) {
             TopAppBar(
                 title = { TipText(article?.title ?: stringResource(Res.string.posts_article_on_x), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
+                actions = { article?.let { ListenToArticle(it) } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
@@ -136,6 +139,13 @@ fun ArticleScreen(postId: String, actions: PostActions, onBack: () -> Unit) {
         }
     }
     }
+}
+
+/** Listen in the article's bar: reads [article] aloud under its title, the bar's own; pressed again while it is read, it stops. */
+@Composable
+private fun ListenToArticle(article: Article) {
+    val title = article.title.ifEmpty { stringResource(Res.string.posts_article_on_x) }
+    ReadAloudButton(title, { SpeechTexts.article(article) })
 }
 
 /** Who wrote it and when, with the post's counts, under the title as XTA puts the post's footer there. */

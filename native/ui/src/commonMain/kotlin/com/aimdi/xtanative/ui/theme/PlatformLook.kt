@@ -25,8 +25,9 @@ internal expect fun systemReducesMotion(): Boolean
 
 /**
  * The system's accent colour as opaque ARGB, for the "System" accent: the
- * desktop's, as its settings portal says and followed as it changes; null
- * where nothing says, and on Android, which has no dynamic colour here.
+ * desktop's, as its settings portal says and followed as it changes, and
+ * on Android 12 and later the wallpaper's (Material You); null where
+ * nothing says.
  */
 @Composable
 internal expect fun systemAccent(): Long?

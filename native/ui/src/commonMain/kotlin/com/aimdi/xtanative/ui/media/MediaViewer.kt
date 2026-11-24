@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.ui.media
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -39,19 +41,26 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -59,10 +68,12 @@ import com.aimdi.xtanative.core.x.model.PhotoSize
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.photoUrl
 import com.aimdi.xtanative.data.LocalPostCache
+import com.aimdi.xtanative.ui.common.AltBadge
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.rememberCopyText
+import com.aimdi.xtanative.ui.common.rememberScreenReaderOn
 import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.downloads.LocalPlatformFiles
 import com.aimdi.xtanative.ui.downloads.MediaSharing
@@ -187,6 +198,11 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     val zoomedPages = remember { mutableStateMapOf<Int, Boolean>() }
     // A video page's keys: Space, k, j, l, m, f, < > and 0 to 9, for the page shown.
     val videoKeys = remember { MutableSharedFlow<VideoKey>(extraBufferCapacity = 8) }
+    // A tap on a photo hides the bar and its ALT, and the next brings them back.
+    var chromeHidden by remember { mutableStateOf(false) }
+    val shownItem = items.getOrNull(pager.currentPage)
+    val chromeShown = ViewerChrome.shown(chromeHidden, shownItem?.kind == XMedia.Kind.PHOTO, rememberScreenReaderOn())
+    val chromeAlpha by animateFloatAsState(if (chromeShown) 1f else 0f, tween(if (reduced) 0 else MOTION_STANDARD_MS))
     Box(
         Modifier
             .fillMaxSize()
@@ -218,7 +234,8 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     ) {
         Column(Modifier.fillMaxSize()) {
             val current = viewed.pages.getOrNull(pager.currentPage)
-            ViewerBar(pager, items.size, backdrop, onClose) {
+            // Hidden, the bar keeps its room, so the photo under it does not jump, and is out of reach.
+            ViewerBar(pager, items.size, backdrop, onClose, Modifier.alpha(chromeAlpha).then(if (chromeShown) Modifier else Modifier.outOfReach())) {
                 if (onOpenPost != null && current != null) {
                     IconTip(stringResource(Res.string.posts_open_post)) { IconButton(onClick = { onOpenPost(current) }) { Icon(PostIcons.OpenInNew, stringResource(Res.string.posts_open_post), tint = Color.White) } }
                 }
@@ -253,6 +270,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
                                 onClose = onClose,
                                 zoomKeys = zoomKeys.takeIf { pager.currentPage == page },
                                 onZoomed = { zoomedPages[page] = it },
+                                onTap = { chromeHidden = !chromeHidden },
                             )
                             XMedia.Kind.VIDEO, XMedia.Kind.GIF -> {
                                 val download: ((String) -> Unit)? = if (saver == null) null else { url -> viewed.save(viewed.pages[page], url)?.let(saver::save) }
@@ -264,6 +282,10 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
                         }
                     }
                     if (viewerPageButtons && items.size > 1) PageButtons(pager, items.size, ::turn)
+                    // The picture's description, at the foot's corner: clear of the bar, and of all but a corner of a pan.
+                    ViewerChrome.alt(shownItem?.alt, shownItem?.kind == XMedia.Kind.PHOTO, chromeShown)?.let { alt ->
+                        key(pager.currentPage) { AltBadge(alt, Modifier.align(Alignment.BottomStart).navigationBarsPadding().padding(8.dp).alpha(chromeAlpha)) }
+                    }
                 }
             }
         }
@@ -274,10 +296,10 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
 
 /** The black bar over the pages: back, "2 / 4" rolling with the page, and [actions] for the page shown. */
 @Composable
-private fun ViewerBar(pager: PagerState, count: Int, backdrop: Float, onClose: () -> Unit, actions: @Composable () -> Unit) {
+private fun ViewerBar(pager: PagerState, count: Int, backdrop: Float, onClose: () -> Unit, modifier: Modifier = Modifier, actions: @Composable () -> Unit) {
     val media = stringResource(Res.string.reader_media)
     Row(
-        Modifier.fillMaxWidth().background(Color.Black.copy(alpha = backdrop)).statusBarsPadding().heightIn(min = 56.dp).padding(end = 4.dp),
+        modifier.fillMaxWidth().background(Color.Black.copy(alpha = backdrop)).statusBarsPadding().heightIn(min = 56.dp).padding(end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconTip(stringResource(Res.string.reader_back)) { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.reader_back), tint = Color.White) } }
@@ -298,6 +320,11 @@ private fun ViewerBar(pager: PagerState, count: Int, backdrop: Float, onClose: (
         actions()
     }
 }
+
+/** What is drawn but hidden: no press reaches it, the keyboard's focus passes it by, and a screen reader hears nothing of it. */
+private fun Modifier.outOfReach(): Modifier = clearAndSetSemantics { }
+    .focusProperties { canFocus = false }
+    .pointerInput(Unit) { awaitPointerEventScope { while (true) awaitPointerEvent(PointerEventPass.Initial).changes.forEach { it.consume() } } }
 
 /** ‹ and › at the sides while there is a page that way, white on black over any picture. */
 @Composable

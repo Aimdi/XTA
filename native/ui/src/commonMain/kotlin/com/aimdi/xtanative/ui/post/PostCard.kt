@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -45,6 +46,7 @@ import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
+import com.aimdi.xtanative.ui.common.rememberSwitchedHaptics
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_community
 import com.aimdi.xtanative.ui.generated.resources.posts_more
@@ -134,7 +136,7 @@ private val MediaBleed = 16.dp
  * reply line, the text and what the post carries, and the counts.
  * [continues] and [midThread] join it to the posts of its thread by a line
  * through the avatars. A tap opens it; with "Double-tap to like" on, a
- * double-tap likes it on this device. A right-click opens its ⋯ menu; on
+ * double-tap likes it on this device. A long press or a right-click opens its ⋯ menu; on
  * the desktop, Ctrl+click and a middle click open it in a new window. On
  * the desktop the keys act on it once the reading keys are on it ([keyedPost]).
  */
@@ -175,7 +177,13 @@ fun PostCard(
             }
             .recordedIn(picture)
             .opensInWindow(inWindow, presses)
-            .opening(rememberDoubleTapLike(shown, scope.prefs, actions)) {
+            .opening(
+                rememberDoubleTapLike(shown, scope.prefs, actions),
+                menu = {
+                    menuAtPost = false
+                    menu = true
+                },
+            ) {
                 if (presses.take() == PostPress.TAP_IN_WINDOW && inWindow != null) inWindow() else actions.openPost(shown.id)
             }
             .drawBehind {
@@ -236,17 +244,30 @@ fun PostCard(
 /**
  * A tap on a post opens it; [like], when the reader asked for it, likes it
  * at a double-tap (tweet.dart's _withDoubleTapToLike). Without it a tap does
- * not wait to see whether a second follows.
+ * not wait to see whether a second follows. A long press opens its ⋯ [menu],
+ * as one on a plugin's card does, with the buzz of a long press. What is
+ * pressed inside the card (a picture, a link or a tag, the avatar, a quote,
+ * a count) takes the press itself, so its own long press stays its own.
  */
 @OptIn(ExperimentalFoundationApi::class)
-internal fun Modifier.opening(like: (() -> Unit)?, open: () -> Unit): Modifier =
-    if (like == null) clickable(onClick = open) else combinedClickable(onDoubleClick = like, onClick = open)
+internal fun Modifier.opening(like: (() -> Unit)?, menu: () -> Unit, open: () -> Unit): Modifier =
+    combinedClickable(onDoubleClick = like, onLongClick = menu, onClick = open)
 
-/** What a double-tap on [post] does with "Double-tap to like" on: likes it on this device, unless it is liked already; null while off. */
+/**
+ * What a double-tap on [post] does with "Double-tap to like" on: likes it
+ * on this device, unless it is liked already, with a tick, as the heart is
+ * not under the finger to show it; null while off.
+ */
 @Composable
 internal fun rememberDoubleTapLike(post: XPost, prefs: PostPrefs, actions: PostActions): (() -> Unit)? {
     val keeper = LocalKeeper.current
-    val like = remember(keeper, post, actions) { { actions.keep.likeHere(keeper, post) } }
+    val haptics = rememberSwitchedHaptics()
+    val like = remember(keeper, post, actions, haptics) {
+        {
+            haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            actions.keep.likeHere(keeper, post)
+        }
+    }
     return like.takeIf { prefs.doubleTapLike }
 }
 

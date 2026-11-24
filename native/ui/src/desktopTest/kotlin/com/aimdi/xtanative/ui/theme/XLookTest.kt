@@ -52,9 +52,9 @@ class XLookTest {
 
     @Test
     fun systemIsOfferedOnTheDesktopOnly() {
-        assertEquals(ThemeAccent.SYSTEM, XLook.offeredAccents(desktop = true, selected = ThemeAccent.BLUE).first())
-        assertEquals(ThemeAccent.entries - ThemeAccent.SYSTEM, XLook.offeredAccents(desktop = false, selected = ThemeAccent.BLUE))
-        assertEquals(ThemeAccent.entries, XLook.offeredAccents(desktop = false, selected = ThemeAccent.SYSTEM), "kept while chosen")
+        assertEquals(ThemeAccent.SYSTEM, XLook.offeredAccents(system = true, selected = ThemeAccent.BLUE).first())
+        assertEquals(ThemeAccent.entries - ThemeAccent.SYSTEM, XLook.offeredAccents(system = false, selected = ThemeAccent.BLUE))
+        assertEquals(ThemeAccent.entries, XLook.offeredAccents(system = false, selected = ThemeAccent.SYSTEM), "kept while chosen")
     }
 
     @Test

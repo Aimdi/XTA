@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,6 +38,7 @@ import com.aimdi.xtanative.ui.common.HeartBurst
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.onSecondaryClick
+import com.aimdi.xtanative.ui.common.rememberSwitchedHaptics
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.saved_like
 import com.aimdi.xtanative.ui.generated.resources.saved_save_here
@@ -149,7 +151,7 @@ internal fun DeviceSaveButton(post: XPost, modifier: Modifier, tint: Color) {
 @Composable
 internal fun KeepableSaveButton(item: Keepable, modifier: Modifier, tint: Color) = KeepableSaveButton(item.id, modifier, tint) { item }
 
-/** [KeepableSaveButton] of the post [id], made [item] only once it is pressed. */
+/** [KeepableSaveButton] of the post [id], made [item] only once it is pressed; a tap ticks, while Haptic feedback is on. */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun KeepableSaveButton(id: String, modifier: Modifier, tint: Color, item: () -> Keepable) {
@@ -157,6 +159,7 @@ internal fun KeepableSaveButton(id: String, modifier: Modifier, tint: Color, ite
     val saved = savedHere(id)
     var sheetFor by remember { mutableStateOf<Keepable?>(null) }
     val label = stringResource(if (saved) Res.string.saved_unsave else Res.string.saved_save_here)
+    val haptics = rememberSwitchedHaptics()
     Box(
         modifier
             .size(40.dp)
@@ -166,7 +169,10 @@ internal fun KeepableSaveButton(id: String, modifier: Modifier, tint: Color, ite
             .combinedClickable(
                 role = Role.Button,
                 onClickLabel = label,
-                onClick = { Keeping.toggleSave(keeper, item()) },
+                onClick = {
+                    haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    Keeping.toggleSave(keeper, item())
+                },
                 onLongClick = { sheetFor = item() },
             ),
         contentAlignment = Alignment.Center,

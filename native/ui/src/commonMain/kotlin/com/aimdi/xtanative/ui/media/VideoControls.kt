@@ -40,11 +40,13 @@ import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -112,7 +114,8 @@ private enum class VideoSheet { MORE, SPEED, QUALITY }
  * ([MuteCorner]) and the seek bar stops short of it. [onFullscreen] goes full
  * screen in place and leaves it full screen; [onPictureInPicture] shrinks
  * the app into a floating window where the platform has one; [onTurn]
- * turns full screen sideways and back, on a phone.
+ * turns full screen sideways and back, on a phone. A [live] stream is not
+ * sped up by a held press.
  */
 internal class VideoChrome(
     val fullscreen: Boolean = false,
@@ -122,6 +125,7 @@ internal class VideoChrome(
     val onToggleFill: (() -> Unit)? = null,
     val onDownload: (() -> Unit)? = null,
     val onTurn: (() -> Unit)? = null,
+    val live: Boolean = false,
 )
 
 /**
@@ -130,8 +134,10 @@ internal class VideoChrome(
  * is in the middle; at the bottom, over the seek bar, the time, then (full
  * screen) mute and picture-in-picture, the menu (speed, quality, subtitles,
  * fit or fill when full screen, download) and the full-screen button. A double
- * tap on either half skips ten seconds that way. They take no insets: their
- * caller keeps them clear of the system bars.
+ * tap on either half skips ten seconds that way, and a finger held on a
+ * playing video plays it at twice the speed until it is lifted
+ * ([VideoRules.holdSpeed]). They take no insets: their caller keeps them
+ * clear of the system bars.
  */
 @Composable
 internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifier: Modifier = Modifier) {
@@ -163,6 +169,16 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
         delay(SPEED_SHOWN_MS)
         speedShown = null
     }
+    // The speed to go back to once the finger held on the video is lifted; null while none is.
+    var heldFrom by remember(playback) { mutableStateOf<Double?>(null) }
+    val release = {
+        heldFrom?.let(playback::setSpeed)
+        heldFrom = null
+    }
+    DisposableEffect(playback) { onDispose(release) }
+    val live by rememberUpdatedState(chrome.live)
+    // Whether the press now down is a finger's, not a mouse's.
+    val pressedByTouch = remember { booleanArrayOf(false) }
     Box(
         modifier
             .fillMaxSize()
@@ -171,6 +187,7 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
                 awaitPointerEventScope {
                     while (true) {
                         val event = awaitPointerEvent(PointerEventPass.Initial)
+                        if (event.type == PointerEventType.Press) pressedByTouch[0] = event.changes.none { it.type == PointerType.Mouse }
                         if (event.type == PointerEventType.Move && event.changes.any { it.type == PointerType.Mouse }) {
                             visible = true
                             touch()
@@ -181,6 +198,22 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
             .pointerInput(playback) {
                 detectTapGestures(
                     onTap = { visible = !visible },
+                    // Lifted, or taken by a swipe: the held speed ends with the press.
+                    onPress = {
+                        tryAwaitRelease()
+                        release()
+                    },
+                    onLongPress = {
+                        val now = playback.state.value
+                        val fast = VideoRules.holdSpeed(pressedByTouch[0], now.playing, live, now.durationMs, now.speed)
+                        if (fast == null) {
+                            // No speed to hold: the press stays the tap it was before a held one meant anything.
+                            visible = !visible
+                        } else {
+                            heldFrom = now.speed
+                            playback.setSpeed(fast)
+                        }
+                    },
                     onDoubleTap = { at ->
                         val back = at.x < size.width / 2f
                         val now = playback.state.value
@@ -201,7 +234,7 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
             }
         }
         if (skipped != 0) SkipBadge(skipped, Modifier.align(if (skipped < 0) Alignment.CenterStart else Alignment.CenterEnd))
-        speedShown?.let { SpeedBadge(it, Modifier.align(Alignment.TopCenter)) }
+        (state.speed.takeIf { heldFrom != null } ?: speedShown)?.let { SpeedBadge(it, Modifier.align(Alignment.TopCenter)) }
         if (state.qualityFailed) QualityFailed(playback, Modifier.align(Alignment.TopCenter))
         if (state.failed) FailedOverlay(playback)
     }

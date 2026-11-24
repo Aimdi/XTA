@@ -73,12 +73,14 @@ object XLook {
         if (accent == ThemeAccent.SYSTEM) systemAccent ?: accent.argb else accent.argb
 
     /**
-     * The accents a picker offers: all of them on the desktop, whose settings
-     * portal gives an accent colour; elsewhere System only while it is the
-     * [selected] one (a backup from the desktop), as it would be X's blue.
+     * The accents a picker offers: all of them where the system has an accent
+     * of its own ([system]: the desktop, whose settings portal gives one, and
+     * Android 12 and later, from the wallpaper); elsewhere System only while
+     * it is the [selected] one (a backup from such a device), as it would be
+     * X's blue.
      */
-    fun offeredAccents(desktop: Boolean, selected: ThemeAccent): List<ThemeAccent> =
-        ThemeAccent.entries.filter { desktop || it != ThemeAccent.SYSTEM || it == selected }
+    fun offeredAccents(system: Boolean, selected: ThemeAccent): List<ThemeAccent> =
+        ThemeAccent.entries.filter { system || it != ThemeAccent.SYSTEM || it == selected }
 
     /** Tokens for a concrete background, tinted with [accent]; System and Lights out resolve here to Lights out. */
     fun tokensFor(background: ThemeBackground, accent: ThemeAccent, systemAccent: Long? = null): XLookTokens {

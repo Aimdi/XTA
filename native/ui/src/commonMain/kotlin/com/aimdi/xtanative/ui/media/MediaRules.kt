@@ -127,6 +127,20 @@ object ViewerKeys {
     private val ZOOM_KEYS = setOf(ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET)
 }
 
+/** What the full-screen viewer shows around the page: its bar, and a described picture's ALT. */
+object ViewerChrome {
+    /**
+     * Whether the viewer's bar and the ALT badge are up. A tap on a photo
+     * hides them ([hidden]) and another brings them back; they stay up on a
+     * page that is not a [photo], whose taps are its video controls', and
+     * while a [screenReader] is on, which could not find a bar that left.
+     */
+    fun shown(hidden: Boolean, photo: Boolean, screenReader: Boolean): Boolean = !hidden || !photo || screenReader
+
+    /** The description the ALT badge of a page shows: a [photo]'s [alt] that says something, while the bar is [shown]. */
+    fun alt(alt: String?, photo: Boolean, shown: Boolean): String? = alt?.trim()?.takeIf { it.isNotEmpty() && photo && shown }
+}
+
 /** The rules of the media viewer's videos (_video.dart, _video_controls.dart, video_quality.dart). */
 object VideoRules {
     /** Seconds a double tap on either half of a video skips. */
@@ -143,6 +157,18 @@ object VideoRules {
 
     /** The place [tenths] tenths of the way through a video of [durationMs] (0 to 9 on the desktop). */
     fun jumpTarget(tenths: Int, durationMs: Long): Long = durationMs.coerceAtLeast(0) * tenths.coerceIn(0, 10) / 10
+
+    /** The speed a video plays at while a finger is held on it. */
+    const val HOLD_SPEED = 2.0
+
+    /**
+     * The speed a press held on a video plays it at until it is let go,
+     * [HOLD_SPEED]; null where holding does nothing: a mouse's press (which
+     * has < and > for it, and drags), a [live] stream or one with no length
+     * to run ahead in, a video that is not [playing], and one as fast already.
+     */
+    fun holdSpeed(touch: Boolean, playing: Boolean, live: Boolean, durationMs: Long, speed: Double): Double? =
+        HOLD_SPEED.takeIf { touch && playing && !live && durationMs > 0 && speed < HOLD_SPEED - 0.01 }
 
     /** How long the controls stay after the last touch. */
     const val CONTROLS_SHOWN_MS = 3_000L

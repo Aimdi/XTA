@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -67,6 +68,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.services.links.XLinks
 import com.aimdi.xtanative.ui.article.ArticleBody
@@ -75,13 +77,16 @@ import com.aimdi.xtanative.ui.article.ArticlePreviewCard
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.TopJump
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
+import com.aimdi.xtanative.ui.common.topJump
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.post
@@ -104,6 +109,9 @@ import com.aimdi.xtanative.ui.generated.resources.posts_zen_replies
 import com.aimdi.xtanative.ui.home.FindInPage
 import com.aimdi.xtanative.ui.home.LocalDesktopActions
 import com.aimdi.xtanative.ui.home.keyedPost
+import com.aimdi.xtanative.ui.speech.ReadAloudButton
+import com.aimdi.xtanative.ui.speech.SpeechTexts
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -141,13 +149,17 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
     val findBlocks = remember(state, findPrefs, finds) {
         if (finds) ThreadFind.blocks(state, findPrefs.threadedReplies, !findPrefs.zen || state.repliesRevealed) else emptyList()
     }
+    val titleScope = rememberCoroutineScope()
+    val reduced = LocalReducedMotion.current
     FindInPage(findBlocks, list) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Res.string.post)) },
+                // A tap on the title goes back to the opened post, as Home's goes back to the top.
+                title = { Text(stringResource(Res.string.post), Modifier.clip(RoundedCornerShape(12.dp)).clickable { titleScope.launch { list.scrollToPost(above, reduced) } }.padding(vertical = 8.dp)) },
                 navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
+                actions = { state.focal?.let { ListenToPost(it, state.replies) } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
@@ -189,6 +201,26 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
         }
     }
     }
+}
+
+/** The list at the opened post, its item at [index]: slid there, or at once while motion is [reduced] ([topJump]). */
+private suspend fun LazyListState.scrollToPost(index: Int, reduced: Boolean) {
+    if (topJump(reduced) == TopJump.INSTANT) scrollToItem(index) else animateScrollToItem(index)
+}
+
+/**
+ * Listen in the opened post's bar: reads [focal] and the thread its author
+ * went on with among [replies] ([SpeechTexts.listened]), or its article
+ * when the post lays one out in full; pressed again while that is read, it
+ * stops. Nothing where the post has no words to read.
+ */
+@Composable
+private fun ListenToPost(focal: XPost, replies: List<XThread>) {
+    val title = SpeechTexts.title(focal)
+    val article = remember(focal) { ArticleLayout.fullArticle(focal) }
+    if (article != null) return ReadAloudButton(article.title.ifEmpty { title }, { SpeechTexts.article(article) })
+    val text = remember(focal, replies) { SpeechTexts.thread(SpeechTexts.listened(focal, replies)) }
+    if (text.isNotEmpty()) ReadAloudButton(title, { text })
 }
 
 private fun LazyListScope.focalItems(state: PostUi, id: String, actions: PostActions, vm: PostViewModel, prefs: PostPrefs, startMedia: Int) {

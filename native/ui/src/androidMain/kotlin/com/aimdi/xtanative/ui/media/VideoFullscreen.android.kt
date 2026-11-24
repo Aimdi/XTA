@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.media
 import android.app.PictureInPictureParams
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Rational
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
@@ -90,6 +91,18 @@ private class ActivityPictureInPicture(private val activity: ComponentActivity) 
             false
         } catch (_: IllegalArgumentException) {
             false
+        }
+    }
+
+    /** Android 12's own auto-enter: the system shrinks the app as it is left, with no flash of the launcher between. */
+    override fun leavesInto(aspectRatio: Float?) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
+        val params = PictureInPictureParams.Builder().setAutoEnterEnabled(aspectRatio != null)
+        if (aspectRatio != null) params.setAspectRatio(Rational(VideoRules.pictureInPictureRatio(aspectRatio), 1000))
+        try {
+            activity.setPictureInPictureParams(params.build())
+        } catch (_: IllegalStateException) {
+        } catch (_: IllegalArgumentException) {
         }
     }
 }

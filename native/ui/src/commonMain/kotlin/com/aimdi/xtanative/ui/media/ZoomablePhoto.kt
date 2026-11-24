@@ -30,6 +30,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.input.pointer.positionChanged
@@ -57,7 +58,9 @@ private enum class PhotoGesture { UNDECIDED, TRANSFORM, SLIDE, PAGE }
  * about the pointer. At its fitted size a
  * drag up or down slides it away and, far or fast enough, closes the viewer
  * ([onBackdrop] hears how dark the backdrop stays meanwhile); a sideways drag
- * turns the page. [motion] off makes every change at once.
+ * turns the page. [motion] off makes every change at once. A finger's single
+ * tap goes to [onTap] (the viewer hides or shows its bar); a mouse's click
+ * does not, so the desktop's bar stays where its pointer looks for it.
  */
 @Composable
 internal fun ZoomablePhoto(
@@ -68,6 +71,7 @@ internal fun ZoomablePhoto(
     onClose: () -> Unit,
     zoomKeys: Flow<ViewerKey>? = null,
     onZoomed: (Boolean) -> Unit = {},
+    onTap: () -> Unit = {},
 ) {
     var scale by remember { mutableFloatStateOf(1f) }
     var area by remember { mutableStateOf(IntSize.Zero) }
@@ -80,6 +84,9 @@ internal fun ZoomablePhoto(
     val close by rememberUpdatedState(onClose)
     val backdrop by rememberUpdatedState(onBackdrop)
     val page = remember { floatArrayOf(0f) }
+    val tap by rememberUpdatedState(onTap)
+    // Whether the press last put down was a finger's, not a mouse's.
+    val pressedByTouch = remember { booleanArrayOf(false) }
     fun report(drag: Float) = backdrop(SlideToClose.backdrop(drag, page[0]))
 
     fun animateTo(toScale: Float, toShift: Shift, toSlide: Float = 0f) {
@@ -137,8 +144,9 @@ internal fun ZoomablePhoto(
             }
             .pointerInput(Unit) {
                 detectTapGestures(
-                    onDoubleTap = { tap ->
-                        val focus = Shift(tap.x - size.width / 2f, tap.y - size.height / 2f)
+                    onTap = { if (pressedByTouch[0]) tap() },
+                    onDoubleTap = { at ->
+                        val focus = Shift(at.x - size.width / 2f, at.y - size.height / 2f)
                         val to = ViewerZoom.doubleTapScale(if (ViewerZoom.zoomed(scale)) scale else ViewerZoom.MIN)
                         animateTo(to, ViewerZoom.shiftFor(focus, scale, shift, to, size.width.toFloat(), size.height.toFloat()))
                     },
@@ -146,7 +154,7 @@ internal fun ZoomablePhoto(
             }
             .pointerInput(Unit) {
                 awaitEachGesture {
-                    awaitFirstDown(requireUnconsumed = false)
+                    pressedByTouch[0] = awaitFirstDown(requireUnconsumed = false).type != PointerType.Mouse
                     var gesture = PhotoGesture.UNDECIDED
                     var moved = Offset.Zero
                     val velocity = VelocityTracker()

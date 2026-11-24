@@ -529,7 +529,7 @@ internal fun BackgroundPicker(selected: ThemeBackground, modifier: Modifier = Mo
 internal fun AccentPicker(selected: ThemeAccent, modifier: Modifier = Modifier, onSelect: (ThemeAccent) -> Unit) {
     val desktopAccent = systemAccent()
     FlowRow(modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        XLook.offeredAccents(isDesktop, selected).forEach { accent ->
+        XLook.offeredAccents(isDesktop || desktopAccent != null, selected).forEach { accent ->
             val chosen = accent == selected
             val argb = XLook.accentArgb(accent, desktopAccent)
             Column(
