@@ -10,4 +10,5 @@
         <item quantity="one">%1$d licença</item>
         <item quantity="other">%1$d licenças</item>
     </plurals>
+    <string name="chrome_offline_bar">Offline – a mostrar cópias guardadas</string>
 </resources>

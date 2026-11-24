@@ -11,4 +11,5 @@
         <item quantity="few">%1$d licențe</item>
         <item quantity="other">%1$d de licențe</item>
     </plurals>
+    <string name="chrome_offline_bar">Offline – se afișează copiile salvate</string>
 </resources>

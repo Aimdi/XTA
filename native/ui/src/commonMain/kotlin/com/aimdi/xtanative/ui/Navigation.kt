@@ -40,6 +40,7 @@ import com.aimdi.xtanative.ui.article.ArticleScreen
 import com.aimdi.xtanative.ui.chrome.CardBacks
 import com.aimdi.xtanative.ui.chrome.CloseOnBack
 import com.aimdi.xtanative.ui.chrome.ConfirmClose
+import com.aimdi.xtanative.ui.chrome.OfflineFrame
 import com.aimdi.xtanative.ui.chrome.SwipeBackCard
 import com.aimdi.xtanative.ui.chrome.UpdateCheck
 import com.aimdi.xtanative.ui.common.CenteredPage
@@ -412,7 +413,7 @@ fun XtaNativeRoot() {
                 } ?: false
             }
         }
-        DesktopNavigation(nav, openSearch, openSettings, openHome, goForward) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) }
+        DesktopNavigation(nav, openSearch, openSettings, openHome, goForward) { OfflineFrame { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) } }
     }
     if (askSignIn) {
         NotLoggedInDialog(onImportBackup = { nav.navigate(Routes.IMPORT) }, onLogin = { nav.navigate(Routes.SIGN_IN) }, onDismiss = { askSignIn = false })

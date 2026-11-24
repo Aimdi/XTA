@@ -11,4 +11,5 @@
         <item quantity="one">%1$d license</item>
         <item quantity="other">%1$d licenses</item>
     </plurals>
+    <string name="chrome_offline_bar">Offline – showing saved copies</string>
 </resources>

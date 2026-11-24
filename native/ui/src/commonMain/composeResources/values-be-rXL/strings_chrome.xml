@@ -12,4 +12,5 @@
         <item quantity="many">%1$d licenzij</item>
         <item quantity="other">%1$d licenzii</item>
     </plurals>
+    <string name="chrome_offline_bar">Pa-za sietkaj – pakazvajucca zachavanyja kopii</string>
 </resources>

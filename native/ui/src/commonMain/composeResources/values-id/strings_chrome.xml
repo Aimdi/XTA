@@ -9,4 +9,5 @@
     <plurals name="chrome_licences_count">
         <item quantity="other">%1$d lisensi</item>
     </plurals>
+    <string name="chrome_offline_bar">Luring – menampilkan salinan tersimpan</string>
 </resources>

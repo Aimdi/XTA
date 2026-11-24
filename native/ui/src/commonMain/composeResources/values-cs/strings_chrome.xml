@@ -12,4 +12,5 @@
         <item quantity="many">%1$d licence</item>
         <item quantity="other">%1$d licencí</item>
     </plurals>
+    <string name="chrome_offline_bar">Offline – zobrazují se uložené kopie</string>
 </resources>

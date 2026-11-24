@@ -9,4 +9,5 @@
     <plurals name="chrome_licences_count">
         <item quantity="other">라이선스 %1$d개</item>
     </plurals>
+    <string name="chrome_offline_bar">오프라인 – 저장된 사본을 표시하는 중</string>
 </resources>

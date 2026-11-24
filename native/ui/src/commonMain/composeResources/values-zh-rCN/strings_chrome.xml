@@ -9,4 +9,5 @@
     <plurals name="chrome_licences_count">
         <item quantity="other">%1$d 份许可</item>
     </plurals>
+    <string name="chrome_offline_bar">离线 – 正在显示已保存的副本</string>
 </resources>

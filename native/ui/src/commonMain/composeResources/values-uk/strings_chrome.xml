@@ -12,4 +12,5 @@
         <item quantity="many">%1$d ліцензій</item>
         <item quantity="other">%1$d ліцензії</item>
     </plurals>
+    <string name="chrome_offline_bar">Немає мережі – показано збережені копії</string>
 </resources>

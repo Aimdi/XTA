@@ -10,4 +10,5 @@
         <item quantity="one">%1$d lizentzia</item>
         <item quantity="other">%1$d lizentzia</item>
     </plurals>
+    <string name="chrome_offline_bar">Konexiorik gabe – gordetako kopiak erakusten</string>
 </resources>

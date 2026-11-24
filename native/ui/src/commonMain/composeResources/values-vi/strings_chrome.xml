@@ -9,4 +9,5 @@
     <plurals name="chrome_licences_count">
         <item quantity="other">%1$d giấy phép</item>
     </plurals>
+    <string name="chrome_offline_bar">Ngoại tuyến – đang hiển thị bản đã lưu</string>
 </resources>

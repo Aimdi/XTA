@@ -10,4 +10,5 @@
         <item quantity="one">%1$d lisans</item>
         <item quantity="other">%1$d lisans</item>
     </plurals>
+    <string name="chrome_offline_bar">Çevrimdışı – kaydedilmiş kopyalar gösteriliyor</string>
 </resources>

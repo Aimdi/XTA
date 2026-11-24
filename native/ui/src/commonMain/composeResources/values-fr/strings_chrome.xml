@@ -10,4 +10,5 @@
         <item quantity="one">%1$d licence</item>
         <item quantity="other">%1$d licences</item>
     </plurals>
+    <string name="chrome_offline_bar">Hors ligne – affichage des copies enregistrées</string>
 </resources>

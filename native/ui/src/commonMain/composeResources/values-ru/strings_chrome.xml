@@ -12,4 +12,5 @@
         <item quantity="many">%1$d лицензий</item>
         <item quantity="other">%1$d лицензии</item>
     </plurals>
+    <string name="chrome_offline_bar">Нет сети – показаны сохранённые копии</string>
 </resources>
