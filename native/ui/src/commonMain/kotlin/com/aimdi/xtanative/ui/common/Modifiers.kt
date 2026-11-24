@@ -16,6 +16,7 @@ import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerType
+import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 
@@ -40,7 +41,8 @@ fun Modifier.longPressOver(accepts: (Offset) -> Boolean = { true }, onLongPress:
     onSecondaryClickAt({ takes(it) }) { press(it) }.pointerInput(Unit) {
         awaitEachGesture {
             val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
-            if (!takes(down.position)) return@awaitEachGesture
+            // The right button held is no long press: its press already ran [onLongPress] once.
+            if (!LongPresses.counts(down.type, currentEvent.buttons.isPrimaryPressed) || !takes(down.position)) return@awaitEachGesture
             // Released, moved away or taken by a scroll before the timeout: nothing of this press is ours.
             val ended = withTimeoutOrNull(viewConfiguration.longPressTimeoutMillis) { waitForUpOrCancellation(PointerEventPass.Initial) ?: down }
             if (ended != null) return@awaitEachGesture
@@ -49,6 +51,12 @@ fun Modifier.longPressOver(accepts: (Offset) -> Boolean = { true }, onLongPress:
             consumeUntilUp()
         }
     }
+}
+
+/** Which presses a long press is timed for ([longPressOver]). */
+internal object LongPresses {
+    /** A touch, a pen's, or the mouse's primary button; not its right or middle one, whose press is a click of its own. */
+    fun counts(type: PointerType, primaryPressed: Boolean): Boolean = type != PointerType.Mouse || primaryPressed
 }
 
 /** The rest of a press taken, so that nothing under it acts on it. */
