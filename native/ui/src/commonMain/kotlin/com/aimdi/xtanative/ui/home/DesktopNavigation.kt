@@ -84,10 +84,11 @@ class DesktopActions(
     /** False when no screen answers. */
     fun refresh(): Boolean = refreshing?.let { it(); true } ?: false
 
-    fun turn(by: Int): Boolean = turning?.let { it(by); true } ?: false
+    /** The screen's pages turned [by]; the post marked on the page left is marked no more. */
+    fun turn(by: Int): Boolean = turning?.let { markedPost = null; it(by); true } ?: false
 
     /** Ctrl and a digit: the screen's tab [digit] ([DesktopKeys.pageAt]); false when no screen answers. */
-    fun jump(digit: Int): Boolean = jumping?.let { it(digit); true } ?: false
+    fun jump(digit: Int): Boolean = jumping?.let { markedPost = null; it(digit); true } ?: false
 
     fun somethingOpen(): Boolean = open?.invoke() ?: false
 
@@ -239,14 +240,22 @@ class DesktopActions(
      * move, under a header pinned over it ([DesktopKeys.currentPost]).
      */
     fun currentPost(): KeyedPost? {
-        markedPost?.takeIf { it in posts && it.place?.isAttached == true }?.let { return it }
         // Only a lazy list holds posts; a page that scrolls as a whole has none to act on.
         val list = readList() as? LazyListState ?: return null
+        markedIn(list)?.let { return it }
         val (drawn, tops) = drawnPosts(list) ?: return null
         val info = list.layoutInfo
         val shown = info.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) }
         return DesktopKeys.currentPost(shown, tops, info.viewportEndOffset)?.let(drawn::get)
     }
+
+    /**
+     * The post marked while it is still drawn in [list]: one marked in
+     * another column, or on a page turned away from, is not what the reading
+     * keys are on now.
+     */
+    internal fun markedIn(list: ScrollableState?): KeyedPost? =
+        markedPost?.takeIf { it.list === list && it in posts && it.place?.isAttached == true }
 
     /** The posts drawn in [list] and where each starts, in its items' offsets; null while the list is not laid out. */
     private fun drawnPosts(list: LazyListState): Pair<List<KeyedPost>, List<Int>>? {
@@ -279,7 +288,7 @@ class DesktopActions(
         val info = list.layoutInfo
         val shown = info.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) }
         val (drawn, tops) = drawnPosts(list) ?: (emptyList<KeyedPost>() to emptyList())
-        val marked = markedPost?.takeIf { it in posts && it.place?.isAttached == true }?.let { drawn.indexOf(it).takeIf { at -> at >= 0 } }
+        val marked = markedIn(list)?.let { drawn.indexOf(it).takeIf { at -> at >= 0 } }
         return when (val step = DesktopKeys.keyStep(shown, info.totalItemsCount, tops, marked, forward)) {
             is DesktopKeys.KeyStep.ToItem -> KeyedStep(step, null)
             is DesktopKeys.KeyStep.ToPost -> KeyedStep(step, drawn[step.post])
@@ -314,6 +323,7 @@ class DesktopActions(
         if (!DesktopKeys.pointerMoved(pointer, at)) return
         if (pointer != null) markedPost = null
         pointer = at
+        if (pointed !== list) markedPost = null
         pointed = list
         if (listColumns[list] != chosenColumn) chosenColumn = null
         if (listColumns[list] != opened) opened = null
@@ -342,6 +352,7 @@ class DesktopActions(
         columnOrder = { emptyList() }
         chosenColumn = null
         opened = null
+        markedPost = null
     }
 
     /** The column just opened beside the others ([readOpened]); null once the pointer or Ctrl+← and Ctrl+→ go elsewhere. */
@@ -358,6 +369,7 @@ class DesktopActions(
     internal fun readOpened(column: Any) {
         opened = column
         chosenColumn = null
+        markedPost = null
         takeKeys()
     }
 
@@ -371,6 +383,7 @@ class DesktopActions(
         val index = DesktopKeys.columnStep(order.size, order.indexOf(current).takeIf { it >= 0 }, by) ?: return false
         chosenColumn = order[index]
         opened = null
+        markedPost = null
         return true
     }
 
