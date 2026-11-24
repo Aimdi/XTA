@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -326,7 +327,10 @@ fun NetworkFocalPost(post: NetworkPost, actions: NetworkPostActions, modifier: M
         post.title?.let { PostTitle(it, Modifier.padding(top = 12.dp), MaterialTheme.typography.titleLarge) }
         CoverLine(post, revealed) { revealed = !revealed }
         if (!post.textCovered(revealed)) {
-            LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 12.dp), style = TextStyle(fontSize = 17.sp, lineHeight = 24.sp))
+            // Selectable, as the app's opened X post is.
+            SelectionContainer(Modifier.padding(top = 12.dp)) {
+                LinkedText(post.text, actions.openMention, actions.openTag, style = TextStyle(fontSize = 17.sp, lineHeight = 24.sp))
+            }
         }
         // The opened post is the screen under the browser: going back to it is closing the browser.
         Attachments(post, actions, revealed, onToggle = { revealed = !revealed }, gap = 12.dp, playing = false, opensPost = false)

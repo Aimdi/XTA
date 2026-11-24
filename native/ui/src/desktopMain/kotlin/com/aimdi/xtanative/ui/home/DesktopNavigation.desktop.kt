@@ -27,6 +27,7 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isAltPressed
 import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -52,6 +53,8 @@ import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.ui.LocalSecondaryWindow
 import com.aimdi.xtanative.ui.chrome.AppClosing
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.TextBlocks
+import com.aimdi.xtanative.ui.common.TextSelectionKeys
 import com.aimdi.xtanative.ui.links.PastedLinks
 import com.aimdi.xtanative.ui.links.takesDroppedLinks
 import com.aimdi.xtanative.ui.post.LinkHover
@@ -240,6 +243,13 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                 keyTaken = actions.jump(digit)
                 return keyTaken
             }
+        }
+        // Ctrl+A in the text block clicked into (an opened post, a bio, an article) selects all of its text, as in a field.
+        if (TextSelectionKeys.selectsAll(event.key, event.type, event.isCtrlPressed, event.isShiftPressed, event.isAltPressed, event.isMetaPressed) &&
+            TextBlocks.selectAllInFocused()
+        ) {
+            keyTaken = true
+            return true
         }
         val canGoBack = nav.previousBackStackEntry != null
         val key = deskKey(event.key)

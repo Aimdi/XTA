@@ -1,8 +1,10 @@
 package com.aimdi.xtanative.ui.theme
 
 import androidx.compose.foundation.DefaultContextMenuRepresentation
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalContextMenuRepresentation
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.text.LocalTextContextMenu
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalRippleConfiguration
@@ -13,6 +15,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import com.aimdi.xtanative.ui.common.SelectingTextMenu
 
 /** How strongly an entry under the pointer is lit, as Material's hovered state lights it. */
 private const val HOVER_ALPHA = 0.08f
@@ -31,7 +34,7 @@ internal val DesktopRipples = RippleConfiguration(
     rippleAlpha = RippleAlpha(pressedAlpha = 0.1f, focusedAlpha = 0.3f, draggedAlpha = 0.16f, hoveredAlpha = HOVER_ALPHA),
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 internal actual fun ProvidePlatformLook(content: @Composable () -> Unit) {
     val colors = MaterialTheme.colorScheme
@@ -42,8 +45,11 @@ internal actual fun ProvidePlatformLook(content: @Composable () -> Unit) {
             itemHoverColor = colors.onSurface.copy(alpha = HOVER_ALPHA),
         )
     }
+    val textMenu = LocalTextContextMenu.current
+    val selecting = remember(textMenu) { if (textMenu is SelectingTextMenu) textMenu else SelectingTextMenu(textMenu) }
     CompositionLocalProvider(
         LocalContextMenuRepresentation provides menus,
+        LocalTextContextMenu provides selecting,
         LocalRippleConfiguration provides DesktopRipples,
         content = content,
     )
