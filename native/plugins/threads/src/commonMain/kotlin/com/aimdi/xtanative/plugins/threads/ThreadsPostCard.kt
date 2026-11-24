@@ -60,6 +60,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPeople
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
@@ -511,9 +512,9 @@ private fun CountButton(icon: ImageVector, count: Long?, label: String, tint: Co
 
 @Composable
 internal fun SmallIcon(icon: ImageVector, label: String, tint: Color = Color.Unspecified, onClick: () -> Unit) {
-    IconButton(onClick = onClick) {
+    IconTip(label) { IconButton(onClick = onClick) {
         Icon(icon, contentDescription = label, tint = tint.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant }, modifier = Modifier.size(20.dp))
-    }
+    } }
 }
 
 /** The heart the like on this device is drawn with. */

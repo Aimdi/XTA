@@ -50,6 +50,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsXyException
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.NoticeHost
@@ -166,7 +167,7 @@ private fun Accounts(app: ThreadsApp) {
             trailingContent = {
                 Row {
                     AddToGroupButton(app.host, account.handle)
-                    IconButton(onClick = { unfollowing = account.handle }) { Icon(Icons.Filled.Delete, contentDescription = pluginString(Strings.unfollow)) }
+                    IconTip(pluginString(Strings.unfollow)) { IconButton(onClick = { unfollowing = account.handle }) { Icon(Icons.Filled.Delete, contentDescription = pluginString(Strings.unfollow)) } }
                 }
             },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),

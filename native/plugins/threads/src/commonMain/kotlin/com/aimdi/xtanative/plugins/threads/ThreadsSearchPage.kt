@@ -61,6 +61,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsQuery
 import com.aimdi.xtanative.networks.threads.ThreadsSearchFound
 import com.aimdi.xtanative.networks.threads.ThreadsSearchTerms
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
@@ -116,12 +117,12 @@ internal fun ThreadsSearchScreen(app: ThreadsApp, start: ThreadsSearchTerms) {
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                navigationIcon = { IconButton(onClick = app.host::back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) } },
+                navigationIcon = { IconTip(pluginString(Strings.back)) { IconButton(onClick = app.host::back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) } } },
                 title = { QueryField(text, onText = { text = it }, onSubmit = submit, onFocus = { focused = it }) },
                 actions = {
-                    IconButton(onClick = { outside(ThreadsLinks.searchUrl(terms.query, terms.tag, tab.recent).toString()) }) {
+                    IconTip(pluginString(Strings.open_in_browser)) { IconButton(onClick = { outside(ThreadsLinks.searchUrl(terms.query, terms.tag, tab.recent).toString()) }) {
                         Icon(PostIcons.OpenInNew, contentDescription = pluginString(Strings.open_in_browser))
-                    }
+                    } }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
@@ -150,7 +151,7 @@ private fun QueryField(text: String, onText: (String) -> Unit, onSubmit: () -> U
         singleLine = true,
         placeholder = { Text(pluginString(Strings.search_posts_hint)) },
         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-        trailingIcon = if (text.isEmpty()) null else { { IconButton(onClick = { onText("") }) { Icon(Icons.Filled.Clear, contentDescription = pluginString(Strings.clear)) } } },
+        trailingIcon = if (text.isEmpty()) null else { { IconTip(pluginString(Strings.clear)) { IconButton(onClick = { onText("") }) { Icon(Icons.Filled.Clear, contentDescription = pluginString(Strings.clear)) } } } },
         keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = { onSubmit() }),
         shape = RoundedCornerShape(24.dp),

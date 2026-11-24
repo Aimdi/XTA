@@ -37,6 +37,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsSearchFound
 import com.aimdi.xtanative.networks.threads.ThreadsTopic
 import com.aimdi.xtanative.networks.threads.attempt
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
@@ -192,8 +193,8 @@ private fun CommunityActions(app: ThreadsApp, url: String) {
     val share = rememberShareText()
     val outside = rememberOpenOutside()
     val copied = Strings.link_copied.get(currentLanguage())
-    IconButton(onClick = { if (!share(url)) app.notices.tell(copied) }) { Icon(Icons.Filled.Share, contentDescription = pluginString(Strings.share_link)) }
-    IconButton(onClick = { outside(url) }) { Icon(PostIcons.OpenInNew, contentDescription = pluginString(Strings.open_in_browser)) }
+    IconTip(pluginString(Strings.share_link)) { IconButton(onClick = { if (!share(url)) app.notices.tell(copied) }) { Icon(Icons.Filled.Share, contentDescription = pluginString(Strings.share_link)) } }
+    IconTip(pluginString(Strings.open_in_browser)) { IconButton(onClick = { outside(url) }) { Icon(PostIcons.OpenInNew, contentDescription = pluginString(Strings.open_in_browser)) } }
 }
 
 /** Nothing a guest is shown here: said so, with the way to threads.com. */
