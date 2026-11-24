@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
+import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import coil3.SingletonImageLoader
@@ -42,6 +43,7 @@ import com.aimdi.xtanative.ui.chrome.CommandLine
 import com.aimdi.xtanative.ui.chrome.InstanceMessage
 import com.aimdi.xtanative.ui.chrome.SavedWindow
 import com.aimdi.xtanative.ui.chrome.SavedWindowFile
+import com.aimdi.xtanative.ui.chrome.ScreenArea
 import com.aimdi.xtanative.ui.chrome.SingleInstance
 import com.aimdi.xtanative.ui.chrome.WindowFullscreen
 import com.aimdi.xtanative.ui.chrome.tray.TrayAction
@@ -56,6 +58,7 @@ import com.aimdi.xtanative.ui.saved.DesktopNotifications
 import com.aimdi.xtanative.ui.theme.DesktopColorScheme
 import java.awt.Dimension
 import java.awt.GraphicsEnvironment
+import java.awt.Toolkit
 import java.io.File
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.FutureTask
@@ -74,7 +77,7 @@ import kotlinx.coroutines.withTimeoutOrNull
  * XTA Native on the Linux desktop: the Android app's screens in one window.
  * A second start raises the window already open and ends (SingleInstance),
  * handing it the link it was started with (`xta-native <url>`);
- * the window opens as large as it was left, as XTA's does. The app's icon
+ * the window opens as large and where it was left, as XTA's does. The app's icon
  * sits in the desktop's tray (TrayService); with Settings › General › Close
  * to tray on, closing the window hides it there, and `--minimized` starts
  * it hidden there, while a tray shows the icon.
@@ -105,7 +108,8 @@ fun main(args: Array<String>) {
         raises.tryEmit(Unit)
     }
     val windowFile = SavedWindowFile(File(files, "window.ini"))
-    val saved = windowFile.read().let { kept -> screenArea()?.let { (width, height) -> kept.fitTo(width, height) } ?: kept }
+    // Back where it was left, while a screen still shows enough of it there; else where the desktop puts a new window.
+    val saved = windowFile.read().placedOn(screenAreas())
     var kept = saved
     // The app is made and started on a thread of its own while the window's toolkit starts on this one: neither waits for the other.
     val starting = FutureTask { desktopApp(files).also { it.start() } }
@@ -165,6 +169,7 @@ fun main(args: Array<String>) {
         val state = rememberWindowState(
             placement = if (saved.maximized) WindowPlacement.Maximized else WindowPlacement.Floating,
             size = DpSize(saved.width.dp, saved.height.dp),
+            position = savedPosition(saved),
         )
         Window(
             // Closed to the tray only while a tray shows the icon, so the window is never lost; a quit asked (Ctrl+Q) quits.
@@ -190,8 +195,11 @@ fun main(args: Array<String>) {
             LaunchedEffect(Unit) { window.minimumSize = Dimension(SavedWindow.MIN_WIDTH, SavedWindow.MIN_HEIGHT) }
             // Each change once it has rested half a second, and the last one when the window closes, as XTA's window_state.cc.
             LaunchedEffect(state) {
-                snapshotFlow { state.placement to state.size }
-                    .map { (placement, size) -> kept.after(placement, size.width.value.roundToInt(), size.height.value.roundToInt()).also { kept = it } }
+                snapshotFlow { Triple(state.placement, state.size, state.position) }
+                    .map { (placement, size, position) ->
+                        val (x, y) = if (position.isSpecified) position.x.value.roundToInt() to position.y.value.roundToInt() else null to null
+                        kept.after(placement, size.width.value.roundToInt(), size.height.value.roundToInt(), x, y).also { kept = it }
+                    }
                     .distinctUntilChanged()
                     .debounce(500)
                     .collect(windowFile::write)
@@ -272,6 +280,26 @@ private fun FutureTask<DesktopApp>.started(): DesktopApp = try {
 } catch (e: ExecutionException) {
     throw e.cause ?: e
 }
+
+/** Where [saved] was left, or the desktop's own place for a window when it has none. */
+private fun savedPosition(saved: SavedWindow): WindowPosition {
+    val x = saved.x ?: return WindowPosition.PlatformDefault
+    val y = saved.y ?: return WindowPosition.PlatformDefault
+    return WindowPosition(x.dp, y.dp)
+}
+
+/** Every screen's work area (without its panels), the primary first, in the window's units; none where there is no screen to ask. */
+private fun screenAreas(): List<ScreenArea> = runCatching {
+    if (GraphicsEnvironment.isHeadless()) return emptyList()
+    val screens = GraphicsEnvironment.getLocalGraphicsEnvironment()
+    val primary = screens.defaultScreenDevice
+    val toolkit = Toolkit.getDefaultToolkit()
+    (listOf(primary) + screens.screenDevices.filter { it != primary }).map { device ->
+        val bounds = device.defaultConfiguration.bounds
+        val insets = toolkit.getScreenInsets(device.defaultConfiguration)
+        ScreenArea(bounds.x + insets.left, bounds.y + insets.top, bounds.width - insets.left - insets.right, bounds.height - insets.top - insets.bottom)
+    }
+}.getOrDefault(emptyList())
 
 /** The primary screen's work area, in the window's units; null where there is no screen to ask. */
 private fun screenArea(): Pair<Int, Int>? = runCatching {

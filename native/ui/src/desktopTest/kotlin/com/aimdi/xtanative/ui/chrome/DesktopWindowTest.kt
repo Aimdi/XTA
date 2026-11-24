@@ -43,6 +43,39 @@ class DesktopWindowTest {
     }
 
     @Test
+    fun thePlaceIsKeptWhileFloatingAndOldFilesHaveNone() {
+        val placed = SavedWindow(800, 900, x = 120, y = -40)
+        assertEquals(placed, SavedWindow.parse(placed.toIni()))
+        assertEquals(SavedWindow(900, 700, true), SavedWindow.parse("[window]\nwidth=900\nheight=700\nmaximized=true\n"), "a file of before has no place")
+        assertEquals(SavedWindow(900, 700), SavedWindow.parse("[window]\nwidth=900\nheight=700\nx=10\n"), "half a place is none")
+        assertEquals(SavedWindow(900, 700), SavedWindow.parse("[window]\nwidth=900\nheight=700\nx=10\ny=999999\n"))
+        assertEquals(SavedWindow(800, 900, true, 120, -40), placed.after(WindowPlacement.Maximized, 1920, 1080, 0, 0), "maximized keeps the floating place")
+        assertEquals(SavedWindow(700, 950, false, 300, 200), placed.after(WindowPlacement.Floating, 700, 950, 300, 200))
+        assertEquals(SavedWindow(700, 950, false, 120, -40), placed.after(WindowPlacement.Floating, 700, 950), "a place unknown keeps the last")
+    }
+
+    @Test
+    fun aWindowComesBackOnTheScreenThatShowsItMovedWhollyOntoIt() {
+        val left = ScreenArea(0, 30, 1920, 1050)
+        val right = ScreenArea(1920, 0, 2560, 1440)
+        val screens = listOf(left, right)
+        assertEquals(SavedWindow(800, 600, x = 100, y = 100), SavedWindow(800, 600, x = 100, y = 100).placedOn(screens))
+        assertEquals(SavedWindow(800, 600, x = 2200, y = 300), SavedWindow(800, 600, x = 2200, y = 300).placedOn(screens), "the second screen")
+        assertEquals(SavedWindow(800, 600, x = 1120, y = 30), SavedWindow(800, 600, x = 1300, y = 0).placedOn(screens), "pulled in from under the panel and off the edge")
+        assertEquals(SavedWindow(800, 600, x = 3680, y = 840), SavedWindow(800, 600, x = 4000, y = 1200).placedOn(screens), "a window half off the right screen comes back onto it")
+        assertEquals(SavedWindow(2560, 1440, x = 1920, y = 0), SavedWindow(3000, 1600, x = 1900, y = 0).placedOn(screens), "sized to the screen it is on")
+    }
+
+    @Test
+    fun aWindowLeftWhereNoScreenIsNowOpensWhereTheDesktopPutsIt() {
+        val laptop = listOf(ScreenArea(0, 0, 1366, 768))
+        assertEquals(SavedWindow(800, 600), SavedWindow(800, 600, x = 2200, y = 300).placedOn(laptop), "its screen unplugged")
+        assertEquals(SavedWindow(800, 600), SavedWindow(800, 600, x = 1360, y = 760).placedOn(laptop), "only a corner showing")
+        assertEquals(SavedWindow(1366, 768), SavedWindow(1920, 1080).placedOn(laptop), "no place, fitted to the primary screen")
+        assertEquals(SavedWindow(800, 600, x = 5, y = 5), SavedWindow(800, 600, x = 5, y = 5).placedOn(emptyList()), "no screens known")
+    }
+
+    @Test
     fun theFileIsWrittenWholeAndReadBack() {
         val file = File(Files.createTempDirectory("xta-window").toFile(), "data/window.ini")
         val windows = SavedWindowFile(file)
