@@ -38,6 +38,7 @@ import com.aimdi.xtanative.networks.substack.SubstackPublication
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.plugins.MediaItem
@@ -208,9 +209,9 @@ internal fun SubstackNoteScreen(app: SubstackApp, id: String) {
         onBack = app.host::back,
         actions = {
             if (url != null && note != null) {
-                IconButton(onClick = { share(url) }) { Icon(Icons.Default.Share, pluginString(Strings.share_link)) }
-                IconButton(onClick = { outside(url) }) { Icon(SubstackIcons.OpenInNew, pluginString(Strings.open_in_browser)) }
-                IconButton(onClick = { app.openMenu(note) }) { Icon(PostIcons.MoreHoriz, pluginString(Strings.more_options)) }
+                IconTip(pluginString(Strings.share_link)) { IconButton(onClick = { share(url) }) { Icon(Icons.Default.Share, pluginString(Strings.share_link)) } }
+                IconTip(pluginString(Strings.open_in_browser)) { IconButton(onClick = { outside(url) }) { Icon(SubstackIcons.OpenInNew, pluginString(Strings.open_in_browser)) } }
+                IconTip(pluginString(Strings.more_options)) { IconButton(onClick = { app.openMenu(note) }) { Icon(PostIcons.MoreHoriz, pluginString(Strings.more_options)) } }
             }
         },
     ) { padding ->

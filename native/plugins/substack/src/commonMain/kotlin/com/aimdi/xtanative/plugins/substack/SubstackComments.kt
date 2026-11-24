@@ -57,6 +57,7 @@ import com.aimdi.xtanative.networks.substack.SubstackComments
 import com.aimdi.xtanative.networks.substack.SubstackLinks
 import com.aimdi.xtanative.networks.substack.SubstackPost
 import com.aimdi.xtanative.networks.substack.SubstackPostLink
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.plugins.LinkedText
@@ -138,7 +139,7 @@ internal fun SubstackCommentsScreen(app: SubstackApp, link: SubstackPostLink, ke
         title = pluginString(Strings.comments),
         onBack = app.host::back,
         actions = {
-            IconButton(onClick = { url?.let(outside) }, enabled = url != null) { Icon(SubstackIcons.OpenInNew, pluginString(Strings.open_in_browser)) }
+            IconTip(pluginString(Strings.open_in_browser)) { IconButton(onClick = { url?.let(outside) }, enabled = url != null) { Icon(SubstackIcons.OpenInNew, pluginString(Strings.open_in_browser)) } }
             BranchesMenu(enabled = state.comments.isNotEmpty(), model::expandAll)
         },
     ) { padding ->
@@ -177,7 +178,7 @@ private fun CommentControls(model: CommentsModel, state: CommentsModel.State) {
             onValueChange = model::search,
             label = { Text(pluginString(Strings.comment_search)) },
             leadingIcon = { Icon(Icons.Default.Search, null) },
-            trailingIcon = if (state.query.isEmpty()) null else ({ IconButton(onClick = { model.search("") }) { Icon(Icons.Default.Clear, pluginString(Strings.clear_search)) } }),
+            trailingIcon = if (state.query.isEmpty()) null else ({ IconTip(pluginString(Strings.clear_search)) { IconButton(onClick = { model.search("") }) { Icon(Icons.Default.Clear, pluginString(Strings.clear_search)) } } }),
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -210,7 +211,7 @@ private fun commentOrderLabel(order: SubstackCommentOrder): PluginText = when (o
 private fun BranchesMenu(enabled: Boolean, onExpand: (Boolean) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }, enabled = enabled) { Icon(Icons.Default.MoreVert, pluginString(Strings.more_options)) }
+        IconTip(pluginString(Strings.more_options)) { IconButton(onClick = { open = true }, enabled = enabled) { Icon(Icons.Default.MoreVert, pluginString(Strings.more_options)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             DropdownMenuItem(text = { Text(pluginString(Strings.expand_all)) }, onClick = { open = false; onExpand(true) })
             DropdownMenuItem(text = { Text(pluginString(Strings.collapse_all)) }, onClick = { open = false; onExpand(false) })

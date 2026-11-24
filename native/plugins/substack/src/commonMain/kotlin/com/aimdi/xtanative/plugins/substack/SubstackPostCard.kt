@@ -46,6 +46,7 @@ import com.aimdi.xtanative.networks.substack.SubstackPost
 import com.aimdi.xtanative.networks.substack.SubstackPosts
 import com.aimdi.xtanative.networks.substack.SubstackReading
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginPlural
@@ -185,9 +186,9 @@ private fun CardActions(app: SubstackApp, post: SubstackPost, marks: PostMarks, 
         CountButton(if (saved) SubstackIcons.Bookmark else SubstackIcons.BookmarkBorder, "", if (saved) accent else muted,
             pluginString(if (saved) Strings.unsave else Strings.save)) { app.launch { app.saves.toggle(post) } }
         CountButton(SubstackIcons.Comment, "${post.commentCount ?: 0}", muted, pluginString(Strings.comments)) { app.openComments(post) }
-        IconButton(onClick = { app.launch { if (unread) app.read.markRead(listOf(post)) else app.read.markUnread(post) } }) {
+        IconTip(pluginString(if (unread) Strings.mark_read else Strings.mark_unread)) { IconButton(onClick = { app.launch { if (unread) app.read.markRead(listOf(post)) else app.read.markUnread(post) } }) {
             Icon(if (unread) SubstackIcons.MarkRead else SubstackIcons.MarkUnread, pluginString(if (unread) Strings.mark_read else Strings.mark_unread), Modifier.size(20.dp), tint = muted)
-        }
+        } }
     }
 }
 

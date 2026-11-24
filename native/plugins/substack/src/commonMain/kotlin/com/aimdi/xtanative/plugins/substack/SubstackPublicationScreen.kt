@@ -60,6 +60,7 @@ import com.aimdi.xtanative.networks.substack.SubstackOrder
 import com.aimdi.xtanative.networks.substack.SubstackPublication
 import com.aimdi.xtanative.networks.substack.SubstackPublicationFilter
 import com.aimdi.xtanative.networks.substack.SubstackRecommendation
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
@@ -302,7 +303,7 @@ private fun PublicationControls(model: PublicationModel, state: PublicationModel
             onValueChange = { query = it; model.search(it) },
             placeholder = { Text(pluginString(Strings.search_publication)) },
             leadingIcon = { Icon(Icons.Default.Search, null) },
-            trailingIcon = if (query.isEmpty()) null else ({ IconButton(onClick = { query = ""; model.search("") }) { Icon(Icons.Default.Clear, pluginString(Strings.clear_search)) } }),
+            trailingIcon = if (query.isEmpty()) null else ({ IconTip(pluginString(Strings.clear_search)) { IconButton(onClick = { query = ""; model.search("") }) { Icon(Icons.Default.Clear, pluginString(Strings.clear_search)) } } }),
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )

@@ -28,6 +28,7 @@ import com.aimdi.xtanative.networks.substack.SubstackNotes
 import com.aimdi.xtanative.networks.substack.SubstackNotesFeed
 import com.aimdi.xtanative.networks.substack.postReads
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFrame
@@ -132,7 +133,7 @@ internal fun SubstackHome(app: SubstackApp, frame: PluginFrame) {
 @Composable
 private fun HomeHeader(app: SubstackApp, state: HomeState, selected: HomePane, onSelect: (HomePane) -> Unit) {
     PluginHomeTabs(HomePane.entries, selected, onSelect, icon = { it.icon }, label = { pluginString(it.label) }) {
-        IconButton(onClick = app::openDiscover) { Icon(Icons.Default.Search, pluginString(Strings.search)) }
+        IconTip(pluginString(Strings.search)) { IconButton(onClick = app::openDiscover) { Icon(Icons.Default.Search, pluginString(Strings.search)) } }
         HomeMenu(app, state, selected)
     }
 }

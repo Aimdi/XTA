@@ -49,6 +49,7 @@ import com.aimdi.xtanative.networks.substack.SubstackLibrarySection
 import com.aimdi.xtanative.networks.substack.SubstackPost
 import com.aimdi.xtanative.networks.substack.SubstackPublication
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
@@ -141,11 +142,11 @@ private fun FollowRow(app: SubstackApp, publication: SubstackPublication, pinned
             Text(publication.name, style = MaterialTheme.typography.bodyLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
             Text(SubstackHomeRules.hostOf(publication), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
         }
-        IconButton(onClick = { app.launch { app.pins.toggle(publication.id) } }) {
+        IconTip(pluginString(if (pinned) Strings.unpin else Strings.pin)) { IconButton(onClick = { app.launch { app.pins.toggle(publication.id) } }) {
             Icon(if (pinned) SubstackIcons.PushPin else SubstackIcons.PushPinOutlined, pluginString(if (pinned) Strings.unpin else Strings.pin), tint = if (pinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline)
-        }
+        } }
         Box {
-            IconButton(onClick = { menu = true }) { Icon(Icons.Default.MoreVert, pluginString(Strings.more_options)) }
+            IconTip(pluginString(Strings.more_options)) { IconButton(onClick = { menu = true }) { Icon(Icons.Default.MoreVert, pluginString(Strings.more_options)) } }
             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                 DropdownMenuItem(text = { Text(addToGroupText()) }, onClick = { menu = false; app.addToGroup(publication) })
                 DropdownMenuItem(text = { Text(pluginString(Strings.unfollow)) }, onClick = { menu = false; confirm = true })
