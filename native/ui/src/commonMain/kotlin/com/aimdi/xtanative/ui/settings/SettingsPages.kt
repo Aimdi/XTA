@@ -300,6 +300,8 @@ internal fun PostsSettings(title: String, vm: SettingsViewModel, focus: String?,
             stringResource(Res.string.settings_apply_all_description),
             stringResource(Res.string.settings_yes),
             stringResource(Res.string.settings_no),
+            // It drops every per-account choice: Enter answers No.
+            confirmIsDefault = false,
             onDismiss = { confirmAll = false },
         ) {
             confirmAll = false

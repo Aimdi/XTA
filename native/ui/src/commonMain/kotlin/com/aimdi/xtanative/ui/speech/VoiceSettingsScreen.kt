@@ -57,6 +57,7 @@ import com.aimdi.xtanative.ui.common.CenteredPage
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_back
@@ -351,7 +352,7 @@ private fun DownloadRow(
                     onDelete()
                 }) { Text(stringResource(Res.string.reader_delete)) }
             },
-            dismissButton = { TextButton(onClick = { confirm = false }) { Text(stringResource(Res.string.reader_cancel)) } },
+            dismissButton = { TextButton(onClick = { confirm = false }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.reader_cancel)) } },
         )
     }
 }

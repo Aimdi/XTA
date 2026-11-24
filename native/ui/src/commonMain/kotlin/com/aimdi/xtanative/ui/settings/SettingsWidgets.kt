@@ -55,6 +55,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.FocusRequester
@@ -416,17 +417,27 @@ internal fun SliderRow(
 
 /** A question asked before something that cannot be undone. */
 @Composable
-internal fun ConfirmDialog(title: String, text: String, confirm: String, dismiss: String, destructive: Boolean = false, onDismiss: () -> Unit, onConfirm: () -> Unit) {
+internal fun ConfirmDialog(
+    title: String,
+    text: String,
+    confirm: String,
+    dismiss: String,
+    destructive: Boolean = false,
+    confirmIsDefault: Boolean = !destructive,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
         text = { Text(text) },
         confirmButton = {
-            TextButton(onClick = onConfirm) {
+            TextButton(onClick = onConfirm, modifier = if (confirmIsDefault) Modifier.dialogDefault() else Modifier) {
                 Text(confirm, color = if (destructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
             }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(dismiss) } },
+        // A destructive question (or one undoing the reader's choices, [confirmIsDefault] false) defaults to Cancel, any other to its confirm button.
+        dismissButton = { TextButton(onClick = onDismiss, modifier = if (confirmIsDefault) Modifier else Modifier.dialogDefault()) { Text(dismiss) } },
     )
 }
 

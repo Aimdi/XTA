@@ -93,6 +93,7 @@ import com.aimdi.xtanative.ui.common.SearchPillShape
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.common.searchPillColors
 import com.aimdi.xtanative.ui.feed.ProvenanceColors
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -744,7 +745,7 @@ private fun UninstallDialog(name: String, onConfirm: () -> Unit, onDismiss: () -
         confirmButton = {
             TextButton(onClick = onConfirm) { Text(stringResource(Res.string.plugin_uninstall), color = MaterialTheme.colorScheme.error) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel)) } },
+        dismissButton = { TextButton(onClick = onDismiss, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.cancel)) } },
     )
 }
 

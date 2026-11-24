@@ -30,6 +30,7 @@ import com.aimdi.xtanative.store.offline.OfflineArticle
 import com.aimdi.xtanative.store.offline.OfflineSaved
 import com.aimdi.xtanative.store.saved.SavedContent
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.offline_article_text_only
@@ -98,7 +99,7 @@ fun OfflineSavedAction(postId: String, content: SavedContent, modifier: Modifier
             onDismissRequest = { asking = false },
             title = { Text(stringResource(Res.string.offline_sensitive_question)) },
             text = { Text(stringResource(Res.string.offline_sensitive_description)) },
-            confirmButton = { Button(onClick = { asking = false; keep() }) { Text(stringResource(Res.string.offline_keep)) } },
+            confirmButton = { Button(onClick = { asking = false; keep() }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.offline_keep)) } },
             dismissButton = { TextButton(onClick = { asking = false }) { Text(stringResource(Res.string.cancel)) } },
         )
     }

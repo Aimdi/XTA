@@ -50,6 +50,7 @@ import com.aimdi.xtanative.store.saved.SavedPost
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalXClient
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
@@ -81,7 +82,7 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
-/** A question with one way to go on, [confirm], and Cancel. */
+/** A question with one way to go on, [confirm] (a removal: Cancel is the default button), and Cancel. */
 @Composable
 fun ConfirmDialog(title: String, text: String?, confirm: String, onDismiss: () -> Unit, onConfirm: () -> Unit) {
     AlertDialog(
@@ -89,7 +90,7 @@ fun ConfirmDialog(title: String, text: String?, confirm: String, onDismiss: () -
         title = { Text(title) },
         text = text?.let { { Text(it) } },
         confirmButton = { TextButton(onClick = onConfirm) { Text(confirm) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel)) } },
+        dismissButton = { TextButton(onClick = onDismiss, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.cancel)) } },
     )
 }
 

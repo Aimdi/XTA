@@ -107,7 +107,7 @@ fun AltTextDialog(description: String, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.media_alt_title)) },
         text = { SelectionContainer { Text(description.trim()) } },
-        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.reader_ok)) } },
+        confirmButton = { TextButton(onClick = onDismiss, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.reader_ok)) } },
     )
 }
 

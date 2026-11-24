@@ -81,6 +81,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.common.problemText
 import com.aimdi.xtanative.ui.feed.PluginPostRow
 import com.aimdi.xtanative.ui.feed.SourcedPost
@@ -373,7 +374,7 @@ private fun InfoDialog(onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.groups_discover)) },
         text = { Text(stringResource(Res.string.groups_discovery_description)) },
-        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.close)) } },
+        confirmButton = { TextButton(onClick = onDismiss, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.close)) } },
     )
 }
 

@@ -66,6 +66,7 @@ import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.ReadFailureNotice
 import com.aimdi.xtanative.ui.common.WithReadingColumn
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.common.readFailureText
 import com.aimdi.xtanative.ui.common.savedAtText
 import com.aimdi.xtanative.ui.common.scrollToTop
@@ -378,7 +379,7 @@ private fun UnrelatedPill(vm: GroupFeedViewModel) {
                     }
                 }
             },
-            confirmButton = { TextButton(onClick = close) { Text(stringResource(Res.string.close)) } },
+            confirmButton = { TextButton(onClick = close, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.close)) } },
             dismissButton = {
                 TextButton(onClick = {
                     runCatching { uri.openUri(UNRELATED_INFO) }

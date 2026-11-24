@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.signin
 
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.common.tabLeavesField
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -77,7 +78,7 @@ private fun ImportOffer(screenName: String, onNo: () -> Unit, onYes: () -> Unit)
         onDismissRequest = onNo,
         title = { Text(stringResource(Res.string.signin_import_title)) },
         text = { Text(stringResource(Res.string.signin_import_text, screenName)) },
-        confirmButton = { TextButton(onClick = onYes) { Text(stringResource(Res.string.settings_yes)) } },
+        confirmButton = { TextButton(onClick = onYes, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.settings_yes)) } },
         dismissButton = { TextButton(onClick = onNo) { Text(stringResource(Res.string.settings_no)) } },
     )
 }

@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.saved
 
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.common.tabLeavesField
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -278,7 +279,7 @@ fun NoteEditorDialog(
                         scope.launch { if (editor.discard()) onDismiss() }
                     }) { Text(stringResource(Res.string.saved_discard)) }
                 },
-                dismissButton = { TextButton(onClick = { confirming = false }) { Text(stringResource(Res.string.cancel)) } },
+                dismissButton = { TextButton(onClick = { confirming = false }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.cancel)) } },
             )
         }
     }

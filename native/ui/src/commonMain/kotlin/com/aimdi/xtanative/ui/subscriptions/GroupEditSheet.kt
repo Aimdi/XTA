@@ -73,6 +73,7 @@ import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
@@ -271,7 +272,7 @@ fun GroupEditSheet(
                         onDismiss()
                     }) { Text(stringResource(Res.string.groups_yes)) }
                 },
-                dismissButton = { TextButton(onClick = { picker = EditPicker.NONE }) { Text(stringResource(Res.string.groups_no)) } },
+                dismissButton = { TextButton(onClick = { picker = EditPicker.NONE }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.groups_no)) } },
             )
         }
         EditPicker.ADD -> AddMemberSheet(actions, onDone = { added ->
