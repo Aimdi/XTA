@@ -113,7 +113,7 @@ internal fun SettingsPage(
 }
 
 /** The widest a settings page grows. */
-private val SETTINGS_MAX_WIDTH = 840.dp
+internal val SETTINGS_MAX_WIDTH = 840.dp
 
 /** The rows of a page, scrolling by [scroll], with the desktop's scrollbar; [view] is on what they scroll in. */
 @Composable
