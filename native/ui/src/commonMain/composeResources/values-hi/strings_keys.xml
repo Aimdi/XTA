@@ -7,7 +7,7 @@
     <string name="keys_go_home">होम पर वापस जाएँ</string>
     <string name="keys_refresh">रीफ़्रेश करें</string>
     <string name="keys_search">खोजें</string>
-    <string name="keys_new">नया नोट, समूह या एंटेना, उसके पेज पर</string>
+    <string name="keys_new">नया नोट, समूह, एंटेना, कॉलम या ट्रेंड का स्थान, उसके पेज पर</string>
     <string name="keys_recent_searches">खोज फ़ील्ड से कोई हाल की खोज चुनें</string>
     <string name="keys_open_copied_link">कॉपी किया गया लिंक खोलें</string>
     <string name="keys_tabs">अगला या पिछला टैब</string>

@@ -7,7 +7,7 @@
     <string name="keys_go_home">홈으로 돌아가기</string>
     <string name="keys_refresh">새로고침</string>
     <string name="keys_search">검색</string>
-    <string name="keys_new">새 메모, 그룹 또는 안테나 (해당 페이지에서)</string>
+    <string name="keys_new">새 메모, 그룹, 안테나, 열 또는 트렌드 위치 (해당 페이지에서)</string>
     <string name="keys_recent_searches">검색창에서 최근 검색어 고르기</string>
     <string name="keys_open_copied_link">복사한 링크 열기</string>
     <string name="keys_tabs">다음 또는 이전 탭</string>

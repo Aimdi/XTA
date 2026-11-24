@@ -7,7 +7,7 @@
     <string name="keys_go_home">Retour à l’accueil</string>
     <string name="keys_refresh">Actualiser</string>
     <string name="keys_search">Rechercher</string>
-    <string name="keys_new">Nouvelle note, groupe ou antenne, sur sa page</string>
+    <string name="keys_new">Nouvelle note, groupe, antenne, colonne ou lieu de tendances, sur sa page</string>
     <string name="keys_recent_searches">Choisir une recherche récente depuis le champ de recherche</string>
     <string name="keys_open_copied_link">Ouvrir un lien copié</string>
     <string name="keys_tabs">Onglet suivant ou précédent</string>

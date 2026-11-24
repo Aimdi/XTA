@@ -7,7 +7,7 @@
     <string name="keys_go_home">Вернуться на главную</string>
     <string name="keys_refresh">Обновить</string>
     <string name="keys_search">Поиск</string>
-    <string name="keys_new">Новая заметка, группа или антенна, на её странице</string>
+    <string name="keys_new">Новая заметка, группа, антенна, колонка или место трендов, на своей странице</string>
     <string name="keys_recent_searches">Выбрать недавний поиск из поля поиска</string>
     <string name="keys_open_copied_link">Открыть скопированную ссылку</string>
     <string name="keys_tabs">Следующая или предыдущая вкладка</string>

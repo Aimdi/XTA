@@ -7,7 +7,7 @@
     <string name="keys_go_home">Zurück zum Start</string>
     <string name="keys_refresh">Aktualisieren</string>
     <string name="keys_search">Suchen</string>
-    <string name="keys_new">Neue Notiz, Gruppe oder Antenne, auf ihrer Seite</string>
+    <string name="keys_new">Neu: Notiz, Gruppe, Antenne, Spalte oder Trend-Ort, auf der jeweiligen Seite</string>
     <string name="keys_recent_searches">Eine letzte Suche aus dem Suchfeld wählen</string>
     <string name="keys_open_copied_link">Kopierten Link öffnen</string>
     <string name="keys_tabs">Nächster oder vorheriger Tab</string>
