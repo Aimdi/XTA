@@ -23,7 +23,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -38,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.rememberSheetState
@@ -57,6 +57,7 @@ import com.aimdi.xtanative.ui.home.HomeStrip
 import com.aimdi.xtanative.ui.home.HomeTab
 import com.aimdi.xtanative.ui.home.LocalHomeNetworks
 import com.aimdi.xtanative.ui.home.StripNetwork
+import com.aimdi.xtanative.ui.home.rememberSheetList
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupLook
 import com.aimdi.xtanative.ui.subscriptions.GroupMark
@@ -118,12 +119,12 @@ fun GroupSwitcherSheet(
     onDismiss: () -> Unit,
 ) {
     val currentId = state.group?.id
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
         if (state.groups.isEmpty()) {
             Text(stringResource(Res.string.groups_none_yet), modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 32.dp))
-            return@ModalBottomSheet
+            return@KeyedSheet
         }
-        LazyColumn(Modifier.padding(bottom = 16.dp)) {
+        LazyColumn(Modifier.padding(bottom = 16.dp), state = rememberSheetList()) {
             item(key = "hint") { CombineHint(state.alsoRead.size, onClear) }
             items(state.groups, key = { it.id }) { group ->
                 SwitcherRow(group, current = group.id == currentId, combined = group.id in state.alsoRead, onClick = { onSwitch(group.id) }, onLongClick = {

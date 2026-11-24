@@ -3,7 +3,6 @@ package com.aimdi.xtanative.ui.pluginstore
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -18,6 +17,7 @@ import com.aimdi.xtanative.data.plugins.PluginSaves
 import com.aimdi.xtanative.data.plugins.PluginSheet
 import com.aimdi.xtanative.data.plugins.keepable
 import com.aimdi.xtanative.store.settings.SubscriptionPrefs
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PostMenuHandlers
@@ -121,7 +121,7 @@ private fun CashtagSheet(symbol: String, onDismiss: () -> Unit) {
     val running by plugins.running.collectAsStateWithLifecycle()
     val language = currentLanguage()
     val entries = remember(symbol, running, language) { plugins.cashtagEntries(symbol, language, running) }
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp)) {
             MenuRow(ShowChart, CashtagLinks.title(symbol)) {
                 onDismiss()

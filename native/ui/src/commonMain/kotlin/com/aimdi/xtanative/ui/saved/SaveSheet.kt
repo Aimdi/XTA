@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
@@ -32,7 +31,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -64,6 +62,7 @@ import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedLibrary
 import com.aimdi.xtanative.store.settings.SavedPrefs
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberSheetState
@@ -80,6 +79,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_sheet_no_match
 import com.aimdi.xtanative.ui.generated.resources.saved_sheet_not_saved
 import com.aimdi.xtanative.ui.generated.resources.saved_sheet_title
 import com.aimdi.xtanative.ui.generated.resources.saved_sheet_unfiled
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -100,8 +100,8 @@ fun SaveSheet(item: Keepable, onDismiss: () -> Unit) {
         keeper.saved.index()
         keeper.settings.load()
     }
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
-        val loaded = library ?: return@ModalBottomSheet
+    KeyedSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
+        val loaded = library ?: return@KeyedSheet
         SheetBody(item, loaded, settings?.get(SavedPrefs.stickyFolderEnabled) == true)
     }
 }
@@ -132,7 +132,7 @@ private fun SheetBody(item: Keepable, library: SavedLibrary, remembering: Boolea
             }
         }
         SheetSearch(view.query, onChange = { view = view.search(it) }, Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 6.dp))
-        Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
+        Column(Modifier.weight(1f, fill = false).verticalScrollByKeys(rememberScrollState()).padding(horizontal = 16.dp)) {
             if (SaveSheetView.labelShown(chips)) SectionLabel(sectionText(chips.section))
             if (chips.canCreate) {
                 CreateRow(stringResource(Res.string.saved_sheet_create, view.query.trim())) {

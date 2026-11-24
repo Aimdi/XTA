@@ -39,7 +39,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
@@ -76,6 +75,7 @@ import com.aimdi.xtanative.store.antenna.Antenna
 import com.aimdi.xtanative.store.antenna.AntennaScope
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.TipText
@@ -98,6 +98,7 @@ import com.aimdi.xtanative.ui.generated.resources.discover_settings
 import com.aimdi.xtanative.ui.generated.resources.discover_show_menu
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
 import com.aimdi.xtanative.ui.home.CreatesWithKeys
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.search.DiscoverIcons
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -248,11 +249,11 @@ private fun AntennaEditor(draft: AntennaDraft, onChange: (AntennaDraft) -> Unit,
     // A new antenna starts at its name, which has the keys as the editor opens.
     val nameFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) { if (draft.isNew) runCatching { nameFocus.requestFocus() } }
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
+    KeyedSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
         Column(
             // Above the keyboard, as XTA lifts its editor.
             Modifier.widthIn(max = ContentWidth).fillMaxWidth().align(Alignment.CenterHorizontally).imePadding()
-                .verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                .verticalScrollByKeys(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(

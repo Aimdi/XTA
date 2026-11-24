@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
@@ -28,7 +27,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -51,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.longPressOver
 import com.aimdi.xtanative.ui.common.rememberSheetState
@@ -133,7 +132,7 @@ internal fun PluginSwitcherSheet(ui: HomeUi, networks: HomeNetworks, shown: Home
     val title = stringResource(Res.string.home_switcher_title)
     val shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
     // Whole at once, and the page's own colour under a hairline, as the app's screens are flat.
-    ModalBottomSheet(
+    KeyedSheet(
         onDismissRequest = calls.onDismiss,
         sheetState = rememberSheetState(alwaysFull = true),
         shape = shape,
@@ -141,7 +140,7 @@ internal fun PluginSwitcherSheet(ui: HomeUi, networks: HomeNetworks, shown: Home
         tonalElevation = 0.dp,
         modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape).semantics { paneTitle = title },
     ) {
-        Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 12.dp)) {
+        Column(Modifier.verticalScrollByKeys(rememberScrollState()).padding(bottom = 12.dp)) {
             SheetHead(shown, ui, networks, plugin)
             Column(Modifier.padding(horizontal = 4.dp, vertical = 6.dp)) {
                 if (plugin != null) {

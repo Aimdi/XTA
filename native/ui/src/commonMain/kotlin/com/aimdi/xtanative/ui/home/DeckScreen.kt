@@ -37,7 +37,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -75,6 +74,7 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.DeckWidth
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
@@ -423,13 +423,13 @@ private fun AddColumnSheet(choices: List<DeckColumn>, networks: HomeNetworks, on
     val session by LocalGraph.current.sessions.state.collectAsStateWithLifecycle()
     val available by networks.available.collectAsStateWithLifecycle()
     val groups = session?.groups.orEmpty()
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Text(
             stringResource(Res.string.home_deck_add),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
         )
-        LazyColumn(Modifier.fillMaxWidth().navigationBarsPadding()) {
+        LazyColumn(Modifier.fillMaxWidth().navigationBarsPadding(), state = rememberSheetList()) {
             items(choices, key = { it.id }) { column ->
                 Row(
                     Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable { onPick(column) }.padding(horizontal = 24.dp),

@@ -261,6 +261,18 @@ object DesktopKeys {
     }
 
     /**
+     * What [key] does to the list of a sheet open over the window
+     * ([SheetKeys]): ↑ ↓, Page Up and Down, Space (with Shift, up), Home and
+     * End move it, as the page's under it; nothing with Ctrl or Alt held,
+     * nor any other key.
+     */
+    fun sheetScroll(key: DeskKey, shift: Boolean, ctrl: Boolean, alt: Boolean): DeskAction = when {
+        ctrl || alt || key !in SCROLL_KEYS -> DeskAction.NONE
+        shift && key != DeskKey.SPACE -> DeskAction.NONE
+        else -> scroll(key, shift)
+    }
+
+    /**
      * Which way a Tab press walks the controls: forward, or back with Shift;
      * null for anything else (Ctrl+Tab and Alt+Tab turn tabs or windows).
      *

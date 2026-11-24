@@ -435,10 +435,10 @@ private val TEXT_SCALES = SettingsChoices.TEXT_SCALE_MIN.toDouble()..SettingsCho
 private const val REFOCUS_AFTER_MS = 50L
 
 /** How far ↑ and ↓ move a list: about a line of a post and a half. */
-private val LINE = 64.dp
+internal val LINE = 64.dp
 
 /** [action] done to the list, eased as the wheel's own moves are (j and k: [stepTo]). */
-private suspend fun LazyListState.moveFor(action: DeskAction, line: Float) {
+internal suspend fun LazyListState.moveFor(action: DeskAction, line: Float) {
     val screen = layoutInfo.viewportSize.height * (1 - DesktopKeys.SCREEN_KEPT)
     when (action) {
         DeskAction.LINE_UP -> animateScrollBy(-line)
@@ -461,7 +461,7 @@ private suspend fun LazyListState.stepTo(step: DesktopKeys.KeyStep.ToItem): Int 
 }
 
 /** A page that scrolls as a whole to [target] ([DesktopKeys.scrolledTo]): at once to its start or end, as a list's Home and End go; eased otherwise. */
-private suspend fun ScrollState.moveTo(action: DeskAction, target: Int) {
+internal suspend fun ScrollState.moveTo(action: DeskAction, target: Int) {
     if (action == DeskAction.TO_TOP || action == DeskAction.TO_END) scrollTo(target) else animateScrollTo(target)
 }
 
@@ -477,7 +477,7 @@ private val TAB_DIGITS: Map<Key, Int> = mapOf(
 /** The keyboard's Menu key, which opens a context menu. */
 private val MENU_KEY = Key(java.awt.event.KeyEvent.VK_CONTEXT_MENU)
 
-private fun deskKey(key: Key): DeskKey = when (key) {
+internal fun deskKey(key: Key): DeskKey = when (key) {
     Key.Escape -> DeskKey.ESCAPE
     Key.DirectionLeft -> DeskKey.LEFT
     Key.DirectionRight -> DeskKey.RIGHT

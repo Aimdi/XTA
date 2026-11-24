@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
@@ -24,7 +23,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import com.aimdi.xtanative.ui.common.FlatFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -43,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -58,6 +57,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_sheet_matches
 import com.aimdi.xtanative.ui.generated.resources.groups_sheet_no_match
 import com.aimdi.xtanative.ui.generated.resources.groups_sheet_recent
 import com.aimdi.xtanative.ui.generated.resources.groups_sheet_search_or_create
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -86,7 +86,7 @@ fun GroupMembershipSheet(
     val ordered = GroupPicker.ordered(groups, openOrder, view.createdIds)
     val chips = GroupPicker.chips(ordered, view, shown)
 
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = { onDone(GroupPicker.answer(selected, chosen)) }, containerColor = MaterialTheme.colorScheme.background) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = { onDone(GroupPicker.answer(selected, chosen)) }, containerColor = MaterialTheme.colorScheme.background) {
         Column(Modifier.imePadding()) {
             Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.groups_add_to_group), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
@@ -112,7 +112,7 @@ fun GroupMembershipSheet(
                 ),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),
             )
-            Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
+            Column(Modifier.weight(1f, fill = false).verticalScrollByKeys(rememberScrollState()).padding(horizontal = 16.dp)) {
                 sectionLabel(groups.isEmpty(), chips)?.let { label ->
                     Text(
                         label,

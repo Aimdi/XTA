@@ -25,7 +25,6 @@ import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Badge
@@ -35,7 +34,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -72,12 +70,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_more_options
 import com.aimdi.xtanative.ui.generated.resources.home_sort_filter
 import com.aimdi.xtanative.ui.generated.resources.home_sort_filter_on
 import com.aimdi.xtanative.ui.generated.resources.home_sort_reset
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.post.PostIcons
 import org.jetbrains.compose.resources.stringResource
 
@@ -291,8 +291,8 @@ private fun FilterButton(filter: ShellFilter, color: Color) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShellSortSheet(subtitle: String?, onDismiss: () -> Unit, onReset: (() -> Unit)? = null, content: @Composable ColumnScope.() -> Unit) {
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
-        Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp).padding(bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        Column(Modifier.verticalScrollByKeys(rememberScrollState()).padding(horizontal = 16.dp).padding(bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Column(Modifier.padding(horizontal = 4.dp).semantics(mergeDescendants = true) { heading() }) {
                 Text(stringResource(Res.string.home_sort_filter), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 if (subtitle != null) Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

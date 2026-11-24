@@ -36,7 +36,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -73,6 +72,7 @@ import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.onSecondaryClickIf
@@ -402,8 +402,8 @@ internal fun NetworksSheet(ui: HomeUi, networks: HomeNetworks, current: String?,
     val onBar = HomeBar.networks(ui.bar)
     val (recent, rest) = AltMicroblogging.sections(onBar, ui.recentNetworks, ui.microblogsGrouped)
     val sheet = NetworkRows(ui, networks, current, AltMicroblogging.members(onBar), onPick)
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
-        LazyColumn(Modifier.padding(bottom = 16.dp)) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
+        LazyColumn(Modifier.padding(bottom = 16.dp), state = rememberSheetList()) {
             item(key = "title") {
                 Text(stringResource(Res.string.home_networks), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp))
             }

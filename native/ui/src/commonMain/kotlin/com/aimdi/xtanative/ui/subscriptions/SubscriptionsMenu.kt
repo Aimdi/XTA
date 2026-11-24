@@ -15,14 +15,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.store.settings.GroupsLayout
 import com.aimdi.xtanative.store.settings.GroupsOrder
 import com.aimdi.xtanative.store.settings.SubscriptionsOrder
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -61,6 +60,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_settings
 import com.aimdi.xtanative.ui.generated.resources.groups_sort_ungrouped
 import com.aimdi.xtanative.ui.generated.resources.groups_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.groups_username
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -87,8 +87,8 @@ fun SubscriptionsMenuSheet(state: SubscriptionsUi, vm: SubscriptionsViewModel, a
         onDismiss()
         action()
     }
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
-        Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 12.dp)) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
+        Column(Modifier.verticalScrollByKeys(rememberScrollState()).padding(bottom = 12.dp)) {
             Text(
                 stringResource(if (groups) Res.string.groups_groups else Res.string.groups_subscriptions),
                 style = MaterialTheme.typography.titleLarge,

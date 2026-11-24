@@ -35,7 +35,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -72,6 +71,7 @@ import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.GroupPack
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -108,6 +108,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_toggle_all
 import com.aimdi.xtanative.ui.generated.resources.groups_unmark_nsfw
 import com.aimdi.xtanative.ui.generated.resources.groups_unpin
 import com.aimdi.xtanative.ui.generated.resources.groups_yes
+import com.aimdi.xtanative.ui.home.rememberSheetList
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -154,7 +155,7 @@ fun GroupEditSheet(
         onDismiss()
     }
 
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheet, containerColor = MaterialTheme.colorScheme.background) {
+    KeyedSheet(onDismissRequest = onDismiss, sheetState = sheet, containerColor = MaterialTheme.colorScheme.background) {
         Column(Modifier.fillMaxHeight(0.9f).imePadding().padding(horizontal = 16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 GroupMark(draft.name, draft.seedColor, draft.emoji, draft.icon, draft.markStyle, 40.dp)
@@ -223,7 +224,7 @@ fun GroupEditSheet(
                 placeholder = { Text(stringResource(Res.string.groups_search_subscriptions)) },
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             )
-            LazyColumn(Modifier.weight(1f)) {
+            LazyColumn(Modifier.weight(1f), state = rememberSheetList()) {
                 items(GroupEdits.visible(candidates, query), key = { it.key }) { row ->
                     MemberCheckRow(row, row.id in draft.members) { draft = draft.toggled(row.id, it) }
                 }
@@ -478,8 +479,8 @@ private fun IconDialog(onPick: (String) -> Unit, onDismiss: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupChoiceSheet(groups: List<FollowGroup>, current: String?, noneLabel: StringResource?, onPick: (String?) -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
-        LazyColumn(Modifier.padding(bottom = 16.dp)) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
+        LazyColumn(Modifier.padding(bottom = 16.dp), state = rememberSheetList()) {
             if (noneLabel != null) {
                 item(key = "none") {
                     ChoiceRow(selected = current == null, onClick = { onPick(null) }) {

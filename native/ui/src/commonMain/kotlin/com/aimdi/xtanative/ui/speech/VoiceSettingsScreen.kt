@@ -27,7 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -56,6 +55,7 @@ import com.aimdi.xtanative.services.speech.VoiceInstall
 import com.aimdi.xtanative.services.util.formatByteSize
 import com.aimdi.xtanative.ui.common.CenteredPage
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -96,6 +96,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_voices_note
 import com.aimdi.xtanative.ui.generated.resources.reader_voices_synthesis_missing
 import com.aimdi.xtanative.ui.generated.resources.reader_voices_use
 import com.aimdi.xtanative.ui.generated.resources.reader_voices_use_description
+import com.aimdi.xtanative.ui.home.rememberSheetList
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.media.ReaderIcons
 import org.jetbrains.compose.resources.stringResource
@@ -133,7 +134,7 @@ private val SETTINGS_EXTRA = 120.dp
 @Composable
 fun VoiceSettingsSheet(onDismiss: () -> Unit) {
     val vm = voiceSettingsViewModel()
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
+    KeyedSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
         Column(Modifier.fillMaxHeight(0.8f)) {
             Text(stringResource(Res.string.reader_speech_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             VoiceSettingsList(vm, PaddingValues(bottom = 8.dp), Modifier.weight(1f))
@@ -155,7 +156,7 @@ private fun voiceSettingsViewModel(): VoiceSettingsViewModel {
 private fun VoiceSettingsList(vm: VoiceSettingsViewModel, padding: PaddingValues, modifier: Modifier) {
     val ui by vm.ui.collectAsStateWithLifecycle()
     val parts = rememberSpeechParts()
-    LazyColumn(modifier, contentPadding = padding) {
+    LazyColumn(modifier, state = rememberSheetList(), contentPadding = padding) {
         offlineVoices(ui, vm, parts)
         if (parts.systemVoices == null) {
             item(key = "no-engine") {

@@ -28,7 +28,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
@@ -39,7 +38,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -81,6 +79,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_download
@@ -100,6 +99,7 @@ import com.aimdi.xtanative.ui.generated.resources.video_fullscreen
 import com.aimdi.xtanative.ui.generated.resources.video_fullscreen_exit
 import com.aimdi.xtanative.ui.generated.resources.video_picture_in_picture
 import com.aimdi.xtanative.ui.generated.resources.video_rotate
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
@@ -474,8 +474,8 @@ private fun FailedOverlay(playback: VideoPlayback) {
 @Composable
 private fun VideoSheets(sheet: VideoSheet?, state: VideoState, playback: VideoPlayback, chrome: VideoChrome, show: (VideoSheet?) -> Unit) {
     sheet ?: return
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = { show(null) }) {
-        Column(Modifier.verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = { show(null) }) {
+        Column(Modifier.verticalScrollByKeys(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) {
             when (sheet) {
                 VideoSheet.MORE -> MoreRows(state, playback, chrome, show)
                 VideoSheet.SPEED -> VideoRules.SPEEDS.reversed().forEach { speed ->

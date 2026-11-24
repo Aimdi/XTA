@@ -521,6 +521,10 @@ fun Modifier.verticalScrollByKeys(scroll: ScrollState): Modifier = movedByKeys(s
 
 @Composable
 private fun Modifier.keyMoved(list: ScrollableState): Modifier {
+    // In a sheet, its own keys move it ([sheetKeys]); the window's never reach it. A sheet over a video full screen has only the host's.
+    LocalSheetKeys.current?.let { sheet ->
+        if ((LocalDesktopActions.current ?: LocalDesktopActionsHost.current.actions) != null) return movedInSheet(sheet, list)
+    }
     val actions = LocalDesktopActions.current ?: return this
     val column = LocalReadColumn.current
     DisposableEffect(actions, list, column) {

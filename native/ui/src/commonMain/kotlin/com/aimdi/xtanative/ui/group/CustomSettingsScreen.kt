@@ -31,7 +31,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -66,6 +65,7 @@ import com.aimdi.xtanative.core.feed.LanguageAction
 import com.aimdi.xtanative.core.feed.MutedKeyword
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.rememberSheetState
@@ -276,7 +276,7 @@ private fun MutedWords(keywords: List<MutedKeyword>, actions: GroupSettingsActio
         }
     }
     editing?.let { keyword ->
-        ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = { editing = null }, containerColor = MaterialTheme.colorScheme.background) {
+        KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = { editing = null }, containerColor = MaterialTheme.colorScheme.background) {
             Column(Modifier.padding(bottom = 16.dp)) {
                 OptionRow(GroupIcons.VisibilityOffOutlined, stringResource(Res.string.groups_filter_hide)) {
                     editing = null

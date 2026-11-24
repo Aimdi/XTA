@@ -23,7 +23,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -48,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XConversation
 import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedPost
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalXClient
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
@@ -74,6 +74,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_rename
 import com.aimdi.xtanative.ui.generated.resources.saved_save
 import com.aimdi.xtanative.ui.generated.resources.saved_some_unchecked
 import com.aimdi.xtanative.ui.generated.resources.saved_tab_unfiled
+import com.aimdi.xtanative.ui.home.rememberSheetList
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import kotlinx.coroutines.delay
@@ -179,7 +180,7 @@ fun DeleteFolderDialog(onDismiss: () -> Unit, onDelete: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun FolderMenuSheet(onRename: () -> Unit, onDelete: () -> Unit, onManage: () -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp)) {
             SheetRow(Icons.Filled.Edit, stringResource(Res.string.saved_rename), onRename)
             SheetRow(Icons.Filled.Delete, stringResource(Res.string.saved_delete), onDelete)
@@ -201,8 +202,8 @@ private fun SheetRow(icon: androidx.compose.ui.graphics.vector.ImageVector, labe
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MoveSheet(folders: List<SavedFolder>, onDismiss: () -> Unit, onPick: (String?) -> Unit) {
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
-        LazyColumn(Modifier.padding(bottom = 16.dp)) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        LazyColumn(Modifier.padding(bottom = 16.dp), state = rememberSheetList()) {
             item(key = "unfiled") { SheetRow(SavedIcons.NoFolder, stringResource(Res.string.saved_tab_unfiled)) { onPick(null) } }
             items(folders, key = { it.id }) { folder -> SheetRow(SavedIcons.Folder, folder.name) { onPick(folder.id) } }
         }

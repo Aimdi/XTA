@@ -25,7 +25,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -47,6 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalProblemActions
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
@@ -92,7 +92,7 @@ internal fun HomeFilterSheet(ui: HomeUi, onApply: (HomeFilterDraft) -> Unit, onD
     val shownGroups = DrawerGroups.matching(groups, query)
     val ids = if (groupsShown) groups.map { it.id } else accountIds
 
-    ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.fillMaxWidth().fillMaxHeight(0.9f)) {
             Row(Modifier.padding(start = 20.dp, end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.home_feed_accounts), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
@@ -130,7 +130,7 @@ internal fun HomeFilterSheet(ui: HomeUi, onApply: (HomeFilterDraft) -> Unit, onD
                     onNone = { draft = draft.selecting(groupsShown, ids.toSet()) }.takeIf { active > 0 },
                 )
             }
-            LazyColumn(Modifier.weight(1f)) {
+            LazyColumn(Modifier.weight(1f), state = rememberSheetList()) {
                 if (!groupsShown && accounts.isEmpty()) {
                     item(key = "no-accounts") { NoAccounts() }
                 } else if ((groupsShown && shownGroups.isEmpty()) || (!groupsShown && shownAccounts.isEmpty())) {

@@ -14,7 +14,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -30,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.offline.OfflineSaved
 import com.aimdi.xtanative.store.saved.SavedContent
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.offline_title
@@ -49,7 +49,7 @@ internal fun SavedNoteRow(id: String, note: String?, content: SavedContent, onEd
     var offline by remember { mutableStateOf(false) }
     NoteLine(note, OfflineSaved.hasMedia(content), onEdit = onEdit, onOffline = { offline = true })
     if (offline) {
-        ModalBottomSheet(sheetState = rememberSheetState(), onDismissRequest = { offline = false }) {
+        KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = { offline = false }) {
             OfflineSavedAction(id, content, Modifier.padding(bottom = 16.dp))
         }
     }
