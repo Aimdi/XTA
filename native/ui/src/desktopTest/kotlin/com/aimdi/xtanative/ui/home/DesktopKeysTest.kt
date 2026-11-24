@@ -856,4 +856,54 @@ class DesktopKeysTest {
         assertEquals(2, DesktopKeys.firstIn(300, 500, listOf(0, 550, 300, 800)))
         assertNull(DesktopKeys.firstIn(300, 500, listOf(0, 800)), "a row without a post (a header)")
     }
+
+    @Test
+    fun atTheEndJAndKWalkThePostsLeftOneByOne() {
+        fun item(index: Int, offset: Int, size: Int = 200) = DesktopKeys.ShownItem(index, offset, size)
+        // The list at its end: items 6 to 9 in view, a post each, 7 marked (j landed there, below the top).
+        val shown = listOf(item(6, -100), item(7, 100), item(8, 300), item(9, 500))
+        val tops = listOf(-100, 100, 300, 500)
+        assertEquals(DesktopKeys.KeyStep.ToPost(2, 300), DesktopKeys.keyStep(shown, 10, tops, marked = 1, forward = true))
+        assertEquals(DesktopKeys.KeyStep.ToPost(3, 500), DesktopKeys.keyStep(shown, 10, tops, marked = 2, forward = true))
+        // The last post: nowhere to go, the mark stays (not back up to item 7 from the list's place).
+        assertNull(DesktopKeys.keyStep(shown, 10, tops, marked = 3, forward = true))
+        // k from there walks back the same way, past the top of the view as well.
+        assertEquals(DesktopKeys.KeyStep.ToPost(2, 300), DesktopKeys.keyStep(shown, 10, tops, marked = 3, forward = false))
+        assertEquals(DesktopKeys.KeyStep.ToPost(0, -100), DesktopKeys.keyStep(shown, 10, tops, marked = 1, forward = false))
+    }
+
+    @Test
+    fun aShortListThatCannotScrollStillWalksItsPosts() {
+        fun item(index: Int, offset: Int, size: Int = 200) = DesktopKeys.ShownItem(index, offset, size)
+        // An opened post (0) and two replies, all in view; the focal post marked at the top.
+        val shown = listOf(item(0, 0, 300), item(1, 300), item(2, 500), item(3, 700, 40))
+        val tops = listOf(0, 300, 500)
+        // j from the focal post: the first reply's item, as any step.
+        assertEquals(DesktopKeys.KeyStep.ToItem(1, 0), DesktopKeys.keyStep(shown, 4, tops, marked = 0, forward = true))
+        // The first reply marked but left below the top: on to the second, and k back to the focal one.
+        assertEquals(DesktopKeys.KeyStep.ToPost(2, 500), DesktopKeys.keyStep(shown, 4, tops, marked = 1, forward = true))
+        assertEquals(DesktopKeys.KeyStep.ToPost(0, 0), DesktopKeys.keyStep(shown, 4, tops, marked = 1, forward = false))
+        // At the very top k has nowhere to go.
+        assertNull(DesktopKeys.keyStep(shown, 4, tops, marked = 0, forward = false))
+    }
+
+    @Test
+    fun aMarkAtTheLineStepsByItemsSaveWithinAThread() {
+        fun item(index: Int, offset: Int, size: Int = 300) = DesktopKeys.ShownItem(index, offset, size)
+        // Item 2 a thread of two posts (0, 250), marked its first; item 3 after it.
+        val shown = listOf(item(2, 0, 500), item(3, 500), item(4, 800))
+        val tops = listOf(0, 250, 500, 800)
+        assertEquals(DesktopKeys.KeyStep.ToPost(1, 250), DesktopKeys.keyStep(shown, 9, tops, marked = 0, forward = true))
+        // A single-post item at the line: the ordinary item step.
+        val plain = listOf(item(2, 0), item(3, 300), item(4, 600))
+        assertEquals(DesktopKeys.KeyStep.ToItem(3, 0), DesktopKeys.keyStep(plain, 9, listOf(0, 300, 600), marked = 0, forward = true))
+        assertEquals(DesktopKeys.KeyStep.ToItem(1, 0), DesktopKeys.keyStep(plain, 9, listOf(0, 300, 600), marked = 0, forward = false))
+        // Nothing marked: from the list's place.
+        assertEquals(DesktopKeys.KeyStep.ToItem(3, 0), DesktopKeys.keyStep(plain, 9, listOf(0, 300, 600), marked = null, forward = true))
+        // Under pinned tabs (48 px): the line is theirs. At it, the next item goes under them.
+        val pinned = listOf(item(1, 0, 48), item(4, 48), item(5, 348))
+        assertEquals(DesktopKeys.KeyStep.ToItem(5, -48), DesktopKeys.keyStep(pinned, 6, listOf(48, 348, 500), marked = 0, forward = true))
+        // The list at its end, item 5's first post marked below them: on to its second.
+        assertEquals(DesktopKeys.KeyStep.ToPost(2, 452), DesktopKeys.keyStep(pinned, 6, listOf(48, 348, 500), marked = 1, forward = true))
+    }
 }

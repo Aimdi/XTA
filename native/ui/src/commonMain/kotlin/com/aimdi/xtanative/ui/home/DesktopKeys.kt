@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.home
 
 import androidx.compose.ui.geometry.Offset
+import kotlin.math.abs
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
 enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, N, OTHER }
@@ -384,6 +385,43 @@ object DesktopKeys {
         }
         if (target !in 0 until count || target == pinned?.index) return null
         return target to -line
+    }
+
+    /** Where j or k takes a list ([keyStep]): to an item's start ([itemStep]), or on to a post already drawn, the list moving [by] that far as it can. */
+    sealed interface KeyStep {
+        data class ToItem(val index: Int, val offset: Int) : KeyStep
+        data class ToPost(val post: Int, val by: Int) : KeyStep
+    }
+
+    /**
+     * Where j ([forward]) or k goes from the post [marked] among those drawn
+     * at [tops] (the items' offsets) in a list of [count] items, [shown] in
+     * view. A marked post at the line (under any pinned header) steps by
+     * items ([itemStep]), except to the next post of its own item (a thread's
+     * next post). One the list could not bring to the line, being at its end
+     * or its start, steps to the next drawn post, or the one before, so every
+     * post there is reached one by one while the list moves as far as it can.
+     * Null where there is nowhere to go: the mark stays. Without a mark, the
+     * step goes from the list's place ([itemStep]).
+     */
+    fun keyStep(shown: List<ShownItem>, count: Int, tops: List<Int>, marked: Int?, forward: Boolean): KeyStep? {
+        val item = itemStep(shown, count, forward)?.let { (index, offset) -> KeyStep.ToItem(index, offset) }
+        val top = marked?.let(tops::getOrNull) ?: return item
+        val items = shown.sortedBy { it.index }
+        val line = pinnedOf(items)?.let { it.offset + it.size } ?: 0
+        val target = tops.withIndex().let { all ->
+            if (forward) all.filter { it.value > top + SLACK }.minByOrNull { it.value } else all.filter { it.value < top - SLACK }.maxByOrNull { it.value }
+        }
+        fun itemOf(at: Int) = items.firstOrNull { at >= it.offset - SLACK && at < it.offset + it.size }?.index
+        val home = itemOf(top)
+        val atLine = abs(top - line) <= SLACK
+        if (target != null && (!atLine || item == null || (home != null && itemOf(target.value) == home))) {
+            return KeyStep.ToPost(target.index, target.value - line)
+        }
+        if (item == null) return null
+        // An item step that would take the mark back the way it came (the list at its end) is none.
+        if (!atLine && home != null && (if (forward) item.index <= home else item.index >= home)) return null
+        return item
     }
 
     /**

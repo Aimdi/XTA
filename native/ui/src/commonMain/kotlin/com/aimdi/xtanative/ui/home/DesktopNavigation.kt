@@ -269,6 +269,29 @@ class DesktopActions(
         markedPost = inItem ?: currentPost()
     }
 
+    /**
+     * Where j ([forward]) or k takes [list] ([DesktopKeys.keyStep]): from
+     * the post marked in it, so near its end or start, where the list moves
+     * no further, the mark still goes on post by post. A step to a post drawn
+     * already names it ([KeyedStep.post]), to be marked once the list moved.
+     */
+    internal fun keyStep(list: LazyListState, forward: Boolean): KeyedStep? {
+        val info = list.layoutInfo
+        val shown = info.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) }
+        val (drawn, tops) = drawnPosts(list) ?: (emptyList<KeyedPost>() to emptyList())
+        val marked = markedPost?.takeIf { it in posts && it.place?.isAttached == true }?.let { drawn.indexOf(it).takeIf { at -> at >= 0 } }
+        return when (val step = DesktopKeys.keyStep(shown, info.totalItemsCount, tops, marked, forward)) {
+            is DesktopKeys.KeyStep.ToItem -> KeyedStep(step, null)
+            is DesktopKeys.KeyStep.ToPost -> KeyedStep(step, drawn[step.post])
+            null -> null
+        }
+    }
+
+    /** [post] marked: j or k went on to it ([keyStep]). */
+    internal fun markPost(post: KeyedPost) {
+        markedPost = post
+    }
+
     /** The keyboard or the mouse moved the list some other way: no post is marked. */
     internal fun unmarkPost() {
         markedPost = null
@@ -707,3 +730,6 @@ fun rememberLeaveField(): () -> Unit {
         }
     }
 }
+
+/** A step of j or k ([DesktopActions.keyStep]), and the post it goes to when that is one drawn already. */
+internal class KeyedStep(val step: DesktopKeys.KeyStep, val post: KeyedPost?)

@@ -101,7 +101,8 @@ fun SwipeBackCard(behind: ImageBitmap?, canLeave: Boolean, leave: () -> Unit, co
     }
     if (canLeave) {
         CardBackGesture(enabled = true, events = card.backEvents)
-        DesktopShortcuts(refresh = {}, turn = {}, isOpen = { true }, close = back)
+        // Esc slides the card back as what is open; the page on it is read with the keys all the same (j and k, Enter, l, b …).
+        DesktopShortcuts(refresh = {}, turn = {}, isOpen = { true }, close = back, readsOpen = { true })
     }
     card.gestures = gestureEdges()
     val page = MaterialTheme.colorScheme.background.luminance()

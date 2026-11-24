@@ -20,17 +20,18 @@ internal val LocalMenuAtPost = staticCompositionLocalOf { false }
 /**
  * What the desktop's keys do to [post] as a feed row: open it as a click
  * does, like or save it on this device as its heart and bookmark do, copy
- * its link, and open its ⋯ menu ([openMenu]).
+ * its link, and open its ⋯ menu ([openMenu]). The post opened already (the
+ * focal one) is not [openable]: Enter and o leave it as it is.
  */
 @Composable
-internal fun rememberPostKeys(post: XPost, actions: PostActions, openMenu: () -> Unit): PostKeys {
+internal fun rememberPostKeys(post: XPost, actions: PostActions, openable: Boolean = true, openMenu: () -> Unit): PostKeys {
     val keeper = LocalKeeper.current
     val shown = post.shown
     val url = PostView.url(post, postScope().prefs)
     val copy = rememberCopyText()
     val copied = stringResource(Res.string.reader_link_copied)
     return PostKeys(
-        open = { actions.openPost(shown.id) },
+        open = { if (openable) actions.openPost(shown.id) },
         like = { actions.keep.toggleLike(keeper, shown) },
         save = { actions.keep.toggleSave(keeper, shown) },
         copyLink = {

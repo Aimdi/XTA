@@ -150,11 +150,24 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         DeskAction.NEXT_ITEM, DeskAction.PREVIOUS_ITEM ->
             when (val list = actions.readList()) {
                 is LazyListState -> {
-                    actions.unmarkPost()
-                    scope.launch {
-                        val landed = list.moveFor(action, line)
-                        // Where j and k land, the post the keys then act on is marked.
-                        if (action == DeskAction.NEXT_ITEM || action == DeskAction.PREVIOUS_ITEM) actions.markPostIn(list, landed)
+                    if (action == DeskAction.NEXT_ITEM || action == DeskAction.PREVIOUS_ITEM) {
+                        // From the post marked: where nothing is left to go to, the mark stays.
+                        actions.keyStep(list, action == DeskAction.NEXT_ITEM)?.let { keyed ->
+                            actions.unmarkPost()
+                            scope.launch {
+                                when (val step = keyed.step) {
+                                    is DesktopKeys.KeyStep.ToPost -> {
+                                        list.animateScrollBy(step.by.toFloat())
+                                        keyed.post?.let(actions::markPost)
+                                    }
+                                    // Where j and k land, the post the keys then act on is marked.
+                                    is DesktopKeys.KeyStep.ToItem -> actions.markPostIn(list, list.stepTo(step))
+                                }
+                            }
+                        }
+                    } else {
+                        actions.unmarkPost()
+                        scope.launch { list.moveFor(action, line) }
                     }
                     true
                 }
@@ -351,8 +364,8 @@ private const val REFOCUS_AFTER_MS = 50L
 /** How far ↑ and ↓ move a list: about a line of a post and a half. */
 private val LINE = 64.dp
 
-/** [action] done to the list, eased as the wheel's own moves are; the item j or k went to, null for none. */
-private suspend fun LazyListState.moveFor(action: DeskAction, line: Float): Int? {
+/** [action] done to the list, eased as the wheel's own moves are (j and k: [stepTo]). */
+private suspend fun LazyListState.moveFor(action: DeskAction, line: Float) {
     val screen = layoutInfo.viewportSize.height * (1 - DesktopKeys.SCREEN_KEPT)
     when (action) {
         DeskAction.LINE_UP -> animateScrollBy(-line)
@@ -361,21 +374,17 @@ private suspend fun LazyListState.moveFor(action: DeskAction, line: Float): Int?
         DeskAction.SCREEN_DOWN -> animateScrollBy(screen)
         DeskAction.TO_TOP -> scrollToItem(0)
         DeskAction.TO_END -> layoutInfo.totalItemsCount.takeIf { it > 0 }?.let { scrollToItem(it - 1) }
-        DeskAction.NEXT_ITEM, DeskAction.PREVIOUS_ITEM ->
-            DesktopKeys.itemStep(
-                layoutInfo.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) },
-                layoutInfo.totalItemsCount,
-                action == DeskAction.NEXT_ITEM,
-            )?.let { (index, offset) ->
-                animateScrollToItem(index, offset)
-                // Tabs in their own place before the step stick on the way, over the post's start: it comes out from under them.
-                val covered = DesktopKeys.coveredAfterStep(layoutInfo.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) }, index)
-                if (covered > 0) animateScrollBy(-covered.toFloat())
-                return index
-            }
         else -> Unit
     }
-    return null
+}
+
+/** j or k's [step] to an item's start ([DesktopKeys.itemStep]), eased as the wheel's own moves are; the item it went to. */
+private suspend fun LazyListState.stepTo(step: DesktopKeys.KeyStep.ToItem): Int {
+    animateScrollToItem(step.index, step.offset)
+    // Tabs in their own place before the step stick on the way, over the post's start: it comes out from under them.
+    val covered = DesktopKeys.coveredAfterStep(layoutInfo.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) }, step.index)
+    if (covered > 0) animateScrollBy(-covered.toFloat())
+    return step.index
 }
 
 /** A page that scrolls as a whole to [target] ([DesktopKeys.scrolledTo]): at once to its start or end, as a list's Home and End go; eased otherwise. */

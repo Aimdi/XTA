@@ -100,6 +100,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_unable_to_load_the_tweet
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_views_count
 import com.aimdi.xtanative.ui.generated.resources.posts_zen_replies
+import com.aimdi.xtanative.ui.home.keyedPost
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -346,11 +347,24 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
     val translation = rememberPostTranslation(shown, scope)
     val drawn = translation?.shown ?: shown
     var menu by rememberSaveable(shown.id) { mutableStateOf(false) }
+    // Opened from the keyboard: at the post, not at the pointer.
+    var menuAtPost by remember(shown.id) { mutableStateOf(false) }
+    // The desktop's keys act on it as on a reply (l, b, Ctrl+Shift+C, the Menu key); it is open already, so Enter leaves it.
+    val keys = rememberPostKeys(post, actions, openable = false) {
+        menuAtPost = true
+        menu = true
+    }
     val article = remember(shown) { ArticleLayout.fullArticle(shown) }
     val picture = rememberPostPicture()
-    Column(Modifier.fillMaxWidth().recordedIn(picture).padding(horizontal = 16.dp, vertical = 12.dp)) {
+    Column(Modifier.fillMaxWidth().keyedPost(keys).recordedIn(picture).padding(horizontal = 16.dp, vertical = 12.dp)) {
         // A right-click on the author line opens the ⋯ menu; the text under it keeps the desktop's own copy menu.
-        Row(Modifier.onSecondaryClick { menu = true }, verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            Modifier.onSecondaryClick {
+                menuAtPost = false
+                menu = true
+            },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             PostAvatar(shown, scope, actions, 44.dp)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
@@ -369,7 +383,10 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
                 }
             }
             translation?.let { TranslateButton(it, scope, glyphTop = false) }
-            HeaderButton(PostIcons.MoreHoriz, stringResource(Res.string.posts_more), glyphTop = false) { menu = true }
+            HeaderButton(PostIcons.MoreHoriz, stringResource(Res.string.posts_more), glyphTop = false) {
+                menuAtPost = false
+                menu = true
+            }
         }
         PostView.replyingTo(shown, quoted = false, midThread = false)?.let { ReplyingTo(it, shown.replyToPostId, actions) }
         if (PostView.textMissing(shown)) {
@@ -395,7 +412,9 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
         if (article == null) PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture)
     }
     Hairline()
-    if (menu) PostMenu(post, actions, onDismiss = { menu = false })
+    if (menu) {
+        CompositionLocalProvider(LocalMenuAtPost provides menuAtPost) { PostMenu(post, actions, onDismiss = { menu = false }) }
+    }
 }
 
 /**
