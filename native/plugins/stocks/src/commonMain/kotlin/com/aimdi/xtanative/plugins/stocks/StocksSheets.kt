@@ -53,6 +53,7 @@ import com.aimdi.xtanative.networks.stocks.StocksSearch
 import com.aimdi.xtanative.networks.stocks.StocksSearchResult
 import com.aimdi.xtanative.networks.stocks.TickerSearchHit
 import com.aimdi.xtanative.networks.stocks.Watchlist
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.rememberCopyContract
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.onContextClick
@@ -208,10 +209,10 @@ internal fun StocksManageSheet(app: StocksApp, onDismiss: () -> Unit, onRemoved:
                     headlineContent = { Text(shown.label(symbol)) },
                     supportingContent = if (asset == null) null else ({ Text(asset.subtitle) }),
                     trailingContent = {
-                        IconButton(onClick = {
+                        IconTip(pluginString(Strings.unsubscribe)) { IconButton(onClick = {
                             app.launch { app.watchlist.remove(symbol) }
                             onRemoved(symbol)
-                        }) { Icon(Icons.Outlined.Delete, pluginString(Strings.unsubscribe)) }
+                        }) { Icon(Icons.Outlined.Delete, pluginString(Strings.unsubscribe)) } }
                     },
                     modifier = Modifier.then(copyAddress?.let { Modifier.onContextClick(it) } ?: Modifier).combinedClickable(
                         onClick = {

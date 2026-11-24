@@ -52,6 +52,7 @@ import com.aimdi.xtanative.networks.stocks.TickerQuote
 import com.aimdi.xtanative.networks.stocks.Watchlist
 import com.aimdi.xtanative.networks.stocks.WatchlistEntries
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
@@ -261,7 +262,7 @@ private fun EmptyStocks(app: StocksApp, model: StocksHomeModel, view: StocksView
 private fun StocksHeader(app: StocksApp, selected: StocksTab, onSelect: (StocksTab) -> Unit, onAdd: () -> Unit, onManage: () -> Unit) {
     PluginHomeTabs(StocksTab.entries, selected, onSelect, icon = ::tabIcon, label = { pluginString(it.label) }, accent = MaterialTheme.colorScheme.primary) {
         // In the app's shell only its search stays on the bar: Add is in the plugin sheet ([StocksMenu]).
-        if (LocalPluginClientBar.current == null) IconButton(onClick = onAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) }
+        if (LocalPluginClientBar.current == null) IconTip(pluginString(Strings.add)) { IconButton(onClick = onAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) } }
         StocksMenu(app, onManage, onAdd)
     }
 }

@@ -28,6 +28,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.stocks.StockNumbers
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /** A list row drawn on what it sits on, a screen or a sheet. */
@@ -37,9 +38,9 @@ internal fun plainRow(): ListItemColors = ListItemDefaults.colors(containerColor
 /** The star of a ticker's or a token's page: the getquin "add to watchlist" from a symbol. */
 @Composable
 internal fun WatchButton(watched: Boolean, onToggle: () -> Unit) {
-    IconButton(onClick = onToggle) {
+    IconTip(pluginString(if (watched) Strings.unwatch else Strings.watch)) { IconButton(onClick = onToggle) {
         Icon(if (watched) Icons.Filled.Star else Icons.Outlined.Star, pluginString(if (watched) Strings.unwatch else Strings.watch))
-    }
+    } }
 }
 
 /** No market data came: the reason ([notFound]: the host has no price for it, else it did not answer), and a way to ask again. */
