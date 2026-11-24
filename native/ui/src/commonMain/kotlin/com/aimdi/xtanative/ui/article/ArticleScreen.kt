@@ -1,5 +1,21 @@
 package com.aimdi.xtanative.ui.article
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import com.aimdi.xtanative.store.reading.ArticleReading
+import com.aimdi.xtanative.store.settings.PostsPrefs
+import com.aimdi.xtanative.ui.common.WithReadingColumn
+import com.aimdi.xtanative.ui.plugins.ArticleReaderControls
+import com.aimdi.xtanative.ui.plugins.KeepsReaderPlace
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.SupervisorJob
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -72,20 +88,29 @@ data class ArticleUi(
     val article: Article? = null,
     val loading: Boolean = false,
     val problem: Problem? = null,
+    /** The reader's place and type in [article], once it is opened; null before, and where it could not be. */
+    val reading: ArticleReading? = null,
+    /** The place could not be opened: the article is read as a plain page. */
+    val plain: Boolean = false,
 )
 
 /**
  * The X article of post [postId]: drawn at once when the post at hand came
  * with its blocks, else read with the post's conversation, which X sends
  * them with. A post that turns out to carry no article leaves its page to
- * the browser.
+ * the browser. Its place and type are the app's [ArticleReading], as the
+ * other networks' readers keep them, under [ArticleLayout.readingId]; an
+ * article finished is marked so on this device only.
  */
 class ArticleViewModel(private val graph: AppGraph, private val postId: String) : ViewModel() {
     private val state = MutableStateFlow(graph.posts.post(postId).let { ArticleUi(post = it, article = it?.let(ArticleLayout::fullArticle)) })
     val ui: StateFlow<ArticleUi> = state.asStateFlow()
 
+    /** Outlives the screen: the place is written once more as it closes. */
+    private val outlives = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
     init {
-        if (state.value.article == null) load()
+        if (state.value.article == null) load() else openReading()
     }
 
     fun load() {
@@ -95,6 +120,7 @@ class ArticleViewModel(private val graph: AppGraph, private val postId: String) 
                 val focal = XConversation.of(graph.client.conversation(postId), postId).focal
                 focal?.let(graph.posts::remember)
                 state.update { it.copy(post = focal ?: it.post, article = focal?.let(ArticleLayout::fullArticle), loading = false) }
+                if (state.value.article != null) openReading()
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Throwable) {
@@ -102,9 +128,40 @@ class ArticleViewModel(private val graph: AppGraph, private val postId: String) 
             }
         }
     }
+
+    private fun openReading() {
+        if (state.value.reading != null) return
+        viewModelScope.launch {
+            try {
+                val reading = ArticleReading.open(
+                    journal = graph.readingJournal,
+                    appearance = graph.readingAppearance,
+                    articleId = ArticleLayout.readingId(postId),
+                    scope = outlives,
+                    onCompleted = {},
+                    remembers = { graph.settings.state.value?.get(PostsPrefs.rememberReadingPosition) != false },
+                    journalOnOpen = false,
+                )
+                state.update { it.copy(reading = reading) }
+            } catch (error: CancellationException) {
+                throw error
+            } catch (_: Exception) {
+                state.update { it.copy(plain = true) }
+            }
+        }
+    }
+
+    override fun onCleared() {
+        state.value.reading?.let { reading -> outlives.launch(NonCancellable) { reading.close() } }
+    }
 }
 
-/** An X article read in XTA Native, as XTA reads it in the opened post: the article is the post's own content. */
+/**
+ * An X article read in XTA Native, as XTA reads it in the opened post: the
+ * article is the post's own content. Under the bar, the readers' line
+ * ([ArticleReaderControls]): how far in, the type, back to the beginning and
+ * finished; the article opens where it was left ([KeepsReaderPlace]).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticleScreen(postId: String, actions: PostActions, onBack: () -> Unit) {
@@ -112,32 +169,82 @@ fun ArticleScreen(postId: String, actions: PostActions, onBack: () -> Unit) {
     val vm: ArticleViewModel = viewModel(key = "article-$postId") { ArticleViewModel(graph, postId) }
     val state by vm.ui.collectAsStateWithLifecycle()
     val article = state.article
+    val reading = state.reading.takeIf { article != null }
+    val list = rememberLazyListState()
+    val coroutines = rememberCoroutineScope()
+    val lead = remember(article, state.post != null) { article?.let { ArticleLayout.lead(it, header = state.post != null) }.orEmpty() }
     // Ctrl+F finds in the article (the desktop's find bar).
-    val findBlocks = remember(article) { article?.let { ArticleLayout.findBlocks(it) }.orEmpty() }
-    FindInPage(findBlocks) {
+    val findBlocks = remember(article, lead, reading != null) {
+        article?.let { if (reading != null) ArticleLayout.findRows(it, lead) else ArticleLayout.findBlocks(it) }.orEmpty()
+    }
+    DisposableEffect(reading) {
+        reading?.setActive(true)
+        onDispose { reading?.setActive(false) }
+    }
+    FindInPage(findBlocks, list.takeIf { reading != null }) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
-                title = { TipText(article?.title ?: stringResource(Res.string.posts_article_on_x), maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
-                actions = { article?.let { ListenToArticle(it) } },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-            )
+            Column(Modifier.background(MaterialTheme.colorScheme.background)) {
+                TopAppBar(
+                    title = { TipText(article?.title ?: stringResource(Res.string.posts_article_on_x), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
+                    actions = { article?.let { ListenToArticle(it) } },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+                )
+                reading?.let { ArticleReaderControls(it, supportsAppearance = true, canComplete = true) { coroutines.launch { list.scrollToItem(0) } } }
+            }
         },
     ) { padding ->
         PostScopeProvider(focalId = postId) {
             val problem = state.problem
-            ReadingPage(padding, PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
-                when {
-                    article != null -> ArticleBody(article, actions, header = { state.post?.let { ArticleByline(it, actions) } })
-                    state.loading -> LoadingRow()
-                    problem != null -> ProblemView(problem, vm::load)
-                    else -> NoArticle(state.post, actions)
+            when {
+                article != null && reading != null -> ReaderArticle(article, reading, lead, list, padding, actions) { state.post?.let { ArticleByline(it, actions) } }
+                // The place is being opened: a moment, and the article comes where it was left.
+                article != null && !state.plain -> Unit
+                else -> ReadingPage(padding, PagePadding) {
+                    when {
+                        article != null -> ArticleBody(article, actions, header = { state.post?.let { ArticleByline(it, actions) } })
+                        state.loading -> LoadingRow()
+                        problem != null -> ProblemView(problem, vm::load)
+                        else -> NoArticle(state.post, actions)
+                    }
                 }
             }
         }
     }
+    }
+}
+
+private val PagePadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+
+/** [article] as the reader's list, in the type and at the place [reading] keeps. */
+@Composable
+private fun ReaderArticle(
+    article: Article,
+    reading: ArticleReading,
+    lead: List<ArticleLead>,
+    list: LazyListState,
+    padding: PaddingValues,
+    actions: PostActions,
+    header: @Composable () -> Unit,
+) {
+    val look by reading.state.collectAsStateWithLifecycle()
+    val items = remember(article) { ArticleLayout.items(article) }
+    val type = readerType(look.fontSize, look.lineHeight)
+    KeepsReaderPlace(reading, list, before = lead.size, blocks = items.size)
+    val around = PaddingValues(
+        start = 16.dp,
+        top = padding.calculateTopPadding() + 8.dp,
+        end = 16.dp,
+        bottom = padding.calculateBottomPadding() + 8.dp,
+    )
+    WithReadingColumn(around, list) { column ->
+        SelectionContainer {
+            LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
+                articleRows(article, lead, items, actions, type, header)
+            }
+        }
     }
 }
 

@@ -13,8 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +44,8 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.model.PhotoSize
 import com.aimdi.xtanative.core.x.model.XPost
@@ -91,6 +97,28 @@ private fun Cover(url: String) {
     )
 }
 
+/** How an article's text is set: the body's style and a heading's. */
+class ArticleType(val body: TextStyle, val heading: TextStyle)
+
+/** The type of an article in a post: the app's own. */
+@Composable
+private fun plainType(): ArticleType = ArticleType(MaterialTheme.typography.bodyLarge, MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+
+/** The type of an article in the reader: the size and line height every reader shares, headings in step with the body. */
+@Composable
+fun readerType(fontSize: Double, lineHeight: Double): ArticleType {
+    val plain = plainType()
+    return remember(plain, fontSize, lineHeight) {
+        ArticleType(
+            plain.body.copy(fontSize = fontSize.sp, lineHeight = lineHeight.em),
+            plain.heading.copy(fontSize = (fontSize * HEADING_SCALE).sp, lineHeight = 1.3.em),
+        )
+    }
+}
+
+/** A heading's size beside the body's, as the app's own type has them (22 to 16). */
+private const val HEADING_SCALE = 1.375
+
 /**
  * An article read in full (ArticleWidget expanded): the cover, the title,
  * [header] under it (the post's footer, in XTA), then each block as its
@@ -99,38 +127,77 @@ private fun Cover(url: String) {
 @Composable
 fun ArticleBody(article: Article, actions: PostActions, modifier: Modifier = Modifier, header: (@Composable () -> Unit)? = null) {
     val items = remember(article) { ArticleLayout.items(article) }
+    val type = plainType()
     Column(modifier.fillMaxWidth()) {
-        article.coverUrl?.let {
-            Box(Modifier.padding(bottom = 16.dp).clip(CardShape)) { Cover(it) }
-        }
-        val title = foundIn(ArticleLayout.TITLE_KEY, remember(article.title) { AnnotatedString(article.title) })
-        Text(
-            title.text,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            onTextLayout = title.laidOut,
-            modifier = Modifier.padding(vertical = 8.dp).then(title.modifier),
-        )
-        if (header != null) {
-            header()
-            HorizontalDivider(thickness = Dp.Hairline, color = MaterialTheme.colorScheme.outlineVariant, modifier = Modifier.padding(bottom = 16.dp))
-        }
+        article.coverUrl?.let { ArticleCover(it) }
+        ArticleTitle(article)
+        if (header != null) ArticleHeader(header)
         SelectionContainer {
             Column {
-                items.forEachIndexed { index, item -> ArticleRow(item, ArticleLayout.rowKey(index), article, actions) }
+                items.forEachIndexed { index, item -> ArticleRow(item, ArticleLayout.rowKey(index), article, actions, type) }
             }
         }
     }
 }
 
+/**
+ * [article] as the rows of a list, for the reader: what [lead] names (the
+ * cover, the title, [header]), then [items], one row each, set in [type].
+ * Inside a selection, only the text's rows are selected.
+ */
+fun LazyListScope.articleRows(
+    article: Article,
+    lead: List<ArticleLead>,
+    items: List<ArticleItem>,
+    actions: PostActions,
+    type: ArticleType,
+    header: @Composable () -> Unit,
+) {
+    items(lead, key = { it.name }, contentType = { it }) { row ->
+        DisableSelection {
+            when (row) {
+                ArticleLead.COVER -> article.coverUrl?.let { ArticleCover(it) }
+                ArticleLead.TITLE -> ArticleTitle(article)
+                ArticleLead.HEADER -> Column { ArticleHeader(header) }
+            }
+        }
+    }
+    itemsIndexed(items, contentType = { _, item -> item::class.simpleName }) { index, item ->
+        ArticleRow(item, ArticleLayout.rowKey(index), article, actions, type)
+    }
+}
+
 @Composable
-private fun ArticleRow(item: ArticleItem, key: String, article: Article, actions: PostActions) {
-    val body = MaterialTheme.typography.bodyLarge
+private fun ArticleCover(url: String) {
+    Box(Modifier.padding(bottom = 16.dp).clip(CardShape)) { Cover(url) }
+}
+
+@Composable
+private fun ArticleTitle(article: Article) {
+    val title = foundIn(ArticleLayout.TITLE_KEY, remember(article.title) { AnnotatedString(article.title) })
+    Text(
+        title.text,
+        style = MaterialTheme.typography.headlineSmall,
+        fontWeight = FontWeight.Bold,
+        onTextLayout = title.laidOut,
+        modifier = Modifier.padding(vertical = 8.dp).then(title.modifier),
+    )
+}
+
+@Composable
+private fun ArticleHeader(header: @Composable () -> Unit) {
+    header()
+    HorizontalDivider(thickness = Dp.Hairline, color = MaterialTheme.colorScheme.outlineVariant, modifier = Modifier.padding(bottom = 16.dp))
+}
+
+@Composable
+private fun ArticleRow(item: ArticleItem, key: String, article: Article, actions: PostActions, type: ArticleType) {
+    val body = type.body
     when (item) {
         is ArticleItem.Paragraph -> BlockText(item.block, key, article, actions, body, Modifier.padding(vertical = 8.dp))
-        is ArticleItem.Heading -> BlockText(item.block, key, article, actions, MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), Modifier.padding(vertical = 16.dp))
-        is ArticleItem.Bullet -> ListItem("•", item.block, key, article, actions)
-        is ArticleItem.Numbered -> ListItem("${item.number}.", item.block, key, article, actions)
+        is ArticleItem.Heading -> BlockText(item.block, key, article, actions, type.heading, Modifier.padding(vertical = 16.dp))
+        is ArticleItem.Bullet -> ListItem("•", item.block, key, article, actions, body)
+        is ArticleItem.Numbered -> ListItem("${item.number}.", item.block, key, article, actions, body)
         is ArticleItem.Quote -> Row(Modifier.padding(vertical = 8.dp).fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainer)) {
             Box(Modifier.width(4.dp).heightIn(min = 24.dp).background(MaterialTheme.colorScheme.outlineVariant))
             BlockText(item.block, key, article, actions, body, Modifier.padding(start = 12.dp, top = 8.dp, end = 8.dp, bottom = 8.dp))
@@ -140,10 +207,10 @@ private fun ArticleRow(item: ArticleItem, key: String, article: Article, actions
 }
 
 @Composable
-private fun ListItem(mark: String, block: ArticleBlock, key: String, article: Article, actions: PostActions) {
+private fun ListItem(mark: String, block: ArticleBlock, key: String, article: Article, actions: PostActions, body: TextStyle) {
     Row(Modifier.padding(start = 6.dp, top = 4.dp, bottom = 4.dp)) {
-        Text("$mark ", style = MaterialTheme.typography.bodyLarge)
-        BlockText(block, key, article, actions, MaterialTheme.typography.bodyLarge, Modifier.weight(1f))
+        Text("$mark ", style = body)
+        BlockText(block, key, article, actions, body, Modifier.weight(1f))
     }
 }
 

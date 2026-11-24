@@ -78,4 +78,27 @@ class ArticleLayoutTest {
         val linking = XPost("3", author, null, "Read", entities = listOf(XEntity.Link(0, 4, "https://t.co/a", "https://x.com/i/article/9", "x.com/i/article/9")))
         assertEquals("https://x.com/i/article/9", ArticleLayout.linkOf(linking))
     }
+
+    @Test
+    fun theReadersListStartsWithTheCoverTitleAndHeaderAndFindLooksInTheRowsThatDrawEachText() {
+        val article = Article(
+            title = "T",
+            previewText = "P",
+            blocks = listOf(block(ArticleBlockType.UNSTYLED, "first"), ArticleBlock(ArticleBlockType.ATOMIC, emptyList(), listOf(1)), block(ArticleBlockType.UNSTYLED, "second")),
+            entities = mapOf(1 to ArticleEntity.Image("https://img")),
+            coverUrl = "https://cover",
+        )
+        assertEquals(listOf(ArticleLead.COVER, ArticleLead.TITLE, ArticleLead.HEADER), ArticleLayout.lead(article, header = true))
+        assertEquals(listOf(ArticleLead.TITLE), ArticleLayout.lead(article.copy(coverUrl = null), header = false))
+        val lead = ArticleLayout.lead(article, header = true)
+        // The picture between the two paragraphs is a row of its own, so the second text is two rows after the first.
+        assertEquals(listOf("T" to 1, "first" to 3, "second" to 5), ArticleLayout.findRows(article, lead).map { it.text to it.item })
+        assertEquals(listOf("T" to 0, "first" to 1, "second" to 3), ArticleLayout.findRows(article.copy(coverUrl = null), listOf(ArticleLead.TITLE)).map { it.text to it.item })
+        assertEquals(ArticleLayout.findBlocks(article).map { it.key }, ArticleLayout.findRows(article, lead).map { it.key })
+    }
+
+    @Test
+    fun anXArticlesPlaceIsKeptUnderANameNoPluginUses() {
+        assertEquals("x-article:1890", ArticleLayout.readingId("1890"))
+    }
 }

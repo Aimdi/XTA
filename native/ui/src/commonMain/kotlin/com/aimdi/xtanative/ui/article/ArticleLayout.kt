@@ -28,6 +28,9 @@ sealed interface ArticleItem {
     data class Embed(val entity: ArticleEntity) : ArticleItem
 }
 
+/** A row of an article's page above its text ([ArticleLayout.lead]). */
+enum class ArticleLead { COVER, TITLE, HEADER }
+
 /** Where a tap on a span of an article's text leads. */
 sealed interface ArticleTap {
     data class Link(val url: String) : ArticleTap
@@ -60,6 +63,28 @@ object ArticleLayout {
     fun findBlocks(article: Article, item: Int? = null): List<FindBlock> =
         listOf(FindBlock(TITLE_KEY, article.title, item)) +
             items(article).mapIndexedNotNull { index, row -> blockOf(row)?.let { FindBlock(rowKey(index), it.text, item) } }
+
+    /**
+     * The rows an article read as a list starts with, in order: its cover
+     * when it has one, its title, and the line under it when the page has
+     * one ([header]). The reader's place counts the text's rows after these.
+     */
+    fun lead(article: Article, header: Boolean): List<ArticleLead> = listOfNotNull(
+        ArticleLead.COVER.takeIf { article.coverUrl != null },
+        ArticleLead.TITLE,
+        ArticleLead.HEADER.takeIf { header },
+    )
+
+    /** [findBlocks] for an article read as a list that starts with [lead]: each text in the list's row that draws it. */
+    fun findRows(article: Article, lead: List<ArticleLead>): List<FindBlock> =
+        listOf(FindBlock(TITLE_KEY, article.title, lead.indexOf(ArticleLead.TITLE).coerceAtLeast(0))) +
+            items(article).mapIndexedNotNull { index, row -> blockOf(row)?.let { FindBlock(rowKey(index), it.text, lead.size + index) } }
+
+    /**
+     * The name the reader's place in the article of post [postId] is kept
+     * under: X's own, so it meets no plugin's (`rss:…`, `substack:…`).
+     */
+    fun readingId(postId: String): String = "x-article:$postId"
 
     /** The block of text [item] draws; none for what an article embeds. */
     fun blockOf(item: ArticleItem): ArticleBlock? = when (item) {
