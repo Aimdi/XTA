@@ -40,6 +40,7 @@ import com.aimdi.xtanative.services.links.LinkPreview
 import com.aimdi.xtanative.services.links.LinkPreviewLayout
 import com.aimdi.xtanative.services.links.LinkPreviews
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.post.dragsLink
 
 private val CardShape = RoundedCornerShape(16.dp)
 private val TileSize = 56.dp
@@ -71,6 +72,8 @@ fun LinkPreviewCard(
             .fillMaxWidth()
             .clip(CardShape)
             .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CardShape)
+            // Dragged with the mouse, the card drags its link out, as a browser's link does.
+            .dragsLink(url)
             .combinedClickable(onClick = onTap, onLongClick = onLongPress)
             .clearAndSetSemantics {
                 contentDescription = "$domain, $shown"

@@ -82,10 +82,11 @@ internal data class AuthorLineCard(val user: XUser, val avatarUrl: String?, val 
 /**
  * [AuthorLine] whose time names [timeTip] (the full date and time) where the
  * pointer rests on it, as X's site does, and whose name shows [card] there;
- * plugin API keeps the one above.
+ * dragging the time drags [timeLink] out, as X's site's time links the
+ * post. The plugin API keeps the one above.
  */
 @Composable
-internal fun AuthorLine(name: String, handle: String, time: String, verified: Boolean, modifier: Modifier, timeTip: String?, card: AuthorLineCard? = null) {
+internal fun AuthorLine(name: String, handle: String, time: String, verified: Boolean, modifier: Modifier, timeTip: String?, card: AuthorLineCard? = null, timeLink: String? = null) {
     val grey = MaterialTheme.colorScheme.onSurfaceVariant
     val style = MaterialTheme.typography.bodyMedium
     val fontScale = LocalDensity.current.fontScale
@@ -101,7 +102,7 @@ internal fun AuthorLine(name: String, handle: String, time: String, verified: Bo
                 Spacer(Modifier)
             }
             Text(remember(handle, grey) { handleText(handle, grey) }, style = style, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            val timeText = @Composable { Text(if (time.isEmpty()) "" else " · $time", style = style, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+            val timeText = @Composable { Text(if (time.isEmpty()) "" else " · $time", style = style, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.dragsLink(timeLink)) }
             if (timeTip.isNullOrEmpty() || timeTip == time) timeText() else IconTip(timeTip, timeText)
         },
     ) { measurables, constraints ->

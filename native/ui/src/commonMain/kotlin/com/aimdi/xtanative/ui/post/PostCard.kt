@@ -263,12 +263,14 @@ internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, siz
 internal fun PostAuthor(post: XPost, scope: PostScope, actions: PostActions, modifier: Modifier = Modifier, avatarUrl: String? = post.author.largeAvatarUrl) {
     val full = fullTimeText(post.createdAt)
     val time = if (scope.prefs.absoluteTimestamps) full else agoText(post.createdAt)
+    // Dragging the time drags the post's address out, as the time on X's site links the post.
+    val link = PostView.url(post, scope.prefs)
     if (PostView.showsAuthor(post, scope.prefs, scope.profileScreenName)) {
         // The full date and time where the pointer rests on a short one, as on X's site (a tooltip on the desktop; nothing on Android).
         val card = AuthorLineCard(post.author, avatarUrl) { actions.openUser(post.author.screenName, post.author.id) }
-        AuthorLine(post.author.name, post.author.screenName, time, post.author.verified, modifier, timeTip = full, card = card)
+        AuthorLine(post.author.name, post.author.screenName, time, post.author.verified, modifier, timeTip = full, card = card, timeLink = link)
     } else {
-        Text(time, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = modifier)
+        Text(time, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = modifier.dragsLink(link))
     }
 }
 

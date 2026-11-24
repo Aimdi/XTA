@@ -431,7 +431,8 @@ private fun FocalMetaLine(post: XPost, prefs: PostPrefs, order: ReplyOrder?, pic
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.weight(1f),
+        // Dragging the line drags the post's address out, as its time on X's site links the post.
+        modifier = Modifier.weight(1f).dragsLink(PostView.url(post, prefs)),
     )
     if (order != null) ReplyOrderChip(order, picture)
     }
