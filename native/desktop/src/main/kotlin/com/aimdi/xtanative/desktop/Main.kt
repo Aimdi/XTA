@@ -38,6 +38,7 @@ import com.aimdi.xtanative.ui.XtaNativeContent
 import com.aimdi.xtanative.ui.appImageLoader
 import com.aimdi.xtanative.ui.appName
 import com.aimdi.xtanative.ui.chrome.AppQuit
+import com.aimdi.xtanative.ui.chrome.CommandLine
 import com.aimdi.xtanative.ui.chrome.InstanceMessage
 import com.aimdi.xtanative.ui.chrome.SavedWindow
 import com.aimdi.xtanative.ui.chrome.SavedWindowFile
@@ -80,10 +81,11 @@ import kotlinx.coroutines.withTimeoutOrNull
  */
 @OptIn(FlowPreview::class)
 fun main(args: Array<String>) {
-    // `xta-native --version`, as command-line programs answer it: the name and version, before anything starts.
-    if ("--version" in args) {
-        println("xta-native ${System.getProperty("xtanative.version").orEmpty()}".trim())
-        exitProcess(0)
+    // `xta-native --help` and `--version`, as command-line programs answer them, before anything starts.
+    when (CommandLine.answer(args)) {
+        CommandLine.Answer.HELP -> print(CommandLine.usage).also { exitProcess(0) }
+        CommandLine.Answer.VERSION -> println(CommandLine.versionLine(System.getProperty("xtanative.version").orEmpty())).also { exitProcess(0) }
+        CommandLine.Answer.RUN -> Unit
     }
     val files = dataFolder()
     val link = InstanceMessage.linkIn(args)
