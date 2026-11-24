@@ -13,6 +13,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.SuspendingPointerInputModifierNode
 import androidx.compose.ui.input.pointer.isPrimaryPressed
@@ -69,11 +70,15 @@ private data class LinkDragElement(val address: String?, val linkAt: ((Offset) -
  * the touch slop: that move is consumed, so the click under it (opening the
  * link or the post) is cancelled. A press on no link is left alone, so text
  * is still selected by dragging from outside a link. Touch is left alone too
- * (a touch screen's drag scrolls).
+ * (a touch screen's drag scrolls). The mouse resting on the link shows its
+ * address at the window's foot ([LinkHover]), as a browser's status bubble.
  */
 @OptIn(ExperimentalComposeUiApi::class)
 private class LinkDragNode(var address: String?, var linkAt: ((Offset) -> String?)?) : DelegatingNode(), CompositionLocalConsumerModifierNode {
     private var dragged: String? = null
+
+    /** The window's pill this link last spoke to. */
+    private var hover: LinkHover? = null
 
     private val source = delegate(
         DragAndDropSourceModifierNode { _ ->
@@ -101,10 +106,37 @@ private class LinkDragNode(var address: String?, var linkAt: ((Offset) -> String
                     val url = address ?: linkAt?.invoke(down.position) ?: return@awaitEachGesture
                     awaitTouchSlopOrCancellation(down.id) { change, _ -> change.consume() } ?: return@awaitEachGesture
                     dragged = url
+                    // The drag's own picture shows the address now.
+                    hover?.left(this@LinkDragNode)
                     source.requestDragAndDropTransfer(down.position)
                 }
             },
         )
+        delegate(
+            SuspendingPointerInputModifierNode {
+                // The link under the resting mouse, for the window's address pill ([LinkHover]).
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        val change = event.changes.firstOrNull() ?: continue
+                        val inside = change.position.x >= 0 && change.position.y >= 0 && change.position.x < size.width && change.position.y < size.height
+                        val url = when {
+                            event.type == PointerEventType.Exit || change.type != PointerType.Mouse || !inside -> null
+                            event.type == PointerEventType.Enter || event.type == PointerEventType.Move -> address ?: linkAt?.invoke(change.position)
+                            else -> continue
+                        }
+                        val to = hover ?: currentValueOf(LocalLinkHover)?.also { hover = it } ?: continue
+                        if (url != null) to.over(this@LinkDragNode, url) else to.left(this@LinkDragNode)
+                    }
+                }
+            },
+        )
+    }
+
+    override fun onDetach() {
+        hover?.left(this)
+        hover = null
+        super.onDetach()
     }
 
     /** What follows the pointer: the address on a dark pill, as a browser shows a dragged link. */

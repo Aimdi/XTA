@@ -54,6 +54,9 @@ import com.aimdi.xtanative.ui.chrome.AppClosing
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.links.PastedLinks
 import com.aimdi.xtanative.ui.links.takesDroppedLinks
+import com.aimdi.xtanative.ui.post.LinkHover
+import com.aimdi.xtanative.ui.post.LinkHoverPill
+import com.aimdi.xtanative.ui.post.LocalLinkHover
 import com.aimdi.xtanative.ui.settings.SettingsChoices
 import java.awt.event.MouseEvent
 import kotlinx.coroutines.delay
@@ -288,7 +291,9 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     }
 
     val frameOrigin = remember { arrayOf(Offset.Zero) }
-    CompositionLocalProvider(LocalDesktopActions provides actions) {
+    // This window's link under the pointer, its address shown in a pill at the frame's foot.
+    val linkHover = remember { LinkHover() }
+    CompositionLocalProvider(LocalDesktopActions provides actions, LocalLinkHover provides linkHover) {
         Box(
             Modifier
                 .fillMaxSize()
@@ -300,7 +305,10 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                             val event = awaitPointerEvent(PointerEventPass.Final)
                             if (event.type == PointerEventType.Scroll) actions.scrolled()
                             if (event.type == PointerEventType.Move || event.type == PointerEventType.Enter) {
-                                event.changes.firstOrNull()?.let { actions.pointerAt(frameOrigin[0] + it.position) }
+                                event.changes.firstOrNull()?.let {
+                                    actions.pointerAt(frameOrigin[0] + it.position)
+                                    linkHover.moved(it.position)
+                                }
                             }
                         }
                     }
@@ -367,6 +375,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             }) {
                 content()
             }
+            LinkHoverPill(linkHover)
         }
     }
     if (showKeys) {
