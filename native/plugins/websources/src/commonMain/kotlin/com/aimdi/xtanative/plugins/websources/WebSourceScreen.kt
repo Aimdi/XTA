@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.websources.WebSourceDefinition
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import kotlinx.coroutines.launch
@@ -72,7 +73,7 @@ internal fun WebSourceScreen(app: WebSourcesApp, source: WebSourceDefinition, li
                     navigationIcon = { BackButton(app) },
                     actions = {
                         FollowButton(app, source, pager.currentPage)
-                        if (source.search != null) IconButton(onClick = { app.openSearch(source) }) { Icon(Icons.Default.Search, pluginString(Strings.search_in, source.name)) }
+                        if (source.search != null) IconTip(pluginString(Strings.search_in, source.name)) { IconButton(onClick = { app.openSearch(source) }) { Icon(Icons.Default.Search, pluginString(Strings.search_in, source.name)) } }
                         SourceMenu(app, source)
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -104,13 +105,13 @@ private fun FollowButton(app: WebSourcesApp, source: WebSourceDefinition, page: 
     val follows by app.follows.collectAsState()
     val list = source.feeds.getOrNull(page) ?: return
     val following = app.isFollowing(follows.orEmpty(), source, list)
-    IconButton(onClick = { app.launch { if (following) app.unfollow(source, list) else app.follow(source, list) } }) {
+    IconTip(pluginString(if (following) Strings.unfollow else Strings.follow)) { IconButton(onClick = { app.launch { if (following) app.unfollow(source, list) else app.follow(source, list) } }) {
         Icon(
             if (following) Icons.Filled.CheckCircle else WebSourcesIcons.AddCircle,
             pluginString(if (following) Strings.unfollow else Strings.follow),
             tint = if (following) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
         )
-    }
+    } }
 }
 
 @Composable
@@ -118,7 +119,7 @@ private fun SourceMenu(app: WebSourcesApp, source: WebSourceDefinition) {
     var open by remember { mutableStateOf(false) }
     var removing by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Default.MoreVert, pluginString(Strings.more_options)) }
+        IconTip(pluginString(Strings.more_options)) { IconButton(onClick = { open = true }) { Icon(Icons.Default.MoreVert, pluginString(Strings.more_options)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             DropdownMenuItem(text = { Text(pluginString(Strings.open_in_browser)) }, onClick = { open = false; app.host.openLink(source.homepage.toString()) })
             DropdownMenuItem(text = { Text(pluginString(Strings.remove)) }, onClick = { open = false; removing = true })
