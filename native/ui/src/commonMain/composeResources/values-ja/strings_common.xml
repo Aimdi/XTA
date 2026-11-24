@@ -40,4 +40,6 @@
     <string name="problem_source_loading">このソースは読み込み中です。他の投稿はすでに読めます。</string>
     <string name="problem_saved_at">%1$s に保存された投稿を表示しています</string>
     <string name="problem_saved_earlier">以前に保存された投稿を表示しています</string>
+    <string name="files_filter_pictures">画像</string>
+    <string name="files_filter_media">画像と動画</string>
 </resources>

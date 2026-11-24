@@ -40,4 +40,6 @@
     <string name="problem_source_loading">Cette source charge encore. Les autres publications sont disponibles.</string>
     <string name="problem_saved_at">Publications enregistrées à %1$s</string>
     <string name="problem_saved_earlier">Publications enregistrées précédemment</string>
+    <string name="files_filter_pictures">Images</string>
+    <string name="files_filter_media">Images et vidéos</string>
 </resources>

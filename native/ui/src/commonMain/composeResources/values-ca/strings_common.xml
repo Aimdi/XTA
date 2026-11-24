@@ -40,4 +40,6 @@
     <string name="problem_source_loading">Aquesta font encara es carrega. Les altres publicacions ja estan disponibles.</string>
     <string name="problem_saved_at">Es mostren publicacions desades a les %1$s</string>
     <string name="problem_saved_earlier">Es mostren publicacions desades anteriorment</string>
+    <string name="files_filter_pictures">Imatges</string>
+    <string name="files_filter_media">Imatges i vídeos</string>
 </resources>

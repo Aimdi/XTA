@@ -40,4 +40,6 @@
     <string name="problem_source_loading">لا يزال هذا المصدر قيد التحميل. المنشورات الأخرى جاهزة للقراءة.</string>
     <string name="problem_saved_at">تُعرض منشورات محفوظة في %1$s</string>
     <string name="problem_saved_earlier">تُعرض منشورات محفوظة سابقًا</string>
+    <string name="files_filter_pictures">الصور</string>
+    <string name="files_filter_media">الصور ومقاطع الفيديو</string>
 </resources>

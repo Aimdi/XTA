@@ -40,4 +40,6 @@
     <string name="problem_source_loading">यह स्रोत अभी लोड हो रहा है। अन्य पोस्ट पढ़ने के लिए तैयार हैं।</string>
     <string name="problem_saved_at">%1$s पर सहेजी गई पोस्ट दिखाई जा रही हैं</string>
     <string name="problem_saved_earlier">पहले सहेजी गई पोस्ट दिखाई जा रही हैं</string>
+    <string name="files_filter_pictures">तस्वीरें</string>
+    <string name="files_filter_media">तस्वीरें और वीडियो</string>
 </resources>

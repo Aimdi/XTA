@@ -40,4 +40,6 @@
     <string name="problem_source_loading">Questa fonte sta ancora caricando. Gli altri post sono disponibili.</string>
     <string name="problem_saved_at">Post salvati alle %1$s</string>
     <string name="problem_saved_earlier">Post salvati in precedenza</string>
+    <string name="files_filter_pictures">Immagini</string>
+    <string name="files_filter_media">Immagini e video</string>
 </resources>

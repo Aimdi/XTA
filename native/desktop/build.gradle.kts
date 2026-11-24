@@ -128,6 +128,9 @@ compose.desktop {
         // Settings shows it; the Android app reads its own from the package.
         jvmArgs("-Dxtanative.version=$versionName")
         if (releaseTag.isNotEmpty()) jvmArgs("-Dxtanative.release_tag=$releaseTag")
+        // The desktop's file chooser opens over the window it names by its X id,
+        // which only AWT's peer knows (ParentWindow); without these it opens unparented.
+        jvmArgs("--add-opens=java.desktop/java.awt=ALL-UNNAMED", "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED")
         nativeDistributions {
             packageName = "xta-native"
             packageVersion = versionName

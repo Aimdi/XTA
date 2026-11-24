@@ -40,4 +40,6 @@
     <string name="problem_source_loading">See allikas alles laadib. Teised postitused on juba loetavad.</string>
     <string name="problem_saved_at">Kuvatakse postitusi, mis salvestati kell %1$s</string>
     <string name="problem_saved_earlier">Kuvatakse varem salvestatud postitusi</string>
+    <string name="files_filter_pictures">Pildid</string>
+    <string name="files_filter_media">Pildid ja videod</string>
 </resources>

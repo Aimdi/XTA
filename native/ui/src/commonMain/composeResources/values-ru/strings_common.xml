@@ -40,4 +40,6 @@
     <string name="problem_source_loading">Этот источник ещё загружается. Другие публикации уже доступны.</string>
     <string name="problem_saved_at">Показаны посты, сохранённые в %1$s</string>
     <string name="problem_saved_earlier">Показаны ранее сохранённые посты</string>
+    <string name="files_filter_pictures">Изображения</string>
+    <string name="files_filter_media">Изображения и видео</string>
 </resources>

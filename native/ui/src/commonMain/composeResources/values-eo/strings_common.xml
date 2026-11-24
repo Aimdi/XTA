@@ -40,4 +40,6 @@
     <string name="problem_source_loading">Ĉi tiu fonto ankoraŭ ŝargiĝas. Aliaj afiŝoj jam estas legeblaj.</string>
     <string name="problem_saved_at">Montriĝas afiŝoj konservitaj je %1$s</string>
     <string name="problem_saved_earlier">Montriĝas pli frue konservitaj afiŝoj</string>
+    <string name="files_filter_pictures">Bildoj</string>
+    <string name="files_filter_media">Bildoj kaj filmetoj</string>
 </resources>

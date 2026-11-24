@@ -40,4 +40,6 @@
     <string name="problem_source_loading">Această sursă încă se încarcă. Celelalte postări sunt disponibile.</string>
     <string name="problem_saved_at">Se afișează postări salvate la %1$s</string>
     <string name="problem_saved_earlier">Se afișează postări salvate anterior</string>
+    <string name="files_filter_pictures">Imagini</string>
+    <string name="files_filter_media">Imagini și videoclipuri</string>
 </resources>

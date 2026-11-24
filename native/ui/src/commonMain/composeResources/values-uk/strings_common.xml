@@ -40,4 +40,6 @@
     <string name="problem_source_loading">Це джерело ще завантажується. Інші дописи вже доступні.</string>
     <string name="problem_saved_at">Показано дописи, збережені о %1$s</string>
     <string name="problem_saved_earlier">Показано раніше збережені дописи</string>
+    <string name="files_filter_pictures">Зображення</string>
+    <string name="files_filter_media">Зображення та відео</string>
 </resources>

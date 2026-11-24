@@ -40,4 +40,6 @@
     <string name="problem_source_loading">Deze bron wordt nog geladen. Andere berichten zijn al beschikbaar.</string>
     <string name="problem_saved_at">Berichten opgeslagen om %1$s</string>
     <string name="problem_saved_earlier">Eerder opgeslagen berichten</string>
+    <string name="files_filter_pictures">Afbeeldingen</string>
+    <string name="files_filter_media">Afbeeldingen en video\'s</string>
 </resources>

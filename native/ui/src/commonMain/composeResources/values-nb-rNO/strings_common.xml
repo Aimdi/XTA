@@ -40,4 +40,6 @@
     <string name="problem_source_loading">Denne kilden lastes fortsatt. Andre innlegg er klare til å leses.</string>
     <string name="problem_saved_at">Viser innlegg lagret %1$s</string>
     <string name="problem_saved_earlier">Viser tidligere lagrede innlegg</string>
+    <string name="files_filter_pictures">Bilder</string>
+    <string name="files_filter_media">Bilder og videoer</string>
 </resources>

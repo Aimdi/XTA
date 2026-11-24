@@ -40,4 +40,6 @@
     <string name="problem_source_loading">Iturri hau kargatzen ari da oraindik. Beste argitalpenak irakurgai daude.</string>
     <string name="problem_saved_at">%1$s(e)an gordetako argitalpenak erakusten dira</string>
     <string name="problem_saved_earlier">Lehenago gordetako argitalpenak erakusten dira</string>
+    <string name="files_filter_pictures">Irudiak</string>
+    <string name="files_filter_media">Irudiak eta bideoak</string>
 </resources>

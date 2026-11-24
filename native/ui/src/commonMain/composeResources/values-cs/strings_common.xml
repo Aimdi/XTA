@@ -40,4 +40,6 @@
     <string name="problem_source_loading">Tento zdroj se stále načítá. Ostatní příspěvky jsou k dispozici.</string>
     <string name="problem_saved_at">Zobrazují se příspěvky uložené v %1$s</string>
     <string name="problem_saved_earlier">Zobrazují se dříve uložené příspěvky</string>
+    <string name="files_filter_pictures">Obrázky</string>
+    <string name="files_filter_media">Obrázky a videa</string>
 </resources>

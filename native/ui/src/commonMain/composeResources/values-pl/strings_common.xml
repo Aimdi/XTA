@@ -40,4 +40,6 @@
     <string name="problem_source_loading">To źródło nadal się ładuje. Inne wpisy są już dostępne.</string>
     <string name="problem_saved_at">Wyświetlane są posty zapisane o %1$s</string>
     <string name="problem_saved_earlier">Wyświetlane są wcześniej zapisane posty</string>
+    <string name="files_filter_pictures">Obrazy</string>
+    <string name="files_filter_media">Obrazy i filmy</string>
 </resources>

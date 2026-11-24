@@ -40,4 +40,6 @@
     <string name="problem_source_loading">Nguồn này vẫn đang tải. Bạn có thể đọc các bài đăng khác.</string>
     <string name="problem_saved_at">Đang hiển thị bài đăng đã lưu lúc %1$s</string>
     <string name="problem_saved_earlier">Đang hiển thị bài đăng đã lưu trước đó</string>
+    <string name="files_filter_pictures">Hình ảnh</string>
+    <string name="files_filter_media">Hình ảnh và video</string>
 </resources>

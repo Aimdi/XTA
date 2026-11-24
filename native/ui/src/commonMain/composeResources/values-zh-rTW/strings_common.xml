@@ -40,4 +40,6 @@
     <string name="problem_source_loading">此來源仍在載入。其他貼文已可閱讀。</string>
     <string name="problem_saved_at">顯示於 %1$s 儲存的貼文</string>
     <string name="problem_saved_earlier">顯示先前儲存的貼文</string>
+    <string name="files_filter_pictures">圖片</string>
+    <string name="files_filter_media">圖片和影片</string>
 </resources>

@@ -40,4 +40,6 @@
     <string name="problem_source_loading">Diese Quelle lädt noch. Andere Beiträge sind bereits verfügbar.</string>
     <string name="problem_saved_at">Angezeigt werden Beiträge, die um %1$s gespeichert wurden</string>
     <string name="problem_saved_earlier">Angezeigt werden früher gespeicherte Beiträge</string>
+    <string name="files_filter_pictures">Bilder</string>
+    <string name="files_filter_media">Bilder und Videos</string>
 </resources>
