@@ -523,7 +523,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             val canLeave = remember(entry.id) { nav.previousBackStackEntry != null }
             // The post a window of its own was opened on: its back arrow closes that window.
             val closeWindow = LocalSecondaryWindow.current?.close?.takeIf { !canLeave }
-            SwipeBackCard(all.backs.claim(entry), canLeave, leave = { nav.popIfOn(entry) }) { back ->
+            SwipeBackCard(all.backs.claim(entry), canLeave, leave = { nav.popIfOn(entry) }, readsOpen = true) { back ->
                 PostScreen(entry.text("id").orEmpty(), actions, onBack = closeWindow ?: back, startMedia = entry.arguments?.read { getIntOrNull("media") } ?: 0)
             }
         }

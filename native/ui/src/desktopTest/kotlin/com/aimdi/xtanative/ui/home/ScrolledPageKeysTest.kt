@@ -75,4 +75,14 @@ class ScrolledPageKeysTest {
         actions.removeList(list)
         assertNull(actions.readList())
     }
+
+    @Test
+    fun aClickedSliderOrSwitchOnAWholePageHasItsKeysFirst() {
+        for (action in listOf(DeskAction.LINE_UP, DeskAction.LINE_DOWN, DeskAction.SCREEN_DOWN, DeskAction.TO_TOP, DeskAction.TO_END)) {
+            kotlin.test.assertTrue(DesktopKeys.controlFirst(action, focusHeld = true, wholePage = true), "$action")
+        }
+        kotlin.test.assertFalse(DesktopKeys.controlFirst(DeskAction.LINE_DOWN, focusHeld = false, wholePage = true), "nothing clicked: the page's")
+        kotlin.test.assertFalse(DesktopKeys.controlFirst(DeskAction.SCREEN_DOWN, focusHeld = true, wholePage = false), "a timeline reads on after a click")
+        kotlin.test.assertFalse(DesktopKeys.controlFirst(DeskAction.NEXT_ITEM, focusHeld = true, wholePage = true), "j and k are the page's")
+    }
 }

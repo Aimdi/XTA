@@ -256,6 +256,22 @@ object DesktopKeys {
      */
     fun keysInside(focusInside: Boolean, typing: Boolean, clicked: Boolean): Boolean = focusInside && (typing || !clicked)
 
+    /**
+     * Whether the scrolling [action] goes first to the control the mouse
+     * clicked, which holds the focus ([focusHeld]), and moves the page only
+     * when that control leaves the key unused: on a page that scrolls as a
+     * whole ([wholePage]: Settings and its sections), a slider takes its
+     * arrows, Home and End, a switch's row its Space. On a lazy list (a
+     * timeline, the Deck) a clicked button, tab or chip leaves the reading
+     * keys to the list at once ([keysInside]).
+     */
+    fun controlFirst(action: DeskAction, focusHeld: Boolean, wholePage: Boolean): Boolean =
+        focusHeld && wholePage && action in PAGE_SCROLLS
+
+    private val PAGE_SCROLLS = setOf(
+        DeskAction.LINE_UP, DeskAction.LINE_DOWN, DeskAction.SCREEN_UP, DeskAction.SCREEN_DOWN, DeskAction.TO_TOP, DeskAction.TO_END,
+    )
+
     private val SCROLL_KEYS = setOf(DeskKey.UP, DeskKey.DOWN, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN, DeskKey.SPACE, DeskKey.HOME, DeskKey.END)
 
     private val POST_KEYS = mapOf(

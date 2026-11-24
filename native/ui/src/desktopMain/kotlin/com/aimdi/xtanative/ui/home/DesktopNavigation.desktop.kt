@@ -79,6 +79,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     var clicked by remember { mutableStateOf(false) }
     // Whether the window took the last key pressed, so the character it types goes nowhere.
     var keyTaken by remember { mutableStateOf(false) }
+    // The page's scroll for the key pressed, once the clicked control under it has left the key unused ([DesktopKeys.controlFirst]).
+    val afterControl = remember { arrayOfNulls<DeskAction>(1) }
     var showKeys by remember { mutableStateOf(false) }
     // The Tab step being taken, until the next key: should it wrap to the frame, the frame hands it on ([DesktopKeys.tabStep]).
     val tabbing = remember { arrayOfNulls<TabStep>(1) }
@@ -225,6 +227,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         // Its step is taken while Tab is down: what takes the focus later never takes it on.
         if (event.type == KeyEventType.KeyUp) tabbing[0] = null
         if (event.type != KeyEventType.KeyDown) return event.type != KeyEventType.KeyUp && keyTaken
+        afterControl[0] = null
         // Tab moves the focus with the keyboard: where it lands keeps the keys, as before any click.
         if (event.key == Key.Tab) clicked = false
         tabbing[0] = DesktopKeys.tabStep(deskKey(event.key), event.isShiftPressed, event.isCtrlPressed, event.isAltPressed)
@@ -253,14 +256,27 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             closeWindow()
             return true
         }
+        // A slider or switch clicked on a page that scrolls as a whole has the key first; the page scrolls only if it went unused.
+        if (!actions.overlayHoldsKeys() && DesktopKeys.controlFirst(action, focusHeld = focusInside, wholePage = actions.readList() is ScrollState)) {
+            afterControl[0] = action
+            keyTaken = false
+            return false
+        }
         // The media viewer's Esc closes it at once, rather than first taking the focus from it as from a field; Ctrl+Q still quits.
         keyTaken = !(actions.overlayHoldsKeys() && action != DeskAction.LEAVE_APP) && act(action)
         return keyTaken
     }
 
     // A / or ? is the character typed, on any layout (Shift+7 on a German one), and only one no field has typed reaches here.
+    // A scrolling key the clicked control left unused comes back here too, and moves the page ([afterControl]).
     fun onTyped(event: KeyEvent): Boolean {
-        if (event.type == KeyEventType.KeyDown || event.type == KeyEventType.KeyUp) return false
+        if (event.type == KeyEventType.KeyDown) {
+            val action = afterControl[0] ?: return false
+            afterControl[0] = null
+            keyTaken = act(action)
+            return keyTaken
+        }
+        if (event.type == KeyEventType.KeyUp) return false
         val key = when (event.utf16CodePoint) {
             '/'.code -> DeskKey.SLASH
             '?'.code -> DeskKey.QUESTION
