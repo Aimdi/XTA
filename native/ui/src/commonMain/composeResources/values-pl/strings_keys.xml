@@ -52,4 +52,6 @@
     <string name="keys_post_link">Kopiuj link do tego wpisu</string>
     <string name="keys_post_menu">Otwórz menu tego wpisu</string>
     <string name="keys_menu">Menu</string>
+    <string name="keys_find_in_page">Szukaj w czytanym wpisie lub artykule</string>
+    <string name="keys_find_match">Następne lub poprzednie wystąpienie na pasku wyszukiwania</string>
 </resources>

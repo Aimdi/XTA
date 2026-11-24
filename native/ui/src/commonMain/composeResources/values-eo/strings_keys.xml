@@ -52,4 +52,6 @@
     <string name="keys_post_link">Kopii la ligilon de tiu afiŝo</string>
     <string name="keys_post_menu">Malfermi la menuon de tiu afiŝo</string>
     <string name="keys_menu">Menuo</string>
+    <string name="keys_find_in_page">Serĉi en la afiŝo aŭ artikolo, kiun vi legas</string>
+    <string name="keys_find_match">Sekva aŭ antaŭa trafo en la serĉbreto</string>
 </resources>

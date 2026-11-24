@@ -48,6 +48,7 @@ import com.aimdi.xtanative.services.article.Article
 import com.aimdi.xtanative.services.article.ArticleBlock
 import com.aimdi.xtanative.services.article.ArticleEntity
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.foundIn
 import com.aimdi.xtanative.ui.post.MediaGrid
 import com.aimdi.xtanative.ui.post.PostActions
 
@@ -102,48 +103,56 @@ fun ArticleBody(article: Article, actions: PostActions, modifier: Modifier = Mod
         article.coverUrl?.let {
             Box(Modifier.padding(bottom = 16.dp).clip(CardShape)) { Cover(it) }
         }
-        Text(article.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 8.dp))
+        val title = foundIn(ArticleLayout.TITLE_KEY, remember(article.title) { AnnotatedString(article.title) })
+        Text(
+            title.text,
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            onTextLayout = title.laidOut,
+            modifier = Modifier.padding(vertical = 8.dp).then(title.modifier),
+        )
         if (header != null) {
             header()
             HorizontalDivider(thickness = Dp.Hairline, color = MaterialTheme.colorScheme.outlineVariant, modifier = Modifier.padding(bottom = 16.dp))
         }
         SelectionContainer {
             Column {
-                items.forEach { item -> ArticleRow(item, article, actions) }
+                items.forEachIndexed { index, item -> ArticleRow(item, ArticleLayout.rowKey(index), article, actions) }
             }
         }
     }
 }
 
 @Composable
-private fun ArticleRow(item: ArticleItem, article: Article, actions: PostActions) {
+private fun ArticleRow(item: ArticleItem, key: String, article: Article, actions: PostActions) {
     val body = MaterialTheme.typography.bodyLarge
     when (item) {
-        is ArticleItem.Paragraph -> BlockText(item.block, article, actions, body, Modifier.padding(vertical = 8.dp))
-        is ArticleItem.Heading -> BlockText(item.block, article, actions, MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), Modifier.padding(vertical = 16.dp))
-        is ArticleItem.Bullet -> ListItem("•", item.block, article, actions)
-        is ArticleItem.Numbered -> ListItem("${item.number}.", item.block, article, actions)
+        is ArticleItem.Paragraph -> BlockText(item.block, key, article, actions, body, Modifier.padding(vertical = 8.dp))
+        is ArticleItem.Heading -> BlockText(item.block, key, article, actions, MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), Modifier.padding(vertical = 16.dp))
+        is ArticleItem.Bullet -> ListItem("•", item.block, key, article, actions)
+        is ArticleItem.Numbered -> ListItem("${item.number}.", item.block, key, article, actions)
         is ArticleItem.Quote -> Row(Modifier.padding(vertical = 8.dp).fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainer)) {
             Box(Modifier.width(4.dp).heightIn(min = 24.dp).background(MaterialTheme.colorScheme.outlineVariant))
-            BlockText(item.block, article, actions, body, Modifier.padding(start = 12.dp, top = 8.dp, end = 8.dp, bottom = 8.dp))
+            BlockText(item.block, key, article, actions, body, Modifier.padding(start = 12.dp, top = 8.dp, end = 8.dp, bottom = 8.dp))
         }
         is ArticleItem.Embed -> Embedded(item.entity, actions, Modifier.padding(vertical = 4.dp))
     }
 }
 
 @Composable
-private fun ListItem(mark: String, block: ArticleBlock, article: Article, actions: PostActions) {
+private fun ListItem(mark: String, block: ArticleBlock, key: String, article: Article, actions: PostActions) {
     Row(Modifier.padding(start = 6.dp, top = 4.dp, bottom = 4.dp)) {
         Text("$mark ", style = MaterialTheme.typography.bodyLarge)
-        BlockText(block, article, actions, MaterialTheme.typography.bodyLarge, Modifier.weight(1f))
+        BlockText(block, key, article, actions, MaterialTheme.typography.bodyLarge, Modifier.weight(1f))
     }
 }
 
 @Composable
-private fun BlockText(block: ArticleBlock, article: Article, actions: PostActions, style: TextStyle, modifier: Modifier) {
+private fun BlockText(block: ArticleBlock, key: String, article: Article, actions: PostActions, style: TextStyle, modifier: Modifier) {
     val linkColor = MaterialTheme.colorScheme.primary
     val text = remember(block, article, linkColor, actions) { annotated(block, article, linkColor, actions) }
-    Text(text, style = style, color = MaterialTheme.colorScheme.onSurface, modifier = modifier)
+    val found = foundIn(key, text)
+    Text(found.text, style = style, color = MaterialTheme.colorScheme.onSurface, onTextLayout = found.laidOut, modifier = modifier.then(found.modifier))
 }
 
 private fun annotated(block: ArticleBlock, article: Article, linkColor: Color, actions: PostActions): AnnotatedString = buildAnnotatedString {

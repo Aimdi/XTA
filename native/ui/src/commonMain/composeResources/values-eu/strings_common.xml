@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Lehenago gordetako argitalpenak erakusten dira</string>
     <string name="files_filter_pictures">Irudiak</string>
     <string name="files_filter_media">Irudiak eta bideoak</string>
+    <string name="find_in_page">Bilatu orrian</string>
+    <string name="find_previous_match">Aurreko bat-etortzea</string>
+    <string name="find_next_match">Hurrengo bat-etortzea</string>
 </resources>

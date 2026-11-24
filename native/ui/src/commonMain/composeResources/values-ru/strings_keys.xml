@@ -52,4 +52,6 @@
     <string name="keys_post_link">Скопировать ссылку на этот пост</string>
     <string name="keys_post_menu">Открыть меню этого поста</string>
     <string name="keys_menu">Меню</string>
+    <string name="keys_find_in_page">Поиск в посте или статье, которые вы читаете</string>
+    <string name="keys_find_match">Следующее или предыдущее совпадение в строке поиска</string>
 </resources>

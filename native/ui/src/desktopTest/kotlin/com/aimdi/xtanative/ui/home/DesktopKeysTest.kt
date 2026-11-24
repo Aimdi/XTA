@@ -326,12 +326,46 @@ class DesktopKeysTest {
     }
 
     @Test
-    fun ctrlFAndSlashGoToTheSearch() {
-        assertEquals(DeskAction.FIND, action(DeskKey.F, ctrl = true))
-        assertEquals(DeskAction.FIND, action(DeskKey.F, ctrl = true, focusInside = true), "Ctrl+F from another field")
-        assertEquals(DeskAction.FIND, action(DeskKey.F, ctrl = true, canGoBack = false), "on the first screen too")
+    fun ctrlFFindsInThePageAndSlashGoesToTheSearch() {
+        assertEquals(DeskAction.FIND_IN_PAGE, action(DeskKey.F, ctrl = true))
+        assertEquals(DeskAction.FIND_IN_PAGE, action(DeskKey.F, ctrl = true, focusInside = true), "Ctrl+F from another field")
+        assertEquals(DeskAction.FIND_IN_PAGE, action(DeskKey.F, ctrl = true, canGoBack = false), "on the first screen too")
+        assertEquals(DeskAction.FIND_IN_PAGE, action(DeskKey.F, ctrl = true, open = true, openIsRead = true), "over the opened post's card")
+        assertEquals(DeskAction.NONE, action(DeskKey.F, ctrl = true, open = true), "not under a sheet or menu")
+        assertEquals(DeskAction.NONE, action(DeskKey.F, ctrl = true, shift = true))
         assertEquals(DeskAction.FIND, action(DeskKey.SLASH))
         assertEquals(DeskAction.FIND, action(DeskKey.SLASH, shift = true), "Shift+7 on a German keyboard")
+    }
+
+    @Test
+    fun f3StepsTheFindBarFromItsFieldToo() {
+        assertEquals(DeskAction.FIND_NEXT, action(DeskKey.F3))
+        assertEquals(DeskAction.FIND_NEXT, action(DeskKey.F3, focusInside = true), "from the find bar's field")
+        assertEquals(DeskAction.FIND_PREVIOUS, action(DeskKey.F3, shift = true))
+        assertEquals(DeskAction.FIND_NEXT, action(DeskKey.F3, open = true, openIsRead = true), "over the opened post's card")
+        assertEquals(DeskAction.NONE, action(DeskKey.F3, open = true), "not under a sheet")
+        assertEquals(DeskAction.NONE, action(DeskKey.F3, ctrl = true))
+    }
+
+    @Test
+    fun aPageFinderTakesCtrlFAndF3AndTheLastShownIsOnTop() {
+        val actions = DesktopActions()
+        assertFalse(actions.findInPage(), "no find bar: Ctrl+F goes on to the search")
+        assertFalse(actions.findStep(1))
+        val opened = mutableListOf<String>()
+        var open = false
+        val post = Any()
+        actions.addPageFinder(post, PageFinder({ opened += "post"; open = true }, { open }))
+        assertFalse(actions.findStep(1), "F3 does nothing while the bar is closed")
+        assertTrue(actions.findInPage())
+        assertTrue(actions.findStep(-1))
+        val article = Any()
+        actions.addPageFinder(article, PageFinder({ opened += "article" }, { false }))
+        assertTrue(actions.findInPage())
+        assertEquals(listOf("post", "article"), opened)
+        actions.removePageFinder(article)
+        actions.removePageFinder(post)
+        assertFalse(actions.findInPage())
     }
 
     @Test

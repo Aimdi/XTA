@@ -52,4 +52,6 @@
     <string name="keys_post_link">Kopeeri selle postituse link</string>
     <string name="keys_post_menu">Ava selle postituse menüü</string>
     <string name="keys_menu">Menüü</string>
+    <string name="keys_find_in_page">Otsi postitusest või artiklist, mida loed</string>
+    <string name="keys_find_match">Järgmine või eelmine vaste otsinguribal</string>
 </resources>

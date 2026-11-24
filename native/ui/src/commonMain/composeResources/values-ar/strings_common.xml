@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">تُعرض منشورات محفوظة سابقًا</string>
     <string name="files_filter_pictures">الصور</string>
     <string name="files_filter_media">الصور ومقاطع الفيديو</string>
+    <string name="find_in_page">البحث في الصفحة</string>
+    <string name="find_previous_match">التطابق السابق</string>
+    <string name="find_next_match">التطابق التالي</string>
 </resources>

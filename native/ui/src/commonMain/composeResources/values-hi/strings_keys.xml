@@ -52,4 +52,6 @@
     <string name="keys_post_link">उस पोस्ट का लिंक कॉपी करें</string>
     <string name="keys_post_menu">उस पोस्ट का मेनू खोलें</string>
     <string name="keys_menu">मेनू</string>
+    <string name="keys_find_in_page">जो पोस्ट या लेख आप पढ़ रहे हैं, उसमें खोजें</string>
+    <string name="keys_find_match">खोज पट्टी में अगला या पिछला मिलान</string>
 </resources>

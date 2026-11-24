@@ -52,4 +52,6 @@
     <string name="keys_post_link">Kopiatu argitalpen horren esteka</string>
     <string name="keys_post_menu">Ireki argitalpen horren menua</string>
     <string name="keys_menu">Menua</string>
+    <string name="keys_find_in_page">Bilatu irakurtzen ari zaren argitalpenean edo artikuluan</string>
+    <string name="keys_find_match">Bilaketa-barrako hurrengo edo aurreko bat-etortzea</string>
 </resources>

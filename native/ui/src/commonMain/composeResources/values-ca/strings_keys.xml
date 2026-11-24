@@ -52,4 +52,6 @@
     <string name="keys_post_link">Copia l'enllaç d'aquesta publicació</string>
     <string name="keys_post_menu">Obre el menú d'aquesta publicació</string>
     <string name="keys_menu">Menú</string>
+    <string name="keys_find_in_page">Cerca a la publicació o l’article que llegeixes</string>
+    <string name="keys_find_match">Coincidència següent o anterior a la barra de cerca</string>
 </resources>

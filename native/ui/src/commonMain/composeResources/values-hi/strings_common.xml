@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">पहले सहेजी गई पोस्ट दिखाई जा रही हैं</string>
     <string name="files_filter_pictures">तस्वीरें</string>
     <string name="files_filter_media">तस्वीरें और वीडियो</string>
+    <string name="find_in_page">पेज में खोजें</string>
+    <string name="find_previous_match">पिछला मिलान</string>
+    <string name="find_next_match">अगला मिलान</string>
 </resources>

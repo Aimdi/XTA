@@ -52,4 +52,6 @@
     <string name="keys_post_link">Salin tautan postingan itu</string>
     <string name="keys_post_menu">Buka menu postingan itu</string>
     <string name="keys_menu">Menu</string>
+    <string name="keys_find_in_page">Cari di postingan atau artikel yang sedang dibaca</string>
+    <string name="keys_find_match">Kecocokan berikutnya atau sebelumnya di bilah pencarian</string>
 </resources>

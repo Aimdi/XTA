@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Đang hiển thị bài đăng đã lưu trước đó</string>
     <string name="files_filter_pictures">Hình ảnh</string>
     <string name="files_filter_media">Hình ảnh và video</string>
+    <string name="find_in_page">Tìm trong trang</string>
+    <string name="find_previous_match">Kết quả trước</string>
+    <string name="find_next_match">Kết quả tiếp theo</string>
 </resources>

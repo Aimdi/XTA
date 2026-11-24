@@ -52,4 +52,6 @@
     <string name="keys_post_link">نسخ رابط ذلك المنشور</string>
     <string name="keys_post_menu">فتح قائمة ذلك المنشور</string>
     <string name="keys_menu">القائمة</string>
+    <string name="keys_find_in_page">البحث في المنشور أو المقال الذي تقرؤه</string>
+    <string name="keys_find_match">التطابق التالي أو السابق في شريط البحث</string>
 </resources>

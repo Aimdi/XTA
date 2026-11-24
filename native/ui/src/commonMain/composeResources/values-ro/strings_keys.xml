@@ -52,4 +52,6 @@
     <string name="keys_post_link">Copiază linkul acelei postări</string>
     <string name="keys_post_menu">Deschide meniul acelei postări</string>
     <string name="keys_menu">Meniu</string>
+    <string name="keys_find_in_page">Caută în postarea sau articolul pe care îl citești</string>
+    <string name="keys_find_match">Potrivirea următoare sau anterioară din bara de căutare</string>
 </resources>

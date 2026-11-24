@@ -53,4 +53,6 @@
     <string name="keys_post_link">Copy the link of that post</string>
     <string name="keys_post_menu">Open the menu of that post</string>
     <string name="keys_menu">Menu</string>
+    <string name="keys_find_in_page">Find in the post or article you are reading</string>
+    <string name="keys_find_match">Next or previous match in the find bar</string>
 </resources>

@@ -52,4 +52,6 @@
     <string name="keys_post_link">그 게시물의 링크 복사</string>
     <string name="keys_post_menu">그 게시물의 메뉴 열기</string>
     <string name="keys_menu">메뉴</string>
+    <string name="keys_find_in_page">읽고 있는 게시물이나 기사에서 찾기</string>
+    <string name="keys_find_match">찾기 막대에서 다음 또는 이전 결과</string>
 </resources>

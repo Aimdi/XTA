@@ -52,4 +52,6 @@
     <string name="keys_post_link">O gönderinin bağlantısını kopyala</string>
     <string name="keys_post_menu">O gönderinin menüsünü aç</string>
     <string name="keys_menu">Menü</string>
+    <string name="keys_find_in_page">Okuduğunuz gönderide veya makalede bul</string>
+    <string name="keys_find_match">Bulma çubuğunda sonraki veya önceki eşleşme</string>
 </resources>

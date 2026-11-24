@@ -52,4 +52,6 @@
     <string name="keys_post_link">Скопіювати посилання на цей допис</string>
     <string name="keys_post_menu">Відкрити меню цього допису</string>
     <string name="keys_menu">Меню</string>
+    <string name="keys_find_in_page">Пошук у дописі чи статті, яку ви читаєте</string>
+    <string name="keys_find_match">Наступний або попередній збіг у рядку пошуку</string>
 </resources>

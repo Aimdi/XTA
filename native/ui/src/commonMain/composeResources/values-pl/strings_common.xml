@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Wyświetlane są wcześniej zapisane posty</string>
     <string name="files_filter_pictures">Obrazy</string>
     <string name="files_filter_media">Obrazy i filmy</string>
+    <string name="find_in_page">Znajdź na stronie</string>
+    <string name="find_previous_match">Poprzednie wystąpienie</string>
+    <string name="find_next_match">Następne wystąpienie</string>
 </resources>

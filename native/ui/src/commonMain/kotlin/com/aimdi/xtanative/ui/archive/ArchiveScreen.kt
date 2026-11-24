@@ -37,19 +37,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.ArchiveNotesStore
+import com.aimdi.xtanative.ui.common.FindBlock
 import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.ReadingPage
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.foundIn
 import com.aimdi.xtanative.ui.downloads.rememberFilePicker
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.archive_extract
@@ -60,6 +65,7 @@ import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.saved_delete
 import com.aimdi.xtanative.ui.generated.resources.saved_ok
+import com.aimdi.xtanative.ui.home.FindInPage
 import com.aimdi.xtanative.ui.saved.NoteEditorDialog
 import com.aimdi.xtanative.ui.saved.NoteTarget
 import com.aimdi.xtanative.ui.saved.SavedIcons
@@ -83,6 +89,9 @@ fun ArchiveScreen(id: String, onBack: () -> Unit) {
     val pick = rememberFilePicker(images = true, title = stringResource(Res.string.archive_extract))
     val passage = ArchiveRules.passage(selection.text, selection.selection.start, selection.selection.end)
 
+    // Ctrl+F finds in the archived page's text (the desktop's find bar).
+    val findBlocks = remember(state.text) { listOf(FindBlock(TEXT_KEY, state.text)) }
+    FindInPage(findBlocks) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -123,15 +132,20 @@ fun ArchiveScreen(id: String, onBack: () -> Unit) {
             Spacer(Modifier.size(12.dp))
             // Read-only, so its text can be selected but not changed: the selection's menu copies it, or highlights it with a note.
             HighlightMenu(stringResource(Res.string.archive_highlight), passage?.let { { highlighting = it } }) {
+                val found = foundIn(TEXT_KEY, remember(state.text) { AnnotatedString(state.text) })
                 BasicTextField(
                     value = selection,
                     onValueChange = { selection = it.copy(text = state.text, selection = clamp(it.selection, state.text.length)) },
                     readOnly = true,
                     textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface, fontSize = MaterialTheme.typography.bodyLarge.fontSize, lineHeight = MaterialTheme.typography.bodyLarge.lineHeight),
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
+                    // The find bar's matches marked on the text, every character where it was.
+                    visualTransformation = { TransformedText(found.text, OffsetMapping.Identity) },
+                    onTextLayout = found.laidOut,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp).then(found.modifier),
                 )
             }
         }
+    }
     }
 
     if (confirming) {
@@ -152,5 +166,8 @@ fun ArchiveScreen(id: String, onBack: () -> Unit) {
         )
     }
 }
+
+/** The find bar's key of the archived page's text. */
+private const val TEXT_KEY = "archive-text"
 
 private fun clamp(range: TextRange, length: Int): TextRange = TextRange(range.start.coerceIn(0, length), range.end.coerceIn(0, length))

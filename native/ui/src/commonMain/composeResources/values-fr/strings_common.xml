@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Publications enregistrées précédemment</string>
     <string name="files_filter_pictures">Images</string>
     <string name="files_filter_media">Images et vidéos</string>
+    <string name="find_in_page">Rechercher dans la page</string>
+    <string name="find_previous_match">Résultat précédent</string>
+    <string name="find_next_match">Résultat suivant</string>
 </resources>

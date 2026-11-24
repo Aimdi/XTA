@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Se muestran publicaciones guardadas anteriormente</string>
     <string name="files_filter_pictures">Imágenes</string>
     <string name="files_filter_media">Imágenes y vídeos</string>
+    <string name="find_in_page">Buscar en la página</string>
+    <string name="find_previous_match">Coincidencia anterior</string>
+    <string name="find_next_match">Coincidencia siguiente</string>
 </resources>

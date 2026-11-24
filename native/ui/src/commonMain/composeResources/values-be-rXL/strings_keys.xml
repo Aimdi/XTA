@@ -52,4 +52,6 @@
     <string name="keys_post_link">Skapijavać spasyłku na hety dopis</string>
     <string name="keys_post_menu">Adkryć mieniu hetaha dopisu</string>
     <string name="keys_menu">Mieniu</string>
+    <string name="keys_find_in_page">Pošuk u dopisie abo artykule, jaki vy čytajecie</string>
+    <string name="keys_find_match">Nastupny abo papiaredni vynik u radku pošuku</string>
 </resources>

@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Exibindo posts salvos anteriormente</string>
     <string name="files_filter_pictures">Imagens</string>
     <string name="files_filter_media">Imagens e vídeos</string>
+    <string name="find_in_page">Localizar na página</string>
+    <string name="find_previous_match">Resultado anterior</string>
+    <string name="find_next_match">Próximo resultado</string>
 </resources>

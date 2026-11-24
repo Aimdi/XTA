@@ -52,4 +52,6 @@
     <string name="keys_post_link">Copier le lien de cette publication</string>
     <string name="keys_post_menu">Ouvrir le menu de cette publication</string>
     <string name="keys_menu">Menu</string>
+    <string name="keys_find_in_page">Rechercher dans la publication ou l’article que vous lisez</string>
+    <string name="keys_find_match">Résultat suivant ou précédent dans la barre de recherche</string>
 </resources>

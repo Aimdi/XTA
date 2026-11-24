@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Se afișează postări salvate anterior</string>
     <string name="files_filter_pictures">Imagini</string>
     <string name="files_filter_media">Imagini și videoclipuri</string>
+    <string name="find_in_page">Caută în pagină</string>
+    <string name="find_previous_match">Potrivirea anterioară</string>
+    <string name="find_next_match">Potrivirea următoare</string>
 </resources>

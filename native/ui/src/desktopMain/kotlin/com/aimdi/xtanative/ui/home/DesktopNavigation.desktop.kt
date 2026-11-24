@@ -150,6 +150,14 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             if (!actions.find()) openSearch()
             true
         }
+        // Over the opened post's card, only its own find bar: the search stays for the page under it.
+        DeskAction.FIND_IN_PAGE -> when {
+            actions.findInPage() -> true
+            actions.somethingOpen() -> false
+            else -> act(DeskAction.FIND)
+        }
+        DeskAction.FIND_NEXT -> actions.findStep(1)
+        DeskAction.FIND_PREVIOUS -> actions.findStep(-1)
         DeskAction.TEXT_BIGGER, DeskAction.TEXT_SMALLER, DeskAction.TEXT_RESET, DeskAction.UI_BIGGER, DeskAction.UI_SMALLER, DeskAction.UI_RESET -> {
             scope.launch {
                 settingsStore.update { settings ->
@@ -482,6 +490,7 @@ private fun deskKey(key: Key): DeskKey = when (key) {
     Key.Q -> DeskKey.Q
     Key.F -> DeskKey.F
     Key.F1 -> DeskKey.F1
+    Key.F3 -> DeskKey.F3
     Key.Comma -> DeskKey.COMMA
     Key.W -> DeskKey.W
     Key.J -> DeskKey.J

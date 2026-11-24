@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Viser tidligere lagrede innlegg</string>
     <string name="files_filter_pictures">Bilder</string>
     <string name="files_filter_media">Bilder og videoer</string>
+    <string name="find_in_page">Finn på siden</string>
+    <string name="find_previous_match">Forrige treff</string>
+    <string name="find_next_match">Neste treff</string>
 </resources>

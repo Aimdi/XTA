@@ -101,6 +101,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_unable_to_load_the_tweet
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_views_count
 import com.aimdi.xtanative.ui.generated.resources.posts_zen_replies
+import com.aimdi.xtanative.ui.home.FindInPage
 import com.aimdi.xtanative.ui.home.keyedPost
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -132,6 +133,10 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
     }
     LaunchedEffect(nearEnd, state.replies.size) { if (nearEnd) vm.loadMore() }
 
+    // Ctrl+F finds in the post, what it answers and its replies (the desktop's find bar).
+    val findPrefs = rememberPostPrefs()
+    val findBlocks = remember(state, findPrefs) { ThreadFind.blocks(state, findPrefs.threadedReplies, !findPrefs.zen || state.repliesRevealed) }
+    FindInPage(findBlocks, list) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -177,6 +182,7 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
             }
         }
         }
+    }
     }
 }
 

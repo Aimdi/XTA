@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Zobrazují se dříve uložené příspěvky</string>
     <string name="files_filter_pictures">Obrázky</string>
     <string name="files_filter_media">Obrázky a videa</string>
+    <string name="find_in_page">Najít na stránce</string>
+    <string name="find_previous_match">Předchozí shoda</string>
+    <string name="find_next_match">Další shoda</string>
 </resources>

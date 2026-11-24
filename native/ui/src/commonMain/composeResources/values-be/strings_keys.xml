@@ -52,4 +52,6 @@
     <string name="keys_post_link">Скапіяваць спасылку на гэты допіс</string>
     <string name="keys_post_menu">Адкрыць меню гэтага допісу</string>
     <string name="keys_menu">Меню</string>
+    <string name="keys_find_in_page">Пошук у допісе або артыкуле, які вы чытаеце</string>
+    <string name="keys_find_match">Наступны або папярэдні вынік у радку пошуку</string>
 </resources>

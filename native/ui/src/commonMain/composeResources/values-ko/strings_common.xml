@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">이전에 저장된 게시물을 표시하고 있습니다</string>
     <string name="files_filter_pictures">사진</string>
     <string name="files_filter_media">사진 및 동영상</string>
+    <string name="find_in_page">페이지에서 찾기</string>
+    <string name="find_previous_match">이전 결과</string>
+    <string name="find_next_match">다음 결과</string>
 </resources>

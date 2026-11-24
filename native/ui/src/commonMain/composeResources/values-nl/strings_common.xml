@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Eerder opgeslagen berichten</string>
     <string name="files_filter_pictures">Afbeeldingen</string>
     <string name="files_filter_media">Afbeeldingen en video\'s</string>
+    <string name="find_in_page">Zoeken op pagina</string>
+    <string name="find_previous_match">Vorige overeenkomst</string>
+    <string name="find_next_match">Volgende overeenkomst</string>
 </resources>

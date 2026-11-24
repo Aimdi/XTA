@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Montriĝas pli frue konservitaj afiŝoj</string>
     <string name="files_filter_pictures">Bildoj</string>
     <string name="files_filter_media">Bildoj kaj filmetoj</string>
+    <string name="find_in_page">Serĉi en la paĝo</string>
+    <string name="find_previous_match">Antaŭa trafo</string>
+    <string name="find_next_match">Sekva trafo</string>
 </resources>

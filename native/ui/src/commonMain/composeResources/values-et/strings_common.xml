@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Kuvatakse varem salvestatud postitusi</string>
     <string name="files_filter_pictures">Pildid</string>
     <string name="files_filter_media">Pildid ja videod</string>
+    <string name="find_in_page">Otsi lehelt</string>
+    <string name="find_previous_match">Eelmine vaste</string>
+    <string name="find_next_match">Järgmine vaste</string>
 </resources>

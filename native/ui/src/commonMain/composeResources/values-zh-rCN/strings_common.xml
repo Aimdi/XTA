@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">显示先前保存的帖子</string>
     <string name="files_filter_pictures">图片</string>
     <string name="files_filter_media">图片和视频</string>
+    <string name="find_in_page">在页面中查找</string>
+    <string name="find_previous_match">上一个匹配项</string>
+    <string name="find_next_match">下一个匹配项</string>
 </resources>

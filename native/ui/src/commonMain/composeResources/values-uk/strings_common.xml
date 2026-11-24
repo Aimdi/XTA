@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Показано раніше збережені дописи</string>
     <string name="files_filter_pictures">Зображення</string>
     <string name="files_filter_media">Зображення та відео</string>
+    <string name="find_in_page">Знайти на сторінці</string>
+    <string name="find_previous_match">Попередній збіг</string>
+    <string name="find_next_match">Наступний збіг</string>
 </resources>

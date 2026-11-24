@@ -52,4 +52,6 @@
     <string name="keys_post_link">Copiar o link desse post</string>
     <string name="keys_post_menu">Abrir o menu desse post</string>
     <string name="keys_menu">Menu</string>
+    <string name="keys_find_in_page">Localizar no post ou artigo que você está lendo</string>
+    <string name="keys_find_match">Próximo resultado ou anterior na barra de busca</string>
 </resources>

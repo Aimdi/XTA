@@ -52,4 +52,6 @@
     <string name="keys_post_link">その投稿のリンクをコピー</string>
     <string name="keys_post_menu">その投稿のメニューを開く</string>
     <string name="keys_menu">メニュー</string>
+    <string name="keys_find_in_page">読んでいるポストや記事の中を検索</string>
+    <string name="keys_find_match">検索バーで次または前の一致へ</string>
 </resources>

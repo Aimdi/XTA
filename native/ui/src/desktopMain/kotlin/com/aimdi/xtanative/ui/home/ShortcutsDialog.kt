@@ -27,6 +27,8 @@ import com.aimdi.xtanative.ui.generated.resources.keys_columns
 import com.aimdi.xtanative.ui.generated.resources.keys_ctrl
 import com.aimdi.xtanative.ui.generated.resources.keys_delete
 import com.aimdi.xtanative.ui.generated.resources.keys_end
+import com.aimdi.xtanative.ui.generated.resources.keys_find_in_page
+import com.aimdi.xtanative.ui.generated.resources.keys_find_match
 import com.aimdi.xtanative.ui.generated.resources.keys_esc
 import com.aimdi.xtanative.ui.generated.resources.keys_forward
 import com.aimdi.xtanative.ui.generated.resources.keys_full_screen
@@ -104,6 +106,8 @@ object DesktopShortcuts {
         Shortcut(Res.string.keys_go_home, listOf(listOf(alt, KeyCap.Named(Res.string.keys_home)))),
         Shortcut(Res.string.keys_refresh, listOf(listOf(sign("F5")), listOf(ctrl, sign("R")))),
         Shortcut(Res.string.keys_search, listOf(listOf(ctrl, sign("F")), listOf(sign("/")), listOf(ctrl, sign("K")), listOf(ctrl, sign("L")))),
+        Shortcut(Res.string.keys_find_in_page, listOf(listOf(ctrl, sign("F")))),
+        Shortcut(Res.string.keys_find_match, listOf(listOf(sign("F3")), listOf(shift, sign("F3")), listOf(sign("↵")), listOf(shift, sign("↵")))),
         Shortcut(Res.string.keys_new, listOf(listOf(ctrl, sign("N")))),
         Shortcut(Res.string.keys_recent_searches, listOf(listOf(sign("↓")), listOf(sign("↑")))),
         Shortcut(Res.string.keys_open_copied_link, listOf(listOf(ctrl, sign("V")))),

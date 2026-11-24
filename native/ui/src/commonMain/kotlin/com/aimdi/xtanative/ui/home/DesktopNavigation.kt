@@ -118,6 +118,24 @@ class DesktopActions(
     /** The search field shown on top takes the keyboard; false when the page has none. */
     fun find(): Boolean = finders.lastOrNull()?.second?.let { it(); true } ?: false
 
+    /** The find bars Ctrl+F and F3 work, the last shown on top ([FindsInPageWithKeys]). */
+    private val pageFinders = mutableListOf<Pair<Any, PageFinder>>()
+
+    internal fun addPageFinder(owner: Any, finder: PageFinder) {
+        pageFinders.removeAll { it.first === owner }
+        pageFinders += owner to finder
+    }
+
+    internal fun removePageFinder(owner: Any) {
+        pageFinders.removeAll { it.first === owner }
+    }
+
+    /** The find bar of the page shown opens and takes the keyboard; false when the page has none. */
+    fun findInPage(): Boolean = pageFinders.lastOrNull()?.second?.let { it.open(); true } ?: false
+
+    /** F3: the open find bar goes to its next match, or [by] -1 the one before; false when none is open. */
+    fun findStep(by: Int): Boolean = pageFinders.lastOrNull()?.second?.step?.invoke(by) ?: false
+
     /** The New actions Ctrl+N opens, the last shown on top ([CreatesWithKeys]). */
     private val creators = mutableListOf<Pair<Any, () -> Boolean>>()
 
@@ -605,6 +623,28 @@ fun FindsWithKeys(find: () -> Unit) {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.addFinder(owner) { latest() } }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.removeFinder(owner) }
     DisposableEffect(actions) { onDispose { actions.removeFinder(owner) } }
+}
+
+/** A page's find bar as the desktop's keys reach it: [open] it (Ctrl+F), or [step] it on (F3; false while it is closed). */
+class PageFinder(val open: () -> Unit, val step: (Int) -> Boolean)
+
+/**
+ * Lets Ctrl+F and F3 ([DesktopKeys]) work the screen's find bar while it is
+ * the one shown, as a browser's find in page: [open] opens it with the
+ * keyboard in its field, [step] goes to the next match or (-1) the one
+ * before, answering false while it is closed. / keeps going to the search.
+ * Nothing off the desktop.
+ */
+@Composable
+fun FindsInPageWithKeys(open: () -> Unit, step: (Int) -> Boolean) {
+    val actions = LocalDesktopActions.current ?: return
+    val latestOpen by rememberUpdatedState(open)
+    val latestStep by rememberUpdatedState(step)
+    val owner = remember { Any() }
+    val finder = remember { PageFinder({ latestOpen() }, { latestStep(it) }) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.addPageFinder(owner, finder) }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.removePageFinder(owner) }
+    DisposableEffect(actions) { onDispose { actions.removePageFinder(owner) } }
 }
 
 /**

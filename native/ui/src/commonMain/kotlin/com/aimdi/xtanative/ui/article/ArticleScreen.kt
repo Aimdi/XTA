@@ -22,6 +22,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -45,6 +46,7 @@ import com.aimdi.xtanative.ui.common.ReadingPage
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.home.FindInPage
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.posts_article_on_x
 import com.aimdi.xtanative.ui.generated.resources.posts_open_in_browser
@@ -108,6 +110,9 @@ fun ArticleScreen(postId: String, actions: PostActions, onBack: () -> Unit) {
     val vm: ArticleViewModel = viewModel(key = "article-$postId") { ArticleViewModel(graph, postId) }
     val state by vm.ui.collectAsStateWithLifecycle()
     val article = state.article
+    // Ctrl+F finds in the article (the desktop's find bar).
+    val findBlocks = remember(article) { article?.let { ArticleLayout.findBlocks(it) }.orEmpty() }
+    FindInPage(findBlocks) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -129,6 +134,7 @@ fun ArticleScreen(postId: String, actions: PostActions, onBack: () -> Unit) {
                 }
             }
         }
+    }
     }
 }
 

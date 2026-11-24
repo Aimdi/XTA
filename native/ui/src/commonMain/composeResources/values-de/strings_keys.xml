@@ -52,4 +52,6 @@
     <string name="keys_post_link">Link dieses Beitrags kopieren</string>
     <string name="keys_post_menu">Menü dieses Beitrags öffnen</string>
     <string name="keys_menu">Menü</string>
+    <string name="keys_find_in_page">Im gerade gelesenen Beitrag oder Artikel suchen</string>
+    <string name="keys_find_match">Nächster oder vorheriger Treffer in der Suchleiste</string>
 </resources>

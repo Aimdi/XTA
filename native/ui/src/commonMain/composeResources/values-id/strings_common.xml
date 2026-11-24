@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Menampilkan postingan yang disimpan sebelumnya</string>
     <string name="files_filter_pictures">Gambar</string>
     <string name="files_filter_media">Gambar dan video</string>
+    <string name="find_in_page">Cari di halaman</string>
+    <string name="find_previous_match">Kecocokan sebelumnya</string>
+    <string name="find_next_match">Kecocokan berikutnya</string>
 </resources>

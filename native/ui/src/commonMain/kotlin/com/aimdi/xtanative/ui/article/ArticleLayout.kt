@@ -10,6 +10,7 @@ import com.aimdi.xtanative.services.article.ArticleParser
 import com.aimdi.xtanative.services.article.ArticleSpan
 import com.aimdi.xtanative.services.article.ArticleTarget
 import com.aimdi.xtanative.services.links.XLinks
+import com.aimdi.xtanative.ui.common.FindBlock
 
 /** One row of an X article as XTA's ArticleWidget lays it out. */
 sealed interface ArticleItem {
@@ -50,6 +51,31 @@ object ArticleLayout {
             listOfNotNull(text) + article.embedsOf(block).map(ArticleItem::Embed)
         }
     }
+
+    /**
+     * What the find bar looks through in [article] ([FindBlock]): its title,
+     * then each row's text, keyed as [ArticleBody] draws them, all in the
+     * list's row [item] (null on a page that scrolls as a whole).
+     */
+    fun findBlocks(article: Article, item: Int? = null): List<FindBlock> =
+        listOf(FindBlock(TITLE_KEY, article.title, item)) +
+            items(article).mapIndexedNotNull { index, row -> blockOf(row)?.let { FindBlock(rowKey(index), it.text, item) } }
+
+    /** The block of text [item] draws; none for what an article embeds. */
+    fun blockOf(item: ArticleItem): ArticleBlock? = when (item) {
+        is ArticleItem.Paragraph -> item.block
+        is ArticleItem.Heading -> item.block
+        is ArticleItem.Bullet -> item.block
+        is ArticleItem.Numbered -> item.block
+        is ArticleItem.Quote -> item.block
+        is ArticleItem.Embed -> null
+    }
+
+    /** The find bar's key of an article's title. */
+    const val TITLE_KEY = "article-title"
+
+    /** The find bar's key of the text of an article's row [index] ([items]). */
+    fun rowKey(index: Int): String = "article-$index"
 
     /** Where [span] leads in [article]: a link entity or a link or mention X marked in the block; nothing for plain text. */
     fun tap(span: ArticleSpan, article: Article): ArticleTap? = when (val target = span.target) {

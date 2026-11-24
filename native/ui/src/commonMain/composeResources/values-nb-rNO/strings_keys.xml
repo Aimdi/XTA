@@ -52,4 +52,6 @@
     <string name="keys_post_link">Kopier lenken til det innlegget</string>
     <string name="keys_post_menu">Åpne menyen for det innlegget</string>
     <string name="keys_menu">Meny</string>
+    <string name="keys_find_in_page">Søk i innlegget eller artikkelen du leser</string>
+    <string name="keys_find_match">Neste eller forrige treff i søkefeltet</string>
 </resources>

@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Es mostren publicacions desades anteriorment</string>
     <string name="files_filter_pictures">Imatges</string>
     <string name="files_filter_media">Imatges i vídeos</string>
+    <string name="find_in_page">Cerca a la pàgina</string>
+    <string name="find_previous_match">Coincidència anterior</string>
+    <string name="find_next_match">Coincidència següent</string>
 </resources>

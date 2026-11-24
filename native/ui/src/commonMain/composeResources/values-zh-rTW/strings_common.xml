@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">顯示先前儲存的貼文</string>
     <string name="files_filter_pictures">圖片</string>
     <string name="files_filter_media">圖片和影片</string>
+    <string name="find_in_page">在頁面中尋找</string>
+    <string name="find_previous_match">上一個符合項目</string>
+    <string name="find_next_match">下一個符合項目</string>
 </resources>

@@ -399,7 +399,7 @@ fun QuotedPost(post: XPost, actions: PostActions, modifier: Modifier = Modifier)
                 }
                 PostAuthor(post, scope, actions, Modifier.weight(1f), avatarUrl = post.author.avatarUrl)
             }
-            if (post.article == null) ExpandablePostText(post, actions, Modifier.padding(top = 4.dp))
+            if (post.article == null) ExpandablePostText(post, actions, Modifier.padding(top = 4.dp), findKey = quoteFindKey(post.id))
             PostAttachments(post, scope, actions, gap = 8.dp, quoted = true)
         }
     }

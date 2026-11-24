@@ -4,7 +4,7 @@ import androidx.compose.ui.geometry.Offset
 import kotlin.math.abs
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, N, Z, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, N, Z, F3, OTHER }
 
 /** A mouse's side buttons: back and forward, as in a browser. */
 enum class SideButton { BACK, FORWARD }
@@ -34,6 +34,13 @@ enum class DeskAction {
 
     /** The page's own search field takes the keyboard, else the search opens ([DesktopActions.find]). */
     FIND,
+
+    /** The page's find bar opens ([DesktopActions.findInPage]), else as [FIND] while nothing is open over the page. */
+    FIND_IN_PAGE,
+
+    /** The open find bar goes to its next match, or the one before ([DesktopActions.findStep]). */
+    FIND_NEXT,
+    FIND_PREVIOUS,
 
     /** The reader's text size a step up, a step down, or back to the system's ([DesktopKeys.textScaled]). */
     TEXT_BIGGER,
@@ -131,7 +138,10 @@ object DesktopKeys {
      * from a field, and / while nothing is being typed in, go to the search,
      * as a desktop app's do: the page's own field, else the app's search;
      * Ctrl+K and Ctrl+L, as a browser's go to its search and address bar,
-     * do the same.
+     * do the same. On a page with a find bar (an opened post, an article)
+     * Ctrl+F opens it instead, as a browser finds in its page, over the
+     * opened post's card too; F3 and Shift+F3 go to its next match and the
+     * one before.
      * Ctrl with + (or =), - and 0 make the text bigger, smaller, or its
      * size again, as a browser's zoom does, from a field too; with Ctrl+Alt
      * they make the whole interface so (text, controls, pictures). F1, and ?
@@ -207,6 +217,13 @@ object DesktopKeys {
             // Over an opened post (a card the page counts as open) too: going home leaves it with the rest.
             key == DeskKey.HOME && alt && !ctrl && !shift -> DeskAction.GO_HOME
             key == DeskKey.V && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.OPEN_PASTED_LINK
+            // Ctrl+F finds in the page (a post, an article) as a browser's does, also over the opened post's card; / is the search's.
+            key == DeskKey.F && ctrl && !alt && !shift -> if (covered) DeskAction.NONE else DeskAction.FIND_IN_PAGE
+            key == DeskKey.F3 && !alt && !ctrl -> when {
+                covered -> DeskAction.NONE
+                shift -> DeskAction.FIND_PREVIOUS
+                else -> DeskAction.FIND_NEXT
+            }
             (key in FIND_KEYS && ctrl && !alt && !shift) || (key == DeskKey.SLASH && !focusInside && !alt && !ctrl) ->
                 if (somethingOpen) DeskAction.NONE else DeskAction.FIND
             ctrl && !alt && !shift && !focusInside && (key == DeskKey.LEFT || key == DeskKey.RIGHT) -> when {
@@ -297,7 +314,7 @@ object DesktopKeys {
     )
 
     /** The letters Ctrl takes to the search: F as a desktop app's find, K and L as a browser's search and address bar. */
-    private val FIND_KEYS = setOf(DeskKey.F, DeskKey.K, DeskKey.L)
+    private val FIND_KEYS = setOf(DeskKey.K, DeskKey.L)
 
     private val TAB_KEYS = setOf(DeskKey.TAB, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN)
 

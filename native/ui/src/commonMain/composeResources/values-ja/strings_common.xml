@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">以前に保存された投稿を表示しています</string>
     <string name="files_filter_pictures">画像</string>
     <string name="files_filter_media">画像と動画</string>
+    <string name="find_in_page">ページ内を検索</string>
+    <string name="find_previous_match">前の一致</string>
+    <string name="find_next_match">次の一致</string>
 </resources>

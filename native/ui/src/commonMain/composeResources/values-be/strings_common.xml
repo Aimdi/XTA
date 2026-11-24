@@ -42,4 +42,7 @@
     <string name="problem_saved_earlier">Паказваюцца раней захаваныя допісы</string>
     <string name="files_filter_pictures">Выявы</string>
     <string name="files_filter_media">Выявы і відэа</string>
+    <string name="find_in_page">Пошук на старонцы</string>
+    <string name="find_previous_match">Папярэдні вынік</string>
+    <string name="find_next_match">Наступны вынік</string>
 </resources>

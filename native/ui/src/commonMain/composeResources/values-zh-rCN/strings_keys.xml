@@ -52,4 +52,6 @@
     <string name="keys_post_link">复制该帖子的链接</string>
     <string name="keys_post_menu">打开该帖子的菜单</string>
     <string name="keys_menu">菜单</string>
+    <string name="keys_find_in_page">在正在阅读的帖子或文章中查找</string>
+    <string name="keys_find_match">查找栏中的下一个或上一个匹配项</string>
 </resources>

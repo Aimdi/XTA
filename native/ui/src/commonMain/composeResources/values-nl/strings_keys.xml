@@ -52,4 +52,6 @@
     <string name="keys_post_link">De link van die post kopiëren</string>
     <string name="keys_post_menu">Het menu van die post openen</string>
     <string name="keys_menu">Menu</string>
+    <string name="keys_find_in_page">Zoeken in het bericht of artikel dat je leest</string>
+    <string name="keys_find_match">Volgende of vorige overeenkomst in de zoekbalk</string>
 </resources>

@@ -52,4 +52,6 @@
     <string name="keys_post_link">Kopírovat odkaz na příspěvek</string>
     <string name="keys_post_menu">Otevřít nabídku příspěvku</string>
     <string name="keys_menu">Nabídka</string>
+    <string name="keys_find_in_page">Hledat v příspěvku nebo článku, který čtete</string>
+    <string name="keys_find_match">Další nebo předchozí shoda v liště hledání</string>
 </resources>
