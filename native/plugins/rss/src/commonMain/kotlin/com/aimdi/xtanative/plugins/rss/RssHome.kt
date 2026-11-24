@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.networks.rss.RssTimelineRules
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
@@ -72,7 +73,7 @@ internal fun RssHome(app: RssApp, frame: PluginFrame) {
 private fun Header(app: RssApp, selected: RssPane, onSelect: (RssPane) -> Unit) {
     PluginHomeTabs(RssPane.entries, selected, onSelect, icon = { it.icon }, label = { pluginString(it.label) }) {
         // In the app's shell Add is in the plugin sheet ([HomeMenu]), and the bar keeps nothing else.
-        if (LocalPluginClientBar.current == null) IconButton(onClick = app::openAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) }
+        if (LocalPluginClientBar.current == null) IconTip(pluginString(Strings.add)) { IconButton(onClick = app::openAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) } }
         HomeMenu(app, selected)
     }
 }

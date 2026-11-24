@@ -53,6 +53,7 @@ import com.aimdi.xtanative.networks.rss.RssFilter
 import com.aimdi.xtanative.networks.rss.RssTags
 import com.aimdi.xtanative.networks.rss.RssTimelineRules
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.PartialFailureButton
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
@@ -166,7 +167,7 @@ private fun FeedRow(feed: RssFeed, tags: List<String>, onOpen: () -> Unit, onTag
             )
         }
         Box {
-            IconButton(onClick = { menu = true }) { Icon(Icons.Default.MoreVert, pluginString(Strings.more_options)) }
+            IconTip(pluginString(Strings.more_options)) { IconButton(onClick = { menu = true }) { Icon(Icons.Default.MoreVert, pluginString(Strings.more_options)) } }
             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                 DropdownMenuItem(text = { Text(pluginString(Strings.set_tag)) }, onClick = { menu = false; onTag() })
                 DropdownMenuItem(text = { Text(pluginString(Strings.add_to_group)) }, onClick = { menu = false; onGroup() })
