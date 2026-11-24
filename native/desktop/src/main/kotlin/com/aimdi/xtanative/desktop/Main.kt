@@ -46,6 +46,7 @@ import com.aimdi.xtanative.ui.chrome.WindowFullscreen
 import com.aimdi.xtanative.ui.chrome.tray.TrayAction
 import com.aimdi.xtanative.ui.chrome.tray.TrayService
 import com.aimdi.xtanative.ui.chrome.tray.trayWords
+import com.aimdi.xtanative.ui.home.ReorderDrags
 import com.aimdi.xtanative.ui.links.DesktopIncomingLinks
 import com.aimdi.xtanative.ui.media.VideoCheck
 import com.aimdi.xtanative.ui.media.mpris.MprisSessions
@@ -173,6 +174,8 @@ fun main(args: Array<String>) {
             state = state,
             // F11 fills the screen and gives it back, over every screen and viewer.
             onPreviewKeyEvent = { event ->
+                // Esc while a list's item is dragged puts it back, before anything else hears it ([ReorderDrags]).
+                if (event.type == KeyEventType.KeyDown && event.key == Key.Escape && ReorderDrags.escape()) return@Window true
                 val f11 = event.type == KeyEventType.KeyDown && event.key == Key.F11 && !event.isAltPressed && !event.isCtrlPressed
                 if (f11) {
                     val (placement, back) = WindowFullscreen.toggled(state.placement, beforeFullscreen)

@@ -2,7 +2,6 @@ package com.aimdi.xtanative.ui.saved
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,20 +25,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.SavedFolder
@@ -61,8 +54,12 @@ import com.aimdi.xtanative.ui.generated.resources.saved_tab_likes
 import com.aimdi.xtanative.ui.generated.resources.saved_tab_notes
 import com.aimdi.xtanative.ui.generated.resources.saved_tab_unfiled
 import com.aimdi.xtanative.ui.home.RowSteps
+import com.aimdi.xtanative.ui.home.dragSlot
 import com.aimdi.xtanative.ui.home.rememberRowKeyMoves
+import com.aimdi.xtanative.ui.home.rememberSlotDrag
 import com.aimdi.xtanative.ui.home.rowMovedByKeys
+import com.aimdi.xtanative.ui.home.slotDragHandle
+import com.aimdi.xtanative.ui.home.slotViewport
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -195,27 +192,21 @@ private fun ReorderableRows(
     onStep: (token: String, up: Boolean) -> Unit,
     row: @Composable (FolderRow, handle: @Composable () -> Unit) -> Unit,
 ) {
-    val heights = remember { mutableStateMapOf<String, Int>() }
     val current by rememberUpdatedState(rows)
-    val moved by rememberUpdatedState(onMoved)
-    var dragging by remember { mutableStateOf<Int?>(null) }
-    var offset by remember { mutableFloatStateOf(0f) }
-    val heightList = rows.map { heights[it.token] ?: 0 }
-    val target = dragging?.let { dropIndex(it, offset, heightList) }
     val step by rememberUpdatedState(onStep)
     val moves = rememberRowKeyMoves { token, up ->
         (RowSteps.step(current.map { it.token }, token, up) != null).also { if (it) step(token as String, up) }
     }
-    Column(modifier.verticalScrollByKeys(rememberScrollState())) {
-        rows.forEachIndexed { index, item -> key(item.token) {
-            val shift = shiftOf(index, dragging, target, heightList)
+    val scroll = rememberScrollState()
+    val slots = rememberSlotDrag(scroll, vertical = true)
+    val tokens: List<Any> = rows.map { it.token }
+    Column(modifier.slotViewport(slots).verticalScrollByKeys(scroll)) {
+        rows.forEach { item -> key(item.token) {
             Box(
                 Modifier
                     .fillMaxWidth()
                     .rowMovedByKeys(moves, item.token)
-                    .onSizeChanged { heights[item.token] = it.height }
-                    .zIndex(if (index == dragging) 1f else 0f)
-                    .graphicsLayer { translationY = if (index == dragging) offset else shift }
+                    .dragSlot(slots, item.token, MaterialTheme.colorScheme.primary)
                     .background(MaterialTheme.colorScheme.background),
             ) {
                 Column {
@@ -223,39 +214,12 @@ private fun ReorderableRows(
                         Icon(
                             SavedIcons.DragHandle,
                             contentDescription = null,
-                            modifier = Modifier.padding(horizontal = 8.dp).pointerInput(item.token) {
-                                detectDragGestures(
-                                    onDragStart = { dragging = current.indexOfFirst { it.token == item.token }.takeIf { it >= 0 }; offset = 0f },
-                                    onDragEnd = {
-                                        val from = dragging
-                                        val to = from?.let { dropIndex(it, offset, current.map { r -> heights[r.token] ?: 0 }) }
-                                        dragging = null
-                                        offset = 0f
-                                        if (from != null && to != null && to != from) moved(from, to)
-                                    },
-                                    onDragCancel = { dragging = null; offset = 0f },
-                                    onDrag = { change, amount ->
-                                        change.consume()
-                                        offset += amount.y
-                                    },
-                                )
-                            },
+                            modifier = Modifier.padding(horizontal = 8.dp).slotDragHandle(slots, item.token, tokens, mouseOnly = false, onMoved = onMoved),
                         )
                     }
                     Hairline()
                 }
             }
         } }
-    }
-}
-
-/** How far a row makes way for the one dragged from [from] to [to]: by that row's height, the other way. */
-private fun shiftOf(index: Int, from: Int?, to: Int?, heights: List<Int>): Float {
-    if (from == null || to == null || index == from) return 0f
-    val moved = heights.getOrElse(from) { 0 }.toFloat()
-    return when {
-        from < to && index in (from + 1)..to -> -moved
-        from > to && index in to until from -> moved
-        else -> 0f
     }
 }
