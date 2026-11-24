@@ -52,6 +52,7 @@ import com.aimdi.xtanative.ui.generated.resources.offline_failed
 import com.aimdi.xtanative.ui.generated.resources.offline_media_count
 import com.aimdi.xtanative.ui.generated.resources.offline_unavailable
 import com.aimdi.xtanative.ui.generated.resources.saved_long_press_hint
+import com.aimdi.xtanative.ui.generated.resources.saved_right_click_hint
 import com.aimdi.xtanative.ui.generated.resources.saved_media_saved
 import com.aimdi.xtanative.ui.generated.resources.saved_media_status
 import com.aimdi.xtanative.ui.generated.resources.saved_no_media_file
@@ -62,6 +63,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_notice_notes
 import com.aimdi.xtanative.ui.generated.resources.saved_notice_saves
 import com.aimdi.xtanative.ui.generated.resources.saved_something_wrong
 import com.aimdi.xtanative.ui.generated.resources.set_a_download_folder_to_auto_download
+import com.aimdi.xtanative.ui.settings.isDesktop
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -159,7 +161,8 @@ fun noticeText(notice: KeepNotice): String = when (notice) {
     KeepNotice.NoMediaFile -> stringResource(Res.string.saved_no_media_file)
     KeepNotice.NeedsDownloadFolder -> stringResource(Res.string.set_a_download_folder_to_auto_download)
     is KeepNotice.Batch -> stringResource(Res.string.downloads_batch, notice.saved, notice.total)
-    KeepNotice.FolderHint -> stringResource(Res.string.saved_long_press_hint)
+    // The desktop's right-click picks the folder (the save button's onSecondaryClick), as a long press does on a phone.
+    KeepNotice.FolderHint -> stringResource(if (isDesktop) Res.string.saved_right_click_hint else Res.string.saved_long_press_hint)
     KeepNotice.LikesStayHere -> stringResource(Res.string.saved_notice_likes)
     is KeepNotice.OnDevice -> "🔒 " + onDeviceText(notice.notice)
     KeepNotice.OpenFailed -> stringResource(Res.string.downloads_open_failed)

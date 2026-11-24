@@ -110,6 +110,7 @@
     <string name="saved_quoted_unavailable">उद्धृत पोस्ट उपलब्ध नहीं</string>
     <string name="saved_note_thread">नोट</string>
     <string name="saved_long_press_hint">सुझाव: फ़ोल्डर में सहेजने के लिए देर तक दबाएँ</string>
+    <string name="saved_right_click_hint">सुझाव: फ़ोल्डर में सहेजने के लिए राइट-क्लिक करें</string>
     <string name="saved_like">इस डिवाइस पर पसंद करें</string>
     <string name="saved_unlike">इस डिवाइस से पसंद हटाएँ</string>
     <string name="saved_save_here">इस डिवाइस पर सहेजें</string>

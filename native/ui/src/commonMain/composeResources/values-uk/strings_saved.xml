@@ -116,6 +116,7 @@
     <string name="saved_quoted_unavailable">Цитований допис недоступний</string>
     <string name="saved_note_thread">Нотатка</string>
     <string name="saved_long_press_hint">Порада: утримуйте, щоб додати до теки</string>
+    <string name="saved_right_click_hint">Порада: клацніть правою кнопкою миші, щоб додати до теки</string>
     <string name="saved_like">Вподобати на цьому пристрої</string>
     <string name="saved_unlike">Прибрати вподобання з цього пристрою</string>
     <string name="saved_save_here">Зберегти на цьому пристрої</string>

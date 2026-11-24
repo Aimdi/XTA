@@ -110,6 +110,7 @@
     <string name="saved_quoted_unavailable">Publicació citada no disponible</string>
     <string name="saved_note_thread">Nota</string>
     <string name="saved_long_press_hint">Consell: mantén premut per desar-lo en una carpeta</string>
+    <string name="saved_right_click_hint">Consell: fes clic amb el botó dret per desar-lo en una carpeta</string>
     <string name="saved_like">M’agrada en aquest dispositiu</string>
     <string name="saved_unlike">Treu el m’agrada d’aquest dispositiu</string>
     <string name="saved_save_here">Desa en aquest dispositiu</string>

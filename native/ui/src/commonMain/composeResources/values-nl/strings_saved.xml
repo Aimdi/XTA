@@ -110,6 +110,7 @@
     <string name="saved_quoted_unavailable">Geciteerde post niet beschikbaar</string>
     <string name="saved_note_thread">Notitie</string>
     <string name="saved_long_press_hint">Tip: houd ingedrukt om in een map te plaatsen</string>
+    <string name="saved_right_click_hint">Tip: klik met de rechtermuisknop om in een map te plaatsen</string>
     <string name="saved_like">Vind ik leuk op dit apparaat</string>
     <string name="saved_unlike">Like van dit apparaat verwijderen</string>
     <string name="saved_save_here">Opslaan op dit apparaat</string>

@@ -107,6 +107,7 @@
     <string name="saved_quoted_unavailable">引用的帖子不可用</string>
     <string name="saved_note_thread">笔记</string>
     <string name="saved_long_press_hint">提示：长按可归入文件夹</string>
+    <string name="saved_right_click_hint">提示：右键点击可归入文件夹</string>
     <string name="saved_like">在此设备点赞</string>
     <string name="saved_unlike">从此设备取消点赞</string>
     <string name="saved_save_here">保存在此设备</string>

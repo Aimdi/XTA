@@ -110,6 +110,7 @@
     <string name="saved_quoted_unavailable">Aipatutako argitalpena ez dago erabilgarri</string>
     <string name="saved_note_thread">Oharra</string>
     <string name="saved_long_press_hint">Aholkua: eduki sakatuta karpeta batean gordetzeko</string>
+    <string name="saved_right_click_hint">Aholkua: egin eskuineko klik karpeta batean gordetzeko</string>
     <string name="saved_like">Atsegin gailu honetan</string>
     <string name="saved_unlike">Kendu atsegina gailu honetatik</string>
     <string name="saved_save_here">Gorde gailu honetan</string>

@@ -107,6 +107,7 @@
     <string name="saved_quoted_unavailable">Bài đăng được trích dẫn không khả dụng</string>
     <string name="saved_note_thread">Ghi chú</string>
     <string name="saved_long_press_hint">Mẹo: nhấn giữ để lưu vào thư mục</string>
+    <string name="saved_right_click_hint">Mẹo: nhấp chuột phải để lưu vào thư mục</string>
     <string name="saved_like">Thích trên thiết bị này</string>
     <string name="saved_unlike">Bỏ thích khỏi thiết bị này</string>
     <string name="saved_save_here">Lưu trên thiết bị này</string>

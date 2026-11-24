@@ -110,6 +110,7 @@
     <string name="saved_quoted_unavailable">Post citato non disponibile</string>
     <string name="saved_note_thread">Nota</string>
     <string name="saved_long_press_hint">Suggerimento: tieni premuto per salvarlo in una cartella</string>
+    <string name="saved_right_click_hint">Suggerimento: fai clic destro per salvarlo in una cartella</string>
     <string name="saved_like">Mi piace su questo dispositivo</string>
     <string name="saved_unlike">Rimuovi il mi piace da questo dispositivo</string>
     <string name="saved_save_here">Salva su questo dispositivo</string>

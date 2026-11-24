@@ -116,6 +116,7 @@
     <string name="saved_quoted_unavailable">Цитируемый пост недоступен</string>
     <string name="saved_note_thread">Заметка</string>
     <string name="saved_long_press_hint">Совет: удерживайте, чтобы поместить в папку</string>
+    <string name="saved_right_click_hint">Совет: нажмите правой кнопкой мыши, чтобы поместить в папку</string>
     <string name="saved_like">Нравится на этом устройстве</string>
     <string name="saved_unlike">Убрать отметку «нравится» с этого устройства</string>
     <string name="saved_save_here">Сохранить на этом устройстве</string>

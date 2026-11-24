@@ -110,6 +110,7 @@
     <string name="saved_quoted_unavailable">Publication citée indisponible</string>
     <string name="saved_note_thread">Note</string>
     <string name="saved_long_press_hint">Astuce : appui long pour classer dans un dossier</string>
+    <string name="saved_right_click_hint">Astuce : clic droit pour classer dans un dossier</string>
     <string name="saved_like">Aimer sur cet appareil</string>
     <string name="saved_unlike">Retirer le j’aime de cet appareil</string>
     <string name="saved_save_here">Enregistrer sur cet appareil</string>

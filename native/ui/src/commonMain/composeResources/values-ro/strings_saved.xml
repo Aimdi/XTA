@@ -113,6 +113,7 @@
     <string name="saved_quoted_unavailable">Postarea citată nu este disponibilă</string>
     <string name="saved_note_thread">Notă</string>
     <string name="saved_long_press_hint">Sfat: ține apăsat pentru a-l adăuga într-un dosar</string>
+    <string name="saved_right_click_hint">Sfat: fă clic dreapta pentru a-l adăuga într-un dosar</string>
     <string name="saved_like">Apreciază pe acest dispozitiv</string>
     <string name="saved_unlike">Elimină aprecierea de pe acest dispozitiv</string>
     <string name="saved_save_here">Salvează pe acest dispozitiv</string>

@@ -116,6 +116,7 @@
     <string name="saved_quoted_unavailable">Цытаваны пост недаступны</string>
     <string name="saved_note_thread">Нататка</string>
     <string name="saved_long_press_hint">Парада: доўгі націск, каб змясціць у тэчку</string>
+    <string name="saved_right_click_hint">Парада: націсніце правай кнопкай мышы, каб змясціць у тэчку</string>
     <string name="saved_like">Падабаецца на гэтай прыладзе</string>
     <string name="saved_unlike">Прыбраць «падабаецца» з гэтай прылады</string>
     <string name="saved_save_here">Захаваць на гэтай прыладзе</string>

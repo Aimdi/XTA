@@ -122,6 +122,7 @@
     <string name="saved_quoted_unavailable">المنشور المقتبس غير متوفر</string>
     <string name="saved_note_thread">ملاحظة</string>
     <string name="saved_long_press_hint">نصيحة: اضغط مطولاً لحفظه في مجلد</string>
+    <string name="saved_right_click_hint">نصيحة: انقر بزر الفأرة الأيمن لحفظه في مجلد</string>
     <string name="saved_like">إعجاب على هذا الجهاز</string>
     <string name="saved_unlike">إزالة الإعجاب من هذا الجهاز</string>
     <string name="saved_save_here">حفظ على هذا الجهاز</string>

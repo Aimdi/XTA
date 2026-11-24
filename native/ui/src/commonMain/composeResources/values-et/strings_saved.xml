@@ -110,6 +110,7 @@
     <string name="saved_quoted_unavailable">Tsiteeritud postitus pole saadaval</string>
     <string name="saved_note_thread">Märge</string>
     <string name="saved_long_press_hint">Näpunäide: hoia all, et lisada kausta</string>
+    <string name="saved_right_click_hint">Näpunäide: tee paremklõps, et lisada kausta</string>
     <string name="saved_like">Meeldi selles seadmes</string>
     <string name="saved_unlike">Eemalda meeldimine sellest seadmest</string>
     <string name="saved_save_here">Salvesta selles seadmes</string>

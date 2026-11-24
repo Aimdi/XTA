@@ -110,6 +110,7 @@
     <string name="saved_quoted_unavailable">Quoted post unavailable</string>
     <string name="saved_note_thread">Note</string>
     <string name="saved_long_press_hint">Tip: long-press to file into a folder</string>
+    <string name="saved_right_click_hint">Tip: right-click to file into a folder</string>
     <string name="saved_like">Like on this device</string>
     <string name="saved_unlike">Remove like from this device</string>
     <string name="saved_save_here">Save on this device</string>
