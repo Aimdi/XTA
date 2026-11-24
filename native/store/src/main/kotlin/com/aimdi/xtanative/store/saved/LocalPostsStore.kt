@@ -80,8 +80,10 @@ class LocalPostsStore(
         val notes = notes()
         if (notes.none { it.id == id }) return null
         val taken = PutBack.taken(notes, { it.id == id }, { it.id }) ?: return null
-        val parked = withContext(Dispatchers.IO) { park(folderOf(id)) }
+        // The note leaves the list first: were the app to end between the two, the next start
+        // clears `notes-undo/`, and that must never hold the files of a note still listed.
         stored.update { now -> if (now.none { it.id == id }) now else now.filterNot { it.id == id } }
+        val parked = withContext(Dispatchers.IO) { park(folderOf(id)) }
         return TakenNote(taken, parked)
     }
 

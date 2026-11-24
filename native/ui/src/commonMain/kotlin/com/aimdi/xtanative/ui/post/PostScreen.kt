@@ -102,6 +102,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_views_count
 import com.aimdi.xtanative.ui.generated.resources.posts_zen_replies
 import com.aimdi.xtanative.ui.home.FindInPage
+import com.aimdi.xtanative.ui.home.LocalDesktopActions
 import com.aimdi.xtanative.ui.home.keyedPost
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -135,7 +136,11 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
 
     // Ctrl+F finds in the post, what it answers and its replies (the desktop's find bar).
     val findPrefs = rememberPostPrefs()
-    val findBlocks = remember(state, findPrefs) { ThreadFind.blocks(state, findPrefs.threadedReplies, !findPrefs.zen || state.repliesRevealed) }
+    // Only the desktop has a find bar: on Android nothing would read the blocks, and a long thread is not worked through for them.
+    val finds = LocalDesktopActions.current != null
+    val findBlocks = remember(state, findPrefs, finds) {
+        if (finds) ThreadFind.blocks(state, findPrefs.threadedReplies, !findPrefs.zen || state.repliesRevealed) else emptyList()
+    }
     FindInPage(findBlocks, list) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
