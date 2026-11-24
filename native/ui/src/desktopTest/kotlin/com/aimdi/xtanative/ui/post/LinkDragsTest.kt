@@ -70,4 +70,13 @@ class LinkDragsTest {
         assertEquals(java.awt.event.MouseEvent.MOUSE_EXITED, DragHover.eventAt(100, 50, 10, -1))
         assertEquals(java.awt.event.MouseEvent.MOUSE_EXITED, DragHover.eventAt(0, 0, 0, 0))
     }
+
+    @Test
+    fun theWindowDraggedFromAnswersNotTheFirstOneOpenedUnderThePointer() {
+        assertEquals("post", DragHover.windowUnder("post", listOf("main", "post")), "a post window over the main one")
+        assertEquals("main", DragHover.windowUnder("main", listOf("main", "post")))
+        assertEquals("main", DragHover.windowUnder("post", listOf("main")), "the active one not under the pointer")
+        assertEquals("main", DragHover.windowUnder(null, listOf("main")), "another program in use")
+        assertNull(DragHover.windowUnder("post", emptyList<String>()))
+    }
 }

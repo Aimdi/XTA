@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.ui.links.DraggedText
 import java.awt.Component
 import java.awt.EventQueue
+import java.awt.KeyboardFocusManager
 import java.awt.MouseInfo
 import java.awt.Point
 import java.awt.Window
@@ -167,13 +168,22 @@ private class LinkDragNode(var address: String?, var linkAt: ((Offset) -> String
  * now is: moved to there when it is over the window, gone when it is not.
  */
 internal object DragHover {
-    /** The window's component under the pointer, which takes its mouse events; null when none is. */
+    /**
+     * The window's component under the pointer, which takes its mouse events;
+     * null when none is. The window is the one in use, which the press that
+     * starts the drag made active: the first one opened that the pointer is
+     * over would be the main one under a post window dragged from.
+     */
     fun componentUnderPointer(): Component? {
         val at = MouseInfo.getPointerInfo()?.location ?: return null
-        val window = Window.getWindows().firstOrNull { it.isShowing && it.bounds.contains(at) } ?: return null
+        val shown = Window.getWindows().filter { it.isShowing && it.bounds.contains(at) }
+        val window = windowUnder(KeyboardFocusManager.getCurrentKeyboardFocusManager().activeWindow, shown) ?: return null
         val local = Point(at).also { SwingUtilities.convertPointFromScreen(it, window) }
         return SwingUtilities.getDeepestComponentAt(window, local.x, local.y)
     }
+
+    /** Of the windows [shown] under the pointer, the [active] one when it is among them, else the first. */
+    fun <W> windowUnder(active: W?, shown: List<W>): W? = active?.takeIf { it in shown } ?: shown.firstOrNull()
 
     /** Tells [component] where the pointer is now, once the drag has let the mouse go. */
     fun settle(component: Component?) {
