@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -56,6 +58,7 @@ import com.aimdi.xtanative.networks.booru.BooruTagOperator
 import com.aimdi.xtanative.networks.booru.BooruTagSuggestion
 import com.aimdi.xtanative.store.settings.BooruPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -72,20 +75,22 @@ import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 internal fun SearchLanding(app: BooruApp, search: BooruSearch, state: BooruSearchState, onField: (String) -> Unit) {
     if (state.input.isNotEmpty() && state.suggestions.isNotEmpty()) {
         val prefix = BooruQuery.suggestionPrefix(state.input).orEmpty()
-        LazyColumn(Modifier.fillMaxSize()) {
+        val suggestions = rememberLazyListState()
+        PluginReadingColumn(PaddingValues(), suggestions) { column -> LazyColumn(Modifier.fillMaxSize(), state = suggestions, contentPadding = column) {
             items(state.suggestions, key = { "s-" + it.name }) { suggestion -> SuggestionRow(suggestion, prefix) { onField(search.pick(suggestion)) } }
-        }
+        } }
         return
     }
     val settings by app.settings.collectAsState()
     val current = settings ?: app.current()
     var editingText by remember { mutableStateOf(false) }
-    LazyColumn(Modifier.fillMaxSize()) {
+    val list = rememberLazyListState()
+    PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
         item(key = "tools") { QueryTools(search, state, current, onField, onEditAsText = { editingText = true }) }
         item(key = "metatags") { Metatags(current) { name -> onField(search.start(name)) } }
         item(key = "saved") { SavedSearches(app) { query -> onField(""); search.run(query) } }
         item(key = "recent") { RecentSearches(app, current) { query -> onField(""); search.run(query) } }
-    }
+    } }
     if (editingText) {
         RawQueryDialog(state.text, onSearch = { text ->
             editingText = false
