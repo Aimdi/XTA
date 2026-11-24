@@ -57,4 +57,17 @@ class LinkDragsTest {
         kotlin.test.assertFalse(com.aimdi.xtanative.ui.links.DraggedText.offered(transfer), "the frame does not start taking it")
         assertNull(com.aimdi.xtanative.ui.links.DraggedText.read(transfer), "nor opens it on a drop")
     }
+
+    @Test
+    fun theWindowHearsThePointerMoveWhenADragEndsOverIt() {
+        assertEquals(java.awt.event.MouseEvent.MOUSE_MOVED, DragHover.eventAt(100, 50, 0, 0))
+        assertEquals(java.awt.event.MouseEvent.MOUSE_MOVED, DragHover.eventAt(100, 50, 99, 49))
+    }
+
+    @Test
+    fun theWindowHearsThePointerLeaveWhenADragEndsOutside() {
+        assertEquals(java.awt.event.MouseEvent.MOUSE_EXITED, DragHover.eventAt(100, 50, 100, 10))
+        assertEquals(java.awt.event.MouseEvent.MOUSE_EXITED, DragHover.eventAt(100, 50, 10, -1))
+        assertEquals(java.awt.event.MouseEvent.MOUSE_EXITED, DragHover.eventAt(0, 0, 0, 0))
+    }
 }

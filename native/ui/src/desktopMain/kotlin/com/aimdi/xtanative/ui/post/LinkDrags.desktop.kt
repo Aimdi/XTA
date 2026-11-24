@@ -32,10 +32,17 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.ui.links.DraggedText
+import java.awt.Component
+import java.awt.EventQueue
+import java.awt.MouseInfo
+import java.awt.Point
+import java.awt.Window
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.SystemFlavorMap
 import java.awt.datatransfer.Transferable
 import java.awt.datatransfer.UnsupportedFlavorException
+import java.awt.event.MouseEvent
+import javax.swing.SwingUtilities
 
 internal actual fun Modifier.dragsLink(url: String?): Modifier {
     val address = LinkDrags.addressOf(url) ?: return this
@@ -72,8 +79,13 @@ private class LinkDragNode(var address: String?, var linkAt: ((Offset) -> String
         DragAndDropSourceModifierNode { _ ->
             val url = dragged ?: return@DragAndDropSourceModifierNode
             val (size, draw) = decoration(url)
+            val under = DragHover.componentUnderPointer()
             startDragAndDropTransfer(
-                DragAndDropTransferData(DragAndDropTransferable(LinkTransfer(url)), supportedActions = listOf(DragAndDropTransferAction.Copy, DragAndDropTransferAction.Link)),
+                DragAndDropTransferData(
+                    DragAndDropTransferable(LinkTransfer(url)),
+                    supportedActions = listOf(DragAndDropTransferAction.Copy, DragAndDropTransferAction.Link),
+                    onTransferCompleted = { DragHover.settle(under) },
+                ),
                 size,
                 draw,
             )
@@ -113,6 +125,39 @@ private class LinkDragNode(var address: String?, var linkAt: ((Offset) -> String
             drawText(text, topLeft = Offset(pad, pad))
         }
     }
+}
+
+/**
+ * The pointer after a drag out of the window: the drag holds the mouse, so
+ * the window hears neither the pointer leaving nor its button's release, and
+ * what was under it at the start (a tooltip, a lit card) stays lit until the
+ * pointer comes back. At the drag's end the window is told where the pointer
+ * now is: moved to there when it is over the window, gone when it is not.
+ */
+internal object DragHover {
+    /** The window's component under the pointer, which takes its mouse events; null when none is. */
+    fun componentUnderPointer(): Component? {
+        val at = MouseInfo.getPointerInfo()?.location ?: return null
+        val window = Window.getWindows().firstOrNull { it.isShowing && it.bounds.contains(at) } ?: return null
+        val local = Point(at).also { SwingUtilities.convertPointFromScreen(it, window) }
+        return SwingUtilities.getDeepestComponentAt(window, local.x, local.y)
+    }
+
+    /** Tells [component] where the pointer is now, once the drag has let the mouse go. */
+    fun settle(component: Component?) {
+        component ?: return
+        EventQueue.invokeLater {
+            if (!component.isShowing) return@invokeLater
+            val at = runCatching { MouseInfo.getPointerInfo()?.location }.getOrNull()
+            val local = at?.let { Point(it).also { p -> SwingUtilities.convertPointFromScreen(p, component) } } ?: Point(-1, -1)
+            val id = eventAt(component.width, component.height, local.x, local.y)
+            component.dispatchEvent(MouseEvent(component, id, System.currentTimeMillis(), 0, local.x, local.y, 0, false))
+        }
+    }
+
+    /** A move to the pointer when it is inside a [width] by [height] component, else the pointer leaving it. */
+    fun eventAt(width: Int, height: Int, x: Int, y: Int): Int =
+        if (x in 0 until width && y in 0 until height) MouseEvent.MOUSE_MOVED else MouseEvent.MOUSE_EXITED
 }
 
 /** The desktop's side of [LinkDrags]: what a dragged link hands over. */
