@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -73,6 +74,7 @@ import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.WithSettings
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -251,7 +253,8 @@ private fun FilterRow(content: @Composable RowScope.() -> Unit) {
 /** The site's tags for the term being typed, in their namespaces' colours. */
 @Composable
 private fun Suggestions(tags: List<EhTag>, onPick: (EhTag) -> Unit) {
-    LazyColumn(Modifier.fillMaxSize()) {
+    val list = rememberLazyListState()
+    PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
         items(tags, key = { it.raw }) { tag ->
             ListItem(
                 headlineContent = { Text(tag.name, color = namespaceColor(tag.namespace) ?: MaterialTheme.colorScheme.onSurface) },
@@ -262,14 +265,15 @@ private fun Suggestions(tags: List<EhTag>, onPick: (EhTag) -> Unit) {
                 modifier = Modifier.clickable { onPick(tag) },
             )
         }
-    }
+    } }
 }
 
 /** The searches run before, newest first, each to run again or forget; all of them cleared at once. */
 @Composable
 private fun SearchHistory(app: EhApp, settings: Settings, onRun: (String) -> Unit) {
     val queries = settings[EhViewerPrefs.searchHistory]
-    LazyColumn(Modifier.fillMaxSize()) {
+    val list = rememberLazyListState()
+    PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
         if (queries.isNotEmpty()) {
             item(key = "title") {
                 ListItem(
@@ -288,7 +292,7 @@ private fun SearchHistory(app: EhApp, settings: Settings, onRun: (String) -> Uni
                 modifier = Modifier.clickable { onRun(query) },
             )
         }
-    }
+    } }
 }
 
 /** What the search found: a spinner while its first page loads, why it failed, that it found nothing, or the galleries. */
