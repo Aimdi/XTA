@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.AbsoluteAlignment
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import java.io.ByteArrayOutputStream
+import java.net.IDN
 import java.nio.ByteBuffer
 import java.nio.charset.CodingErrorAction
 import kotlinx.coroutines.delay
@@ -89,21 +90,62 @@ internal object LinkHovers {
 
     /**
      * [address] (an ASCII address, see [LinkDrags.addressOf]) as the reader
-     * reads it: escaped letters of other scripts shown as themselves, as a
-     * browser shows them. Escaped ASCII, spaces, controls and invisible
-     * marks (which could make one address look like another) stay escaped.
+     * reads it: escaped letters of other scripts in its path, query and
+     * fragment shown as themselves, as a browser shows them. Escaped ASCII,
+     * spaces, controls and invisible marks (which could make one address look
+     * like another) stay escaped. The host is never shown in other scripts:
+     * one of them reads as its punycode (`xn--`), as browsers show a host
+     * that could pass for another (a Cyrillic "а" in "аpple.com").
      */
     fun readable(address: String): String {
-        val out = StringBuilder(address.length)
+        val authorityStart = address.indexOf("://").takeIf { it > 0 }?.plus(3) ?: return decodedEscapes(address)
+        val authorityEnd = address.indexOfAny(charArrayOf('/', '?', '#'), authorityStart).takeIf { it >= 0 } ?: address.length
+        return address.substring(0, authorityStart) +
+            readableAuthority(address.substring(authorityStart, authorityEnd)) +
+            decodedEscapes(address.substring(authorityEnd))
+    }
+
+    /** `user@host:port` with the host as ASCII ([IDN.toASCII]); left as written where it is no host that could be read. */
+    private fun readableAuthority(authority: String): String {
+        if ('%' !in authority) return authority
+        val hostStart = authority.lastIndexOf('@') + 1
+        val portAt = authority.indexOf(':', hostStart).takeIf { it >= 0 && !authority.startsWith("[", hostStart) } ?: authority.length
+        val host = authority.substring(hostStart, portAt)
+        val ascii = asciiHost(host) ?: return authority
+        return authority.substring(0, hostStart) + ascii + authority.substring(portAt)
+    }
+
+    /** [host], its escapes undone as a browser does, as ASCII: punycode for other scripts; null when it is no name. */
+    private fun asciiHost(host: String): String? {
+        if ('%' !in host) return host
+        val bytes = ByteArrayOutputStream()
         var i = 0
-        while (i < address.length) {
-            val end = escapesEnd(address, i)
+        while (i < host.length) {
+            if (escapesEnd(host, i) > i) {
+                bytes.write(host.substring(i + 1, i + 3).toInt(16))
+                i += 3
+            } else {
+                bytes.write(host[i].code.takeIf { it < 0x80 } ?: return null)
+                i++
+            }
+        }
+        val decoded = decoded(bytes.toByteArray().toList()) ?: return null
+        return runCatching { IDN.toASCII(decoded, IDN.ALLOW_UNASSIGNED) }.getOrNull()
+            ?.takeIf { ascii -> ascii.isNotEmpty() && ascii.all { it.isLetterOrDigit() && it.code < 0x80 || it == '-' || it == '.' } }
+    }
+
+    /** [text] with its runs of escapes decoded where safe ([decodedRun]). */
+    private fun decodedEscapes(text: String): String {
+        val out = StringBuilder(text.length)
+        var i = 0
+        while (i < text.length) {
+            val end = escapesEnd(text, i)
             if (end == i) {
-                out.append(address[i])
+                out.append(text[i])
                 i++
                 continue
             }
-            out.append(decodedRun(address.substring(i, end)))
+            out.append(decodedRun(text.substring(i, end)))
             i = end
         }
         return out.toString()

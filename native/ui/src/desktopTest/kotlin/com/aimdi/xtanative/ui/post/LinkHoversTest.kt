@@ -53,6 +53,19 @@ class LinkHoversTest {
     }
 
     @Test
+    fun aHostInOtherScriptsReadsAsPunycodeNotAsTheHostItMimics() {
+        // A Cyrillic "а" (U+0430) in place of the Latin one: never shown as "аpple.com".
+        assertEquals("https://xn--pple-43d.com/а", LinkHovers.readable("https://%D0%B0pple.com/%D0%B0"))
+        assertEquals("https://xn--pple-43d.com:8080?q=1", LinkHovers.readable("https://%D0%B0pple.com:8080?q=1"))
+        assertEquals("https://me@xn--pple-43d.com#ä", LinkHovers.readable("https://me@%D0%B0pple.com#%C3%A4"))
+        assertEquals("https://xn--mnchen-3ya.de", LinkHovers.readable("https://m%C3%BCnchen.de"))
+        assertEquals("https://x.com/", LinkHovers.readable("https://x.com/"))
+        // No name a browser would go to: left escaped as written.
+        assertEquals("https://%E2%80%AE.com/", LinkHovers.readable("https://%E2%80%AE.com/"))
+        assertEquals("https://%C3x.com", LinkHovers.readable("https://%C3x.com"))
+    }
+
+    @Test
     fun whatCouldDisguiseAnAddressStaysEscaped() {
         // Right-to-left override, no-break space, a broken sequence, a lone trail byte, a dangling %.
         assertEquals("https://a/%E2%80%AE", LinkHovers.readable("https://a/%E2%80%AE"))
