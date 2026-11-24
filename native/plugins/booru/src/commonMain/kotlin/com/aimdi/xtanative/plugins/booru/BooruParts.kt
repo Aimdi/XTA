@@ -53,6 +53,7 @@ import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import com.aimdi.xtanative.networks.booru.BooruTagCategory
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.links.LocalLinks
@@ -90,9 +91,9 @@ internal fun BooruImage(url: String, modifier: Modifier = Modifier, contentScale
         when {
             !failed -> Unit
             url.isEmpty() -> Icon(BooruIcons.BrokenImage, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
-            else -> IconButton(onClick = { attempt++ }) {
+            else -> IconTip(pluginString(Strings.retry)) { IconButton(onClick = { attempt++ }) {
                 Icon(BooruIcons.BrokenImage, contentDescription = pluginString(Strings.retry), tint = MaterialTheme.colorScheme.outline)
-            }
+            } }
         }
     }
 }

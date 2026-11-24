@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.swipeTabs
@@ -101,7 +102,7 @@ internal fun BooruHome(app: BooruApp, frame: PluginFrame, ownActions: Boolean = 
 @Composable
 private fun ShellBar(app: BooruApp, settings: Settings, tab: HomeTab, onTab: (HomeTab) -> Unit) {
     PluginHomeTabs(emptyList()) {
-        IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
+        IconTip(pluginString(Strings.search)) { IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } }
         ShellMenuButton { close ->
             DropdownMenuItem(text = { Text(pluginString(Strings.settings)) }, onClick = {
                 close()
@@ -131,8 +132,8 @@ private fun HomeBar(tab: HomeTab, onTab: (HomeTab) -> Unit, actions: HomeActions
             }
         }
         if (actions != null) {
-            IconButton(onClick = actions.search) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
-            IconButton(onClick = actions.settings) { Icon(Icons.Filled.Settings, pluginString(Strings.settings)) }
+            IconTip(pluginString(Strings.search)) { IconButton(onClick = actions.search) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } }
+            IconTip(pluginString(Strings.settings)) { IconButton(onClick = actions.settings) { Icon(Icons.Filled.Settings, pluginString(Strings.settings)) } }
         }
     }
 }
@@ -183,9 +184,9 @@ private fun FollowingRow(app: BooruApp, tags: List<String>, failed: Int, onRetry
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (failed > 0) {
-            IconButton(onClick = { explaining = true }) {
+            IconTip(pluginString(Strings.following_partial)) { IconButton(onClick = { explaining = true }) {
                 Icon(GroupIcons.WarningAmber, pluginString(Strings.following_partial), tint = MaterialTheme.colorScheme.error)
-            }
+            } }
         }
         tags.forEach { tag ->
             InputChip(
@@ -193,9 +194,9 @@ private fun FollowingRow(app: BooruApp, tags: List<String>, failed: Int, onRetry
                 onClick = { app.openSearch(tag) },
                 label = { Text(tag) },
                 trailingIcon = {
-                    IconButton(onClick = { app.launch { app.unfollow(tag) } }, modifier = Modifier.size(24.dp)) {
+                    IconTip(pluginString(Strings.unsubscribe)) { IconButton(onClick = { app.launch { app.unfollow(tag) } }, modifier = Modifier.size(24.dp)) {
                         Icon(Icons.Filled.Close, pluginString(Strings.unsubscribe), modifier = Modifier.size(18.dp))
-                    }
+                    } }
                 },
             )
         }

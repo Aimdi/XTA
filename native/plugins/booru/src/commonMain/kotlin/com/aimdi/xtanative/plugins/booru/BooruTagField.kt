@@ -54,6 +54,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.booru.BooruQueryToken
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /**
@@ -108,7 +109,7 @@ internal fun TagField(search: BooruSearch, state: BooruSearchState, field: Mutab
                     },
                 )
             }
-            IconButton(onClick = run) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
+            IconTip(pluginString(Strings.search)) { IconButton(onClick = run) { Icon(Icons.Filled.Search, pluginString(Strings.search)) } }
         }
     }
 }
@@ -127,9 +128,9 @@ private fun FieldChip(tag: String, state: BooruSearchState, onEdit: () -> Unit, 
             onClick = onEdit,
             label = { Text(tokenText(tag, state.categories[BooruQueryToken.parse(tag).value])) },
             trailingIcon = {
-                IconButton(onClick = onRemove, modifier = Modifier.size(24.dp)) {
+                IconTip(pluginString(Strings.delete)) { IconButton(onClick = onRemove, modifier = Modifier.size(24.dp)) {
                     Icon(Icons.Filled.Close, pluginString(Strings.delete), modifier = Modifier.size(18.dp))
-                }
+                } }
             },
         )
     }

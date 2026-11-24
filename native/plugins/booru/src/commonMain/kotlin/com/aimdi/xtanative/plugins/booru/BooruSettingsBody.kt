@@ -42,6 +42,7 @@ import com.aimdi.xtanative.networks.booru.BooruRating
 import com.aimdi.xtanative.networks.booru.BooruRatingRules
 import com.aimdi.xtanative.store.settings.BooruPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
@@ -159,9 +160,9 @@ private fun CustomSiteChip(app: BooruApp, site: BooruPreset, selected: Boolean, 
         onClick = { choose(app, site)?.let(onAsk) },
         label = { Text(site.name) },
         trailingIcon = {
-            IconButton(onClick = { app.update { BooruSites.withoutCustom(it, site) } }, modifier = Modifier.size(24.dp)) {
+            IconTip(pluginString(Strings.remove_site)) { IconButton(onClick = { app.update { BooruSites.withoutCustom(it, site) } }, modifier = Modifier.size(24.dp)) {
                 Icon(Icons.Filled.Close, pluginString(Strings.remove_site), Modifier.size(18.dp))
-            }
+            } }
         },
     )
 }
@@ -300,9 +301,9 @@ private fun LazyListScope.muteSection(app: BooruApp, settings: Settings) {
                         onClick = {},
                         label = { Text(queryText(entry)) },
                         trailingIcon = {
-                            IconButton(onClick = { app.update { BooruConfig.withoutMuted(it, entry) } }, modifier = Modifier.size(24.dp)) {
+                            IconTip(pluginString(Strings.delete)) { IconButton(onClick = { app.update { BooruConfig.withoutMuted(it, entry) } }, modifier = Modifier.size(24.dp)) {
                                 Icon(Icons.Filled.Close, pluginString(Strings.delete), Modifier.size(18.dp))
-                            }
+                            } }
                         },
                     )
                 }
@@ -326,7 +327,7 @@ private fun MuteField(app: BooruApp) {
         onValueChange = { entry = it },
         label = { Text(pluginString(Strings.mute_tag)) },
         supportingText = { Text(pluginString(Strings.mute_help)) },
-        trailingIcon = { IconButton(onClick = mute) { Icon(Icons.Filled.Add, pluginString(Strings.mute_tag)) } },
+        trailingIcon = { IconTip(pluginString(Strings.mute_tag)) { IconButton(onClick = mute) { Icon(Icons.Filled.Add, pluginString(Strings.mute_tag)) } } },
         singleLine = true,
         keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { mute() }),

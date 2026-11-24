@@ -33,6 +33,7 @@ import com.aimdi.xtanative.networks.booru.BooruArtist
 import com.aimdi.xtanative.networks.booru.BooruEndpoints
 import com.aimdi.xtanative.networks.booru.BooruQuery
 import com.aimdi.xtanative.networks.booru.BooruTagCategory
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -60,7 +61,7 @@ private fun QueryPage(
     var downloading by remember { mutableStateOf(false) }
     PluginScaffold(title, onBack = app.host::back, actions = {
         actions()
-        IconButton(onClick = { downloading = true }) { Icon(BooruIcons.DownloadAll, pluginString(Strings.download_all)) }
+        IconTip(pluginString(Strings.download_all)) { IconButton(onClick = { downloading = true }) { Icon(BooruIcons.DownloadAll, pluginString(Strings.download_all)) } }
     }) { padding ->
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             Column(Modifier.fillMaxSize()) {
@@ -89,11 +90,11 @@ internal fun BooruTagScreen(app: BooruApp, route: BooruRoute.Tag) = Bound(app) {
         site = route.site,
         title = route.tag,
         actions = {
-            IconButton(onClick = { app.launch { if (followed) app.unfollow(route.tag) else app.follows.add(route.tag) } }) {
+            IconTip(pluginString(if (followed) Strings.unfollow_tag else Strings.follow_tag)) { IconButton(onClick = { app.launch { if (followed) app.unfollow(route.tag) else app.follows.add(route.tag) } }) {
                 Icon(if (followed) Icons.Filled.Check else BooruIcons.Sell, pluginString(if (followed) Strings.unfollow_tag else Strings.follow_tag))
-            }
-            if (BooruEndpoints.supportsWiki(engine)) IconButton(onClick = { wiki = true }) { Icon(BooruIcons.Wiki, pluginString(Strings.wiki)) }
-            IconButton(onClick = { app.openSearch(route.tag) }) { Icon(Icons.Filled.Search, pluginString(Strings.search_tag)) }
+            } }
+            if (BooruEndpoints.supportsWiki(engine)) IconTip(pluginString(Strings.wiki)) { IconButton(onClick = { wiki = true }) { Icon(BooruIcons.Wiki, pluginString(Strings.wiki)) } }
+            IconTip(pluginString(Strings.search_tag)) { IconButton(onClick = { app.openSearch(route.tag) }) { Icon(Icons.Filled.Search, pluginString(Strings.search_tag)) } }
         },
         header = { if (route.category == BooruTagCategory.ARTIST) ArtistLinks(app, route) },
     )

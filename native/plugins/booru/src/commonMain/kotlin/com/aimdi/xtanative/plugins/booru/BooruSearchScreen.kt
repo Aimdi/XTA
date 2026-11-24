@@ -30,6 +30,7 @@ import com.aimdi.xtanative.networks.booru.BooruMetatags
 import com.aimdi.xtanative.networks.booru.BooruQuery
 import com.aimdi.xtanative.store.settings.BooruPrefs
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
@@ -83,11 +84,11 @@ internal fun BooruSearchScreen(app: BooruApp, route: BooruRoute.Search) = Bound(
         Box(Modifier.fillMaxSize()) {
             Column(Modifier.fillMaxSize().statusBarsPadding()) {
                 Row(Modifier.padding(start = 4.dp, end = 4.dp, top = 6.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) }
+                    IconTip(pluginString(Strings.back)) { IconButton(onClick = back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) } }
                     TagField(search, state, field, autofocus = route.query.isBlank(), modifier = Modifier.weight(1f))
                     SaveSearchButton(app, state.text)
                     if (state.showsResults && results != null) {
-                        IconButton(onClick = { downloading = true }) { Icon(BooruIcons.DownloadAll, pluginString(Strings.download_all)) }
+                        IconTip(pluginString(Strings.download_all)) { IconButton(onClick = { downloading = true }) { Icon(BooruIcons.DownloadAll, pluginString(Strings.download_all)) } }
                     }
                 }
                 Hairline()
@@ -115,7 +116,7 @@ internal fun SaveSearchButton(app: BooruApp, text: String) {
     val query = BooruQuery.normalise(text)
     val saved = query != null && app.follows.state.collectAsState().value.orEmpty().contains(query)
     val message = pluginString(Strings.search_saved, pluginString(Strings.tab_following))
-    IconButton(
+    IconTip(pluginString(if (saved) Strings.unsave_search else Strings.save_search)) { IconButton(
         enabled = query != null,
         onClick = {
             if (query != null) {
@@ -131,5 +132,5 @@ internal fun SaveSearchButton(app: BooruApp, text: String) {
         },
     ) {
         Icon(if (saved) Icons.Filled.Star else Icons.Outlined.Star, pluginString(if (saved) Strings.unsave_search else Strings.save_search))
-    }
+    } }
 }

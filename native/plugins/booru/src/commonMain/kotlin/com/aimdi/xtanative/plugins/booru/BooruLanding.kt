@@ -58,6 +58,7 @@ import com.aimdi.xtanative.networks.booru.BooruTagOperator
 import com.aimdi.xtanative.networks.booru.BooruTagSuggestion
 import com.aimdi.xtanative.store.settings.BooruPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -205,7 +206,7 @@ private fun RecentSearches(app: BooruApp, settings: Settings, onRun: (String) ->
     Column(Modifier.fillMaxWidth()) {
         SectionTitle(pluginString(Strings.search_history)) {
             if (history.isNotEmpty()) {
-                IconButton(onClick = { app.update { it.with(BooruPrefs.searchHistory, emptyList()) } }) { Icon(DiscoverIcons.DeleteSweep, pluginString(Strings.clear_history)) }
+                IconTip(pluginString(Strings.clear_history)) { IconButton(onClick = { app.update { it.with(BooruPrefs.searchHistory, emptyList()) } }) { Icon(DiscoverIcons.DeleteSweep, pluginString(Strings.clear_history)) } }
             }
         }
         if (history.isEmpty()) ListItem(headlineContent = { Text(pluginString(Strings.search_history_empty)) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
@@ -224,7 +225,7 @@ private fun HistoryRow(query: String, onRun: (String) -> Unit, onForget: (String
         ListItem(
             headlineContent = { Text(queryText(query)) },
             leadingContent = { Icon(PostIcons.History, contentDescription = null) },
-            trailingContent = { IconButton(onClick = { onForget(query) }) { Icon(Icons.Filled.Close, pluginString(Strings.delete)) } },
+            trailingContent = { IconTip(pluginString(Strings.delete)) { IconButton(onClick = { onForget(query) }) { Icon(Icons.Filled.Close, pluginString(Strings.delete)) } } },
             modifier = Modifier.clickable { onRun(query) },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         )
