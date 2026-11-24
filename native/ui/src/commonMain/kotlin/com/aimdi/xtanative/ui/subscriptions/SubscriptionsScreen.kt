@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.subscriptions
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -292,7 +293,8 @@ private fun Header(
 @Composable
 private fun HeaderTab(icon: ImageVector, label: String, selected: Boolean, onClick: () -> Unit) {
     val color = if (selected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant
-    Box(Modifier.fillMaxHeight().selectable(selected = selected, role = Role.Tab, onClick = onClick).padding(horizontal = 12.dp)) {
+    // As wide as its label: the line under the chosen tab fills only that, never the bar, leaving room for the other tab.
+    Box(Modifier.fillMaxHeight().width(IntrinsicSize.Max).selectable(selected = selected, role = Role.Tab, onClick = onClick).padding(horizontal = 12.dp)) {
         Row(Modifier.align(Alignment.Center), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
             Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
