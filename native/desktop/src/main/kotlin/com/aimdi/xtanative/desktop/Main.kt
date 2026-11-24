@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -23,6 +24,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ApplicationScope
+import androidx.compose.ui.window.LocalWindowExceptionHandlerFactory
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
@@ -46,6 +48,7 @@ import com.aimdi.xtanative.ui.chrome.SavedWindow
 import com.aimdi.xtanative.ui.chrome.SavedWindowFile
 import com.aimdi.xtanative.ui.chrome.ScreenArea
 import com.aimdi.xtanative.ui.chrome.SingleInstance
+import com.aimdi.xtanative.ui.chrome.WindowCrash
 import com.aimdi.xtanative.ui.chrome.WindowFullscreen
 import com.aimdi.xtanative.ui.chrome.tray.TrayAction
 import com.aimdi.xtanative.ui.chrome.tray.TrayService
@@ -84,7 +87,7 @@ import kotlinx.coroutines.withTimeoutOrNull
  * to tray on, closing the window hides it there, and `--minimized` starts
  * it hidden there, while a tray shows the icon.
  */
-@OptIn(FlowPreview::class)
+@OptIn(FlowPreview::class, ExperimentalComposeUiApi::class)
 fun main(args: Array<String>) {
     // `xta-native --help` and `--version`, as command-line programs answer them, and an unknown option refused, before anything starts.
     when (CommandLine.answer(args)) {
@@ -146,6 +149,8 @@ fun main(args: Array<String>) {
             windowFile.write(kept)
             exitApplication()
         }
+        // A window that breaks is written down as a crash and quits the app ([WindowCrash]), not hidden to the tray behind Swing's dialog.
+        val crashes = remember(graph) { WindowCrash.handlers({ graph.crashReports.recordCaught(it, Thread.currentThread().name) }, quit) }
         // Here, outside the window, as a hidden window's content may not run.
         LaunchedEffect(Unit) {
             raises.collect {
@@ -179,67 +184,70 @@ fun main(args: Array<String>) {
             size = DpSize(saved.width.dp, saved.height.dp),
             position = savedPosition(saved),
         )
-        Window(
-            // Closed to the tray only while a tray shows the icon, so the window is never lost; a quit asked (Ctrl+Q) quits.
-            onCloseRequest = { if (!AppQuit.taken() && toTray && tray.shown.value) visible = false else quit() },
-            visible = visible,
-            // Names the screen shown, as a desktop app's title does ("flutter – Search – XTA Native").
-            title = WindowTitles.title(titlePart, name),
-            icon = appIcon(),
-            state = state,
-            // F11 fills the screen and gives it back, over every screen and viewer.
-            onPreviewKeyEvent = { event ->
-                // Esc while a list's item is dragged puts it back, before anything else hears it ([ReorderDrags]).
-                if (event.type == KeyEventType.KeyDown && event.key == Key.Escape && ReorderDrags.escape()) return@Window true
-                val f11 = event.type == KeyEventType.KeyDown && event.key == Key.F11 && !event.isAltPressed && !event.isCtrlPressed
-                if (f11) {
-                    val (placement, back) = WindowFullscreen.toggled(state.placement, beforeFullscreen)
-                    beforeFullscreen = back
-                    state.placement = placement
-                }
-                f11
-            },
-        ) {
-            // The smallest window grows with the interface size, as the layouts it keeps from overflowing do.
-            LaunchedEffect(uiScale) { window.minimumSize = minimumSize(uiScale) }
-            // Each change once it has rested half a second, and the last one when the window closes, as XTA's window_state.cc.
-            LaunchedEffect(state) {
-                snapshotFlow { Triple(state.placement, state.size, state.position) }
-                    .map { (placement, size, position) ->
-                        val (x, y) = if (position.isSpecified) position.x.value.roundToInt() to position.y.value.roundToInt() else null to null
-                        kept.after(placement, size.width.value.roundToInt(), size.height.value.roundToInt(), x, y).also { kept = it }
+        CompositionLocalProvider(LocalWindowExceptionHandlerFactory provides crashes) {
+            Window(
+                // Closed to the tray only while a tray shows the icon, so the window is never lost; a quit asked (Ctrl+Q) quits.
+                onCloseRequest = { if (!AppQuit.taken() && toTray && tray.shown.value) visible = false else quit() },
+                visible = visible,
+                // Names the screen shown, as a desktop app's title does ("flutter – Search – XTA Native").
+                title = WindowTitles.title(titlePart, name),
+                icon = appIcon(),
+                state = state,
+                // F11 fills the screen and gives it back, over every screen and viewer.
+                onPreviewKeyEvent = { event ->
+                    // Esc while a list's item is dragged puts it back, before anything else hears it ([ReorderDrags]).
+                    if (event.type == KeyEventType.KeyDown && event.key == Key.Escape && ReorderDrags.escape()) return@Window true
+                    val f11 = event.type == KeyEventType.KeyDown && event.key == Key.F11 && !event.isAltPressed && !event.isCtrlPressed
+                    if (f11) {
+                        val (placement, back) = WindowFullscreen.toggled(state.placement, beforeFullscreen)
+                        beforeFullscreen = back
+                        state.placement = placement
                     }
-                    .distinctUntilChanged()
-                    .debounce(500)
-                    .collect(windowFile::write)
-            }
-            LaunchedEffect(fronts) {
-                if (fronts == 0) return@LaunchedEffect
-                state.isMinimized = false
-                window.toFront()
-                window.requestFocus()
-            }
-            // What a post window asked of the plugins or the voice settings shows here, so the window comes up for it.
-            val showMain = remember(window) {
-                {
-                    val appActive = KeyboardFocusManager.getCurrentKeyboardFocusManager().activeWindow != null
-                    if (DesktopWindows.showsMain(visible && !state.isMinimized, window.isActive, appActive)) raises.tryEmit(Unit)
+                    f11
+                },
+            ) {
+                // The smallest window grows with the interface size, as the layouts it keeps from overflowing do.
+                LaunchedEffect(uiScale) { window.minimumSize = minimumSize(uiScale) }
+                // Each change once it has rested half a second, and the last one when the window closes, as XTA's window_state.cc.
+                LaunchedEffect(state) {
+                    snapshotFlow { Triple(state.placement, state.size, state.position) }
+                        .map { (placement, size, position) ->
+                            val (x, y) = if (position.isSpecified) position.x.value.roundToInt() to position.y.value.roundToInt() else null to null
+                            kept.after(placement, size.width.value.roundToInt(), size.height.value.roundToInt(), x, y).also { kept = it }
+                        }
+                        .distinctUntilChanged()
+                        .debounce(500)
+                        .collect(windowFile::write)
+                }
+                LaunchedEffect(fronts) {
+                    if (fronts == 0) return@LaunchedEffect
+                    state.isMinimized = false
+                    window.toFront()
+                    window.requestFocus()
+                }
+                // What a post window asked of the plugins or the voice settings shows here, so the window comes up for it.
+                val showMain = remember(window) {
+                    {
+                        val appActive = KeyboardFocusManager.getCurrentKeyboardFocusManager().activeWindow != null
+                        if (DesktopWindows.showsMain(visible && !state.isMinimized, window.isActive, appActive)) raises.tryEmit(Unit)
+                    }
+                }
+                CompositionLocalProvider(LocalUriHandler provides SystemBrowser, LocalShowMainWindow provides showMain) {
+                    Box(Modifier.fillMaxSize()) {
+                        XtaNativeContent(graph, app.plugins)
+                        // A download or offline save that ends while another window is in use is told by the desktop too.
+                        val notifies by remember(graph) { graph.settings.observe(DesktopPrefs.notifications) }.collectAsState(initial = true)
+                        DesktopNotices(name, notifies) { window.isActive }
+                        VideoCheck.Shown()
+                        WindowCrash.TestCrash("main")
+                    }
                 }
             }
-            CompositionLocalProvider(LocalUriHandler provides SystemBrowser, LocalShowMainWindow provides showMain) {
-                Box(Modifier.fillMaxSize()) {
-                    XtaNativeContent(graph, app.plugins)
-                    // A download or offline save that ends while another window is in use is told by the desktop too.
-                    val notifies by remember(graph) { graph.settings.observe(DesktopPrefs.notifications) }.collectAsState(initial = true)
-                    DesktopNotices(name, notifies) { window.isActive }
-                    VideoCheck.Shown()
-                }
+            // The posts opened in windows of their own (Ctrl+click, a middle click, the post menu's Open in new window).
+            val others by DesktopWindows.opened.collectAsState()
+            for (opened in others) {
+                key(opened.serial) { PostWindow(opened, app, name, uiScale, quit, onQuitKey = { raises.tryEmit(Unit) }) }
             }
-        }
-        // The posts opened in windows of their own (Ctrl+click, a middle click, the post menu's Open in new window).
-        val others by DesktopWindows.opened.collectAsState()
-        for (opened in others) {
-            key(opened.serial) { PostWindow(opened, app, name, uiScale, quit, onQuitKey = { raises.tryEmit(Unit) }) }
         }
     }
     runBlocking { withTimeoutOrNull(2_000) { starting.started().graph.awaitWrites() } }
@@ -272,6 +280,7 @@ private fun ApplicationScope.PostWindow(opened: OpenedWindow, app: DesktopApp, n
         LaunchedEffect(uiScale) { window.minimumSize = minimumSize(uiScale) }
         CompositionLocalProvider(LocalUriHandler provides SystemBrowser) {
             XtaNativeContent(app.graph, app.plugins, secondary)
+            WindowCrash.TestCrash("post")
         }
     }
 }

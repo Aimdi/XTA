@@ -208,4 +208,22 @@ class CrashReporterTest {
             Thread.setDefaultUncaughtExceptionHandler(before)
         }
     }
+
+    @Test
+    fun aCrashAWindowCaughtIsWrittenDownAsAnUncaughtOne() {
+        assertFalse(reports.recordCaught(IllegalStateException("too early"), "AWT-EventQueue-0"))
+        assertNull(reports.takeLastCrash())
+        val before = Thread.getDefaultUncaughtExceptionHandler()
+        try {
+            Thread.setDefaultUncaughtExceptionHandler(null)
+            var recorded = 0
+            reports.install({ true }, "1.2.3") { recorded++ }
+            assertTrue(reports.recordCaught(IllegalStateException("window"), "AWT-EventQueue-0"))
+            assertTrue(reports.takeLastCrash()!!.text.contains("java.lang.IllegalStateException: window"))
+            assertTrue(reports.list().single().text.contains("java.lang.IllegalStateException: window"))
+            assertEquals(1, recorded)
+        } finally {
+            Thread.setDefaultUncaughtExceptionHandler(before)
+        }
+    }
 }

@@ -63,12 +63,34 @@ class CrashReports(private val folder: File, private val clock: () -> Long = Sys
      * lets the platform's own handler go on as it would have.
      */
     fun install(enabled: () -> Boolean, appVersion: String, recorded: () -> Unit = {}) {
+        val writing = Installed(enabled, appVersion, recorded)
+        installed = writing
         val previous = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, error ->
-            if (isScreensThread(thread.name)) recordLast(error, thread.name, appVersion)
-            if (runCatching(enabled).getOrDefault(false) && record(error, thread.name, appVersion) != null) runCatching(recorded)
+            writeDown(error, thread.name, writing)
             previous?.uncaughtException(thread, error)
         }
+    }
+
+    /**
+     * A crash the platform caught before it could reach [install]'s handler
+     * (a desktop window's, which Compose catches itself), written down as an
+     * uncaught one on [thread] is; false while nothing is installed. Never throws.
+     */
+    fun recordCaught(error: Throwable, thread: String): Boolean {
+        val writing = installed ?: return false
+        runCatching { writeDown(error, thread, writing) }
+        return true
+    }
+
+    private class Installed(val enabled: () -> Boolean, val appVersion: String, val recorded: () -> Unit)
+
+    @Volatile
+    private var installed: Installed? = null
+
+    private fun writeDown(error: Throwable, thread: String, writing: Installed) {
+        if (isScreensThread(thread)) recordLast(error, thread, writing.appVersion)
+        if (runCatching(writing.enabled).getOrDefault(false) && record(error, thread, writing.appVersion) != null) runCatching(writing.recorded)
     }
 
     private fun recordLast(error: Throwable, thread: String, appVersion: String) {
