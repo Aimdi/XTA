@@ -7,7 +7,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import coil3.ImageLoader
 import coil3.PlatformContext
+import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.request.crossfade
+import com.aimdi.xtanative.core.net.AppProxy
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.LocalPostCache
@@ -39,6 +41,7 @@ import com.aimdi.xtanative.ui.saved.LocalKeeper
 import com.aimdi.xtanative.ui.settings.trimImageCache
 import com.aimdi.xtanative.ui.speech.SpeechBarScaffold
 import com.aimdi.xtanative.ui.theme.XtaTheme
+import okhttp3.Dispatcher
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -98,10 +101,20 @@ private fun RootOrBroken(graph: AppGraph) {
 @Composable
 fun appName(): String = stringResource(Res.string.app_name)
 
-/** The one image loader of the process, which each shell installs: pictures fade in, the desktop shrinks them smoothly and caches them in the user's own cache folder, and those cached too long ago go. */
+/**
+ * The one image loader of the process, which each shell installs: pictures come over [AppProxy]'s client (the
+ * proxy the reader set) with a dispatcher of their own, fade in, the desktop shrinks them smoothly and caches them
+ * in the user's own cache folder, and those cached too long ago go.
+ */
 fun appImageLoader(context: PlatformContext): ImageLoader = ImageLoader.Builder(context)
-    .components { addPlatformPictureDecoders() }
+    .components {
+        add(OkHttpNetworkFetcherFactory(callFactory = { pictureClient }))
+        addPlatformPictureDecoders()
+    }
     .apply { platformPictureDiskCache()?.let { diskCache(it) } }
     .crossfade(true)
     .build()
     .also(::trimImageCache)
+
+/** The pictures' client: [AppProxy]'s, built when the first picture loads. */
+private val pictureClient by lazy { AppProxy.client.newBuilder().dispatcher(Dispatcher()).build() }

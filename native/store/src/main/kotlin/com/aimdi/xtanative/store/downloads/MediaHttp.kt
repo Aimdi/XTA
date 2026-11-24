@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.store.downloads
 
+import com.aimdi.xtanative.core.net.AppProxy
 import java.io.Closeable
 import java.io.IOException
 import java.io.InputStream
@@ -9,6 +10,7 @@ import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -76,7 +78,9 @@ class OkHttpMediaHttp(client: OkHttpClient? = null) : MediaHttp {
     }
 
     companion object {
-        val defaultClient: OkHttpClient = OkHttpClient.Builder()
+        /** From [AppProxy.client], for its proxy, with a dispatcher of its own so long downloads never hold up XTA's reads. */
+        val defaultClient: OkHttpClient = AppProxy.client.newBuilder()
+            .dispatcher(Dispatcher())
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(45, TimeUnit.SECONDS)
             .build()

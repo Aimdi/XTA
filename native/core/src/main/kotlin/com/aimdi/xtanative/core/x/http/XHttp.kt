@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.core.x.http
 
+import com.aimdi.xtanative.core.net.AppProxy
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.SocketTimeoutException
@@ -98,8 +99,9 @@ class OkHttpXHttp(client: OkHttpClient = defaultClient) : XHttp {
     companion object {
         private const val RETRY_DELAY_MILLIS = 200L
 
+        /** The client XTA's requests share; it derives from [AppProxy.client], so it takes the proxy the reader set. */
         val defaultClient: OkHttpClient = CredentialGuard.on(
-            OkHttpClient.Builder()
+            AppProxy.client.newBuilder()
                 .connectTimeout(15, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .callTimeout(30, TimeUnit.SECONDS)
