@@ -2,6 +2,7 @@ package com.aimdi.xtanative.plugins.threads
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -44,6 +45,7 @@ import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RetryMessage
@@ -274,7 +276,8 @@ private fun ProfileBody(
         val columns = ThreadsMediaGrid.columns(maxWidth.value)
         val gridRows = remember(posts, columns) { ThreadsMediaGrid.rows(ThreadsMediaGrid.tiles(posts), columns) }
         PullToRefreshBox(isRefreshing = refreshing, onRefresh = refresh, modifier = Modifier.fillMaxSize()) {
-            LazyColumn(state = list, modifier = Modifier.fillMaxSize().swipeTabs(ProfileTab.entries, tab, select)) {
+            // The media grid keeps the window's width; posts read in the column.
+            PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(state = list, contentPadding = if (mediaTab && grid) PaddingValues() else column, modifier = Modifier.fillMaxSize().swipeTabs(ProfileTab.entries, tab, select)) {
                 item(key = "card") { ThreadsProfileCard(app, profile, onFilters = { sheet = true }) }
                 item(key = "tabs") { ProfileTabStrip(ProfileTab.entries, tab, label = { pluginString(it.label) }, onSelect = select) }
                 item(key = "filters") {
@@ -291,7 +294,7 @@ private fun ProfileBody(
                 }
                 moreFoot("profile", paging) { pager?.retry() }
                 if (ThreadsProfilePaging.endsOnWeb(paging, firstPage)) item(key = "end") { ProfileEnd(profile.username) }
-            }
+            } }
         }
     }
     if (sheet) ProfileFiltersSheet(app, profile, ThreadsProfileView.filters(mediaTab), chosen, onChoose = { content = it }) { sheet = false }

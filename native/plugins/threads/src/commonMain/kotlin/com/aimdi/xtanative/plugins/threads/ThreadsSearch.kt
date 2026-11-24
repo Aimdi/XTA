@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,8 +28,8 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.InputChip
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -57,6 +58,7 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -148,7 +150,8 @@ private fun PeopleResults(app: ThreadsApp, text: String, frame: PluginFrame, onO
     val state by fetch.state.collectAsState()
     val users = state.value
     LaunchedEffect(users) { if (users != null) app.remember(text) }
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = frame.padding) {
+    val list = rememberLazyListState()
+    PluginReadingColumn(frame.padding, list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
         item(key = "account") { AccountInUse(app) }
         item(key = "posts") { SheetRow(PostIcons.Article, pluginString(Strings.search_posts)) { onPosts(ThreadsSearchTerms(text.trim(), tag = false)) } }
         when {
@@ -157,7 +160,7 @@ private fun PeopleResults(app: ThreadsApp, text: String, frame: PluginFrame, onO
             users.isEmpty() -> item(key = "none") { MessageText(pluginString(Strings.no_matching_accounts)) }
             else -> people(app, users, onOpen)
         }
-    }
+    } }
 }
 
 @Composable

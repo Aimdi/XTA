@@ -67,6 +67,7 @@ import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -248,7 +249,7 @@ private fun Results(app: ThreadsApp, terms: ThreadsSearchTerms, tab: ThreadsSear
     if (postsTab) ReadsMoreNear(list, more, paged)
     val language = currentLanguage()
     PullToRefreshBox(isRefreshing = state.loading && found != null, onRefresh = { fetch.load(force = true) }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(frame.padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             when {
                 found == null && state.problem != null -> item(key = "problem") { RetryMessage(ThreadsFailures.search(state.problem, language), onRetry = { fetch.load() }) }
                 found == null -> item(key = "loading") { PluginFeedSkeleton() }
@@ -262,7 +263,7 @@ private fun Results(app: ThreadsApp, terms: ThreadsSearchTerms, tab: ThreadsSear
                     moreFoot("search", paged, more::retry)
                 }
             }
-        }
+        } }
     }
 }
 

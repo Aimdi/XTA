@@ -26,6 +26,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.plugins.PluginAvatar
+import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.post.AuthorLine
 
 /**
@@ -77,11 +78,11 @@ private val ArticleStyle = TextStyle(fontSize = 17.sp, lineHeight = 26.sp)
 internal fun ThreadsArticleView(app: ThreadsApp, article: ThreadsArticle) {
     val list = rememberLazyListState()
     CompositionLocalProvider(LocalThreadsGallery provides article.posts) {
-        LazyColumn(state = list, contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 32.dp), modifier = Modifier.fillMaxSize()) {
+        PluginReadingColumn(PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 32.dp), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             item(key = "author") { ArticleAuthor(app, article.first) }
             items(article.posts, key = { "part:" + it.id }, contentType = { "part" }) { post -> ArticlePart(app, post) }
             item(key = "end") { Hairline(Modifier.padding(top = 20.dp)) }
-        }
+        } }
     }
 }
 
