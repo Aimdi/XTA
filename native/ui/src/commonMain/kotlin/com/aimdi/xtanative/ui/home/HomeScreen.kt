@@ -511,6 +511,14 @@ private fun TakeRequests(shell: HomeShellState, ui: HomeUi) {
         if (BarPage.Feed in ui.bar) shell.show(BarPage.Feed)
         if (ui.tabs.any { it.key == key }) shell.shownKey = key
     }
+    // Alt+Home: the page Home starts on (Settings › Home's first page), not the one last picked on the bar or sidebar.
+    val toStart by HomeRequests.start.collectAsStateWithLifecycle()
+    LaunchedEffect(toStart) {
+        if (!HomeRequests.startTaken()) return@LaunchedEffect
+        shell.sheet = null
+        shell.layer = null
+        shell.show(HomeBar.startPage(ui.bar, ui.initialBarIndex))
+    }
 }
 
 /** What opens over all of Home: the search of the shown timeline's loaded posts, and Following's Custom rules. */

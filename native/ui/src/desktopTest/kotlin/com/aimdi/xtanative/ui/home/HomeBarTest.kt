@@ -53,6 +53,14 @@ class HomeBarTest {
     }
 
     @Test
+    fun altHomeGoesBackToThePageHomeStartsOnNotTheOneLastPicked() {
+        val bar = pages("feed", "saved", "group-g1")
+        assertEquals(bar[0], HomeBar.startPage(bar, HomeBar.initialIndex(bar, "")))
+        assertEquals(bar[1], HomeBar.startPage(bar, HomeBar.initialIndex(bar, "saved")))
+        assertEquals(bar[0], HomeBar.startPage(bar, 7), "a place the bar no longer has: its first page")
+    }
+
+    @Test
     fun oneNetworkKeepsItsPlaceAfterTheOthersAndMoreGoBehindNetworks() {
         val one = pages("reddit", "feed", "saved")
         assertEquals(listOf(BarSlot.Page(1), BarSlot.Page(2), BarSlot.Page(0)), HomeBar.slots(one, emptyList()))

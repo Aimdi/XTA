@@ -45,4 +45,14 @@ class FollowingBarTest {
         HomeRequests.taken(HomeTab.ForYou.key)
         assertNull(HomeRequests.tab.value)
     }
+
+    @Test
+    fun aBackToStartRequestIsTakenOnce() {
+        assertFalse(HomeRequests.startTaken(), "nothing asked")
+        HomeRequests.toStart()
+        assertTrue(HomeRequests.start.value)
+        assertTrue(HomeRequests.startTaken())
+        assertFalse(HomeRequests.start.value)
+        assertFalse(HomeRequests.startTaken(), "acted on once")
+    }
 }

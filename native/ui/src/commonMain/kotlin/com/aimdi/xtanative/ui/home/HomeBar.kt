@@ -86,6 +86,9 @@ object HomeBar {
     /** Where Home opens (_initialPageOf): the page XTA's initial page names when it is on the bar, else the first. */
     fun initialIndex(pages: List<BarPage>, initialTab: String): Int = pages.indexOfFirst { it.id == initialTab.trim() }.coerceAtLeast(0)
 
+    /** The page Home starts on ([initialIndex]'s), where Alt+Home goes back to: the first when there is no such place. */
+    fun startPage(pages: List<BarPage>, initialIndex: Int): BarPage = pages.getOrElse(initialIndex) { pages.first() }
+
     /** Whether [initialTab] is one of the bar's pages, which the strip then leaves to the bar. */
     fun opensOnBar(pages: List<BarPage>, initialTab: String): Boolean = pages.any { it.id == initialTab.trim() }
 

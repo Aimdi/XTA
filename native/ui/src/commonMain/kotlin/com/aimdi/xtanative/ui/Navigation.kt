@@ -393,8 +393,16 @@ fun XtaNativeRoot() {
         val openSettings = remember(nav) {
             { if (!nav.popBackStack(Routes.SETTINGS, inclusive = false) && SearchKeys.opensSettingsOver(nav.currentDestination?.route)) nav.navigate(Routes.SETTINGS) }
         }
-        // Alt+Home goes back to Home, as a browser's goes to its home page; nothing where Home is not below.
-        val openHome = remember(nav) { { nav.popBackStack(Routes.HOME, inclusive = false); Unit } }
+        // Alt+Home goes back to Home, as a browser's goes to its home page, and to Home's start page there (not
+        // Saved or another page last picked on its bar); nothing where Home is not below.
+        val openHome = remember(nav) {
+            {
+                if (runCatching { nav.getBackStackEntry(Routes.HOME) }.isSuccess) {
+                    nav.popBackStack(Routes.HOME, inclusive = false)
+                    HomeRequests.toStart()
+                }
+            }
+        }
         // Alt+→ and the mouse's forward button open again what going back left, as a browser's forward does.
         val forward = remember(nav) { ForwardRoutes() }
         LaunchedEffect(nav, forward) {
