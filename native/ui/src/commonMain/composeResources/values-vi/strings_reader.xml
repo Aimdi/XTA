@@ -43,6 +43,11 @@
     <string name="reader_speech_stop">Dừng</string>
     <string name="reader_speech_listen">Nghe</string>
     <string name="reader_speech_stop_listening">Dừng</string>
+    <string name="reader_speech_sleep">Hẹn giờ ngủ</string>
+    <string name="reader_speech_sleep_off">Tắt</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="other">%1$d phút</item>
+    </plurals>
     <string name="reader_speech_no_text">Chưa có nội dung nào để đọc</string>
     <string name="reader_speech_voice_settings">Cài đặt giọng đọc</string>
     <string name="reader_speech_unavailable">Thiết bị này chưa cài bộ đọc nào</string>

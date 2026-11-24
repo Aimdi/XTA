@@ -43,6 +43,12 @@
     <string name="reader_speech_stop">Atura</string>
     <string name="reader_speech_listen">Escolta</string>
     <string name="reader_speech_stop_listening">Atura</string>
+    <string name="reader_speech_sleep">Temporitzador de son</string>
+    <string name="reader_speech_sleep_off">Desactivat</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d minut</item>
+        <item quantity="other">%1$d minuts</item>
+    </plurals>
     <string name="reader_speech_no_text">Encara no hi ha text llegible per escoltar</string>
     <string name="reader_speech_voice_settings">Ajustos de veu</string>
     <string name="reader_speech_unavailable">Aquest dispositiu no té cap motor de veu</string>

@@ -43,6 +43,12 @@
     <string name="reader_speech_stop">Stopp</string>
     <string name="reader_speech_listen">Lytt</string>
     <string name="reader_speech_stop_listening">Stopp</string>
+    <string name="reader_speech_sleep">Søvntimer</string>
+    <string name="reader_speech_sleep_off">Av</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d minutt</item>
+        <item quantity="other">%1$d minutter</item>
+    </plurals>
     <string name="reader_speech_no_text">Ingenting lesbart å lese opp ennå</string>
     <string name="reader_speech_voice_settings">Stemmeinnstillinger</string>
     <string name="reader_speech_unavailable">Ingen talemotor er installert på denne enheten</string>

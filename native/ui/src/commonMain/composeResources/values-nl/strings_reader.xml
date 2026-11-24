@@ -43,6 +43,12 @@
     <string name="reader_speech_stop">Stoppen</string>
     <string name="reader_speech_listen">Beluisteren</string>
     <string name="reader_speech_stop_listening">Stoppen</string>
+    <string name="reader_speech_sleep">Slaaptimer</string>
+    <string name="reader_speech_sleep_off">Uit</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d minuut</item>
+        <item quantity="other">%1$d minuten</item>
+    </plurals>
     <string name="reader_speech_no_text">Nog geen leesbare tekst om voor te lezen</string>
     <string name="reader_speech_voice_settings">Steminstellingen</string>
     <string name="reader_speech_unavailable">Op dit apparaat is geen spraakmodule geïnstalleerd</string>

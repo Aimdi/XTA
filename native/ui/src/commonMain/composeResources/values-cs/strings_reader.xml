@@ -43,6 +43,14 @@
     <string name="reader_speech_stop">Zastavit</string>
     <string name="reader_speech_listen">Poslouchat</string>
     <string name="reader_speech_stop_listening">Zastavit</string>
+    <string name="reader_speech_sleep">Časovač vypnutí</string>
+    <string name="reader_speech_sleep_off">Vypnuto</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d minuta</item>
+        <item quantity="few">%1$d minuty</item>
+        <item quantity="many">%1$d minuty</item>
+        <item quantity="other">%1$d minut</item>
+    </plurals>
     <string name="reader_speech_no_text">Zatím není co číst nahlas</string>
     <string name="reader_speech_voice_settings">Nastavení hlasu</string>
     <string name="reader_speech_unavailable">V tomto zařízení není žádný hlasový modul</string>

@@ -43,6 +43,12 @@
     <string name="reader_speech_stop">रोकें</string>
     <string name="reader_speech_listen">सुनें</string>
     <string name="reader_speech_stop_listening">रोकें</string>
+    <string name="reader_speech_sleep">स्लीप टाइमर</string>
+    <string name="reader_speech_sleep_off">बंद</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d मिनट</item>
+        <item quantity="other">%1$d मिनट</item>
+    </plurals>
     <string name="reader_speech_no_text">अभी बोलने के लिए कोई पाठ नहीं है</string>
     <string name="reader_speech_voice_settings">आवाज़ सेटिंग</string>
     <string name="reader_speech_unavailable">इस डिवाइस पर कोई वाक् इंजन इंस्टॉल नहीं है</string>

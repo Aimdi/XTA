@@ -43,6 +43,14 @@
     <string name="reader_speech_stop">Остановить</string>
     <string name="reader_speech_listen">Слушать</string>
     <string name="reader_speech_stop_listening">Остановить</string>
+    <string name="reader_speech_sleep">Таймер сна</string>
+    <string name="reader_speech_sleep_off">Выключен</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d минута</item>
+        <item quantity="few">%1$d минуты</item>
+        <item quantity="many">%1$d минут</item>
+        <item quantity="other">%1$d минуты</item>
+    </plurals>
     <string name="reader_speech_no_text">Пока нечего озвучить</string>
     <string name="reader_speech_voice_settings">Настройки голоса</string>
     <string name="reader_speech_unavailable">На этом устройстве нет синтезатора речи</string>

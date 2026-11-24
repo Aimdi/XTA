@@ -43,6 +43,12 @@
     <string name="reader_speech_stop">Parar</string>
     <string name="reader_speech_listen">Ouvir</string>
     <string name="reader_speech_stop_listening">Parar de ouvir</string>
+    <string name="reader_speech_sleep">Temporizador de suspensão</string>
+    <string name="reader_speech_sleep_off">Desativado</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d minuto</item>
+        <item quantity="other">%1$d minutos</item>
+    </plurals>
     <string name="reader_speech_no_text">Ainda não há texto legível para ouvir</string>
     <string name="reader_speech_voice_settings">Definições de voz</string>
     <string name="reader_speech_unavailable">Este dispositivo não tem nenhum motor de voz</string>

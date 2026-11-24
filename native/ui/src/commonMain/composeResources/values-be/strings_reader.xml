@@ -43,6 +43,14 @@
     <string name="reader_speech_stop">Спыніць</string>
     <string name="reader_speech_listen">Слухаць</string>
     <string name="reader_speech_stop_listening">Спыніць</string>
+    <string name="reader_speech_sleep">Таймер сну</string>
+    <string name="reader_speech_sleep_off">Выключаны</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d хвіліна</item>
+        <item quantity="few">%1$d хвіліны</item>
+        <item quantity="many">%1$d хвілін</item>
+        <item quantity="other">%1$d хвіліны</item>
+    </plurals>
     <string name="reader_speech_no_text">Пакуль няма тэксту для агучвання</string>
     <string name="reader_speech_voice_settings">Налады голасу</string>
     <string name="reader_speech_unavailable">На гэтай прыладзе няма рухавіка маўлення</string>

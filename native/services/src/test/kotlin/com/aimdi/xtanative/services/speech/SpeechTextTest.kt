@@ -109,4 +109,16 @@ class SpeechTextTest {
         assertEquals("A Title\n\nA Publication\n\nThe body begins here. The body begins here. The body begins here.", chunks.first())
         assertEquals("One.\n\nTwo.", chunkForSpeech("One.\n \n\nTwo.", maxChars = 5, firstMaxChars = 5).joinToString("|").replace("|", "\n\n"))
     }
+
+    @Test
+    fun aChunkHeldPartWayGoesOnFromTheSentenceItWasIn() {
+        val chunk = "One is here. Two is there!\n\nThree starts a paragraph. Four ends it."
+        assertEquals(chunk, restOfChunk(chunk, 0))
+        assertEquals(chunk, restOfChunk(chunk, 11), "still in the first sentence")
+        assertEquals("Two is there!\n\nThree starts a paragraph. Four ends it.", restOfChunk(chunk, 13))
+        assertEquals("Three starts a paragraph. Four ends it.", restOfChunk(chunk, 30))
+        assertEquals("Four ends it.", restOfChunk(chunk, 10_000), "never past the last sentence")
+        assertEquals("", restOfChunk("", 5))
+        assertEquals("次の文。", restOfChunk("最初の文。 次の文。", 7))
+    }
 }

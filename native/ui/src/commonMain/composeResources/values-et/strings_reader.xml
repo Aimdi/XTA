@@ -43,6 +43,12 @@
     <string name="reader_speech_stop">Peata</string>
     <string name="reader_speech_listen">Kuula</string>
     <string name="reader_speech_stop_listening">Peata</string>
+    <string name="reader_speech_sleep">Unetaimer</string>
+    <string name="reader_speech_sleep_off">Väljas</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d minut</item>
+        <item quantity="other">%1$d minutit</item>
+    </plurals>
     <string name="reader_speech_no_text">Pole veel midagi ette lugeda</string>
     <string name="reader_speech_voice_settings">Hääle seaded</string>
     <string name="reader_speech_unavailable">Selles seadmes pole kõnemootorit</string>

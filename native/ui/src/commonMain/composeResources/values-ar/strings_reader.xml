@@ -43,6 +43,16 @@
     <string name="reader_speech_stop">إيقاف</string>
     <string name="reader_speech_listen">استمع</string>
     <string name="reader_speech_stop_listening">إيقاف الاستماع</string>
+    <string name="reader_speech_sleep">مؤقت النوم</string>
+    <string name="reader_speech_sleep_off">إيقاف</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="zero">%1$d دقيقة</item>
+        <item quantity="one">دقيقة واحدة</item>
+        <item quantity="two">دقيقتان</item>
+        <item quantity="few">%1$d دقائق</item>
+        <item quantity="many">%1$d دقيقة</item>
+        <item quantity="other">%1$d دقيقة</item>
+    </plurals>
     <string name="reader_speech_no_text">لا يوجد نص قابل للقراءة بعد</string>
     <string name="reader_speech_voice_settings">إعدادات الصوت</string>
     <string name="reader_speech_unavailable">لا يوجد محرك قراءة على هذا الجهاز</string>

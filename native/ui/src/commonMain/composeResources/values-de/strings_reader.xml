@@ -43,6 +43,12 @@
     <string name="reader_speech_stop">Stopp</string>
     <string name="reader_speech_listen">Vorlesen</string>
     <string name="reader_speech_stop_listening">Vorlesen stoppen</string>
+    <string name="reader_speech_sleep">Sleep-Timer</string>
+    <string name="reader_speech_sleep_off">Aus</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d Minute</item>
+        <item quantity="other">%1$d Minuten</item>
+    </plurals>
     <string name="reader_speech_no_text">Noch kein lesbarer Text zum Vorlesen</string>
     <string name="reader_speech_voice_settings">Stimme einstellen</string>
     <string name="reader_speech_unavailable">Auf diesem Gerät ist keine Sprachausgabe installiert</string>

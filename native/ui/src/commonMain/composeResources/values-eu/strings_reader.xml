@@ -43,6 +43,12 @@
     <string name="reader_speech_stop">Gelditu</string>
     <string name="reader_speech_listen">Entzun</string>
     <string name="reader_speech_stop_listening">Gelditu</string>
+    <string name="reader_speech_sleep">Lo-tenporizadorea</string>
+    <string name="reader_speech_sleep_off">Desaktibatuta</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">Minutu %1$d</item>
+        <item quantity="other">%1$d minutu</item>
+    </plurals>
     <string name="reader_speech_no_text">Oraindik ez dago irakurri beharreko testurik</string>
     <string name="reader_speech_voice_settings">Ahots-ezarpenak</string>
     <string name="reader_speech_unavailable">Gailu honek ez du ahots-motorrik</string>

@@ -43,6 +43,14 @@
     <string name="reader_speech_stop">Spynić</string>
     <string name="reader_speech_listen">Sluchać</string>
     <string name="reader_speech_stop_listening">Spynić</string>
+    <string name="reader_speech_sleep">Tajmier snu</string>
+    <string name="reader_speech_sleep_off">Vyklučany</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d chvilina</item>
+        <item quantity="few">%1$d chviliny</item>
+        <item quantity="many">%1$d chvilin</item>
+        <item quantity="other">%1$d chviliny</item>
+    </plurals>
     <string name="reader_speech_no_text">Pakul niama tekstu dla ahučvannia</string>
     <string name="reader_speech_voice_settings">Nalady hołasu</string>
     <string name="reader_speech_unavailable">Na hetaj pryladzie niama ruchavika maŭliennia</string>

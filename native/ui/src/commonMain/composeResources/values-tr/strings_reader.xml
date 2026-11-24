@@ -43,6 +43,12 @@
     <string name="reader_speech_stop">Durdur</string>
     <string name="reader_speech_listen">Dinle</string>
     <string name="reader_speech_stop_listening">Durdur</string>
+    <string name="reader_speech_sleep">Uyku zamanlayıcısı</string>
+    <string name="reader_speech_sleep_off">Kapalı</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d dakika</item>
+        <item quantity="other">%1$d dakika</item>
+    </plurals>
     <string name="reader_speech_no_text">Henüz okunacak metin yok</string>
     <string name="reader_speech_voice_settings">Ses ayarları</string>
     <string name="reader_speech_unavailable">Bu cihazda konuşma motoru yüklü değil</string>

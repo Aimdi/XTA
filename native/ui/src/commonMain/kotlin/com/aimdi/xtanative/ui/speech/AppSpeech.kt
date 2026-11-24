@@ -8,7 +8,11 @@ import com.aimdi.xtanative.services.speech.Tts
 import com.aimdi.xtanative.services.speech.TtsChoice
 import com.aimdi.xtanative.services.speech.TtsFailureAction
 import com.aimdi.xtanative.store.settings.SettingsStore
+import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -41,6 +45,12 @@ sealed interface SpeechNotice {
  * false where the platform has none to read with; [voicesOnly] where only
  * downloaded voices read (the desktop), so no system engine is offered when
  * none of them would.
+ *
+ * A reading can be held and gone on with, and a sleep timer ([sleepIn])
+ * holds it by itself: the timer is this object's, so it runs on when the
+ * screen is left and the reading goes on in the background, and it is kept
+ * nowhere else, so it ends with the reading and with the app. [clock] gives
+ * milliseconds that only go forward and [wait] lets them pass.
  */
 class AppSpeech(
     private val reader: SpeechReader,
@@ -48,6 +58,8 @@ class AppSpeech(
     private val scope: CoroutineScope,
     val hasEngine: Boolean,
     private val voicesOnly: Boolean = false,
+    private val clock: () -> Long = { System.nanoTime() / 1_000_000 },
+    private val wait: suspend (Long) -> Unit = { delay(it) },
 ) {
     val playback: StateFlow<SpeechPlayback> = reader.state
 
@@ -58,6 +70,17 @@ class AppSpeech(
 
     /** Ticks when a notice's way out asks for the voice settings, which the app's navigation opens. */
     val voiceSettingsAsked: SharedFlow<Unit> = settingsAsks.asSharedFlow()
+
+    /** Counts the readings asked for, so one that ends knows whether it is still the one at hand. */
+    private val readings = AtomicInteger()
+
+    private val sleepLeft = MutableStateFlow<Int?>(null)
+
+    /** The minutes left on the sleep timer, as the bar's button shows them; null while none runs. */
+    val sleepMinutes: StateFlow<Int?> = sleepLeft.asStateFlow()
+
+    /** The sleep timer's wait; changed only under this object's lock, with [sleepLeft]. */
+    private var sleeping: Job? = null
 
     /** The last reading asked for, which "Use Sherpa" starts again. */
     @Volatile
@@ -73,15 +96,19 @@ class AppSpeech(
 
     /** Reads [text] aloud as [title], in place of whatever was being read; a reading no engine takes leaves a notice. */
     fun speak(title: String, text: String) {
+        sleepIn(null)
         notices.value = null
         when {
             !hasEngine -> notices.value = SpeechNotice.NoEngine
             text.isBlank() -> notices.value = SpeechNotice.NothingToRead
             else -> {
                 last = title to text
+                val mine = readings.incrementAndGet()
                 scope.launch {
                     val choice = VoiceChoices.choiceOf(settings.load())
                     if (!reader.speak(title, text, choice)) notices.value = failure(choice)
+                    // Over by itself, or stopped from the lock screen: nothing is left for a timer to hold.
+                    if (mine == readings.get() && !playback.value.speaking) sleepIn(null)
                 }
             }
         }
@@ -96,7 +123,49 @@ class AppSpeech(
     }
 
     fun stop() {
+        sleepIn(null)
         scope.launch { reader.stop() }
+    }
+
+    /** Holds the reading where it is; [resume] goes on with it. */
+    fun pause() {
+        scope.launch { reader.pause() }
+    }
+
+    fun resume() = reader.resume()
+
+    /**
+     * The sleep timer: in [minutes] the reading is held, as [pause] holds it,
+     * and the timer is gone. Null turns it off, and so do stopping the
+     * reading, its end and another reading. Nothing while nothing is read.
+     */
+    @Synchronized
+    fun sleepIn(minutes: Int?) {
+        val timer = minutes?.takeIf { it > 0 && playback.value.speaking }?.let { SleepTimer.of(it, clock()) }
+        sleeping?.cancel()
+        sleepLeft.value = timer?.minutesLeft(clock())
+        sleeping = timer?.let { scope.launch { keep(it) } }
+    }
+
+    /** Shows [timer]'s minutes as they pass, then holds the reading. */
+    private suspend fun keep(timer: SleepTimer) {
+        val mine = currentCoroutineContext()[Job]
+        while (true) {
+            val now = clock()
+            if (timer.isDue(now)) break
+            if (!shows(mine, timer.minutesLeft(now))) return
+            wait(timer.nextChange(now))
+        }
+        if (shows(mine, null)) reader.pause()
+    }
+
+    /** Puts [left] on the button for the timer waited by [job], unless another has taken its place; no minutes left ends it. */
+    @Synchronized
+    private fun shows(job: Job?, left: Int?): Boolean {
+        if (sleeping !== job) return false
+        sleepLeft.value = left
+        if (left == null) sleeping = null
+        return true
     }
 
     /** Takes [notice] off the bar, unless another has replaced it since. */

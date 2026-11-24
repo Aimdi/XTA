@@ -43,6 +43,11 @@
     <string name="reader_speech_stop">중지</string>
     <string name="reader_speech_listen">듣기</string>
     <string name="reader_speech_stop_listening">중지</string>
+    <string name="reader_speech_sleep">취침 타이머</string>
+    <string name="reader_speech_sleep_off">끄기</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="other">%1$d분</item>
+    </plurals>
     <string name="reader_speech_no_text">아직 읽을 텍스트가 없습니다</string>
     <string name="reader_speech_voice_settings">음성 설정</string>
     <string name="reader_speech_unavailable">이 기기에 설치된 음성 엔진이 없습니다</string>

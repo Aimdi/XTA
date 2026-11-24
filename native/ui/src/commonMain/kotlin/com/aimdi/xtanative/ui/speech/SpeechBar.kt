@@ -6,6 +6,8 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -19,6 +21,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,10 +35,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,12 +54,18 @@ import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.ago_minutes
 import com.aimdi.xtanative.ui.generated.resources.reader_dismiss
+import com.aimdi.xtanative.ui.generated.resources.reader_media_pause
+import com.aimdi.xtanative.ui.generated.resources.reader_media_play
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_get_sherpa
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_no_engine
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_no_text
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_no_voice
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_playing
+import com.aimdi.xtanative.ui.generated.resources.reader_speech_sleep
+import com.aimdi.xtanative.ui.generated.resources.reader_speech_sleep_minutes
+import com.aimdi.xtanative.ui.generated.resources.reader_speech_sleep_off
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_sherpa_missing
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_stop
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_unavailable
@@ -59,7 +75,9 @@ import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.media.AudioSessions
 import com.aimdi.xtanative.ui.media.ReaderIcons
 import com.aimdi.xtanative.ui.media.rememberAudioSessions
+import com.aimdi.xtanative.ui.plugins.pathIcon
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 /** The app's reading aloud, for any screen: read a post, a thread or an article, stop, ask what is being read. */
@@ -124,8 +142,66 @@ private fun ReadingRow(playback: SpeechPlayback, speech: AppSpeech) {
             Text(stringResource(Res.string.reader_speech_playing), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
             playback.title?.let { TipText(it, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis) }
         }
+        SleepButton(speech)
+        val hold = stringResource(if (playback.paused) Res.string.reader_media_play else Res.string.reader_media_pause)
+        IconTip(hold) { IconButton(onClick = { if (playback.paused) speech.resume() else speech.pause() }) {
+            Icon(if (playback.paused) Icons.Filled.PlayArrow else ReaderIcons.Pause, hold)
+        } }
         IconTip(stringResource(Res.string.reader_speech_stop)) { IconButton(onClick = { speech.stop() }) { Icon(ReaderIcons.StopCircle, stringResource(Res.string.reader_speech_stop)) } }
     }
+}
+
+/**
+ * The sleep timer: a button that opens its times, and shows the minutes left
+ * while one runs. When they are up the reading is held, not stopped, so it
+ * can be gone on with where it was.
+ */
+@Composable
+private fun SleepButton(speech: AppSpeech) {
+    val left by speech.sleepMinutes.collectAsStateWithLifecycle()
+    var open by remember { mutableStateOf(false) }
+    val label = stringResource(Res.string.reader_speech_sleep)
+    Box {
+        val minutes = left
+        IconTip(label) {
+            if (minutes == null) {
+                IconButton(onClick = { open = true }) { Icon(SleepGlyph, label) }
+            } else {
+                val remaining = pluralStringResource(Res.plurals.reader_speech_sleep_minutes, minutes, minutes)
+                TextButton(
+                    onClick = { open = true },
+                    contentPadding = PaddingValues(horizontal = 4.dp),
+                    modifier = Modifier.defaultMinSize(minWidth = 48.dp, minHeight = 48.dp).semantics {
+                        contentDescription = label
+                        stateDescription = remaining
+                    },
+                ) { Text(stringResource(Res.string.ago_minutes, minutes), style = MaterialTheme.typography.labelMedium, maxLines = 1) }
+            }
+        }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.reader_speech_sleep_off)) },
+                onClick = {
+                    open = false
+                    speech.sleepIn(null)
+                },
+            )
+            SleepTimer.CHOICES.forEach { choice ->
+                DropdownMenuItem(
+                    text = { Text(pluralStringResource(Res.plurals.reader_speech_sleep_minutes, choice, choice)) },
+                    onClick = {
+                        open = false
+                        speech.sleepIn(choice)
+                    },
+                )
+            }
+        }
+    }
+}
+
+/** Material's Bedtime (Apache 2.0), which the core set lacks. */
+private val SleepGlyph by lazy {
+    pathIcon("Bedtime", "M12.34,2.02C6.59,1.82 2,6.42 2,12c0,5.52 4.48,10 10,10c3.71,0 6.93,-2.02 8.66,-5.02C13.15,16.73 8.57,8.55 12.34,2.02z")
 }
 
 /** Why nothing is read, for a few seconds, with what can be done about it. */

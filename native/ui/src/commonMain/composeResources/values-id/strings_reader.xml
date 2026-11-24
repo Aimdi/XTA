@@ -43,6 +43,11 @@
     <string name="reader_speech_stop">Hentikan</string>
     <string name="reader_speech_listen">Dengarkan</string>
     <string name="reader_speech_stop_listening">Berhenti</string>
+    <string name="reader_speech_sleep">Timer tidur</string>
+    <string name="reader_speech_sleep_off">Nonaktif</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="other">%1$d menit</item>
+    </plurals>
     <string name="reader_speech_no_text">Belum ada teks yang bisa dibacakan</string>
     <string name="reader_speech_voice_settings">Pengaturan suara</string>
     <string name="reader_speech_unavailable">Perangkat ini tidak memiliki mesin suara</string>

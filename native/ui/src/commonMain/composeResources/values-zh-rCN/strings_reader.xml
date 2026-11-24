@@ -43,6 +43,11 @@
     <string name="reader_speech_stop">停止</string>
     <string name="reader_speech_listen">朗读</string>
     <string name="reader_speech_stop_listening">停止朗读</string>
+    <string name="reader_speech_sleep">睡眠定时器</string>
+    <string name="reader_speech_sleep_off">关闭</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="other">%1$d 分钟</item>
+    </plurals>
     <string name="reader_speech_no_text">还没有可朗读的内容</string>
     <string name="reader_speech_voice_settings">语音设置</string>
     <string name="reader_speech_unavailable">此设备未安装语音引擎</string>

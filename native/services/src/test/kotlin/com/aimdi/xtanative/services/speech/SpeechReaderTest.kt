@@ -178,4 +178,93 @@ class SpeechReaderTest {
         assertFalse(reader.state.value.speaking)
         assertTrue(cleared >= 2)
     }
+
+    @Test
+    fun aReadingHeldFallsSilentKeepsItsBarAndGoesOnWithTheChunkItWasHeldIn() = runBlocking {
+        val engine = FakeEngine(maxChunkChars = 300)
+        engine.hold = CompletableDeferred()
+        val reader = SpeechReader(listOf(engine))
+        val chunks = chunkForSpeech(english, 300)
+        val reading = async { reader.speak("Post", english, TtsChoice()) }
+        while (engine.spoken.isEmpty()) yield()
+        reader.pause()
+        assertEquals(SpeechPlayback("Post", speaking = true, paused = true), reader.state.value)
+        repeat(20) { yield() }
+        assertEquals(1, engine.spoken.size, "nothing is said while it is held")
+        engine.hold = null
+        reader.resume()
+        assertTrue(reading.await())
+        assertEquals(listOf(chunks[0]) + chunks, engine.spoken, "the chunk it was held in is said again, then the rest")
+        assertEquals(SpeechPlayback.IDLE, reader.state.value)
+    }
+
+    @Test
+    fun aReadingHeldLongIntoAChunkGoesOnFromTheSentenceItWasIn() = runBlocking {
+        var now = 0L
+        // Ten characters a second for two chunks; the third lasts until it is held.
+        val engine = object : FakeEngine(maxChunkChars = 300) {
+            override suspend fun say(chunk: String): UtteranceOutcome {
+                if (spoken.size < 2) now += chunk.length * 100L
+                hold = if (spoken.size == 2) CompletableDeferred() else null
+                return super.say(chunk)
+            }
+        }
+        val reader = SpeechReader(listOf(engine), clock = { now })
+        val chunks = chunkForSpeech(english, 300)
+        val sentence = "This is the story of a sentence that is long enough to count.".length + 1
+        val reading = async { reader.speak("Post", english, TtsChoice()) }
+        while (engine.spoken.size < 3) yield()
+        // Two sentences and a half at the pace learnt, which is counted a tenth slower.
+        now += (sentence * 2 + sentence / 2) * 1000L / 9
+        reader.pause()
+        reader.resume()
+        assertTrue(reading.await())
+        assertEquals(chunks[2].substring(sentence * 2), engine.spoken[3], "from the third sentence of the chunk, not its start")
+        assertEquals(chunks.drop(3), engine.spoken.drop(4))
+    }
+
+    @Test
+    fun stoppingAReadingThatIsHeldEndsIt() = runBlocking {
+        val engine = FakeEngine(maxChunkChars = 300)
+        engine.hold = CompletableDeferred()
+        val reader = SpeechReader(listOf(engine))
+        val reading = async { reader.speak("Post", english, TtsChoice()) }
+        while (engine.spoken.isEmpty()) yield()
+        reader.pause()
+        reader.stop()
+        assertTrue(reading.await())
+        assertEquals(SpeechPlayback.IDLE, reader.state.value)
+        assertEquals(1, engine.spoken.size)
+        reader.resume()
+        assertEquals(SpeechPlayback.IDLE, reader.state.value, "nothing is left to go on with")
+    }
+
+    @Test
+    fun anEngineThatReadsAheadHearsOfTheNextChunksAgainAfterAPause() = runBlocking {
+        val heard = ArrayList<String>()
+        val engine = object : FakeEngine(maxChunkChars = 300), SpeechLookahead {
+            override fun upcoming(chunk: String) {
+                heard += chunk
+            }
+        }
+        engine.hold = CompletableDeferred()
+        val reader = SpeechReader(listOf(engine))
+        val chunks = chunkForSpeech(english, 300)
+        val reading = async { reader.speak("Post", english, TtsChoice()) }
+        while (heard.size < 2) yield()
+        reader.pause()
+        engine.hold = null
+        reader.resume()
+        assertTrue(reading.await())
+        assertEquals(listOf(chunks[1], chunks[2], chunks[1], chunks[2]), heard.take(4))
+    }
+
+    @Test
+    fun thePaceIsLearntFromWhatWasSaidAndErrsTowardsTooLittle() {
+        val pace = SpeechPace()
+        assertEquals(30, pace.saidIn(10_000), "a guess at the slowest reading before anything is heard")
+        pace.heard(1500, 100_000)
+        assertEquals(135, pace.saidIn(10_000), "fifteen a second, less a tenth")
+        assertEquals(0, pace.saidIn(-5))
+    }
 }

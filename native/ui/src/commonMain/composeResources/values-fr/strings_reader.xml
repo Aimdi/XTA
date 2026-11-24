@@ -43,6 +43,12 @@
     <string name="reader_speech_stop">Arrêter</string>
     <string name="reader_speech_listen">Écouter</string>
     <string name="reader_speech_stop_listening">Arrêter l’écoute</string>
+    <string name="reader_speech_sleep">Minuteur de veille</string>
+    <string name="reader_speech_sleep_off">Désactivé</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d minute</item>
+        <item quantity="other">%1$d minutes</item>
+    </plurals>
     <string name="reader_speech_no_text">Rien de lisible à lire à voix haute pour l’instant</string>
     <string name="reader_speech_voice_settings">Réglages de la voix</string>
     <string name="reader_speech_unavailable">Aucun moteur vocal n’est installé sur cet appareil</string>

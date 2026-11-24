@@ -43,6 +43,12 @@
     <string name="reader_speech_stop">Interrompi</string>
     <string name="reader_speech_listen">Ascolta</string>
     <string name="reader_speech_stop_listening">Interrompi</string>
+    <string name="reader_speech_sleep">Timer di spegnimento</string>
+    <string name="reader_speech_sleep_off">Disattivato</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d minuto</item>
+        <item quantity="other">%1$d minuti</item>
+    </plurals>
     <string name="reader_speech_no_text">Non c’è ancora testo leggibile da ascoltare</string>
     <string name="reader_speech_voice_settings">Impostazioni voce</string>
     <string name="reader_speech_unavailable">Su questo dispositivo non è installato alcun motore vocale</string>

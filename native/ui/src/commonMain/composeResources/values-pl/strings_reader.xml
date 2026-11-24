@@ -43,6 +43,14 @@
     <string name="reader_speech_stop">Zatrzymaj</string>
     <string name="reader_speech_listen">Słuchaj</string>
     <string name="reader_speech_stop_listening">Zatrzymaj</string>
+    <string name="reader_speech_sleep">Wyłącznik czasowy</string>
+    <string name="reader_speech_sleep_off">Wyłączony</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d minuta</item>
+        <item quantity="few">%1$d minuty</item>
+        <item quantity="many">%1$d minut</item>
+        <item quantity="other">%1$d minuty</item>
+    </plurals>
     <string name="reader_speech_no_text">Nie ma jeszcze tekstu do odczytania</string>
     <string name="reader_speech_voice_settings">Ustawienia głosu</string>
     <string name="reader_speech_unavailable">To urządzenie nie ma zainstalowanego silnika mowy</string>

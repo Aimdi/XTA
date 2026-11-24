@@ -43,6 +43,12 @@
     <string name="reader_speech_stop">Haltu</string>
     <string name="reader_speech_listen">Aŭskulti</string>
     <string name="reader_speech_stop_listening">Haltigi</string>
+    <string name="reader_speech_sleep">Dormotempigilo</string>
+    <string name="reader_speech_sleep_off">Malŝaltita</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d minuto</item>
+        <item quantity="other">%1$d minutoj</item>
+    </plurals>
     <string name="reader_speech_no_text">Ankoraŭ nenio legebla por laŭtlegi</string>
     <string name="reader_speech_voice_settings">Voĉaj agordoj</string>
     <string name="reader_speech_unavailable">Ĉi tiu aparato havas neniun parolmotoron</string>

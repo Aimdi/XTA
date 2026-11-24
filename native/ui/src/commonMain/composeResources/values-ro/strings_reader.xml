@@ -43,6 +43,13 @@
     <string name="reader_speech_stop">Oprește</string>
     <string name="reader_speech_listen">Ascultă</string>
     <string name="reader_speech_stop_listening">Oprește</string>
+    <string name="reader_speech_sleep">Temporizator de somn</string>
+    <string name="reader_speech_sleep_off">Dezactivat</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d minut</item>
+        <item quantity="few">%1$d minute</item>
+        <item quantity="other">%1$d de minute</item>
+    </plurals>
     <string name="reader_speech_no_text">Încă nu există text care poate fi citit</string>
     <string name="reader_speech_voice_settings">Setări de voce</string>
     <string name="reader_speech_unavailable">Acest dispozitiv nu are niciun motor de voce</string>

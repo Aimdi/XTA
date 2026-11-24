@@ -48,6 +48,12 @@
     <string name="reader_speech_stop">Stop</string>
     <string name="reader_speech_listen">Listen</string>
     <string name="reader_speech_stop_listening">Stop listening</string>
+    <string name="reader_speech_sleep">Sleep timer</string>
+    <string name="reader_speech_sleep_off">Off</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="one">%1$d minute</item>
+        <item quantity="other">%1$d minutes</item>
+    </plurals>
     <string name="reader_speech_no_text">Nothing readable to speak yet</string>
     <string name="reader_speech_voice_settings">Voice settings</string>
     <string name="reader_speech_unavailable">This device has no speech engine installed</string>

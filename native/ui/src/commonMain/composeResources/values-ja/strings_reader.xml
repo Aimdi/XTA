@@ -43,6 +43,11 @@
     <string name="reader_speech_stop">停止</string>
     <string name="reader_speech_listen">読み上げ</string>
     <string name="reader_speech_stop_listening">読み上げを停止</string>
+    <string name="reader_speech_sleep">スリープタイマー</string>
+    <string name="reader_speech_sleep_off">オフ</string>
+    <plurals name="reader_speech_sleep_minutes">
+        <item quantity="other">%1$d分</item>
+    </plurals>
     <string name="reader_speech_no_text">まだ読み上げる文章がありません</string>
     <string name="reader_speech_voice_settings">音声の設定</string>
     <string name="reader_speech_unavailable">この端末には音声エンジンがありません</string>

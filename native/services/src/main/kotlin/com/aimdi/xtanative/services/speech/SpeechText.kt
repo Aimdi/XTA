@@ -79,6 +79,20 @@ private val paragraphBreak = Regex("[\\s\\p{Z}]*\\n[\\s\\p{Z}]*\\n[\\s\\p{Z}]*")
 /** After a sentence's end, any run of space, the ideographic space included. */
 private val sentenceBreak = Regex("(?<=[.!?。！？])[\\s\\p{Z}]+")
 
+/** Where a new sentence or paragraph starts, after its break. */
+private val anyBreak = Regex(paragraphBreak.pattern + "|" + sentenceBreak.pattern)
+
+/**
+ * What is left of [chunk] for a reading held after about [saidChars]
+ * characters of it: from the start of the sentence that character is in, so
+ * the reading goes on with a whole sentence.
+ */
+fun restOfChunk(chunk: String, saidChars: Int): String {
+    val at = saidChars.coerceIn(0, (chunk.length - 1).coerceAtLeast(0))
+    val start = anyBreak.findAll(chunk).map { it.range.last + 1 }.takeWhile { it <= at }.lastOrNull() ?: 0
+    return chunk.substring(start)
+}
+
 /**
  * The rest of [full] from [needle], a paragraph the reader held to start
  * reading there. When the paragraph is not found, its first line, then its
