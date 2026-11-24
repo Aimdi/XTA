@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -220,8 +221,9 @@ internal class ReaderSurface(private val pages: Int, start: Int, private val fli
 }
 
 /**
- * Every page down one column at the screen's width, the last one clear of the
- * bar; the page most on screen is the page. The column zooms as one.
+ * Every page down one column at the screen's width, up to [COLUMN_MAX_WIDTH]
+ * and centred in a wide window, the last one clear of the bar; the page most
+ * on screen is the page. The column zooms as one.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -242,6 +244,7 @@ private fun ColumnPages(illust: PixivIllust, urls: List<String>, surface: Reader
     LazyColumn(
         state = list,
         contentPadding = PaddingValues(bottom = underBar),
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize().onSizeChanged { size = it }.zoomsColumn(zoom),
     ) {
         items(urls.size, key = { "page-$it" }) { index ->
@@ -251,7 +254,7 @@ private fun ColumnPages(illust: PixivIllust, urls: List<String>, surface: Reader
             }
             PixivPicture(
                 urls[index],
-                Modifier.fillMaxWidth().aspectRatio(illust.aspectRatio.toFloat().coerceIn(0.2f, 5f)).onContextClick(actions).combinedClickable(
+                Modifier.widthIn(max = COLUMN_MAX_WIDTH).fillMaxWidth().aspectRatio(illust.aspectRatio.toFloat().coerceIn(0.2f, 5f)).onContextClick(actions).combinedClickable(
                     onClick = {},
                     onDoubleClick = { zoom.toggle(size) },
                     onLongClick = actions,
@@ -264,6 +267,9 @@ private fun ColumnPages(illust: PixivIllust, urls: List<String>, surface: Reader
         }
     }
 }
+
+/** The widest a page grows in the column: a wide window shows it centred, not blown up to the window's width. */
+private val COLUMN_MAX_WIDTH = 960.dp
 
 private fun visibleHeight(offset: Int, size: Int, end: Int): Int = (minOf(offset + size, end) - maxOf(offset, 0)).coerceAtLeast(0)
 
