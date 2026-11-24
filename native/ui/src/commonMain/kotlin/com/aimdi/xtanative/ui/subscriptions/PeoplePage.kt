@@ -66,6 +66,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_search
 import com.aimdi.xtanative.ui.generated.resources.groups_show_in_main_feed
 import com.aimdi.xtanative.ui.generated.resources.groups_unsubscribe
 import com.aimdi.xtanative.ui.home.RowSteps
+import com.aimdi.xtanative.ui.home.pressDrag
 import com.aimdi.xtanative.ui.home.rememberRetappedList
 import com.aimdi.xtanative.ui.home.rememberRowKeyMoves
 import com.aimdi.xtanative.ui.home.rowMovedByKeys
@@ -137,7 +138,14 @@ private fun PeopleList(state: SubscriptionsUi, actions: PeopleActions, contentPa
             val reorder = if (!state.canDragPeople) {
                 Modifier
             } else {
-                Modifier.pointerInput(key, keys) {
+                // The mouse drags a row at once, as a desktop list's; a finger long-presses first, the list scrolling under a plain drag.
+                Modifier.pressDrag(
+                    key = key,
+                    mouseOnly = true,
+                    onStart = { drag.start(key, keys) },
+                    onMove = { by, _ -> drag.drag(by.y) },
+                    onEnd = { done -> if (done) drag.end()?.let { (from, to) -> actions.move(from, to) } else drag.cancel() },
+                ).pointerInput(key, keys) {
                     detectDragGesturesAfterLongPress(
                         onDragStart = { drag.start(key, keys) },
                         onDrag = { change, amount ->
