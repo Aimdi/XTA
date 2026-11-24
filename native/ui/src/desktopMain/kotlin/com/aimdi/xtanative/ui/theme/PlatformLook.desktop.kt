@@ -81,3 +81,11 @@ internal actual fun systemReducesMotion(): Boolean {
     LaunchedEffect(scheme) { scheme.start() }
     return scheme.animationsOff.collectAsState().value
 }
+
+/** The desktop's accent colour, as its settings portal says, followed as it changes; null where it says none. */
+@Composable
+internal actual fun systemAccent(): Long? {
+    val scheme = DesktopColorScheme.desktop
+    LaunchedEffect(scheme) { scheme.start() }
+    return scheme.accent.collectAsState().value
+}

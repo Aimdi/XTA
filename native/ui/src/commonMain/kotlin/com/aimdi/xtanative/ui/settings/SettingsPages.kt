@@ -74,7 +74,9 @@ import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login_descri
 import com.aimdi.xtanative.ui.links.BrowserPickerRow
 import com.aimdi.xtanative.ui.speech.VoiceSettingsSheet
 import com.aimdi.xtanative.ui.theme.Contrast
+import com.aimdi.xtanative.ui.theme.XLook
 import com.aimdi.xtanative.ui.theme.XLookTokens
+import com.aimdi.xtanative.ui.theme.systemAccent
 import java.util.Locale
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
@@ -513,23 +515,28 @@ internal fun BackgroundPicker(selected: ThemeBackground, modifier: Modifier = Mo
     }
 }
 
-/** X's six accents, each a disc; the chosen one carries a check. */
+/**
+ * X's six accents, each a disc, and on the desktop System, drawn in the
+ * desktop's accent colour as it is now; the chosen one carries a check.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun AccentPicker(selected: ThemeAccent, modifier: Modifier = Modifier, onSelect: (ThemeAccent) -> Unit) {
+    val desktopAccent = systemAccent()
     FlowRow(modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        ThemeAccent.entries.forEach { accent ->
+        XLook.offeredAccents(isDesktop, selected).forEach { accent ->
             val chosen = accent == selected
+            val argb = XLook.accentArgb(accent, desktopAccent)
             Column(
                 Modifier.width(64.dp).clip(RoundedCornerShape(12.dp)).clickable { onSelect(accent) }.padding(vertical = 6.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(
-                    Modifier.size(32.dp).clip(CircleShape).background(Color(accent.argb))
+                    Modifier.size(32.dp).clip(CircleShape).background(Color(argb))
                         .border(if (chosen) 2.dp else 0.dp, if (chosen) MaterialTheme.colorScheme.onBackground else Color.Transparent, CircleShape),
                     contentAlignment = Alignment.Center,
                 ) {
-                    if (chosen) Icon(Icons.Outlined.Check, null, tint = Color(Contrast.foreground(accent.argb)), modifier = Modifier.size(18.dp))
+                    if (chosen) Icon(Icons.Outlined.Check, null, tint = Color(Contrast.foreground(argb)), modifier = Modifier.size(18.dp))
                 }
                 Text(accentLabel(accent), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp), maxLines = 1)
             }

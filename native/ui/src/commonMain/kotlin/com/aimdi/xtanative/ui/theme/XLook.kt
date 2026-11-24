@@ -64,19 +64,35 @@ object XLook {
     private const val BLACK = 0xFF000000
     private const val WHITE = 0xFFFFFFFF
 
+    /**
+     * The colour [accent] stands for: its own, or for [ThemeAccent.SYSTEM] the
+     * desktop's accent ([systemAccent], opaque ARGB), and X's blue where the
+     * desktop gives none.
+     */
+    fun accentArgb(accent: ThemeAccent, systemAccent: Long? = null): Long =
+        if (accent == ThemeAccent.SYSTEM) systemAccent ?: accent.argb else accent.argb
+
+    /**
+     * The accents a picker offers: all of them on the desktop, whose settings
+     * portal gives an accent colour; elsewhere System only while it is the
+     * [selected] one (a backup from the desktop), as it would be X's blue.
+     */
+    fun offeredAccents(desktop: Boolean, selected: ThemeAccent): List<ThemeAccent> =
+        ThemeAccent.entries.filter { desktop || it != ThemeAccent.SYSTEM || it == selected }
+
     /** Tokens for a concrete background, tinted with [accent]; System and Lights out resolve here to Lights out. */
-    fun tokensFor(background: ThemeBackground, accent: ThemeAccent): XLookTokens {
+    fun tokensFor(background: ThemeBackground, accent: ThemeAccent, systemAccent: Long? = null): XLookTokens {
         val base = when (background) {
             ThemeBackground.LIGHT -> XLookTokens.LIGHT
             ThemeBackground.DIM -> XLookTokens.DIM
             ThemeBackground.SYSTEM, ThemeBackground.LIGHTS_OUT -> XLookTokens.LIGHTS_OUT
         }
-        return base.copy(accent = accent.argb)
+        return base.copy(accent = accentArgb(accent, systemAccent))
     }
 
     /** The dark half: System darkens to Lights out, the cheapest on an OLED panel; Dim is a deliberate choice. */
-    fun darkTokensFor(background: ThemeBackground, accent: ThemeAccent): XLookTokens =
-        tokensFor(if (background == ThemeBackground.DIM) ThemeBackground.DIM else ThemeBackground.LIGHTS_OUT, accent)
+    fun darkTokensFor(background: ThemeBackground, accent: ThemeAccent, systemAccent: Long? = null): XLookTokens =
+        tokensFor(if (background == ThemeBackground.DIM) ThemeBackground.DIM else ThemeBackground.LIGHTS_OUT, accent, systemAccent)
 
     /** Only System defers to the device; every other background names a brightness. */
     fun modeFor(background: ThemeBackground): XLookMode = when (background) {
@@ -85,8 +101,8 @@ object XLook {
         ThemeBackground.DIM, ThemeBackground.LIGHTS_OUT -> XLookMode.DARK
     }
 
-    /** The tokens in force for [settings] while the system is dark or not. */
-    fun tokens(settings: Settings, systemDark: Boolean): XLookTokens {
+    /** The tokens in force for [settings] while the system is dark or not, with the desktop's accent where it gives one. */
+    fun tokens(settings: Settings, systemDark: Boolean, systemAccent: Long? = null): XLookTokens {
         val background = settings[ThemePrefs.background]
         val accent = settings[ThemePrefs.accent]
         val dark = when (modeFor(background)) {
@@ -94,7 +110,7 @@ object XLook {
             XLookMode.LIGHT -> false
             XLookMode.DARK -> true
         }
-        return if (dark) darkTokensFor(background, accent) else tokensFor(ThemeBackground.LIGHT, accent)
+        return if (dark) darkTokensFor(background, accent, systemAccent) else tokensFor(ThemeBackground.LIGHT, accent, systemAccent)
     }
 
     fun isLightsOut(tokens: XLookTokens): Boolean = tokens.background == BLACK && tokens.card == BLACK

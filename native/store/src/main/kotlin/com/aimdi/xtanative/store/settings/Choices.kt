@@ -9,8 +9,13 @@ enum class ThemeBackground(override val stored: String) : PrefChoice {
     LIGHTS_OUT("lights_out"),
 }
 
-/** X's own accents, each legible on every background; [argb] is the colour. */
+/**
+ * X's own accents, each legible on every background; [argb] is the colour.
+ * [SYSTEM] follows the desktop's accent colour where its settings portal
+ * gives one; its [argb] is the blue drawn where nothing does.
+ */
 enum class ThemeAccent(override val stored: String, val argb: Long) : PrefChoice {
+    SYSTEM("system", 0xFF1D9BF0),
     BLUE("blue", 0xFF1D9BF0),
     YELLOW("yellow", 0xFFFFD400),
     PINK("pink", 0xFFF91880),

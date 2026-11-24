@@ -11,3 +11,6 @@ internal actual fun systemPrefersDark(): Boolean = isSystemInDarkTheme()
 
 @Composable
 internal actual fun systemReducesMotion(): Boolean = false
+
+@Composable
+internal actual fun systemAccent(): Long? = null

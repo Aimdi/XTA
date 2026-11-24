@@ -5,6 +5,7 @@ import com.aimdi.xtanative.ui.media.mpris.DBusMessage
 import com.aimdi.xtanative.ui.media.mpris.DBusType
 import com.aimdi.xtanative.ui.media.mpris.Variant
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +17,8 @@ import kotlinx.coroutines.flow.asStateFlow
  * switches): true for dark, false for light, null where nothing says, as
  * Java itself cannot tell on Linux. Read once at the start, then followed.
  * On the same connection, whether the desktop has its animations off
- * ([animationsOff], GNOME's enable-animations, which the portals pass on).
+ * ([animationsOff], GNOME's enable-animations, which the portals pass on),
+ * and its accent colour ([accent], org.freedesktop.appearance accent-color).
  */
 class DesktopColorScheme(
     private val connect: () -> DBusConnection?,
@@ -28,6 +30,10 @@ class DesktopColorScheme(
 
     /** Whether the desktop's settings turn animations off; false where nothing says. */
     val animationsOff: StateFlow<Boolean> = stillness.asStateFlow()
+    private val tint = MutableStateFlow<Long?>(null)
+
+    /** The desktop's accent colour as opaque ARGB; null where it gives none or one out of range. */
+    val accent: StateFlow<Long?> = tint.asStateFlow()
     private val started = AtomicBoolean(false)
 
     @Volatile
@@ -51,21 +57,26 @@ class DesktopColorScheme(
         bus.onSignal = { signal ->
             PortalColors.changed(signal)?.let { mutable.value = it }
             PortalMotion.changed(signal)?.let { stillness.value = it }
+            if (PortalAccent.isChange(signal)) tint.value = PortalAccent.argb(signal.body[2])
         }
         bus.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "AddMatch", "s", listOf(PortalColors.MATCH))
-        val answer = bus.call(PortalColors.PORTAL, PortalColors.PATH, PortalColors.SETTINGS, "ReadOne", "ss", listOf(PortalColors.NAMESPACE, PortalColors.KEY))
-            ?.takeIf { it.type == DBusType.METHOD_RETURN }
-            // Portals before version 2 have only Read, whose value comes wrapped once more.
-            ?: bus.call(PortalColors.PORTAL, PortalColors.PATH, PortalColors.SETTINGS, "Read", "ss", listOf(PortalColors.NAMESPACE, PortalColors.KEY))
-        answer?.takeIf { it.type == DBusType.METHOD_RETURN }?.let { reply -> PortalColors.dark(reply.body.firstOrNull())?.let { mutable.value = it } }
-        (
-            bus.call(PortalColors.PORTAL, PortalColors.PATH, PortalColors.SETTINGS, "ReadOne", "ss", listOf(PortalMotion.NAMESPACE, PortalMotion.KEY))
-                ?.takeIf { it.type == DBusType.METHOD_RETURN }
-                // Portals before version 2 have only Read (its value wrapped once more, which PortalMotion unwraps).
-                ?: bus.call(PortalColors.PORTAL, PortalColors.PATH, PortalColors.SETTINGS, "Read", "ss", listOf(PortalMotion.NAMESPACE, PortalMotion.KEY))
-                    ?.takeIf { it.type == DBusType.METHOD_RETURN }
-            )?.let { reply -> PortalMotion.off(reply.body.firstOrNull())?.let { stillness.value = it } }
+        read(bus, PortalColors.NAMESPACE, PortalColors.KEY)?.let { PortalColors.dark(it) }?.let { mutable.value = it }
+        read(bus, PortalMotion.NAMESPACE, PortalMotion.KEY)?.let { PortalMotion.off(it) }?.let { stillness.value = it }
+        read(bus, PortalAccent.NAMESPACE, PortalAccent.KEY)?.let { PortalAccent.argb(it) }?.let { tint.value = it }
     }
+
+    /**
+     * One setting's value from the portal; null where it has none. Portals
+     * before version 2 have only Read, whose value comes wrapped once more
+     * (each reader unwraps it).
+     */
+    private fun read(bus: DBusConnection, namespace: String, key: String): Any? =
+        (
+            bus.call(PortalColors.PORTAL, PortalColors.PATH, PortalColors.SETTINGS, "ReadOne", "ss", listOf(namespace, key))
+                ?.takeIf { it.type == DBusType.METHOD_RETURN }
+                ?: bus.call(PortalColors.PORTAL, PortalColors.PATH, PortalColors.SETTINGS, "Read", "ss", listOf(namespace, key))
+                    ?.takeIf { it.type == DBusType.METHOD_RETURN }
+            )?.body?.firstOrNull()
 
     /** Stops following (tests). */
     fun close() {
@@ -92,6 +103,32 @@ object PortalMotion {
         if (signal.body[0] != NAMESPACE || signal.body[1] != KEY) return null
         return off(signal.body[2])
     }
+
+    private tailrec fun unwrapped(value: Any?): Any? = if (value is Variant) unwrapped(value.value) else value
+}
+
+/**
+ * The desktop's accent colour through the settings portal
+ * (org.freedesktop.appearance accent-color: red, green and blue, each 0 to
+ * 1; a value out of that range means the desktop has none), as plain decisions.
+ */
+object PortalAccent {
+    const val NAMESPACE = PortalColors.NAMESPACE
+    const val KEY = "accent-color"
+
+    /** The portal's value as opaque ARGB; null for no colour, a channel out of 0..1 or a value of another kind. */
+    fun argb(value: Any?): Long? {
+        val channels = (unwrapped(value) as? List<*>)?.takeIf { it.size == 3 } ?: return null
+        val levels = channels.map { (it as? Number)?.toDouble()?.takeIf { level -> level in 0.0..1.0 } ?: return null }
+        return Contrast.argb(255, byte(levels[0]), byte(levels[1]), byte(levels[2]))
+    }
+
+    /** Whether [signal] is the portal saying the accent colour changed (to [argb] of its value, which may be none). */
+    fun isChange(signal: DBusMessage): Boolean =
+        signal.iface == PortalColors.SETTINGS && signal.member == "SettingChanged" && signal.body.size >= 3 &&
+            signal.body[0] == NAMESPACE && signal.body[1] == KEY
+
+    private fun byte(level: Double): Int = (level * 255).roundToInt()
 
     private tailrec fun unwrapped(value: Any?): Any? = if (value is Variant) unwrapped(value.value) else value
 }

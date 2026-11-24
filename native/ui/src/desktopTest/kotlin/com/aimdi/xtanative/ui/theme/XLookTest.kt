@@ -36,6 +36,27 @@ class XLookTest {
     }
 
     @Test
+    fun theSystemAccentFollowsTheDesktopAndFallsBackToBlue() {
+        val system = settings(ThemeBackground.DIM, ThemeAccent.SYSTEM)
+        assertEquals(0xFF3584E4, XLook.tokens(system, systemDark = false, systemAccent = 0xFF3584E4).accent)
+        assertEquals(0xFF3584E4, XLook.tokens(settings(ThemeBackground.SYSTEM, ThemeAccent.SYSTEM), systemDark = false, systemAccent = 0xFF3584E4).accent, "light half too")
+        assertEquals(ThemeAccent.BLUE.argb, XLook.tokens(system, systemDark = false, systemAccent = null).accent)
+        // A named accent ignores the desktop's.
+        assertEquals(ThemeAccent.PINK.argb, XLook.tokens(settings(ThemeBackground.DIM, ThemeAccent.PINK), systemDark = false, systemAccent = 0xFF3584E4).accent)
+        // A desktop accent that does not read on the page is corrected like any other.
+        val scheme = XLook.scheme(XLook.tokens(settings(ThemeBackground.LIGHT, ThemeAccent.SYSTEM), systemDark = false, systemAccent = 0xFFFFFF80))
+        assertTrue(Contrast.ratio(scheme.primary, 0xFFFFFFFF) >= 4.5)
+        assertEquals(0xFFFFFF80, scheme.accentFill)
+    }
+
+    @Test
+    fun systemIsOfferedOnTheDesktopOnly() {
+        assertEquals(ThemeAccent.SYSTEM, XLook.offeredAccents(desktop = true, selected = ThemeAccent.BLUE).first())
+        assertEquals(ThemeAccent.entries - ThemeAccent.SYSTEM, XLook.offeredAccents(desktop = false, selected = ThemeAccent.BLUE))
+        assertEquals(ThemeAccent.entries, XLook.offeredAccents(desktop = false, selected = ThemeAccent.SYSTEM), "kept while chosen")
+    }
+
+    @Test
     fun anAccentThatDoesNotReadOnThePageIsCorrected() {
         val scheme = XLook.scheme(XLook.tokens(settings(ThemeBackground.LIGHT, ThemeAccent.YELLOW), systemDark = false))
         assertNotEquals(ThemeAccent.YELLOW.argb, scheme.primary)

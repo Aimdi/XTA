@@ -25,7 +25,7 @@ fun XtaTheme(content: @Composable () -> Unit) {
     val settings = stored ?: Settings()
     val systemDark = systemPrefersDark()
     val reducesMotion = systemReducesMotion()
-    val tokens = XLook.tokens(settings, systemDark)
+    val tokens = XLook.tokens(settings, systemDark, systemAccent())
     val scheme = remember(tokens) { XLook.scheme(tokens) }
     val density = LocalDensity.current
     val textScale = settings[AccessibilityPrefs.textScale].toFloat()

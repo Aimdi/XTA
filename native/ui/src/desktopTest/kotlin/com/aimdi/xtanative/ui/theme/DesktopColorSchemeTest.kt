@@ -9,8 +9,10 @@ import java.nio.file.Files
 import java.util.concurrent.TimeUnit
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -54,6 +56,32 @@ class DesktopColorSchemeTest {
         assertNull(PortalColors.changed(signal(PortalMotion.NAMESPACE, PortalMotion.KEY, false)))
     }
 
+    @Test
+    fun thePortalsAccentColourIsReadAsArgb() {
+        fun rgb(r: Double, g: Double, b: Double) = Variant("(ddd)", listOf(r, g, b))
+        assertEquals(0xFF3584E4, PortalAccent.argb(rgb(0x35 / 255.0, 0x84 / 255.0, 0xE4 / 255.0)))
+        assertEquals(0xFF000000, PortalAccent.argb(rgb(0.0, 0.0, 0.0)))
+        assertEquals(0xFFFFFFFF, PortalAccent.argb(rgb(1.0, 1.0, 1.0)))
+        assertEquals(0xFFFF0000, PortalAccent.argb(Variant("v", rgb(1.0, 0.0, 0.0))), "Read, before ReadOne, wraps it once more")
+        // Out of range is how a portal says "no accent".
+        assertNull(PortalAccent.argb(rgb(-1.0, -1.0, -1.0)))
+        assertNull(PortalAccent.argb(rgb(0.5, 1.5, 0.5)))
+        assertNull(PortalAccent.argb(Variant("(dd)", listOf(0.5, 0.5))))
+        assertNull(PortalAccent.argb(Variant("u", 1L)))
+        assertNull(PortalAccent.argb(null))
+    }
+
+    @Test
+    fun onlyTheAccentColoursChangeIsAnAccentChange() {
+        fun signal(namespace: String, key: String) = DBusMessage(
+            DBusType.SIGNAL, iface = PortalColors.SETTINGS, member = "SettingChanged", signature = "ssv",
+            body = listOf(namespace, key, Variant("(ddd)", listOf(1.0, 0.0, 0.0))),
+        )
+        assertTrue(PortalAccent.isChange(signal(PortalAccent.NAMESPACE, PortalAccent.KEY)))
+        assertFalse(PortalAccent.isChange(signal(PortalAccent.NAMESPACE, PortalColors.KEY)))
+        assertFalse(PortalAccent.isChange(signal(PortalMotion.NAMESPACE, PortalAccent.KEY)))
+    }
+
     /** A bus of the test's own, never the desktop's; null without dbus-daemon. */
     private fun privateBus(): Pair<Process, File>? {
         val folder = Files.createTempDirectory("xta-dbus").toFile()
@@ -81,8 +109,11 @@ class DesktopColorSchemeTest {
             // A portal of the test's own: dark until it says otherwise.
             val portal = assertNotNull(DBusConnection.connect(socket))
             portal.onCall = { call ->
-                if (call.member == "ReadOne" && call.body == listOf(PortalColors.NAMESPACE, PortalColors.KEY)) portal.reply(call, "v", listOf(Variant("u", 1L)))
-                else portal.fail(call, DBusConnection.UNKNOWN_METHOD, "no")
+                when {
+                    call.member == "ReadOne" && call.body == listOf(PortalColors.NAMESPACE, PortalColors.KEY) -> portal.reply(call, "v", listOf(Variant("u", 1L)))
+                    call.member == "ReadOne" && call.body == listOf(PortalAccent.NAMESPACE, PortalAccent.KEY) -> portal.reply(call, "v", listOf(Variant("(ddd)", listOf(0.0, 0.0, 1.0))))
+                    else -> portal.fail(call, DBusConnection.UNKNOWN_METHOD, "no")
+                }
             }
             portal.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "RequestName", "su", listOf(PortalColors.PORTAL, 4L))
             val scheme = DesktopColorScheme({ DBusConnection.connect(socket) }, gtkTheme = null)
@@ -91,6 +122,12 @@ class DesktopColorSchemeTest {
             assertEquals(true, scheme.dark.value)
             portal.signal(PortalColors.PATH, PortalColors.SETTINGS, "SettingChanged", "ssv", listOf(PortalColors.NAMESPACE, PortalColors.KEY, Variant("u", 2L)))
             runBlocking { withTimeout(5_000) { scheme.dark.first { it == false } } }
+            assertEquals(0xFF0000FF, scheme.accent.value)
+            portal.signal(PortalColors.PATH, PortalColors.SETTINGS, "SettingChanged", "ssv", listOf(PortalAccent.NAMESPACE, PortalAccent.KEY, Variant("(ddd)", listOf(0.0, 1.0, 0.0))))
+            runBlocking { withTimeout(5_000) { scheme.accent.first { it == 0xFF00FF00 } } }
+            // The desktop dropping its accent: back to none, so the app's default.
+            portal.signal(PortalColors.PATH, PortalColors.SETTINGS, "SettingChanged", "ssv", listOf(PortalAccent.NAMESPACE, PortalAccent.KEY, Variant("(ddd)", listOf(-1.0, -1.0, -1.0))))
+            runBlocking { withTimeout(5_000) { scheme.accent.first { it == null } } }
             scheme.close()
             portal.close()
         } finally {
