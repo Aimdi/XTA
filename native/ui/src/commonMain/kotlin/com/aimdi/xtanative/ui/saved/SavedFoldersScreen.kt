@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -63,6 +62,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_tab_unfiled
 import com.aimdi.xtanative.ui.home.RowSteps
 import com.aimdi.xtanative.ui.home.rememberRowKeyMoves
 import com.aimdi.xtanative.ui.home.rowMovedByKeys
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -205,7 +205,7 @@ private fun ReorderableRows(
     val moves = rememberRowKeyMoves { token, up ->
         (RowSteps.step(current.map { it.token }, token, up) != null).also { if (it) step(token as String, up) }
     }
-    Column(modifier.verticalScroll(rememberScrollState())) {
+    Column(modifier.verticalScrollByKeys(rememberScrollState())) {
         rows.forEachIndexed { index, item -> key(item.token) {
             val shift = shiftOf(index, dragging, target, heightList)
             Box(

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.automirrored.outlined.List
@@ -67,6 +66,7 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login_description
 import com.aimdi.xtanative.ui.home.foundWithKeys
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.intro.IntroFlow
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.launch
@@ -115,7 +115,7 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: (
         val scroll = rememberScrollState()
         Box(Modifier.fillMaxSize().padding(padding)) {
         ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd))
-        Column(Modifier.settingsRows().verticalScroll(scroll).padding(bottom = 24.dp)) {
+        Column(Modifier.settingsRows().verticalScrollByKeys(scroll).padding(bottom = 24.dp)) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },

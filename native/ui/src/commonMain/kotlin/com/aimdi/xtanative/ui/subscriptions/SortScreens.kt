@@ -27,7 +27,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -102,6 +101,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_sort_suggest
 import com.aimdi.xtanative.ui.generated.resources.groups_sort_title
 import com.aimdi.xtanative.ui.generated.resources.groups_sort_ungrouped
 import com.aimdi.xtanative.ui.generated.resources.groups_undo
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -184,7 +184,7 @@ fun SortUngroupedScreen(onBack: () -> Unit, onSortOneByOne: (List<String>) -> Un
 @Composable
 private fun PlanBody(state: SortUi, modifier: Modifier, onSortOneByOne: () -> Unit) {
     val plan = state.plan
-    Column(modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(modifier.verticalScrollByKeys(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(stringResource(Res.string.groups_sort_description))
         Spacer(Modifier.height(12.dp))
         if (plan.isEmpty) {
@@ -389,7 +389,7 @@ private fun SorterEnd(sorter: SorterState, onSortSkipped: () -> Unit, onFinish: 
     val placed = sorter.placedCount
     val skipped = sorter.skipped.size
     Column(
-        modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
+        modifier.fillMaxSize().verticalScrollByKeys(rememberScrollState()).padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {

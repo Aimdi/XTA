@@ -55,6 +55,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.runtime.DisposableEffect
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalFocusManager
@@ -172,7 +173,7 @@ private val SETTINGS_MAX_WIDTH = 840.dp
 internal fun SettingsList(padding: PaddingValues, content: @Composable ColumnScope.() -> Unit) {
     val scroll = rememberScrollState()
     Box(Modifier.fillMaxSize().padding(padding)) {
-        Column(Modifier.fillMaxSize().settingsRows().verticalScroll(scroll).padding(bottom = 24.dp), content = content)
+        Column(Modifier.fillMaxSize().settingsRows().verticalScrollByKeys(scroll).padding(bottom = 24.dp), content = content)
         ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd))
     }
 }

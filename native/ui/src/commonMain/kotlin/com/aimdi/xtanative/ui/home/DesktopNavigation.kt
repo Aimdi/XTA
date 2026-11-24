@@ -1,6 +1,9 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -168,17 +171,21 @@ class DesktopActions(
     /** Esc in a field: true when the field dropped something of its own, and keeps the keyboard for now. */
     internal fun escapeInField(): Boolean = fieldEscapes.asReversed().any { it.second() }
 
-    /** The lists on screen, in the order they came, the one the pointer was last over, and the column each is in ([ReadColumn]). */
-    private val lists = mutableListOf<LazyListState>()
-    private var pointed: LazyListState? = null
-    private val listColumns = mutableMapOf<LazyListState, Any>()
+    /**
+     * The lists on screen, in the order they came, the one the pointer was
+     * last over, and the column each is in ([ReadColumn]). A list is a lazy
+     * one ([LazyListState]) or a page that scrolls as a whole ([ScrollState]).
+     */
+    private val lists = mutableListOf<ScrollableState>()
+    private var pointed: ScrollableState? = null
+    private val listColumns = mutableMapOf<ScrollableState, Any>()
 
-    internal fun addList(list: LazyListState, column: Any? = null) {
+    internal fun addList(list: ScrollableState, column: Any? = null) {
         lists += list
         if (column != null) listColumns[list] = column
     }
 
-    internal fun removeList(list: LazyListState) {
+    internal fun removeList(list: ScrollableState) {
         lists -= list
         listColumns -= list
         listPlaces -= list
@@ -186,9 +193,9 @@ class DesktopActions(
     }
 
     /** Where each list on screen is laid out, so the posts drawn in it are placed against it ([currentPost]). */
-    private val listPlaces = mutableMapOf<LazyListState, LayoutCoordinates>()
+    private val listPlaces = mutableMapOf<ScrollableState, LayoutCoordinates>()
 
-    internal fun placeList(list: LazyListState, place: LayoutCoordinates) {
+    internal fun placeList(list: ScrollableState, place: LayoutCoordinates) {
         listPlaces[list] = place
     }
 
@@ -218,7 +225,8 @@ class DesktopActions(
      */
     fun currentPost(): KeyedPost? {
         markedPost?.takeIf { it in posts && it.place?.isAttached == true }?.let { return it }
-        val list = readList() ?: return null
+        // Only a lazy list holds posts; a page that scrolls as a whole has none to act on.
+        val list = readList() as? LazyListState ?: return null
         val (drawn, tops) = drawnPosts(list) ?: return null
         val info = list.layoutInfo
         val shown = info.visibleItemsInfo.map { DesktopKeys.ShownItem(it.index, it.offset, it.size) }
@@ -264,7 +272,7 @@ class DesktopActions(
      * nothing: the event is the window's own, sent as what is under the
      * pointer moved (the Deck scrolled sideways to a chosen column).
      */
-    internal fun point(list: LazyListState, at: Offset? = null) {
+    internal fun point(list: ScrollableState, at: Offset? = null) {
         if (!DesktopKeys.pointerMoved(pointer, at)) return
         if (pointer != null) markedPost = null
         pointer = at
@@ -412,7 +420,7 @@ class DesktopActions(
      * beside it). A column gone from the page (the Deck's detail closed)
      * counts as none chosen or opened.
      */
-    internal fun readList(): LazyListState? {
+    internal fun readList(): ScrollableState? {
         chosen()?.let { column -> return lists.lastOrNull { listColumns[it] == column } }
         opened?.takeIf { it in columnOrder() }?.let { column -> lists.lastOrNull { listColumns[it] == column }?.let { return it } }
         return pointed ?: lists.firstOrNull()
@@ -426,7 +434,24 @@ class DesktopActions(
  * it with its column. Nothing off the desktop.
  */
 @Composable
-fun Modifier.movedByKeys(list: LazyListState): Modifier {
+fun Modifier.movedByKeys(list: LazyListState): Modifier = keyMoved(list)
+
+/**
+ * A page that scrolls as a whole ([verticalScroll]) moved by the desktop's
+ * keys as a list is ([movedByKeys]): ↑ ↓, Page Up and Down, Space, Home and
+ * End, while nothing in it keeps the keys (a field, a slider, a dialog).
+ * Put it before the [verticalScroll] of the same [scroll]; or use
+ * [verticalScrollByKeys], which does both. Nothing off the desktop.
+ */
+@Composable
+fun Modifier.movedByKeys(scroll: ScrollState): Modifier = keyMoved(scroll)
+
+/** [verticalScroll] over [scroll], moved by the desktop's keys too ([movedByKeys]). */
+@Composable
+fun Modifier.verticalScrollByKeys(scroll: ScrollState): Modifier = movedByKeys(scroll).verticalScroll(scroll)
+
+@Composable
+private fun Modifier.keyMoved(list: ScrollableState): Modifier {
     val actions = LocalDesktopActions.current ?: return this
     val column = LocalReadColumn.current
     DisposableEffect(actions, list, column) {

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -41,6 +40,7 @@ import com.aimdi.xtanative.ui.generated.resources.signin_import_text
 import com.aimdi.xtanative.ui.generated.resources.signin_import_title
 import com.aimdi.xtanative.ui.generated.resources.signin_open_in_browser
 import com.aimdi.xtanative.ui.generated.resources.signin_username
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.settings.SettingsPage
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -119,7 +119,7 @@ internal fun CookieSignInPage(onBack: () -> Unit, onSignedIn: (XAccount) -> Unit
     val cookies = XSignIn.pastedCookies(pasted)
     val screenName = XSignIn.screenNameOf(typed)
     SettingsPage(stringResource(Res.string.signin_add_account), onBack) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp)) {
+        Column(Modifier.fillMaxSize().padding(padding).verticalScrollByKeys(rememberScrollState()).padding(16.dp)) {
             Text(stringResource(Res.string.signin_cookie_help), style = MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = { links?.openOutside(XSignIn.BROWSER_LOGIN) }) {

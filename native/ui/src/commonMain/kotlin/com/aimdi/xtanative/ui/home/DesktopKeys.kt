@@ -270,6 +270,31 @@ object DesktopKeys {
         else -> DeskAction.SCREEN_DOWN
     }
 
+    /**
+     * Where a page that scrolls as a whole (a verticalScroll's ScrollState)
+     * stands after [action], from [value] of [max]: a [line] for ↑ and ↓, a
+     * [viewport] less [kept] of it for a screen (some of what was read stays
+     * in view, as a browser's Page Down leaves), its start or end for Home
+     * and End, never past either. Null when [action] does not move such a
+     * page (j and k: it has no items).
+     */
+    fun scrolledTo(action: DeskAction, value: Int, max: Int, viewport: Int, line: Float, kept: Float = SCREEN_KEPT): Int? {
+        val screen = (viewport * (1 - kept)).toInt().coerceAtLeast(1)
+        val target = when (action) {
+            DeskAction.LINE_UP -> value - line.toInt()
+            DeskAction.LINE_DOWN -> value + line.toInt()
+            DeskAction.SCREEN_UP -> value - screen
+            DeskAction.SCREEN_DOWN -> value + screen
+            DeskAction.TO_TOP -> 0
+            DeskAction.TO_END -> max
+            else -> return null
+        }
+        return target.coerceIn(0, max.coerceAtLeast(0))
+    }
+
+    /** How much of a screen's move stays in view after it ([scrolledTo]), as a browser's Page Down keeps a little. */
+    const val SCREEN_KEPT = 0.12f
+
     /** Going back: what is open closes first; the keys never leave the first screen. */
     fun back(canGoBack: Boolean, somethingOpen: Boolean): DeskAction = when {
         somethingOpen -> DeskAction.CLOSE

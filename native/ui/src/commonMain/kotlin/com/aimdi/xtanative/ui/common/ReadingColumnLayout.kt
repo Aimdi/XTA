@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.ui.common
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.home.ReadList
 import com.aimdi.xtanative.ui.home.movedByKeys
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 
 /**
  * [content] given [padding] with the room on either side that keeps a list
@@ -45,6 +49,24 @@ fun WithReadingColumn(padding: PaddingValues, list: LazyListState? = null, conte
                 Modifier.align(Alignment.TopEnd).padding(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding()),
             )
         }
+    }
+}
+
+/**
+ * A page read top to bottom that scrolls as a whole (an article, an archived
+ * page): [content] in the centred reading column of a wide window, as the
+ * lists of posts are ([WithReadingColumn]), inside [padding] and then
+ * [inner]. The page itself fills the width, so the wheel works across all
+ * of it, the desktop's scrollbar stands at its end edge, and the desktop's
+ * keys move it ([verticalScrollByKeys]).
+ */
+@Composable
+fun ReadingPage(padding: PaddingValues, inner: PaddingValues, content: @Composable ColumnScope.() -> Unit) {
+    val scroll = rememberScrollState()
+    BoxWithConstraints(Modifier.fillMaxSize().padding(padding)) {
+        val inset = ReadingColumn.inset(maxWidth.value).dp
+        Column(Modifier.fillMaxSize().verticalScrollByKeys(scroll).padding(horizontal = inset).padding(inner), content = content)
+        ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd))
     }
 }
 

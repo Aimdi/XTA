@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
@@ -142,15 +143,23 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         }
         DeskAction.LINE_UP, DeskAction.LINE_DOWN, DeskAction.SCREEN_UP, DeskAction.SCREEN_DOWN, DeskAction.TO_TOP, DeskAction.TO_END,
         DeskAction.NEXT_ITEM, DeskAction.PREVIOUS_ITEM ->
-            actions.readList()?.let { list ->
-                actions.unmarkPost()
-                scope.launch {
-                    val landed = list.moveFor(action, line)
-                    // Where j and k land, the post the keys then act on is marked.
-                    if (action == DeskAction.NEXT_ITEM || action == DeskAction.PREVIOUS_ITEM) actions.markPostIn(list, landed)
+            when (val list = actions.readList()) {
+                is LazyListState -> {
+                    actions.unmarkPost()
+                    scope.launch {
+                        val landed = list.moveFor(action, line)
+                        // Where j and k land, the post the keys then act on is marked.
+                        if (action == DeskAction.NEXT_ITEM || action == DeskAction.PREVIOUS_ITEM) actions.markPostIn(list, landed)
+                    }
+                    true
                 }
-                true
-            } ?: false
+                is ScrollState -> DesktopKeys.scrolledTo(action, list.value, list.maxValue, list.viewportSize, line)?.let { target ->
+                    actions.unmarkPost()
+                    scope.launch { list.moveTo(action, target) }
+                    true
+                } ?: false
+                else -> false
+            }
         // Not past a sheet open over the page, which holds no keys of its own.
         DeskAction.OPEN_POST, DeskAction.LIKE_POST, DeskAction.SAVE_POST, DeskAction.COPY_POST_LINK, DeskAction.POST_MENU ->
             !actions.sheetOpen() && actions.onPost { keys ->
@@ -319,12 +328,9 @@ private const val REFOCUS_AFTER_MS = 50L
 /** How far ↑ and ↓ move a list: about a line of a post and a half. */
 private val LINE = 64.dp
 
-/** A screen's move leaves this much of what was read in view, as a browser's Page Down does. */
-private const val SCREEN_KEPT = 0.12f
-
 /** [action] done to the list, eased as the wheel's own moves are; the item j or k went to, null for none. */
 private suspend fun LazyListState.moveFor(action: DeskAction, line: Float): Int? {
-    val screen = layoutInfo.viewportSize.height * (1 - SCREEN_KEPT)
+    val screen = layoutInfo.viewportSize.height * (1 - DesktopKeys.SCREEN_KEPT)
     when (action) {
         DeskAction.LINE_UP -> animateScrollBy(-line)
         DeskAction.LINE_DOWN -> animateScrollBy(line)
@@ -347,6 +353,11 @@ private suspend fun LazyListState.moveFor(action: DeskAction, line: Float): Int?
         else -> Unit
     }
     return null
+}
+
+/** A page that scrolls as a whole to [target] ([DesktopKeys.scrolledTo]): at once to its start or end, as a list's Home and End go; eased otherwise. */
+private suspend fun ScrollState.moveTo(action: DeskAction, target: Int) {
+    if (action == DeskAction.TO_TOP || action == DeskAction.TO_END) scrollTo(target) else animateScrollTo(target)
 }
 
 /** Longer than a screen's slide, by which time a screen that focuses a field has done so. */
