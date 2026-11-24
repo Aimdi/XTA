@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Keine Retweets zu diesem Tweet gefunden!</string>
     <string name="posts_no_saves">Noch nichts gespeichert — Lesezeichen bleiben auf diesem Gerät</string>
     <string name="posts_open_in_browser">Im Browser öffnen</string>
+    <string name="posts_open_in_new_window">In neuem Fenster öffnen</string>
     <string name="posts_open_on_web_archive">Auf web.archive.org öffnen</string>
     <string name="posts_open_post">Beitrag öffnen</string>
     <string name="posts_page_not_found">Twitter behauptet diese Seite existiere nicht</string>

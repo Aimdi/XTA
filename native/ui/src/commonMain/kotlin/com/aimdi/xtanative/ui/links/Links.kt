@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.http.OkHttpXHttp
 import com.aimdi.xtanative.services.links.NetworkLink
 import com.aimdi.xtanative.services.links.SharedLinks
+import com.aimdi.xtanative.ui.LocalSecondaryWindow
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_checking_link
@@ -122,10 +123,14 @@ fun BindLinkScreens(screens: LinkScreens) {
         opener.bind(screens)
         onDispose { opener.unbind(screens) }
     }
-    IncomingLinkEffect { url ->
-        scope.launch {
-            val step = IncomingLinks.step(url, opener::openOnNetwork) { short -> SharedLinks.resolve(short, SharedHttp.http) }
-            IncomingLinks.open(step, screens, outside = opener::openOutside, postLink = { link -> opener.openPostLink(link) }, unable = { unreadable = it })
+    // What other apps hand the app goes to its main window alone, not to a window of its own beside it as well.
+    val main = LocalSecondaryWindow.current == null
+    if (main) {
+        IncomingLinkEffect { url ->
+            scope.launch {
+                val step = IncomingLinks.step(url, opener::openOnNetwork) { short -> SharedLinks.resolve(short, SharedHttp.http) }
+                IncomingLinks.open(step, screens, outside = opener::openOutside, postLink = { link -> opener.openPostLink(link) }, unable = { unreadable = it })
+            }
         }
     }
     unreadable?.let { url ->
@@ -138,7 +143,7 @@ fun BindLinkScreens(screens: LinkScreens) {
             onDismiss = { unreadable = null },
         )
     }
-    SharedTextEffect { text ->
+    if (main) SharedTextEffect { text ->
         scope.launch {
             val settings = runCatching { settingsStore.load() }.getOrNull()
             val pixiv = screens.pixivWork != null && LinkSteps.networkEnabled(settings, NetworkLink.PIXIV)

@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Bu tweeti retweetleyen kimse bulunamadı!</string>
     <string name="posts_no_saves">Henüz kayıt yok — yer işaretleri bu cihazda kalır</string>
     <string name="posts_open_in_browser">Tarayıcıda aç</string>
+    <string name="posts_open_in_new_window">Yeni pencerede aç</string>
     <string name="posts_open_on_web_archive">web.archive.org'da aç</string>
     <string name="posts_open_post">Gönderiyi aç</string>
     <string name="posts_page_not_found">Twitter sayfanın mevcut olmadığını söylüyor, ancak bu doğru olmayabilir</string>

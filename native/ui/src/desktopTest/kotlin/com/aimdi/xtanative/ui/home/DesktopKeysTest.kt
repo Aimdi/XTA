@@ -906,4 +906,19 @@ class DesktopKeysTest {
         // The list at its end, item 5's first post marked below them: on to its second.
         assertEquals(DesktopKeys.KeyStep.ToPost(2, 452), DesktopKeys.keyStep(pinned, 6, listOf(48, 348, 500), marked = 1, forward = true))
     }
+
+    @Test
+    fun aPostWindowClosesWithCtrlWAndEscOnItsFirstScreen() {
+        val escAtRoot = action(DeskKey.ESCAPE, canGoBack = false)
+        assertTrue(DesktopKeys.closesWindow(DeskKey.ESCAPE, alt = false, ctrl = false, shift = false, action = escAtRoot))
+        val escDeeper = action(DeskKey.ESCAPE, canGoBack = true)
+        assertFalse(DesktopKeys.closesWindow(DeskKey.ESCAPE, alt = false, ctrl = false, shift = false, action = escDeeper), "Esc goes back first")
+        val ctrlW = action(DeskKey.W, ctrl = true, canGoBack = true)
+        assertTrue(DesktopKeys.closesWindow(DeskKey.W, alt = false, ctrl = true, shift = false, action = ctrlW), "Ctrl+W closes it from any screen")
+        val ctrlWOverMenu = action(DeskKey.W, ctrl = true, open = true)
+        assertFalse(DesktopKeys.closesWindow(DeskKey.W, alt = false, ctrl = true, shift = false, action = ctrlWOverMenu), "what is open closes first")
+        assertFalse(DesktopKeys.closesWindow(DeskKey.W, alt = false, ctrl = false, shift = false, action = DeskAction.NONE), "w alone is a letter")
+        assertFalse(DesktopKeys.closesWindow(DeskKey.W, alt = false, ctrl = true, shift = true, action = DeskAction.NONE))
+        assertFalse(DesktopKeys.closesWindow(DeskKey.Q, alt = false, ctrl = true, shift = false, action = DeskAction.LEAVE_APP), "Ctrl+Q still quits")
+    }
 }

@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Neniu, kiu repepis ĉi tiun pepon, troviĝis!</string>
     <string name="posts_no_saves">Ankoraŭ neniuj konservitaj — legosignoj restas en ĉi tiu aparato</string>
     <string name="posts_open_in_browser">Malfermi en retumilo</string>
+    <string name="posts_open_in_new_window">Malfermi en nova fenestro</string>
     <string name="posts_open_on_web_archive">Malfermi ĉe web.archive.org</string>
     <string name="posts_open_post">Malfermi la afiŝon</string>
     <string name="posts_page_not_found">Twitter diras, la paĝo ne ekzistas, sed tio eble ne estas vere</string>

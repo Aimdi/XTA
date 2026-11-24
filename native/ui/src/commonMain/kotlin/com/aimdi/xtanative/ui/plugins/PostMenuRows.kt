@@ -11,6 +11,7 @@ import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_add_to_group
 import com.aimdi.xtanative.ui.generated.resources.posts_open_in_browser
+import com.aimdi.xtanative.ui.generated.resources.posts_open_in_new_window
 import com.aimdi.xtanative.ui.generated.resources.posts_quotes
 import com.aimdi.xtanative.ui.generated.resources.posts_reposted_by
 import com.aimdi.xtanative.ui.generated.resources.reader_link_share
@@ -18,6 +19,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_add_note
 import com.aimdi.xtanative.ui.generated.resources.saved_save_here
 import com.aimdi.xtanative.ui.generated.resources.saved_save_to_folder
 import com.aimdi.xtanative.ui.generated.resources.saved_unsave
+import com.aimdi.xtanative.ui.post.NewWindowIcon
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.saved.SavedIcons
 import org.jetbrains.compose.resources.stringResource
@@ -59,7 +61,8 @@ internal class PostMenuHandlers(
  * A plugin post's entries in XTA's order (showPluginPostActions): saving it
  * on this device or taking it out, the note on it, its author's groups,
  * sharing its link, its folder, who reposted and quoted it where the plugin
- * lists them, and the browser.
+ * lists them, a window of its own where the app opens one ([newWindow]:
+ * an X post's on the desktop), and the browser.
  */
 @Composable
 internal fun PostMenuRows(
@@ -68,6 +71,7 @@ internal fun PostMenuRows(
     handlers: PostMenuHandlers,
     onDone: () -> Unit,
     row: PluginMenuEntry = SheetEntry,
+    newWindow: (() -> Unit)? = null,
 ) {
     val outside = rememberOpenOutside()
     val share = rememberShareText()
@@ -79,5 +83,6 @@ internal fun PostMenuRows(
     row(SavedIcons.Folder, stringResource(Res.string.saved_save_to_folder), then(handlers.chooseFolder))
     menu.reposts?.let { open -> row(XIcons.Repost, stringResource(Res.string.posts_reposted_by), then(open)) }
     menu.quotes?.let { open -> row(PostIcons.Quote, stringResource(Res.string.posts_quotes), then(open)) }
+    newWindow?.let { open -> row(NewWindowIcon, stringResource(Res.string.posts_open_in_new_window), then(open)) }
     row(PostIcons.OpenInNew, stringResource(Res.string.posts_open_in_browser), then { outside(menu.url) })
 }

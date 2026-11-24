@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">找不到任何轉推此推文的人！</string>
     <string name="posts_no_saves">還沒有儲存的文章——書籤只保存在本機</string>
     <string name="posts_open_in_browser">在瀏覽器中開啟</string>
+    <string name="posts_open_in_new_window">在新視窗中開啟</string>
     <string name="posts_open_on_web_archive">在 web.archive.org 上開啟</string>
     <string name="posts_open_post">開啟貼文</string>
     <string name="posts_page_not_found">X 表示該頁面不存在，但這可能不是真的</string>

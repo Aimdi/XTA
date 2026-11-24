@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Не знайдено нікого, хто ретвітнув цей твіт!</string>
     <string name="posts_no_saves">Поки немає збережених — закладки лишаються на цьому пристрої</string>
     <string name="posts_open_in_browser">Відкрити у браузері</string>
+    <string name="posts_open_in_new_window">Відкрити в новому вікні</string>
     <string name="posts_open_on_web_archive">Відкрити на web.archive.org</string>
     <string name="posts_open_post">Відкрити допис</string>
     <string name="posts_page_not_found">X повідомляє, що сторінка не існує, але це може бути неправда</string>

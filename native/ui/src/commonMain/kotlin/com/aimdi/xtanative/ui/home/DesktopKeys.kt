@@ -487,6 +487,15 @@ object DesktopKeys {
     private const val X11_BACK = 6
     private const val X11_FORWARD = 7
 
+    /**
+     * Whether [key] closes a window of the app's own beside its main one
+     * (a post opened in a new window) where it does nothing else ([action]
+     * none): Ctrl+W, as a browser's closes its window's last tab, and Esc on
+     * its first screen. The main window never closes so.
+     */
+    fun closesWindow(key: DeskKey, alt: Boolean, ctrl: Boolean, shift: Boolean, action: DeskAction): Boolean =
+        action == DeskAction.NONE && !alt && !shift && ((key == DeskKey.ESCAPE && !ctrl) || (key == DeskKey.W && ctrl))
+
     /** The mouse's back button: as the keys, but on the first screen it closes the app, as XTA's goes back from Home. */
     fun mouseBack(canGoBack: Boolean, somethingOpen: Boolean): DeskAction =
         back(canGoBack, somethingOpen).takeIf { it != DeskAction.NONE } ?: DeskAction.LEAVE_APP

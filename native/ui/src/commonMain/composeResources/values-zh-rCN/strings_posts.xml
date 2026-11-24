@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">找不到任何转推此推文的人！</string>
     <string name="posts_no_saves">还没有保存的文章——书签只保存在本机</string>
     <string name="posts_open_in_browser">在浏览器中打开</string>
+    <string name="posts_open_in_new_window">在新窗口中打开</string>
     <string name="posts_open_on_web_archive">在 web.archive.org 上打开</string>
     <string name="posts_open_post">打开帖子</string>
     <string name="posts_page_not_found">Twitter 说该页面不存在，但这可能不是真的</string>

@@ -45,10 +45,12 @@ import org.jetbrains.compose.resources.stringResource
  * in XTA's theme, their links opening the way XTA opens them and their media
  * saved through the downloads, with the reading-aloud bar under them, a video
  * full screen over them all, and [plugins]' tabs and screens among them.
+ * A [window] of the app's own beside its main one starts on its screen.
  */
 @Composable
-fun XtaNativeContent(graph: AppGraph, plugins: AppPlugins) {
+fun XtaNativeContent(graph: AppGraph, plugins: AppPlugins, window: SecondaryWindow? = null) {
     CompositionLocalProvider(
+        LocalSecondaryWindow provides window,
         LocalGraph provides graph,
         // The narrow parts, for what reads one or two of them rather than the whole graph.
         LocalSettingsStore provides graph.settings,

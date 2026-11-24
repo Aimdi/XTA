@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Nebyl nalezen nikdo, kdo by tento tweet retweetnul!</string>
     <string name="posts_no_saves">Zatím žádná uložená — záložky zůstávají v zařízení</string>
     <string name="posts_open_in_browser">Otevřít v prohlížeči</string>
+    <string name="posts_open_in_new_window">Otevřít v novém okně</string>
     <string name="posts_open_on_web_archive">Otevřít na web.archive.org</string>
     <string name="posts_open_post">Otevřít příspěvek</string>
     <string name="posts_page_not_found">Twitter říká, že stránka neexistuje, nemusí to ale být pravda</string>

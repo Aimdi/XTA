@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Selle säutsu kordussäutsijaid ei leitud!</string>
     <string name="posts_no_saves">Salvestusi veel pole — järjehoidjad jäävad sellesse seadmesse</string>
     <string name="posts_open_in_browser">Ava brauseris</string>
+    <string name="posts_open_in_new_window">Ava uues aknas</string>
     <string name="posts_open_on_web_archive">Ava web.archive.org-is</string>
     <string name="posts_open_post">Ava postitus</string>
     <string name="posts_page_not_found">Twitter ütleb, et lehte pole olemas, kuid see ei pruugi tõsi olla</string>

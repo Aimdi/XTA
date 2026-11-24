@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
+import com.aimdi.xtanative.ui.LocalSecondaryWindow
 import com.aimdi.xtanative.ui.chrome.AppClosing
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.links.PastedLinks
@@ -109,6 +110,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         onDispose { if (host.actions === actions) host.actions = null }
     }
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    // A window of its own beside the main one closes with Ctrl+W, Esc and the back button on its first screen; the main window asks to quit.
+    val closeWindow = LocalSecondaryWindow.current?.close
     val line = with(LocalDensity.current) { LINE.toPx() }
 
     fun act(action: DeskAction): Boolean = when (action) {
@@ -243,6 +246,13 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             keyTaken = true
             return true
         }
+        if (closeWindow != null && !actions.overlayHoldsKeys() &&
+            DesktopKeys.closesWindow(key, event.isAltPressed, event.isCtrlPressed, event.isShiftPressed, action)
+        ) {
+            keyTaken = true
+            closeWindow()
+            return true
+        }
         // The media viewer's Esc closes it at once, rather than first taking the focus from it as from a field; Ctrl+Q still quits.
         keyTaken = !(actions.overlayHoldsKeys() && action != DeskAction.LEAVE_APP) && act(action)
         return keyTaken
@@ -290,8 +300,10 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                                 // On X11 the side buttons come as AWT's 6 and 7, which Compose does not name (its back and forward are 4 and 5).
                                 val side = (event.nativeEvent as? MouseEvent)?.let { DesktopKeys.sideButton(it.button) }
                                 when {
-                                    event.buttons.isBackPressed || side == SideButton.BACK ->
-                                        act(DesktopKeys.mouseBack(nav.previousBackStackEntry != null, actions.somethingOpen()))
+                                    event.buttons.isBackPressed || side == SideButton.BACK -> {
+                                        val back = DesktopKeys.mouseBack(nav.previousBackStackEntry != null, actions.somethingOpen())
+                                        if (back == DeskAction.LEAVE_APP && closeWindow != null) closeWindow() else act(back)
+                                    }
                                     event.buttons.isForwardPressed || side == SideButton.FORWARD -> act(DeskAction.FORWARD)
                                 }
                             }

@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Nie znojdziena nikoha, chto retvitnuŭ hety tvit!</string>
     <string name="posts_no_saves">Pakul niama zachavanych pastoŭ — zakladki na hetaj pryladzie</string>
     <string name="posts_open_in_browser">Adčynić u braŭzery</string>
+    <string name="posts_open_in_new_window">Adkryć u novym aknie</string>
     <string name="posts_open_on_web_archive">Adčynić na web.archive.org</string>
     <string name="posts_open_post">Adkryć post</string>
     <string name="posts_page_not_found">Twitter kaža, što hetaja staronka nie isnuje, ale heta moža być niapraŭdaj</string>

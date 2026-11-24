@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">इस पोस्ट को रीट्वीट करने वाला कोई नहीं मिला!</string>
     <string name="posts_no_saves">अभी कुछ सहेजा नहीं — बुकमार्क इस डिवाइस पर रहते हैं</string>
     <string name="posts_open_in_browser">ब्राउज़र में खोलें</string>
+    <string name="posts_open_in_new_window">नई विंडो में खोलें</string>
     <string name="posts_open_on_web_archive">web.archive.org पर खोलें</string>
     <string name="posts_open_post">पोस्ट खोलें</string>
     <string name="posts_page_not_found">X का कहना है कि पृष्ठ मौजूद नहीं है, लेकिन यह सच नहीं हो सकता</string>

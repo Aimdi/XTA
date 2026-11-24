@@ -2,10 +2,12 @@ package com.aimdi.xtanative.desktop
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -20,6 +22,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
@@ -27,6 +30,9 @@ import androidx.compose.ui.window.rememberWindowState
 import coil3.SingletonImageLoader
 import com.aimdi.xtanative.store.settings.DesktopPrefs
 import com.aimdi.xtanative.ui.DesktopWindowTitle
+import com.aimdi.xtanative.ui.DesktopWindows
+import com.aimdi.xtanative.ui.OpenedWindow
+import com.aimdi.xtanative.ui.SecondaryWindow
 import com.aimdi.xtanative.ui.WindowTitles
 import com.aimdi.xtanative.ui.XtaNativeContent
 import com.aimdi.xtanative.ui.appImageLoader
@@ -201,11 +207,56 @@ fun main(args: Array<String>) {
                 }
             }
         }
+        // The posts opened in windows of their own (Ctrl+click, a middle click, the post menu's Open in new window).
+        val others by DesktopWindows.opened.collectAsState()
+        for (opened in others) {
+            key(opened.serial) { PostWindow(opened, app, name, quit, onQuitKey = { raises.tryEmit(Unit) }) }
+        }
     }
     runBlocking { withTimeoutOrNull(2_000) { starting.started().graph.awaitWrites() } }
     instance.close()
     exitProcess(0)
 }
+
+/**
+ * A window of the app's own beside the main one, [opened] on a post, about
+ * as wide as the reading column: closing it closes it alone, unless the app
+ * was asked to quit from it (Ctrl+Q, [onQuitKey] bringing the main window up
+ * to ask), and only the main window keeps its size, the tray and the title
+ * the bar shows for the app.
+ */
+@Composable
+private fun ApplicationScope.PostWindow(opened: OpenedWindow, app: DesktopApp, name: String, quit: () -> Unit, onQuitKey: () -> Unit) {
+    val secondary = remember(opened) { SecondaryWindow(opened.route) { DesktopWindows.close(opened) } }
+    val part by secondary.titlePart.collectAsState()
+    val state = rememberWindowState(size = remember { postWindowSize() })
+    Window(
+        onCloseRequest = { if (AppQuit.taken()) quit() else secondary.close() },
+        title = WindowTitles.title(part, name),
+        icon = appIcon(),
+        state = state,
+        onPreviewKeyEvent = { event ->
+            if (event.type == KeyEventType.KeyDown && event.key == Key.Q && event.isCtrlPressed && !event.isAltPressed) onQuitKey()
+            false
+        },
+    ) {
+        LaunchedEffect(Unit) { window.minimumSize = Dimension(SavedWindow.MIN_WIDTH, SavedWindow.MIN_HEIGHT) }
+        CompositionLocalProvider(LocalUriHandler provides SystemBrowser) {
+            XtaNativeContent(app.graph, app.plugins, secondary)
+        }
+    }
+}
+
+/** A post window's size: the reading column's width, and as tall as the screen allows up to a reading height. */
+private fun postWindowSize(): DpSize {
+    val height = screenArea()?.second?.let { minOf(it, POST_WINDOW_HEIGHT) } ?: POST_WINDOW_HEIGHT
+    return DpSize(POST_WINDOW_WIDTH.dp, height.dp)
+}
+
+/** About the reading column's width (HomeWide's widest column), with its margins. */
+private const val POST_WINDOW_WIDTH = 680
+
+private const val POST_WINDOW_HEIGHT = 900
 
 /** How long `--minimized` waits for a tray to show the icon before it opens the window after all. */
 private const val TRAY_WAIT_MS = 4_000L

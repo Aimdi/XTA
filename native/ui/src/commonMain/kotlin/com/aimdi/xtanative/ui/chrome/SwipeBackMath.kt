@@ -135,8 +135,12 @@ object SwipeBack {
      */
     fun slideOffset(curved: Float, width: Float, closing: Boolean): Float = (1 - curved) * width * (if (closing) CLOSE_TRAVEL else 1f)
 
-    /** The lift of a card sliding in or out: partly lifted while far, flat once within 40 % of a width of rest. */
-    fun slideLift(distance: Float, width: Float): Float = TRANSIT_LIFT * (abs(distance) / (TRANSIT_LIFT_DISTANCE * width)).coerceIn(0f, 1f)
+    /**
+     * The lift of a card sliding in or out: partly lifted while far, flat once within 40 % of a width of rest;
+     * flat before it has a width (a new window's first layout), never NaN.
+     */
+    fun slideLift(distance: Float, width: Float): Float =
+        if (width <= 0f) 0f else TRANSIT_LIFT * (abs(distance) / (TRANSIT_LIFT_DISTANCE * width)).coerceIn(0f, 1f)
 
     /** Where a card sliding in or out is drawn, [curved] of its way in. */
     fun slidePose(curved: Float, size: CardSize, closing: Boolean, mirrored: Boolean): CardPose {
@@ -202,7 +206,7 @@ object SwipeBack {
 
     /** How much of the page behind shows with the card at [offset]: none while it covers it, all once it is 85 % of a width away. */
     fun behindUncovered(offset: CardVec, size: CardSize): Float =
-        (CardVec(max(offset.x, 0f), offset.y).distance / (size.width * BEHIND_CLEAR_AT)).coerceIn(0f, 1f)
+        if (size.width <= 0f) 0f else (CardVec(max(offset.x, 0f), offset.y).distance / (size.width * BEHIND_CLEAR_AT)).coerceIn(0f, 1f)
 
     /** The page behind a card that leaves [uncovered] of it. */
     fun behindLook(uncovered: Float): BehindLook = BehindLook(

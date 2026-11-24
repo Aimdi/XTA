@@ -46,6 +46,7 @@
     <string name="posts_unable_to_load_more_retweets">Unable to load more people who retweeted this post</string>
     <string name="posts_no_saves">No saved posts yet — bookmarks stay on this device</string>
     <string name="posts_open_in_browser">Open in browser</string>
+    <string name="posts_open_in_new_window">Open in new window</string>
     <string name="posts_open_on_web_archive">Open on web.archive.org</string>
     <string name="posts_open_post">Open post</string>
     <string name="posts_page_not_found">X says the page does not exist, but that may not be true</string>

@@ -133,7 +133,8 @@ private val MediaBleed = 16.dp
  * reply line, the text and what the post carries, and the counts.
  * [continues] and [midThread] join it to the posts of its thread by a line
  * through the avatars. A tap opens it; with "Double-tap to like" on, a
- * double-tap likes it on this device. A right-click opens its ⋯ menu. On
+ * double-tap likes it on this device. A right-click opens its ⋯ menu; on
+ * the desktop, Ctrl+click and a middle click open it in a new window. On
  * the desktop the keys act on it once the reading keys are on it ([keyedPost]).
  */
 @Composable
@@ -159,6 +160,10 @@ fun PostCard(
         menuAtPost = true
         menu = true
     }
+    // Ctrl+click and a middle click open the post in a window of its own, on the desktop.
+    val windows = LocalPostWindows.current
+    val inWindow = windows?.let { open -> { open(shown.id) } }
+    val presses = remember { CardPresses() }
     Column(
         modifier
             .fillMaxWidth()
@@ -168,7 +173,10 @@ fun PostCard(
                 menu = true
             }
             .recordedIn(picture)
-            .opening(rememberDoubleTapLike(shown, scope.prefs, actions)) { actions.openPost(shown.id) }
+            .opensInWindow(inWindow, presses)
+            .opening(rememberDoubleTapLike(shown, scope.prefs, actions)) {
+                if (inWindow != null && presses.last == PostPress.TAP_IN_WINDOW) inWindow() else actions.openPost(shown.id)
+            }
             .drawBehind {
                 val x = PostGeometry.RAIL_CENTER.dp.toPx()
                 val width = PostGeometry.RAIL_WIDTH.dp.toPx()

@@ -91,7 +91,7 @@ object DesktopWindowTitle {
     }
 }
 
-/** Keeps [DesktopWindowTitle] naming the screen [nav] shows. */
+/** Keeps [DesktopWindowTitle] naming the screen [nav] shows; in a [SecondaryWindow], that window's own title. */
 @Composable
 internal actual fun WindowTitleFollows(nav: NavHostController) {
     val entry by nav.currentBackStackEntryAsState()
@@ -101,5 +101,6 @@ internal actual fun WindowTitleFollows(nav: NavHostController) {
         is TitlePart.Named -> stringResource(part.name)
         is TitlePart.Profile -> "@" + part.screenName
     }
-    LaunchedEffect(text) { DesktopWindowTitle.show(text) }
+    val secondary = LocalSecondaryWindow.current
+    LaunchedEffect(text, secondary) { if (secondary != null) secondary.showTitle(text) else DesktopWindowTitle.show(text) }
 }

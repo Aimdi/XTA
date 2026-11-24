@@ -42,6 +42,7 @@
     <string name="posts_no_retweets">Niemand gevonden die deze tweet heeft geretweet!</string>
     <string name="posts_no_saves">Nog niets opgeslagen — bladwijzers blijven op dit apparaat</string>
     <string name="posts_open_in_browser">Openen in browser</string>
+    <string name="posts_open_in_new_window">Openen in nieuw venster</string>
     <string name="posts_open_on_web_archive">Openen op web.archive.org</string>
     <string name="posts_open_post">Bericht openen</string>
     <string name="posts_page_not_found">Twitter meldt dat deze pagina niet bestaat, maar dit hoeft niet te kloppen</string>
