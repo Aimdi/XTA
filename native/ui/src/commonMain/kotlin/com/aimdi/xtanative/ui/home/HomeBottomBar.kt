@@ -74,6 +74,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.onSecondaryClickIf
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
@@ -335,6 +336,7 @@ private fun RowScope.BarItem(
         Modifier
             .weight(1f)
             .fillMaxHeight()
+            .onSecondaryClickIf(onHold)
             .combinedClickable(role = Role.Tab, onClick = onClick, onLongClick = onHold)
             .semantics(mergeDescendants = true) {
                 this.selected = selected

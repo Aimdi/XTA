@@ -60,6 +60,8 @@ import com.aimdi.xtanative.services.ai.TranslationStatus
 import com.aimdi.xtanative.ui.common.LocalSessions
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.common.onSecondaryClick
+import com.aimdi.xtanative.ui.common.onSecondaryClickIf
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_add_to_group
@@ -248,6 +250,7 @@ internal fun HeaderButton(
         Modifier
             .size(PostGeometry.TOUCH_TARGET.dp)
             .clip(CircleShape)
+            .onSecondaryClickIf(onLongClick)
             .combinedClickable(role = Role.Button, onClick = onClick, onLongClick = onLongClick)
             .semantics { contentDescription = label },
         contentAlignment = if (glyphTop) Alignment.TopCenter else Alignment.Center,
@@ -372,6 +375,7 @@ private fun BadgeDisc(avatar: Dp, subscribe: String, addToGroup: String, onFollo
         Modifier
             .offset(at, at)
             .size(target)
+            .onSecondaryClick(onMore)
             .combinedClickable(
                 interactionSource = null,
                 indication = ripple(bounded = false, radius = disc.dp),

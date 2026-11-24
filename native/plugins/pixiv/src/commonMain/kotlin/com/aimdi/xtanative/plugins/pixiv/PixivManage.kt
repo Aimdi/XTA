@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivTag
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -189,13 +190,14 @@ private fun MuteGroup(title: String, icon: ImageVector, chips: List<MuteChip>, l
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         chips.forEach { chip ->
             val shape = RoundedCornerShape(8.dp)
+            val copyChip = chip.copy?.let { text -> { copy(text, Strings.copied) } }
             Surface(
                 shape = shape,
                 color = Color.Transparent,
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                modifier = Modifier.clip(shape).combinedClickable(
+                modifier = Modifier.clip(shape).then(copyChip?.let { Modifier.onContextClick(it) } ?: Modifier).combinedClickable(
                     onClick = { sheets.ask.ask(Strings.unmute_question.get(language, chip.label), Strings.unmute.get(language), chip.unmute) },
-                    onLongClick = chip.copy?.let { text -> { copy(text, Strings.copied) } },
+                    onLongClick = copyChip,
                 ),
             ) {
                 Row(Modifier.padding(start = 8.dp), verticalAlignment = Alignment.CenterVertically) {

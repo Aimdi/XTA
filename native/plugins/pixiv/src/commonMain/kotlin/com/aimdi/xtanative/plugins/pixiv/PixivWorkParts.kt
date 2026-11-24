@@ -57,6 +57,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivTagKinds
 import com.aimdi.xtanative.networks.pixiv.PixivUser
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.saved.SavedIcons
@@ -183,12 +184,13 @@ internal fun TagChips(tags: List<PixivTag>, kind: PixivSearchKind = PixivSearchK
     val kinded = remember(tags) { PixivTagKinds.kinded(tags) }
     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         kinded.forEach { entry ->
-            TagChip(entry, Modifier.combinedClickable(
+            val actions = {
+                haptics.medium()
+                sheets.show(PixivSheet.Tag(entry.tag, leaveOnMute))
+            }
+            TagChip(entry, Modifier.onContextClick(actions).combinedClickable(
                 onClick = { runtime.openTagSearch(entry.tag.name, kind) },
-                onLongClick = {
-                    haptics.medium()
-                    sheets.show(PixivSheet.Tag(entry.tag, leaveOnMute))
-                },
+                onLongClick = actions,
             ))
         }
     }

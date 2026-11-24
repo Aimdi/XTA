@@ -82,6 +82,7 @@ import com.aimdi.xtanative.ui.common.mediaShown
 import com.aimdi.xtanative.ui.common.rememberPicture
 import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.common.onSecondaryClick
+import com.aimdi.xtanative.ui.common.onSecondaryClickAt
 import com.aimdi.xtanative.ui.downloads.PluginDownloads
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -413,6 +414,8 @@ fun ZoomableImage(
         contentScale = ContentScale.Fit,
         onState = onState,
         modifier = modifier
+            // A mouse gives no long press: its right-click does the same.
+            .then(onLongPress?.let { Modifier.onSecondaryClickAt(action = it) } ?: Modifier)
             .pointerInput(onTap, onLongPress) {
                 detectTapGestures(
                     onTap = onTap,

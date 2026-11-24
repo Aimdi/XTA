@@ -72,6 +72,7 @@ import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -244,15 +245,16 @@ private fun ColumnPages(illust: PixivIllust, urls: List<String>, surface: Reader
         modifier = Modifier.fillMaxSize().onSizeChanged { size = it }.zoomsColumn(zoom),
     ) {
         items(urls.size, key = { "page-$it" }) { index ->
+            val actions = {
+                haptics.medium()
+                sheets.show(PixivSheet.PageActions(illust, index, surface))
+            }
             PixivPicture(
                 urls[index],
-                Modifier.fillMaxWidth().aspectRatio(illust.aspectRatio.toFloat().coerceIn(0.2f, 5f)).combinedClickable(
+                Modifier.fillMaxWidth().aspectRatio(illust.aspectRatio.toFloat().coerceIn(0.2f, 5f)).onContextClick(actions).combinedClickable(
                     onClick = {},
                     onDoubleClick = { zoom.toggle(size) },
-                    onLongClick = {
-                        haptics.medium()
-                        sheets.show(PixivSheet.PageActions(illust, index, surface))
-                    },
+                    onLongClick = actions,
                 ),
                 ContentScale.FillWidth,
                 contentDescription = pluginString(Strings.page_of, index + 1, urls.size),
@@ -292,6 +294,7 @@ internal fun ZoomablePage(url: String, onLoaded: (() -> Unit)? = null, onLongPre
     var offset by remember { mutableStateOf(Offset.Zero) }
     Box(
         Modifier.fillMaxSize()
+            .onContextClick(onLongPress)
             .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = { onLongPress() },

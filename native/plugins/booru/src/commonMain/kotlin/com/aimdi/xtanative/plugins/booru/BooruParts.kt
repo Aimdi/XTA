@@ -56,6 +56,7 @@ import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.links.LocalLinks
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /** What the reader chose, once the app's settings are read. */
@@ -160,6 +161,7 @@ internal fun TagChip(
                 .clip(shape)
                 .background(fill)
                 .border(1.dp, border, shape)
+                .then(onLongClick?.let { Modifier.onContextClick(it) } ?: Modifier)
                 .combinedClickable(onClick = onClick, onLongClick = onLongClick, onLongClickLabel = longClickLabel)
                 .let { if (description != null) it.semantics { contentDescription = description } else it }
                 .padding(horizontal = 8.dp, vertical = 6.dp),

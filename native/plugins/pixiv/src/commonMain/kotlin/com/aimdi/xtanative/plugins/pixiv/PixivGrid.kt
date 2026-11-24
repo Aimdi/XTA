@@ -240,14 +240,15 @@ private fun TileHeart(illust: PixivIllust, modifier: Modifier) {
     val marks by runtime.bookmarking.works.state.collectAsState()
     val bookmarked = marks.on(illust.id, illust.isBookmarked)
     val busy = marks.isBusy(illust.id)
+    val edit = {
+        haptics.medium()
+        sheets.show(PixivSheet.EditWork(illust))
+    }
     Box(
-        modifier.size(48.dp).clip(CircleShape).combinedClickable(
+        modifier.size(48.dp).clip(CircleShape).then(if (busy) Modifier else Modifier.onContextClick(edit)).combinedClickable(
             enabled = !busy,
             onClick = { sheets.toggleBookmark(illust, haptics) },
-            onLongClick = {
-                haptics.medium()
-                sheets.show(PixivSheet.EditWork(illust))
-            },
+            onLongClick = edit,
         ),
         contentAlignment = Alignment.Center,
     ) {

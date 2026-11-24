@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivImages
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
@@ -78,13 +79,14 @@ internal fun PageViewer(illust: PixivIllust, page: Int, surface: WorkSurface, mo
     HorizontalPager(pager, modifier = modifier, beyondViewportPageCount = 1) { index ->
         val url = PixivImages.pageUrl(illust, index, quality)
         val ugoira = index == 0 && illust.isUgoira
+        val actions = {
+            haptics.medium()
+            sheets.show(PixivSheet.PageActions(illust, index, surface))
+        }
         Box(
-            Modifier.fillMaxSize().combinedClickable(
+            Modifier.fillMaxSize().onContextClick(actions).combinedClickable(
                 onClick = { if (!ugoira) surface.openReader(index, vertical = false) },
-                onLongClick = {
-                    haptics.medium()
-                    sheets.show(PixivSheet.PageActions(illust, index, surface))
-                },
+                onLongClick = actions,
             ),
             contentAlignment = Alignment.Center,
         ) {

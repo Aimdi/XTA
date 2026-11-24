@@ -70,6 +70,7 @@ import com.aimdi.xtanative.networks.ehviewer.EhPreview
 import com.aimdi.xtanative.networks.ehviewer.EhTag
 import com.aimdi.xtanative.networks.ehviewer.EhTagGroup
 import com.aimdi.xtanative.ui.common.rememberCopyText
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberImageRequest
@@ -146,6 +147,10 @@ private fun TagChip(app: EhApp, tag: EhTag, group: EhTagGroup, weak: Boolean) {
     val copied = pluginString(Strings.gallery_tag_copied, tag.raw)
     val spoken = if (weak) pluginString(Strings.gallery_weak_tag, tag.name) else tag.name
     val shape = RoundedCornerShape(10.dp)
+    val copy = {
+        copyText(tag.raw)
+        app.notices.tell(copied)
+    }
     Box(Modifier.defaultMinSize(minHeight = 48.dp), contentAlignment = Alignment.Center) {
         Text(
             tag.name,
@@ -158,12 +163,10 @@ private fun TagChip(app: EhApp, tag: EhTag, group: EhTagGroup, weak: Boolean) {
                 .clip(shape)
                 .background(fill)
                 .then(if (weak) Modifier.dashedOutline(border) else Modifier.border(1.dp, border, shape))
+                .onContextClick(copy)
                 .combinedClickable(
                     onClick = { app.openSearch(tag.query) },
-                    onLongClick = {
-                        copyText(tag.raw)
-                        app.notices.tell(copied)
-                    },
+                    onLongClick = copy,
                     onLongClickLabel = pluginString(Strings.gallery_copy_tag),
                 )
                 .semantics { contentDescription = spoken }

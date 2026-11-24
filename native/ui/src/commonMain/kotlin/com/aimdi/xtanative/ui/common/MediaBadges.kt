@@ -90,6 +90,7 @@ fun AltBadge(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier
             .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+            .onSecondaryClick(onClick)
             .combinedClickable(role = Role.Button, onClickLabel = title, onClick = onClick, onLongClick = onClick)
             .semantics { contentDescription = title }
             .padding(8.dp),

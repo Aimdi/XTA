@@ -42,6 +42,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.MediaTiles
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -65,7 +66,7 @@ internal class ItemActions(
 @Composable
 internal fun WebSourceItemCard(source: WebSourceDefinition, item: WebSourceItem, actions: ItemActions, showSource: Boolean = false, read: Boolean = false) {
     Box {
-        Column(Modifier.fillMaxWidth().alpha(if (read) READ_ALPHA else 1f).combinedClickable(onClick = { actions.open(item) }, onLongClick = { actions.more(item) }).padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 12.dp)) {
+        Column(Modifier.fillMaxWidth().alpha(if (read) READ_ALPHA else 1f).onContextClick { actions.more(item) }.combinedClickable(onClick = { actions.open(item) }, onLongClick = { actions.more(item) }).padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 12.dp)) {
             when (source.layout) {
                 WebSourceLayout.LINKS -> LinkBody(source, item, showSource, actions)
                 WebSourceLayout.ARTICLES -> ArticleBody(source, item, showSource)
@@ -197,7 +198,7 @@ private fun Cover(url: String, modifier: Modifier) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun WebSourcePictureTile(item: WebSourceItem, onMore: () -> Unit, onOpen: () -> Unit) {
-    Box(Modifier.aspectRatio(1f).padding(1.dp).combinedClickable(onClick = onOpen, onLongClick = onMore)) {
+    Box(Modifier.aspectRatio(1f).padding(1.dp).onContextClick(onMore).combinedClickable(onClick = onOpen, onLongClick = onMore)) {
         val picture = item.pictures.firstOrNull()
         if (picture == null) {
             PictureBox {}

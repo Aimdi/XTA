@@ -54,6 +54,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivNovel
 import com.aimdi.xtanative.networks.pixiv.PixivUser
 import com.aimdi.xtanative.networks.pixiv.PixivUserPreview
 import com.aimdi.xtanative.ui.plugins.addToGroupText
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -128,19 +129,20 @@ internal fun FollowButton(user: PixivUser, modifier: Modifier = Modifier, promin
     val scheme = MaterialTheme.colorScheme
     val content = scheme.primary
     val shape = if (prominent) RoundedCornerShape(8.dp) else CircleShape
+    val follow = {
+        haptics.medium()
+        sheets.show(PixivSheet.Follow(user))
+    }
     Surface(
         shape = shape,
         color = Color.Transparent,
         contentColor = content,
-        modifier = modifier.heightIn(min = 48.dp).clip(shape).combinedClickable(
+        modifier = modifier.heightIn(min = 48.dp).clip(shape).then(if (busy) Modifier else Modifier.onContextClick(follow)).combinedClickable(
             enabled = !busy,
             role = Role.Button,
             onLongClickLabel = pluginString(Strings.follow_privately),
             onClick = { sheets.toggleFollow(user, haptics) },
-            onLongClick = {
-                haptics.medium()
-                sheets.show(PixivSheet.Follow(user))
-            },
+            onLongClick = follow,
         ),
     ) {
         Row(Modifier.padding(start = 16.dp, end = 24.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {

@@ -55,6 +55,7 @@ import com.aimdi.xtanative.networks.stocks.TickerSearchHit
 import com.aimdi.xtanative.networks.stocks.Watchlist
 import com.aimdi.xtanative.ui.common.rememberCopyContract
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import kotlinx.coroutines.CancellationException
@@ -202,6 +203,7 @@ internal fun StocksManageSheet(app: StocksApp, onDismiss: () -> Unit, onRemoved:
             }
             items(shown.ids, key = { it }) { symbol ->
                 val asset = shown.assets[symbol]
+                val copyAddress = asset?.let { { copy(it.address) } }
                 ListItem(
                     headlineContent = { Text(shown.label(symbol)) },
                     supportingContent = if (asset == null) null else ({ Text(asset.subtitle) }),
@@ -211,12 +213,12 @@ internal fun StocksManageSheet(app: StocksApp, onDismiss: () -> Unit, onRemoved:
                             onRemoved(symbol)
                         }) { Icon(Icons.Outlined.Delete, pluginString(Strings.unsubscribe)) }
                     },
-                    modifier = Modifier.combinedClickable(
+                    modifier = Modifier.then(copyAddress?.let { Modifier.onContextClick(it) } ?: Modifier).combinedClickable(
                         onClick = {
                             onDismiss()
                             app.open(symbol)
                         },
-                        onLongClick = asset?.let { { copy(it.address) } },
+                        onLongClick = copyAddress,
                     ),
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                 )

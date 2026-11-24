@@ -61,6 +61,7 @@ import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
+import com.aimdi.xtanative.ui.common.onSecondaryClickIf
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.pinned
 import com.aimdi.xtanative.ui.generated.resources.plugin_post_hide
@@ -560,7 +561,7 @@ internal fun CountButton(
     onClick: (() -> Unit)?,
 ) {
     val clickable = if (onClick != null) {
-        Modifier.clip(CircleShape).combinedClickable(role = Role.Button, onClick = onClick, onLongClick = onLongClick).padding(4.dp)
+        Modifier.clip(CircleShape).onSecondaryClickIf(onLongClick).combinedClickable(role = Role.Button, onClick = onClick, onLongClick = onLongClick).padding(4.dp)
     } else {
         Modifier
     }

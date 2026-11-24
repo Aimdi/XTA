@@ -44,6 +44,7 @@ import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.app_name
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -141,6 +142,7 @@ private fun AccountHeader(account: XAccount?, onClose: (() -> Unit)?, onAvatar: 
     Column(
         Modifier
             .fillMaxWidth()
+            .onSecondaryClick(onAvatar)
             .combinedClickable(
                 onClickLabel = stringResource(Res.string.settings),
                 onLongClickLabel = stringResource(Res.string.settings_avatar_title),

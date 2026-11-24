@@ -66,6 +66,7 @@ import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.NetworkBookmark
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
@@ -123,6 +124,7 @@ internal fun ThreadsPostCard(
         modifier
             .fillMaxWidth()
             .recordedIn(picture)
+            .onContextClick(menu)
             .combinedClickable(
                 onClickLabel = pluginString(Strings.open_post),
                 onClick = open,
@@ -248,17 +250,18 @@ private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor:
         edited.takeIf { post.facts.edited && !focal },
     )
     val badge = post.facts.communityBadge
+    val toggleTime = if (focal || absolute) null else { { exact = !exact } }
     Row(verticalAlignment = Alignment.CenterVertically) {
         AuthorLine(
             post.authorName,
             post.handle,
             time,
             verified = post.isVerified,
-            modifier = Modifier.weight(1f).combinedClickable(
+            modifier = Modifier.weight(1f).then(toggleTime?.let { Modifier.onContextClick(it) } ?: Modifier).combinedClickable(
                 onClickLabel = post.authorName,
                 onClick = { app.openProfile(post.handle) },
                 onLongClickLabel = pluginString(Strings.exact_time).takeIf { !focal && !absolute },
-                onLongClick = if (focal || absolute) null else { { exact = !exact } },
+                onLongClick = toggleTime,
             ),
         )
         SmallIcon(PostIcons.MoreHoriz, pluginString(Strings.more_options), onClick = onMore)

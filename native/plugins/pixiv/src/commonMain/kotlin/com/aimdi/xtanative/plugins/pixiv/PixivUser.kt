@@ -62,6 +62,7 @@ import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
@@ -191,12 +192,14 @@ private fun UserHeader(profile: PixivUserProfile, onWorks: () -> Unit) {
 private fun Banner(url: String) {
     val sheets = LocalPixivSheets.current
     val haptics = rememberHaptics()
+    val save = {
+        haptics.medium()
+        sheets.saveImage(url)
+    }
     PixivPicture(
         url,
-        Modifier.fillMaxWidth().height(140.dp).background(MaterialTheme.colorScheme.surfaceVariant).combinedClickable(onClick = {}, onLongClick = {
-            haptics.medium()
-            sheets.saveImage(url)
-        }, onLongClickLabel = pluginString(Strings.profile_save_background)),
+        Modifier.fillMaxWidth().height(140.dp).background(MaterialTheme.colorScheme.surfaceVariant).onContextClick(save)
+            .combinedClickable(onClick = {}, onLongClick = save, onLongClickLabel = pluginString(Strings.profile_save_background)),
         contentDescription = null,
         contentScale = ContentScale.Crop,
     )

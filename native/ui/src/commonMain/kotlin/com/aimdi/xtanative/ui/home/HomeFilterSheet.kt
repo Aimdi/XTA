@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalProblemActions
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -221,6 +222,7 @@ private fun FilterRow(
         Modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp)
+            .onSecondaryClick(onOnly)
             .combinedClickable(role = Role.Checkbox, onLongClick = onOnly, onClick = { onToggle(!on) })
             .padding(start = 20.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,

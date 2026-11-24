@@ -52,6 +52,7 @@ import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
@@ -232,7 +233,7 @@ private fun PostActions(app: RedditApp, post: RedditPost, comments: Int, onComme
             }
             // A tap saves on this device or takes it out; a long press picks its folder, as XTA's RedditThreadSaveButton.
             Box(
-                Modifier.size(48.dp).clip(CircleShape).combinedClickable(role = Role.Button, onClick = { app.toggleSaved(post) }, onLongClick = { app.chooseFolder(post) }),
+                Modifier.size(48.dp).clip(CircleShape).onContextClick { app.chooseFolder(post) }.combinedClickable(role = Role.Button, onClick = { app.toggleSaved(post) }, onLongClick = { app.chooseFolder(post) }),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(

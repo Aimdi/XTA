@@ -45,6 +45,7 @@ import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginNotices
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
@@ -165,6 +166,7 @@ private fun ContractLine(asset: CryptoAsset, onCopy: () -> Unit) {
     Row(
         Modifier
             .heightIn(min = 48.dp)
+            .onContextClick(onCopy)
             .combinedClickable(onClick = onCopy, onLongClick = onCopy)
             .clearAndSetSemantics {
                 contentDescription = label

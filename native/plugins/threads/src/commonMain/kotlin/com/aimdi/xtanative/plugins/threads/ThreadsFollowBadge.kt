@@ -20,6 +20,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.plugins.addToGroupText
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /**
@@ -64,6 +65,7 @@ internal fun ThreadsFollowBadge(app: ThreadsApp, account: ThreadsAccount, shown:
             Modifier
                 .offset(at, at)
                 .size(target)
+                .onContextClick { app.addToGroup(account) }
                 .combinedClickable(
                     interactionSource = null,
                     indication = ripple(bounded = false, radius = disc.dp),

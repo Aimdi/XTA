@@ -47,6 +47,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsTopic
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.plugins.PluginText
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -195,6 +196,7 @@ private fun MediaGridTile(app: ThreadsApp, tile: ThreadsMediaGrid.Tile, pixels: 
         modifier
             .aspectRatio(1f)
             .background(MaterialTheme.colorScheme.surfaceVariant)
+            .onContextClick { app.openPost(tile.post) }
             .combinedClickable(
                 onClickLabel = if (covered) openPost else name,
                 onClick = { if (covered) app.openPost(tile.post) else app.openMedia(tile.post, 0) },

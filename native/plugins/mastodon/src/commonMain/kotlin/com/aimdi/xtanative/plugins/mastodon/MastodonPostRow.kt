@@ -36,6 +36,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.PostCover
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -145,6 +146,7 @@ private fun CountButton(icon: ImageVector, count: Long, label: PluginText, hideC
         Modifier
             .heightIn(min = 40.dp)
             .clip(RoundedCornerShape(20.dp))
+            .then(onLongClick?.let { Modifier.onContextClick(it) } ?: Modifier)
             .combinedClickable(onClickLabel = name, role = Role.Button, onClick = onClick, onLongClick = onLongClick)
             .padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
