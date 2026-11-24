@@ -25,6 +25,7 @@ import com.aimdi.xtanative.core.session.AccountLookup
 import com.aimdi.xtanative.core.session.FollowCheck
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.LocalGraph
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -115,7 +116,7 @@ private fun Results(state: CleanupState) {
             LazyColumn(Modifier.heightIn(max = 280.dp).padding(top = 8.dp)) {
                 items(state.broken, key = { it.first.id }) { (account, reason) ->
                     Column(Modifier.padding(vertical = 4.dp)) {
-                        Text("@${account.screenName}", maxLines = 2, overflow = TextOverflow.Ellipsis)
+                        TipText("@${account.screenName}", maxLines = 2, overflow = TextOverflow.Ellipsis)
                         Text(
                             stringResource(if (reason == BrokenReason.SUSPENDED) Res.string.groups_account_suspended else Res.string.groups_user_not_found),
                             style = MaterialTheme.typography.bodySmall,

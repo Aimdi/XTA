@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.VerifiedBadges
 import com.aimdi.xtanative.ui.search.FollowMenu
@@ -38,10 +39,10 @@ fun UserRow(user: XUser, actions: PostActions) {
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(user.name, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
+                TipText(user.name, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
                 VerifiedBadges(user, 16.dp, Modifier.padding(start = 4.dp))
             }
-            Text("@" + user.screenName, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            TipText("@" + user.screenName, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         FollowMenu(FollowTarget.Account(user))
     }

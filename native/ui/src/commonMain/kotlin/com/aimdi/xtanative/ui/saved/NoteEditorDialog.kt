@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.saved
 
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.tabLeavesField
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -329,7 +330,7 @@ private fun EditorBar(title: String, busy: Boolean, saving: Boolean, canSave: Bo
     Row(Modifier.fillMaxWidth().padding(start = 8.dp, end = 16.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose, enabled = !busy) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } }
         Spacer(Modifier.width(8.dp))
-        Text(title, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        TipText(title, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
         Spacer(Modifier.width(8.dp))
         Button(onClick = onSave, enabled = !busy && canSave, modifier = Modifier.heightIn(min = 44.dp)) {
             if (saving) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
@@ -399,7 +400,7 @@ private fun QuotedPreview(content: SavedContent) {
     val post = content.xPost ?: return
     val shape = RoundedCornerShape(16.dp)
     Column(Modifier.fillMaxWidth().padding(top = 12.dp).clip(shape).border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape).padding(12.dp)) {
-        Text(post.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        TipText(post.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Text("@" + post.author.screenName, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(post.text, maxLines = 6, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 4.dp))
     }

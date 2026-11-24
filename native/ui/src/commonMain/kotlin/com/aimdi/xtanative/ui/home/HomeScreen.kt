@@ -65,6 +65,7 @@ import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.CenteredPage
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberLiveEdges
 import com.aimdi.xtanative.ui.common.rememberScreenReaderOn
 import com.aimdi.xtanative.ui.feed.MediaModes
@@ -281,7 +282,7 @@ private fun HomeSidebar(parts: HomeParts, shell: HomeShellState, page: BarPage, 
             pages = {
                 itemsIndexed(ui.bar, key = { _, barPage -> "page-" + barPage.id }) { index, barPage ->
                     NavigationDrawerItem(
-                        label = { Text(barLabel(barPage, ui), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        label = { TipText(barLabel(barPage, ui), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                         selected = barPage == page,
                         onClick = { barTapped(shell, ui, index) },
                         icon = { BarPageIcon(barPage, barPage == page, ui, parts.networks) },
@@ -437,7 +438,7 @@ private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: I
             val extras = takeover.on(BarPage.Network(id))?.split?.more.orEmpty()
             Column {
                 TopAppBar(
-                    title = { Text(ui.networks.firstOrNull { it.id == id }?.title ?: id, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    title = { TipText(ui.networks.firstOrNull { it.id == id }?.title ?: id, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     actions = {
                         // Off Home's Feed there is no plugin sheet: the plugin's own entries stay its ⋮ ([ShellMenuButton]).
                         PluginActions(client)

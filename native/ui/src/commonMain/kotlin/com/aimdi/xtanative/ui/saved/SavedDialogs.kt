@@ -49,6 +49,7 @@ import com.aimdi.xtanative.core.x.model.XConversation
 import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedPost
 import com.aimdi.xtanative.ui.common.LocalXClient
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
@@ -253,7 +254,7 @@ internal fun CleanupDialog(posts: List<SavedPost>, onDismiss: () -> Unit) {
                 } else {
                     Text(stringResource(if (scan.broken.isEmpty()) Res.string.saved_none_deleted else Res.string.saved_deleted_found))
                     scan.broken.forEach { post ->
-                        Text(SavedCleanup.label(post), maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.heightIn(min = 32.dp).padding(top = 8.dp))
+                        TipText(SavedCleanup.label(post), maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.heightIn(min = 32.dp).padding(top = 8.dp))
                     }
                     if (scan.unreachable > 0) {
                         Text(

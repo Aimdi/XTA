@@ -77,6 +77,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemRow
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.clickableNoRipple
@@ -196,7 +197,7 @@ fun ProfileScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(user?.name ?: "@$screenName", maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                title = { TipText(user?.name ?: "@$screenName", maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 actions = {
                     if (user != null) {
@@ -504,7 +505,7 @@ private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actio
 private fun Identity(user: XUser?, screenName: String, note: String, onNote: (() -> Unit)?) {
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
+            TipText(
                 user?.name ?: screenName,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.ExtraBold,
@@ -537,7 +538,7 @@ private fun MetaLine(icon: ImageVector, text: String, link: Boolean = false, onC
     val grey = MaterialTheme.colorScheme.onSurfaceVariant
     Row(verticalAlignment = Alignment.CenterVertically, modifier = if (onClick != null) Modifier.clickableNoRipple(onClick) else Modifier) {
         Icon(icon, null, tint = grey, modifier = Modifier.size(16.dp))
-        Text(
+        TipText(
             text,
             color = if (link) MaterialTheme.colorScheme.primary else grey,
             style = MaterialTheme.typography.bodyMedium,

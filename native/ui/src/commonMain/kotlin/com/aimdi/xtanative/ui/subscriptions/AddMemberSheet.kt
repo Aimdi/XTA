@@ -44,6 +44,7 @@ import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_add_member_failed
@@ -150,8 +151,8 @@ private fun Results(state: AddMemberUi, rows: List<FollowableRow>, onAdd: (XUser
                 ) {
                     Avatar(user.avatarUrl, 40.dp)
                     Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
-                        Text(user.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text("@${user.screenName}", maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        TipText(user.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        TipText("@${user.screenName}", maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Icon(if (added) Icons.Filled.Check else Icons.Filled.Add, contentDescription = null)
                 }
@@ -177,8 +178,8 @@ private fun NetworkRow(row: FollowableRow, added: Boolean, enabled: Boolean, onF
     ) {
         PluginMark(owner, network, 40.dp)
         Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
-            Text(row.label, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(network, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            TipText(row.label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            TipText(network, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Icon(if (added) Icons.Filled.Check else Icons.Filled.Add, contentDescription = null)
     }

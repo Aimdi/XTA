@@ -78,6 +78,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -173,11 +174,11 @@ private fun AntennaRow(antenna: Antenna, onOpen: () -> Unit, onSettings: () -> U
     ) {
         Icon(DiscoverIcons.Radar, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Column(Modifier.weight(1f).padding(start = 16.dp)) {
-            Text(antenna.name, style = MaterialTheme.typography.bodyLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            TipText(antenna.name, style = MaterialTheme.typography.bodyLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
             val secondary = MaterialTheme.colorScheme.onSurfaceVariant
-            Text(scopeLabel(antenna.scope), style = MaterialTheme.typography.bodySmall, color = secondary, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            TipText(scopeLabel(antenna.scope), style = MaterialTheme.typography.bodySmall, color = secondary, maxLines = 2, overflow = TextOverflow.Ellipsis)
             Spacer(Modifier.height(2.dp))
-            Text(antenna.includeTerms.joinToString(", "), style = MaterialTheme.typography.bodySmall, color = secondary, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            TipText(antenna.includeTerms.joinToString(", "), style = MaterialTheme.typography.bodySmall, color = secondary, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
         Box {
             IconTip(stringResource(Res.string.discover_show_menu)) { IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = stringResource(Res.string.discover_show_menu)) } }

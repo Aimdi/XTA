@@ -47,6 +47,7 @@ import com.aimdi.xtanative.core.x.model.photoUrl
 import com.aimdi.xtanative.services.article.Article
 import com.aimdi.xtanative.services.article.ArticleBlock
 import com.aimdi.xtanative.services.article.ArticleEntity
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.post.MediaGrid
 import com.aimdi.xtanative.ui.post.PostActions
 
@@ -65,9 +66,9 @@ fun ArticlePreviewCard(post: XPost, onClick: () -> Unit, modifier: Modifier = Mo
     ) {
         article.coverUrl?.let { Cover(it) }
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(article.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            TipText(article.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
             if (article.previewText.isNotEmpty()) {
-                Text(
+                TipText(
                     article.previewText,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,

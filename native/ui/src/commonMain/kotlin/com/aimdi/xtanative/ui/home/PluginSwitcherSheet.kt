@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.longPressOver
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -202,9 +203,9 @@ private fun SheetHead(shown: HomeTab?, ui: HomeUi, networks: HomeNetworks, plugi
         }
     }
     Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Text(shown?.let { tabLabel(it, ui) }.orEmpty(), fontSize = 22.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        TipText(shown?.let { tabLabel(it, ui) }.orEmpty(), fontSize = 22.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
         plugin?.subtitle?.let {
-            Text(it.text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            TipText(it.text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
 }
@@ -287,7 +288,7 @@ private fun NetworkTile(id: String, ui: HomeUi, networks: HomeNetworks, shown: B
                     Box(Modifier.align(Alignment.TopEnd).size(9.dp).background(MaterialTheme.colorScheme.background, CircleShape).padding(1.5.dp).background(MaterialTheme.colorScheme.error, CircleShape))
                 }
             }
-            Text(
+            TipText(
                 name,
                 fontSize = 13.sp,
                 fontWeight = if (shown) FontWeight.Bold else FontWeight.Normal,
@@ -307,6 +308,6 @@ private fun NetworkTile(id: String, ui: HomeUi, networks: HomeNetworks, shown: B
 @Composable
 private fun FootButton(label: String, modifier: Modifier, onClick: () -> Unit) {
     TextButton(onClick = onClick, modifier = modifier.heightIn(min = 48.dp)) {
-        Text(label, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        TipText(label, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }

@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_add_to_group
@@ -136,7 +137,7 @@ fun GroupMembershipSheet(
                         FlatFilterChip(
                             selected = group.id in chosen,
                             onClick = { chosen = GroupPicker.toggled(chosen, group.id) },
-                            label = { Text(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                            label = { TipText(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                             leadingIcon = { GroupMark(group, 24.dp) },
                         )
                     }
@@ -177,7 +178,7 @@ private fun CreateRow(label: String, onClick: () -> Unit) {
             Icon(Icons.Filled.Add, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
         }
         Spacer(Modifier.width(12.dp))
-        Text(label, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold, maxLines = 3, overflow = TextOverflow.Ellipsis)
+        TipText(label, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold, maxLines = 3, overflow = TextOverflow.Ellipsis)
     }
 }
 

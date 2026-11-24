@@ -72,6 +72,7 @@ import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.GroupPack
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
@@ -189,7 +190,7 @@ fun GroupEditSheet(
             ) {
                 TextButton(onClick = { picker = EditPicker.ADD }) {
                     Icon(GroupIcons.PersonAdd, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Text(stringResource(Res.string.groups_add_to_group), maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 8.dp))
+                    TipText(stringResource(Res.string.groups_add_to_group), maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 8.dp))
                 }
                 Discreet(GroupIcons.Checklist, Res.string.groups_toggle_all) { draft = draft.toggledAll(rows.map { it.id }) }
                 if (existing != null) {
@@ -347,8 +348,8 @@ private fun MemberCheckRow(row: SubscriptionRow, checked: Boolean, onChange: (Bo
     ) {
         SubscriptionFace(row, 40.dp)
         Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
-            Text(row.name, maxLines = 1, overflow = TextOverflow.Ellipsis, color = if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
-            Text(
+            TipText(row.name, maxLines = 1, overflow = TextOverflow.Ellipsis, color = if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
+            TipText(
                 subscriptionSubtitle(row),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -490,7 +491,7 @@ fun GroupChoiceSheet(groups: List<FollowGroup>, current: String?, noneLabel: Str
             items(groups, key = { it.id }) { group ->
                 ChoiceRow(selected = current == group.id, onClick = { onPick(group.id) }) {
                     GroupMark(group, 32.dp)
-                    Text(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 16.dp))
+                    TipText(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 16.dp))
                 }
             }
         }

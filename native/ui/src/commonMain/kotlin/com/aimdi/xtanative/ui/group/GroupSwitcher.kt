@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -83,14 +84,14 @@ fun GroupFeedTitle(state: GroupFeedUi, onClick: (() -> Unit)?) {
         }
         Column(Modifier.weight(1f, fill = false)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(group?.name.orEmpty(), maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f, fill = false))
+                TipText(group?.name.orEmpty(), maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f, fill = false))
                 if (state.alsoRead.isNotEmpty()) {
                     Text("+${state.alsoRead.size}", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(start = 6.dp))
                 }
                 if (onClick != null) Icon(GroupIcons.ExpandMore, contentDescription = null, modifier = Modifier.padding(start = 2.dp).size(20.dp))
             }
             // An empty line while the group loads keeps the name from shifting when the count arrives.
-            Text(
+            TipText(
                 if (state.loaded) pluralStringResource(Res.plurals.groups_member_count, state.memberCount, state.memberCount) else "",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -174,7 +175,7 @@ private fun SwitcherRow(group: FollowGroup, current: Boolean, combined: Boolean,
     ) {
         GroupMark(group, 36.dp)
         Column(Modifier.weight(1f).padding(horizontal = 16.dp)) {
-            Text(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis, color = tint, fontWeight = if (current || combined) FontWeight.Bold else null)
+            TipText(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis, color = tint, fontWeight = if (current || combined) FontWeight.Bold else null)
             Text(
                 pluralStringResource(Res.plurals.groups_member_count, group.memberIds.size, group.memberIds.size),
                 style = MaterialTheme.typography.bodySmall,
@@ -214,7 +215,7 @@ fun FeedSwitcherMenu(
         }
         FeedSwitcher.pinned(state.groups, state.group?.id).forEach { group ->
             DropdownMenuItem(
-                text = { Text(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                text = { TipText(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 leadingIcon = { GroupMark(group, 24.dp) },
                 onClick = { onGroup(group.id) },
             )
@@ -238,7 +239,7 @@ private fun HomeFeedItems(onPick: (String) -> Unit) {
     val usable = available.mapTo(HashSet()) { it.id }
     HomeStrip.tabs(pins, usable::contains, emptyList()).forEach { tab ->
         DropdownMenuItem(
-            text = { Text(feedLabel(tab, available), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+            text = { TipText(feedLabel(tab, available), maxLines = 1, overflow = TextOverflow.Ellipsis) },
             leadingIcon = { FeedIcon(tab, networks) },
             onClick = { onPick(tab.key) },
         )

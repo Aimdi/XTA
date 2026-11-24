@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.discover_clear_recent_searches
 import com.aimdi.xtanative.ui.generated.resources.discover_delete
@@ -59,7 +60,7 @@ fun RecentSearchesBar(
                 InputChip(
                     selected = index == highlighted,
                     onClick = { onSelect(query) },
-                    label = { Text(query, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    label = { TipText(query, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     leadingIcon = { Icon(DiscoverIcons.History, contentDescription = recent, modifier = Modifier.size(18.dp)) },
                     trailingIcon = {
                         Icon(

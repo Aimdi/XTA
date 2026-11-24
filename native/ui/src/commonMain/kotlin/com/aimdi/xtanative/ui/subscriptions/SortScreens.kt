@@ -69,6 +69,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -347,8 +348,8 @@ fun UngroupedSorterScreen(accountIds: List<String>, openProfile: (String) -> Uni
 private fun AccountCard(row: SubscriptionRow, onOpen: () -> Unit) {
     Column(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         SubscriptionFace(row, 72.dp)
-        Text(row.name, style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 12.dp))
-        Text(subscriptionSubtitle(row), color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp))
+        TipText(row.name, style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 12.dp))
+        TipText(subscriptionSubtitle(row), color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp))
         TextButton(onClick = onOpen, modifier = Modifier.padding(top = 4.dp)) {
             Icon(GroupIcons.OpenInNew, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.groups_open_profile), modifier = Modifier.padding(start = 8.dp))
@@ -368,7 +369,7 @@ private fun GroupChips(state: SorterUi, onGroup: (String) -> Unit, onSeveral: ()
         state.groups.forEach { group ->
             AssistChip(
                 onClick = { onGroup(group.id) },
-                label = { Text(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 200.dp)) },
+                label = { TipText(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 200.dp)) },
                 leadingIcon = { GroupMark(group, 24.dp) },
             )
         }

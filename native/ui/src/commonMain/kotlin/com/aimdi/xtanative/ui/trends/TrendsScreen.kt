@@ -83,6 +83,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
@@ -413,7 +414,7 @@ private fun TrendRow(rank: Int, trend: XTrend, onClick: () -> Unit) {
     ) {
         Text(rank.toString(), color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.width(36.dp))
         Column(Modifier.weight(1f)) {
-            Text(trend.name, style = MaterialTheme.typography.bodyLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            TipText(trend.name, style = MaterialTheme.typography.bodyLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
             trend.volume?.let { volume ->
                 Text(
                     pluralStringResource(Res.plurals.discover_trend_posts, volume.coerceIn(0, Int.MAX_VALUE.toLong()).toInt(), countText(volume)),

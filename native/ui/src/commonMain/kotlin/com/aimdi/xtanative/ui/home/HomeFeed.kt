@@ -65,6 +65,7 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalParentTurnsPages
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberLiveEdges
 import com.aimdi.xtanative.ui.common.rememberScreenReaderOn
@@ -354,7 +355,7 @@ private fun TimelineTopBar(
     TopAppBar(
         navigationIcon = { if (current != null) PickerMark(current, ui, networks, look.anyUnread) { calls.openSheet(HomeSheet.PICKER) } },
         title = {
-            Text(
+            TipText(
                 current?.let { tabLabel(it, ui) }.orEmpty(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

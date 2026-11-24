@@ -64,6 +64,7 @@ import com.aimdi.xtanative.store.settings.AiPrefs
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.NetworkPrefs
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.home.AccountMark
@@ -252,9 +253,9 @@ private fun AccountRow(account: XAccount, on: Boolean, locked: Boolean, onDelete
         }
         Spacer(Modifier.width(16.dp))
         Column(Modifier.weight(1f)) {
-            Text(account.screenName ?: stringResource(Res.string.settings_unknown_username), style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            TipText(account.screenName ?: stringResource(Res.string.settings_unknown_username), style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
             if (locked) {
-                Text(stringResource(Res.string.home_filter_keep_one), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                TipText(stringResource(Res.string.home_filter_keep_one), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
         Checkbox(checked = on, onCheckedChange = null, enabled = !locked)

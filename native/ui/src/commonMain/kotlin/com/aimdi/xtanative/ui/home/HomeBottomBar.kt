@@ -74,6 +74,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.onSecondaryClickIf
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -347,7 +348,7 @@ private fun RowScope.BarItem(
     ) {
         Box(Modifier.heightIn(min = 26.dp), contentAlignment = Alignment.Center) { icon(selected) }
         if (labels) {
-            Text(
+            TipText(
                 label,
                 fontSize = 11.sp,
                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
@@ -444,7 +445,7 @@ private fun NetworkRow(id: String, rows: NetworkRows, indent: Boolean = false) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         rows.networks.Mark(id, 28.dp)
-        Text(
+        TipText(
             rows.ui.networks.firstOrNull { it.id == id }?.title ?: id,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
@@ -461,7 +462,7 @@ private fun MicroblogsEntry(rows: NetworkRows) {
     Column {
         Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable { open = !open }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
             MicroblogMark(rows.networks, 28.dp)
-            Text(stringResource(Res.string.home_alt_microblogging), maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f).padding(horizontal = 16.dp))
+            TipText(stringResource(Res.string.home_alt_microblogging), maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f).padding(horizontal = 16.dp))
             Icon(if (open) GroupIcons.ExpandLess else GroupIcons.ExpandMore, contentDescription = null)
         }
         if (open) rows.microblogs.forEach { id -> NetworkRow(id, rows, indent = true) }

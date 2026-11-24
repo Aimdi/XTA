@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.search.DiscoverIcons
 
 /**
@@ -20,7 +21,7 @@ import com.aimdi.xtanative.ui.search.DiscoverIcons
 fun PluginRecentSearchRow(query: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     ListItem(
         leadingContent = { Icon(DiscoverIcons.History, contentDescription = null) },
-        headlineContent = { Text(query, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        headlineContent = { TipText(query, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         modifier = modifier.clickable(onClick = onClick),
     )

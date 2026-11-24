@@ -64,6 +64,7 @@ import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedLibrary
 import com.aimdi.xtanative.store.settings.SavedPrefs
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -210,7 +211,7 @@ private fun CreateRow(label: String, onClick: () -> Unit) {
             Icon(Icons.Filled.Add, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
         }
         Spacer(Modifier.width(12.dp))
-        Text(label, color = MaterialTheme.colorScheme.primary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 3, overflow = TextOverflow.Ellipsis)
+        TipText(label, color = MaterialTheme.colorScheme.primary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 3, overflow = TextOverflow.Ellipsis)
     }
 }
 
@@ -230,7 +231,7 @@ private fun FolderChip(folder: SavedFolder, selected: Boolean, onClick: () -> Un
                     Icon(SavedIcons.Folder, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
                 }
                 Spacer(Modifier.width(8.dp))
-                Text(folder.name, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 15.sp)
+                TipText(folder.name, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 15.sp)
                 if (selected) {
                     Spacer(Modifier.width(6.dp))
                     Icon(Icons.Filled.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
@@ -281,7 +282,7 @@ private fun StatusLine(status: SaveStatus) {
             modifier = Modifier.size(20.dp),
         )
         Spacer(Modifier.width(10.dp))
-        Text(
+        TipText(
             when (status) {
                 SaveStatus.NotSaved -> stringResource(Res.string.saved_sheet_not_saved)
                 SaveStatus.Unfiled -> stringResource(Res.string.saved_sheet_unfiled)

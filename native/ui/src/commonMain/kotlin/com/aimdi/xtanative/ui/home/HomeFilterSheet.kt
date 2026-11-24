@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalProblemActions
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -194,7 +195,7 @@ private fun NoAccounts() {
 @Composable
 private fun BulkBar(status: String, warning: Boolean, onAll: (() -> Unit)?, onNone: (() -> Unit)?) {
     Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(
+        TipText(
             status,
             style = MaterialTheme.typography.labelLarge,
             color = if (warning) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
@@ -230,7 +231,7 @@ private fun FilterRow(
     ) {
         leading()
         Column(Modifier.weight(1f)) {
-            Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            TipText(title, maxLines = 1, overflow = TextOverflow.Ellipsis)
             if (subtitle != null) {
                 Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
             }

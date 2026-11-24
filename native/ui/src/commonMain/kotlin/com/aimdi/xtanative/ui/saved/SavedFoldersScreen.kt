@@ -47,6 +47,7 @@ import com.aimdi.xtanative.store.saved.SavedTabs
 import com.aimdi.xtanative.store.settings.SavedPrefs
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.saved_delete
@@ -173,7 +174,7 @@ private fun FolderRowView(row: FolderRow.Folder, handle: @Composable () -> Unit,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            Text(row.folder.name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            TipText(row.folder.name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(pluralStringResource(Res.plurals.saved_folder_count, row.count, row.count), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         IconTip(stringResource(Res.string.saved_delete)) { IconButton(onClick = onDelete) { Icon(Icons.Filled.Delete, stringResource(Res.string.saved_delete)) } }

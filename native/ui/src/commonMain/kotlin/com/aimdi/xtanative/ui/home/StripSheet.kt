@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
@@ -173,7 +174,7 @@ private fun NetworkRow(network: StripNetwork, networks: HomeNetworks, onClick: (
     ) {
         Box(Modifier.size(24.dp), contentAlignment = Alignment.Center) { networks.Mark(network.id, 24.dp) }
         Spacer(Modifier.width(16.dp))
-        Text(network.title, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        TipText(network.title, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
         controls()
     }
 }

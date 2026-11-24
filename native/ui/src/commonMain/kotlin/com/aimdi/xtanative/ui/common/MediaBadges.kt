@@ -131,6 +131,6 @@ fun ShowMediaTile(what: String, icon: ImageVector, onShow: () -> Unit, modifier:
         verticalArrangement = Arrangement.spacedBy(if (compact) 4.dp else 8.dp, Alignment.CenterVertically),
     ) {
         Icon(icon, contentDescription = null, tint = muted)
-        Text(label, style = MaterialTheme.typography.bodySmall, color = muted, textAlign = TextAlign.Center, maxLines = 3, overflow = TextOverflow.Ellipsis)
+        TipText(label, style = MaterialTheme.typography.bodySmall, color = muted, textAlign = TextAlign.Center, maxLines = 3, overflow = TextOverflow.Ellipsis)
     }
 }

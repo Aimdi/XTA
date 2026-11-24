@@ -49,6 +49,7 @@ import com.aimdi.xtanative.store.saved.ArchiveNotesStore
 import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.ReadingPage
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.downloads.rememberFilePicker
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.archive_extract
@@ -86,7 +87,7 @@ fun ArchiveScreen(id: String, onBack: () -> Unit) {
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(state.title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                title = { TipText(state.title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )

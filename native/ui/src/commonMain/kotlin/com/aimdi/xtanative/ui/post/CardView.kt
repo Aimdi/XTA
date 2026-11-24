@@ -44,6 +44,7 @@ import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.card_from
@@ -179,7 +180,7 @@ private fun MediaCard(card: XCard.Link, post: XPost?, onOpen: () -> Unit, modifi
             if (!several && card.title.isNotBlank()) TitleOverPicture(card.title, Modifier.align(Alignment.BottomStart).clickable(onClick = onOpen))
         }
         if (several && card.title.isNotBlank()) {
-            Text(
+            TipText(
                 card.title,
                 style = MaterialTheme.typography.titleSmall,
                 maxLines = 2,
@@ -193,7 +194,7 @@ private fun MediaCard(card: XCard.Link, post: XPost?, onOpen: () -> Unit, modifi
 
 @Composable
 private fun TitleOverPicture(title: String, modifier: Modifier) {
-    Text(
+    TipText(
         title,
         color = Color.White,
         fontSize = 13.sp,
@@ -330,7 +331,7 @@ private fun PollChoiceBar(poll: XCard.Poll, choice: XCard.Poll.Choice, locale: L
                 Box(Modifier.clip(RoundedCornerShape(PollBar.RADIUS.dp)).clickable(onClick = opener)) { PollChoiceImage(image.takeIf { pictures.load }) }
                 Spacer(Modifier.width(PollBar.END.dp))
             }
-            Text(choice.label, style = MaterialTheme.typography.bodyMedium, fontWeight = weight, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+            TipText(choice.label, style = MaterialTheme.typography.bodyMedium, fontWeight = weight, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
             Spacer(Modifier.width(PollBar.END.dp))
             Text(percent, style = MaterialTheme.typography.bodyMedium, fontWeight = weight)
         }

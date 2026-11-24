@@ -81,6 +81,7 @@ import com.aimdi.xtanative.store.saved.SavedSource
 import com.aimdi.xtanative.store.saved.SavedTabs
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.ReadingColumn
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -322,7 +323,7 @@ private fun TitleBar(notice: SavedNotice, onBack: (() -> Unit)?, searchable: Boo
         },
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
+                TipText(
                     stringResource(Res.string.saved_title),
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
@@ -523,7 +524,7 @@ private fun TabChip(label: String, selected: Boolean, trailing: ImageVector?, on
             .padding(horizontal = 10.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
+        TipText(
             label,
             fontSize = 13.sp,
             fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,

@@ -76,6 +76,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemRow
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
@@ -372,7 +373,7 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(Modifier.weight(1f, fill = false)) {
                             AuthorHoverCard(shown.author, shown.author.largeAvatarUrl, { actions.openUser(shown.author.screenName, shown.author.id) }) {
-                                Text(shown.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                TipText(shown.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             }
                         }
                         if (shown.author.verified) {
@@ -431,7 +432,7 @@ private fun FocalMetaLine(post: XPost, prefs: PostPrefs, order: ReplyOrder?, pic
     if (time.isEmpty() && viewsLabel == null && order == null) return
     val number = views?.let { countText(it) }
     Row(Modifier.fillMaxWidth().padding(top = if (order == null) 12.dp else 2.dp), verticalAlignment = Alignment.CenterVertically) {
-    Text(
+    TipText(
         buildAnnotatedString {
             append(time)
             if (time.isNotEmpty() && viewsLabel != null) append(" · ")

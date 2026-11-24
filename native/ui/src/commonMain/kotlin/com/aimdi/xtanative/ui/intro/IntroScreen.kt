@@ -55,6 +55,7 @@ import com.aimdi.xtanative.store.settings.ThemePrefs
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.ConfirmCloseOnBack
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -202,7 +203,7 @@ private fun FlowColumnOfAccounts(names: List<String>) {
             ) {
                 Icon(Icons.Outlined.AccountCircle, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.size(8.dp))
-                Text(stringResource(Res.string.intro_signed_in_as, name), style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                TipText(stringResource(Res.string.intro_signed_in_as, name), style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
     }
@@ -287,7 +288,7 @@ private fun Tile(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             if (icon != null) Icon(icon, null, tint = colors.onSurfaceVariant, modifier = Modifier.size(24.dp))
-            Text(title, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            TipText(title, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
         when (status) {
             is PluginStatus.Downloading -> LinearProgressIndicator(progress = { status.fraction }, modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth())

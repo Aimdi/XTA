@@ -21,6 +21,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
 import kotlin.math.max
 import kotlin.math.min
@@ -94,14 +95,18 @@ internal fun AuthorLine(name: String, handle: String, time: String, verified: Bo
     Layout(
         modifier = modifier,
         content = {
-            val nameText = @Composable { Text(name, style = style, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis) }
-            if (card == null) nameText() else AuthorHoverCard(card.user, card.avatarUrl, card.onOpen, nameText)
+            // With a card the card names the author; without one the name is a tip where it is cut.
+            if (card == null) {
+                TipText(name, style = style, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            } else {
+                AuthorHoverCard(card.user, card.avatarUrl, card.onOpen) { Text(name, style = style, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+            }
             if (verified) {
                 Icon(XIcons.Verified, contentDescription = null, tint = Color.Unspecified, modifier = Modifier.padding(start = 2.dp).size(17.dp))
             } else {
                 Spacer(Modifier)
             }
-            Text(remember(handle, grey) { handleText(handle, grey) }, style = style, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            TipText(remember(handle, grey) { handleText(handle, grey) }, style = style, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis)
             val timeText = @Composable { Text(if (time.isEmpty()) "" else " · $time", style = style, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.dragsLink(timeLink)) }
             if (timeTip.isNullOrEmpty() || timeTip == time) timeText() else IconTip(timeTip, timeText)
         },

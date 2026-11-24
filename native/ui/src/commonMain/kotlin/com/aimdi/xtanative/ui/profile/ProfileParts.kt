@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.profile
 
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.tabLeavesField
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -153,7 +154,7 @@ private fun RowScope.NoteInline(note: String, onEdit: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(if (empty) Icons.Filled.Add else Icons.Filled.Edit, null, tint = color, modifier = Modifier.size(14.dp))
-        Text(
+        TipText(
             if (empty) stringResource(Res.string.posts_profile_note_short) else note,
             color = color,
             fontStyle = if (empty) FontStyle.Normal else FontStyle.Italic,
@@ -200,7 +201,7 @@ internal fun FollowedByLine(followedBy: FollowedBy, onOpen: () -> Unit) {
                 }
             }
         }
-        Text(
+        TipText(
             label,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -239,7 +240,7 @@ internal fun FollowedBySheet(followedBy: FollowedBy, actions: PostActions, onDis
                 ) {
                     Avatar(member.avatarUrl, 40.dp)
                     Column(Modifier.padding(start = 12.dp)) {
-                        Text(member.name, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        TipText(member.name, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         Text("@" + member.screenName, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
                     }
                 }

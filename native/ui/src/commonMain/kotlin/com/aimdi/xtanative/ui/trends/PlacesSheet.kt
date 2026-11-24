@@ -35,6 +35,7 @@ import com.aimdi.xtanative.core.x.model.XTrendPlace
 import com.aimdi.xtanative.core.x.model.XTrendPlaces
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_find_the_available_trend_locations
@@ -89,7 +90,7 @@ private fun CountryItem(name: String, expanded: Boolean, onClick: () -> Unit) {
         Modifier.fillMaxWidth().heightIn(min = 52.dp).clickable(onClick = onClick).padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        TipText(name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
         Icon(if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown, contentDescription = null)
     }
 }
@@ -108,7 +109,7 @@ private fun PlaceItem(place: XTrendPlace, shown: Boolean, indent: Boolean = fals
             .heightIn(min = 48.dp)
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
-        Text(place.name, color = if (shown) colors.onPrimary else colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        TipText(place.name, color = if (shown) colors.onPrimary else colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
         if (place.isCountry) {
             Text(
                 stringResource(Res.string.discover_country),

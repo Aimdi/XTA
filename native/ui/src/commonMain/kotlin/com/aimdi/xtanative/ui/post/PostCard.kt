@@ -40,6 +40,7 @@ import com.aimdi.xtanative.services.links.XLinks
 import com.aimdi.xtanative.ui.article.ArticlePreviewCard
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.fullTimeText
@@ -310,7 +311,7 @@ internal fun ReplyingTo(screenName: String, replyToId: String?, actions: PostAct
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Text("@$screenName", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        TipText("@$screenName", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 

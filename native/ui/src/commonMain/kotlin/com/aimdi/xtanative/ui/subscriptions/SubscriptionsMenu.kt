@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.store.settings.GroupsLayout
 import com.aimdi.xtanative.store.settings.GroupsOrder
 import com.aimdi.xtanative.store.settings.SubscriptionsOrder
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_antennas
@@ -159,7 +160,7 @@ private fun ModeButton(icon: ImageVector, label: StringResource, selected: Boole
         horizontalArrangement = Arrangement.Center,
     ) {
         Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
-        Text(
+        TipText(
             stringResource(label),
             color = tint,
             fontSize = 13.sp,

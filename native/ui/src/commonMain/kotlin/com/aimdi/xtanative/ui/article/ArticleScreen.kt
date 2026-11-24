@@ -42,6 +42,7 @@ import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.ReadingPage
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -111,7 +112,7 @@ fun ArticleScreen(postId: String, actions: PostActions, onBack: () -> Unit) {
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(article?.title ?: stringResource(Res.string.posts_article_on_x), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                title = { TipText(article?.title ?: stringResource(Res.string.posts_article_on_x), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )

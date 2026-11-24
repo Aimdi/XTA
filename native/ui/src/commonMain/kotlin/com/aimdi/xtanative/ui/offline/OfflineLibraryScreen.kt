@@ -52,6 +52,7 @@ import com.aimdi.xtanative.store.offline.OfflineEntry
 import com.aimdi.xtanative.store.offline.OfflineStore
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -208,7 +209,7 @@ private fun EntryRow(entry: OfflineEntry, onOpen: () -> Unit, onRemove: () -> Un
         )
         Spacer(Modifier.width(16.dp))
         Column(Modifier.weight(1f)) {
-            Text(entry.title, maxLines = 2, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyLarge)
+            TipText(entry.title, maxLines = 2, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyLarge)
             Text(
                 entry.source + "\n" + statusText(entry.availability) + " · " + OfflineRules.bytes(entry.bytes, locale) + "\n" + detailText(OfflineRules.detail(entry)),
                 style = MaterialTheme.typography.bodySmall,

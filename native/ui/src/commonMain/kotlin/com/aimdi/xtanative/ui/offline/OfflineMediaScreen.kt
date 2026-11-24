@@ -34,6 +34,7 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.offline.OfflineEntry
 import com.aimdi.xtanative.store.offline.OfflineFile
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.offline_media_label
@@ -54,7 +55,7 @@ fun OfflineMediaScreen(id: String, onBack: () -> Unit) {
         containerColor = Color.Black,
         topBar = {
             TopAppBar(
-                title = { Text(entry?.title.orEmpty(), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                title = { TipText(entry?.title.orEmpty(), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Black,
