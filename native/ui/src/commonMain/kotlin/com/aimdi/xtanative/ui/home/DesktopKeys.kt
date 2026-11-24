@@ -182,6 +182,10 @@ object DesktopKeys {
      * and nothing is open over the page, presses the Undo of the notice at
      * the foot of the window (posts removed from Saved, a folder or a note
      * deleted, accounts unfollowed), as a desktop app undoes its last change.
+     * A state of the page that Back closes ([backOpen]: a search open in
+     * place, an earlier card to go back to) is closed by Esc, Alt+← and the
+     * Back key before they go back; it covers nothing, so the other keys go
+     * on as they were.
      */
     fun action(
         key: DeskKey,
@@ -195,13 +199,14 @@ object DesktopKeys {
         selecting: Boolean = false,
         openIsRead: Boolean = false,
         focusHeld: Boolean = focusInside,
+        backOpen: Boolean = false,
     ): DeskAction {
         // Only what is open over the page stops the reading keys; a column opened beside it is read with them.
         val covered = somethingOpen && !openIsRead
         return when {
             key == DeskKey.ESCAPE && focusInside -> DeskAction.LEAVE_FIELD
             key == DeskKey.ESCAPE && selecting && !somethingOpen -> DeskAction.LEAVE_SELECTION
-            key == DeskKey.ESCAPE || key == DeskKey.BACK || (key == DeskKey.LEFT && alt) -> back(canGoBack, somethingOpen)
+            key == DeskKey.ESCAPE || key == DeskKey.BACK || (key == DeskKey.LEFT && alt) -> back(canGoBack, somethingOpen || backOpen)
             // Over an opened post (a card the page counts as open) too, as Alt+Home.
             key == DeskKey.RIGHT && alt && !ctrl && !shift -> DeskAction.FORWARD
             key == DeskKey.F5 || (key == DeskKey.R && ctrl) -> DeskAction.REFRESH

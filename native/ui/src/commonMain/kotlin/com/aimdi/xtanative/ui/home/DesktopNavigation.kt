@@ -99,9 +99,30 @@ class DesktopActions(
      */
     fun openIsRead(): Boolean = openRead?.invoke() == true && !sheetOpen()
 
+    /**
+     * What the going-back keys close: what the screen has open over it first
+     * ([DesktopShortcuts]), else the last of the states that close on Back
+     * ([addBack]).
+     */
     fun close() {
-        closing?.invoke()
+        val back = backs.lastOrNull()?.second
+        if (back == null || open?.invoke() == true) closing?.invoke() else back()
     }
+
+    /** The states the screen shown closes on Back ([com.aimdi.xtanative.ui.common.BackHandling]), the last enabled on top. */
+    private val backs = mutableListOf<Pair<Any, () -> Unit>>()
+
+    internal fun addBack(owner: Any, back: () -> Unit) {
+        backs.removeAll { it.first === owner }
+        backs += owner to back
+    }
+
+    internal fun removeBack(owner: Any) {
+        backs.removeAll { it.first === owner }
+    }
+
+    /** Whether a state the screen shown closes on Back is on (a search open in place, an earlier card to go back to): Esc, Alt+← and the back button close it. */
+    fun backOpen(): Boolean = backs.isNotEmpty()
 
     /** The search fields that Ctrl+F and / go to, the last shown on top ([FindsWithKeys]). */
     private val finders = mutableListOf<Pair<Any, () -> Unit>>()

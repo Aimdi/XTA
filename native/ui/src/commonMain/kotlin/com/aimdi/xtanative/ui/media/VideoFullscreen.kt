@@ -83,7 +83,8 @@ private fun FullscreenLayer(video: FullscreenVideo, onClose: () -> Unit) {
     val pip = rememberPictureInPicture(onDismissed = { player.setActive(false) })
     var sideways by remember { mutableStateOf(false) }
     FullscreenWindow(sideways)
-    BackHandling(enabled = true, onBack = onClose)
+    // Its own Esc closes it; it holds the keys.
+    BackHandling(enabled = true, byKeys = false, onBack = onClose)
     PausesWhenLeft(player)
     var fill by remember { mutableStateOf(false) }
     val focus = remember { FocusRequester() }

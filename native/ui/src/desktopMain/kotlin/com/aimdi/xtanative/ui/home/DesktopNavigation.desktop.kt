@@ -276,7 +276,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         val key = deskKey(pressed)
         val action = DesktopKeys.action(
             key, event.isAltPressed, event.isCtrlPressed, DesktopKeys.keysInside(focusInside, typing[0] > 0, clicked), canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed,
-            selecting = actions.selecting(), openIsRead = actions.openIsRead(), focusHeld = focusInside,
+            selecting = actions.selecting(), openIsRead = actions.openIsRead(), focusHeld = focusInside, backOpen = actions.backOpen(),
         )
         // A search field's first Esc drops the recent search it highlighted; the next leaves the field.
         if (action == DeskAction.LEAVE_FIELD && actions.escapeInField()) {
@@ -357,7 +357,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                                 val awtButton = (event.nativeEvent as? MouseEvent)?.button
                                 when (DesktopKeys.pressedSide(awtButton, event.buttons.isBackPressed, event.buttons.isForwardPressed)) {
                                     SideButton.BACK -> {
-                                        val back = DesktopKeys.mouseBack(nav.previousBackStackEntry != null, actions.somethingOpen())
+                                        val back = DesktopKeys.mouseBack(nav.previousBackStackEntry != null, actions.somethingOpen() || actions.backOpen())
                                         if (back == DeskAction.LEAVE_APP && closeWindow != null) closeWindow() else act(back)
                                     }
                                     SideButton.FORWARD -> act(DeskAction.FORWARD)

@@ -71,5 +71,5 @@ fun ConfirmClose() {
  */
 @Composable
 fun CloseOnBack(enabled: Boolean) {
-    BackHandling(enabled = enabled) { AppClosing.ask() }
+    BackHandling(enabled = enabled, byKeys = false) { AppClosing.ask() }
 }
