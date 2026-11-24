@@ -212,6 +212,10 @@ private fun AboutRows(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snackb
     NavigationRow(stringResource(Res.string.settings_licenses), stringResource(Res.string.settings_licenses_description), Icons.AutoMirrored.Outlined.List) {
         onOpen(SettingsRoutes.LICENCES)
     }
+    // The desktop's log, for a bug report: where it is, opened in the file manager.
+    logsFolder?.let { folder ->
+        NavigationRow(stringResource(Res.string.settings_open_logs), folder, Icons.Outlined.Build, chevron = false) { openLogsFolder() }
+    }
     NavigationRow(stringResource(Res.string.settings_intro_again), stringResource(Res.string.settings_intro_again_description), Icons.Outlined.Refresh, chevron = false) {
         vm.graph.keep {
             vm.graph.settings.update(IntroFlow::again)

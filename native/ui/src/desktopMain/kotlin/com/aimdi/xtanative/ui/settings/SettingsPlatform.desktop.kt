@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.ui.settings
 
 import androidx.compose.runtime.Composable
+import com.aimdi.xtanative.ui.chrome.AppLog
+import com.aimdi.xtanative.ui.chrome.LogsFolder
 import com.aimdi.xtanative.ui.common.FileChoosers
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.settings_download_path
@@ -36,3 +38,9 @@ internal actual fun rememberFolderPicker(onPicked: (stored: String, name: String
     }
 }
 
+
+/** The log [AppLog] keeps, in `$XDG_STATE_HOME/xta-native/logs`. */
+internal actual val logsFolder: String? get() = AppLog.folder().path
+
+/** Through xdg-open, the folder handed as one argument. */
+internal actual fun openLogsFolder(): Boolean = LogsFolder.open()

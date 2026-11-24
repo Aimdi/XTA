@@ -36,6 +36,6 @@ class CommandLineTest {
     fun theVersionLineAndUsageNameWhatTheAppTakes() {
         assertEquals("xta-native 1.2.3", CommandLine.versionLine("1.2.3"))
         assertEquals("xta-native", CommandLine.versionLine(""))
-        listOf("--minimized", "--version", "--help", "URL").forEach { assertTrue(it in CommandLine.usage, it) }
+        listOf("--minimized", "--version", "--help", "URL", "XDG_STATE_HOME/xta-native/logs").forEach { assertTrue(it in CommandLine.usage, it) }
     }
 }

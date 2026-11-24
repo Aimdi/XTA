@@ -41,6 +41,7 @@ import com.aimdi.xtanative.ui.WindowTitles
 import com.aimdi.xtanative.ui.XtaNativeContent
 import com.aimdi.xtanative.ui.appImageLoader
 import com.aimdi.xtanative.ui.appName
+import com.aimdi.xtanative.ui.chrome.AppLog
 import com.aimdi.xtanative.ui.chrome.AppQuit
 import com.aimdi.xtanative.ui.chrome.CommandLine
 import com.aimdi.xtanative.ui.chrome.InstanceMessage
@@ -104,6 +105,8 @@ fun main(args: Array<String>) {
     val files = dataFolder()
     val link = InstanceMessage.linkIn(args)
     val instance = SingleInstance.claim(files, link?.let(InstanceMessage::Open) ?: InstanceMessage.Raise) ?: exitProcess(0)
+    // What the app prints is kept in its log too, once this start is the one that runs: from the menu, nothing reads the terminal.
+    AppLog.install()
     link?.let(DesktopIncomingLinks::hand)
     val raises = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val trayClicks = MutableSharedFlow<TrayAction>(extraBufferCapacity = 4)

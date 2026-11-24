@@ -318,6 +318,7 @@
     <string name="settings_licenses_description">XTA 使用的所有優秀軟體</string>
     <string name="settings_intro_again">再次顯示導覽</string>
     <string name="settings_intro_again_description">重新查看首次啟動時的卡片。</string>
+    <string name="settings_open_logs">開啟記錄檔資料夾</string>
     <string name="settings_ok">確定</string>
     <string name="settings_diagnostics_copy">複製報告</string>
     <string name="settings_diagnostics_copied">診斷已複製到剪貼簿</string>

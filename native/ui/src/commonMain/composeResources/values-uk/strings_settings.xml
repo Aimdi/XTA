@@ -318,6 +318,7 @@
     <string name="settings_licenses_description">Все чудове програмне забезпечення, яке використовує XTA</string>
     <string name="settings_intro_again">Показати вступ знову</string>
     <string name="settings_intro_again_description">Ще раз переглянути картки першого запуску.</string>
+    <string name="settings_open_logs">Відкрити теку журналів</string>
     <string name="settings_ok">Добре</string>
     <string name="settings_diagnostics_copy">Скопіювати звіт</string>
     <string name="settings_diagnostics_copied">Діагностику скопійовано до буфера обміну</string>

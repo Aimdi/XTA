@@ -318,6 +318,7 @@
     <string name="settings_licenses_description">Usio vydatnaje prahramnaje zabiespiačennie, jakoje vykarystoŭvajecca XTA</string>
     <string name="settings_intro_again">Pakazać uvodziny znoŭ</string>
     <string name="settings_intro_again_description">Jašče raz prajści kartki pieršaha zapusku.</string>
+    <string name="settings_open_logs">Adkryć papku žurnałaŭ</string>
     <string name="settings_ok">Dobra</string>
     <string name="settings_diagnostics_copy">Skapijavać spravazdaču</string>
     <string name="settings_diagnostics_copied">Dyjahnostyka skapijavana ŭ bufier abmienu</string>

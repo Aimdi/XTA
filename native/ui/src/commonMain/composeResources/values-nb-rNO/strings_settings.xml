@@ -318,6 +318,7 @@
     <string name="settings_licenses_description">All den flotte programvaren som brukes av XTA</string>
     <string name="settings_intro_again">Vis introduksjonen igjen</string>
     <string name="settings_intro_again_description">Se kortene fra første oppstart på nytt.</string>
+    <string name="settings_open_logs">Åpne loggmappen</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Kopier rapporten</string>
     <string name="settings_diagnostics_copied">Diagnostikk kopiert til utklippstavlen</string>

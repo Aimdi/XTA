@@ -55,5 +55,8 @@ object CommandLine {
         |Files:
         |  ${'$'}XDG_DATA_HOME/xta-native    the app's data (~/.local/share/xta-native)
         |  ${'$'}XDG_CACHE_HOME/xta-native   pictures and other caches (~/.cache/xta-native)
+        |  ${'$'}XDG_STATE_HOME/xta-native/logs
+        |                             the app's log, what it would print here, without
+        |                             cookies or tokens (~/.local/state/xta-native/logs)
         |""".trimMargin()
 }

@@ -318,6 +318,7 @@
     <string name="settings_licenses_description">Tot software-ul excelent utilizat de XTA</string>
     <string name="settings_intro_again">Arată din nou introducerea</string>
     <string name="settings_intro_again_description">Revezi cardurile de la prima pornire.</string>
+    <string name="settings_open_logs">Deschide dosarul de jurnale</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Copiază raportul</string>
     <string name="settings_diagnostics_copied">Diagnosticarea a fost copiată în clipboard</string>

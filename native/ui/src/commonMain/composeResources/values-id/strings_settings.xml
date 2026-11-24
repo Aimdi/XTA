@@ -318,6 +318,7 @@
     <string name="settings_licenses_description">Semua perangkat lunak hebat yang digunakan oleh XTA</string>
     <string name="settings_intro_again">Tampilkan perkenalan lagi</string>
     <string name="settings_intro_again_description">Putar ulang kartu saat pertama kali dibuka.</string>
+    <string name="settings_open_logs">Buka folder log</string>
     <string name="settings_ok">Oke</string>
     <string name="settings_diagnostics_copy">Salin laporan</string>
     <string name="settings_diagnostics_copied">Diagnostik disalin ke papan klip</string>

@@ -62,3 +62,7 @@ internal actual fun rememberFolderPicker(onPicked: (stored: String, name: String
 
 @Composable
 internal actual fun rememberLoginStart(): LoginStart? = null
+
+internal actual val logsFolder: String? = null
+
+internal actual fun openLogsFolder(): Boolean = false

@@ -318,6 +318,7 @@
     <string name="settings_licenses_description">Quackerで使用する偉大なソフトウェア</string>
     <string name="settings_intro_again">イントロをもう一度表示</string>
     <string name="settings_intro_again_description">初回起動時のカードをもう一度見る。</string>
+    <string name="settings_open_logs">ログフォルダーを開く</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">レポートをコピー</string>
     <string name="settings_diagnostics_copied">診断をクリップボードにコピーしました</string>

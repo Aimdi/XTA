@@ -318,6 +318,7 @@
     <string name="settings_licenses_description">Kõik suurepärane tarkvara, mida XTA kasutab</string>
     <string name="settings_intro_again">Näita sissejuhatust uuesti</string>
     <string name="settings_intro_again_description">Vaata esimese käivituse kaardid uuesti läbi.</string>
+    <string name="settings_open_logs">Ava logide kaust</string>
     <string name="settings_ok">Sobib</string>
     <string name="settings_diagnostics_copy">Kopeeri aruanne</string>
     <string name="settings_diagnostics_copied">Diagnostika kopeeriti lõikelauale</string>

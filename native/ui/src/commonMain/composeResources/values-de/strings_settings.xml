@@ -318,6 +318,7 @@
     <string name="settings_licenses_description">All die fantastische Software, die XTA verwendet</string>
     <string name="settings_intro_again">Intro erneut anzeigen</string>
     <string name="settings_intro_again_description">Die Karten vom ersten Start noch einmal durchgehen.</string>
+    <string name="settings_open_logs">Protokollordner öffnen</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Bericht kopieren</string>
     <string name="settings_diagnostics_copied">Diagnose in die Zwischenablage kopiert</string>

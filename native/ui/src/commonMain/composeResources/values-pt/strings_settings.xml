@@ -318,6 +318,7 @@
     <string name="settings_licenses_description">Todo o ótimo software usado por XTA</string>
     <string name="settings_intro_again">Mostrar a introdução outra vez</string>
     <string name="settings_intro_again_description">Rever os cartões do primeiro arranque.</string>
+    <string name="settings_open_logs">Abrir pasta de registos</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Copiar o relatório</string>
     <string name="settings_diagnostics_copied">Diagnóstico copiado para a área de transferência</string>

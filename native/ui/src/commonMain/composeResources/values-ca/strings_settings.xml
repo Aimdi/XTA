@@ -318,6 +318,7 @@
     <string name="settings_licenses_description">Tot el genial programari utilitzat per XTA</string>
     <string name="settings_intro_again">Torna a mostrar la introducció</string>
     <string name="settings_intro_again_description">Torna a veure les targetes del primer inici.</string>
+    <string name="settings_open_logs">Obre la carpeta de registres</string>
     <string name="settings_ok">D'acord</string>
     <string name="settings_diagnostics_copy">Copia l'informe</string>
     <string name="settings_diagnostics_copied">Diagnòstic copiat al porta-retalls</string>
