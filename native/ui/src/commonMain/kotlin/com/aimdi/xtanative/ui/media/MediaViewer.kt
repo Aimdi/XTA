@@ -156,6 +156,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     val posts = LocalPostCache.current
     val items = viewed.items
     val size = rememberPhotoSize()
+    val savesData = savesMobileData()
     val reduced = LocalReducedMotion.current
     val saver = LocalMediaSaver.current
     val links = LocalLinks.current
@@ -271,6 +272,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
                                 zoomKeys = zoomKeys.takeIf { pager.currentPage == page },
                                 onZoomed = { zoomedPages[page] = it },
                                 onTap = { chromeHidden = !chromeHidden },
+                                sharpUrl = SharpPhoto.url(viewed.shownUrl(item, PhotoSize.LARGE), savesData),
                             )
                             XMedia.Kind.VIDEO, XMedia.Kind.GIF -> {
                                 val download: ((String) -> Unit)? = if (saver == null) null else { url -> viewed.save(viewed.pages[page], url)?.let(saver::save) }

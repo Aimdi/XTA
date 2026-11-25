@@ -80,3 +80,11 @@ class SeekTimeTest {
         assertEquals(0, SeekTime.left(0.5f, barWidth = 0, labelWidth = 100), "before the bar is measured")
     }
 }
+
+class SharpPhotoTest {
+    @Test
+    fun aZoomedPhotoIsReadLargerUnlessDataIsSaved() {
+        assertEquals("https://pbs.twimg.com/media/a?format=jpg&name=large", SharpPhoto.url("https://pbs.twimg.com/media/a?format=jpg&name=large", savesData = false))
+        assertEquals(null, SharpPhoto.url("https://pbs.twimg.com/media/a?format=jpg&name=large", savesData = true))
+    }
+}

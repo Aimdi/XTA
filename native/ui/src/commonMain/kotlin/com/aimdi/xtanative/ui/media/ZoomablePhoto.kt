@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_media
 import kotlinx.coroutines.Job
@@ -72,6 +74,7 @@ internal fun ZoomablePhoto(
     zoomKeys: Flow<ViewerKey>? = null,
     onZoomed: (Boolean) -> Unit = {},
     onTap: () -> Unit = {},
+    sharpUrl: String? = null,
 ) {
     var scale by remember { mutableFloatStateOf(1f) }
     var area by remember { mutableStateOf(IntSize.Zero) }
@@ -118,7 +121,15 @@ internal fun ZoomablePhoto(
     }
     // The viewer reads the arrows as moving about the photo while it is zoomed in.
     val zoomedNow by rememberUpdatedState(onZoomed)
-    LaunchedEffect(Unit) { snapshotFlow { ViewerZoom.zoomed(scale) }.collect { zoomedNow(it) } }
+    // Once zoomed into, the photo is read again larger ([sharpUrl]) and laid over the fitted one when it has come.
+    var sharpWanted by remember(sharpUrl) { mutableStateOf(false) }
+    var sharpLoaded by remember(sharpUrl) { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        snapshotFlow { ViewerZoom.zoomed(scale) }.collect {
+            zoomedNow(it)
+            if (it) sharpWanted = true
+        }
+    }
 
     Box(
         Modifier
@@ -226,11 +237,42 @@ internal fun ZoomablePhoto(
                     translationY = shift.y + slide
                 },
         )
+        if (sharpWanted && sharpUrl != null && !failed) {
+            val context = LocalPlatformContext.current
+            AsyncImage(
+                model = remember(sharpUrl, context) { ImageRequest.Builder(context).data(sharpUrl).size(SharpPhoto.PIXELS).build() },
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                onState = { state -> sharpLoaded = state is AsyncImagePainter.State.Success },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        alpha = if (sharpLoaded) 1f else 0f
+                        scaleX = scale
+                        scaleY = scale
+                        translationX = shift.x
+                        translationY = shift.y + slide
+                    },
+            )
+        }
         when {
             failed -> Icon(ReaderIcons.BrokenImage, stringResource(Res.string.reader_media), tint = Color.White.copy(alpha = 0.7f), modifier = Modifier.size(32.dp))
             loading -> CircularProgressIndicator(Modifier.padding(12.dp).size(24.dp), color = Color.White, strokeWidth = 2.dp)
         }
     }
+}
+
+/**
+ * The larger reading of a photo the viewer lays over the fitted one once it
+ * is zoomed into: a fitted photo is decoded at the screen's size, which
+ * four times magnified shows its pixels.
+ */
+internal object SharpPhoto {
+    /** The longest side the larger reading is decoded at: sharp at any zoom the viewer allows, and a bitmap a phone holds easily. */
+    const val PIXELS = 2560
+
+    /** The address read once zoomed in, [large] being the photo at its large size; none while data is saved on a metered network. */
+    fun url(large: String, savesData: Boolean): String? = large.takeUnless { savesData }
 }
 
 /** XTA's quick motion, in milliseconds (motion.dart's kXtaMotionFast). */
