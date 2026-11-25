@@ -68,8 +68,8 @@ import org.jetbrains.compose.resources.stringResource
  * ([HomeWide]), with the bar's pages ([pages]) under the account and
  * nothing to close ([onClose] null). The row of the screen shown beside it
  * ([current], its route), or of the group shown ([currentGroup], its id),
- * is marked as the bar's page is; [marked] goes on the marked screen's row
- * (the focus F6 gives it).
+ * is marked as the bar's page is; [marked] goes on the marked screen's or
+ * group's row (the focus F6 gives it).
  */
 @Composable
 internal fun AccountMenu(
@@ -117,7 +117,8 @@ internal fun AccountMenu(
             }
         }
         items(shown, key = { "group-" + it.id }) { group ->
-            GroupRow(group, HomeTab.Group(group.id, group.name).key in unread, selected = group.id == currentGroup) { onGroup(group) }
+            val selected = group.id == currentGroup
+            GroupRow(group, HomeTab.Group(group.id, group.name).key in unread, selected, modifier = if (selected) marked else Modifier) { onGroup(group) }
         }
     }
 }
@@ -175,8 +176,8 @@ private fun GroupsHeader(count: Int, query: String, onQuery: (String) -> Unit) {
 
 /** A group: its mark (with the unread dot), name and size; pinned groups say so. */
 @Composable
-private fun GroupRow(group: FollowGroup, unread: Boolean, selected: Boolean, onClick: () -> Unit) {
-    NavRowFrame(selected = selected, onClick = onClick, shape = NavRowTallShape, minHeight = 64.dp, modifier = Modifier.padding(vertical = 2.dp)) {
+private fun GroupRow(group: FollowGroup, unread: Boolean, selected: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    NavRowFrame(selected = selected, onClick = onClick, shape = NavRowTallShape, minHeight = 64.dp, modifier = Modifier.padding(vertical = 2.dp).then(modifier)) {
         UnreadDot(unread) { GroupMark(group, 40.dp) }
         Column(Modifier.weight(1f)) {
             TipText(group.name, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)

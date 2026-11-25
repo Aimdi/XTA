@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.focusProperties
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -873,7 +874,8 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Com
     var menu by remember { mutableStateOf(false) }
     val stack by nav.currentBackStack.collectAsStateWithLifecycle()
     val visible by nav.visibleEntries.collectAsStateWithLifecycle()
-    val home = stack.lastOrNull { it.destination.route == Routes.HOME }
+    // Home's place as it goes (popped, its model cleared) is no longer one the frame reads Home's model from.
+    val home = stack.lastOrNull { it.destination.route == Routes.HOME }?.takeIf { it.lifecycle.currentState != Lifecycle.State.DESTROYED }
     // A row clicked keeps no focus: the keys go back to the screen beside the column, its reading keys at work at once.
     val leaveRow = rememberLeaveField()
     BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -881,7 +883,7 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Com
         val viewer = visible.any { it.destination.route in FULL_WINDOW }
         val deckFits = DeckGroups.fits(maxWidth.value, minOf(maxWidth, maxHeight).value)
         val screens = stack.map { entry -> FrameRoute(entry.destination.route, entry.text("id")?.takeIf { entry.destination.route == Routes.GROUP }) }
-        val calls = frameCalls(nav, frame, routes, leaveRow)
+        val calls = remember(nav, frame, routes, leaveRow) { frameCalls(nav, frame, routes, leaveRow) }
         val railMenu = menu && kind == FrameKind.RAIL
         SideEffect {
             frame.inset = HomeWide.inset(kind)
@@ -907,14 +909,14 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Com
         }
         if (home != null) {
             // Closed by Esc, its X or the scrim, the keys go back to the rail's menu button; a row picked leads on to its screen.
-            val hide = { menu = false }
+            val hide = remember { { menu = false } }
             val close = {
                 hide()
                 runCatching { focus.menu.requestFocus() }
                 Unit
             }
             RailMenu(railMenu, onClose = close) {
-                FramedSidebar(home, frame, screens, Routes.HOME, deckFits, routes, calls.after(hide), onClose = close)
+                FramedSidebar(home, frame, screens, Routes.HOME, deckFits, routes, remember(calls) { calls.after(hide) }, onClose = close)
             }
         }
     }
