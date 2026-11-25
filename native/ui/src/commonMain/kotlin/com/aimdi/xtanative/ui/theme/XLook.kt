@@ -66,6 +66,9 @@ data class XLookScheme(
     val outline: Long,
     /** An on switch's knob on [primary]: white as X draws it, black where white would not stand out. */
     val onSwitch: Long,
+    /** A loading placeholder's block at the darkest of its pulse ([boneHighlight] the other end): seen on the page in every theme. */
+    val bone: Long,
+    val boneHighlight: Long,
 )
 
 /** The theme the settings ask for (main.dart, x_look_theme.dart). */
@@ -76,6 +79,15 @@ object XLook {
 
     /** WCAG's least contrast for a control's edge or a knob: 3:1. */
     const val NON_TEXT = 3.0
+
+    /**
+     * How much of the text colour a loading placeholder's blocks take, at
+     * either end of their pulse: the page's own containers were as light as
+     * Light's page (and Dim's), so the blocks faded out and loading looked
+     * like a blank page.
+     */
+    private const val BONE = 0.14
+    private const val BONE_HIGHLIGHT = 0.08
 
     /**
      * The colour [accent] stands for: its own, or for [ThemeAccent.SYSTEM] the
@@ -163,6 +175,8 @@ object XLook {
             onAccentFill = Contrast.foreground(tokens.accent),
             outline = Contrast.ensure(Contrast.ensure(tokens.outline, tokens.background, NON_TEXT), floating, NON_TEXT),
             onSwitch = if (Contrast.ratio(WHITE, readableAccent) >= NON_TEXT) WHITE else BLACK,
+            bone = Contrast.alphaBlend(Contrast.withAlpha(tokens.onBackground, BONE), tokens.background),
+            boneHighlight = Contrast.alphaBlend(Contrast.withAlpha(tokens.onBackground, BONE_HIGHLIGHT), tokens.background),
         )
     }
 

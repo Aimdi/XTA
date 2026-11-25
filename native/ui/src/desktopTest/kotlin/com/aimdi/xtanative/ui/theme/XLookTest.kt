@@ -124,4 +124,14 @@ class XLookTest {
         assertEquals(0xFFFFFFFF, XLook.scheme(XLookTokens.LIGHTS_OUT).onSwitch)
         assertEquals(0xFF000000, XLook.scheme(XLook.tokens(settings(ThemeBackground.DIM, ThemeAccent.YELLOW), systemDark = true)).onSwitch)
     }
+
+    @Test
+    fun aLoadingPlaceholderIsSeenOnEveryPage() {
+        for (tokens in listOf(XLookTokens.LIGHT, XLookTokens.DIM, XLookTokens.LIGHTS_OUT)) {
+            val scheme = XLook.scheme(tokens)
+            assertTrue(Contrast.ratio(scheme.bone, tokens.background) >= 1.25, "bone on ${tokens.background}")
+            assertTrue(Contrast.ratio(scheme.boneHighlight, tokens.background) >= 1.1, "highlight on ${tokens.background}")
+            assertTrue(Contrast.ratio(scheme.bone, tokens.background) > Contrast.ratio(scheme.boneHighlight, tokens.background), "the pulse moves")
+        }
+    }
 }

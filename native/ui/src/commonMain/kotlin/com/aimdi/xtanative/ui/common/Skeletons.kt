@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -35,6 +34,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.theme.LocalXLook
 
 /**
  * Placeholder posts while a feed's first page loads (XTA's TweetFeedSkeleton):
@@ -69,8 +69,8 @@ fun PostSkeleton(modifier: Modifier = Modifier) {
 @Composable
 fun RowSkeleton(modifier: Modifier = Modifier, count: Int = 6, picture: Shape = CircleShape, pictureSize: Dp = 40.dp) {
     val pulse = rememberSkeletonPulse()
-    val base = MaterialTheme.colorScheme.surfaceContainerHighest
-    val highlight = MaterialTheme.colorScheme.surfaceContainerHigh
+    val base = Color(LocalXLook.current.bone)
+    val highlight = Color(LocalXLook.current.boneHighlight)
     val color = lerp(base, highlight, pulse.value)
     Column(modifier.fillMaxWidth().padding(top = 4.dp)) {
         repeat(count) {
@@ -95,8 +95,8 @@ fun RowSkeleton(modifier: Modifier = Modifier, count: Int = 6, picture: Shape = 
 @Composable
 fun GridSkeleton(modifier: Modifier = Modifier, count: Int = 9, columns: Int = 3) {
     val pulse = rememberSkeletonPulse()
-    val base = MaterialTheme.colorScheme.surfaceContainerHighest
-    val highlight = MaterialTheme.colorScheme.surfaceContainerHigh
+    val base = Color(LocalXLook.current.bone)
+    val highlight = Color(LocalXLook.current.boneHighlight)
     val across = columns.coerceAtLeast(1)
     Column(modifier.fillMaxWidth().padding(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         repeat(SkeletonGrid.rows(count, across)) { row ->
@@ -138,8 +138,8 @@ private fun rememberSkeletonPulse(): State<Float> {
 
 @Composable
 private fun PostSkeletonBones(pulse: State<Float>) {
-    val base = MaterialTheme.colorScheme.surfaceContainerHighest
-    val highlight = MaterialTheme.colorScheme.surfaceContainerHigh
+    val base = Color(LocalXLook.current.bone)
+    val highlight = Color(LocalXLook.current.boneHighlight)
     val value by pulse
     val color = lerp(base, highlight, value)
     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
