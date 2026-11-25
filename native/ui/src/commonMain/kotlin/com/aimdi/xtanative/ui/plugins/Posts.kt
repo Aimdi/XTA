@@ -1,6 +1,9 @@
 package com.aimdi.xtanative.ui.plugins
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -56,6 +59,7 @@ import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.data.plugins.keepable
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.HitArea
 import com.aimdi.xtanative.ui.common.RollingCount
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
@@ -566,7 +570,16 @@ internal fun CountButton(
     onClick: (() -> Unit)?,
 ) {
     val clickable = if (onClick != null) {
-        Modifier.clip(CircleShape).onSecondaryClickIf(onLongClick).combinedClickable(role = Role.Button, onClick = onClick, onLongClick = onLongClick).padding(4.dp)
+        // The press reaches a little past the glyph and its number (HitArea), while its ripple stays on them.
+        val hit = remember { HitArea() }
+        val presses = remember { MutableInteractionSource() }
+        hit.outer
+            .onSecondaryClickIf(onLongClick)
+            .combinedClickable(presses, indication = null, role = Role.Button, onClick = onClick, onLongClick = onLongClick)
+            .then(hit.inner)
+            .clip(CircleShape)
+            .indication(presses, LocalIndication.current)
+            .padding(4.dp)
     } else {
         Modifier
     }
