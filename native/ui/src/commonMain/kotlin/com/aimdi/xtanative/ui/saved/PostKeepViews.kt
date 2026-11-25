@@ -5,6 +5,12 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.ui.graphics.graphicsLayer
+import com.aimdi.xtanative.ui.common.HeartBurstMotion
+import com.aimdi.xtanative.ui.common.HitArea
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -154,28 +160,52 @@ internal fun KeepableSaveButton(item: Keepable, modifier: Modifier, tint: Color)
 @Composable
 internal fun KeepableSaveButton(id: String, modifier: Modifier, tint: Color, item: () -> Keepable) {
     val keeper = LocalKeeper.current
-    val saved = savedHere(id)
+    // Drawn as tapped at once, as the heart is, before the save is written.
+    val switch = rememberOptimistic(id, savedHere(id))
+    val saved = switch.shown
     var sheetFor by remember { mutableStateOf<Keepable?>(null) }
     val label = stringResource(if (saved) Res.string.saved_unsave else Res.string.saved_save_here)
+    // A save lands with the heart's little pop, unless motion is reduced or calm or zen mode keeps actions quiet.
+    val pop = remember { Animatable(1f) }
+    val scope = rememberCoroutineScope()
+    val still = LocalReducedMotion.current || quietActions()
+    val hit = remember { HitArea() }
+    val presses = remember { MutableInteractionSource() }
     Box(
         modifier
-            .size(40.dp)
-            .clip(CircleShape)
+            .then(hit.outer)
             // A right-click picks the folder, as a long press does.
             .onSecondaryClick { sheetFor = item() }
             .combinedClickable(
                 role = Role.Button,
                 onClickLabel = label,
-                onClick = { Keeping.toggleSave(keeper, item()) },
+                indication = null,
+                interactionSource = presses,
+                onClick = {
+                    if (!saved && !still) scope.launch {
+                        pop.snapTo(0f)
+                        pop.animateTo(1f, tween(BOOKMARK_POP_MILLIS, easing = LinearEasing))
+                    }
+                    switch.tap()
+                    Keeping.toggleSave(keeper, item())
+                },
                 onLongClick = { sheetFor = item() },
-            ),
+            )
+            .then(hit.inner)
+            .size(40.dp)
+            .clip(CircleShape)
+            .indication(presses, LocalIndication.current),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
             if (saved) SavedIcons.Bookmark else SavedIcons.BookmarkBorder,
             contentDescription = label,
             tint = if (saved) MaterialTheme.colorScheme.primary else tint.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant },
-            modifier = Modifier.size(19.dp),
+            modifier = Modifier.size(19.dp).graphicsLayer {
+                val scale = if (pop.value >= 1f) 1f else HeartBurstMotion.popScale(pop.value)
+                scaleX = scale
+                scaleY = scale
+            },
         )
     }
     sheetFor?.let { item -> SaveSheet(item) { sheetFor = null } }
@@ -189,7 +219,8 @@ internal fun KeepableSaveButton(id: String, modifier: Modifier, tint: Color, ite
 @Composable
 internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, count: Long) {
     val keeper = LocalKeeper.current
-    val liked = likedHere(post.shown.id)
+    val switch = rememberOptimistic(post.shown.id, likedHere(post.shown.id))
+    val liked = switch.shown
     val label = stringResource(if (liked) Res.string.saved_unlike else Res.string.saved_like)
     val rest = tint.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant }
     val active = MaterialTheme.colorScheme.primary
@@ -217,10 +248,14 @@ internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, coun
                 burst.snapTo(0f)
                 if (!liked && !still) burst.animateTo(1f, tween(HEART_BURST_MILLIS, easing = LinearEasing))
             }
+            switch.tap()
             Keeping.toggleLike(keeper, Keepable.of(post))
         }
     }
 }
+
+/** How long a save's pop takes: the second half of the heart's, where it lands. */
+private const val BOOKMARK_POP_MILLIS = HEART_BURST_MILLIS * 55 / 100
 
 /** Calm or zen mode is on, which keep actions quiet (XTA's quietActions). */
 @Composable
