@@ -45,7 +45,7 @@ class XtaNativeApp : Application(), SingletonImageLoader.Factory {
         plugins = if (catalogue != null) AppPlugins(filesDir, graph, androidPlugins(this), catalogue) else AppPlugins(filesDir, graph, androidPlugins(this))
         graph.start()
         plugins.start()
-        DownloadNotifications(this, graph.downloads.state).start()
+        DownloadNotifications(this, graph.downloads).start()
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader = appImageLoader(context)

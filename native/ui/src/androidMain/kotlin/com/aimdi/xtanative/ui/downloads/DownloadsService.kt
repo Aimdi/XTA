@@ -11,8 +11,11 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
-import com.aimdi.xtanative.store.downloads.DownloadCenterState
+import android.content.BroadcastReceiver
+import android.graphics.drawable.Icon
+import com.aimdi.xtanative.store.downloads.DownloadQueue
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.links.LauncherShortcut
 import com.aimdi.xtanative.ui.generated.resources.downloads_downloading
 import com.aimdi.xtanative.ui.generated.resources.downloads_title
@@ -21,7 +24,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -33,10 +35,10 @@ import org.jetbrains.compose.resources.getString
  * [DownloadsService] is in the foreground with it, so leaving the app does
  * not stall the files still arriving (Android freezes a process nobody
  * sees), and the notification says how far they are. It goes when the last
- * one ends. Where Android shows no notification (13 and later, until the
+ * one ends, or its Cancel stops them all. Where Android shows no notification (13 and later, until the
  * reader allows them) the service still keeps the downloads going.
  */
-class DownloadNotifications(private val context: Context, private val state: StateFlow<DownloadCenterState>) {
+class DownloadNotifications(private val context: Context, private val queue: DownloadQueue) {
     private val manager: NotificationManager? = context.getSystemService(NotificationManager::class.java)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var channel = false
@@ -52,8 +54,9 @@ class DownloadNotifications(private val context: Context, private val state: Sta
 
     /** Follows the downloads from now on; a new notice at most every [UPDATE_MILLIS], the last one always shown. */
     fun start() {
+        cancelAll = { scope.launch { queue.state.value.entries.filter { it.canCancel }.forEach { queue.cancel(it.id) } } }
         scope.launch {
-            state.map(DownloadNotices::of).distinctUntilChanged().conflate().collect { notice ->
+            queue.state.map(DownloadNotices::of).distinctUntilChanged().conflate().collect { notice ->
                 try {
                     if (notice == null) hide() else show(notice)
                 } catch (e: CancellationException) {
@@ -100,6 +103,7 @@ class DownloadNotifications(private val context: Context, private val state: Sta
             .setNumber(notice.count)
             .setProgress(100, notice.percent ?: 0, notice.percent == null)
             .setContentIntent(openApp)
+            .addAction(Notification.Action.Builder(Icon.createWithResource(context, android.R.drawable.ic_menu_close_clear_cancel), getString(Res.string.cancel), DownloadsCancel.intent(context)).build())
             .setCategory(Notification.CATEGORY_PROGRESS)
             .setShowWhen(false)
             .setOnlyAlertOnce(true)
@@ -123,6 +127,22 @@ class DownloadNotifications(private val context: Context, private val state: Sta
         /** What the service goes into the foreground with as it starts; null once nothing downloads. */
         @Volatile
         var latest: Notification? = null
+
+        /** Stops every download that can be stopped; set once the downloads are followed. */
+        @Volatile
+        var cancelAll: (() -> Unit)? = null
+    }
+}
+
+/** The notification's Cancel: every download running or waiting is stopped, as its own Cancel in the list stops one. */
+class DownloadsCancel : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        DownloadNotifications.cancelAll?.invoke()
+    }
+
+    internal companion object {
+        fun intent(context: Context): PendingIntent =
+            PendingIntent.getBroadcast(context, 0, Intent(context, DownloadsCancel::class.java), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
     }
 }
 

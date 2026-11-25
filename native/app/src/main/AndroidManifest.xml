@@ -128,6 +128,10 @@
             android:name="com.aimdi.xtanative.ui.downloads.DownloadsService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
+        <!-- The downloads notification's Cancel. -->
+        <receiver
+            android:name="com.aimdi.xtanative.ui.downloads.DownloadsCancel"
+            android:exported="false" />
         <receiver
             android:name="com.aimdi.xtanative.ui.media.PlaybackButtons"
             android:exported="true">
