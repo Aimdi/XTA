@@ -20,7 +20,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,6 +40,7 @@ import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.Problem
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.PostSkeleton
@@ -199,7 +199,7 @@ fun QuotesScreen(id: String, reposters: Boolean, actions: PostActions, onBack: (
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
+            ColumnTopAppBar(
                 title = {
                     TabRow(selectedTabIndex = pager.currentPage, containerColor = MaterialTheme.colorScheme.background, divider = {}) {
                         listOf(Res.string.posts_quotes, Res.string.posts_retweets).forEachIndexed { index, label ->

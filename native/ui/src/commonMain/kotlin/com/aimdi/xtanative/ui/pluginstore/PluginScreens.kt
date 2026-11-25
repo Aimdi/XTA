@@ -163,7 +163,7 @@ fun PluginSettingsScreen(id: String, onBack: () -> Unit) {
     val plugin = runningPlugin(id)?.plugin
     val language = currentLanguage()
     val title = plugin?.let { runCatching { it.settingsTitle(language) }.getOrNull() ?: it.title(language) } ?: id
-    PluginScaffold(title = title, onBack = onBack) { padding ->
+    PluginScaffold(title = title, onBack = onBack, column = SETTINGS_MAX_WIDTH) { padding ->
         val body = plugin?.settings
         // As the app's own settings pages: a readable column in a wide window, not rows across the screen.
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()), contentAlignment = Alignment.TopCenter) {

@@ -45,7 +45,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,6 +55,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
@@ -97,13 +97,14 @@ internal fun SettingsPage(
         snackbarHost = { if (snackbar != null) SnackbarHost(snackbar) },
         floatingActionButton = floating,
         topBar = {
-            TopAppBar(
+            ColumnTopAppBar(
                 title = { TipText(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = {
                     IconTip(stringResource(Res.string.settings_back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.settings_back)) } }
                 },
                 actions = actions,
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+                column = SETTINGS_MAX_WIDTH,
             )
         },
     ) { padding ->

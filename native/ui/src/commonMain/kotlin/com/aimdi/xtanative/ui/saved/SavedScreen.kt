@@ -46,7 +46,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -80,6 +79,7 @@ import com.aimdi.xtanative.store.saved.SavedSort
 import com.aimdi.xtanative.store.saved.SavedSource
 import com.aimdi.xtanative.store.saved.SavedTabs
 import com.aimdi.xtanative.ui.common.ActionsInTopBar
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.TipText
@@ -318,7 +318,7 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
 @Composable
 private fun TitleBar(notice: SavedNotice, onBack: (() -> Unit)?, searchable: Boolean, onWrite: () -> Unit, onMenu: (SavedMenuAction) -> Unit) {
     val noticeText = onDeviceText(notice)
-    TopAppBar(
+    ColumnTopAppBar(
         navigationIcon = {
             if (onBack != null) IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
         },
@@ -374,7 +374,7 @@ private fun SavedMenu(searchable: Boolean, onMenu: (SavedMenuAction) -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SelectionBar(count: Int, allSelected: Boolean, onClose: () -> Unit, onSelectAll: () -> Unit, onMove: () -> Unit, onRemove: () -> Unit) {
-    TopAppBar(
+    ColumnTopAppBar(
         navigationIcon = { IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } } },
         title = { Text(if (count == 0) stringResource(Res.string.saved_none_selected) else pluralStringResource(Res.plurals.saved_selected, count, count)) },
         actions = {

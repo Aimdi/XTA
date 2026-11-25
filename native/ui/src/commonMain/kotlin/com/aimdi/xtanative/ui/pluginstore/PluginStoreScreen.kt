@@ -204,6 +204,7 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
     PluginScaffold(
         title = stringResource(Res.string.plugin_store),
         onBack = onBack,
+        column = STORE_COLUMN,
         actions = {
             ShowPrivateMenu(store.showPrivate) { show -> scope.launch { plugins.showPrivate(show) } }
             IconTip(stringResource(Res.string.retry)) { IconButton(onClick = { scope.launch { plugins.manager.refresh() } }, enabled = !store.catalogue.refreshing) {

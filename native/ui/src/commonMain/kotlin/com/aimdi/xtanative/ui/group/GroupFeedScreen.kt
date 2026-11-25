@@ -24,7 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,6 +40,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.feed.ContentFilter
 import com.aimdi.xtanative.core.feed.FeedSort
 import com.aimdi.xtanative.ui.common.BackHandling
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
+import com.aimdi.xtanative.ui.common.InBarColumn
 import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
@@ -170,7 +171,7 @@ private fun GroupTopBar(
     onRank: (() -> Unit)? = null,
 ) {
     var menu by remember { mutableStateOf(false) }
-    TopAppBar(
+    ColumnTopAppBar(
         navigationIcon = {
             if (onBack != null) IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
         },
@@ -258,24 +259,27 @@ private fun ControlBar(
     onDiscover: (Boolean) -> Unit,
     onMedia: () -> Unit,
 ) {
-    Row(
-        Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (chips.discovering) {
-            DiscoverChip(selected = true) { onDiscover(false) }
-        } else {
-            OrderChips(state, onSort)
-            DiscoverChip(selected = false) { onDiscover(true) }
-            MediaChip(chips.mediaOnly, onMedia)
-            state.contentChip?.let { filter ->
-                FlatFilterChip(
-                    selected = true,
-                    onClick = onCustom,
-                    label = { Text(contentFilterLabel(filter)) },
-                    leadingIcon = { Icon(GroupIcons.FilterAltOutlined, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                )
+    // Under the bar, in the column its contents and the posts stand in.
+    InBarColumn {
+        Row(
+            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (chips.discovering) {
+                DiscoverChip(selected = true) { onDiscover(false) }
+            } else {
+                OrderChips(state, onSort)
+                DiscoverChip(selected = false) { onDiscover(true) }
+                MediaChip(chips.mediaOnly, onMedia)
+                state.contentChip?.let { filter ->
+                    FlatFilterChip(
+                        selected = true,
+                        onClick = onCustom,
+                        label = { Text(contentFilterLabel(filter)) },
+                        leadingIcon = { Icon(GroupIcons.FilterAltOutlined, contentDescription = null, modifier = Modifier.size(18.dp)) },
+                    )
+                }
             }
         }
     }

@@ -34,7 +34,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,6 +54,7 @@ import com.aimdi.xtanative.services.speech.VoiceFailure
 import com.aimdi.xtanative.services.speech.VoiceInstall
 import com.aimdi.xtanative.services.util.formatByteSize
 import com.aimdi.xtanative.ui.common.CenteredPage
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
@@ -104,6 +104,7 @@ import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.media.ReaderIcons
 import com.aimdi.xtanative.ui.theme.xSwitchColors
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.settings.SETTINGS_MAX_WIDTH
 import com.aimdi.xtanative.ui.settings.isDesktop
 
 /** Settings › Accessibility › Read aloud as its own screen (TtsSettingsScreen). */
@@ -114,10 +115,11 @@ fun VoiceSettingsScreen(onBack: () -> Unit) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
+            ColumnTopAppBar(
                 title = { Text(stringResource(Res.string.reader_speech_title)) },
                 navigationIcon = { IconTip(stringResource(Res.string.reader_back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.reader_back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+                column = SETTINGS_MAX_WIDTH,
             )
         },
     ) { padding ->
