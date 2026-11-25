@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.group
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -61,12 +62,14 @@ import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.Motion
 import com.aimdi.xtanative.ui.common.PostSkeleton
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.ReadFailureNotice
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.dialogDefault
+import com.aimdi.xtanative.ui.common.itemMotion
 import com.aimdi.xtanative.ui.common.readFailureText
 import com.aimdi.xtanative.ui.common.savedAtText
 import com.aimdi.xtanative.ui.common.scrollToTop
@@ -211,10 +214,15 @@ fun GroupFeedBody(
         }
         SourceLoadingHairline(plugin.loading, Modifier.align(Alignment.TopCenter))
         Column(Modifier.align(Alignment.TopCenter).padding(top = 12.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (state.unrelatedNotice) UnrelatedPill(vm)
-            if (progress.canRetry) RetryPill(progress.answered, progress.total, vm::retryFailed)
-            if (plugin.newHeld > 0) {
-                NewPostsPill(plugin.newHeld) {
+            AnimatedVisibility(state.unrelatedNotice, enter = Motion.popEnter(reduced), exit = Motion.popExit(reduced)) { UnrelatedPill(vm) }
+            AnimatedVisibility(progress.canRetry, enter = Motion.popEnter(reduced), exit = Motion.popExit(reduced)) {
+                RetryPill(progress.answered, progress.total, vm::retryFailed)
+            }
+            // The count the pill said, while it goes once the posts are shown.
+            val held = remember { intArrayOf(0) }
+            if (plugin.newHeld > 0) held[0] = plugin.newHeld
+            AnimatedVisibility(plugin.newHeld > 0, enter = Motion.popEnter(reduced), exit = Motion.popExit(reduced)) {
+                NewPostsPill(held[0]) {
                     scope.launch { list.scrollToTop(reduced) }
                     vm.revealPlugins()
                 }
@@ -243,13 +251,16 @@ private fun FeedList(state: GroupFeedUi, vm: GroupFeedViewModel, actions: PostAc
         if (post != null) PluginPostRow(post, mixed.plugins[post.source]) else byKey[key]?.let { draw(it) }
     }
     val divider = run.divider
+    val reduced = LocalReducedMotion.current
     WithReadingColumn(contentPadding, list) { padding ->
         LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
             run.stale?.let { stale -> item(key = "stale", contentType = "notice") { StaleNotice(stale, run.savedAt, vm) } }
             itemsIndexed(threads, key = { _, thread -> thread.id }, contentType = { _, _ -> "thread" }) { index, thread ->
-                if (index == divider) CaughtUpDivider()
-                Placed(mixed.buckets, index, mixed.plugins, layout, posts, drawKey) {
-                    FeedThreadRow(layout.ofThread(index, thread), thread, actions, drawKey) { draw(thread) }
+                Column(itemMotion(reduced)) {
+                    if (index == divider) CaughtUpDivider()
+                    Placed(mixed.buckets, index, mixed.plugins, layout, posts, drawKey) {
+                        FeedThreadRow(layout.ofThread(index, thread), thread, actions, drawKey) { draw(thread) }
+                    }
                 }
             }
             item(key = "footer", contentType = "footer") {

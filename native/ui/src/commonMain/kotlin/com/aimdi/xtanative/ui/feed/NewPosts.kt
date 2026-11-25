@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.new_posts
@@ -35,10 +34,10 @@ internal fun NewPostsPill(count: Int, onClick: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Filled.KeyboardArrowUp, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+        Icon(Icons.Filled.KeyboardArrowUp, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(18.dp))
         Text(
             pluralStringResource(Res.plurals.new_posts, count, count),
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onPrimary,
             style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(start = 4.dp),
         )
