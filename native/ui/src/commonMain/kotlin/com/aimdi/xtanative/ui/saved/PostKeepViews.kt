@@ -5,7 +5,6 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.ui.graphics.graphicsLayer
@@ -18,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -194,7 +194,8 @@ internal fun KeepableSaveButton(id: String, modifier: Modifier, tint: Color, ite
             .then(hit.inner)
             .size(40.dp)
             .clip(CircleShape)
-            .indication(presses, LocalIndication.current),
+            // Lit in the accent under the pointer, as a saved bookmark is drawn, rather than in a neutral grey.
+            .indication(presses, ripple(color = MaterialTheme.colorScheme.primary)),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
@@ -243,14 +244,16 @@ internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, coun
             label = label,
             tint = if (liked) active else rest,
             onLongClick = null,
-        ) {
-            scope.launch {
-                burst.snapTo(0f)
-                if (!liked && !still) burst.animateTo(1f, tween(HEART_BURST_MILLIS, easing = LinearEasing))
-            }
-            switch.tap()
-            Keeping.toggleLike(keeper, Keepable.of(post))
-        }
+            onClick = {
+                scope.launch {
+                    burst.snapTo(0f)
+                    if (!liked && !still) burst.animateTo(1f, tween(HEART_BURST_MILLIS, easing = LinearEasing))
+                }
+                switch.tap()
+                Keeping.toggleLike(keeper, Keepable.of(post))
+            },
+            hue = active,
+        )
     }
 }
 

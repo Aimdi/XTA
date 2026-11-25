@@ -26,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
@@ -558,7 +560,13 @@ fun NetworkCount(
     onClick: (() -> Unit)? = null,
 ) = CountButton({ Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(17.dp)) }, n, label, tint, onLongClick, onClick)
 
-/** [NetworkCount] with a [glyph] of its own, as the device's like draws its heart burst; its number rolls as it changes ([RollingCount]). */
+/**
+ * [NetworkCount] with a [glyph] of its own, as the device's like draws its
+ * heart burst; its number rolls as it changes ([RollingCount]). [hue], where
+ * given, colours its ripple, so the pointer resting on it lights it faintly
+ * in what it does (X's footer: the like's colour, the repost's green), not
+ * in a neutral grey.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun CountButton(
@@ -568,6 +576,7 @@ internal fun CountButton(
     tint: Color,
     onLongClick: (() -> Unit)?,
     onClick: (() -> Unit)?,
+    hue: Color = Color.Unspecified,
 ) {
     val clickable = if (onClick != null) {
         // The press reaches a little past the glyph and its number (HitArea), while its ripple stays on them.
@@ -578,7 +587,7 @@ internal fun CountButton(
             .combinedClickable(presses, indication = null, role = Role.Button, onClick = onClick, onLongClick = onLongClick)
             .then(hit.inner)
             .clip(CircleShape)
-            .indication(presses, LocalIndication.current)
+            .indication(presses, if (hue.isSpecified) ripple(color = hue) else LocalIndication.current)
             .padding(4.dp)
     } else {
         Modifier

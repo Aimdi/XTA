@@ -81,6 +81,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_translation_too_many
 import com.aimdi.xtanative.ui.generated.resources.posts_translation_unsupported
 import com.aimdi.xtanative.ui.generated.resources.posts_views_count
 import com.aimdi.xtanative.ui.generated.resources.saved_note_quote
+import com.aimdi.xtanative.ui.plugins.CountButton
 import com.aimdi.xtanative.ui.plugins.NetworkCount
 import com.aimdi.xtanative.ui.profile.AuthorGroupsSheet
 import com.aimdi.xtanative.ui.saved.KeepNotice
@@ -162,14 +163,15 @@ private fun rememberFooterFit(available: Dp, labels: FooterLabels): FooterFit {
 private fun FooterCountItems(post: XPost, actions: PostActions, counts: FooterCounts, views: Long?, onNote: () -> Unit) {
     val scope = postScope()
     var quoteMenu by remember { mutableStateOf(false) }
-    NetworkCount(
+    FooterCount(
         XIcons.Reply,
         counts.replies ?: 0,
         stringResource(Res.string.posts_open_post),
+        MaterialTheme.colorScheme.primary,
         onLongClick = { scope.revealReplies?.invoke() ?: actions.openPost(post.id) },
     ) { actions.openPost(post.id) }
     Box {
-        NetworkCount(XIcons.Repost, counts.reposts ?: 0, stringResource(Res.string.posts_quotes), onLongClick = { quoteMenu = true }) { actions.openQuotes(post.id) }
+        FooterCount(XIcons.Repost, counts.reposts ?: 0, stringResource(Res.string.posts_quotes), REPOST_GREEN, onLongClick = { quoteMenu = true }) { actions.openQuotes(post.id) }
         QuoteMenu(quoteMenu, onDismiss = { quoteMenu = false }, onQuotes = { actions.openQuotes(post.id) }, onRetweets = { actions.openReposters(post.id) }, onNote = onNote)
     }
     actions.keep.LikeButton(post, count = counts.likes ?: 0)
@@ -178,6 +180,16 @@ private fun FooterCountItems(post: XPost, actions: PostActions, counts: FooterCo
         Box(Modifier.padding(FooterFit.PADDING.dp)) { NetworkCount(XIcons.Views, views, label) }
     }
 }
+
+/** A count of the footer that is a button, its ripple in [hue] ([CountButton]). */
+@Composable
+private fun FooterCount(icon: ImageVector, n: Long, label: String, hue: Color, onLongClick: () -> Unit, onClick: () -> Unit) {
+    val tint = MaterialTheme.colorScheme.onSurfaceVariant
+    CountButton({ Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(17.dp)) }, n, label, tint, onLongClick, onClick, hue)
+}
+
+/** X's repost green, which lights the reposts under the pointer as X's footer does. */
+internal val REPOST_GREEN = Color(0xFF00BA7C)
 
 /** The long press on the reposts (quote_actions.dart): its quotes, who reposted it, and a note on this device quoting it. */
 @Composable
@@ -201,7 +213,7 @@ private fun FooterEndButtons(post: XPost, actions: PostActions, onShare: () -> U
         Modifier
             .size(FooterFit.BUTTON.dp)
             .clip(CircleShape)
-            .clickable(role = Role.Button, onClickLabel = label, onClick = onShare),
+            .clickable(interactionSource = null, indication = ripple(color = MaterialTheme.colorScheme.primary), role = Role.Button, onClickLabel = label, onClick = onShare),
         contentAlignment = Alignment.Center,
     ) {
         Icon(Icons.Filled.Share, contentDescription = label, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
