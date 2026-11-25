@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -182,7 +183,8 @@ private fun RetryButton(problem: Problem, onRetry: () -> Unit, raised: Boolean) 
     }
     val label = if (seconds > 0) stringResource(Res.string.problem_retry_in, RetryCountdown.format(seconds)) else stringResource(Res.string.retry)
     when {
-        raised -> TextButton(onClick = onRetry) { Text(label) }
+        // The way on from a whole screen's failure stands out, as XTA's raised button did.
+        raised -> FilledTonalButton(onClick = onRetry) { Text(label) }
         problem.isRateLimit -> TextButton(onClick = onRetry, enabled = seconds == 0) {
             Icon(Icons.Outlined.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
