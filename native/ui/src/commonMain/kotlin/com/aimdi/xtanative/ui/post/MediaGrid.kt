@@ -47,6 +47,7 @@ import com.aimdi.xtanative.ui.common.AltBadge
 import com.aimdi.xtanative.ui.common.AltTextDialog
 import com.aimdi.xtanative.ui.common.ShowMediaTile
 import com.aimdi.xtanative.ui.common.mediaShown
+import com.aimdi.xtanative.ui.common.rememberPictureIndication
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_media
 import com.aimdi.xtanative.ui.media.GifCorner
@@ -254,7 +255,8 @@ private fun describeOrSave(media: XMedia, owner: MediaOwner, saver: MediaSaver?,
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun MediaTile(media: XMedia, url: String, scale: ContentScale, post: XPost?, modifier: Modifier, onLongClick: (() -> Unit)?, onClick: () -> Unit) {
-    Box(modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)) {
+    // No grey wash over the picture under the pointer; a press and the keyboard's focus still show.
+    Box(modifier.combinedClickable(interactionSource = null, indication = rememberPictureIndication(), onClick = onClick, onLongClick = onLongClick)) {
         AsyncImage(
             model = url,
             contentDescription = null,

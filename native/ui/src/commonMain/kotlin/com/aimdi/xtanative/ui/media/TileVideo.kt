@@ -36,6 +36,7 @@ import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.rememberPictureIndication
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_video
 import com.aimdi.xtanative.ui.generated.resources.reader_video_length
@@ -229,7 +230,7 @@ private fun TileLabels(durationMs: Long?): TileLabels {
  */
 @Composable
 private fun IdleTile(autoplay: Boolean, muted: Boolean, durationMs: Long?, labels: TileLabels, onOpen: () -> Unit, modifier: Modifier) {
-    Box(modifier.clickable(onClickLabel = labels.onClick, role = Role.Button, onClick = onOpen).semantics { contentDescription = labels.description }) {
+    Box(modifier.clickable(interactionSource = null, indication = rememberPictureIndication(), onClickLabel = labels.onClick, role = Role.Button, onClick = onOpen).semantics { contentDescription = labels.description }) {
         TileCorner(VideoRules.cornerTimeMs(null, durationMs), play = VideoRules.cornerPlay(autoplay, holding = false), Modifier.align(Alignment.BottomStart))
         if (autoplay) {
             val chosen by VideoMute.choice.collectAsState()
@@ -252,7 +253,8 @@ private fun PlayingTile(player: VideoPlayer, alt: String?, poster: Any?, seen: B
     Box(
         modifier
             .background(Color.Black)
-            .clickable(onClickLabel = labels.onClick, role = Role.Button, onClick = onOpen)
+            // No grey wash over the video under the pointer; a press and the keyboard's focus still show.
+            .clickable(interactionSource = null, indication = rememberPictureIndication(), onClickLabel = labels.onClick, role = Role.Button, onClick = onOpen)
             .semantics { contentDescription = labels.description },
     ) {
         player.Picture(fill = true, Modifier.matchParentSize())

@@ -45,6 +45,7 @@ import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
+import com.aimdi.xtanative.ui.common.rememberBehindIndication
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_community
 import com.aimdi.xtanative.ui.generated.resources.posts_more
@@ -239,8 +240,16 @@ fun PostCard(
  * not wait to see whether a second follows.
  */
 @OptIn(ExperimentalFoundationApi::class)
-internal fun Modifier.opening(like: (() -> Unit)?, open: () -> Unit): Modifier =
-    if (like == null) clickable(onClick = open) else combinedClickable(onDoubleClick = like, onClick = open)
+@Composable
+internal fun Modifier.opening(like: (() -> Unit)?, open: () -> Unit): Modifier {
+    // Lit behind the post, so its pictures and videos keep their colours under the pointer.
+    val wash = rememberBehindIndication()
+    return if (like == null) {
+        clickable(interactionSource = null, indication = wash, onClick = open)
+    } else {
+        combinedClickable(interactionSource = null, indication = wash, onDoubleClick = like, onClick = open)
+    }
+}
 
 /** What a double-tap on [post] does with "Double-tap to like" on: likes it on this device, unless it is liked already; null while off. */
 @Composable

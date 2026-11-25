@@ -46,6 +46,7 @@ import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.currentLocale
+import com.aimdi.xtanative.ui.common.rememberPictureIndication
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.card_from
 import com.aimdi.xtanative.ui.generated.resources.poll_ended_days
@@ -145,7 +146,7 @@ private fun LargeLinkCard(card: XCard.Link, onOpen: () -> Unit, modifier: Modifi
                 .fillMaxWidth()
                 .clip(CardShape)
                 .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, CardShape)
-                .clickable(onClick = onOpen),
+                .clickable(interactionSource = null, indication = rememberPictureIndication(), onClick = onOpen),
         ) {
             AsyncImage(
                 model = picture?.url,
