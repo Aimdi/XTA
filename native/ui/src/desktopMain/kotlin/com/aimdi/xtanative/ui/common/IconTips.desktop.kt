@@ -35,7 +35,7 @@ actual fun IconTip(label: String, content: @Composable () -> Unit) {
         tooltip = { TipBubble(label) },
         delayMillis = TIP_DELAY_MS,
         tooltipPlacement = TipPlacement,
-        modifier = Modifier.focusRing(),
+        modifier = Modifier.keyboardFocusRing(),
     ) { content() }
 }
 
@@ -72,7 +72,7 @@ private val RING_WIDTH = 2.dp
  * ([KeyboardFocusLook]), as the ripple shows it no more than faintly.
  */
 @Composable
-private fun Modifier.focusRing(): Modifier {
+internal actual fun Modifier.keyboardFocusRing(): Modifier {
     var focused by remember { mutableStateOf(false) }
     val color = MaterialTheme.colorScheme.primary
     return onFocusChanged { focused = it.hasFocus && KeyboardFocusLook.keyboard }.drawWithContent {

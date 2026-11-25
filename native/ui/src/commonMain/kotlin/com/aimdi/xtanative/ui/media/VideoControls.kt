@@ -85,6 +85,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -309,13 +310,15 @@ private fun ControlButton(icon: ImageVector, label: String, onClick: () -> Unit)
     IconTip(label) { IconButton(onClick = onClick) { Icon(icon, contentDescription = label, tint = Color.White) } }
 }
 
-/** Full screen's sound button, said as on or off. */
+/** Full screen's sound button, said as on or off, with its name under the pointer and a ring for the keyboard as the bar's other buttons have. */
 @Composable
 private fun MuteButton(muted: Boolean, onToggle: () -> Unit) {
     val label = stringResource(Res.string.reader_video_mute)
-    IconToggleButton(checked = muted, onCheckedChange = { onToggle() }, modifier = Modifier.semantics { contentDescription = label }) {
-        Crossfade(targetState = muted, animationSpec = tween(MOTION_FAST_MS)) { quiet ->
-            Icon(if (quiet) ReaderIcons.VolumeOff else ReaderIcons.VolumeUp, contentDescription = null, tint = Color.White)
+    IconTip(label) {
+        IconToggleButton(checked = muted, onCheckedChange = { onToggle() }, modifier = Modifier.semantics { contentDescription = label }) {
+            Crossfade(targetState = muted, animationSpec = tween(MOTION_FAST_MS)) { quiet ->
+                Icon(if (quiet) ReaderIcons.VolumeOff else ReaderIcons.VolumeUp, contentDescription = null, tint = Color.White)
+            }
         }
     }
 }
@@ -339,6 +342,7 @@ internal fun MuteCorner(muted: Boolean, onToggle: () -> Unit, modifier: Modifier
         modifier
             .padding(inset - (TouchTarget - disc) / 2)
             .size(TouchTarget)
+            .keyboardFocusRing()
             .clip(CircleShape)
             .toggleable(value = muted, role = Role.Switch, onValueChange = { onToggle() })
             .semantics { contentDescription = label },
@@ -367,6 +371,8 @@ private fun PlayPauseButton(state: VideoState, modifier: Modifier, onClick: () -
     Box(
         modifier
             .size(64.dp)
+            // Its own ring: on black, an icon button's focus shade is not seen.
+            .keyboardFocusRing()
             .clip(CircleShape)
             .background(Color.Black.copy(alpha = 0.54f))
             .clickable(onClick = onClick)
