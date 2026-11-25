@@ -50,8 +50,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -353,7 +355,7 @@ private fun TimelineTopBar(
 ) {
     val ui = look.ui
     TopAppBar(
-        navigationIcon = { if (current != null) PickerMark(current, ui, networks, look.anyUnread) { calls.openSheet(HomeSheet.PICKER) } },
+        navigationIcon = { if (current != null) PickerMark(current, ui, networks, look.anyUnread, calls.onTab) { calls.openSheet(HomeSheet.PICKER) } },
         title = {
             TipText(
                 current?.let { tabLabel(it, ui) }.orEmpty(),
@@ -371,11 +373,16 @@ private fun TimelineTopBar(
     )
 }
 
-/** The timeline's mark as the picker's button (HomeTimelineTitle): said as the timeline's name, with the dot while a timeline has unread posts. */
+/**
+ * The timeline's mark as the picker's button (HomeTimelineTitle): said as the timeline's name, with the dot while a timeline has unread posts.
+ * A screen reader, which cannot swipe between timelines, gets each other timeline as an action of the button, by its name ([onTab]).
+ */
 @Composable
-private fun PickerMark(tab: HomeTab, ui: HomeUi, networks: HomeNetworks, unread: Boolean, onClick: () -> Unit) {
+private fun PickerMark(tab: HomeTab, ui: HomeUi, networks: HomeNetworks, unread: Boolean, onTab: (Int) -> Unit, onClick: () -> Unit) {
     val label = listOfNotNull(tabLabel(tab, ui), stringResource(Res.string.home_unread).takeIf { unread }, stringResource(Res.string.home_networks)).joinToString(", ")
-    IconTip(label) { IconButton(onClick = onClick, modifier = Modifier.semantics { contentDescription = label }) {
+    val names = ui.tabs.map { tabLabel(it, ui) }
+    val others = ui.tabs.indices.filter { ui.tabs[it] != tab }.map { index -> CustomAccessibilityAction(names[index]) { onTab(index); true } }
+    IconTip(label) { IconButton(onClick = onClick, modifier = Modifier.semantics { contentDescription = label; customActions = others }) {
         // The label says the dot already.
         Box(Modifier.clearAndSetSemantics {}) { UnreadDot(unread) { TimelineMark(tab, networks, 24.dp) } }
     } }

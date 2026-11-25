@@ -87,6 +87,7 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.close
 import com.aimdi.xtanative.ui.generated.resources.downloads_title
+import com.aimdi.xtanative.ui.generated.resources.home_more_options
 import com.aimdi.xtanative.ui.generated.resources.offline_title
 import com.aimdi.xtanative.ui.generated.resources.saved_are_you_sure
 import com.aimdi.xtanative.ui.generated.resources.saved_clear_search
@@ -346,7 +347,7 @@ private fun TitleBar(notice: SavedNotice, onBack: (() -> Unit)?, searchable: Boo
 private fun SavedMenu(searchable: Boolean, onMenu: (SavedMenuAction) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, contentDescription = null) }
+        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, contentDescription = stringResource(Res.string.home_more_options)) }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             @Composable
             fun item(action: SavedMenuAction, icon: ImageVector, label: String) =

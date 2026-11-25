@@ -36,8 +36,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
@@ -65,12 +68,16 @@ import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.onSecondaryClickIf
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.groups_open_profile
 import com.aimdi.xtanative.ui.generated.resources.pinned
+import com.aimdi.xtanative.ui.generated.resources.plugin_more_options
 import com.aimdi.xtanative.ui.generated.resources.plugin_post_hide
 import com.aimdi.xtanative.ui.generated.resources.plugin_post_show
 import com.aimdi.xtanative.ui.generated.resources.plugin_stat_replies
 import com.aimdi.xtanative.ui.generated.resources.replying_to
 import com.aimdi.xtanative.ui.generated.resources.reposted_by
+import com.aimdi.xtanative.ui.generated.resources.saved_save_here
+import com.aimdi.xtanative.ui.generated.resources.saved_unsave
 import com.aimdi.xtanative.ui.generated.resources.stat_likes
 import com.aimdi.xtanative.ui.generated.resources.stat_quotes
 import com.aimdi.xtanative.ui.generated.resources.stat_reposts
@@ -78,6 +85,9 @@ import com.aimdi.xtanative.ui.links.LinkFrom
 import com.aimdi.xtanative.ui.post.AuthorLine
 import com.aimdi.xtanative.ui.post.CardView
 import com.aimdi.xtanative.ui.saved.KeepableSaveButton
+import com.aimdi.xtanative.ui.saved.Keeping
+import com.aimdi.xtanative.ui.saved.LocalKeeper
+import com.aimdi.xtanative.ui.saved.savedHere
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -231,11 +241,16 @@ fun NetworkPostCard(
     var revealed by rememberSaveable(post.id, post.revision) { mutableStateOf(false) }
     val more = actions.more
     val press = extras.onLongPress ?: more?.let { open -> { open(post) } }
+    // The bookmark the shared counts end with; a network's own footer draws its own.
+    val archive = if (extras.footer == null) rememberArchive(post, actions) else null
+    val menuLabel = stringResource(Res.string.plugin_more_options)
+    val spoken = spokenActions(post, actions, archive, press, menuLabel)
     Column(
         modifier
             .fillMaxWidth()
             .then(press?.let { Modifier.onSecondaryClick(it) } ?: Modifier)
-            .combinedClickable(onClick = { actions.open(post) }, onLongClick = press)
+            .combinedClickable(onClick = { actions.open(post) }, onLongClickLabel = menuLabel.takeIf { press != null }, onLongClick = press)
+            .semantics { customActions = spoken }
             .padding(start = 16.dp + IndentStep * indent.coerceIn(0, MAX_INDENT), end = 16.dp, top = 12.dp, bottom = if (continues) 4.dp else 12.dp),
     ) {
         val repostedBy = post.repostedBy
@@ -261,9 +276,50 @@ fun NetworkPostCard(
                 Attachments(post, actions, revealed, onToggle = { revealed = !revealed }, gap = 10.dp, playing = playing, opensPost = true, extras = extras)
                 if (!post.textCovered(revealed) && !extras.quoteFirst) extras.below?.invoke()
                 val footer = extras.footer
-                if (footer != null) footer() else CountsLine(post, rememberArchive(post, actions))
+                if (footer != null) footer() else CountsLine(post, archive)
             }
         }
+    }
+}
+
+/**
+ * What a screen reader offers on a network's card beside opening it, each
+ * named as its control is and calling what that control calls: the author's
+ * profile (the avatar), the bookmark of a post the [archive] keeps, and the
+ * menu a long press opens ([press]). Nothing is sent to the network.
+ */
+@Composable
+private fun spokenActions(
+    post: NetworkPost,
+    actions: NetworkPostActions,
+    archive: PluginPostArchive?,
+    press: (() -> Unit)?,
+    menuLabel: String,
+): List<CustomAccessibilityAction> {
+    val keeper = LocalKeeper.current
+    val item = remember(archive) { archive?.keepable() }
+    val saved = item != null && savedHere(item.id)
+    val profile = stringResource(Res.string.groups_open_profile)
+    val save = stringResource(if (saved) Res.string.saved_unsave else Res.string.saved_save_here)
+    return remember(keeper, post, actions, item, press, profile, save, menuLabel) {
+        listOfNotNull(
+            CustomAccessibilityAction(profile) {
+                actions.openAuthor(post)
+                true
+            },
+            item?.let { kept ->
+                CustomAccessibilityAction(save) {
+                    Keeping.toggleSave(keeper, kept)
+                    true
+                }
+            },
+            press?.let { open ->
+                CustomAccessibilityAction(menuLabel) {
+                    open()
+                    true
+                }
+            },
+        )
     }
 }
 
@@ -552,9 +608,12 @@ fun NetworkCount(
     tint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     onLongClick: (() -> Unit)? = null,
     onClick: (() -> Unit)? = null,
-) = CountButton({ Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(17.dp)) }, n, label, tint, onLongClick, onClick)
+) = CountButton({ Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(17.dp)) }, n, label, tint, onLongClick, onClick = onClick)
 
-/** [NetworkCount] with a [glyph] of its own, as the device's like draws its heart burst; its number rolls as it changes ([RollingCount]). */
+/**
+ * [NetworkCount] with a [glyph] of its own, as the device's like draws its heart burst; its number rolls as it changes ([RollingCount]).
+ * [on] is the state of one the reader switches (the heart, liked or not), said by a screen reader; null for one that only counts.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun CountButton(
@@ -563,6 +622,7 @@ internal fun CountButton(
     label: String?,
     tint: Color,
     onLongClick: (() -> Unit)?,
+    on: Boolean? = null,
     onClick: (() -> Unit)?,
 ) {
     val clickable = if (onClick != null) {
@@ -571,7 +631,16 @@ internal fun CountButton(
         Modifier
     }
     Row(
-        clickable.let { if (label != null) it.semantics { contentDescription = label } else it },
+        clickable.let {
+            if (label == null && on == null) {
+                it
+            } else {
+                it.semantics {
+                    if (label != null) contentDescription = label
+                    if (on != null) selected = on
+                }
+            }
+        },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         glyph()

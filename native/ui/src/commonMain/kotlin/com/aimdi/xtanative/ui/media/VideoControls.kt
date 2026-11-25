@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -68,6 +69,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.semantics.stateDescription
@@ -555,7 +557,10 @@ private fun MoreRows(state: VideoState, playback: VideoPlayback, chrome: VideoCh
 
 @Composable
 private fun SheetRow(icon: ImageVector, label: String, checked: Boolean = false, onClick: () -> Unit) {
-    Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        Modifier.fillMaxWidth().clickable(onClick = onClick).semantics { if (checked) selected = true }.padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Icon(icon, contentDescription = null)
         Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f).padding(start = 16.dp))
         if (checked) Icon(Icons.Filled.Check, contentDescription = null)
@@ -564,7 +569,10 @@ private fun SheetRow(icon: ImageVector, label: String, checked: Boolean = false,
 
 @Composable
 private fun CheckRow(label: String, selected: Boolean, onClick: () -> Unit) {
-    Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        Modifier.fillMaxWidth().selectable(selected = selected, role = Role.RadioButton, onClick = onClick).padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         if (selected) Icon(Icons.Filled.Check, contentDescription = null) else Spacer(Modifier.width(24.dp))
         Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(start = 16.dp))
     }

@@ -59,6 +59,7 @@ import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.downloads.LocalPlatformFiles
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
+import com.aimdi.xtanative.ui.generated.resources.home_more_options
 import com.aimdi.xtanative.ui.generated.resources.saved_delete
 import com.aimdi.xtanative.ui.generated.resources.saved_edit_note
 import com.aimdi.xtanative.ui.generated.resources.saved_note_author
@@ -123,7 +124,7 @@ fun NoteTile(
                         Text(agoText(Instant.ofEpochMilli(note.updatedAt)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
                     }
                     Box {
-                        IconButton(onClick = { menu = true }) { Icon(SavedIcons.MoreHoriz, contentDescription = null) }
+                        IconButton(onClick = { menu = true }) { Icon(SavedIcons.MoreHoriz, contentDescription = stringResource(Res.string.home_more_options)) }
                         DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                             DropdownMenuItem(text = { Text(stringResource(Res.string.saved_edit_note)) }, onClick = { menu = false; onEdit() })
                             if (onReply != null) DropdownMenuItem(text = { Text(stringResource(Res.string.saved_note_reply)) }, onClick = { menu = false; onReply() })

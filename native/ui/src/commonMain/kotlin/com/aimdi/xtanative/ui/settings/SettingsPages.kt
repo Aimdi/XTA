@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -44,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -537,7 +539,7 @@ internal fun AccentPicker(selected: ThemeAccent, modifier: Modifier = Modifier, 
             val chosen = accent == selected
             val argb = XLook.accentArgb(accent, desktopAccent)
             Column(
-                Modifier.width(64.dp).clip(RoundedCornerShape(12.dp)).clickable { onSelect(accent) }.padding(vertical = 6.dp),
+                Modifier.width(64.dp).clip(RoundedCornerShape(12.dp)).selectable(selected = chosen, role = Role.RadioButton) { onSelect(accent) }.padding(vertical = 6.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(

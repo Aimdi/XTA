@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -94,6 +95,18 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
+ * What a post's card asks of its footer for a screen reader: the card's
+ * "Share post" action opens the sheet the footer's Share button opens, which
+ * the footer keeps.
+ */
+internal class FooterAsks {
+    var share by mutableStateOf(false)
+}
+
+/** The asks of the card a footer is drawn in; none outside a timeline's card. */
+internal val LocalFooterAsks = staticCompositionLocalOf<FooterAsks?> { null }
+
+/**
  * The strip under a post, as XTA lays it out (tweet_footer.dart): replies,
  * reposts with quotes, the heart and the views spread across, then the
  * bookmark and Share. Replies open the post (a long press shows zen mode's
@@ -111,6 +124,7 @@ fun PostFooter(post: XPost, actions: PostActions, counts: FooterCounts, modifier
     var sharing by rememberSaveable(post.id) { mutableStateOf(false) }
     var noting by rememberSaveable(post.id) { mutableStateOf(false) }
     val sharePicture = rememberPictureShare(post, picture)
+    val asks = LocalFooterAsks.current
     val labels = FooterLabels(counts.replies.label(), counts.reposts.label(), counts.likes.label(), counts.views.label())
     BoxWithConstraints(modifier.fillMaxWidth().padding(top = 6.dp)) {
         val fit = rememberFooterFit(maxWidth, labels)
@@ -132,7 +146,12 @@ fun PostFooter(post: XPost, actions: PostActions, counts: FooterCounts, modifier
         }
     }
     if (noting) actions.keep.NoteAbout(post) { noting = false }
-    if (sharing) PostShareSheet(post, sharePicture, onDismiss = { sharing = false })
+    if (sharing || asks?.share == true) {
+        PostShareSheet(post, sharePicture, onDismiss = {
+            sharing = false
+            asks?.share = false
+        })
+    }
 }
 
 /** The plural form of a views label: once abbreviated, the count is "thousands", which takes the many form. */

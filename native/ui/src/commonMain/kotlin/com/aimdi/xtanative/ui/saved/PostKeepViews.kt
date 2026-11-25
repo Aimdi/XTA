@@ -28,6 +28,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XPost
@@ -42,6 +44,7 @@ import com.aimdi.xtanative.ui.common.rememberSwitchedHaptics
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.saved_like
 import com.aimdi.xtanative.ui.generated.resources.saved_save_here
+import com.aimdi.xtanative.ui.generated.resources.saved_save_to_folder
 import com.aimdi.xtanative.ui.generated.resources.saved_unlike
 import com.aimdi.xtanative.ui.generated.resources.saved_unsave
 import com.aimdi.xtanative.ui.plugins.CountButton
@@ -160,6 +163,7 @@ internal fun KeepableSaveButton(id: String, modifier: Modifier, tint: Color, ite
     var sheetFor by remember { mutableStateOf<Keepable?>(null) }
     val label = stringResource(if (saved) Res.string.saved_unsave else Res.string.saved_save_here)
     val haptics = rememberSwitchedHaptics()
+    val folders = stringResource(Res.string.saved_save_to_folder)
     Box(
         modifier
             .size(40.dp)
@@ -169,12 +173,15 @@ internal fun KeepableSaveButton(id: String, modifier: Modifier, tint: Color, ite
             .combinedClickable(
                 role = Role.Button,
                 onClickLabel = label,
+                onLongClickLabel = folders,
                 onClick = {
                     haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     Keeping.toggleSave(keeper, item())
                 },
                 onLongClick = { sheetFor = item() },
-            ),
+            )
+            // Saved or not, as the filled bookmark shows it.
+            .semantics { selected = saved },
         contentAlignment = Alignment.Center,
     ) {
         Icon(
@@ -218,6 +225,7 @@ internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, coun
             label = label,
             tint = if (liked) active else rest,
             onLongClick = null,
+            on = liked,
         ) {
             scope.launch {
                 burst.snapTo(0f)

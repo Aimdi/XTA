@@ -31,6 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -49,6 +55,7 @@ import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.rememberSwitchedHaptics
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.groups_open_profile
 import com.aimdi.xtanative.ui.generated.resources.posts_community
 import com.aimdi.xtanative.ui.generated.resources.posts_more
 import com.aimdi.xtanative.ui.generated.resources.posts_no_text
@@ -59,13 +66,20 @@ import com.aimdi.xtanative.ui.generated.resources.posts_replying_to
 import com.aimdi.xtanative.ui.generated.resources.posts_reposted
 import com.aimdi.xtanative.ui.generated.resources.posts_subscribers_only_of_author
 import com.aimdi.xtanative.ui.generated.resources.posts_thread
+import com.aimdi.xtanative.ui.generated.resources.posts_share
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_view_quoted
+import com.aimdi.xtanative.ui.generated.resources.saved_like
+import com.aimdi.xtanative.ui.generated.resources.saved_save_here
+import com.aimdi.xtanative.ui.generated.resources.saved_unlike
+import com.aimdi.xtanative.ui.generated.resources.saved_unsave
 import com.aimdi.xtanative.ui.home.keyedPost
 import com.aimdi.xtanative.ui.media.LiveRooms
 import com.aimdi.xtanative.ui.media.LocalLivePlayer
 import com.aimdi.xtanative.ui.saved.KeepNotices
 import com.aimdi.xtanative.ui.saved.LocalKeeper
+import com.aimdi.xtanative.ui.saved.likedHere
+import com.aimdi.xtanative.ui.saved.savedHere
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -140,6 +154,8 @@ private val MediaBleed = 16.dp
  * double-tap likes it on this device. A long press or a right-click opens its ⋯ menu; on
  * the desktop, Ctrl+click and a middle click open it in a new window. On
  * the desktop the keys act on it once the reading keys are on it ([keyedPost]).
+ * A screen reader gets what the gestures and the buttons do as the card's
+ * actions ([CardSpoken]), each calling what its button calls.
  */
 @Composable
 fun PostCard(
@@ -170,6 +186,15 @@ fun PostCard(
     val presses = remember { CardPresses() }
     // In an opened post's threaded replies, a press on the rail collapses the branch.
     val collapse = LocalBranchCollapse.current
+    val showsAuthor = PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName)
+    val openAuthor = { actions.openUser(shown.author.screenName, shown.author.id) }
+    val openMenu = {
+        menuAtPost = false
+        menu = true
+    }
+    val asks = remember(shown.id) { FooterAsks() }
+    val spoken = spokenActions(shown, actions, showsAuthor, openAuthor, onShare = { asks.share = true }, onMenu = openMenu)
+    val moreLabel = stringResource(Res.string.posts_more)
     Column(
         modifier
             .fillMaxWidth()
@@ -182,14 +207,13 @@ fun PostCard(
             .opensInWindow(inWindow, presses)
             .opening(
                 rememberDoubleTapLike(shown, scope.prefs, actions),
-                menu = {
-                    menuAtPost = false
-                    menu = true
-                },
+                menu = openMenu,
+                menuLabel = moreLabel,
             ) {
                 if (presses.take() == PostPress.TAP_IN_WINDOW && inWindow != null) inWindow() else actions.openPost(shown.id)
             }
             .collapsesBranch(collapse)
+            .semantics { customActions = spoken }
             .drawBehind {
                 val x = PostGeometry.railX(size.width.toDp().value, layoutDirection == LayoutDirection.Rtl).dp.toPx()
                 val width = PostGeometry.RAIL_WIDTH.dp.toPx()
@@ -208,6 +232,7 @@ fun PostCard(
         Row {
             // The avatar in its 48 dp target, which opens the author as the avatar does.
             val inset = PostGeometry.AVATAR_TARGET_INSET.dp
+            val openProfile = stringResource(Res.string.groups_open_profile)
             Box(
                 Modifier
                     .offset(-inset, -inset)
@@ -216,10 +241,14 @@ fun PostCard(
                     .clickable(
                         interactionSource = null,
                         indication = ripple(bounded = false, radius = (PostGeometry.TOUCH_TARGET / 2).dp),
-                        enabled = PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName),
-                    ) { actions.openUser(shown.author.screenName, shown.author.id) },
+                        enabled = showsAuthor,
+                        role = Role.Button,
+                        onClick = openAuthor,
+                    )
+                    // Said once: the picture inside opens the same profile, and is left out for a screen reader.
+                    .semantics { if (showsAuthor) contentDescription = openProfile else hideFromAccessibility() },
                 contentAlignment = Alignment.Center,
-            ) { PostAvatar(shown, scope, actions, AvatarSize) }
+            ) { PostAvatar(shown, scope, actions, AvatarSize, spoken = false) }
             Spacer(Modifier.width((PostGeometry.COLUMN_START - PostGeometry.AVATAR_START - PostGeometry.TOUCH_TARGET).dp))
             val buttons = if (translation != null) 2 else 1
             Box(Modifier.weight(1f)) {
@@ -232,15 +261,14 @@ fun PostCard(
                     }
                     TranslationFailure(translation)
                     PostAttachments(shown, scope, actions, gap = 10.dp)
-                    PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = true), picture = picture)
+                    CompositionLocalProvider(LocalFooterAsks provides asks) {
+                        PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = true), picture = picture)
+                    }
                 }
                 // Translate and ⋯ at the end of the author line, reaching over the text under it as X's ⋯ does.
                 Row(Modifier.align(Alignment.TopEnd)) {
                     translation?.let { TranslateButton(it, scope) }
-                    HeaderButton(PostIcons.MoreHoriz, stringResource(Res.string.posts_more)) {
-                        menuAtPost = false
-                        menu = true
-                    }
+                    HeaderButton(PostIcons.MoreHoriz, moreLabel, onClick = openMenu)
                 }
             }
             if (menu) {
@@ -257,10 +285,52 @@ fun PostCard(
  * as one on a plugin's card does, with the buzz of a long press. What is
  * pressed inside the card (a picture, a link or a tag, the avatar, a quote,
  * a count) takes the press itself, so its own long press stays its own.
+ * [menuLabel] names the long press for a screen reader.
  */
 @OptIn(ExperimentalFoundationApi::class)
-internal fun Modifier.opening(like: (() -> Unit)?, menu: () -> Unit, open: () -> Unit): Modifier =
-    combinedClickable(onDoubleClick = like, onLongClick = menu, onClick = open)
+internal fun Modifier.opening(like: (() -> Unit)?, menu: () -> Unit, menuLabel: String? = null, open: () -> Unit): Modifier =
+    combinedClickable(onDoubleClick = like, onLongClickLabel = menuLabel, onLongClick = menu, onClick = open)
+
+/**
+ * What a screen reader offers on [post]'s card, in [CardSpoken]'s order: the
+ * double-tap's like and the long press's menu, which it cannot make, and the
+ * author, the bookmark and Share, without walking to their buttons. Each is
+ * named as its button is and calls what its button calls; nothing is sent to X.
+ */
+@Composable
+private fun spokenActions(
+    post: XPost,
+    actions: PostActions,
+    showsAuthor: Boolean,
+    onAuthor: () -> Unit,
+    onShare: () -> Unit,
+    onMenu: () -> Unit,
+): List<CustomAccessibilityAction> {
+    val keeper = LocalKeeper.current
+    val liked = likedHere(post.id)
+    val saved = savedHere(post.id)
+    val labels = mapOf(
+        CardSpoken.AUTHOR to stringResource(Res.string.groups_open_profile),
+        CardSpoken.LIKE to stringResource(if (liked) Res.string.saved_unlike else Res.string.saved_like),
+        CardSpoken.SAVE to stringResource(if (saved) Res.string.saved_unsave else Res.string.saved_save_here),
+        CardSpoken.SHARE to stringResource(Res.string.posts_share),
+        CardSpoken.MENU to stringResource(Res.string.posts_more),
+    )
+    return remember(keeper, post, actions, showsAuthor, labels, onAuthor, onShare, onMenu) {
+        CardSpoken.of(showsAuthor).map { action ->
+            CustomAccessibilityAction(labels.getValue(action)) {
+                when (action) {
+                    CardSpoken.AUTHOR -> onAuthor()
+                    CardSpoken.LIKE -> actions.keep.toggleLike(keeper, post)
+                    CardSpoken.SAVE -> actions.keep.toggleSave(keeper, post)
+                    CardSpoken.SHARE -> onShare()
+                    CardSpoken.MENU -> onMenu()
+                }
+                true
+            }
+        }
+    }
+}
 
 /**
  * What a double-tap on [post] does with "Double-tap to like" on: likes it
@@ -296,17 +366,19 @@ private fun ContextLines(post: XPost, actions: PostActions, pinned: Boolean, fir
 
 /** The author's picture, opening the profile, with the author's card where the pointer rests on it; a plain face in non-confirmation-bias mode; XTA's follow badge on it. */
 @Composable
-internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, size: Dp) {
+internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, size: Dp, spoken: Boolean = true) {
     if (!PostView.showsAuthor(post, scope.prefs, scope.profileScreenName)) {
         Icon(Icons.Filled.AccountCircle, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(size))
         return
     }
     val open = { actions.openUser(post.author.screenName, post.author.id) }
+    // Where the target around the picture says it already ([spoken] false), the picture is not said again.
+    val heard = if (spoken) Modifier else Modifier.semantics { hideFromAccessibility() }
     AuthorHoverCard(post.author, post.author.largeAvatarUrl, open) {
         if (scope.prefs.followBadge) {
-            FollowBadge(post.author, size) { Avatar(post.author.largeAvatarUrl, size, onClick = open) }
+            FollowBadge(post.author, size) { Avatar(post.author.largeAvatarUrl, size, heard, onClick = open) }
         } else {
-            Avatar(post.author.largeAvatarUrl, size, onClick = open)
+            Avatar(post.author.largeAvatarUrl, size, heard, onClick = open)
         }
     }
 }

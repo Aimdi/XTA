@@ -508,6 +508,8 @@ private fun ChoiceRow(selected: Boolean, onClick: () -> Unit, content: @Composab
             .fillMaxWidth()
             .heightIn(min = 56.dp)
             .clickable(onClick = onClick)
+            // The check at the end, for a screen reader.
+            .semantics { this.selected = selected }
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

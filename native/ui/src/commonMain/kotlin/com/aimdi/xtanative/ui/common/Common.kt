@@ -16,14 +16,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.store.settings.SettingsStore
+import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.groups_open_profile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * The reader's settings, as every shared part reads them (a post's card, the
@@ -41,18 +45,21 @@ val LocalOnline = staticCompositionLocalOf<Flow<Boolean>> { flowOf(true) }
  */
 val LocalSessions = staticCompositionLocalOf<SessionStore> { error("No session provided") }
 
-/** A round picture of someone, asked for as its server wants it ([pictureModel]: Pixiv's with its Referer). */
+/**
+ * A round picture of someone, asked for as its server wants it ([pictureModel]: Pixiv's with its Referer).
+ * With [onClick] it leads to them, and a screen reader hears it as the button that opens their profile.
+ */
 @Composable
 fun Avatar(url: String?, size: Dp, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null) {
     AsyncImage(
         model = url?.let { rememberPicture(it) },
-        contentDescription = null,
+        contentDescription = if (onClick != null) stringResource(Res.string.groups_open_profile) else null,
         contentScale = ContentScale.Crop,
         modifier = modifier
             .size(size)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.surfaceVariant)
-            .let { if (onClick != null) it.clickable(onClick = onClick) else it },
+            .let { if (onClick != null) it.clickable(role = Role.Button, onClick = onClick) else it },
     )
 }
 

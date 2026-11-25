@@ -63,6 +63,7 @@ import com.aimdi.xtanative.ui.common.ColumnScrollbar
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.saved_clear_search
 import com.aimdi.xtanative.ui.generated.resources.settings_proxy
 import com.aimdi.xtanative.ui.generated.resources.settings_proxy_description
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login
@@ -124,7 +125,7 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: (
                 placeholder = { Text(stringResource(Res.string.settings_search)) },
                 leadingIcon = { Icon(Icons.Outlined.Search, null) },
                 trailingIcon = {
-                    if (query.isNotEmpty()) IconButton(onClick = { query = "" }) { Icon(Icons.Outlined.Close, null) }
+                    if (query.isNotEmpty()) IconButton(onClick = { query = "" }) { Icon(Icons.Outlined.Close, stringResource(Res.string.saved_clear_search)) }
                 },
                 singleLine = true,
                 shape = MaterialTheme.shapes.extraLarge,

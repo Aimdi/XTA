@@ -78,6 +78,7 @@ import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.home_refresh
 import com.aimdi.xtanative.ui.importer.rememberBackupChooser
 import java.time.Instant
 import java.time.LocalDate
@@ -545,7 +546,7 @@ internal fun DiagnosticsSettings(title: String, vm: SettingsViewModel, onBack: (
         onBack,
         snackbar,
         actions = {
-            IconButton(onClick = { revision++ }) { Icon(Icons.Outlined.Refresh, null) }
+            IconTip(stringResource(Res.string.home_refresh)) { IconButton(onClick = { revision++ }) { Icon(Icons.Outlined.Refresh, stringResource(Res.string.home_refresh)) } }
             IconTip(stringResource(Res.string.settings_diagnostics_copy)) { IconButton(onClick = {
                 copyText((listOf(report.toPlainText()) + crashes.map { it.text }).joinToString("\n\n"))
                 scope.launch { snackbar.showSnackbar(copied) }
