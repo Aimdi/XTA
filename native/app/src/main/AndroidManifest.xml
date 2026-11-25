@@ -12,6 +12,8 @@
          the reader before it shows that one, the first time something is downloaded. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Settings › General › Lock the app asks the phone for the fingerprint, face or screen lock it knows. -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
     <queries>
         <!-- Settings › General › Open links in: the browsers to pick from. -->
@@ -92,6 +94,12 @@
                 <data android:host="pixiv.me" />
             </intent-filter>
         </activity>
+        <!-- The lock page over the screens (Settings › General › Lock the app). -->
+        <activity
+            android:name=".LockActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|fontScale|screenLayout|density|uiMode"
+            android:excludeFromRecents="false"
+            android:exported="false" />
         <!-- Keeps reading aloud and a podcast playing when the app is left, with the media notification
              (XTA's audio_service AudioService); its buttons come back through the receiver, and a headset's
              buttons too, as XTA's MediaButtonReceiver takes them. -->

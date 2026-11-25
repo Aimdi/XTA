@@ -15,4 +15,6 @@
         <item quantity="other">%1$d लाइसेंस</item>
     </plurals>
     <string name="chrome_offline_bar">ऑफ़लाइन – सहेजी गई प्रतियाँ दिखाई जा रही हैं</string>
+    <string name="app_lock_title">XTA लॉक है</string>
+    <string name="app_lock_unlock">अनलॉक करें</string>
 </resources>

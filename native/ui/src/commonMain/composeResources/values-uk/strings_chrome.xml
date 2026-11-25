@@ -17,4 +17,6 @@
         <item quantity="other">%1$d ліцензії</item>
     </plurals>
     <string name="chrome_offline_bar">Немає мережі – показано збережені копії</string>
+    <string name="app_lock_title">XTA заблоковано</string>
+    <string name="app_lock_unlock">Розблокувати</string>
 </resources>

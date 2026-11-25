@@ -16,4 +16,6 @@
         <item quantity="other">%1$d de licențe</item>
     </plurals>
     <string name="chrome_offline_bar">Offline – se afișează copiile salvate</string>
+    <string name="app_lock_title">XTA este blocată</string>
+    <string name="app_lock_unlock">Deblochează</string>
 </resources>

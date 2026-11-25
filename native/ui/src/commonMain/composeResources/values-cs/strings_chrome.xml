@@ -17,4 +17,6 @@
         <item quantity="other">%1$d licencí</item>
     </plurals>
     <string name="chrome_offline_bar">Offline – zobrazují se uložené kopie</string>
+    <string name="app_lock_title">XTA je zamčená</string>
+    <string name="app_lock_unlock">Odemknout</string>
 </resources>

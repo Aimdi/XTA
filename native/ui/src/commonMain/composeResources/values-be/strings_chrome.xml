@@ -17,4 +17,6 @@
         <item quantity="other">%1$d ліцэнзіі</item>
     </plurals>
     <string name="chrome_offline_bar">Па-за сеткай – паказваюцца захаваныя копіі</string>
+    <string name="app_lock_title">XTA заблакаваны</string>
+    <string name="app_lock_unlock">Разблакаваць</string>
 </resources>

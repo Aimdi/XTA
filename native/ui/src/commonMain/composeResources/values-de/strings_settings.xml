@@ -45,6 +45,8 @@
     <string name="settings_clean_links_description">Entfernt Tracker und überflüssige Parameter, bevor ein Link geöffnet oder geteilt wird</string>
     <string name="settings_disable_screenshots">Screenshots deaktivieren</string>
     <string name="settings_disable_screenshots_hint">Versucht zu verhindern, dass Screenshots von Fritter gemacht werden können. Dies ist keine Garantie und funktioniert möglicherweise nicht auf allen Geräten.</string>
+    <string name="settings_app_lock">App sperren</string>
+    <string name="settings_app_lock_hint">Beim Öffnen von XTA Fingerabdruck, Gesicht oder Displaysperre verlangen. Auf diesem Gerät muss eine Displaysperre eingerichtet sein.</string>
     <string name="settings_default_tab">Standard-Tab</string>
     <string name="settings_default_tab_description">Welcher Tab beim Öffnen der App angezeigt wird</string>
     <string name="settings_default_feed_tab">Standard-Feed-Tab</string>

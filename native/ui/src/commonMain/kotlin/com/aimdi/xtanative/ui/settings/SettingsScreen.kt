@@ -266,6 +266,7 @@ private val INDEX = listOf(
     Indexed(SettingsSection.GENERAL, DesktopPrefs.proxyMode.key, Res.string.settings_proxy, Res.string.settings_proxy_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.cleanLinks.key, Res.string.settings_clean_links, Res.string.settings_clean_links_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.disableScreenshots.key, Res.string.settings_disable_screenshots, Res.string.settings_disable_screenshots_hint),
+    Indexed(SettingsSection.GENERAL, GeneralPrefs.appLock.key, Res.string.settings_app_lock, Res.string.settings_app_lock_hint),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.initialTab.key, Res.string.settings_default_tab, Res.string.settings_default_tab_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.defaultFeedTab.key, Res.string.settings_default_feed_tab, Res.string.settings_default_feed_tab_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.defaultProfileTab.key, Res.string.settings_default_profile_tab, Res.string.settings_default_profile_tab_description),
@@ -318,8 +319,8 @@ private val INDEX = listOf(
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.swipeBackTilt.key, Res.string.settings_swipe_back_tilt, Res.string.settings_swipe_back_tilt_description),
 )
 
-/** The controls only Android has: the desktop's window takes no screenshot block, gives no haptics, has no status bar and no metered network. */
-private val ANDROID_ONLY = setOf(GeneralPrefs.disableScreenshots.key, AccessibilityPrefs.haptics.key, ThemePrefs.hideStatusBar.key, MediaPrefs.saveDataOnMobile.key)
+/** The controls only Android has: the desktop's window takes no screenshot block and no lock, gives no haptics, has no status bar and no metered network. */
+private val ANDROID_ONLY = setOf(GeneralPrefs.disableScreenshots.key, GeneralPrefs.appLock.key, AccessibilityPrefs.haptics.key, ThemePrefs.hideStatusBar.key, MediaPrefs.saveDataOnMobile.key)
 
 /** The controls only the desktop has: its notifications, its tray, its windows' interface size and its proxy. */
 private val DESKTOP_ONLY = setOf(DesktopPrefs.notifications.key, DesktopPrefs.closeToTray.key, START_AT_LOGIN_KEY, DesktopPrefs.uiScale.key, DesktopPrefs.proxyMode.key)

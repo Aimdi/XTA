@@ -14,4 +14,6 @@
         <item quantity="other">%1$d 份许可</item>
     </plurals>
     <string name="chrome_offline_bar">离线 – 正在显示已保存的副本</string>
+    <string name="app_lock_title">XTA 已锁定</string>
+    <string name="app_lock_unlock">解锁</string>
 </resources>

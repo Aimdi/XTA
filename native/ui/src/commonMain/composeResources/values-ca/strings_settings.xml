@@ -45,6 +45,8 @@
     <string name="settings_clean_links_description">Treu els rastrejadors i els paràmetres inútils abans d’obrir o compartir un enllaç</string>
     <string name="settings_disable_screenshots">Deshabilita captures de pantalla</string>
     <string name="settings_disable_screenshots_hint">Evita que es prenguin captures de pantalla. Pot ser que això no funcioni en tots els dispositius.</string>
+    <string name="settings_app_lock">Bloqueja l'aplicació</string>
+    <string name="settings_app_lock_hint">Demana l'empremta, la cara o el bloqueig de pantalla en obrir XTA. Cal tenir un bloqueig de pantalla en aquest dispositiu.</string>
     <string name="settings_default_tab">Pestanya per defecte</string>
     <string name="settings_default_tab_description">Quina pestanya es mostra quan s'obre l'aplicació</string>
     <string name="settings_default_feed_tab">Pestanya de feed predeterminada</string>

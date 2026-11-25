@@ -45,6 +45,8 @@
     <string name="settings_clean_links_description">Quita rastreadores y parámetros basura antes de abrir o compartir un enlace</string>
     <string name="settings_disable_screenshots">Desactivar capturas de pantalla</string>
     <string name="settings_disable_screenshots_hint">Evitar que se tomen capturas de pantalla. Puede que no funcione en todos los dispositivos.</string>
+    <string name="settings_app_lock">Bloquear la aplicación</string>
+    <string name="settings_app_lock_hint">Pide la huella, el rostro o el bloqueo de pantalla al abrir XTA. Requiere un bloqueo de pantalla en este dispositivo.</string>
     <string name="settings_default_tab">Pestaña predeterminada</string>
     <string name="settings_default_tab_description">Qué pestaña se muestra cuando se abre la app</string>
     <string name="settings_default_feed_tab">Pestaña de feed predeterminada</string>

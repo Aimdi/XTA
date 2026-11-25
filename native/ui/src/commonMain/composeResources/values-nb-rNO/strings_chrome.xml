@@ -15,4 +15,6 @@
         <item quantity="other">%1$d lisenser</item>
     </plurals>
     <string name="chrome_offline_bar">Frakoblet – viser lagrede kopier</string>
+    <string name="app_lock_title">XTA er låst</string>
+    <string name="app_lock_unlock">Lås opp</string>
 </resources>

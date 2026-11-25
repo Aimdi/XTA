@@ -45,6 +45,8 @@
     <string name="settings_clean_links_description">開啟或分享連結前去掉追蹤器和多餘參數</string>
     <string name="settings_disable_screenshots">停用螢幕截圖</string>
     <string name="settings_disable_screenshots_hint">防止螢幕截圖。此功能可能不適用於所有裝置。</string>
+    <string name="settings_app_lock">鎖定應用程式</string>
+    <string name="settings_app_lock_hint">開啟 XTA 時要求驗證指紋、臉部或螢幕鎖定。此裝置需已設定螢幕鎖定。</string>
     <string name="settings_default_tab">預設分頁</string>
     <string name="settings_default_tab_description">開啟應用程式時顯示的分頁</string>
     <string name="settings_default_feed_tab">預設動態分頁</string>
