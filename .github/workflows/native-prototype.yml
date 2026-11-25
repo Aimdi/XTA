@@ -574,6 +574,45 @@ jobs:
           ' _ "$app"
           echo "XTA Native was still running after 20 s."
 
+      # bin/xta-native-launch as a reader's first two starts run it, with a
+      # cache of their own: the first makes the class-data archive in the
+      # background, the second starts with it (Java names the options it
+      # picked up) and stays up.
+      - name: Start twice through the launcher
+        env:
+          XTA_NATIVE_MOCK_X: http://127.0.0.1:8787
+          SKIKO_RENDER_API: SOFTWARE
+        run: |
+          set -euo pipefail
+          mkdir -p native-desktop
+          launcher="$RUNNER_TEMP/xta-native-desktop-$VERSION_NAME-linux-x64/bin/xta-native-launch"
+          xvfb-run -a -s '-screen 0 1280x960x24' bash -c '
+            export XDG_DATA_HOME="$2/data" XDG_CONFIG_HOME="$2/config" XDG_CACHE_HOME="$2/cache" XDG_STATE_HOME="$2/state"
+            cds="$2/cache/xta-native/cds"
+            "$1" > native-desktop/launch-first.log 2>&1 &
+            pid=$!
+            for _ in $(seq 1 180); do
+              compgen -G "$cds/*.jsa" > /dev/null && break
+              sleep 1
+            done
+            kill "$pid" 2> /dev/null || true
+            wait "$pid" 2> /dev/null || true
+            ls -l "$cds" || true
+            if ! compgen -G "$cds/*.jsa" > /dev/null; then
+              echo "The first start made no class-data archive:"; cat native-desktop/launch-first.log; exit 1
+            fi
+            "$1" > native-desktop/launch-second.log 2>&1 &
+            pid=$!
+            sleep 15
+            if ! kill -0 "$pid" 2> /dev/null; then
+              echo "The start with the archive is no longer running:"; cat native-desktop/launch-second.log; exit 1
+            fi
+            kill "$pid"
+          ' _ "$launcher" "$RUNNER_TEMP/launch-home"
+          grep -q "JAVA_TOOL_OPTIONS: -XX:SharedArchiveFile=" native-desktop/launch-second.log \
+            || { echo "The second start did not take the archive:"; cat native-desktop/launch-second.log; exit 1; }
+          echo "The launcher made the class-data archive, and the start with it was still running after 15 s."
+
       # The plugin store's whole chain on the desktop, from a catalogue the
       # runner serves: the first plugin downloaded, checked against its size,
       # SHA-256 and the certificate built into the app, kept, loaded and shown
