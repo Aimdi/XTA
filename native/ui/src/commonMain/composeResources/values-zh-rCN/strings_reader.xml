@@ -64,6 +64,7 @@
     <string name="reader_voices_use">使用已下载的语音</string>
     <string name="reader_voices_use_description">如果有已下载的语音支持文章的语言，就用它朗读；否则使用下方的引擎。</string>
     <string name="reader_voices_note">只有在你点按“下载”时，才会从 GitHub（k2-fsa/sherpa-onnx）下载语音。语音完全在本设备上运行。</string>
+    <string name="reader_voices_note_desktop">只有在你点击“下载”时，才会从 GitHub（k2-fsa/sherpa-onnx）下载语音。语音完全在本设备上运行。</string>
     <string name="reader_voices_synthesis_missing">此版本可以下载语音，但还不能用它们朗读。在此之前，由下方的语音引擎朗读。</string>
     <string name="reader_voice_licence">许可证：%1$s</string>
     <string name="reader_voice_installing">正在校验并解压…</string>

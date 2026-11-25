@@ -165,6 +165,7 @@
     <string name="saved_media_status">Không thể lưu, X đã trả về lỗi %1$d</string>
     <string name="downloads_cancelled">Đã hủy</string>
     <string name="downloads_interrupted">Bị gián đoạn · Thử lại để tiếp tục</string>
+    <string name="downloads_interrupted_desktop">Bị gián đoạn · Nhấp Thử lại để tiếp tục</string>
     <string name="downloads_batch">Số tệp đã lưu: %1$d / %2$d</string>
     <string name="downloads_saved_to">Đã lưu vào %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Đặt thư mục tải xuống trong Cài đặt &gt; Đa phương tiện để tự động tải.</string>

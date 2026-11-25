@@ -165,6 +165,7 @@
     <string name="saved_media_status">无法保存媒体。Twitter 返回的状态是 %1$d</string>
     <string name="downloads_cancelled">已取消</string>
     <string name="downloads_interrupted">已中断 · 点按重试以继续</string>
+    <string name="downloads_interrupted_desktop">已中断 · 点击重试以继续</string>
     <string name="downloads_batch">已保存文件：%1$d / %2$d</string>
     <string name="downloads_saved_to">已保存到 %1$s</string>
     <string name="set_a_download_folder_to_auto_download">在设置 &gt; 媒体中设置下载文件夹以自动下载。</string>

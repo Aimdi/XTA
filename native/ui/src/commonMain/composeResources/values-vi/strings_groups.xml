@@ -24,6 +24,7 @@
     <string name="groups_columns">Số cột</string>
     <string name="groups_combine_clear">Xóa</string>
     <string name="groups_combine_hint">Giữ một nhóm để đọc cùng với nhóm này</string>
+    <string name="groups_combine_hint_desktop">Nhấp chuột phải vào một nhóm để đọc cùng với nhóm này</string>
     <string name="groups_combined_count">Đang đọc thêm %1$d nhóm cùng lúc</string>
     <string name="groups_compact">Thu gọn</string>
     <string name="groups_content_default">Mặc định</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Không có kết quả</string>
     <string name="groups_no_subscriptions">Không có người đang theo dõi, nhập thủ công hoặc tìm kiếm !</string>
     <string name="groups_none_description">Nhóm gộp các đăng ký thành bảng tin tùy chỉnh. Nhấn giữ để chỉnh sửa nhóm.</string>
+    <string name="groups_none_description_desktop">Nhóm gộp các đăng ký thành bảng tin tùy chỉnh. Nhấp chuột phải để chỉnh sửa nhóm.</string>
     <string name="groups_none_yet">Chưa có nhóm nào</string>
     <string name="groups_not_all_posts">Nhắc nhở: do giới hạn của X, không phải mọi bài viết có mặt ở đây</string>
     <string name="groups_ok">OK</string>

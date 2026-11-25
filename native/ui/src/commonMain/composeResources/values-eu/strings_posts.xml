@@ -96,6 +96,7 @@
     <string name="posts_verified_organization">Egiaztatutako erakundea</string>
     <string name="posts_view_quoted">Ikusi aipatutako txioa</string>
     <string name="posts_zen_replies">Eduki sakatuta iruzkinen botoia erantzunak erakusteko</string>
+    <string name="posts_zen_replies_desktop">Egin eskuineko klik iruzkinen botoian erantzunak erakusteko</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s ikustaldi</item>
         <item quantity="other">%1$s ikustaldi</item>

@@ -61,6 +61,7 @@ import com.aimdi.xtanative.ui.generated.resources.downloads_empty
 import com.aimdi.xtanative.ui.generated.resources.downloads_failed
 import com.aimdi.xtanative.ui.generated.resources.downloads_history_unavailable
 import com.aimdi.xtanative.ui.generated.resources.downloads_interrupted
+import com.aimdi.xtanative.ui.generated.resources.downloads_interrupted_desktop
 import com.aimdi.xtanative.ui.generated.resources.downloads_open_file
 import com.aimdi.xtanative.ui.generated.resources.downloads_progress
 import com.aimdi.xtanative.ui.generated.resources.downloads_queued
@@ -74,6 +75,7 @@ import com.aimdi.xtanative.ui.saved.KeepNotices
 import com.aimdi.xtanative.ui.saved.SavedIcons
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.settings.isDesktop
 
 /**
  * Downloads (downloads_screen.dart): the ones running or waiting first,
@@ -209,5 +211,5 @@ private fun statusText(status: DownloadStatus): String = when (status) {
     DownloadStatus.COMPLETED -> stringResource(Res.string.downloads_completed)
     DownloadStatus.FAILED -> stringResource(Res.string.downloads_failed)
     DownloadStatus.CANCELLED -> stringResource(Res.string.downloads_cancelled)
-    DownloadStatus.INTERRUPTED -> stringResource(Res.string.downloads_interrupted)
+    DownloadStatus.INTERRUPTED -> stringResource(if (isDesktop) Res.string.downloads_interrupted_desktop else Res.string.downloads_interrupted)
 }

@@ -84,6 +84,7 @@
     <string name="settings_yes">Tak</string>
     <string name="settings_zen_mode">Dzen-režym</string>
     <string name="settings_zen_mode_description">Spakajniejšaja stužka: chavaje statystyku pastoŭ, chavaje adkazy, pakul vy nie ŭtrymajecie knopku kamentaryjaŭ, i pakazvaje tolki niekalki niadaŭnich pastoŭ ad kožnaha.</string>
+    <string name="settings_zen_mode_description_desktop">Spakajniejšaja stužka: chavaje statystyku pastoŭ, chavaje adkazy, pakul vy nie nacisniecie na knopku kamentaryjaŭ pravaj knopkaj myšy, i pakazvaje tolki niekalki niadaŭnich pastoŭ ad kožnaha.</string>
     <string name="settings_threaded_replies">Lancužkovyja adkazy</string>
     <string name="settings_threaded_replies_description">Pakazvać adkazy pad adkrytym dopisam u vyhladzie dreva z vodstupami, dzie kožny adkaz ukladzieny pad tym, na jaki jon adkazvaje.</string>
     <string name="settings_collapse_boosts">Hrupavać seryi repostaŭ</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Jakasć vyjaŭ</string>
     <string name="settings_load_manually">Zahružać medyja ŭručnuju</string>
     <string name="settings_load_manually_description">Vyjavy i videa nie buduć zahružacca, pakul vy ich nie nacisniecie — kab ekanomić mabilny trafik.</string>
+    <string name="settings_load_manually_description_desktop">Vyjavy i videa nie buduć zahružacca, pakul vy na ich nie pstrykniecie — kab ekanomić trafik.</string>
     <string name="settings_save_bandwidth">Ekanomcie miesca na ekranie, z vyjavami mienšaha pamieru</string>
     <string name="settings_quality_low">Nizkaja</string>
     <string name="settings_quality_medium">Siaredniaja</string>
@@ -179,11 +181,17 @@
     <string name="settings_ticker_chart">Hrafik akcyi</string>
     <string name="settings_ticker_chart_description">Pakazvajecca pry adkrycci tykera. XTA sam biare ceny z publičnych servisaŭ biez ulikovaha zapisu; pry vyklučenni zapyt nie adpraŭlajecca, dopisy zastajucca.</string>
     <string name="settings_double_tap_like">Dvojny dotyk — padabajecca</string>
+    <string name="settings_double_tap_like_desktop">Dvajnaja pstryčka — padabajecca</string>
     <string name="settings_double_tap_like_description">Vyklučana pa zmaŭčanni: kožny adzinarny dotyk čakaje mahčymaha druhoha, tamu post adkryvajecca krychu paźniej.</string>
+    <string name="settings_double_tap_like_description_desktop">Vyklučana pa zmaŭčanni: kožnaja adzinarnaja pstryčka čakaje mahčymaj druhoj, tamu post adkryvajecca krychu paźniej.</string>
     <string name="settings_swipe_back_anywhere">Viartannie svajpam z luboha miesca</string>
+    <string name="settings_swipe_back_anywhere_desktop">Viartannie pieraciahvanniem z luboha miesca</string>
     <string name="settings_swipe_back_anywhere_description">Paciahnicie adkryty post z luboha jaho miesca, kab viarnucca. Vyklučana: tolki ad kraju ekrana.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Paciahnicie adkryty post z luboha jaho miesca, kab viarnucca. Vyklučana: tolki ad kraju akna.</string>
     <string name="settings_swipe_back_tilt">Nachił usled za palcam</string>
+    <string name="settings_swipe_back_tilt_desktop">Nachił usled za kursoram</string>
     <string name="settings_swipe_back_tilt_description">Post, jaki vy ciahniecie nazad, pavaročvajecca vakoł palca i hojdajecca ad chutkasci ruchu.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">Post, jaki vy ciahniecie nazad, pavaročvajecca vakoł kursora i hojdajecca ad chutkasci ruchu.</string>
     <string name="settings_accounts_empty">Dadajcie akaŭnt, kab zahruzić «Dla vas».</string>
     <string name="settings_accounts_description">Adkliučajcie zapasnyja akaŭnty, jakija trymajecie tolki dziela limitaŭ. «Dla vas» abjadnoŭvaje stužki ŭklučanych akaŭntaŭ; «Čytaju» dalej vykarystoŭvaje lakalnyja padpiski, ale pry zahruzcy prapuskaje adklučanyja. Kamentary i profili pry patrebie mohuć vykarystać luby akaŭnt.</string>
     <string name="settings_account_delete_confirm">Vyjsci z @%1$s? XTA zabudzie hety seans na pryladzie, i adrabić heta budzie niemahčyma.</string>

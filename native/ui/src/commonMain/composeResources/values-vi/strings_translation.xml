@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Dịch</string>
     <string name="translation_privacy">Không có gì được gửi đi cho đến khi bạn nhấn Dịch. Khi đó văn bản chỉ được gửi tới dịch vụ bạn chọn ở đây.</string>
+    <string name="translation_privacy_desktop">Không có gì được gửi đi cho đến khi bạn nhấp Dịch. Khi đó văn bản chỉ được gửi tới dịch vụ bạn chọn ở đây.</string>
     <string name="translation_provider">Dịch vụ dịch</string>
     <string name="translation_provider_off">Tắt</string>
     <string name="translation_provider_ai">Nhà cung cấp AI</string>

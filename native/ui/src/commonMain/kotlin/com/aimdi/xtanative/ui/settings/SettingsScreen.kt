@@ -281,11 +281,11 @@ private val INDEX = listOf(
     Indexed(SettingsSection.POSTS, PostsPrefs.includeReposts.key, Res.string.settings_include_reposts, Res.string.settings_feed_default_description),
     Indexed(SettingsSection.POSTS, PostsPrefs.threadedReplies.key, Res.string.settings_threaded_replies, Res.string.settings_threaded_replies_description),
     Indexed(SettingsSection.POSTS, PostsPrefs.collapseReposts.key, Res.string.settings_collapse_boosts, Res.string.settings_collapse_boosts_description),
-    Indexed(SettingsSection.POSTS, PostsPrefs.zenMode.key, Res.string.settings_zen_mode, Res.string.settings_zen_mode_description),
+    Indexed(SettingsSection.POSTS, PostsPrefs.zenMode.key, Res.string.settings_zen_mode, GestureWording.zenModeDescription),
     Indexed(SettingsSection.POSTS, PostsPrefs.calmMode.key, Res.string.settings_calm_mode, Res.string.settings_calm_mode_description),
     Indexed(SettingsSection.POSTS, PostsPrefs.zenPageCap.key, Res.string.settings_zen_page_cap, Res.string.settings_zen_page_cap_description),
     Indexed(SettingsSection.POSTS, PostsPrefs.rememberReadingPosition.key, Res.string.settings_reading_position, Res.string.settings_reading_position_description),
-    Indexed(SettingsSection.MEDIA, MediaPrefs.loadManually.key, Res.string.settings_load_manually, Res.string.settings_load_manually_description),
+    Indexed(SettingsSection.MEDIA, MediaPrefs.loadManually.key, Res.string.settings_load_manually, GestureWording.loadManuallyDescription),
     Indexed(SettingsSection.MEDIA, MediaPrefs.imageQuality.key, Res.string.settings_image_quality, Res.string.settings_save_bandwidth),
     Indexed(SettingsSection.MEDIA, MediaPrefs.gridColumns.key, Res.string.settings_grid_columns, Res.string.settings_grid_columns_description),
     Indexed(SettingsSection.MEDIA, MediaPrefs.gridLayout.key, Res.string.settings_media_layout, null),
@@ -312,9 +312,9 @@ private val INDEX = listOf(
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.disableAnimations.key, Res.string.settings_disable_animations, Res.string.settings_disable_animations_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.haptics.key, Res.string.settings_haptics, Res.string.settings_haptics_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.tickerChart.key, Res.string.settings_ticker_chart, Res.string.settings_ticker_chart_description),
-    Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.doubleTapLike.key, Res.string.settings_double_tap_like, Res.string.settings_double_tap_like_description),
-    Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.swipeBackAnywhere.key, Res.string.settings_swipe_back_anywhere, Res.string.settings_swipe_back_anywhere_description),
-    Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.swipeBackTilt.key, Res.string.settings_swipe_back_tilt, Res.string.settings_swipe_back_tilt_description),
+    Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.doubleTapLike.key, GestureWording.doubleTapLike, GestureWording.doubleTapLikeDescription),
+    Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.swipeBackAnywhere.key, GestureWording.swipeBackAnywhere, GestureWording.swipeBackAnywhereDescription),
+    Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.swipeBackTilt.key, GestureWording.swipeBackTilt, GestureWording.swipeBackTiltDescription),
 )
 
 /** The controls only Android has: the desktop's window takes no screenshot block, gives no haptics and has no status bar. */

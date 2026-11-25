@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Traducció</string>
     <string name="translation_privacy">No s'envia res fins que no toques Tradueix. Aleshores el text només va al servei que triïs aquí.</string>
+    <string name="translation_privacy_desktop">No s'envia res fins que no fas clic a Tradueix. Aleshores el text només va al servei que triïs aquí.</string>
     <string name="translation_provider">Servei de traducció</string>
     <string name="translation_provider_off">Desactivat</string>
     <string name="translation_provider_ai">Proveïdor d'IA</string>

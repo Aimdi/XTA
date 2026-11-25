@@ -101,11 +101,13 @@ import com.aimdi.xtanative.ui.generated.resources.posts_unable_to_load_the_tweet
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_views_count
 import com.aimdi.xtanative.ui.generated.resources.posts_zen_replies
+import com.aimdi.xtanative.ui.generated.resources.posts_zen_replies_desktop
 import com.aimdi.xtanative.ui.home.FindInPage
 import com.aimdi.xtanative.ui.home.LocalDesktopActions
 import com.aimdi.xtanative.ui.home.keyedPost
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.settings.isDesktop
 
 /**
  * An opened post (status.dart): what it answers, the post drawn as X draws
@@ -287,7 +289,7 @@ private fun ThreadEnd(state: PostUi, vm: PostViewModel) {
 @Composable
 private fun ZenReplies(onReveal: () -> Unit) {
     Text(
-        stringResource(Res.string.posts_zen_replies),
+        stringResource(if (isDesktop) Res.string.posts_zen_replies_desktop else Res.string.posts_zen_replies),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth().clickable(onClick = onReveal).padding(24.dp),

@@ -252,7 +252,7 @@ private fun AvatarRow(account: XAccount?, revision: Int, onClick: () -> Unit) {
         Column(Modifier.weight(1f)) {
             Text(stringResource(Res.string.settings_avatar_title), style = MaterialTheme.typography.bodyLarge)
             Text(
-                stringResource(if (revision > 0) Res.string.settings_avatar_change else Res.string.settings_avatar_description),
+                stringResource(if (revision > 0) GestureWording.avatarChange else Res.string.settings_avatar_description),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

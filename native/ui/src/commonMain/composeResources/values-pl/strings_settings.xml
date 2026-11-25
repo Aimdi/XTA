@@ -84,6 +84,7 @@
     <string name="settings_yes">Tak</string>
     <string name="settings_zen_mode">Tryb zen</string>
     <string name="settings_zen_mode_description">Spokojniejszy kanał: ukrywa statystyki wpisów, ukrywa odpowiedzi, dopóki nie przytrzymasz przycisku komentarzy, i pokazuje tylko kilka ostatnich wpisów każdej osoby.</string>
+    <string name="settings_zen_mode_description_desktop">Spokojniejszy kanał: ukrywa statystyki wpisów, ukrywa odpowiedzi, dopóki nie klikniesz prawym przyciskiem przycisku komentarzy, i pokazuje tylko kilka ostatnich wpisów każdej osoby.</string>
     <string name="settings_threaded_replies">Odpowiedzi w wątkach</string>
     <string name="settings_threaded_replies_description">Pokazuj odpowiedzi pod otwartym wpisem jako wcięte drzewo, z każdą odpowiedzią zagnieżdżoną pod tą, na którą odpowiada.</string>
     <string name="settings_collapse_boosts">Grupuj serie podań dalej</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Jakość obrazów</string>
     <string name="settings_load_manually">Ładuj multimedia ręcznie</string>
     <string name="settings_load_manually_description">Obrazy i filmy będą ładowane dopiero po dotknięciu, aby oszczędzać dane komórkowe.</string>
+    <string name="settings_load_manually_description_desktop">Obrazy i filmy będą ładowane dopiero po kliknięciu, aby oszczędzać dane.</string>
     <string name="settings_save_bandwidth">Oszczędzaj transfer dzięki mniejszym obrazom</string>
     <string name="settings_quality_low">Niska</string>
     <string name="settings_quality_medium">Średnia</string>
@@ -179,11 +181,17 @@
     <string name="settings_ticker_chart">Wykres giełdowy</string>
     <string name="settings_ticker_chart_description">Pokazywany po otwarciu tickera. XTA sam pobiera notowania z publicznych usług bez konta; po wyłączeniu nie wysyła żadnego zapytania, a wpisy zostają.</string>
     <string name="settings_double_tap_like">Podwójne dotknięcie, aby polubić</string>
+    <string name="settings_double_tap_like_desktop">Podwójne kliknięcie, aby polubić</string>
     <string name="settings_double_tap_like_description">Domyślnie wyłączone: każde pojedyncze dotknięcie czeka na ewentualne drugie, więc otwieranie wpisu trwa nieco dłużej.</string>
+    <string name="settings_double_tap_like_description_desktop">Domyślnie wyłączone: każde pojedyncze kliknięcie czeka na ewentualne drugie, więc otwieranie wpisu trwa nieco dłużej.</string>
     <string name="settings_swipe_back_anywhere">Cofanie przesunięciem z dowolnego miejsca</string>
+    <string name="settings_swipe_back_anywhere_desktop">Cofanie przeciągnięciem z dowolnego miejsca</string>
     <string name="settings_swipe_back_anywhere_description">Przeciągnij otwarty wpis z dowolnego miejsca, aby wrócić. Wyłączone: tylko od krawędzi ekranu.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Przeciągnij otwarty wpis z dowolnego miejsca, aby wrócić. Wyłączone: tylko od krawędzi okna.</string>
     <string name="settings_swipe_back_tilt">Przechylanie za palcem</string>
+    <string name="settings_swipe_back_tilt_desktop">Przechylanie za wskaźnikiem</string>
     <string name="settings_swipe_back_tilt_description">Przeciągany wpis obraca się wokół palca i kołysze w rytm prędkości.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">Przeciągany wpis obraca się wokół wskaźnika i kołysze w rytm prędkości.</string>
     <string name="settings_accounts_empty">Dodaj konto, aby wczytać Dla Ciebie.</string>
     <string name="settings_accounts_description">Wyłącz zapasowe konta trzymane tylko dla limitów. Dla Ciebie scala osi czasu włączonych kont; Obserwowani nadal używa lokalnych subskrypcji, ale pomija wyłączone konta przy pobieraniu. Komentarze i profile w razie potrzeby mogą użyć dowolnego konta.</string>
     <string name="settings_account_delete_confirm">Wylogować @%1$s? XTA zapomni jego sesję na tym urządzeniu, a tej operacji nie można cofnąć.</string>

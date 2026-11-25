@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Vertaling</string>
     <string name="translation_privacy">Er wordt niets verstuurd tot je op Vertalen tikt. De tekst gaat dan alleen naar de dienst die je hier kiest.</string>
+    <string name="translation_privacy_desktop">Er wordt niets verstuurd tot je op Vertalen klikt. De tekst gaat dan alleen naar de dienst die je hier kiest.</string>
     <string name="translation_provider">Vertaaldienst</string>
     <string name="translation_provider_off">Uit</string>
     <string name="translation_provider_ai">AI-aanbieder</string>

@@ -96,6 +96,7 @@
     <string name="posts_verified_organization">Organización verificada</string>
     <string name="posts_view_quoted">Ver el tuit citado</string>
     <string name="posts_zen_replies">Mantén pulsado el botón de comentarios para mostrar las respuestas</string>
+    <string name="posts_zen_replies_desktop">Haz clic derecho en el botón de comentarios para mostrar las respuestas</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s visualización</item>
         <item quantity="other">%1$s visualizaciones</item>

@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">Votre avatar</string>
     <string name="settings_avatar_change">Touchez pour changer l’image en haut à gauche</string>
+    <string name="settings_avatar_change_desktop">Cliquez pour changer l’image en haut à gauche</string>
     <string name="settings_avatar_description">Image en haut à gauche et dans le tiroir — reste sur cet appareil</string>
     <string name="settings_avatar_choose">Choisir depuis l’appareil</string>
     <string name="settings_avatar_from_account">Utiliser la photo de profil X</string>

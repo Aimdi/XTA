@@ -96,6 +96,7 @@
     <string name="posts_verified_organization">Kinnitatud organisatsioon</string>
     <string name="posts_view_quoted">Vaata tsiteeritud postitust</string>
     <string name="posts_zen_replies">Vastuste kuvamiseks hoia kommentaarinuppu all</string>
+    <string name="posts_zen_replies_desktop">Vastuste kuvamiseks tee kommentaarinupul paremklõps</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s vaatamine</item>
         <item quantity="other">%1$s vaatamist</item>

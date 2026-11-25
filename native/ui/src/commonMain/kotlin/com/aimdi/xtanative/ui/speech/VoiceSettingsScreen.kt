@@ -94,6 +94,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_voice_progress
 import com.aimdi.xtanative.ui.generated.resources.reader_voice_ready
 import com.aimdi.xtanative.ui.generated.resources.reader_voices
 import com.aimdi.xtanative.ui.generated.resources.reader_voices_note
+import com.aimdi.xtanative.ui.generated.resources.reader_voices_note_desktop
 import com.aimdi.xtanative.ui.generated.resources.reader_voices_synthesis_missing
 import com.aimdi.xtanative.ui.generated.resources.reader_voices_use
 import com.aimdi.xtanative.ui.generated.resources.reader_voices_use_description
@@ -101,6 +102,7 @@ import com.aimdi.xtanative.ui.home.rememberSheetList
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.media.ReaderIcons
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.settings.isDesktop
 
 /** Settings › Accessibility › Read aloud as its own screen (TtsSettingsScreen). */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -202,7 +204,7 @@ private fun LazyListScope.offlineVoices(ui: VoiceSettingsUi, vm: VoiceSettingsVi
         }
     }
     items(parts.voices.catalog, key = { "voice-" + it.id }) { voice -> VoiceRow(voice, ui, vm, parts) }
-    item(key = "voices-note") { Note(stringResource(Res.string.reader_voices_note)) }
+    item(key = "voices-note") { Note(stringResource(if (isDesktop) Res.string.reader_voices_note_desktop else Res.string.reader_voices_note)) }
     if (!engine.bundled) item(key = "engine-note") { Note(stringResource(Res.string.reader_voice_engine_note)) }
 }
 

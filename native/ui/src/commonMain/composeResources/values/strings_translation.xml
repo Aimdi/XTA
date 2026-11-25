@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Translation</string>
     <string name="translation_privacy">Nothing is sent until you tap Translate. The text then goes only to the service chosen here.</string>
+    <string name="translation_privacy_desktop">Nothing is sent until you click Translate. The text then goes only to the service chosen here.</string>
     <string name="translation_provider">Translation service</string>
     <string name="translation_provider_off">Off</string>
     <string name="translation_provider_ai">AI provider</string>

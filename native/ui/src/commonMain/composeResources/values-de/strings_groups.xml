@@ -24,6 +24,7 @@
     <string name="groups_columns">Spalten</string>
     <string name="groups_combine_clear">Aufheben</string>
     <string name="groups_combine_hint">Halte eine Gruppe gedrückt, um sie zusammen mit dieser zu lesen</string>
+    <string name="groups_combine_hint_desktop">Rechtsklick auf eine Gruppe, um sie zusammen mit dieser zu lesen</string>
     <string name="groups_combined_count">%1$d weitere werden mitgelesen</string>
     <string name="groups_compact">Kompakt</string>
     <string name="groups_content_default">Standard</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Keine Ergebnisse</string>
     <string name="groups_no_subscriptions">Keine Abonnements. Suche oder importiere welche!</string>
     <string name="groups_none_description">Mit Gruppen mischst du Abos zu eigenen Feeds. Lange drücken zum Bearbeiten.</string>
+    <string name="groups_none_description_desktop">Mit Gruppen mischst du Abos zu eigenen Feeds. Rechtsklick auf eine Gruppe zum Bearbeiten.</string>
     <string name="groups_none_yet">Noch keine Gruppen</string>
     <string name="groups_not_all_posts">Hinweis: Aufgrund einer Beschränkung seitens Twitter werden möglicherweise nicht alle Tweets angezeigt</string>
     <string name="groups_ok">OK</string>

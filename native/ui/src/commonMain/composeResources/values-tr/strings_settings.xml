@@ -84,6 +84,7 @@
     <string name="settings_yes">Evet</string>
     <string name="settings_zen_mode">Zen modu</string>
     <string name="settings_zen_mode_description">Daha sakin bir akış: gönderi istatistiklerini gizler, yorum düğmesini basılı tutana kadar yanıtları gizler ve kişi başına yalnızca birkaç güncel gönderi gösterir.</string>
+    <string name="settings_zen_mode_description_desktop">Daha sakin bir akış: gönderi istatistiklerini gizler, yorum düğmesine sağ tıklayana kadar yanıtları gizler ve kişi başına yalnızca birkaç güncel gönderi gösterir.</string>
     <string name="settings_threaded_replies">İç içe yanıtlar</string>
     <string name="settings_threaded_replies_description">Açılan bir gönderinin yanıtlarını, her yanıt cevapladığı yanıtın altına yerleşecek şekilde girintili bir ağaç olarak göster.</string>
     <string name="settings_collapse_boosts">Art arda gelen repostları grupla</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Görüntü kalitesi</string>
     <string name="settings_load_manually">Medyayı elle yükle</string>
     <string name="settings_load_manually_description">Mobil veriden tasarruf etmek için görüntüler ve videolar siz dokunana kadar yüklenmez.</string>
+    <string name="settings_load_manually_description_desktop">Veriden tasarruf etmek için görüntüler ve videolar siz tıklayana kadar yüklenmez.</string>
     <string name="settings_save_bandwidth">Daha küçük görüntülerle bant genişliğinden tasarruf edin</string>
     <string name="settings_quality_low">Düşük</string>
     <string name="settings_quality_medium">Orta</string>
@@ -179,11 +181,17 @@
     <string name="settings_ticker_chart">Hisse grafiği</string>
     <string name="settings_ticker_chart_description">Bir hisse kodu açtığınızda görünür. XTA fiyatları hesap gerektirmeyen açık servislerden kendisi alır; kapalıyken hiçbir istek gönderilmez, gönderiler kalır.</string>
     <string name="settings_double_tap_like">Beğenmek için çift dokunma</string>
+    <string name="settings_double_tap_like_desktop">Beğenmek için çift tıklama</string>
     <string name="settings_double_tap_like_description">Varsayılan olarak kapalı: açıkken her tek dokunuş ikinci bir dokunuşu bekler, bu yüzden gönderi açmak biraz yavaşlar.</string>
+    <string name="settings_double_tap_like_description_desktop">Varsayılan olarak kapalı: açıkken her tek tıklama ikinci bir tıklamayı bekler, bu yüzden gönderi açmak biraz yavaşlar.</string>
     <string name="settings_swipe_back_anywhere">Her yerden kaydırarak geri dönme</string>
+    <string name="settings_swipe_back_anywhere_desktop">Her yerden sürükleyerek geri dönme</string>
     <string name="settings_swipe_back_anywhere_description">Geri dönmek için açık bir gönderiyi herhangi bir yerinden sürükleyin. Kapalı: yalnızca ekranın kenarından.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Geri dönmek için açık bir gönderiyi herhangi bir yerinden sürükleyin. Kapalı: yalnızca pencerenin kenarından.</string>
     <string name="settings_swipe_back_tilt">Parmakla eğme</string>
+    <string name="settings_swipe_back_tilt_desktop">İşaretçiyle eğme</string>
     <string name="settings_swipe_back_tilt_description">Geri sürüklediğiniz gönderi parmağınızın etrafında döner ve hızınıza göre sallanır.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">Geri sürüklediğiniz gönderi işaretçinin etrafında döner ve hızınıza göre sallanır.</string>
     <string name="settings_accounts_empty">Sana özel’i yüklemek için bir hesap ekleyin.</string>
     <string name="settings_accounts_description">Yalnızca hız limitleri için tuttuğunuz yedek hesapları kapatın. Sana özel, açık hesapların ana sayfa akışlarını birleştirir; Takip edilenler yerel aboneliklerinizi kullanmaya devam eder ancak kapalı hesapları çekerken atlar. Yorumlar ve profiller gerekirse hâlâ herhangi bir hesabı kullanabilir.</string>
     <string name="settings_account_delete_confirm">@%1$s hesabından çıkış yapılsın mı? XTA bu cihazdaki oturumu unutacak ve bu işlem geri alınamaz.</string>

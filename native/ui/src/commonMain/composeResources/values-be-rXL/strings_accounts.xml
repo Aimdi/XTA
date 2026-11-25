@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">Vaš avatar</string>
     <string name="settings_avatar_change">Nacisnicie, kab zmianić vyjavu źvierchu źleva</string>
+    <string name="settings_avatar_change_desktop">Pstryknicie, kab zmianić vyjavu źvierchu źleva</string>
     <string name="settings_avatar_description">Vyjava źvierchu źleva i ŭ mieniu — zastajecca na hetaj pryladzie</string>
     <string name="settings_avatar_choose">Vybrać z prylady</string>
     <string name="settings_avatar_from_account">Uziać fota profilu X</string>

@@ -45,6 +45,7 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.following
 import com.aimdi.xtanative.ui.generated.resources.groups_combine_clear
 import com.aimdi.xtanative.ui.generated.resources.groups_combine_hint
+import com.aimdi.xtanative.ui.generated.resources.groups_combine_hint_desktop
 import com.aimdi.xtanative.ui.generated.resources.groups_combined_count
 import com.aimdi.xtanative.ui.generated.resources.groups_create
 import com.aimdi.xtanative.ui.generated.resources.groups_groups
@@ -64,6 +65,7 @@ import com.aimdi.xtanative.ui.subscriptions.GroupMark
 import com.aimdi.xtanative.ui.subscriptions.groupColor
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.settings.isDesktop
 
 /**
  * A group feed's title (group_feed_title.dart, group_switcher.dart): the
@@ -147,7 +149,7 @@ fun GroupSwitcherSheet(
 private fun CombineHint(count: Int, onClear: () -> Unit) {
     if (count == 0) {
         Text(
-            stringResource(Res.string.groups_combine_hint),
+            stringResource(if (isDesktop) Res.string.groups_combine_hint_desktop else Res.string.groups_combine_hint),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 8.dp),
         )

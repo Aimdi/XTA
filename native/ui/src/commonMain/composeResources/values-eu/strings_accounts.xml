@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">Zure avatarra</string>
     <string name="settings_avatar_change">Sakatu goian ezkerreko irudia aldatzeko</string>
+    <string name="settings_avatar_change_desktop">Egin klik goian ezkerreko irudia aldatzeko</string>
     <string name="settings_avatar_description">Goian ezkerrean eta tiraderan agertzen den irudia — gailu honetan geratzen da</string>
     <string name="settings_avatar_choose">Aukeratu gailutik</string>
     <string name="settings_avatar_from_account">Erabili X-eko profil-argazkia</string>

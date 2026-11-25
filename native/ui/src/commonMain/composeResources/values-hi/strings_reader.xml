@@ -64,6 +64,7 @@
     <string name="reader_voices_use">डाउनलोड की गई आवाज़ इस्तेमाल करें</string>
     <string name="reader_voices_use_description">अगर कोई डाउनलोड की गई आवाज़ लेख की भाषा बोलती है तो उसी से पढ़ता है; वरना नीचे दिया इंजन इस्तेमाल करता है।</string>
     <string name="reader_voices_note">आवाज़ें GitHub (k2-fsa/sherpa-onnx) से तभी डाउनलोड होती हैं जब आप डाउनलोड पर टैप करते हैं। ये पूरी तरह इसी डिवाइस पर चलती हैं।</string>
+    <string name="reader_voices_note_desktop">आवाज़ें GitHub (k2-fsa/sherpa-onnx) से तभी डाउनलोड होती हैं जब आप डाउनलोड पर क्लिक करते हैं। ये पूरी तरह इसी डिवाइस पर चलती हैं।</string>
     <string name="reader_voices_synthesis_missing">यह संस्करण आवाज़ें डाउनलोड कर सकता है, पर अभी उनसे पढ़ नहीं सकता। तब तक नीचे दिया वाक् इंजन ज़ोर से पढ़ता है।</string>
     <string name="reader_voice_licence">लाइसेंस: %1$s</string>
     <string name="reader_voice_installing">जाँच और अनपैक किया जा रहा है…</string>

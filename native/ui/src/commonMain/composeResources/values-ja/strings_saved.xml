@@ -165,6 +165,7 @@
     <string name="saved_media_status">メディアを保存できませんでした。Twitterから返されたステータス：%1$d</string>
     <string name="downloads_cancelled">キャンセル済み</string>
     <string name="downloads_interrupted">中断 · 再試行して続行</string>
+    <string name="downloads_interrupted_desktop">中断 · 「再試行」をクリックして続行</string>
     <string name="downloads_batch">保存したファイル数: %1$d / %2$d</string>
     <string name="downloads_saved_to">%1$s に保存しました</string>
     <string name="set_a_download_folder_to_auto_download">自動ダウンロードするには、設定 &gt; メディアでダウンロードフォルダーを設定してください。</string>

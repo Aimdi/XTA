@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Traduzione</string>
     <string name="translation_privacy">Non viene inviato nulla finché non tocchi Traduci. Il testo va poi solo al servizio scelto qui.</string>
+    <string name="translation_privacy_desktop">Non viene inviato nulla finché non fai clic su Traduci. Il testo va poi solo al servizio scelto qui.</string>
     <string name="translation_provider">Servizio di traduzione</string>
     <string name="translation_provider_off">Disattivato</string>
     <string name="translation_provider_ai">Fornitore IA</string>

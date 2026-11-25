@@ -100,6 +100,7 @@
     <string name="posts_verified_organization">Verified organization</string>
     <string name="posts_view_quoted">View quoted tweet</string>
     <string name="posts_zen_replies">Hold the comment button to show the replies</string>
+    <string name="posts_zen_replies_desktop">Right-click the comment button to show the replies</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s View</item>
         <item quantity="other">%1$s Views</item>

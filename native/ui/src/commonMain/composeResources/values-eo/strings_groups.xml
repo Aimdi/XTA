@@ -24,6 +24,7 @@
     <string name="groups_columns">Kolumnoj</string>
     <string name="groups_combine_clear">Vakigi</string>
     <string name="groups_combine_hint">Tenu grupon por legi ĝin kune kun ĉi tiu</string>
+    <string name="groups_combine_hint_desktop">Dekstre alklaku grupon por legi ĝin kune kun ĉi tiu</string>
     <string name="groups_combined_count">Kune legiĝas ankoraŭ %1$d</string>
     <string name="groups_compact">Kompakta</string>
     <string name="groups_content_default">Defaŭlta</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Ne rezultoj</string>
     <string name="groups_no_subscriptions">Ne abonoj. Provu serĉi aŭ importi iujn!</string>
     <string name="groups_none_description">Grupoj miksas abonojn en proprajn fluojn. Longa tuŝo redaktas grupon.</string>
+    <string name="groups_none_description_desktop">Grupoj miksas abonojn en proprajn fluojn. Dekstra alklako redaktas grupon.</string>
     <string name="groups_none_yet">Ankoraŭ neniuj grupoj</string>
     <string name="groups_not_all_posts">Noto: Pro limigo de Twitter, ne ĉiuj pepoj eble estas ampleksitaj</string>
     <string name="groups_ok">Bone</string>

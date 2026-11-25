@@ -51,6 +51,7 @@
     <string name="home_filter_accounts_explained">Itzali tasa-mugetarako bakarrik gordetzen dituzun erreserba-kontuak. Zuretzat piztuta dauden kontuen hasierako kronologiak biltzen ditu; Jarraitzen tokiko harpidetzak erabiltzen jarraitzen du, baina itzalitakoak saltatzen ditu eskuratzean. Iruzkinek eta profilek edozein kontu erabil dezakete behar izanez gero.</string>
     <string name="home_filter_groups_explained">Desaktibatu talde bat kideak Jarraitzen ataletik ezkutatzeko. Taldearen fitxa geratzen da. Haien argitalpenak Zuretzat ataletik ere kentzen dira.</string>
     <string name="home_filter_only_hint">Sakatu luze bat hori bakarrik aktibo uzteko.</string>
+    <string name="home_filter_only_hint_desktop">Egin eskuineko klik bati hori bakarrik aktibo uzteko.</string>
     <string name="home_filter_keep_one">Gutxienez kontu bat piztuta utzi behar da</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Dena</string>

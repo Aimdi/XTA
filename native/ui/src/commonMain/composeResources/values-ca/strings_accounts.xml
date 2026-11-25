@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">El teu avatar</string>
     <string name="settings_avatar_change">Toqueu per canviar la imatge de dalt a l’esquerra</string>
+    <string name="settings_avatar_change_desktop">Feu clic per canviar la imatge de dalt a l’esquerra</string>
     <string name="settings_avatar_description">Imatge a dalt a l’esquerra i al calaix — es queda en aquest dispositiu</string>
     <string name="settings_avatar_choose">Tria del dispositiu</string>
     <string name="settings_avatar_from_account">Fes servir la foto de perfil d’X</string>

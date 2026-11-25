@@ -168,6 +168,7 @@
     <string name="saved_media_status">Unable to save the media. X returned a status of %1$d</string>
     <string name="downloads_cancelled">Cancelled</string>
     <string name="downloads_interrupted">Interrupted · tap retry to continue</string>
+    <string name="downloads_interrupted_desktop">Interrupted · click retry to continue</string>
     <string name="downloads_batch">Files saved: %1$d / %2$d</string>
     <string name="downloads_saved_to">Saved to %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Set a download folder in Settings &gt; Media to auto-download.</string>

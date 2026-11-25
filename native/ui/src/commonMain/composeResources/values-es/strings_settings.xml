@@ -84,6 +84,7 @@
     <string name="settings_yes">Sí</string>
     <string name="settings_zen_mode">Modo zen</string>
     <string name="settings_zen_mode_description">Un feed más tranquilo: oculta las estadísticas, oculta las respuestas hasta que mantengas pulsado el botón de comentarios y muestra solo unas pocas publicaciones recientes por persona.</string>
+    <string name="settings_zen_mode_description_desktop">Un feed más tranquilo: oculta las estadísticas, oculta las respuestas hasta que hagas clic derecho en el botón de comentarios y muestra solo unas pocas publicaciones recientes por persona.</string>
     <string name="settings_threaded_replies">Respuestas anidadas</string>
     <string name="settings_threaded_replies_description">Muestra las respuestas de una publicación abierta como un árbol con sangría, cada respuesta anidada bajo aquella a la que responde.</string>
     <string name="settings_collapse_boosts">Agrupar rachas de republicaciones</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Calidad de las imágenes</string>
     <string name="settings_load_manually">Cargar los medios manualmente</string>
     <string name="settings_load_manually_description">Las imágenes y los vídeos solo se cargan al tocarlos, para ahorrar datos móviles.</string>
+    <string name="settings_load_manually_description_desktop">Las imágenes y los vídeos solo se cargan al hacer clic en ellos, para ahorrar datos.</string>
     <string name="settings_save_bandwidth">Ahorrar ancho de banda con imágenes más pequeñas</string>
     <string name="settings_quality_low">Baja</string>
     <string name="settings_quality_medium">Media</string>
@@ -179,11 +181,17 @@
     <string name="settings_ticker_chart">Gráfico bursátil</string>
     <string name="settings_ticker_chart_description">Se muestra al abrir un tícker. XTA obtiene los precios de servicios públicos sin cuenta; desactivado no hace ninguna petición y quedan las publicaciones.</string>
     <string name="settings_double_tap_like">Doble toque para dar me gusta</string>
+    <string name="settings_double_tap_like_desktop">Doble clic para dar me gusta</string>
     <string name="settings_double_tap_like_description">Desactivado por defecto: cada toque simple espera por si llega un segundo, así que abrir una publicación tarda un poco más.</string>
+    <string name="settings_double_tap_like_description_desktop">Desactivado por defecto: cada clic simple espera por si llega un segundo, así que abrir una publicación tarda un poco más.</string>
     <string name="settings_swipe_back_anywhere">Deslizar para volver desde cualquier punto</string>
+    <string name="settings_swipe_back_anywhere_desktop">Arrastrar para volver desde cualquier punto</string>
     <string name="settings_swipe_back_anywhere_description">Arrastra una publicación abierta desde cualquier punto para volver. Desactivado: solo desde el borde de la pantalla.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Arrastra una publicación abierta desde cualquier punto para volver. Desactivado: solo desde el borde de la ventana.</string>
     <string name="settings_swipe_back_tilt">Inclinar con el dedo</string>
+    <string name="settings_swipe_back_tilt_desktop">Inclinar con el puntero</string>
     <string name="settings_swipe_back_tilt_description">La publicación que arrastras gira alrededor de tu dedo y se balancea según tu velocidad.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">La publicación que arrastras gira alrededor del puntero y se balancea según tu velocidad.</string>
     <string name="settings_accounts_empty">Añade una cuenta para cargar Para ti.</string>
     <string name="settings_accounts_description">Desactiva las cuentas de reserva que solo guardas por los límites de tasa. Para ti fusiona las cronologías de las cuentas activas; Siguiendo sigue usando tus suscripciones locales, pero omite las cuentas desactivadas al cargar. Comentarios y perfiles aún pueden usar cualquier cuenta si hace falta.</string>
     <string name="settings_account_delete_confirm">¿Cerrar la sesión de @%1$s? XTA olvidará su sesión en este dispositivo y no podrás deshacerlo.</string>

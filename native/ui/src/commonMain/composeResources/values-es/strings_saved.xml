@@ -168,6 +168,7 @@
     <string name="saved_media_status">No se puede guardar el contenido. X devolvió el estado %1$d</string>
     <string name="downloads_cancelled">Cancelado</string>
     <string name="downloads_interrupted">Interrumpido · Reintenta para continuar</string>
+    <string name="downloads_interrupted_desktop">Interrumpido · Haz clic en Reintentar para continuar</string>
     <string name="downloads_batch">Archivos guardados: %1$d / %2$d</string>
     <string name="downloads_saved_to">Guardado en %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Configura una carpeta de descargas en Ajustes &gt; Multimedia para descargar automáticamente.</string>

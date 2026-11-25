@@ -24,6 +24,7 @@
     <string name="groups_columns">Sloupce</string>
     <string name="groups_combine_clear">Zrušit</string>
     <string name="groups_combine_hint">Podržte skupinu, abyste ji četli spolu s touto</string>
+    <string name="groups_combine_hint_desktop">Klikněte pravým tlačítkem na skupinu, abyste ji četli spolu s touto</string>
     <string name="groups_combined_count">Společně se čte ještě %1$d</string>
     <string name="groups_compact">Kompaktní</string>
     <string name="groups_content_default">Výchozí</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Žádné výsledky</string>
     <string name="groups_no_subscriptions">Žádné odběry. Zkuste nějaké vyhledat nebo importovat!</string>
     <string name="groups_none_description">Skupiny míchají odběry do vlastních feedů. Dlouhým stiskem skupinu upravíte.</string>
+    <string name="groups_none_description_desktop">Skupiny míchají odběry do vlastních feedů. Kliknutím pravým tlačítkem skupinu upravíte.</string>
     <string name="groups_none_yet">Zatím žádné skupiny</string>
     <string name="groups_not_all_posts">Poznámka: kvuli imitaci Twitteru nemusí byt zahrnuty všechny tweety</string>
     <string name="groups_ok">OK</string>

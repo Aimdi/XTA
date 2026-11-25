@@ -24,6 +24,7 @@
     <string name="groups_columns">Zutabeak</string>
     <string name="groups_combine_clear">Garbitu</string>
     <string name="groups_combine_hint">Eutsi talde bati hau honekin batera irakurtzeko</string>
+    <string name="groups_combine_hint_desktop">Egin eskuineko klik talde batean hau honekin batera irakurtzeko</string>
     <string name="groups_combined_count">Beste %1$d batera irakurtzen</string>
     <string name="groups_compact">Trinkoa</string>
     <string name="groups_content_default">Lehenetsia</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Ez dago emaitzarik</string>
     <string name="groups_no_subscriptions">Ez dago harpidetzarik. Saiatu batzuk bilatzen edo inportatzen!</string>
     <string name="groups_none_description">Taldeek harpidetzak feed pertsonalizatuetan biltzen dituzte. Luze sakatu taldea editatzeko.</string>
+    <string name="groups_none_description_desktop">Taldeek harpidetzak feed pertsonalizatuetan biltzen dituzte. Egin eskuineko klik taldean editatzeko.</string>
     <string name="groups_none_yet">Oraindik ez dago talderik</string>
     <string name="groups_not_all_posts">Oharra: Twitter-eko muga bat dela eta, litekeena da txio guztiak ez agertzea</string>
     <string name="groups_ok">Ados</string>

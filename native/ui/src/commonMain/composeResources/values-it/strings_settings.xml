@@ -84,6 +84,7 @@
     <string name="settings_yes">Sì</string>
     <string name="settings_zen_mode">Modalità zen</string>
     <string name="settings_zen_mode_description">Un feed più tranquillo: nasconde le statistiche, nasconde le risposte finché non tieni premuto il pulsante dei commenti e mostra solo pochi post recenti per persona.</string>
+    <string name="settings_zen_mode_description_desktop">Un feed più tranquillo: nasconde le statistiche, nasconde le risposte finché non fai clic destro sul pulsante dei commenti e mostra solo pochi post recenti per persona.</string>
     <string name="settings_threaded_replies">Risposte nidificate</string>
     <string name="settings_threaded_replies_description">Mostra le risposte sotto un post aperto come un albero rientrato, con ogni risposta annidata sotto quella a cui risponde.</string>
     <string name="settings_collapse_boosts">Raggruppa le serie di repost</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Qualità delle immagini</string>
     <string name="settings_load_manually">Carica i media manualmente</string>
     <string name="settings_load_manually_description">Le immagini e i video vengono caricati solo quando li tocchi, per risparmiare dati mobili.</string>
+    <string name="settings_load_manually_description_desktop">Le immagini e i video vengono caricati solo quando ci fai clic, per risparmiare dati.</string>
     <string name="settings_save_bandwidth">Risparmia banda usando immagini più piccole</string>
     <string name="settings_quality_low">Bassa</string>
     <string name="settings_quality_medium">Media</string>
@@ -179,11 +181,17 @@
     <string name="settings_ticker_chart">Grafico azionario</string>
     <string name="settings_ticker_chart_description">Mostrato all'apertura di un ticker. XTA recupera da sé le quotazioni da servizi pubblici senza account; disattivato non invia nulla e restano i post.</string>
     <string name="settings_double_tap_like">Doppio tocco per mettere mi piace</string>
+    <string name="settings_double_tap_like_desktop">Doppio clic per mettere mi piace</string>
     <string name="settings_double_tap_like_description">Disattivato di default: ogni tocco singolo attende un eventuale secondo, quindi aprire un post risulta un po' più lento.</string>
+    <string name="settings_double_tap_like_description_desktop">Disattivato di default: ogni clic singolo attende un eventuale secondo, quindi aprire un post risulta un po' più lento.</string>
     <string name="settings_swipe_back_anywhere">Scorri indietro da qualsiasi punto</string>
+    <string name="settings_swipe_back_anywhere_desktop">Trascina indietro da qualsiasi punto</string>
     <string name="settings_swipe_back_anywhere_description">Trascina un post aperto da qualsiasi punto per tornare indietro. Disattivato: solo dal bordo dello schermo.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Trascina un post aperto da qualsiasi punto per tornare indietro. Disattivato: solo dal bordo della finestra.</string>
     <string name="settings_swipe_back_tilt">Inclina con il dito</string>
+    <string name="settings_swipe_back_tilt_desktop">Inclina con il puntatore</string>
     <string name="settings_swipe_back_tilt_description">Il post che trascini indietro ruota attorno al dito e oscilla secondo la tua velocità.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">Il post che trascini indietro ruota attorno al puntatore e oscilla secondo la tua velocità.</string>
     <string name="settings_accounts_empty">Aggiungi un account per caricare Per te.</string>
     <string name="settings_accounts_description">Disattiva gli account di riserva tenuti solo per i limiti di frequenza. Per te unisce le timeline degli account lasciati attivi; Following usa ancora i tuoi abbonamenti locali ma salta gli account disattivati in fase di recupero. Commenti e profili possono ancora usare qualsiasi account se serve.</string>
     <string name="settings_account_delete_confirm">Vuoi disconnettere @%1$s? XTA dimenticherà la sua sessione su questo dispositivo e l'operazione non è reversibile.</string>

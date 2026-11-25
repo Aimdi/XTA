@@ -84,6 +84,7 @@
     <string name="settings_yes">نعم</string>
     <string name="settings_zen_mode">وضع الهدوء</string>
     <string name="settings_zen_mode_description">موجز أهدأ: يخفي إحصاءات المنشورات، ويخفي الردود حتى تضغط مطولًا على زر التعليقات، ويعرض فقط بضعة منشورات حديثة لكل شخص.</string>
+    <string name="settings_zen_mode_description_desktop">موجز أهدأ: يخفي إحصاءات المنشورات، ويخفي الردود حتى تنقر بزر الفأرة الأيمن على زر التعليقات، ويعرض فقط بضعة منشورات حديثة لكل شخص.</string>
     <string name="settings_threaded_replies">الردود المتفرعة</string>
     <string name="settings_threaded_replies_description">عرض الردود تحت المنشور المفتوح كشجرة متدرجة، مع تداخل كل رد تحت الرد الذي يجيب عنه.</string>
     <string name="settings_collapse_boosts">تجميع سلاسل إعادة النشر</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">جودة الصور</string>
     <string name="settings_load_manually">تحميل الوسائط يدويًا</string>
     <string name="settings_load_manually_description">لن يتم تحميل الصور والفيديوهات إلا عند النقر عليها، لتوفير بيانات الجوّال.</string>
+    <string name="settings_load_manually_description_desktop">لن يتم تحميل الصور والفيديوهات إلا عند النقر عليها، لتوفير البيانات.</string>
     <string name="settings_save_bandwidth">حفظ النطاق الترددي مع صور أصغر</string>
     <string name="settings_quality_low">منخفضة</string>
     <string name="settings_quality_medium">متوسطة</string>
@@ -179,11 +181,17 @@
     <string name="settings_ticker_chart">مخطط السهم</string>
     <string name="settings_ticker_chart_description">يُعرض عند فتح رمز سهم. يجلب XTA بيانات السعر بنفسه من خدمات عامة لا تتطلب حسابًا؛ عند إيقافه لا يُرسل أي طلب وتبقى المنشورات.</string>
     <string name="settings_double_tap_like">النقر المزدوج للإعجاب</string>
+    <string name="settings_double_tap_like_desktop">النقر المزدوج للإعجاب</string>
     <string name="settings_double_tap_like_description">مطفأ افتراضيًا: عند تفعيله تنتظر كل نقرة مفردة لمعرفة ما إذا كانت ستتبعها ثانية، فيصبح فتح المنشور أبطأ قليلًا.</string>
+    <string name="settings_double_tap_like_description_desktop">مطفأ افتراضيًا: عند تفعيله تنتظر كل نقرة مفردة لمعرفة ما إذا كانت ستتبعها ثانية، فيصبح فتح المنشور أبطأ قليلًا.</string>
     <string name="settings_swipe_back_anywhere">السحب للرجوع من أي مكان</string>
+    <string name="settings_swipe_back_anywhere_desktop">السحب للرجوع من أي مكان</string>
     <string name="settings_swipe_back_anywhere_description">اسحب المنشور المفتوح من أي مكان فيه للرجوع. عند الإيقاف: من حافة الشاشة فقط.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">اسحب المنشور المفتوح من أي مكان فيه للرجوع. عند الإيقاف: من حافة النافذة فقط.</string>
     <string name="settings_swipe_back_tilt">الإمالة مع إصبعك</string>
+    <string name="settings_swipe_back_tilt_desktop">الإمالة مع المؤشر</string>
     <string name="settings_swipe_back_tilt_description">المنشور الذي تسحبه للرجوع يدور حول إصبعك ويتمايل مع سرعتك.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">المنشور الذي تسحبه للرجوع يدور حول المؤشر ويتمايل مع سرعتك.</string>
     <string name="settings_accounts_empty">أضف حساباً لتحميل «لك».</string>
     <string name="settings_accounts_description">عطّل الحسابات الاحتياطية التي تبقيها فقط لحدود المعدّل. «لك» يدمج الجداول الزمنية للحسابات المفعّلة؛ «المتابَعون» ما زال يستخدم اشتراكاتك المحلية لكنه يتجاوز الحسابات المعطّلة عند الجلب. يمكن للتعليقات والملفات الشخصية استخدام أي حساب عند الحاجة.</string>
     <string name="settings_account_delete_confirm">تسجيل الخروج من @%1$s؟ سينسى XTA جلسته على هذا الجهاز، ولا يمكن التراجع عن ذلك.</string>

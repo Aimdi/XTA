@@ -96,6 +96,7 @@
     <string name="posts_verified_organization">सत्यापित संगठन</string>
     <string name="posts_view_quoted">उद्धृत पोस्ट देखें</string>
     <string name="posts_zen_replies">जवाब देखने के लिए टिप्पणी बटन को दबाकर रखें</string>
+    <string name="posts_zen_replies_desktop">जवाब देखने के लिए टिप्पणी बटन पर राइट-क्लिक करें</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s बार देखा गया</item>
         <item quantity="other">%1$s बार देखा गया</item>

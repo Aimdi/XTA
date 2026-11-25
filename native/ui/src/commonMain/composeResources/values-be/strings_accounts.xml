@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">Ваш аватар</string>
     <string name="settings_avatar_change">Націсніце, каб змяніць выяву зверху злева</string>
+    <string name="settings_avatar_change_desktop">Пстрыкніце, каб змяніць выяву зверху злева</string>
     <string name="settings_avatar_description">Выява зверху злева і ў меню — застаецца на гэтай прыладзе</string>
     <string name="settings_avatar_choose">Выбраць з прылады</string>
     <string name="settings_avatar_from_account">Узяць фота профілю X</string>

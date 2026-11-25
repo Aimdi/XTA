@@ -165,6 +165,7 @@
     <string name="saved_media_status">無法儲存媒體。X 傳回狀態為 %1$d</string>
     <string name="downloads_cancelled">已取消</string>
     <string name="downloads_interrupted">已中斷 · 點選重試以繼續</string>
+    <string name="downloads_interrupted_desktop">已中斷 · 按一下重試以繼續</string>
     <string name="downloads_batch">已儲存檔案：%1$d / %2$d</string>
     <string name="downloads_saved_to">已儲存到 %1$s</string>
     <string name="set_a_download_folder_to_auto_download">在設定 &gt; 媒體中設定下載資料夾以自動下載。</string>

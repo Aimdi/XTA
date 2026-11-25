@@ -96,6 +96,7 @@
     <string name="posts_verified_organization">Kontrolita organizo</string>
     <string name="posts_view_quoted">Vidi la cititan pecon</string>
     <string name="posts_zen_replies">Longpremu la komentan butonon por montri la respondojn</string>
+    <string name="posts_zen_replies_desktop">Dekstre alklaku la komentan butonon por montri la respondojn</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s vido</item>
         <item quantity="other">%1$s vidoj</item>

@@ -84,6 +84,7 @@
     <string name="settings_yes">예</string>
     <string name="settings_zen_mode">젠 모드</string>
     <string name="settings_zen_mode_description">더 차분한 피드: 게시물 통계를 숨기고, 댓글 버튼을 길게 누를 때까지 답글을 숨기며, 사람마다 최근 게시물 몇 개만 표시합니다.</string>
+    <string name="settings_zen_mode_description_desktop">더 차분한 피드: 게시물 통계를 숨기고, 댓글 버튼을 마우스 오른쪽 버튼으로 클릭할 때까지 답글을 숨기며, 사람마다 최근 게시물 몇 개만 표시합니다.</string>
     <string name="settings_threaded_replies">스레드형 답글</string>
     <string name="settings_threaded_replies_description">열린 게시물의 답글을 들여쓰기된 트리로 표시하여, 각 답글이 답한 대상 아래에 중첩되도록 합니다.</string>
     <string name="settings_collapse_boosts">연속된 리포스트 묶기</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">이미지 화질</string>
     <string name="settings_load_manually">미디어 수동으로 불러오기</string>
     <string name="settings_load_manually_description">모바일 데이터를 절약하기 위해 이미지와 동영상은 탭하기 전까지 불러오지 않습니다.</string>
+    <string name="settings_load_manually_description_desktop">데이터를 절약하기 위해 이미지와 동영상은 클릭하기 전까지 불러오지 않습니다.</string>
     <string name="settings_save_bandwidth">작은 이미지로 데이터 절약</string>
     <string name="settings_quality_low">낮음</string>
     <string name="settings_quality_medium">중간</string>
@@ -179,11 +181,17 @@
     <string name="settings_ticker_chart">주식 차트</string>
     <string name="settings_ticker_chart_description">티커를 열면 표시됩니다. 시세는 계정이 필요 없는 공개 서비스에서 XTA가 직접 가져옵니다. 끄면 아무 요청도 하지 않고 게시물만 남습니다.</string>
     <string name="settings_double_tap_like">두 번 눌러 좋아요</string>
+    <string name="settings_double_tap_like_desktop">더블클릭하여 좋아요</string>
     <string name="settings_double_tap_like_description">기본값은 꺼짐입니다. 켜면 한 번 누를 때마다 두 번째 입력을 기다리므로 게시물을 여는 속도가 조금 느려집니다.</string>
+    <string name="settings_double_tap_like_description_desktop">기본값은 꺼짐입니다. 켜면 한 번 클릭할 때마다 두 번째 입력을 기다리므로 게시물을 여는 속도가 조금 느려집니다.</string>
     <string name="settings_swipe_back_anywhere">어디서나 밀어서 뒤로 가기</string>
+    <string name="settings_swipe_back_anywhere_desktop">어디서나 끌어서 뒤로 가기</string>
     <string name="settings_swipe_back_anywhere_description">열린 게시물의 어느 곳에서든 끌어서 뒤로 갑니다. 끄면 화면 가장자리에서만 가능합니다.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">열린 게시물의 어느 곳에서든 끌어서 뒤로 갑니다. 끄면 창 가장자리에서만 가능합니다.</string>
     <string name="settings_swipe_back_tilt">손가락 따라 기울이기</string>
+    <string name="settings_swipe_back_tilt_desktop">포인터 따라 기울이기</string>
     <string name="settings_swipe_back_tilt_description">뒤로 끄는 게시물이 손가락을 중심으로 돌고 움직이는 속도에 따라 흔들립니다.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">뒤로 끄는 게시물이 포인터를 중심으로 돌고 움직이는 속도에 따라 흔들립니다.</string>
     <string name="settings_accounts_empty">추천을 불러오려면 계정을 추가하세요.</string>
     <string name="settings_accounts_description">한도만 위해 남겨 둔 예비 계정은 끄세요. 추천은 켠 계정의 홈 타임라인을 합칩니다. 팔로잉은 로컬 구독을 쓰되, 끈 계정으로는 가져오지 않습니다. 댓글과 프로필은 필요하면 어떤 계정이든 쓸 수 있습니다.</string>
     <string name="settings_account_delete_confirm">@%1$s에서 로그아웃할까요? 이 기기에 남아 있는 세션이 삭제되며 되돌릴 수 없습니다.</string>

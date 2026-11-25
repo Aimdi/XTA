@@ -66,7 +66,7 @@ internal fun TranslationSettings(title: String, vm: SettingsViewModel, onBack: (
     val clearedText = stringResource(Res.string.translation_cache_cleared)
     SettingsPage(title, onBack, snackbar) { padding ->
         SettingsList(padding) {
-            SettingsHeader(null, stringResource(Res.string.translation_privacy))
+            SettingsHeader(null, stringResource(GestureWording.translationPrivacy))
             ChoiceRow(
                 title = stringResource(Res.string.translation_provider),
                 options = TranslationService.entries,

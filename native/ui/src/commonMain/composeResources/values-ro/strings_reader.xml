@@ -64,6 +64,7 @@
     <string name="reader_voices_use">Folosește o voce descărcată</string>
     <string name="reader_voices_use_description">Citește cu o voce descărcată atunci când una vorbește limba articolului; altfel folosește motorul de mai jos.</string>
     <string name="reader_voices_note">Vocile se descarcă de pe GitHub (k2-fsa/sherpa-onnx) doar când atingi Descarcă. Rulează în întregime pe acest dispozitiv.</string>
+    <string name="reader_voices_note_desktop">Vocile se descarcă de pe GitHub (k2-fsa/sherpa-onnx) doar când faci clic pe Descarcă. Rulează în întregime pe acest dispozitiv.</string>
     <string name="reader_voices_synthesis_missing">Această versiune poate descărca voci, dar încă nu poate citi cu ele. Până atunci, citește cu voce tare motorul de voce de mai jos.</string>
     <string name="reader_voice_licence">Licență: %1$s</string>
     <string name="reader_voice_installing">Se verifică și se dezarhivează…</string>

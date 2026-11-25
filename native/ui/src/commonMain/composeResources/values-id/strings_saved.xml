@@ -165,6 +165,7 @@
     <string name="saved_media_status">Tidak dapat menyimpan media. Twitter mengembalikan status %1$d</string>
     <string name="downloads_cancelled">Dibatalkan</string>
     <string name="downloads_interrupted">Terputus · Coba lagi untuk melanjutkan</string>
+    <string name="downloads_interrupted_desktop">Terputus · Klik Coba lagi untuk melanjutkan</string>
     <string name="downloads_batch">File tersimpan: %1$d / %2$d</string>
     <string name="downloads_saved_to">Disimpan ke %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Atur folder unduhan di Pengaturan &gt; Media untuk mengunduh otomatis.</string>

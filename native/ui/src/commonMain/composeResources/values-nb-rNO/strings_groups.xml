@@ -24,6 +24,7 @@
     <string name="groups_columns">Kolonner</string>
     <string name="groups_combine_clear">Fjern</string>
     <string name="groups_combine_hint">Hold inne en gruppe for å lese den sammen med denne</string>
+    <string name="groups_combine_hint_desktop">Høyreklikk på en gruppe for å lese den sammen med denne</string>
     <string name="groups_combined_count">Leser %1$d til samtidig</string>
     <string name="groups_compact">Kompakt</string>
     <string name="groups_content_default">Standard</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Ingen resultater</string>
     <string name="groups_no_subscriptions">Ingen abonnementer. Prøv å søke eller importere noen!</string>
     <string name="groups_none_description">Grupper blander abonnementer til egne feeds. Trykk lenge for å redigere en gruppe.</string>
+    <string name="groups_none_description_desktop">Grupper blander abonnementer til egne feeds. Høyreklikk på en gruppe for å redigere den.</string>
     <string name="groups_none_yet">Ingen grupper ennå</string>
     <string name="groups_not_all_posts">Merk: På grunn av en Twitter-begrensning kan det hende at ikke alle tweets er inkludert</string>
     <string name="groups_ok">OK</string>

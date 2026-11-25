@@ -24,6 +24,7 @@
     <string name="groups_columns">Coloane</string>
     <string name="groups_combine_clear">Șterge</string>
     <string name="groups_combine_hint">Țineți apăsat un grup pentru a-l citi împreună cu acesta</string>
+    <string name="groups_combine_hint_desktop">Faceți clic dreapta pe un grup pentru a-l citi împreună cu acesta</string>
     <string name="groups_combined_count">Se mai citesc %1$d împreună</string>
     <string name="groups_compact">Compact</string>
     <string name="groups_content_default">Implicit</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Niciun rezultat</string>
     <string name="groups_no_subscriptions">Niciun abonament. Încercați să căutați sau să importați câteva!</string>
     <string name="groups_none_description">Grupurile combină abonamentele în feeduri personalizate. Apasă lung un grup pentru a-l edita.</string>
+    <string name="groups_none_description_desktop">Grupurile combină abonamentele în feeduri personalizate. Fă clic dreapta pe un grup pentru a-l edita.</string>
     <string name="groups_none_yet">Niciun grup încă</string>
     <string name="groups_not_all_posts">Notă: Din cauza limitărilor X, este posibil ca nu toate postările să fie incluse</string>
     <string name="groups_ok">OK</string>

@@ -84,6 +84,7 @@
     <string name="settings_yes">はい</string>
     <string name="settings_zen_mode">禅モード</string>
     <string name="settings_zen_mode_description">より穏やかなフィード：投稿の統計を隠し、コメントボタンを長押しするまで返信を隠し、各ユーザーの最近の投稿を数件だけ表示します。</string>
+    <string name="settings_zen_mode_description_desktop">より穏やかなフィード：投稿の統計を隠し、コメントボタンを右クリックするまで返信を隠し、各ユーザーの最近の投稿を数件だけ表示します。</string>
     <string name="settings_threaded_replies">スレッド形式の返信</string>
     <string name="settings_threaded_replies_description">開いた投稿の返信を、返信先の下に入れ子にしたインデント付きのツリーで表示します。</string>
     <string name="settings_collapse_boosts">連続したリポストをまとめる</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">画像の画質</string>
     <string name="settings_load_manually">メディアを手動で読み込む</string>
     <string name="settings_load_manually_description">モバイルデータを節約するため、画像や動画はタップするまで読み込まれません。</string>
+    <string name="settings_load_manually_description_desktop">データを節約するため、画像や動画はクリックするまで読み込まれません。</string>
     <string name="settings_save_bandwidth">小さい画像にすると通信容量を削減できます</string>
     <string name="settings_quality_low">低</string>
     <string name="settings_quality_medium">中</string>
@@ -179,11 +181,17 @@
     <string name="settings_ticker_chart">株価チャート</string>
     <string name="settings_ticker_chart_description">ティッカーを開いたときに表示されます。価格はアカウント不要の公開サービスから XTA 自身が取得します。オフにすると通信は発生せず、投稿だけが残ります。</string>
     <string name="settings_double_tap_like">ダブルタップでいいね</string>
+    <string name="settings_double_tap_like_desktop">ダブルクリックでいいね</string>
     <string name="settings_double_tap_like_description">既定ではオフです。オンにすると、シングルタップのたびに二度目を待つため、投稿を開く動作がわずかに遅く感じられます。</string>
+    <string name="settings_double_tap_like_description_desktop">既定ではオフです。オンにすると、シングルクリックのたびに二度目を待つため、投稿を開く動作がわずかに遅く感じられます。</string>
     <string name="settings_swipe_back_anywhere">どこからでもスワイプで戻る</string>
+    <string name="settings_swipe_back_anywhere_desktop">どこからでもドラッグで戻る</string>
     <string name="settings_swipe_back_anywhere_description">開いた投稿をどこからでもドラッグして戻ります。オフにすると画面の端からのみになります。</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">開いた投稿をどこからでもドラッグして戻ります。オフにするとウィンドウの端からのみになります。</string>
     <string name="settings_swipe_back_tilt">指に合わせて傾ける</string>
+    <string name="settings_swipe_back_tilt_desktop">ポインターに合わせて傾ける</string>
     <string name="settings_swipe_back_tilt_description">ドラッグして戻す投稿が指を中心に回転し、動かす速さに合わせて揺れます。</string>
+    <string name="settings_swipe_back_tilt_description_desktop">ドラッグして戻す投稿がポインターを中心に回転し、動かす速さに合わせて揺れます。</string>
     <string name="settings_accounts_empty">おすすめを表示するにはアカウントを追加してください。</string>
     <string name="settings_accounts_description">レート制限のためだけに残している予備アカウントをオフにします。おすすめはオンのアカウントのホームタイムラインをまとめます。フォロー中はローカルの購読を使いますが、オフにしたアカウントでは取得しません。コメントやプロフィールは必要ならどのアカウントでも使えます。</string>
     <string name="settings_account_delete_confirm">@%1$s からサインアウトしますか？この端末に残っているセッションは削除され、元に戻すことはできません。</string>

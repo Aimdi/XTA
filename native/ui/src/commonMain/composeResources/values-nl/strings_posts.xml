@@ -96,6 +96,7 @@
     <string name="posts_verified_organization">Geverifieerde organisatie</string>
     <string name="posts_view_quoted">Bekijk geciteerde post</string>
     <string name="posts_zen_replies">Houd de reactieknop ingedrukt om de reacties te tonen</string>
+    <string name="posts_zen_replies_desktop">Klik met de rechtermuisknop op de reactieknop om de reacties te tonen</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s weergave</item>
         <item quantity="other">%1$s weergaven</item>

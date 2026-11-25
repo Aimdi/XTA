@@ -44,8 +44,10 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.media_alt_badge
 import com.aimdi.xtanative.ui.generated.resources.media_alt_title
 import com.aimdi.xtanative.ui.generated.resources.media_tap_to_show
+import com.aimdi.xtanative.ui.generated.resources.media_tap_to_show_desktop
 import com.aimdi.xtanative.ui.generated.resources.reader_ok
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.settings.isDesktop
 
 private val BadgeShape = RoundedCornerShape(6.dp)
 
@@ -118,7 +120,7 @@ fun AltTextDialog(description: String, onDismiss: () -> Unit) {
  */
 @Composable
 fun ShowMediaTile(what: String, icon: ImageVector, onShow: () -> Unit, modifier: Modifier = Modifier, compact: Boolean = false) {
-    val label = stringResource(Res.string.media_tap_to_show, what)
+    val label = stringResource(if (isDesktop) Res.string.media_tap_to_show_desktop else Res.string.media_tap_to_show, what)
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
     val tint = muted.copy(alpha = if (compact) 0.08f else 0.12f).compositeOver(MaterialTheme.colorScheme.surface)
     Column(

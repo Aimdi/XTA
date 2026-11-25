@@ -24,6 +24,7 @@
     <string name="groups_columns">Kolumny</string>
     <string name="groups_combine_clear">Wyczyść</string>
     <string name="groups_combine_hint">Przytrzymaj grupę, aby czytać ją razem z tą</string>
+    <string name="groups_combine_hint_desktop">Kliknij grupę prawym przyciskiem, aby czytać ją razem z tą</string>
     <string name="groups_combined_count">Czytasz razem jeszcze %1$d</string>
     <string name="groups_compact">Kompaktowy</string>
     <string name="groups_content_default">Domyślnie</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Brak wyników</string>
     <string name="groups_no_subscriptions">Brak subskrypcji. Spróbuj wyszukać lub zaimportować trochę!</string>
     <string name="groups_none_description">Grupy łączą subskrypcje w własne kanały. Przytrzymaj grupę, aby ją edytować.</string>
+    <string name="groups_none_description_desktop">Grupy łączą subskrypcje w własne kanały. Kliknij grupę prawym przyciskiem, aby ją edytować.</string>
     <string name="groups_none_yet">Brak grup</string>
     <string name="groups_not_all_posts">Uwaga: Ze względu na ograniczenia Twittera nie wszystkie tweety mogą zostać uwzględnione</string>
     <string name="groups_ok">OK</string>

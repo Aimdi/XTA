@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">अनुवाद</string>
     <string name="translation_privacy">जब तक आप अनुवाद करें नहीं दबाते, कुछ नहीं भेजा जाता। तब टेक्स्ट केवल यहाँ चुनी गई सेवा को जाता है।</string>
+    <string name="translation_privacy_desktop">जब तक आप अनुवाद करें पर क्लिक नहीं करते, कुछ नहीं भेजा जाता। तब टेक्स्ट केवल यहाँ चुनी गई सेवा को जाता है।</string>
     <string name="translation_provider">अनुवाद सेवा</string>
     <string name="translation_provider_off">बंद</string>
     <string name="translation_provider_ai">एआई प्रदाता</string>

@@ -65,6 +65,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_create
 import com.aimdi.xtanative.ui.generated.resources.groups_has_unread
 import com.aimdi.xtanative.ui.generated.resources.groups_member_count
 import com.aimdi.xtanative.ui.generated.resources.groups_none_description
+import com.aimdi.xtanative.ui.generated.resources.groups_none_description_desktop
 import com.aimdi.xtanative.ui.generated.resources.groups_none_yet
 import com.aimdi.xtanative.ui.generated.resources.groups_pin
 import com.aimdi.xtanative.ui.generated.resources.groups_unpin
@@ -74,6 +75,7 @@ import com.aimdi.xtanative.ui.home.rememberRowKeyMoves
 import com.aimdi.xtanative.ui.home.rowMovedByKeys
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.settings.isDesktop
 
 /** Each level of nesting moves a list row this far in. */
 private val NEST_INDENT = 20.dp
@@ -108,7 +110,7 @@ private fun EmptyGroups(onCreate: () -> Unit, contentPadding: PaddingValues) {
         Icon(GroupIcons.Workspaces, contentDescription = null, tint = MaterialTheme.colorScheme.outline, modifier = Modifier.size(48.dp))
         Spacer(Modifier.height(8.dp))
         Text(stringResource(Res.string.groups_none_yet), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-        Text(stringResource(Res.string.groups_none_description), textAlign = TextAlign.Center)
+        Text(stringResource(if (isDesktop) Res.string.groups_none_description_desktop else Res.string.groups_none_description), textAlign = TextAlign.Center)
         Spacer(Modifier.height(16.dp))
         Button(onClick = onCreate) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))

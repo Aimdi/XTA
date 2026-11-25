@@ -180,6 +180,7 @@
     <string name="saved_media_status">تعذر حفظ الوسائط. أعاد تويتر حالة %1$d</string>
     <string name="downloads_cancelled">تم الإلغاء</string>
     <string name="downloads_interrupted">انقطع التنزيل · أعد المحاولة للمتابعة</string>
+    <string name="downloads_interrupted_desktop">انقطع التنزيل · انقر على إعادة المحاولة للمتابعة</string>
     <string name="downloads_batch">الملفات المحفوظة: %1$d / %2$d</string>
     <string name="downloads_saved_to">تم الحفظ في %1$s</string>
     <string name="set_a_download_folder_to_auto_download">عيّن مجلد تنزيل في الإعدادات &gt; الوسائط للتنزيل التلقائي.</string>

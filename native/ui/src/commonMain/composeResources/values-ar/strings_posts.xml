@@ -96,6 +96,7 @@
     <string name="posts_verified_organization">مؤسسة موثّقة</string>
     <string name="posts_view_quoted">عرض التغريدة المقتبسة</string>
     <string name="posts_zen_replies">اضغط مطولًا على زر التعليقات لعرض الردود</string>
+    <string name="posts_zen_replies_desktop">انقر بزر الفأرة الأيمن على زر التعليقات لعرض الردود</string>
     <plurals name="posts_views_count">
         <item quantity="zero">%1$s مشاهدة</item>
         <item quantity="one">%1$s مشاهدة</item>

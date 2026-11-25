@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">翻訳</string>
     <string name="translation_privacy">「翻訳」をタップするまで何も送信されません。タップすると、ここで選んだサービスにだけテキストが送られます。</string>
+    <string name="translation_privacy_desktop">「翻訳」をクリックするまで何も送信されません。クリックすると、ここで選んだサービスにだけテキストが送られます。</string>
     <string name="translation_provider">翻訳サービス</string>
     <string name="translation_provider_off">オフ</string>
     <string name="translation_provider_ai">AI プロバイダー</string>

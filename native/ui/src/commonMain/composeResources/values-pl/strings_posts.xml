@@ -96,6 +96,7 @@
     <string name="posts_verified_organization">Zweryfikowana organizacja</string>
     <string name="posts_view_quoted">Zobacz cytowany post</string>
     <string name="posts_zen_replies">Przytrzymaj przycisk komentarzy, aby pokazać odpowiedzi</string>
+    <string name="posts_zen_replies_desktop">Kliknij prawym przyciskiem przycisk komentarzy, aby pokazać odpowiedzi</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s wyświetlenie</item>
         <item quantity="few">%1$s wyświetlenia</item>

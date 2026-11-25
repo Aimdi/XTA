@@ -84,6 +84,7 @@
     <string name="settings_yes">Ano</string>
     <string name="settings_zen_mode">Zen režim</string>
     <string name="settings_zen_mode_description">Klidnější kanál: skryje statistiky příspěvků, skryje odpovědi, dokud nepodržíte tlačítko komentářů, a zobrazí jen několik nedávných příspěvků od každého.</string>
+    <string name="settings_zen_mode_description_desktop">Klidnější kanál: skryje statistiky příspěvků, skryje odpovědi, dokud nekliknete pravým tlačítkem na tlačítko komentářů, a zobrazí jen několik nedávných příspěvků od každého.</string>
     <string name="settings_threaded_replies">Vnořené odpovědi</string>
     <string name="settings_threaded_replies_description">Zobrazovat odpovědi u otevřeného příspěvku jako odsazený strom, kde je každá odpověď vnořena pod tu, na kterou reaguje.</string>
     <string name="settings_collapse_boosts">Seskupovat série repostů</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Kvalita obrázků</string>
     <string name="settings_load_manually">Načítat média ručně</string>
     <string name="settings_load_manually_description">Obrázky a videa se načtou až po klepnutí, aby se šetřila mobilní data.</string>
+    <string name="settings_load_manually_description_desktop">Obrázky a videa se načtou až po kliknutí, aby se šetřila data.</string>
     <string name="settings_save_bandwidth">Ušetřete data s menšími obrázky</string>
     <string name="settings_quality_low">Nízká</string>
     <string name="settings_quality_medium">Střední</string>
@@ -179,11 +181,17 @@
     <string name="settings_ticker_chart">Graf akcie</string>
     <string name="settings_ticker_chart_description">Zobrazí se po otevření tickeru. XTA si ceny bere sám z veřejných služeb bez účtu; po vypnutí neodešle žádný požadavek a příspěvky zůstanou.</string>
     <string name="settings_double_tap_like">Dvojitým klepnutím dát to se mi líbí</string>
+    <string name="settings_double_tap_like_desktop">Dvojklikem dát to se mi líbí</string>
     <string name="settings_double_tap_like_description">Ve výchozím stavu vypnuto: každé jednoduché klepnutí čeká, zda nepřijde druhé, takže otevření příspěvku chvíli trvá.</string>
+    <string name="settings_double_tap_like_description_desktop">Ve výchozím stavu vypnuto: každé jednoduché kliknutí čeká, zda nepřijde druhé, takže otevření příspěvku chvíli trvá.</string>
     <string name="settings_swipe_back_anywhere">Zpět přejetím odkudkoli</string>
+    <string name="settings_swipe_back_anywhere_desktop">Zpět tažením odkudkoli</string>
     <string name="settings_swipe_back_anywhere_description">Otevřený příspěvek táhněte zpět z kteréhokoli místa. Vypnuto: jen od okraje obrazovky.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Otevřený příspěvek táhněte zpět z kteréhokoli místa. Vypnuto: jen od okraje okna.</string>
     <string name="settings_swipe_back_tilt">Náklon podle prstu</string>
+    <string name="settings_swipe_back_tilt_desktop">Náklon podle ukazatele</string>
     <string name="settings_swipe_back_tilt_description">Příspěvek, který táhnete zpět, se otáčí kolem prstu a kývá se podle rychlosti.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">Příspěvek, který táhnete zpět, se otáčí kolem ukazatele myši a kývá se podle rychlosti.</string>
     <string name="settings_accounts_empty">Přidejte účet pro načtení Pro vás.</string>
     <string name="settings_accounts_description">Vypněte náhradní účty, které držíte jen kvůli limitům. Pro vás sloučí časové osy zapnutých účtů; Sleduji dál používá místní odběry, ale při načítání přeskočí vypnuté. Komentáře a profily můžou v případě potřeby použít kterýkoli účet.</string>
     <string name="settings_account_delete_confirm">Odhlásit účet @%1$s? XTA na tomto zařízení zapomene jeho relaci a tuto akci nelze vrátit zpět.</string>

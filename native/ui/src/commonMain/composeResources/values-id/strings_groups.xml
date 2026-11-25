@@ -24,6 +24,7 @@
     <string name="groups_columns">Kolom</string>
     <string name="groups_combine_clear">Bersihkan</string>
     <string name="groups_combine_hint">Tahan grup untuk membacanya bersama grup ini</string>
+    <string name="groups_combine_hint_desktop">Klik kanan grup untuk membacanya bersama grup ini</string>
     <string name="groups_combined_count">%1$d lainnya dibaca bersamaan</string>
     <string name="groups_compact">Ringkas</string>
     <string name="groups_content_default">Bawaan</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Tidak ada hasil</string>
     <string name="groups_no_subscriptions">Tidak ada langganan. Coba mencari atau mengimpor beberapa!</string>
     <string name="groups_none_description">Grup menggabungkan langganan menjadi feed khusus. Tekan lama untuk mengedit grup.</string>
+    <string name="groups_none_description_desktop">Grup menggabungkan langganan menjadi feed khusus. Klik kanan grup untuk mengeditnya.</string>
     <string name="groups_none_yet">Belum ada grup</string>
     <string name="groups_not_all_posts">Catatan: Karena batasan Twitter, tidak semua cuitan akan disertakan</string>
     <string name="groups_ok">Oke</string>

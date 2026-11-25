@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Překlad</string>
     <string name="translation_privacy">Nic se neodešle, dokud neklepnete na Přeložit. Text pak putuje jen do zde vybrané služby.</string>
+    <string name="translation_privacy_desktop">Nic se neodešle, dokud nekliknete na Přeložit. Text pak putuje jen do zde vybrané služby.</string>
     <string name="translation_provider">Překladová služba</string>
     <string name="translation_provider_off">Vypnuto</string>
     <string name="translation_provider_ai">Poskytovatel AI</string>

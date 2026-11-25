@@ -168,6 +168,7 @@
     <string name="saved_media_status">Impossible d\'enregistrer le média. Twitter a retourné un statut de %1$d</string>
     <string name="downloads_cancelled">Annulé</string>
     <string name="downloads_interrupted">Interrompu · Réessayez pour continuer</string>
+    <string name="downloads_interrupted_desktop">Interrompu · Cliquez sur Réessayer pour continuer</string>
     <string name="downloads_batch">Fichiers enregistrés : %1$d / %2$d</string>
     <string name="downloads_saved_to">Enregistré dans %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Définissez un dossier de téléchargement dans Paramètres &gt; Médias pour le téléchargement automatique.</string>

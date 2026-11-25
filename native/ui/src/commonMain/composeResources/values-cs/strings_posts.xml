@@ -96,6 +96,7 @@
     <string name="posts_verified_organization">Ověřená organizace</string>
     <string name="posts_view_quoted">Zobrazit citovaný tweet</string>
     <string name="posts_zen_replies">Podržením tlačítka komentářů zobrazíte odpovědi</string>
+    <string name="posts_zen_replies_desktop">Kliknutím pravým tlačítkem na tlačítko komentářů zobrazíte odpovědi</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s zobrazení</item>
         <item quantity="few">%1$s zobrazení</item>

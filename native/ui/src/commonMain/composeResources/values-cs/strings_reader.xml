@@ -64,6 +64,7 @@
     <string name="reader_voices_use">Používat stažený hlas</string>
     <string name="reader_voices_use_description">Předčítá staženým hlasem, pokud některý mluví jazykem článku; jinak použije modul níže.</string>
     <string name="reader_voices_note">Hlasy se stahují z GitHubu (k2-fsa/sherpa-onnx) jen tehdy, když klepnete na Stáhnout. Běží celé v tomto zařízení.</string>
+    <string name="reader_voices_note_desktop">Hlasy se stahují z GitHubu (k2-fsa/sherpa-onnx) jen tehdy, když kliknete na Stáhnout. Běží celé v tomto zařízení.</string>
     <string name="reader_voices_synthesis_missing">Tato verze umí hlasy stáhnout, ale zatím jimi neumí číst. Do té doby čte nahlas hlasový modul níže.</string>
     <string name="reader_voice_licence">Licence: %1$s</string>
     <string name="reader_voice_installing">Kontrola a rozbalování…</string>

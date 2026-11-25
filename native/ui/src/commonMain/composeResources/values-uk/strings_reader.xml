@@ -64,6 +64,7 @@
     <string name="reader_voices_use">Використовувати завантажений голос</string>
     <string name="reader_voices_use_description">Читає завантаженим голосом, якщо він говорить мовою статті; інакше використовує рушій нижче.</string>
     <string name="reader_voices_note">Голоси завантажуються з GitHub (k2-fsa/sherpa-onnx) лише тоді, коли ви натискаєте «Завантажити». Вони працюють повністю на цьому пристрої.</string>
+    <string name="reader_voices_note_desktop">Голоси завантажуються з GitHub (k2-fsa/sherpa-onnx) лише тоді, коли ви клацаєте «Завантажити». Вони працюють повністю на цьому пристрої.</string>
     <string name="reader_voices_synthesis_missing">Ця версія може завантажувати голоси, але поки не вміє ними читати. Доти вголос читає синтезатор мовлення нижче.</string>
     <string name="reader_voice_licence">Ліцензія: %1$s</string>
     <string name="reader_voice_installing">Перевірка й розпакування…</string>

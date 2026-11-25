@@ -24,6 +24,7 @@
     <string name="groups_columns">स्तंभ</string>
     <string name="groups_combine_clear">हटाएँ</string>
     <string name="groups_combine_hint">किसी समूह को इसके साथ पढ़ने के लिए दबाकर रखें</string>
+    <string name="groups_combine_hint_desktop">किसी समूह को इसके साथ पढ़ने के लिए उस पर राइट-क्लिक करें</string>
     <string name="groups_combined_count">%1$d और साथ में पढ़े जा रहे हैं</string>
     <string name="groups_compact">कॉम्पैक्ट</string>
     <string name="groups_content_default">डिफ़ॉल्ट</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">कोई परिणाम नहीं</string>
     <string name="groups_no_subscriptions">कोई सदस्यता नहीं। कुछ खोजने या आयात करने का प्रयास करें!</string>
     <string name="groups_none_description">समूह सदस्यताओं को कस्टम फ़ीड में मिलाते हैं। संपादित करने के लिए समूह को देर तक दबाएँ।</string>
+    <string name="groups_none_description_desktop">समूह सदस्यताओं को कस्टम फ़ीड में मिलाते हैं। संपादित करने के लिए समूह पर राइट-क्लिक करें।</string>
     <string name="groups_none_yet">अभी कोई समूह नहीं</string>
     <string name="groups_not_all_posts">नोट: X की सीमाओं के कारण, सभी पोस्ट शामिल नहीं हो सकती हैं</string>
     <string name="groups_ok">ठीक है</string>

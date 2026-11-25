@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Übersetzung</string>
     <string name="translation_privacy">Es wird nichts gesendet, bevor du auf „Übersetzen“ tippst. Der Text geht dann nur an den hier gewählten Dienst.</string>
+    <string name="translation_privacy_desktop">Es wird nichts gesendet, bevor du auf „Übersetzen“ klickst. Der Text geht dann nur an den hier gewählten Dienst.</string>
     <string name="translation_provider">Übersetzungsdienst</string>
     <string name="translation_provider_off">Aus</string>
     <string name="translation_provider_ai">KI-Anbieter</string>

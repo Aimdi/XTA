@@ -97,6 +97,7 @@
     <string name="posts_verified_organization">已認證機構</string>
     <string name="posts_view_quoted">查看引用的貼文</string>
     <string name="posts_zen_replies">長按留言按鈕以顯示回覆</string>
+    <string name="posts_zen_replies_desktop">在留言按鈕上按右鍵以顯示回覆</string>
     <plurals name="posts_views_count">
         <item quantity="other">%1$s 次查看</item>
     </plurals>

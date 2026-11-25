@@ -53,6 +53,7 @@
     <string name="home_filter_accounts_explained">Wyłącz zapasowe konta trzymane tylko dla limitów. Dla Ciebie scala osi czasu włączonych kont; Obserwowani nadal używa lokalnych subskrypcji, ale pomija wyłączone konta przy pobieraniu. Komentarze i profile w razie potrzeby mogą użyć dowolnego konta.</string>
     <string name="home_filter_groups_explained">Wyłącz grupę, aby ukryć jej członków w Obserwowanych. Karta grupy zostaje. Ich wpisy znikają też z Dla Ciebie.</string>
     <string name="home_filter_only_hint">Przytrzymaj pozycję, aby zostawić włączoną tylko ją.</string>
+    <string name="home_filter_only_hint_desktop">Kliknij pozycję prawym przyciskiem, aby zostawić włączoną tylko ją.</string>
     <string name="home_filter_keep_one">Przynajmniej jedno konto musi zostać włączone</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Wszystkie</string>

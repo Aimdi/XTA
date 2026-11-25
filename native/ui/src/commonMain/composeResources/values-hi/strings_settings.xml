@@ -84,6 +84,7 @@
     <string name="settings_yes">हाँ</string>
     <string name="settings_zen_mode">ज़ेन मोड</string>
     <string name="settings_zen_mode_description">एक शांत फ़ीड: पोस्ट के आँकड़े छिपाता है, टिप्पणी बटन दबाकर रखने तक जवाब छिपाता है, और प्रति व्यक्ति केवल कुछ हालिया पोस्ट दिखाता है।</string>
+    <string name="settings_zen_mode_description_desktop">एक शांत फ़ीड: पोस्ट के आँकड़े छिपाता है, टिप्पणी बटन पर राइट-क्लिक करने तक जवाब छिपाता है, और प्रति व्यक्ति केवल कुछ हालिया पोस्ट दिखाता है।</string>
     <string name="settings_threaded_replies">थ्रेडेड जवाब</string>
     <string name="settings_threaded_replies_description">खुली हुई पोस्ट के जवाब एक इंडेंटेड ट्री के रूप में दिखाएँ, जहाँ हर जवाब उसी के नीचे नेस्ट हो जिसका वह उत्तर है।</string>
     <string name="settings_collapse_boosts">रीपोस्ट की लड़ी को समूह में रखें</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">छवि गुणवत्ता</string>
     <string name="settings_load_manually">मीडिया मैन्युअल रूप से लोड करें</string>
     <string name="settings_load_manually_description">मोबाइल डेटा बचाने के लिए छवियाँ और वीडियो तब तक लोड नहीं होंगे जब तक आप उन्हें टैप न करें।</string>
+    <string name="settings_load_manually_description_desktop">डेटा बचाने के लिए छवियाँ और वीडियो तब तक लोड नहीं होंगे जब तक आप उन पर क्लिक न करें।</string>
     <string name="settings_save_bandwidth">छोटी छवियों से बैंडविड्थ बचाएं</string>
     <string name="settings_quality_low">कम</string>
     <string name="settings_quality_medium">मध्यम</string>
@@ -179,11 +181,17 @@
     <string name="settings_ticker_chart">स्टॉक चार्ट</string>
     <string name="settings_ticker_chart_description">टिकर खोलने पर दिखता है। XTA खुद सार्वजनिक सेवाओं से भाव लाता है जिनके लिए खाता नहीं चाहिए; बंद होने पर कोई अनुरोध नहीं जाता और पोस्ट बने रहते हैं।</string>
     <string name="settings_double_tap_like">पसंद करने के लिए दो बार टैप करें</string>
+    <string name="settings_double_tap_like_desktop">पसंद करने के लिए डबल-क्लिक करें</string>
     <string name="settings_double_tap_like_description">डिफ़ॉल्ट रूप से बंद: चालू होने पर हर सिंगल टैप दूसरे टैप का इंतज़ार करता है, इसलिए पोस्ट खुलने में थोड़ी देर लगती है।</string>
+    <string name="settings_double_tap_like_description_desktop">डिफ़ॉल्ट रूप से बंद: चालू होने पर हर सिंगल क्लिक दूसरे क्लिक का इंतज़ार करता है, इसलिए पोस्ट खुलने में थोड़ी देर लगती है।</string>
     <string name="settings_swipe_back_anywhere">कहीं से भी स्वाइप करके वापस जाएं</string>
+    <string name="settings_swipe_back_anywhere_desktop">कहीं से भी खींचकर वापस जाएं</string>
     <string name="settings_swipe_back_anywhere_description">वापस जाने के लिए खुली पोस्ट को उस पर कहीं से भी खींचें। बंद होने पर: केवल स्क्रीन के किनारे से।</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">वापस जाने के लिए खुली पोस्ट को उस पर कहीं से भी खींचें। बंद होने पर: केवल विंडो के किनारे से।</string>
     <string name="settings_swipe_back_tilt">उंगली के साथ झुकाव</string>
+    <string name="settings_swipe_back_tilt_desktop">पॉइंटर के साथ झुकाव</string>
     <string name="settings_swipe_back_tilt_description">जिस पोस्ट को आप वापस खींचते हैं, वह आपकी उंगली के चारों ओर घूमती है और आपकी गति के साथ झूलती है।</string>
+    <string name="settings_swipe_back_tilt_description_desktop">जिस पोस्ट को आप वापस खींचते हैं, वह पॉइंटर के चारों ओर घूमती है और आपकी गति के साथ झूलती है।</string>
     <string name="settings_accounts_empty">आपके लिए लोड करने हेतु खाता जोड़ें।</string>
     <string name="settings_accounts_description">केवल दर सीमाओं के लिए रखे अतिरिक्त खाते बंद करें। आपके लिए चालू खातों की होम टाइमलाइन मिलाता है; फ़ॉलोइंग स्थानीय सदस्यताएँ इस्तेमाल करता है, पर बंद खातों से नहीं लाता। टिप्पणियाँ और प्रोफ़ाइल ज़रूरत पर किसी भी खाते का उपयोग कर सकते हैं।</string>
     <string name="settings_account_delete_confirm">@%1$s से साइन आउट करें? XTA इस उपकरण पर उसका सत्र भूल जाएगा, और इसे वापस नहीं लाया जा सकता।</string>

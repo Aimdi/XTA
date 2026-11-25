@@ -24,6 +24,7 @@
     <string name="groups_columns">Kolommen</string>
     <string name="groups_combine_clear">Wissen</string>
     <string name="groups_combine_hint">Houd een groep ingedrukt om die samen met deze te lezen</string>
+    <string name="groups_combine_hint_desktop">Klik met de rechtermuisknop op een groep om die samen met deze te lezen</string>
     <string name="groups_combined_count">%1$d andere worden meegelezen</string>
     <string name="groups_compact">Compact</string>
     <string name="groups_content_default">Standaard</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Geen resultaten</string>
     <string name="groups_no_subscriptions">Geen abonnementen. Probeer er te zoeken of te importeren!</string>
     <string name="groups_none_description">Groepen combineren abonnementen tot eigen feeds. Lang indrukken om te bewerken.</string>
+    <string name="groups_none_description_desktop">Groepen combineren abonnementen tot eigen feeds. Klik met de rechtermuisknop om te bewerken.</string>
     <string name="groups_none_yet">Nog geen groepen</string>
     <string name="groups_not_all_posts">Opmerking: door een beperking bij Twitter kunnen niet alle tweets worden opgenomen</string>
     <string name="groups_ok">OK</string>

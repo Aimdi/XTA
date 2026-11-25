@@ -24,6 +24,7 @@
     <string name="groups_columns">Слупкі</string>
     <string name="groups_combine_clear">Скінуць</string>
     <string name="groups_combine_hint">Утрымлівайце групу, каб чытаць яе разам з гэтай</string>
+    <string name="groups_combine_hint_desktop">Націсніце на групу правай кнопкай мышы, каб чытаць яе разам з гэтай</string>
     <string name="groups_combined_count">Разам чытаецца яшчэ: %1$d</string>
     <string name="groups_compact">Кампактна</string>
     <string name="groups_content_default">Стандартна</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Нічога не знойдзена</string>
     <string name="groups_no_subscriptions">Няма падпісак. Паспрабуйце пашукаць або імпартаваць нешта!</string>
     <string name="groups_none_description">Групы збіраюць падпіскі ў свае стужкі. Доўгае націсканне — рэдагаванне.</string>
+    <string name="groups_none_description_desktop">Групы збіраюць падпіскі ў свае стужкі. Правая кнопка мышы на групе — рэдагаванне.</string>
     <string name="groups_none_yet">Пакуль няма груп</string>
     <string name="groups_not_all_posts">Заўвага: У сувязі з абмежаваннем Twitter, не ўсе твіты могуць быць уключаны</string>
     <string name="groups_ok">Добра</string>

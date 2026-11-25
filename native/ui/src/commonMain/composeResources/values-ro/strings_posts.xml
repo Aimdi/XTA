@@ -96,6 +96,7 @@
     <string name="posts_verified_organization">Organizație verificată</string>
     <string name="posts_view_quoted">Vezi postarea citată</string>
     <string name="posts_zen_replies">Ține apăsat butonul de comentarii pentru a afișa răspunsurile</string>
+    <string name="posts_zen_replies_desktop">Fă clic dreapta pe butonul de comentarii pentru a afișa răspunsurile</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s vizualizare</item>
         <item quantity="few">%1$s vizualizări</item>

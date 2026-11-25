@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">Jouw avatar</string>
     <string name="settings_avatar_change">Tik om de afbeelding linksboven te wijzigen</string>
+    <string name="settings_avatar_change_desktop">Klik om de afbeelding linksboven te wijzigen</string>
     <string name="settings_avatar_description">Afbeelding linksboven en in het menu — blijft op dit apparaat</string>
     <string name="settings_avatar_choose">Kiezen van apparaat</string>
     <string name="settings_avatar_from_account">X-profielfoto gebruiken</string>

@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Itzulpena</string>
     <string name="translation_privacy">Ez da ezer bidaltzen Itzuli sakatu arte. Orduan testua hemen aukeratutako zerbitzura bakarrik doa.</string>
+    <string name="translation_privacy_desktop">Ez da ezer bidaltzen Itzuli aukeran klik egin arte. Orduan testua hemen aukeratutako zerbitzura bakarrik doa.</string>
     <string name="translation_provider">Itzulpen-zerbitzua</string>
     <string name="translation_provider_off">Desaktibatuta</string>
     <string name="translation_provider_ai">AA hornitzailea</string>

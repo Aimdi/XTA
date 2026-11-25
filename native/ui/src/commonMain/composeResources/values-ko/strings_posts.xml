@@ -96,6 +96,7 @@
     <string name="posts_verified_organization">인증된 조직</string>
     <string name="posts_view_quoted">인용된 게시물 보기</string>
     <string name="posts_zen_replies">답글을 보려면 댓글 버튼을 길게 누르세요</string>
+    <string name="posts_zen_replies_desktop">답글을 보려면 댓글 버튼을 마우스 오른쪽 버튼으로 클릭하세요</string>
     <plurals name="posts_views_count">
         <item quantity="other">조회수 %1$s회</item>
     </plurals>

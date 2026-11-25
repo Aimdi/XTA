@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Перевод</string>
     <string name="translation_privacy">Ничего не отправляется, пока вы не нажмёте «Перевести». Тогда текст уходит только в выбранный здесь сервис.</string>
+    <string name="translation_privacy_desktop">Ничего не отправляется, пока вы не щёлкнете «Перевести». Тогда текст уходит только в выбранный здесь сервис.</string>
     <string name="translation_provider">Сервис перевода</string>
     <string name="translation_provider_off">Выключен</string>
     <string name="translation_provider_ai">Поставщик ИИ</string>

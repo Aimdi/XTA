@@ -52,6 +52,7 @@
     <string name="home_filter_accounts_explained">Dezactivează conturile de rezervă ținute doar pentru limite. Pentru tine îmbină cronologiile conturilor lăsate pe pornit; Urmăresc tot folosește abonamentele locale, dar sare peste conturile oprite la încărcare. Comentariile și profilurile pot folosi orice cont dacă e nevoie.</string>
     <string name="home_filter_groups_explained">Oprește un grup ca să-i ascunzi membrii din Urmăresc. Fila grupului rămâne. Postările lor dispar și din Pentru tine.</string>
     <string name="home_filter_only_hint">Apasă lung pe unul ca să rămână activ doar acela.</string>
+    <string name="home_filter_only_hint_desktop">Fă clic dreapta pe unul ca să rămână activ doar acela.</string>
     <string name="home_filter_keep_one">Cel puțin un cont trebuie să rămână pornit</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Toate</string>

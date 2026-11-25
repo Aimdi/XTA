@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Tõlkimine</string>
     <string name="translation_privacy">Midagi ei saadeta enne, kui puudutad nuppu Tõlgi. Siis läheb tekst ainult siin valitud teenusele.</string>
+    <string name="translation_privacy_desktop">Midagi ei saadeta enne, kui klõpsad nuppu Tõlgi. Siis läheb tekst ainult siin valitud teenusele.</string>
     <string name="translation_provider">Tõlketeenus</string>
     <string name="translation_provider_off">Väljas</string>
     <string name="translation_provider_ai">Tehisintellekti teenus</string>

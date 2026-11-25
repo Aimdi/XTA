@@ -168,6 +168,7 @@
     <string name="saved_media_status">Medien konnten nicht gespeichert werden. Twitter gab folgenden Statuscode zurück: %1$d</string>
     <string name="downloads_cancelled">Abgebrochen</string>
     <string name="downloads_interrupted">Unterbrochen · Zum Fortfahren erneut versuchen</string>
+    <string name="downloads_interrupted_desktop">Unterbrochen · Zum Fortfahren auf „Erneut versuchen“ klicken</string>
     <string name="downloads_batch">Gespeicherte Dateien: %1$d / %2$d</string>
     <string name="downloads_saved_to">Gespeichert in %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Lege für den automatischen Download einen Download-Ordner unter Einstellungen &gt; Medien fest.</string>

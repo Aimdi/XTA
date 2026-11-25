@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">الترجمة</string>
     <string name="translation_privacy">لا يُرسَل أي شيء قبل أن تضغط على ترجمة، وعندها يذهب النص إلى الخدمة المختارة هنا فقط.</string>
+    <string name="translation_privacy_desktop">لا يُرسَل أي شيء قبل أن تنقر على ترجمة، وعندها يذهب النص إلى الخدمة المختارة هنا فقط.</string>
     <string name="translation_provider">خدمة الترجمة</string>
     <string name="translation_provider_off">متوقفة</string>
     <string name="translation_provider_ai">مزوّد الذكاء الاصطناعي</string>

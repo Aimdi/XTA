@@ -64,6 +64,7 @@
     <string name="reader_voices_use">다운로드한 음성 사용</string>
     <string name="reader_voices_use_description">기사 언어에 맞는 다운로드한 음성이 있으면 그 음성으로 읽고, 없으면 아래 엔진을 사용합니다.</string>
     <string name="reader_voices_note">음성은 다운로드를 탭할 때만 GitHub(k2-fsa/sherpa-onnx)에서 받아오며, 모두 이 기기에서 실행됩니다.</string>
+    <string name="reader_voices_note_desktop">음성은 다운로드를 클릭할 때만 GitHub(k2-fsa/sherpa-onnx)에서 받아오며, 모두 이 기기에서 실행됩니다.</string>
     <string name="reader_voices_synthesis_missing">이 버전은 음성을 다운로드할 수 있지만 아직 그 음성으로 읽어 줄 수는 없습니다. 그때까지는 아래 음성 엔진이 읽어 줍니다.</string>
     <string name="reader_voice_licence">라이선스: %1$s</string>
     <string name="reader_voice_installing">확인하고 압축을 푸는 중…</string>

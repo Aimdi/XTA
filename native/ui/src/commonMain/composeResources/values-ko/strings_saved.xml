@@ -165,6 +165,7 @@
     <string name="saved_media_status">미디어를 저장할 수 없습니다. X가 %1$d 상태를 반환했습니다</string>
     <string name="downloads_cancelled">취소됨</string>
     <string name="downloads_interrupted">중단됨 · 다시 시도하여 계속</string>
+    <string name="downloads_interrupted_desktop">중단됨 · 다시 시도를 클릭하여 계속</string>
     <string name="downloads_batch">저장된 파일: %1$d / %2$d</string>
     <string name="downloads_saved_to">%1$s에 저장됨</string>
     <string name="set_a_download_folder_to_auto_download">자동 다운로드하려면 설정 &gt; 미디어에서 다운로드 폴더를 설정하세요.</string>

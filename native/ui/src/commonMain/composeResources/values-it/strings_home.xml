@@ -51,6 +51,7 @@
     <string name="home_filter_accounts_explained">Disattiva gli account di riserva tenuti solo per i limiti di frequenza. Per te unisce le timeline degli account lasciati attivi; Seguiti usa ancora i tuoi abbonamenti locali ma salta gli account disattivati in fase di recupero. Commenti e profili possono ancora usare qualsiasi account se serve.</string>
     <string name="home_filter_groups_explained">Disattiva un gruppo per nasconderne i membri da Seguiti. La scheda del gruppo resta. I loro post vengono tolti anche da Per te.</string>
     <string name="home_filter_only_hint">Tieni premuto un elemento per lasciare attivo solo quello.</string>
+    <string name="home_filter_only_hint_desktop">Fai clic destro su un elemento per lasciare attivo solo quello.</string>
     <string name="home_filter_keep_one">Almeno un account deve restare attivo</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Tutti</string>

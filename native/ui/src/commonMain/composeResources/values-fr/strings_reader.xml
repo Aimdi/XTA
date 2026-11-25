@@ -64,6 +64,7 @@
     <string name="reader_voices_use">Utiliser une voix téléchargée</string>
     <string name="reader_voices_use_description">Lit avec une voix téléchargée lorsqu'elle parle la langue de l'article ; sinon, utilise le moteur ci-dessous.</string>
     <string name="reader_voices_note">Les voix sont téléchargées depuis GitHub (k2-fsa/sherpa-onnx) uniquement lorsque vous appuyez sur Télécharger. Elles fonctionnent entièrement sur cet appareil.</string>
+    <string name="reader_voices_note_desktop">Les voix sont téléchargées depuis GitHub (k2-fsa/sherpa-onnx) uniquement lorsque vous cliquez sur Télécharger. Elles fonctionnent entièrement sur cet appareil.</string>
     <string name="reader_voices_synthesis_missing">Cette version peut télécharger des voix, mais ne sait pas encore lire avec elles. En attendant, c'est le moteur vocal ci-dessous qui lit à voix haute.</string>
     <string name="reader_voice_licence">Licence : %1$s</string>
     <string name="reader_voice_installing">Vérification et décompression…</string>

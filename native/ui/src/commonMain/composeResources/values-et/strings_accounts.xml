@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">Sinu avatar</string>
     <string name="settings_avatar_change">Puuduta, et muuta ülal vasakul olevat pilti</string>
+    <string name="settings_avatar_change_desktop">Klõpsa, et muuta ülal vasakul olevat pilti</string>
     <string name="settings_avatar_description">Pilt ülal vasakul ja sahtlis — jääb sellesse seadmesse</string>
     <string name="settings_avatar_choose">Vali seadmest</string>
     <string name="settings_avatar_from_account">Kasuta X-i profiilifotot</string>

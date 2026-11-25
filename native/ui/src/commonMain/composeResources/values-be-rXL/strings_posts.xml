@@ -96,6 +96,7 @@
     <string name="posts_verified_organization">Paćvierdžanaja arhanizacyja</string>
     <string name="posts_view_quoted">Prahladzieć cytavany post</string>
     <string name="posts_zen_replies">Utrymlivajcie knopku kamentaryjaŭ, kab pakazać adkazy</string>
+    <string name="posts_zen_replies_desktop">Nacisnicie na knopku kamentaryjaŭ pravaj knopkaj myšy, kab pakazać adkazy</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s prahliad</item>
         <item quantity="few">%1$s prahliady</item>

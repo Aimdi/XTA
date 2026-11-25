@@ -51,6 +51,7 @@
     <string name="home_filter_accounts_explained">Desactiva els comptes de reserva que només guardes pels límits. Per a tu fusiona les cronologies dels comptes actius; Seguint continua usant les teves subscripcions locals, però omet els desactivats en carregar. Comentaris i perfils encara poden usar qualsevol compte si cal.</string>
     <string name="home_filter_groups_explained">Desactiva un grup per amagar-ne els membres de Seguint. La pestanya del grup es queda. Les seves publicacions també desapareixen de Per a tu.</string>
     <string name="home_filter_only_hint">Mantén premut un element per deixar només aquest activat.</string>
+    <string name="home_filter_only_hint_desktop">Fes clic amb el botó dret en un element per deixar només aquest activat.</string>
     <string name="home_filter_keep_one">Cal deixar com a mínim un compte activat</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Tot</string>

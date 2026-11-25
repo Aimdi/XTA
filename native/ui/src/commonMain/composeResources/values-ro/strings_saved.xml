@@ -171,6 +171,7 @@
     <string name="saved_media_status">Nu se poate salva media. X a returnat starea %1$d</string>
     <string name="downloads_cancelled">Anulat</string>
     <string name="downloads_interrupted">Întrerupt · Reîncearcă pentru a continua</string>
+    <string name="downloads_interrupted_desktop">Întrerupt · Fă clic pe Reîncearcă pentru a continua</string>
     <string name="downloads_batch">Fișiere salvate: %1$d / %2$d</string>
     <string name="downloads_saved_to">Salvat în %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Setează un dosar de descărcări în Setări &gt; Media pentru descărcare automată.</string>

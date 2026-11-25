@@ -3,6 +3,7 @@
     <string name="media_alt_badge">ALT</string>
     <string name="media_alt_title">Bildbeschreibung</string>
     <string name="media_tap_to_show">Antippen, um %1$s anzuzeigen</string>
+    <string name="media_tap_to_show_desktop">Klicken, um %1$s anzuzeigen</string>
     <string name="media_copy_image">Bild kopieren</string>
     <string name="media_save_as">Speichern unter …</string>
     <string name="media_drag_out">Bild in eine andere App ziehen</string>

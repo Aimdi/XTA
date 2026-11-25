@@ -24,6 +24,7 @@
     <string name="groups_columns">Veerud</string>
     <string name="groups_combine_clear">Tühjenda</string>
     <string name="groups_combine_hint">Hoia rühma all, et lugeda seda koos selle rühmaga</string>
+    <string name="groups_combine_hint_desktop">Tee rühmal paremklõps, et lugeda seda koos selle rühmaga</string>
     <string name="groups_combined_count">Koos loetakse veel %1$d</string>
     <string name="groups_compact">Kompaktne</string>
     <string name="groups_content_default">Vaikimisi</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Tulemusi pole</string>
     <string name="groups_no_subscriptions">Tellimusi ei leidu. Kas lisa mõni otsingust või impordi!</string>
     <string name="groups_none_description">Grupid ühendavad tellimused kohandatud voogudeks. Pika vajutusega saad gruppi muuta.</string>
+    <string name="groups_none_description_desktop">Grupid ühendavad tellimused kohandatud voogudeks. Paremklõpsuga saad gruppi muuta.</string>
     <string name="groups_none_yet">Gruppe pole veel</string>
     <string name="groups_not_all_posts">Märkus: Twitteri määratud piirangute tõttu ei pruugi kõik säutsud olla kaasatud</string>
     <string name="groups_ok">Sobib</string>

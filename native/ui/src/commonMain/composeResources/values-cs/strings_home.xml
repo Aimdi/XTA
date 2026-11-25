@@ -53,6 +53,7 @@
     <string name="home_filter_accounts_explained">Vypněte náhradní účty, které držíte jen kvůli limitům. Pro vás sloučí časové osy zapnutých účtů; Sledování dál používá místní odběry, ale při načítání přeskočí vypnuté. Komentáře a profily můžou v případě potřeby použít kterýkoli účet.</string>
     <string name="home_filter_groups_explained">Vypněte skupinu, aby se její členové skryli ze Sledování. Karta skupiny zůstane. Jejich příspěvky zmizí i z Pro vás.</string>
     <string name="home_filter_only_hint">Dlouhým stisknutím položky necháte zapnutou jen ji.</string>
+    <string name="home_filter_only_hint_desktop">Kliknutím pravým tlačítkem na položku necháte zapnutou jen ji.</string>
     <string name="home_filter_keep_one">Alespoň jeden účet musí zůstat zapnutý</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Vše</string>

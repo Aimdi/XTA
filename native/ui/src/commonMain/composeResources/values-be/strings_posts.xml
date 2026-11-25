@@ -96,6 +96,7 @@
     <string name="posts_verified_organization">Пацверджаная арганізацыя</string>
     <string name="posts_view_quoted">Праглядзець цытаваны пост</string>
     <string name="posts_zen_replies">Утрымлівайце кнопку каментарыяў, каб паказаць адказы</string>
+    <string name="posts_zen_replies_desktop">Націсніце на кнопку каментарыяў правай кнопкай мышы, каб паказаць адказы</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s прагляд</item>
         <item quantity="few">%1$s прагляды</item>

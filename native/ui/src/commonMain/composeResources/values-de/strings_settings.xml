@@ -84,6 +84,7 @@
     <string name="settings_yes">Ja</string>
     <string name="settings_zen_mode">Zen-Modus</string>
     <string name="settings_zen_mode_description">Ein ruhigerer Feed: blendet Beitragsstatistiken aus, verbirgt Antworten, bis du die Kommentar-Schaltfläche gedrückt hältst, und zeigt nur wenige aktuelle Beiträge pro Person.</string>
+    <string name="settings_zen_mode_description_desktop">Ein ruhigerer Feed: blendet Beitragsstatistiken aus, verbirgt Antworten, bis du mit der rechten Maustaste auf die Kommentar-Schaltfläche klickst, und zeigt nur wenige aktuelle Beiträge pro Person.</string>
     <string name="settings_threaded_replies">Verschachtelte Antworten</string>
     <string name="settings_threaded_replies_description">Antworten unter einem geöffneten Beitrag als eingerückten Baum anzeigen, jede Antwort verschachtelt unter der, auf die sie antwortet.</string>
     <string name="settings_collapse_boosts">Repost-Serien zusammenfassen</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Bildqualität</string>
     <string name="settings_load_manually">Medien manuell laden</string>
     <string name="settings_load_manually_description">Fotos und Videos werden erst beim Antippen geladen, um mobile Daten zu sparen.</string>
+    <string name="settings_load_manually_description_desktop">Fotos und Videos werden erst beim Anklicken geladen, um Daten zu sparen.</string>
     <string name="settings_save_bandwidth">Datennutzung mittels kleinerer Auflösung sparen</string>
     <string name="settings_quality_low">Niedrig</string>
     <string name="settings_quality_medium">Mittel</string>
@@ -179,11 +181,17 @@
     <string name="settings_ticker_chart">Aktienchart</string>
     <string name="settings_ticker_chart_description">Wird beim Öffnen eines Tickers gezeigt. XTA holt die Kurse selbst von öffentlichen Diensten ohne Konto; ausgeschaltet wird nichts angefragt und die Beiträge bleiben.</string>
     <string name="settings_double_tap_like">Doppeltippen zum Liken</string>
+    <string name="settings_double_tap_like_desktop">Doppelklick zum Liken</string>
     <string name="settings_double_tap_like_description">Standardmäßig aus: Jeder einzelne Tipp wartet dann kurz auf einen zweiten, wodurch das Öffnen eines Beitrags etwas träger wird.</string>
+    <string name="settings_double_tap_like_description_desktop">Standardmäßig aus: Jeder einzelne Klick wartet dann kurz auf einen zweiten, wodurch das Öffnen eines Beitrags etwas träger wird.</string>
     <string name="settings_swipe_back_anywhere">Von überall zurückwischen</string>
+    <string name="settings_swipe_back_anywhere_desktop">Von überall zurückziehen</string>
     <string name="settings_swipe_back_anywhere_description">Zieh einen geöffneten Beitrag von jeder Stelle aus, um zurückzugehen. Aus: nur vom Bildschirmrand.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Zieh einen geöffneten Beitrag von jeder Stelle aus, um zurückzugehen. Aus: nur vom Fensterrand.</string>
     <string name="settings_swipe_back_tilt">Mit dem Finger neigen</string>
+    <string name="settings_swipe_back_tilt_desktop">Mit dem Mauszeiger neigen</string>
     <string name="settings_swipe_back_tilt_description">Ein Beitrag, den du zurückziehst, dreht sich um deinen Finger und schwingt mit deinem Tempo.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">Ein Beitrag, den du zurückziehst, dreht sich um den Mauszeiger und schwingt mit deinem Tempo.</string>
     <string name="settings_accounts_empty">Konto hinzufügen, um Für dich zu laden.</string>
     <string name="settings_accounts_description">Schalten Sie Ersatzkonten aus, die Sie nur für höhere Ratenlimits behalten. Für dich führt die Timelines eingeschalteter Konten zusammen; Folgt verwendet weiter deine lokalen Abos, überspringt ausgeschaltete Konten beim Abrufen aber. Kommentare und Profile können bei Bedarf weiterhin jedes Konto nutzen.</string>
     <string name="settings_account_delete_confirm">Von @%1$s abmelden? XTA vergisst die Sitzung auf diesem Gerät – das lässt sich nicht rückgängig machen.</string>

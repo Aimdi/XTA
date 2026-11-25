@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">Twój awatar</string>
     <string name="settings_avatar_change">Dotknij, aby zmienić obraz w lewym górnym rogu</string>
+    <string name="settings_avatar_change_desktop">Kliknij, aby zmienić obraz w lewym górnym rogu</string>
     <string name="settings_avatar_description">Obraz w lewym górnym rogu i w menu — zostaje na tym urządzeniu</string>
     <string name="settings_avatar_choose">Wybierz z urządzenia</string>
     <string name="settings_avatar_from_account">Użyj zdjęcia profilowego z X</string>

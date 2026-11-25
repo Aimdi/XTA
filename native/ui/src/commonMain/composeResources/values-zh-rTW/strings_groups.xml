@@ -24,6 +24,7 @@
     <string name="groups_columns">欄數</string>
     <string name="groups_combine_clear">清除</string>
     <string name="groups_combine_hint">長按群組即可與目前群組一起閱讀</string>
+    <string name="groups_combine_hint_desktop">在群組上按右鍵即可與目前群組一起閱讀</string>
     <string name="groups_combined_count">正在一起閱讀另外 %1$d 個</string>
     <string name="groups_compact">緊湊</string>
     <string name="groups_content_default">預設</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">沒有結果</string>
     <string name="groups_no_subscriptions">沒有訂閱。試著搜尋或匯入一些吧！</string>
     <string name="groups_none_description">群組可把訂閱組成自訂時間軸。長按群組可編輯。</string>
+    <string name="groups_none_description_desktop">群組可把訂閱組成自訂時間軸。在群組上按右鍵可編輯。</string>
     <string name="groups_none_yet">尚無群組</string>
     <string name="groups_not_all_posts">注意：由於 X 的限制，可能不會包含所有推文</string>
     <string name="groups_ok">確定</string>

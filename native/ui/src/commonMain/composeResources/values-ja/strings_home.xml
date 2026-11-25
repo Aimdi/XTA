@@ -50,6 +50,7 @@
     <string name="home_filter_accounts_explained">レート制限のためだけに残している予備アカウントをオフにします。おすすめはオンのアカウントのホームタイムラインをまとめます。フォロー中はローカルの購読を使いますが、オフにしたアカウントでは取得しません。コメントやプロフィールは必要ならどのアカウントでも使えます。</string>
     <string name="home_filter_groups_explained">グループをオフにすると、そのメンバーがフォロー中から非表示になります。グループのタブはそのままです。投稿は「おすすめ」からも外れます。</string>
     <string name="home_filter_only_hint">長押しすると、その項目だけをオンにします。</string>
+    <string name="home_filter_only_hint_desktop">右クリックすると、その項目だけをオンにします。</string>
     <string name="home_filter_keep_one">少なくとも 1 つのアカウントはオンのままにしてください</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">すべて</string>

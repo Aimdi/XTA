@@ -64,6 +64,7 @@
     <string name="reader_voices_use">Erabili deskargatutako ahotsa</string>
     <string name="reader_voices_use_description">Deskargatutako ahots batekin irakurtzen du artikuluaren hizkuntza hitz egiten badu; bestela, beheko motorra erabiltzen du.</string>
     <string name="reader_voices_note">Ahotsak GitHub-etik (k2-fsa/sherpa-onnx) deskargatzen dira, Deskargatu sakatzen duzunean bakarrik. Gailu honetan bertan exekutatzen dira osorik.</string>
+    <string name="reader_voices_note_desktop">Ahotsak GitHub-etik (k2-fsa/sherpa-onnx) deskargatzen dira, Deskargatu aukeran klik egiten duzunean bakarrik. Gailu honetan bertan exekutatzen dira osorik.</string>
     <string name="reader_voices_synthesis_missing">Bertsio honek ahotsak deskarga ditzake, baina oraindik ezin du haiekin irakurri. Bitartean, beheko ahots-motorrak irakurtzen du ozen.</string>
     <string name="reader_voice_licence">Lizentzia: %1$s</string>
     <string name="reader_voice_installing">Egiaztatzen eta deskonprimatzen…</string>

@@ -97,6 +97,7 @@ Bấm để xem thêm</string>
     <string name="posts_verified_organization">Tổ chức đã xác minh</string>
     <string name="posts_view_quoted">Xem bài đăng được trích dẫn</string>
     <string name="posts_zen_replies">Giữ nút bình luận để hiển thị các trả lời</string>
+    <string name="posts_zen_replies_desktop">Nhấp chuột phải vào nút bình luận để hiển thị các trả lời</string>
     <plurals name="posts_views_count">
         <item quantity="other">%1$s lượt xem</item>
     </plurals>

@@ -97,6 +97,7 @@ Click to show more..</string>
     <string name="posts_verified_organization">認証済みの組織</string>
     <string name="posts_view_quoted">引用ポストを表示</string>
     <string name="posts_zen_replies">返信を表示するにはコメントボタンを長押ししてください</string>
+    <string name="posts_zen_replies_desktop">返信を表示するにはコメントボタンを右クリックしてください</string>
     <plurals name="posts_views_count">
         <item quantity="other">%1$s件の表示</item>
     </plurals>

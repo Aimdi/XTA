@@ -24,6 +24,7 @@
     <string name="groups_columns">Столбцы</string>
     <string name="groups_combine_clear">Сбросить</string>
     <string name="groups_combine_hint">Удерживайте группу, чтобы читать её вместе с этой</string>
+    <string name="groups_combine_hint_desktop">Щёлкните группу правой кнопкой мыши, чтобы читать её вместе с этой</string>
     <string name="groups_combined_count">Вместе читается ещё: %1$d</string>
     <string name="groups_compact">Компактно</string>
     <string name="groups_content_default">По умолчанию</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Ничего не найдено</string>
     <string name="groups_no_subscriptions">Нет подписок. Попробуйте поискать или импортировать некоторые!</string>
     <string name="groups_none_description">Группы собирают подписки в свои ленты. Долгое нажатие — редактирование.</string>
+    <string name="groups_none_description_desktop">Группы собирают подписки в свои ленты. Щелчок правой кнопкой мыши — редактирование.</string>
     <string name="groups_none_yet">Пока нет групп</string>
     <string name="groups_not_all_posts">Примечание: В связи с ограничением Twitter, не все твиты могут быть включены</string>
     <string name="groups_ok">Ок</string>

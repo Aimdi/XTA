@@ -64,6 +64,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_filter_groups_explained
 import com.aimdi.xtanative.ui.generated.resources.home_filter_keep_one
 import com.aimdi.xtanative.ui.generated.resources.home_filter_none
 import com.aimdi.xtanative.ui.generated.resources.home_filter_only_hint
+import com.aimdi.xtanative.ui.generated.resources.home_filter_only_hint_desktop
 import com.aimdi.xtanative.ui.generated.resources.home_filter_reset
 import com.aimdi.xtanative.ui.generated.resources.home_group_members
 import com.aimdi.xtanative.ui.generated.resources.home_groups
@@ -72,6 +73,7 @@ import com.aimdi.xtanative.ui.generated.resources.search
 import com.aimdi.xtanative.ui.generated.resources.signin_add_account
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.settings.isDesktop
 
 /**
  * Home feed accounts (XTA's home filter sheet): which X accounts For you
@@ -112,7 +114,7 @@ internal fun HomeFilterSheet(ui: HomeUi, onApply: (HomeFilterDraft) -> Unit, onD
             )
             Text(
                 stringResource(if (groupsShown) Res.string.home_filter_groups_explained else Res.string.home_filter_accounts_explained) +
-                    " " + stringResource(Res.string.home_filter_only_hint),
+                    " " + stringResource(if (isDesktop) Res.string.home_filter_only_hint_desktop else Res.string.home_filter_only_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 20.dp),

@@ -278,7 +278,7 @@ internal fun PostsSettings(title: String, vm: SettingsViewModel, focus: String?,
             SettingsHeader(stringResource(Res.string.settings_zen_mode))
             PrefSwitch(settings, PostsPrefs.threadedReplies, stringResource(Res.string.settings_threaded_replies), stringResource(Res.string.settings_threaded_replies_description), vm, focus)
             PrefSwitch(settings, PostsPrefs.collapseReposts, stringResource(Res.string.settings_collapse_boosts), stringResource(Res.string.settings_collapse_boosts_description), vm, focus)
-            PrefSwitch(settings, PostsPrefs.zenMode, stringResource(Res.string.settings_zen_mode), stringResource(Res.string.settings_zen_mode_description), vm, focus)
+            PrefSwitch(settings, PostsPrefs.zenMode, stringResource(Res.string.settings_zen_mode), stringResource(GestureWording.zenModeDescription), vm, focus)
             PrefSwitch(settings, PostsPrefs.calmMode, stringResource(Res.string.settings_calm_mode), stringResource(Res.string.settings_calm_mode_description), vm, focus)
             ChoiceRow(
                 stringResource(Res.string.settings_zen_page_cap),
@@ -352,7 +352,7 @@ internal fun MediaSettings(title: String, vm: SettingsViewModel, focus: String?,
     SettingsPage(title, onBack) { padding ->
         SettingsList(padding) {
             SettingsHeader(stringResource(Res.string.settings_image_quality))
-            PrefSwitch(settings, MediaPrefs.loadManually, stringResource(Res.string.settings_load_manually), stringResource(Res.string.settings_load_manually_description), vm, focus)
+            PrefSwitch(settings, MediaPrefs.loadManually, stringResource(Res.string.settings_load_manually), stringResource(GestureWording.loadManuallyDescription), vm, focus)
             ChoiceRow(
                 stringResource(Res.string.settings_image_quality),
                 stringResource(Res.string.settings_save_bandwidth),
@@ -584,9 +584,9 @@ internal fun AccessibilitySettings(title: String, vm: SettingsViewModel, focus: 
                 PrefSwitch(settings, AccessibilityPrefs.haptics, stringResource(Res.string.settings_haptics), stringResource(Res.string.settings_haptics_description), vm, focus)
             }
             PrefSwitch(settings, AccessibilityPrefs.tickerChart, stringResource(Res.string.settings_ticker_chart), stringResource(Res.string.settings_ticker_chart_description), vm, focus)
-            PrefSwitch(settings, AccessibilityPrefs.doubleTapLike, stringResource(Res.string.settings_double_tap_like), stringResource(Res.string.settings_double_tap_like_description), vm, focus)
-            PrefSwitch(settings, AccessibilityPrefs.swipeBackAnywhere, stringResource(Res.string.settings_swipe_back_anywhere), stringResource(Res.string.settings_swipe_back_anywhere_description), vm, focus)
-            PrefSwitch(settings, AccessibilityPrefs.swipeBackTilt, stringResource(Res.string.settings_swipe_back_tilt), stringResource(Res.string.settings_swipe_back_tilt_description), vm, focus)
+            PrefSwitch(settings, AccessibilityPrefs.doubleTapLike, stringResource(GestureWording.doubleTapLike), stringResource(GestureWording.doubleTapLikeDescription), vm, focus)
+            PrefSwitch(settings, AccessibilityPrefs.swipeBackAnywhere, stringResource(GestureWording.swipeBackAnywhere), stringResource(GestureWording.swipeBackAnywhereDescription), vm, focus)
+            PrefSwitch(settings, AccessibilityPrefs.swipeBackTilt, stringResource(GestureWording.swipeBackTilt), stringResource(GestureWording.swipeBackTiltDescription), vm, focus)
             // XTA opens Read aloud's settings over this page (openTtsSettings).
             NavigationRow(
                 stringResource(Res.string.settings_speech),

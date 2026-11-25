@@ -96,6 +96,7 @@
     <string name="posts_verified_organization">Doğrulanmış kuruluş</string>
     <string name="posts_view_quoted">Alıntılanan gönderiyi görüntüle</string>
     <string name="posts_zen_replies">Yanıtları göstermek için yorum düğmesini basılı tut</string>
+    <string name="posts_zen_replies_desktop">Yanıtları göstermek için yorum düğmesine sağ tıkla</string>
     <plurals name="posts_views_count">
         <item quantity="other">%1$s görüntülenme</item>
     </plurals>
