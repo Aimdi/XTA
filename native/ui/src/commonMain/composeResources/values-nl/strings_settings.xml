@@ -45,6 +45,8 @@
     <string name="settings_clean_links_description">Verwijdert trackers en overbodige parameters voordat een link wordt geopend of gedeeld</string>
     <string name="settings_disable_screenshots">Schermafbeeldingen uitschakelen</string>
     <string name="settings_disable_screenshots_hint">Voorkomen dat er schermafbeeldingen worden gemaakt. Dit werkt mogelijk niet op alle apparaten.</string>
+    <string name="settings_app_lock">App vergrendelen</string>
+    <string name="settings_app_lock_hint">Vraag om je vingerafdruk, gezicht of schermvergrendeling wanneer XTA wordt geopend. Dit apparaat moet een schermvergrendeling hebben.</string>
     <string name="settings_default_tab">Standaard tabblad</string>
     <string name="settings_default_tab_description">Welk tabblad wordt weergegeven wanneer de app opent</string>
     <string name="settings_default_feed_tab">Standaard feed-tabblad</string>

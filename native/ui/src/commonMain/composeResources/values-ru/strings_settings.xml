@@ -45,6 +45,8 @@
     <string name="settings_clean_links_description">Убирает трекеры и лишние параметры перед открытием или отправкой ссылки</string>
     <string name="settings_disable_screenshots">Отключить скриншоты</string>
     <string name="settings_disable_screenshots_hint">Предотвращение создания скриншотов. Это может работать не на всех устройствах.</string>
+    <string name="settings_app_lock">Блокировать приложение</string>
+    <string name="settings_app_lock_hint">Запрашивать отпечаток пальца, лицо или блокировку экрана при открытии XTA. На устройстве должна быть настроена блокировка экрана.</string>
     <string name="settings_default_tab">Вкладка по умолчанию</string>
     <string name="settings_default_tab_description">Какая вкладка отображается при открытии приложения</string>
     <string name="settings_default_feed_tab">Вкладка ленты по умолчанию</string>

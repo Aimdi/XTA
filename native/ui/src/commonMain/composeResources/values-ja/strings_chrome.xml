@@ -14,4 +14,6 @@
         <item quantity="other">ライセンス: %1$d 件</item>
     </plurals>
     <string name="chrome_offline_bar">オフライン – 保存済みのコピーを表示しています</string>
+    <string name="app_lock_title">XTA はロックされています</string>
+    <string name="app_lock_unlock">ロック解除</string>
 </resources>

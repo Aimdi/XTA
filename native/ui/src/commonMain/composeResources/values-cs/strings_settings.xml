@@ -45,6 +45,8 @@
     <string name="settings_clean_links_description">Odstraní sledovače a zbytečné parametry, než se odkaz otevře nebo nasdílí</string>
     <string name="settings_disable_screenshots">Zakázat snímky obrazovky</string>
     <string name="settings_disable_screenshots_hint">Zabránit pořizování snímků obrazovky. Nemusí fungovat na všech zařízeních.</string>
+    <string name="settings_app_lock">Zamykat aplikaci</string>
+    <string name="settings_app_lock_hint">Při otevření XTA vyžadovat otisk prstu, obličej nebo zámek obrazovky. Zařízení musí mít nastavený zámek obrazovky.</string>
     <string name="settings_default_tab">Výchozí karta</string>
     <string name="settings_default_tab_description">Karta, která bude zobrazena při otevření aplikace</string>
     <string name="settings_default_feed_tab">Výchozí karta kanálu</string>

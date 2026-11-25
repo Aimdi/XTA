@@ -15,4 +15,6 @@
         <item quantity="other">%1$d litsentsi</item>
     </plurals>
     <string name="chrome_offline_bar">Võrguühenduseta – kuvatakse salvestatud koopiaid</string>
+    <string name="app_lock_title">XTA on lukus</string>
+    <string name="app_lock_unlock">Ava lukust</string>
 </resources>

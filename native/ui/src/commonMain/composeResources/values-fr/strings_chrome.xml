@@ -15,4 +15,6 @@
         <item quantity="other">%1$d licences</item>
     </plurals>
     <string name="chrome_offline_bar">Hors ligne – affichage des copies enregistrées</string>
+    <string name="app_lock_title">XTA est verrouillée</string>
+    <string name="app_lock_unlock">Déverrouiller</string>
 </resources>

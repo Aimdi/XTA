@@ -45,6 +45,8 @@
     <string name="settings_clean_links_description">Прыбірае трэкеры і лішнія параметры перад адкрыццём або адпраўкай спасылкі</string>
     <string name="settings_disable_screenshots">Адключыць скрыншоты</string>
     <string name="settings_disable_screenshots_hint">Прадухіленне стварэння скрыншотаў. Гэта можа працаваць не на ўсіх прыладах.</string>
+    <string name="settings_app_lock">Блакаваць праграму</string>
+    <string name="settings_app_lock_hint">Пытаць адбітак пальца, твар або блакіроўку экрана пры адкрыцці XTA. Патрэбна блакіроўка экрана на гэтай прыладзе.</string>
     <string name="settings_default_tab">Укладка па змаўчанні</string>
     <string name="settings_default_tab_description">Якая ўкладка адлюстроўваецца пры адкрыцці дадатку</string>
     <string name="settings_default_feed_tab">Укладка стужкі па змаўчанні</string>

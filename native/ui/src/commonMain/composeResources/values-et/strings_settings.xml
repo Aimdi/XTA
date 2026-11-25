@@ -45,6 +45,8 @@
     <string name="settings_clean_links_description">Eemaldab jälgijad ja üleliigsed parameetrid enne lingi avamist või jagamist</string>
     <string name="settings_disable_screenshots">Lülita ekraanitõmmised välja</string>
     <string name="settings_disable_screenshots_hint">Ära luba teha ekraanitõmmiseid. See ei pruugi kõikides seadmetes toimida.</string>
+    <string name="settings_app_lock">Lukusta rakendus</string>
+    <string name="settings_app_lock_hint">XTA avamisel küsitakse sõrmejälge, nägu või ekraanilukku. Selles seadmes peab olema ekraanilukk seadistatud.</string>
     <string name="settings_default_tab">Vaikimisi vaade</string>
     <string name="settings_default_tab_description">Missugune vaade on kuvatud rakenduse käivitamisel</string>
     <string name="settings_default_feed_tab">Vaikimisi voo sakk</string>

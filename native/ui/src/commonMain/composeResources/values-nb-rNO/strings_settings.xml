@@ -45,6 +45,8 @@
     <string name="settings_clean_links_description">Fjerner sporere og unødvendige parametere før en lenke åpnes eller deles</string>
     <string name="settings_disable_screenshots">Skru av skjermavbildninger</string>
     <string name="settings_disable_screenshots_hint">Deaktiver skjermbildevarsel</string>
+    <string name="settings_app_lock">Lås appen</string>
+    <string name="settings_app_lock_hint">Be om fingeravtrykk, ansikt eller skjermlås når XTA åpnes. Krever at enheten har skjermlås.</string>
     <string name="settings_default_tab">Forvalgt fane</string>
     <string name="settings_default_tab_description">Hvilken fane som vises når programmet åpnes</string>
     <string name="settings_default_feed_tab">Standard strømfane</string>

@@ -15,4 +15,6 @@
         <item quantity="other">%1$d licenties</item>
     </plurals>
     <string name="chrome_offline_bar">Offline – opgeslagen kopieën worden getoond</string>
+    <string name="app_lock_title">XTA is vergrendeld</string>
+    <string name="app_lock_unlock">Ontgrendelen</string>
 </resources>

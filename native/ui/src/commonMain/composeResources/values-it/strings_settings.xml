@@ -45,6 +45,8 @@
     <string name="settings_clean_links_description">Rimuove tracker e parametri inutili prima di aprire o condividere un link</string>
     <string name="settings_disable_screenshots">Disattiva screenshot</string>
     <string name="settings_disable_screenshots_hint">Impedisce di poter acquisire screenshot. Potrebbe non funzionare su tutti i dispositivi.</string>
+    <string name="settings_app_lock">Blocca l'app</string>
+    <string name="settings_app_lock_hint">Chiedi l'impronta, il volto o il blocco schermo all'apertura di XTA. Richiede un blocco schermo su questo dispositivo.</string>
     <string name="settings_default_tab">Scheda predefinita</string>
     <string name="settings_default_tab_description">Quale scheda viene visualizzata quando si apre l'app</string>
     <string name="settings_default_feed_tab">Scheda feed predefinita</string>

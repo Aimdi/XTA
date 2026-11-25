@@ -45,6 +45,8 @@
     <string name="settings_clean_links_description">Retire les traqueurs et les paramètres inutiles avant d’ouvrir ou de partager un lien</string>
     <string name="settings_disable_screenshots">Désactiver les captures d'écran</string>
     <string name="settings_disable_screenshots_hint">Empêche la prise de captures d'écran. Cela peut ne pas fonctionner sur tous les appareils.</string>
+    <string name="settings_app_lock">Verrouiller l'application</string>
+    <string name="settings_app_lock_hint">Demander l'empreinte, le visage ou le verrouillage de l'écran à l'ouverture de XTA. Un verrouillage d'écran doit être configuré sur cet appareil.</string>
     <string name="settings_default_tab">Onglet par défaut</string>
     <string name="settings_default_tab_description">Onglet affiché à l'ouverture de l'application</string>
     <string name="settings_default_feed_tab">Onglet par défaut du fil</string>

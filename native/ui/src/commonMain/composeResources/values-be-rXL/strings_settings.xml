@@ -45,6 +45,8 @@
     <string name="settings_clean_links_description">Prybiraje trekiery i lišnija parametry pierad adkrycciom abo adpraŭkaj spasyłki</string>
     <string name="settings_disable_screenshots">Adkliučyć skrynšoty</string>
     <string name="settings_disable_screenshots_hint">Praduchilennie stvareńnia skrynšotaŭ. Heta moža pracavać nie na ŭsich pryladach.</string>
+    <string name="settings_app_lock">Błakavać prahramu</string>
+    <string name="settings_app_lock_hint">Pytać adbitak palca, tvar abo błakiroŭku ekrana pry adkrycci XTA. Patrebna błakiroŭka ekrana na hetaj pryladzie.</string>
     <string name="settings_default_tab">Układka pa zmaŭčanni</string>
     <string name="settings_default_tab_description">Jakaja ŭkładka adlustroŭvajecca pry adkrycci dadatku</string>
     <string name="settings_default_feed_tab">Układka stužki pa zmaŭčanni</string>
