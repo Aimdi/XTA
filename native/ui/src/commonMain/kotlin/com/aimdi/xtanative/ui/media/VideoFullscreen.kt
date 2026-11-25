@@ -32,6 +32,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.shortcutKey
 import com.aimdi.xtanative.ui.home.HoldsKeys
+import com.aimdi.xtanative.ui.home.skippedByTab
 
 /** A video full screen: its player, its shape, its Download, and what is done once it closes. */
 internal class FullscreenVideo(val player: VideoPlayer, val aspectRatio: Float, val onDownload: (() -> Unit)?, val onClosed: () -> Unit)
@@ -98,6 +99,8 @@ private fun FullscreenLayer(video: FullscreenVideo, onClose: () -> Unit) {
             // Nothing under it is touched while it is up, picture-in-picture included.
             .pointerInput(Unit) { awaitPointerEventScope { while (true) awaitPointerEvent().changes.forEach { it.consume() } } }
             .onKeyEvent { event -> (event.type == KeyEventType.KeyDown || typedChar(event) != null) && fullscreenKey(event, player, onClose) }
+            // It holds the keys, yet Tab goes round the video's controls without stopping on it, where nothing would show.
+            .skippedByTab()
             .focusRequester(focus)
             .focusable(),
     ) {

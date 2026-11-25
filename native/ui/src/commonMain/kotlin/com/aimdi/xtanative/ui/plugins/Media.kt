@@ -100,6 +100,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_link_copied
 import com.aimdi.xtanative.ui.generated.resources.reader_link_share
 import com.aimdi.xtanative.ui.generated.resources.reader_media
 import com.aimdi.xtanative.ui.home.HoldsKeys
+import com.aimdi.xtanative.ui.home.skippedByTab
 import com.aimdi.xtanative.ui.media.GifCorner
 import com.aimdi.xtanative.ui.media.LocalViewerVideoKeys
 import com.aimdi.xtanative.ui.media.MOTION_FAST_MS
@@ -302,6 +303,8 @@ fun MediaPager(
                     ViewerKey.NONE -> false
                 }
             }
+            // It holds the keys, yet Tab goes round the viewer's buttons without stopping on it, where nothing would show.
+            .skippedByTab()
             .focusRequester(focus)
             .focusable(),
     ) {
