@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">Cuộn một màn hình</string>
     <string name="keys_scroll_ends">Lên đầu hoặc xuống cuối</string>
     <string name="keys_move">Di chuyển giữa các nút và ô nhập</string>
+    <string name="keys_regions">Di chuyển giữa thanh điều hướng và trang</string>
     <string name="keys_text_size">Chữ lớn hơn, nhỏ hơn hoặc bình thường</string>
     <string name="keys_interface_size">Giao diện lớn hơn, nhỏ hơn hoặc bình thường</string>
     <string name="keys_full_screen">Toàn màn hình</string>

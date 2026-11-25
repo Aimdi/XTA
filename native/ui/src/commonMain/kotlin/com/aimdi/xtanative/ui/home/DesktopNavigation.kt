@@ -109,6 +109,30 @@ class DesktopActions(
         if (back == null || open?.invoke() == true) closing?.invoke() else back()
     }
 
+    /** The navigation beside the screens ([FrameRegion]), F6's other place; null where the window has none. */
+    private var region: FrameRegion? = null
+
+    internal fun setRegion(owner: FrameRegion?) {
+        region = owner
+    }
+
+    internal fun dropRegion(owner: FrameRegion) {
+        if (region === owner) region = null
+    }
+
+    /**
+     * F6 and Shift+F6, as a browser moves between its bars and its page: from
+     * the page to the navigation beside it ([FrameRegion.enter]), and from
+     * there back to the page ([toPage]). False where the window has no
+     * navigation beside its screens, or it took no focus.
+     */
+    fun otherRegion(toPage: () -> Unit): Boolean {
+        val side = region ?: return false
+        if (!side.holds()) return side.enter()
+        toPage()
+        return true
+    }
+
     /** The states the screen shown closes on Back ([com.aimdi.xtanative.ui.common.BackHandling]), the last enabled on top. */
     private val backs = mutableListOf<Pair<Any, () -> Unit>>()
 
@@ -759,6 +783,24 @@ internal fun DesktopShortcuts(
     }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.release(owner) }
     DisposableEffect(actions) { onDispose { actions.release(owner) } }
+}
+
+/**
+ * The navigation beside a desktop window's screens (the wide frame's column
+ * or rail) as F6 reaches it: [enter] gives the focus to its row of where the
+ * reader is, true if something in it took it; [holds] while something in it
+ * has the focus.
+ */
+class FrameRegion(val enter: () -> Boolean, val holds: () -> Boolean)
+
+/** [region] is the window's navigation for F6 while this is composed ([DesktopActions.otherRegion]). Nothing off the desktop. */
+@Composable
+internal fun ReachedByF6(region: FrameRegion) {
+    val actions = LocalDesktopActions.current ?: return
+    DisposableEffect(actions, region) {
+        actions.setRegion(region)
+        onDispose { actions.dropRegion(region) }
+    }
 }
 
 /**

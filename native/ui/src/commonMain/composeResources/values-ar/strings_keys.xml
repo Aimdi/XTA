@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">التمرير بمقدار شاشة</string>
     <string name="keys_scroll_ends">الانتقال إلى الأعلى أو إلى النهاية</string>
     <string name="keys_move">التنقل بين الأزرار والحقول</string>
+    <string name="keys_regions">التنقل بين قائمة التنقل والصفحة</string>
     <string name="keys_text_size">نص أكبر أو أصغر أو عادي</string>
     <string name="keys_interface_size">واجهة أكبر أو أصغر أو عادية</string>
     <string name="keys_full_screen">ملء الشاشة</string>

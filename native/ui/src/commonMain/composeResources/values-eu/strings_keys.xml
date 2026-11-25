@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">Korritu pantaila bat</string>
     <string name="keys_scroll_ends">Joan hasierara edo amaierara</string>
     <string name="keys_move">Mugitu botoi eta eremuen artean</string>
+    <string name="keys_regions">Mugitu nabigazioaren eta orriaren artean</string>
     <string name="keys_text_size">Testu handiagoa, txikiagoa edo normala</string>
     <string name="keys_interface_size">Interfaze handiagoa, txikiagoa edo normala</string>
     <string name="keys_full_screen">Pantaila osoa</string>

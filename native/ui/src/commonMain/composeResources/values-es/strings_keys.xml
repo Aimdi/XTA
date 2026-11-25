@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">Desplazarse una pantalla</string>
     <string name="keys_scroll_ends">Ir al principio o al final</string>
     <string name="keys_move">Moverse entre botones y campos</string>
+    <string name="keys_regions">Moverse entre la navegación y la página</string>
     <string name="keys_text_size">Texto más grande, más pequeño o normal</string>
     <string name="keys_interface_size">Interfaz más grande, más pequeña o normal</string>
     <string name="keys_full_screen">Pantalla completa</string>

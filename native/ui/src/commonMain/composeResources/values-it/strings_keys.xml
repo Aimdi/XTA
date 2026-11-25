@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">Scorri di una schermata</string>
     <string name="keys_scroll_ends">Vai all’inizio o alla fine</string>
     <string name="keys_move">Spostati tra pulsanti e campi</string>
+    <string name="keys_regions">Spostati tra la navigazione e la pagina</string>
     <string name="keys_text_size">Testo più grande, più piccolo o normale</string>
     <string name="keys_interface_size">Interfaccia più grande, più piccola o normale</string>
     <string name="keys_full_screen">Schermo intero</string>

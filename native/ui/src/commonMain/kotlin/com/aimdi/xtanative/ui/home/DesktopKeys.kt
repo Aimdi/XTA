@@ -4,7 +4,7 @@ import androidx.compose.ui.geometry.Offset
 import kotlin.math.abs
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, N, Z, F3, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, N, Z, F3, F6, OTHER }
 
 /** A mouse's side buttons: back and forward, as in a browser. */
 enum class SideButton { BACK, FORWARD }
@@ -76,6 +76,9 @@ enum class DeskAction {
 
     /** The list of the desktop's keys opens ([DesktopShortcuts]). */
     SHOW_KEYS,
+
+    /** The keys go from the page to the navigation beside it, or back, as a browser's F6 moves between its bars and its page ([DesktopActions.otherRegion]). */
+    OTHER_REGION,
 
     /** Settings open, as Ctrl+, opens a desktop app's preferences. */
     OPEN_SETTINGS,
@@ -152,6 +155,10 @@ object DesktopKeys {
      * X's site, while nothing is being typed in. Ctrl+V, while nothing is
      * being typed in, opens a link copied elsewhere, as dropping it does.
      * Alt+Home goes back to Home, as a browser's goes to its home page.
+     * F6 and Shift+F6, from a field too, move the focus between the page and
+     * the navigation beside it (a wide desktop window's column or rail), as
+     * a browser's move between its bars and its page; not while something
+     * is open over the page.
      * Ctrl+← and Ctrl+→, while nothing is being typed in (where they go a
      * word at a time) and nothing is open over the page, give the reading
      * keys the column before or the next, in the reading direction, on a
@@ -219,6 +226,7 @@ object DesktopKeys {
             ctrl && alt && key in TEXT_KEYS -> interfaceSize(key)
             (key == DeskKey.F1 && !alt && !ctrl) || (key == DeskKey.QUESTION && !focusInside && !alt && !ctrl) ->
                 if (somethingOpen) DeskAction.NONE else DeskAction.SHOW_KEYS
+            key == DeskKey.F6 && !alt && !ctrl -> if (somethingOpen) DeskAction.NONE else DeskAction.OTHER_REGION
             // Over an opened post (a card the page counts as open) too: going home leaves it with the rest.
             key == DeskKey.HOME && alt && !ctrl && !shift -> DeskAction.GO_HOME
             key == DeskKey.V && ctrl && !alt && !shift && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.OPEN_PASTED_LINK

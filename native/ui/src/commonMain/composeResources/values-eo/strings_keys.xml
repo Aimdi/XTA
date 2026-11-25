@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">Rulumi je ekrano</string>
     <string name="keys_scroll_ends">Al la komenco aŭ al la fino</string>
     <string name="keys_move">Moviĝi inter butonoj kaj kampoj</string>
+    <string name="keys_regions">Moviĝi inter la navigado kaj la paĝo</string>
     <string name="keys_text_size">Pli granda, pli malgranda aŭ normala teksto</string>
     <string name="keys_interface_size">Pli granda, pli malgranda aŭ normala interfaco</string>
     <string name="keys_full_screen">Tutekrane</string>

@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">Posunout o obrazovku</string>
     <string name="keys_scroll_ends">Na začátek nebo na konec</string>
     <string name="keys_move">Přecházet mezi tlačítky a poli</string>
+    <string name="keys_regions">Přecházet mezi navigací a stránkou</string>
     <string name="keys_text_size">Větší, menší nebo normální písmo</string>
     <string name="keys_interface_size">Větší, menší nebo normální rozhraní</string>
     <string name="keys_full_screen">Celá obrazovka</string>

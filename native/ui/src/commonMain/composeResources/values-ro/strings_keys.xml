@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">Derulează un ecran</string>
     <string name="keys_scroll_ends">Mergi la început sau la sfârșit</string>
     <string name="keys_move">Treci de la un buton sau câmp la altul</string>
+    <string name="keys_regions">Treci de la navigare la pagină și înapoi</string>
     <string name="keys_text_size">Text mai mare, mai mic sau normal</string>
     <string name="keys_interface_size">Interfață mai mare, mai mică sau normală</string>
     <string name="keys_full_screen">Ecran complet</string>

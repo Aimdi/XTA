@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">捲動一個畫面</string>
     <string name="keys_scroll_ends">前往頂端或結尾</string>
     <string name="keys_move">在按鈕與欄位之間移動</string>
+    <string name="keys_regions">在導覽與頁面之間移動</string>
     <string name="keys_text_size">放大、縮小或恢復一般文字</string>
     <string name="keys_interface_size">放大、縮小或恢復正常介面</string>
     <string name="keys_full_screen">全螢幕</string>

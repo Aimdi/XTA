@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">한 화면 스크롤</string>
     <string name="keys_scroll_ends">맨 위 또는 맨 끝으로 이동</string>
     <string name="keys_move">버튼과 입력란 사이 이동</string>
+    <string name="keys_regions">탐색 메뉴와 페이지 사이 이동</string>
     <string name="keys_text_size">글자 크게, 작게 또는 기본 크기</string>
     <string name="keys_interface_size">인터페이스 크게, 작게 또는 기본 크기</string>
     <string name="keys_full_screen">전체 화면</string>

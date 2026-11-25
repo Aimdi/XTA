@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">Eine Bildschirmseite scrollen</string>
     <string name="keys_scroll_ends">Zum Anfang oder zum Ende</string>
     <string name="keys_move">Zwischen Schaltflächen und Feldern wechseln</string>
+    <string name="keys_regions">Zwischen Navigation und Seite wechseln</string>
     <string name="keys_text_size">Größere, kleinere oder normale Schrift</string>
     <string name="keys_interface_size">Größere, kleinere oder normale Oberfläche</string>
     <string name="keys_full_screen">Vollbild</string>

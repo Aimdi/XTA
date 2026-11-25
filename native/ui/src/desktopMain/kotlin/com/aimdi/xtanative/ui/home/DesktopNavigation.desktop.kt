@@ -236,6 +236,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             showKeys = true
             true
         }
+        // From the navigation beside the screens back to the page: the frame takes the keys, its reading keys at work at once.
+        DeskAction.OTHER_REGION -> actions.otherRegion { focus.requestFocus() }
         DeskAction.CREATE -> actions.create()
         DeskAction.UNDO -> KeepNotices.undo(KeepNotices.shown.value, keeper::keep)
         DeskAction.SELECT_ALL -> actions.selectAll()
@@ -253,8 +255,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         if (event.type == KeyEventType.Unknown && LayoutKeys.ctrlTypesNothing(event.utf16CodePoint, event.isCtrlPressed, event.isAltPressed)) return true
         if (event.type != KeyEventType.KeyDown) return event.type != KeyEventType.KeyUp && keyTaken
         afterControl[0] = null
-        // Tab moves the focus with the keyboard: where it lands keeps the keys, as before any click.
-        if (event.key == Key.Tab) clicked = false
+        // Tab and F6 move the focus with the keyboard: where it lands keeps the keys, as before any click.
+        if (event.key == Key.Tab || event.key == Key.F6) clicked = false
         // Letters and digits by where they sit when the layout names them otherwise ([shortcutKey]): Ctrl+1 on a French keyboard, j on a Russian one.
         val pressed = shortcutKey(event)
         tabbing[0] = DesktopKeys.tabStep(deskKey(pressed), event.isShiftPressed, event.isCtrlPressed, event.isAltPressed)
@@ -496,6 +498,7 @@ internal fun deskKey(key: Key): DeskKey = when (key) {
     Key.F -> DeskKey.F
     Key.F1 -> DeskKey.F1
     Key.F3 -> DeskKey.F3
+    Key.F6 -> DeskKey.F6
     Key.Comma -> DeskKey.COMMA
     Key.W -> DeskKey.W
     Key.J -> DeskKey.J
