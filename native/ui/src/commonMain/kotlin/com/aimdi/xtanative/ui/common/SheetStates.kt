@@ -1,13 +1,17 @@
 package com.aimdi.xtanative.ui.common
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -25,8 +29,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.semantics.collapse
+import androidx.compose.ui.semantics.dismiss as dismissAction
+import androidx.compose.ui.semantics.expand
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.dismiss
+import com.aimdi.xtanative.ui.generated.resources.posts_collapse
+import com.aimdi.xtanative.ui.generated.resources.posts_expand
 import com.aimdi.xtanative.ui.home.GivesKeysBack
 import com.aimdi.xtanative.ui.home.LocalSheetKeys
 import com.aimdi.xtanative.ui.home.rememberSheetKeys
@@ -34,6 +46,7 @@ import com.aimdi.xtanative.ui.home.sheetKeys
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Whether a sheet opens all the way at once: on the desktop, where the
@@ -71,7 +84,10 @@ internal fun rememberSheetState(alwaysFull: Boolean = false): SheetState {
  *
  * A [border] is drawn on the sheet as it slides, by a surface of its own
  * inside Material's: a border in [modifier] would be drawn where the sheet
- * rests before its slide moves it, a ghost frame at the window's top.
+ * rests before its slide moves it, a ghost frame at the window's top. That
+ * surface takes the system bars' insets (Material's own sheet, transparent
+ * there, takes none, or the navigation bar's strip would show through it) and
+ * draws the drag handle with its screen-reader actions ([HandleWithActions]).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -116,14 +132,40 @@ internal fun KeyedSheet(
         containerColor = Color.Transparent,
         tonalElevation = 0.dp,
         dragHandle = null,
+        contentWindowInsets = { WindowInsets(0) },
     ) {
         Surface(Modifier.fillMaxWidth(), shape = shape, color = containerColor, tonalElevation = tonalElevation, border = border) {
-            Column {
-                BottomSheetDefaults.DragHandle(Modifier.align(Alignment.CenterHorizontally))
+            Column(Modifier.windowInsetsPadding(BottomSheetDefaults.windowInsets)) {
+                HandleWithActions(sheetState, scope, closer, Modifier.align(Alignment.CenterHorizontally))
                 inside()
             }
         }
     }
+}
+
+/**
+ * Material's drag handle with the actions Material's own sheet gives it, for
+ * a screen reader (TalkBack's dismiss, expand and collapse): the bordered
+ * [KeyedSheet] draws its handle itself, inside its own surface, so it adds
+ * them as Material would.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HandleWithActions(sheetState: SheetState, scope: CoroutineScope, closer: SheetCloser, modifier: Modifier) {
+    val dismissLabel = stringResource(Res.string.dismiss)
+    val expandLabel = stringResource(Res.string.posts_expand)
+    val collapseLabel = stringResource(Res.string.posts_collapse)
+    Box(
+        modifier.semantics(mergeDescendants = true) {
+            dismissAction(dismissLabel) { closer.close(); true }
+            when {
+                sheetState.currentValue == SheetValue.PartiallyExpanded ->
+                    expand(expandLabel) { scope.launch { sheetState.expand() }; true }
+                sheetState.hasPartiallyExpandedState ->
+                    collapse(collapseLabel) { scope.launch { sheetState.partialExpand() }; true }
+            }
+        },
+    ) { BottomSheetDefaults.DragHandle() }
 }
 
 /**
