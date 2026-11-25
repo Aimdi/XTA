@@ -18,13 +18,19 @@ data class XLookTokens(
     val divider: Long,
     val card: Long,
     val border: Long,
+    /**
+     * The edge of a control that must be seen: an off switch, an outlined
+     * field. [border] is a hairline as faint as [divider]; this one reaches
+     * 3:1 on the page (WCAG's non-text contrast).
+     */
+    val outline: Long = secondary,
 ) {
     companion object {
         private const val BLUE = 0xFF1D9BF0
 
-        val LIGHT = XLookTokens(BLUE, 0xFFFFFFFF, 0xFF0F1419, 0xFF536471, 0xFFEFF3F4, 0xFFFFFFFF, 0xFFEFF3F4)
-        val DIM = XLookTokens(BLUE, 0xFF15202B, 0xFFF7F9F9, 0xFF8899A4, 0xFF38444D, 0xFF192734, 0xFF38444D)
-        val LIGHTS_OUT = XLookTokens(BLUE, 0xFF000000, 0xFFE7E9EA, 0xFF71767B, 0xFF2F3336, 0xFF000000, 0xFF2F3336)
+        val LIGHT = XLookTokens(BLUE, 0xFFFFFFFF, 0xFF0F1419, 0xFF536471, 0xFFEFF3F4, 0xFFFFFFFF, 0xFFEFF3F4, 0xFF768390)
+        val DIM = XLookTokens(BLUE, 0xFF15202B, 0xFFF7F9F9, 0xFF8899A4, 0xFF38444D, 0xFF192734, 0xFF38444D, 0xFF8899A4)
+        val LIGHTS_OUT = XLookTokens(BLUE, 0xFF000000, 0xFFE7E9EA, 0xFF71767B, 0xFF2F3336, 0xFF000000, 0xFF2F3336, 0xFF71767B)
     }
 }
 
@@ -56,6 +62,10 @@ data class XLookScheme(
     /** The raw accent as a fill, and what reads on it. */
     val accentFill: Long,
     val onAccentFill: Long,
+    /** [XLookTokens.outline], kept at 3:1 on the page and on what floats. */
+    val outline: Long,
+    /** An on switch's knob on [primary]: white as X draws it, black where white would not stand out. */
+    val onSwitch: Long,
 )
 
 /** The theme the settings ask for (main.dart, x_look_theme.dart). */
@@ -63,6 +73,9 @@ object XLook {
     private const val ERROR_RED = 0xFFF4212E
     private const val BLACK = 0xFF000000
     private const val WHITE = 0xFFFFFFFF
+
+    /** WCAG's least contrast for a control's edge or a knob: 3:1. */
+    const val NON_TEXT = 3.0
 
     /**
      * The colour [accent] stands for: its own, or for [ThemeAccent.SYSTEM] the
@@ -148,6 +161,8 @@ object XLook {
             inset = inset,
             accentFill = tokens.accent,
             onAccentFill = Contrast.foreground(tokens.accent),
+            outline = Contrast.ensure(Contrast.ensure(tokens.outline, tokens.background, NON_TEXT), floating, NON_TEXT),
+            onSwitch = if (Contrast.ratio(WHITE, readableAccent) >= NON_TEXT) WHITE else BLACK,
         )
     }
 

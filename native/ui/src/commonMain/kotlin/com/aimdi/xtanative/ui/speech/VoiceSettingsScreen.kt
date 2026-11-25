@@ -101,6 +101,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_voices_use_description
 import com.aimdi.xtanative.ui.home.rememberSheetList
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.media.ReaderIcons
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 import org.jetbrains.compose.resources.stringResource
 import com.aimdi.xtanative.ui.settings.isDesktop
 
@@ -397,7 +398,7 @@ private fun SwitchRow(title: String, description: String, checked: Boolean, onCh
             Text(title, style = MaterialTheme.typography.bodyLarge)
             Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Switch(checked = checked, onCheckedChange = null)
+        Switch(checked = checked, onCheckedChange = null, colors = xSwitchColors())
     }
 }
 

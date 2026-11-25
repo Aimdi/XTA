@@ -34,6 +34,7 @@ import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 
 /**
  * An account in a list, as the networks' screens list people: its picture,
@@ -109,7 +110,7 @@ private fun RowScope.SwitchWords(label: String, checked: Boolean, description: S
             Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
-    Switch(checked = checked, onCheckedChange = null)
+    Switch(checked = checked, onCheckedChange = null, colors = xSwitchColors())
 }
 
 /**

@@ -49,6 +49,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_popular_description
 import com.aimdi.xtanative.ui.generated.resources.groups_recent
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -134,6 +135,6 @@ private fun SwitchRow(title: StringResource, subtitle: StringResource?, value: B
             Text(stringResource(title))
             if (subtitle != null) Text(stringResource(subtitle), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Switch(checked = value, onCheckedChange = null, modifier = Modifier.padding(start = 16.dp))
+        Switch(checked = value, onCheckedChange = null, colors = xSwitchColors(), modifier = Modifier.padding(start = 16.dp))
     }
 }

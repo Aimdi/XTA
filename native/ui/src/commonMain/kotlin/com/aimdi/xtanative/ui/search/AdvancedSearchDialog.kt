@@ -110,6 +110,7 @@ import com.aimdi.xtanative.ui.generated.resources.discover_this_exact_phrase
 import com.aimdi.xtanative.ui.generated.resources.discover_to_these_accounts
 import com.aimdi.xtanative.ui.generated.resources.discover_until
 import com.aimdi.xtanative.ui.generated.resources.discover_videos
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import org.jetbrains.compose.resources.StringResource
@@ -340,7 +341,7 @@ private fun ToggleRow(label: String, checked: Boolean, onChange: (Boolean) -> Un
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(label, modifier = Modifier.weight(1f))
-        Switch(checked = checked, onCheckedChange = null)
+        Switch(checked = checked, onCheckedChange = null, colors = xSwitchColors())
     }
 }
 

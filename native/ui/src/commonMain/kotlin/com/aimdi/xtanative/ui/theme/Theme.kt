@@ -3,9 +3,12 @@ package com.aimdi.xtanative.ui.theme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Shapes
+import androidx.compose.material3.SwitchColors
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -62,7 +65,7 @@ fun colorSchemeOf(scheme: XLookScheme): ColorScheme {
         surfaceContainer = Color(scheme.surfaceContainer),
         surfaceContainerHigh = Color(scheme.surfaceContainerHigh),
         surfaceContainerHighest = Color(scheme.surfaceContainerHighest),
-        outline = Color(t.border),
+        outline = Color(scheme.outline),
         outlineVariant = Color(t.divider),
         error = Color(scheme.error),
         onError = Color(scheme.onError),
@@ -71,5 +74,20 @@ fun colorSchemeOf(scheme: XLookScheme): ColorScheme {
         // X's grey-blue wash lightened Lights out's black page, which the reader keeps black on purpose.
         scrim = Color.Black,
         onErrorContainer = Color(scheme.onErrorContainer),
+    )
+}
+
+/**
+ * A switch in the X Look: the on knob white on the accent as X draws it
+ * ([XLookScheme.onSwitch]), not Material's onPrimary, which was black on Dim's
+ * blue; the off knob and edge in the outline that reads on the page.
+ */
+@Composable
+fun xSwitchColors(): SwitchColors {
+    val look = LocalXLook.current
+    return SwitchDefaults.colors(
+        checkedThumbColor = Color(look.onSwitch),
+        uncheckedThumbColor = Color(look.outline),
+        uncheckedBorderColor = Color(look.outline),
     )
 }

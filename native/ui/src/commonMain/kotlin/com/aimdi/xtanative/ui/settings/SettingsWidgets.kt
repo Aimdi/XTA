@@ -76,6 +76,7 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.settings_back
 import com.aimdi.xtanative.ui.generated.resources.settings_cancel
 import com.aimdi.xtanative.ui.generated.resources.settings_save
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 import org.jetbrains.compose.resources.stringResource
 
 /** A settings page: its title, Back, and what it holds, on the page's own background, no wider than [SETTINGS_MAX_WIDTH]. */
@@ -185,7 +186,7 @@ internal fun SwitchRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RowText(title, description, enabled, Modifier.weight(1f).padding(end = 12.dp))
-        Switch(checked = checked, onCheckedChange = null, enabled = enabled)
+        Switch(checked = checked, onCheckedChange = null, colors = xSwitchColors(), enabled = enabled)
     }
 }
 

@@ -79,6 +79,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_tab_unfiled
 import com.aimdi.xtanative.ui.home.rememberSheetList
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -162,7 +163,7 @@ private fun FolderSwitch(title: String, description: String, checked: Boolean, o
             Text(title, style = MaterialTheme.typography.bodyLarge)
             Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Switch(checked = checked, onCheckedChange = null)
+        Switch(checked = checked, onCheckedChange = null, colors = xSwitchColors())
     }
 }
 

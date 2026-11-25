@@ -98,4 +98,30 @@ class XLookTest {
             assertEquals(Color.Black, scheme.scrim, background.name)
         }
     }
+
+    @Test
+    fun theOutlineOfAControlReadsOnEveryBackgroundAndAccent() {
+        for (background in ThemeBackground.entries) for (accent in ThemeAccent.entries) for (dark in listOf(false, true)) {
+            val scheme = XLook.scheme(XLook.tokens(settings(background, accent), systemDark = dark))
+            val where = "$background $accent dark=$dark"
+            assertTrue(Contrast.ratio(scheme.outline, scheme.tokens.background) >= XLook.NON_TEXT, "outline on the page, $where")
+            assertTrue(Contrast.ratio(scheme.outline, scheme.floating) >= XLook.NON_TEXT, "outline on a dialog, $where")
+            assertTrue(Contrast.ratio(scheme.onSwitch, scheme.primary) >= XLook.NON_TEXT, "on knob on the accent, $where")
+        }
+    }
+
+    @Test
+    fun theOutlineIsNotTheFaintDivider() {
+        for (tokens in listOf(XLookTokens.LIGHT, XLookTokens.DIM, XLookTokens.LIGHTS_OUT)) {
+            assertNotEquals(tokens.divider, XLook.scheme(tokens).outline)
+            assertEquals(tokens.outline, XLook.scheme(tokens).outline, "each background's own outline already reads")
+        }
+    }
+
+    @Test
+    fun anOnSwitchShowsAWhiteKnobOnXsBlue() {
+        assertEquals(0xFFFFFFFF, XLook.scheme(XLookTokens.DIM).onSwitch)
+        assertEquals(0xFFFFFFFF, XLook.scheme(XLookTokens.LIGHTS_OUT).onSwitch)
+        assertEquals(0xFF000000, XLook.scheme(XLook.tokens(settings(ThemeBackground.DIM, ThemeAccent.YELLOW), systemDark = true)).onSwitch)
+    }
 }
