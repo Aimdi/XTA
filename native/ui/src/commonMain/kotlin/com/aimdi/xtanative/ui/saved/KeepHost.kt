@@ -1,5 +1,10 @@
 package com.aimdi.xtanative.ui.saved
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.Motion
 import com.aimdi.xtanative.ui.downloads.LocalPlatformFiles
 import com.aimdi.xtanative.ui.downloads.PlatformFilesHost
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -79,11 +86,21 @@ fun KeepHost() {
     KeepNoticeHost()
 }
 
-/** The notice showing now, at the foot of the window above the navigation bar, as XTA's snack bars are. */
+/**
+ * The notice showing now, at the foot of the window above the navigation bar,
+ * as XTA's snack bars are: it rises and fades in, and fades as it goes (at
+ * once while motion is reduced), still saying what it said while it fades.
+ */
 @Composable
 private fun KeepNoticeHost() {
     val shown by KeepNotices.shown.collectAsState()
-    val current = shown ?: return
+    val reduced = LocalReducedMotion.current
+    val visible = remember { MutableTransitionState(false) }
+    visible.targetState = shown != null
+    // A plain holder, not state: what the notice said, while it fades after it has gone.
+    val last = remember { arrayOfNulls<ShownNotice>(1) }
+    shown?.let { last[0] = it }
+    val current = NoticeFade.drawn(shown, last[0], reduced, settled = visible.isIdle) ?: return
     val keeper = LocalKeeper.current
     val files = LocalPlatformFiles.current
     val scope = rememberCoroutineScope()
@@ -115,9 +132,29 @@ private fun KeepNoticeHost() {
     val position = remember(lift) { FootOfWindow(lift) }
     val notice = current.notice
     Popup(popupPositionProvider = position, properties = PopupProperties(focusable = false)) {
-        Snackbar(modifier = Modifier.padding(horizontal = 16.dp).widthIn(max = 560.dp), action = open ?: (notice as? KeepNotice.Progress)?.onCancel?.let(::cancelButton)) {
-            if (notice is KeepNotice.Progress) ProgressLine(notice) else Text(noticeText(notice))
+        AnimatedVisibility(
+            visible,
+            enter = if (reduced) EnterTransition.None else Motion.fadeEnter(false, Motion.STANDARD_MS) + slideInVertically(tween(Motion.STANDARD_MS)) { it / 2 },
+            exit = Motion.fadeExit(reduced),
+        ) {
+            Snackbar(modifier = Modifier.padding(horizontal = 16.dp).widthIn(max = 560.dp), action = open ?: (notice as? KeepNotice.Progress)?.onCancel?.let(::cancelButton)) {
+                if (notice is KeepNotice.Progress) ProgressLine(notice) else Text(noticeText(notice))
+            }
         }
+    }
+}
+
+/** Which notice the foot of the window draws as notices come and go. */
+internal object NoticeFade {
+    /**
+     * The notice [shown] now; else, while it fades out ([settled] false) and
+     * motion is not [reduced], the [last] one shown; else none, and the notice
+     * has gone.
+     */
+    fun drawn(shown: ShownNotice?, last: ShownNotice?, reduced: Boolean, settled: Boolean): ShownNotice? = when {
+        shown != null -> shown
+        reduced || settled -> null
+        else -> last
     }
 }
 
