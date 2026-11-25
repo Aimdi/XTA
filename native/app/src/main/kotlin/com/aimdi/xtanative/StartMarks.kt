@@ -15,7 +15,7 @@ object StartMarks {
 
     /** [step] is reached now. On the main thread. */
     fun mark(step: String) {
-        if (!written) marks += step to SystemClock.elapsedRealtime() - Process.getStartElapsedRealtime()
+        if (!written && marks.none { it.first == step }) marks += step to SystemClock.elapsedRealtime() - Process.getStartElapsedRealtime()
     }
 
     /** The first frame is drawn: the steps so far go to the log, once a process. */

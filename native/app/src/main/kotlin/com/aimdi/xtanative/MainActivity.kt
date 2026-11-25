@@ -21,6 +21,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,6 +56,8 @@ class MainActivity : ComponentActivity() {
         // The first frame drawn ends the start's marks (native/PERF.md).
         Choreographer.getInstance().postFrameCallback { window.decorView.post { StartMarks.firstFrame() } }
         setContent {
+            // The first composition is done when its effects run (native/PERF.md).
+            SideEffect { StartMarks.mark("composed") }
             // Settings › General › Disable screenshots: Android's FLAG_SECURE on the window, as XTA's AndroidSecureWindow.
             // A locked app is kept out of screenshots the same way, until it is unlocked.
             val noScreenshots by graph.settings.observe(GeneralPrefs.disableScreenshots).collectAsState(initial = false)
@@ -85,6 +88,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        StartMarks.mark("content set")
     }
 
     /**

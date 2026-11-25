@@ -34,6 +34,7 @@ until a second run agrees. APK bytes are exact.
 | 236 | `ca644027` | No parameter null checks; no compiler-only files | 10,288,232 (−14.7%) | 798 ms | 779 ms | 119,770 kB |
 | 237 | `7ba79455` | The string tables packed | 10,140,776 (−16.0%) | 798 ms | 752 ms | 117,511 kB |
 | 238 | `28ab943b` | Kept videos in the app's own player | 9,955,126 (−17.5%) | 974 ms | 858 ms | 118,338 kB |
+| 240 | `09bc6fc9` | Measurement only (the same app as 238) | 9,955,126 | 630 ms | 643 ms | 118,434 kB |
 
 At the baseline the two dex files are 9,383,959 bytes packed (78% of the
 APK) and the resource table 659,364.
@@ -99,7 +100,20 @@ round's.
   dex (−97 kB of it), the Android resources 81,372 → 19,677 bytes and the
   resource table 223,020 → 165,256: 186 kB of APK. The desktop job passed
   again, so run 237's podcast failure was the runner's.
-- **The starts cannot be read yet.** Installed and compiled, run by run:
+- **The starts were the runners'.** Run 240 is the same app as run 238 and
+  starts in 630 ms where 238 took 974; Android's own Settings, started the
+  same way, took 368 ms there (the app is 1.71 times it). Read every later
+  start as that ratio.
+- **Where a start goes** (run 240, `StartMarks`, four launches after the
+  first): the application is made by 12 ms, the graph by 17, the activity
+  is in `onCreate` by 22 and has read the settings by 25; the first frame
+  is drawn at 506 to 580 ms. So nothing before `setContent` is worth
+  moving: the half second is the first composition, layout and draw. A
+  start compiled by its profile (`speed-profile`) is no faster than one as
+  installed (643 against 630), which asks whether a profile is applied at
+  all; the next run compiles everything (`speed`) to see what compiled code
+  can give, and marks the end of the first composition.
+- Before that was known: **the starts could not be read.** Installed and compiled, run by run:
   749/708, 759/702, 798/779, 798/752, 974/858 ms. Nothing in rounds 2 to 4
   adds work before the first frame, and run 238's five launches agree with
   each other (925 to 1,048), which is what a slower runner looks like, not a
