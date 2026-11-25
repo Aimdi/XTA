@@ -28,6 +28,7 @@ until a second run agrees. APK bytes are exact.
 |---|---|---|---|---|---|---|
 | 230 | `e76d1efc` | Baseline | 12,067,121 | 749 ms | 708 ms | 125,108 kB |
 | 235 | `c3257f66` | No Kotlin metadata; libraries' strings in 29 languages | 10,411,798 (−13.7%) | 759 ms | 702 ms | 125,358 kB |
+| 236 | `ca644027` | No parameter null checks; no compiler-only files | 10,288,232 (−14.7%) | 798 ms | 779 ms | 119,770 kB |
 
 At the baseline the two dex files are 9,383,959 bytes packed (78% of the
 APK) and the resource table 659,364.
@@ -64,20 +65,33 @@ round's.
   223,848 bytes (−435,516).
 
 - **No parameter null checks** (`-assumenosideeffects` on Kotlin's
-  `Intrinsics.check…Parameter/ExpressionValue/ReturnedValue/Field`): result
-  pending its first run.
+  `Intrinsics.check…Parameter/ExpressionValue/ReturnedValue/Field`): run 236,
+  the dex 8,187,687 → 8,078,494 bytes packed (−109,193); code in memory
+  60,332 → 56,376 kB.
 - **No compiler-only files in the APK** (Kotlin's module and builtin tables,
-  the coroutines' debug probe, version stamps): result pending its first run.
+  the coroutines' debug probe, version stamps): run 236, about 14 kB.
+- Run 236's starts read slower (798 and 779 ms against 759 and 702) with one
+  launch of 1,011 ms among them; nothing in the round adds work at start, so
+  this is taken for the emulator's noise until a later run says otherwise.
+- **The string tables packed** (`gradle/pack-resources.gradle.kts`,
+  `ui/common/PackedResources.kt`): run 236's report showed
+  `ui.generated.resources` alone at 2,188,441 bytes of dex, the tables
+  Compose's generator writes as code (40,561 objects built for 1,353
+  strings in 30 folders). Each table is now one packed line. Result pending
+  its first run.
 
 ## Next, in the order the measurements suggest
 
-0. `dex-top.txt` was empty in run 235 (apkanalyzer's lines are not
-   tab-separated as the script assumed); fixed to split on blanks.
-1. Read `dex-top.txt` of the first run that has it: which packages outside
-   the kept list are large (Media3, Commons Compress, navigation's
-   internals), and whether the app's own internal code can lose weight.
-2. The screens' strings and pictures are 1.3 MB packed in 630 files: what
-   the pictures among them are, and whether any is larger than it need be.
+1. Run 236's code by package (dex bytes): the app 7.04 MB, of which
+   `ui` 5.87 MB (`ui.generated.resources` 2.19 MB before packing, `ui.home`
+   0.41, `ui.subscriptions` 0.31, `ui.plugins` 0.31, `ui.settings` 0.29,
+   `ui.saved` 0.28, `ui.post` 0.27), `store` 0.45, `core` 0.35; Compose 4.69
+   MB (kept whole by the plugin contract); Media3 0.84; Kotlin 0.59; kotlinx
+   0.53; OkHttp 0.25; navigation 0.23; Coil 0.21; jsoup 0.19.
+2. `androidx.recyclerview` (99 kB) and Media3's own player controls are in
+   the APK only because the offline library plays a kept video in Media3's
+   `PlayerView` (`ui/offline/OfflineVideo.android.kt`): playing it in the
+   app's own player would drop them, their drawables and their layouts.
 3. Memory by kind, once `compare.txt` has it: the picture cache's share, and
    what is made at start that could wait for its first use.
 4. Start: what runs before the first frame (`XtaNativeApp.onCreate`,

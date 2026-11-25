@@ -79,3 +79,6 @@ if (androidSdk) apply(from = "android.gradle")
 compose.resources {
     packageOfResClass = "com.aimdi.xtanative.ui.generated.resources"
 }
+
+// The generated string tables, packed (two megabytes less code on Android): see the script.
+apply(from = rootProject.file("gradle/pack-resources.gradle.kts"))
