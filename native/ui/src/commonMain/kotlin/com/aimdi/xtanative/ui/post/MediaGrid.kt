@@ -226,14 +226,16 @@ private fun ShownMedia(media: XMedia, index: Int, count: Int, scale: ContentScal
     // Shown at once unless media waits for a tap: only then is there anything to look up.
     val shown = !loadsManually() || mediaShown(url, revealed) { revealed = true }
     val saver = LocalMediaSaver.current
-    Box(Modifier.fillMaxSize().semantics { contentDescription = if (count > 1) "$word ${index + 1}/$count" else word }) {
+    val label = if (count > 1) "$word ${index + 1}/$count" else word
+    // One stop for a screen reader: the tile, read as its place and its description; ALT stays a button of its own.
+    Box(Modifier.fillMaxSize()) {
         if (!shown) {
-            ShowMediaTile(word, MediaIcons.ImageOutlined, onShow = { revealed = true }, modifier = Modifier.fillMaxSize())
+            ShowMediaTile(label, MediaIcons.ImageOutlined, onShow = { revealed = true }, modifier = Modifier.fillMaxSize())
             return@Box
         }
         // A long press on a photo shows what it is of, or saves it when it says nothing.
         val onLongPress: (() -> Unit)? = if (media.kind != XMedia.Kind.PHOTO) null else ({ describeOrSave(media, owner, saver) { describing = true } })
-        MediaTile(media, url, scale, owner.post, Modifier.fillMaxSize().background(backdrop), onLongPress, onOpen)
+        MediaTile(media, url, scale, owner.post, Modifier.fillMaxSize().background(backdrop).semantics { contentDescription = listOfNotNull(label, media.alt).joinToString(". ") }, onLongPress, onOpen)
         // A video's and a GIF's own label holds the bottom-start corner, and its mute switch the other.
         media.alt?.let { AltBadge(it, Modifier.align(if (media.kind == XMedia.Kind.PHOTO) Alignment.BottomStart else Alignment.TopStart)) }
     }
@@ -255,7 +257,7 @@ private fun MediaTile(media: XMedia, url: String, scale: ContentScale, post: XPo
     Box(modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)) {
         AsyncImage(
             model = url,
-            contentDescription = media.alt,
+            contentDescription = null,
             contentScale = scale,
             modifier = Modifier.fillMaxSize(),
         )
