@@ -334,8 +334,12 @@ internal fun PostAttachments(shown: XPost, scope: PostScope, actions: PostAction
                 { index -> actions.openMedia(shown.id, index) },
                 Modifier.padding(top = gap),
                 post = shown,
+                username = shown.author.screenName,
+                postId = shown.id,
                 start = startMedia,
                 bleed = if (quoted) 0.dp else MediaBleed,
+                // The post opened shows its picture whole; in a feed a tall one is cut to 4:5.
+                tallCapped = scope.focalId != shown.id,
             )
         }
         if (shown.sensitive) SensitiveGate(scope.sensitive, modifier = Modifier.padding(top = gap)) { media() } else media()

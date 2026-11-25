@@ -36,6 +36,13 @@ object MediaStrip {
     /** A picture alone keeps its own shape, however tall: nothing beside it has to agree with it. */
     fun singleAspect(aspect: Float): Float = if (!aspect.isFinite() || aspect <= 0f) 1f else aspect
 
+    /**
+     * A picture alone in a feed: its own shape, but no taller than a row's
+     * tallest card (4:5), cropped as a row's cards are, so one long
+     * screenshot does not fill the screen; opened, it shows whole.
+     */
+    fun feedSingleAspect(aspect: Float): Float = singleAspect(aspect).coerceAtLeast(MIN_ASPECT)
+
     /** [aspect] kept within the row's range. */
     fun clamp(aspect: Float): Float = if (!aspect.isFinite() || aspect <= 0f) 1f else aspect.coerceIn(MIN_ASPECT, MAX_ASPECT)
 

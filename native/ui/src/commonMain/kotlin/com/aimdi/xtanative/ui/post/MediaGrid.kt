@@ -85,13 +85,33 @@ fun MediaGrid(
     postId: String = post?.id.orEmpty(),
     start: Int = 0,
     bleed: Dp = 0.dp,
+) = MediaGrid(media, onOpen, modifier, post, username, postId, start, bleed, tallCapped = false)
+
+/**
+ * [MediaGrid], with a picture alone no taller than 4:5 where [tallCapped]
+ * ([MediaStrip.feedSingleAspect]): a post in a feed, not the one opened.
+ */
+@Composable
+internal fun MediaGrid(
+    media: List<XMedia>,
+    onOpen: (Int) -> Unit,
+    modifier: Modifier,
+    post: XPost?,
+    username: String,
+    postId: String,
+    start: Int,
+    bleed: Dp,
+    tallCapped: Boolean,
 ) {
     if (media.isEmpty()) return
     val owner = MediaOwner(username, postId, post)
     if (media.size == 1) {
-        val frame = modifier.fillMaxWidth().aspectRatio(MediaStrip.singleAspect(MediaStrip.aspectOf(media[0]))).clip(MediaShape)
+        val own = MediaStrip.singleAspect(MediaStrip.aspectOf(media[0]))
+        val shown = if (tallCapped) MediaStrip.feedSingleAspect(own) else own
+        val frame = modifier.fillMaxWidth().aspectRatio(shown).clip(MediaShape)
+        val scale = if (shown == own) ContentScale.Fit else ContentScale.Crop
         Box(frame.border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, MediaShape).background(Color.Black)) {
-            ShownMedia(media[0], 0, 1, ContentScale.Fit, Color.Black, owner) { onOpen(0) }
+            ShownMedia(media[0], 0, 1, scale, Color.Black, owner) { onOpen(0) }
         }
     } else {
         MediaRow(media, owner, start, bleed, modifier, onOpen)
