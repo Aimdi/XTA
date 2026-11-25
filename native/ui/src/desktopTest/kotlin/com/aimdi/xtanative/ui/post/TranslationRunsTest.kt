@@ -1,0 +1,69 @@
+package com.aimdi.xtanative.ui.post
+
+import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.services.ai.TranslationStatus
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertSame
+
+class TranslationRunsTest {
+    private val post = XPost("1", XUser("u", "u", "U"), null, "hallo")
+    private val english = post.copy(text = "hello")
+
+    @Test
+    fun `a translation goes on when the card that asked for it leaves`() = runBlocking {
+        val runs = TranslationRuns(CoroutineScope(Job() + Dispatchers.Default))
+        val answer = CompletableDeferred<XPost>()
+        val card = CoroutineScope(Job())
+        val first = PostTranslation(post, runs.of("k"), runs) { answer.await() }
+        first.translate()
+        card.cancel()
+        answer.complete(english)
+        val back = PostTranslation(post, runs.of("k"), runs) { error("asked twice") }
+        withTimeout(5_000) { while (back.status != TranslationStatus.TRANSLATED) kotlinx.coroutines.delay(10) }
+        assertEquals("hello", back.shown.text)
+    }
+
+    @Test
+    fun `a translation given is shown again without asking twice`() = runBlocking {
+        val runs = TranslationRuns(CoroutineScope(Job() + Dispatchers.Unconfined))
+        var asked = 0
+        val translation = PostTranslation(post, runs.of("k"), runs) { asked++; english }
+        translation.translate()
+        translation.showOriginal()
+        assertSame(post, translation.shown)
+        translation.translate()
+        assertEquals(TranslationStatus.TRANSLATED, translation.status)
+        assertEquals(1, asked)
+    }
+
+    @Test
+    fun `a failure says why and can be tried again`() = runBlocking {
+        val runs = TranslationRuns(CoroutineScope(Job() + Dispatchers.Unconfined))
+        var fail = true
+        val translation = PostTranslation(post, runs.of("k"), runs) { if (fail) error("no") else english }
+        translation.translate()
+        assertEquals(TranslationStatus.FAILED, translation.status)
+        fail = false
+        translation.translate()
+        assertEquals(TranslationStatus.TRANSLATED, translation.status)
+    }
+
+    @Test
+    fun `runs are kept apart by post, target and service, and the oldest go first`() {
+        val runs = TranslationRuns(max = 2)
+        val a = runs.of(TranslationRuns.key("1", "de", null))
+        assertSame(a, runs.of(TranslationRuns.key("1", "de", null)))
+        runs.of(TranslationRuns.key("1", "en", null))
+        runs.of(TranslationRuns.key("2", "de", null))
+        assert(a !== runs.of(TranslationRuns.key("1", "de", null)))
+    }
+}

@@ -278,7 +278,6 @@ internal fun HeaderButton(
  */
 @Composable
 internal fun TranslateButton(translation: PostTranslation, scope: PostScope, glyphTop: Boolean = true) {
-    val coroutines = rememberCoroutineScope()
     when (translation.status) {
         TranslationStatus.TRANSLATING -> Box(
             Modifier.size(PostGeometry.TOUCH_TARGET.dp),
@@ -298,10 +297,10 @@ internal fun TranslateButton(translation: PostTranslation, scope: PostScope, gly
             PostIcons.Translate,
             stringResource(Res.string.posts_translate),
             if (translation.status == TranslationStatus.FAILED) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
-            onLongClick = { scope.translateAll?.request() ?: coroutines.launch { translation.translate() } },
+            onLongClick = { scope.translateAll?.request() ?: translation.translate() },
             glyphTop = glyphTop,
         ) {
-            coroutines.launch { translation.translate() }
+            translation.translate()
         }
     }
 }
