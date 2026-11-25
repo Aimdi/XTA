@@ -29,6 +29,7 @@ until a second run agrees. APK bytes are exact.
 | 230 | `e76d1efc` | Baseline | 12,067,121 | 749 ms | 708 ms | 125,108 kB |
 | 235 | `c3257f66` | No Kotlin metadata; libraries' strings in 29 languages | 10,411,798 (−13.7%) | 759 ms | 702 ms | 125,358 kB |
 | 236 | `ca644027` | No parameter null checks; no compiler-only files | 10,288,232 (−14.7%) | 798 ms | 779 ms | 119,770 kB |
+| 237 | `7ba79455` | The string tables packed | 10,140,776 (−16.0%) | 798 ms | 752 ms | 117,511 kB |
 
 At the baseline the two dex files are 9,383,959 bytes packed (78% of the
 APK) and the resource table 659,364.
@@ -77,8 +78,20 @@ round's.
   `ui/common/PackedResources.kt`): run 236's report showed
   `ui.generated.resources` alone at 2,188,441 bytes of dex, the tables
   Compose's generator writes as code (40,561 objects built for 1,353
-  strings in 30 folders). Each table is now one packed line. Result pending
-  its first run.
+  strings in 30 folders). Each table is now one packed line. Run 237: that
+  package is 217,483 bytes of dex (−1,970,958), the dex packed 8,078,494 →
+  7,938,410 (the old tables were repetitive and packed well, so the APK
+  gains 147 kB while the code the phone maps in loses 1.6 MB: code in
+  memory 56,376 → 53,924 kB). 1,491 tables packed, none left; every screen
+  of the emulator's pass still found its words.
+- Run 237's desktop job failed at "Videos play in the app": the podcast
+  player stood at 0 ms on a runner whose sound output would not open
+  (PipeWire, ALSA and JACK all refusing). The video itself played to its
+  end; nothing of the round touches the desktop's players. Taken for the
+  runner's, to be confirmed by the next run.
+- **Kept videos in the app's own player**
+  (`ui/offline/OfflineVideo.android.kt`), not Media3's `PlayerView`: result
+  pending its first run.
 
 ## Next, in the order the measurements suggest
 
@@ -88,10 +101,11 @@ round's.
    `ui.saved` 0.28, `ui.post` 0.27), `store` 0.45, `core` 0.35; Compose 4.69
    MB (kept whole by the plugin contract); Media3 0.84; Kotlin 0.59; kotlinx
    0.53; OkHttp 0.25; navigation 0.23; Coil 0.21; jsoup 0.19.
-2. `androidx.recyclerview` (99 kB) and Media3's own player controls are in
-   the APK only because the offline library plays a kept video in Media3's
-   `PlayerView` (`ui/offline/OfflineVideo.android.kt`): playing it in the
-   app's own player would drop them, their drawables and their layouts.
+2. After the tables, the app's own screens are the largest thing a round
+   can still move: `ui.home` 0.41 MB, `ui.subscriptions` 0.31, `ui.plugins`
+   0.31, `ui.settings` 0.29, `ui.saved` 0.28, `ui.post` 0.27 of dex. What in
+   them the desktop alone uses (the deck, windows, keys) is in the Android
+   app too, kept by the plugin contract's `ui.**`.
 3. Memory by kind, once `compare.txt` has it: the picture cache's share, and
    what is made at start that could wait for its first use.
 4. Start: what runs before the first frame (`XtaNativeApp.onCreate`,
