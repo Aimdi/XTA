@@ -9,6 +9,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -38,15 +39,26 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.dismiss
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
@@ -56,6 +68,7 @@ import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_open_menu
+import com.aimdi.xtanative.ui.generated.resources.keys_menu
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -90,7 +103,8 @@ fun FramedRail(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             val inMenu = mark.screen != null || mark.group != null
-            RailItem(stringResource(Res.string.home_open_menu), selected = inMenu, onClick = onMenu, modifier = if (inMenu) marked else Modifier) {
+            val button = focus?.let { Modifier.focusRequester(it.menu) } ?: Modifier
+            RailItem(stringResource(Res.string.home_open_menu), selected = inMenu, onClick = onMenu, modifier = button.then(if (inMenu) marked else Modifier)) {
                 Icon(Icons.Filled.Menu, contentDescription = null)
             }
             Spacer(Modifier.height(8.dp))
@@ -134,7 +148,10 @@ private val RAIL_ITEM_HEIGHT = 48.dp
  * [open]: it slides in from the start edge over a scrim, as a drawer does,
  * edged with a line where the page is as dark as its shadow (Lights out);
  * a click on the scrim, Esc and the back keys close it ([onClose]). Where
- * motion is reduced it shows and goes at once.
+ * motion is reduced it shows and goes at once. Open, it holds the keys as a
+ * dialog does ([HoldsKeys]): they go into it, its own Esc closes it, F6
+ * and the window's keys wait, and a screen reader hears it as a pane it can
+ * dismiss.
  */
 @Composable
 fun RailMenu(open: Boolean, onClose: () -> Unit, content: @Composable () -> Unit) {
@@ -148,12 +165,36 @@ fun RailMenu(open: Boolean, onClose: () -> Unit, content: @Composable () -> Unit
         enter = slideInHorizontally(if (reduced) snap() else tween(MENU_MS)) { -it },
         exit = slideOutHorizontally(if (reduced) snap() else tween(MENU_MS)) { -it },
     ) {
-        GivesKeysBack()
-        Surface(Modifier.fillMaxHeight(), shape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp), color = MaterialTheme.colorScheme.background, shadowElevation = 6.dp, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)) {
+        val focus = remember { FocusRequester() }
+        HoldsKeys(focus)
+        // Its rows are laid out a frame or two after it is composed: the keys go in once one can take them.
+        LaunchedEffect(focus) {
+            repeat(FOCUS_TRIES) {
+                withFrameNanos { }
+                if (runCatching { focus.requestFocus(FocusDirection.Enter) }.getOrDefault(false)) return@LaunchedEffect
+            }
+        }
+        val title = stringResource(Res.string.keys_menu)
+        Surface(
+            Modifier
+                .fillMaxHeight()
+                .onPreviewKeyEvent { event -> (event.key == Key.Escape && event.type == KeyEventType.KeyDown).also { if (it) onClose() } }
+                .semantics {
+                    paneTitle = title
+                    dismiss { onClose(); true }
+                }
+                .focusRequester(focus)
+                .focusGroup(),
+            shape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp),
+            color = MaterialTheme.colorScheme.background,
+            shadowElevation = 6.dp,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        ) {
             content()
         }
     }
 }
 
+private const val FOCUS_TRIES = 5
 private const val MENU_MS = 200
 private const val SCRIM_ALPHA = 0.32f

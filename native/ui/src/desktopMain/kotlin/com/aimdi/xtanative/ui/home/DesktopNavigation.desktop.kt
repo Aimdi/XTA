@@ -301,7 +301,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             return false
         }
         // The media viewer's Esc closes it at once, rather than first taking the focus from it as from a field; Ctrl+Q still quits.
-        keyTaken = !(actions.overlayHoldsKeys() && action != DeskAction.LEAVE_APP) && act(action)
+        keyTaken = DesktopKeys.windowActs(action, actions.overlayHoldsKeys()) && act(action)
         return keyTaken
     }
 

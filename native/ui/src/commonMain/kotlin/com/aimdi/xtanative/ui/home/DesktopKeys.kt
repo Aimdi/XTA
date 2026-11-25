@@ -314,6 +314,13 @@ object DesktopKeys {
     fun keysInside(focusInside: Boolean, typing: Boolean, clicked: Boolean): Boolean = focusInside && (typing || !clicked)
 
     /**
+     * Whether the window does [action] itself while an overlay may hold the
+     * keys ([overlayHolds]: the media viewer, a video full screen, the rail's
+     * menu): then only Ctrl+Q; Esc, Tab, F6 and the rest are the overlay's.
+     */
+    fun windowActs(action: DeskAction, overlayHolds: Boolean): Boolean = !overlayHolds || action == DeskAction.LEAVE_APP
+
+    /**
      * Whether the scrolling [action] goes first to the control the mouse
      * clicked, which holds the focus ([focusHeld]), and moves the page only
      * when that control leaves the key unused: on a page that scrolls as a

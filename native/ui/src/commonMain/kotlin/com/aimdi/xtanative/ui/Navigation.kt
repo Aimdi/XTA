@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.focusProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -888,13 +890,14 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Com
         // A menu open over a rail is closed once the window has the column, or nothing beside its screens.
         LaunchedEffect(kind) { if (kind != FrameKind.RAIL) menu = false }
         if (kind != FrameKind.NONE) ReachedByF6(focus.region)
-        Row(Modifier.fillMaxSize()) {
+        // Under the rail's open menu nothing takes the keys: they stay in the menu, as in a dialog.
+        Row(Modifier.fillMaxSize().focusProperties { onEnter = { if (menu) cancelFocusChange() } }.focusGroup()) {
             if (home != null && kind == FrameKind.SIDEBAR) {
                 FramedSidebar(home, frame, screens, Routes.HOME, deckFits, routes, calls, Modifier.frameNavigation(focus, covered = viewer), focus = focus)
                 VerticalDivider()
             }
             if (home != null && kind == FrameKind.RAIL) {
-                FramedRail(home, frame, screens, Routes.HOME, calls, onMenu = { menu = true }, Modifier.frameNavigation(focus, covered = viewer || railMenu), focus)
+                FramedRail(home, frame, screens, Routes.HOME, calls, onMenu = { menu = true }, Modifier.frameNavigation(focus, covered = viewer), focus)
                 VerticalDivider()
             }
             Box(Modifier.weight(1f).fillMaxHeight().then(if (kind != FrameKind.NONE && !viewer) Modifier.clipToBounds() else Modifier)) {
@@ -903,9 +906,15 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Com
             }
         }
         if (home != null) {
-            val close = { menu = false }
+            // Closed by Esc, its X or the scrim, the keys go back to the rail's menu button; a row picked leads on to its screen.
+            val hide = { menu = false }
+            val close = {
+                hide()
+                runCatching { focus.menu.requestFocus() }
+                Unit
+            }
             RailMenu(railMenu, onClose = close) {
-                FramedSidebar(home, frame, screens, Routes.HOME, deckFits, routes, calls.after(close), onClose = close)
+                FramedSidebar(home, frame, screens, Routes.HOME, deckFits, routes, calls.after(hide), onClose = close)
             }
         }
     }

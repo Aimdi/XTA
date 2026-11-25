@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.ui.focus.FocusRequester
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -66,6 +67,21 @@ class FrameRegionTest {
         assertEquals(0, stepped, "no step on from a start that took no focus")
         assertFalse(focus.entering, "and it takes none afterwards")
         assertFalse(focus.enter())
+    }
+
+    @Test
+    fun whileTheRailsMenuHoldsTheKeysTheWindowLeavesThemToIt() {
+        for (action in listOf(DeskAction.OTHER_REGION, DeskAction.ENTER_PAGE, DeskAction.CLOSE, DeskAction.LEAVE_FIELD, DeskAction.NEXT_COLUMN)) {
+            assertFalse(DesktopKeys.windowActs(action, overlayHolds = true), "$action is the menu's")
+            assertTrue(DesktopKeys.windowActs(action, overlayHolds = false))
+        }
+        assertTrue(DesktopKeys.windowActs(DeskAction.LEAVE_APP, overlayHolds = true), "Ctrl+Q still quits")
+        val actions = DesktopActions()
+        val menu = FocusRequester()
+        actions.holdKeys(menu)
+        assertTrue(actions.overlayHoldsKeys())
+        actions.releaseKeys(menu)
+        assertFalse(actions.overlayHoldsKeys(), "closed, it gives them back")
     }
 
     @Test

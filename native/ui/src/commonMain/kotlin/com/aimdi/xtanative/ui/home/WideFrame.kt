@@ -170,6 +170,9 @@ class FrameFocus {
     val marked = FocusRequester()
     val whole = FocusRequester()
     val page = FocusRequester()
+
+    /** The rail's menu button ([FramedRail]), where the keys go back as the menu it opened closes. */
+    val menu = FocusRequester()
     var holds = false
 
     /** Whether the page's start ([PageStart]) takes the focus now: only on the way to the page's first control, never for Tab's own walk. */
