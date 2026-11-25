@@ -75,12 +75,14 @@ import com.aimdi.xtanative.ui.article.ArticlePreviewCard
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
+import com.aimdi.xtanative.ui.common.itemMotion
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -221,16 +223,18 @@ private fun Gap(reason: String?, screenName: String?, id: String, actions: PostA
 /** The replies: threads in X's order, or a tree with the deeper branches left to "Continue thread". */
 private fun LazyListScope.replyItems(state: PostUi, actions: PostActions, threaded: Boolean) {
     if (!threaded) {
-        items(state.replies, key = { "reply-" + it.id }, contentType = { "thread" }) { thread -> ThreadRows(thread, actions) }
+        items(state.replies, key = { "reply-" + it.id }, contentType = { "thread" }) { thread ->
+            Box(itemMotion(LocalReducedMotion.current)) { ThreadRows(thread, actions) }
+        }
         return
     }
     val rows = ThreadTree.rows(ThreadTree.nodes(state.replies))
     items(rows, key = { row -> rowKey(row) }, contentType = { row -> if (row is ThreadRow.Reply) "thread" else "continue" }) { row ->
         when (row) {
-            is ThreadRow.Reply -> Box(Modifier.padding(start = (ThreadTree.indentLevels(row.visualDepth) * 40).dp)) {
+            is ThreadRow.Reply -> Box(itemMotion(LocalReducedMotion.current).padding(start = (ThreadTree.indentLevels(row.visualDepth) * 40).dp)) {
                 ThreadRows(row.node.thread, actions)
             }
-            is ThreadRow.Continue -> ContinueThread(row, actions)
+            is ThreadRow.Continue -> Box(itemMotion(LocalReducedMotion.current)) { ContinueThread(row, actions) }
         }
     }
 }

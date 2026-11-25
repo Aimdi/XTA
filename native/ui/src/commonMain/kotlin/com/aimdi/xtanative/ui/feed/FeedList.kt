@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.feed
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,6 +25,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.PostsPrefs
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.itemMotion
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_caught_up
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
@@ -62,8 +65,10 @@ fun LazyListScope.feedThreads(
     // Only a stacked or folded row looks threads up by key: the map is made when one first does.
     val byKey by lazy { threads.associateBy(FeedLayout::xKey) }
     itemsIndexed(threads, key = { _, thread -> keyOf(thread) }, contentType = { _, _ -> "thread" }) { index, thread ->
-        if (index == divider) CaughtUpDivider()
-        FeedThreadRow(layout.ofThread(index, thread), thread, actions, draw = { key -> byKey[key]?.let { row(it) } }) { row(thread) }
+        Column(itemMotion(LocalReducedMotion.current)) {
+            if (index == divider) CaughtUpDivider()
+            FeedThreadRow(layout.ofThread(index, thread), thread, actions, draw = { key -> byKey[key]?.let { row(it) } }) { row(thread) }
+        }
     }
 }
 
