@@ -45,7 +45,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -81,6 +80,7 @@ import com.aimdi.xtanative.ui.generated.resources.stat_reposts
 import com.aimdi.xtanative.ui.links.LinkFrom
 import com.aimdi.xtanative.ui.post.AuthorLine
 import com.aimdi.xtanative.ui.post.CardView
+import com.aimdi.xtanative.ui.post.linkStyles
 import com.aimdi.xtanative.ui.saved.KeepableSaveButton
 import org.jetbrains.compose.resources.stringResource
 
@@ -114,7 +114,7 @@ fun LinkedText(
 
 private fun annotated(runs: List<TextRun>, linkColor: Color, onMention: (String) -> Unit, onTag: (String) -> Unit): AnnotatedString =
     buildAnnotatedString {
-        val styles = TextLinkStyles(SpanStyle(color = linkColor))
+        val styles = linkStyles(linkColor)
         for (run in runs) {
             when (run) {
                 is TextRun.Plain -> append(run.text)

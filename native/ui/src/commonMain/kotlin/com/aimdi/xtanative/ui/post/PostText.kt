@@ -30,6 +30,7 @@ import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.IntSize
@@ -221,7 +222,7 @@ internal fun annotated(
     cashtags: ((String) -> Boolean)? = null,
     contracts: ContractSpans? = null,
 ): AnnotatedString = buildAnnotatedString {
-    val styles = TextLinkStyles(SpanStyle(color = linkColor))
+    val styles = linkStyles(linkColor)
     for (run in runs) {
         when (run) {
             is XRun.Text -> if (contracts == null) append(run.text) else appendWithContracts(run.text, contracts)
@@ -239,7 +240,7 @@ internal fun annotated(
 
 /** [text] with each contract address in it cut in the middle, led by its watched token's network, a tap copying it whole. */
 private fun AnnotatedString.Builder.appendWithContracts(text: String, contracts: ContractSpans) {
-    val styles = TextLinkStyles(SpanStyle(color = contracts.color))
+    val styles = linkStyles(contracts.color)
     for (piece in CryptoAddresses.pieces(text)) {
         when (piece) {
             is AddressPiece.Text -> append(piece.text)
@@ -249,6 +250,24 @@ private fun AnnotatedString.Builder.appendWithContracts(text: String, contracts:
         }
     }
 }
+
+/**
+ * How a link, mention or tag in a post's text is drawn: in [color],
+ * underlined while the pointer is over it or the keys are on it, and
+ * washed in its colour while pressed, so a click shows where it lands.
+ */
+internal fun linkStyles(color: Color): TextLinkStyles {
+    val marked = SpanStyle(color = color, textDecoration = TextDecoration.Underline)
+    return TextLinkStyles(
+        style = SpanStyle(color = color),
+        focusedStyle = marked,
+        hoveredStyle = marked,
+        pressedStyle = marked.copy(background = color.copy(alpha = LINK_PRESSED_ALPHA)),
+    )
+}
+
+/** How strongly a pressed link is washed: enough to see, not enough to hide its letters. */
+internal const val LINK_PRESSED_ALPHA = 0.16f
 
 /** What a contract address's link is tagged with, before the address: never a cashtag's `$`. */
 private const val CONTRACT_TAG = "contract:"
