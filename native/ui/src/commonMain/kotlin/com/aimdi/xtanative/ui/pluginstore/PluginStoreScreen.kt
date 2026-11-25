@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.pluginstore
 
+import com.aimdi.xtanative.ui.common.destructiveTextColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -747,7 +748,7 @@ private fun UninstallDialog(name: String, onConfirm: () -> Unit, onDismiss: () -
         title = { Text(stringResource(Res.string.plugin_uninstall_confirm, name)) },
         text = { Text(stringResource(Res.string.plugin_uninstall_confirm_detail)) },
         confirmButton = {
-            TextButton(onClick = onConfirm) { Text(stringResource(Res.string.plugin_uninstall), color = MaterialTheme.colorScheme.error) }
+            TextButton(onClick = onConfirm, colors = destructiveTextColors()) { Text(stringResource(Res.string.plugin_uninstall)) }
         },
         dismissButton = { TextButton(onClick = onDismiss, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.cancel)) } },
     )

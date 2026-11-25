@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.speech
 
+import com.aimdi.xtanative.ui.common.destructiveTextColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -353,7 +354,7 @@ private fun DownloadRow(
                 TextButton(onClick = {
                     confirm = false
                     onDelete()
-                }) { Text(stringResource(Res.string.reader_delete)) }
+                }, colors = destructiveTextColors()) { Text(stringResource(Res.string.reader_delete)) }
             },
             dismissButton = { TextButton(onClick = { confirm = false }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.reader_cancel)) } },
         )

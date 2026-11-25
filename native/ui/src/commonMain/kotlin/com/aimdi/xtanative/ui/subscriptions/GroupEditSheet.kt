@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.subscriptions
 
+import com.aimdi.xtanative.ui.common.destructiveTextColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -271,7 +272,7 @@ fun GroupEditSheet(
                         picker = EditPicker.NONE
                         actions.delete(group.id)
                         onDismiss()
-                    }) { Text(stringResource(Res.string.groups_yes)) }
+                    }, colors = destructiveTextColors()) { Text(stringResource(Res.string.groups_yes)) }
                 },
                 dismissButton = { TextButton(onClick = { picker = EditPicker.NONE }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.groups_no)) } },
             )

@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.offline
 
+import com.aimdi.xtanative.ui.common.destructiveButtonColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -161,7 +162,7 @@ fun OfflineLibraryScreen(onBack: () -> Unit, openMedia: (id: String) -> Unit, op
             onDismissRequest = { clearing = false },
             title = { Text(stringResource(Res.string.offline_clear_question)) },
             text = { Text(stringResource(Res.string.offline_clear_description)) },
-            confirmButton = { Button(onClick = { clearing = false; scope.launch { store.clear() } }) { Text(stringResource(Res.string.offline_clear)) } },
+            confirmButton = { Button(onClick = { clearing = false; scope.launch { store.clear() } }, colors = destructiveButtonColors()) { Text(stringResource(Res.string.offline_clear)) } },
             dismissButton = { TextButton(onClick = { clearing = false }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.cancel)) } },
         )
     }

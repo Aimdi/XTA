@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.ui.settings
 
+import androidx.compose.material3.ButtonDefaults
+import com.aimdi.xtanative.ui.common.destructiveTextColors
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -433,9 +435,11 @@ internal fun ConfirmDialog(
         title = { Text(title) },
         text = { Text(text) },
         confirmButton = {
-            TextButton(onClick = onConfirm, modifier = if (confirmIsDefault) Modifier.dialogDefault() else Modifier) {
-                Text(confirm, color = if (destructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
-            }
+            TextButton(
+                onClick = onConfirm,
+                modifier = if (confirmIsDefault) Modifier.dialogDefault() else Modifier,
+                colors = if (destructive) destructiveTextColors() else ButtonDefaults.textButtonColors(),
+            ) { Text(confirm) }
         },
         // A destructive question (or one undoing the reader's choices, [confirmIsDefault] false) defaults to Cancel, any other to its confirm button.
         dismissButton = { TextButton(onClick = onDismiss, modifier = if (confirmIsDefault) Modifier else Modifier.dialogDefault()) { Text(dismiss) } },

@@ -1,5 +1,8 @@
 package com.aimdi.xtanative.ui.common
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -32,6 +35,19 @@ fun Modifier.dialogDefault(): Modifier {
     }
     return focusRequester(focus)
 }
+
+/**
+ * A destructive answer's text button (delete, remove, discard, clear,
+ * uninstall) in the theme's error colour, so it reads apart from the Cancel
+ * beside it, which stays the default ([dialogDefault]).
+ */
+@Composable
+fun destructiveTextColors(): ButtonColors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+
+/** [destructiveTextColors] for a filled button: the error colour behind its words. */
+@Composable
+fun destructiveButtonColors(): ButtonColors =
+    ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error, contentColor = MaterialTheme.colorScheme.onError)
 
 /** How long a default button waits for its dialog's window to take the keys. */
 private const val WINDOW_FOCUS_WAIT_MS = 500L

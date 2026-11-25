@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.saved
 
+import com.aimdi.xtanative.ui.common.destructiveTextColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -91,7 +92,7 @@ fun ConfirmDialog(title: String, text: String?, confirm: String, onDismiss: () -
         onDismissRequest = onDismiss,
         title = { Text(title) },
         text = text?.let { { Text(it) } },
-        confirmButton = { TextButton(onClick = onConfirm) { Text(confirm) } },
+        confirmButton = { TextButton(onClick = onConfirm, colors = destructiveTextColors()) { Text(confirm) } },
         dismissButton = { TextButton(onClick = onDismiss, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.cancel)) } },
     )
 }
