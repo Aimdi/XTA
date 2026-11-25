@@ -38,6 +38,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -287,15 +288,27 @@ private fun SearchField(
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = { onSearch() }),
+        // The words as typed, not in the bar's bold title style it sits in when wide.
+        textStyle = MaterialTheme.typography.bodyLarge,
         shape = RoundedCornerShape(24.dp),
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            focusedContainerColor = fieldFill(),
+            unfocusedContainerColor = fieldFill(),
         ),
         modifier = modifier,
     )
+}
+
+/**
+ * The field's fill: a raised surface, or, where that is the page's own colour
+ * (Light, whose cards are white), the grey of X's own search field there.
+ */
+@Composable
+private fun fieldFill(): Color {
+    val colors = MaterialTheme.colorScheme
+    return if (colors.surfaceContainerHigh == colors.background) colors.surfaceVariant else colors.surfaceContainerHigh
 }
 
 /** The advanced search, with how many filters are set on it. */
@@ -313,14 +326,10 @@ private fun AdvancedButton(filters: Int, onClick: () -> Unit) {
     } }
 }
 
+/** The tabs across the whole column where they fit side by side, as a community's are; narrower, a strip that scrolls. */
 @Composable
 private fun SearchTabs(selected: SearchTab, onSelect: (SearchTab) -> Unit) {
-    ScrollableTabRow(
-        selectedTabIndex = selected.ordinal,
-        edgePadding = 8.dp,
-        containerColor = MaterialTheme.colorScheme.background,
-        divider = { Hairline() },
-    ) {
+    val tabs: @Composable () -> Unit = {
         SearchTab.entries.forEach { tab ->
             Tab(
                 selected = tab == selected,
@@ -331,7 +340,17 @@ private fun SearchTabs(selected: SearchTab, onSelect: (SearchTab) -> Unit) {
             )
         }
     }
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        if (maxWidth >= TABS_FILL_FROM) {
+            TabRow(selectedTabIndex = selected.ordinal, containerColor = MaterialTheme.colorScheme.background, divider = { Hairline() }, tabs = tabs)
+        } else {
+            ScrollableTabRow(selectedTabIndex = selected.ordinal, edgePadding = 8.dp, containerColor = MaterialTheme.colorScheme.background, divider = { Hairline() }, tabs = tabs)
+        }
+    }
 }
+
+/** From this width on the search's five tabs share the column evenly, room enough for their longest names. */
+private val TABS_FILL_FROM = 560.dp
 
 private fun tabName(tab: SearchTab) = when (tab) {
     SearchTab.TOP -> Res.string.discover_popular
