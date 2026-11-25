@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.post
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -13,6 +14,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -30,12 +32,15 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.parse.XRun
 import com.aimdi.xtanative.core.x.parse.XText
 import com.aimdi.xtanative.networks.AddressPiece
 import com.aimdi.xtanative.networks.CryptoAddresses
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.Motion
 import com.aimdi.xtanative.ui.common.clickableNoRipple
 import com.aimdi.xtanative.ui.common.foundIn
 import com.aimdi.xtanative.ui.common.rememberCopyContract
@@ -132,16 +137,24 @@ fun ExpandablePostText(
     val contracts = rememberContractSpans()
     val text = remember(runs, linkColor, actions, cashtags, contracts) { annotated(runs, linkColor, actions, cashtags, contracts) }
     if (text.isEmpty()) return
-    var expanded by remember(post.id, post.text) { mutableStateOf(false) }
+    // Kept by post, so a text unfolded stays so when the list scrolls it away and back, or the screen comes back.
+    var expanded by rememberSaveable(post.id, post.text) { mutableStateOf(false) }
     var folds by remember(post.id, post.text, maxLines) { mutableStateOf(false) }
+    var unfolding by remember(post.id) { mutableStateOf(false) }
     val clipped = maxLines != null && !expanded
     val found = foundIn(findKey, text)
+    val unfold = {
+        unfolding = true
+        expanded = true
+    }
     // The find bar's match shown is in the folded part: the text unfolds, as Show more does.
-    LaunchedEffect(found.holdsCurrent) { if (found.holdsCurrent) expanded = true }
+    LaunchedEffect(found.holdsCurrent) { if (found.holdsCurrent) unfold() }
     val laidOut = remember { TextLayoutHolder() }
     var topic by remember { mutableStateOf<String?>(null) }
     topic?.let { TopicSheet(it) { topic = null } }
-    Column(modifier.animateContentSize()) {
+    val resizes = ShowMore.resizes(LocalReducedMotion.current, folds, clipped, unfolding)
+    val settled = remember { { _: IntSize, _: IntSize -> unfolding = false } }
+    Column(modifier.then(if (resizes) Modifier.animateContentSize(tween(Motion.STANDARD_MS), finishedListener = settled) else Modifier)) {
         val drawn: @Composable () -> Unit = {
             Text(
                 found.text,
@@ -164,10 +177,21 @@ fun ExpandablePostText(
                 color = linkColor,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.heightIn(min = 36.dp).padding(top = 8.dp, end = 12.dp).clickableNoRipple { expanded = true },
+                modifier = Modifier.heightIn(min = 36.dp).padding(top = 8.dp, end = 12.dp).clickableNoRipple(onClick = unfold),
             )
         }
     }
+}
+
+/**
+ * When a folding text's size animates: only one that has a Show more, while
+ * it is folded or unfolding, and not while motion is [reduced]. A list's
+ * every text carrying the animation would animate as rows are reused in a
+ * fling; a text that never folds, or has finished unfolding, has no need of it.
+ */
+internal object ShowMore {
+    fun resizes(reduced: Boolean, folds: Boolean, clipped: Boolean, unfolding: Boolean): Boolean =
+        !reduced && folds && (clipped || unfolding)
 }
 
 /** The find bar's key of the text of quoted post [id] ([QuotedPost], [ThreadFind]), apart from the post's own where it is shown too. */
