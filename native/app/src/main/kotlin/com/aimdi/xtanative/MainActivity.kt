@@ -111,12 +111,10 @@ class MainActivity : ComponentActivity() {
         requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), NOTIFICATIONS_REQUEST)
     }
 
-    /** Coming into sight: the lock page goes over the screens when the app is locked, or locks now. */
+    /** Coming into sight: the app locks now when it is time to. */
     override fun onStart() {
         super.onStart()
-        if (arriveAtLock()) {
-            startActivity(Intent(this, LockActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NO_ANIMATION))
-        }
+        arriveAtLock()
     }
 
     override fun onStop() {
@@ -132,8 +130,16 @@ class MainActivity : ComponentActivity() {
         return AppLockSession.arrive(enabled, secure, SystemClock.elapsedRealtime())
     }
 
+    /**
+     * In front while locked: the lock page goes over the screens. Here
+     * rather than as they come into sight, as a link or the launcher brings
+     * this activity forward by clearing a lock page that stood over it.
+     */
     override fun onResume() {
         super.onResume()
+        if (AppLockSession.locked) {
+            startActivity(Intent(this, LockActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NO_ANIMATION))
+        }
         preferFastestRefreshRate()
     }
 }
