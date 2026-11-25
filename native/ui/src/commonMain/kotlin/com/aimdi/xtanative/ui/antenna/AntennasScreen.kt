@@ -79,6 +79,7 @@ import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.common.rememberSheetState
@@ -105,8 +106,8 @@ import com.aimdi.xtanative.ui.search.DiscoverIcons
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
-/** XTA's antennas list and editor are no wider than this on a wide screen. */
-private val ContentWidth = 720.dp
+/** XTA's antennas list and editor are no wider than this on a wide screen: the reading column. */
+private val ContentWidth = ReadingColumn.MAX_WIDTH.dp
 
 /**
  * XTA's antennas: saved keyword listeners, newest first, each opening its

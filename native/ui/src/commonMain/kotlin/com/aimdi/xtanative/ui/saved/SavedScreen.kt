@@ -67,6 +67,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -313,7 +314,11 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
     }
 }
 
-/** The title at 28 sp, the lock that says what stays on this device, and the archive's menu. */
+/**
+ * The title, the lock that says what stays on this device, and the archive's
+ * menu. The title is XTA's 28 sp on a phone; on the desktop it is the size of
+ * every other page's title beside it in the window.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TitleBar(notice: SavedNotice, onBack: (() -> Unit)?, searchable: Boolean, onWrite: () -> Unit, onMenu: (SavedMenuAction) -> Unit) {
@@ -326,9 +331,9 @@ private fun TitleBar(notice: SavedNotice, onBack: (() -> Unit)?, searchable: Boo
             Row(verticalAlignment = Alignment.CenterVertically) {
                 TipText(
                     stringResource(Res.string.saved_title),
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = (-0.56).sp,
+                    fontSize = if (ActionsInTopBar) TextUnit.Unspecified else 28.sp,
+                    fontWeight = if (ActionsInTopBar) null else FontWeight.Bold,
+                    letterSpacing = if (ActionsInTopBar) TextUnit.Unspecified else (-0.56).sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f, fill = false),

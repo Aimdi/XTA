@@ -74,6 +74,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.ColumnScrollbar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.settings_back
 import com.aimdi.xtanative.ui.generated.resources.settings_cancel
@@ -117,8 +118,8 @@ internal fun SettingsPage(
     }
 }
 
-/** The widest a settings page grows. */
-internal val SETTINGS_MAX_WIDTH = 840.dp
+/** The widest a settings page grows: the reading column, as XTA's settings (kSettingsContentWidth) and the plugin store. */
+internal val SETTINGS_MAX_WIDTH = ReadingColumn.MAX_WIDTH.dp
 
 /** The rows of a page, scrolling by [scroll], with the desktop's scrollbar; [view] is on what they scroll in. */
 @Composable

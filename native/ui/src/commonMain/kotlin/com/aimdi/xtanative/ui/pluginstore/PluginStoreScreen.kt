@@ -156,6 +156,7 @@ import com.aimdi.xtanative.ui.home.rememberLeaveField
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.settings.SETTINGS_MAX_WIDTH
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import java.text.NumberFormat
 import java.util.Locale
@@ -291,8 +292,8 @@ private fun StoreColumn(refreshing: Boolean, onRefresh: () -> Unit, modifier: Mo
     }
 }
 
-/** XTA's kSettingsContentWidth. */
-private val STORE_COLUMN = 720.dp
+/** XTA's kSettingsContentWidth, as the app's own settings pages. */
+private val STORE_COLUMN = SETTINGS_MAX_WIDTH
 
 /** Scrolls [list] to a plugin whose install has just ended, as [StoreRows] says, among the installed plugins [shown]. */
 @Composable

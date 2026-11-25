@@ -124,14 +124,11 @@ fun VoiceSettingsScreen(onBack: () -> Unit) {
         },
     ) { padding ->
         // As the other settings pages: a readable column, centred in a wide window.
-        CenteredPage(extra = SETTINGS_EXTRA) {
+        CenteredPage {
             VoiceSettingsList(vm, PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 24.dp), Modifier.fillMaxSize())
         }
     }
 }
-
-/** What a settings page is wider than the reading column (SettingsPage's 840 dp). */
-private val SETTINGS_EXTRA = 120.dp
 
 /**
  * The same settings as a sheet over a reader ("Voice settings" in its menu,
