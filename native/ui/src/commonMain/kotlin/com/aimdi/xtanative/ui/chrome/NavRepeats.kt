@@ -38,11 +38,19 @@ private val repeats = WeakHashMap<NavHostController, NavRepeats>()
  * [route] opened over the screen on top, unless it is the screen that was
  * just opened there ([NavRepeats]); whether it was opened.
  */
-internal fun NavHostController.push(route: String): Boolean {
+internal fun NavHostController.push(route: String): Boolean = push(route) { route }
+
+/**
+ * The screen [opening] names, at the route [route] makes, opened as [push]
+ * opens one: for a route that differs each time the same screen is opened
+ * (one naming a gallery kept under a new key), so a double-tap is still
+ * known by [opening]. [route] is made only when the screen opens.
+ */
+internal fun NavHostController.push(opening: String, route: () -> String): Boolean {
     val guard = synchronized(repeats) { repeats.getOrPut(this) { NavRepeats() } }
     val now = System.currentTimeMillis()
-    if (!guard.allows(route, currentBackStackEntry?.id, now)) return false
-    navigate(route)
-    guard.pushed(route, currentBackStackEntry?.id, now)
+    if (!guard.allows(opening, currentBackStackEntry?.id, now)) return false
+    navigate(route())
+    guard.pushed(opening, currentBackStackEntry?.id, now)
     return true
 }

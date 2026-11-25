@@ -186,6 +186,10 @@ internal object Routes {
     /** The viewer over the gallery kept as [key], from [index]; [page] is where it falls back to once the gallery is gone. */
     fun gallery(key: String, index: Int, page: ViewerPage?) =
         "gallery/" + encoded(key) + "/$index" + (page?.let { "?post=" + encoded(it.postId) + "&at=" + it.index } ?: "")
+
+    /** What names the viewer [gallery] opens at [index] and [page] whatever its key: the same tile tapped twice. */
+    fun galleryOpening(index: Int, page: ViewerPage?) =
+        "gallery/$index" + (page?.let { "/" + encoded(it.postId) + "/" + it.index } ?: "")
     fun search(query: String?) = search(query, null)
 
     /** The search of [query] on [tab] (a [SearchTab.routeName]); either may be left out. With [focus], the field takes the keyboard, the query ready to add to. */
@@ -374,9 +378,11 @@ fun XtaNativeRoot() {
     val postWindows = remember { windowOpener()?.let { open -> { id: String -> open(Routes.post(id)) } } }
 
     // A grid's tiles open the viewer over everything it has loaded (media_grid_lightbox.dart).
+    // Its route names the gallery by a new key each time; a double-tap is known by the page it opens on.
     val galleries = remember(nav) {
         { gallery: MediaGallery, at: Int ->
-            nav.push(Routes.gallery(Galleries.put(gallery), at, gallery.pages().getOrNull(at)))
+            val page = gallery.pages().getOrNull(at)
+            nav.push(Routes.galleryOpening(at, page)) { Routes.gallery(Galleries.put(gallery), at, page) }
             Unit
         }
     }
