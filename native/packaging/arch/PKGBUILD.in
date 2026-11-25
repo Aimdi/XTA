@@ -25,7 +25,8 @@ package() {
   cp -a bin lib "${pkgdir}/opt/xta-native/"
   install -Dm755 /dev/stdin "${pkgdir}/usr/bin/xta-native" <<'LAUNCHER'
 #!/bin/sh
-exec /opt/xta-native/bin/xta-native "$@"
+# The app with each user's class-data sharing archive (bin/xta-native-launch).
+exec /opt/xta-native/bin/xta-native-launch "$@"
 LAUNCHER
   install -Dm644 share/applications/com.aimdi.xtanative.desktop "${pkgdir}/usr/share/applications/com.aimdi.xtanative.desktop"
   # The icon as SVG, in pixels at each size, and its one-colour (symbolic) form.

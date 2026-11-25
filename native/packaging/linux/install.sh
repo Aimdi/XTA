@@ -30,11 +30,14 @@ install_entry() {
       ;;
   esac
   mkdir -p "$data/applications"
+  # The launcher that gives starts their class-data archive (xta-native-launch), where the tarball has it.
+  launcher=$here/bin/xta-native-launch
+  [ -x "$launcher" ] || launcher=$here/bin/xta-native
   while IFS= read -r line; do
     case "$line" in
       # The app's own name becomes its path here, the rest of the line (%U, an action's link) kept.
-      Exec=xta-native*) printf 'Exec="%s"%s\n' "$here/bin/xta-native" "${line#Exec=xta-native}" ;;
-      Exec=*) printf 'Exec="%s" %%U\n' "$here/bin/xta-native" ;;
+      Exec=xta-native*) printf 'Exec="%s"%s\n' "$launcher" "${line#Exec=xta-native}" ;;
+      Exec=*) printf 'Exec="%s" %%U\n' "$launcher" ;;
       *) printf '%s\n' "$line" ;;
     esac
   done <"$here/share/applications/$app.desktop" >"$data/applications/$app.desktop"
