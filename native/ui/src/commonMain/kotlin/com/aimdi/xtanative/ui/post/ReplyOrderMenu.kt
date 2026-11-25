@@ -47,6 +47,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
@@ -195,6 +196,8 @@ private fun <T> ReplyOrderPopup(
             Modifier
                 .fillMaxSize()
                 .background(Color.Black.copy(alpha = scrim))
+                // The pointer's way out (Esc is the keys'), never a stop of Tab's, where it would show nothing.
+                .focusProperties { canFocus = false }
                 .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null, onClick = close),
         ) {
             val density = LocalDensity.current
@@ -251,6 +254,8 @@ private fun <T> ReplyOrderRows(
             .clip(shape)
             .background(colors.surfaceContainerLow)
             .border(1.dp, colors.outlineVariant.copy(alpha = 0.5f), shape)
+            // Keeps a click on the panel from closing it; no stop of Tab's either.
+            .focusProperties { canFocus = false }
             .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {}
             .padding(vertical = 4.dp),
     ) {
