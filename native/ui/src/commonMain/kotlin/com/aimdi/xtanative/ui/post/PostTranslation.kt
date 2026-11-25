@@ -21,7 +21,9 @@ import com.aimdi.xtanative.ui.common.currentLocale
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 
 /**
@@ -34,6 +36,18 @@ internal class TranslationRun {
     var status by mutableStateOf(TranslationStatus.ORIGINAL)
     var problem by mutableStateOf<TranslationProblem?>(null)
     var translated by mutableStateOf<TranslatedText?>(null)
+
+    /** The translation under way, which [forget] stops. */
+    var job: Job? = null
+
+    /** Back to the original, nothing kept, the translation under way stopped. */
+    fun forget() = synchronized(this) {
+        job?.cancel()
+        job = null
+        translated = null
+        problem = null
+        status = TranslationStatus.ORIGINAL
+    }
 }
 
 /**
@@ -73,9 +87,14 @@ internal class TranslationRuns(
         }
         run.status = TranslationStatus.TRANSLATING
         run.problem = null
-        scope.launch {
+        run.job = scope.launch {
             run.status = try {
-                run.translated = ask()
+                val translated = ask()
+                // A translation forgotten while it came is not shown.
+                synchronized(run) {
+                    ensureActive()
+                    run.translated = translated
+                }
                 TranslationStatus.TRANSLATED
             } catch (error: CancellationException) {
                 run.status = TranslationStatus.ORIGINAL
@@ -85,6 +104,12 @@ internal class TranslationRuns(
                 TranslationStatus.FAILED
             }
         }
+    }
+
+    /** Forgets every translation (Settings › Translation › Clear), the ones on screen and under way too. */
+    fun clear() {
+        val all = synchronized(kept) { kept.values.toList().also { kept.clear() } }
+        all.forEach(TranslationRun::forget)
     }
 
     companion object {

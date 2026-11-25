@@ -14,6 +14,8 @@ import com.aimdi.xtanative.store.settings.AiPrefs
 import com.aimdi.xtanative.store.settings.ReadingPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.SettingsStore
+import com.aimdi.xtanative.ui.post.TranslationMemory
+import com.aimdi.xtanative.ui.post.TranslationRuns
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -52,7 +54,15 @@ class ReaderTranslation(private val settings: SettingsStore, http: XHttp, store:
     /** What [config]'s server translates, for Settings' Test. */
     suspend fun languages(config: TranslationConfig): List<TranslationLanguage> = translator.languages(config)
 
-    suspend fun clear() = kept.clear()
+    /**
+     * Forgets every translation: the service's kept on the device, and X's
+     * and the service's kept for this run, the ones on screen too.
+     */
+    suspend fun clear() {
+        kept.clear()
+        TranslationRuns.shared.clear()
+        TranslationMemory.shared.clear()
+    }
 
     companion object {
         fun configOf(settings: Settings): TranslationConfig = TranslationConfig.read(

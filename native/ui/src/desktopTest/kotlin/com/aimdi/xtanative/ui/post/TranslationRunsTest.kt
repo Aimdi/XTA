@@ -70,6 +70,26 @@ class TranslationRunsTest {
     }
 
     @Test
+    fun `clearing forgets every translation, the ones on screen and under way too`() = runBlocking {
+        val runs = TranslationRuns(CoroutineScope(Job() + Dispatchers.Unconfined))
+        val shown = PostTranslation(post, runs.of("a"), runs) { english }
+        shown.translate()
+        val hung = CompletableDeferred<TranslatedText>()
+        val coming = PostTranslation(post, runs.of("b"), runs) { hung.await() }
+        coming.translate()
+        assertEquals(TranslationStatus.TRANSLATING, coming.status)
+        runs.clear()
+        hung.complete(english)
+        assertEquals(TranslationStatus.ORIGINAL, shown.status)
+        assertSame(post, shown.shown)
+        assertEquals(TranslationStatus.ORIGINAL, coming.status)
+        assertSame(post, coming.shown)
+        var asked = 0
+        PostTranslation(post, runs.of("a"), runs) { asked++; english }.translate()
+        assertEquals(1, asked)
+    }
+
+    @Test
     fun `runs are kept apart by post, target and service, and the oldest go first`() {
         val runs = TranslationRuns(max = 2)
         val a = runs.of(TranslationRuns.key("1", "de", null))

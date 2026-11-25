@@ -217,6 +217,8 @@ class PostRulesTest {
         val memory = TranslationMemory { 0 }
         memory.write("k", "v", ttlMillis = 1)
         assertEquals("v", memory.read("k"))
+        memory.clear()
+        assertNull(memory.read("k"), "cleared")
     }
 
     @Test
