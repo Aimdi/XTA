@@ -67,6 +67,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.services.links.XLinks
 import com.aimdi.xtanative.ui.article.ArticleBody
@@ -164,6 +165,8 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
         PostScopeProvider(focalId = id, translateAll = true, revealReplies = reveal) {
             val prefs = postScope().prefs
             val zenHidden = prefs.zen && !state.repliesRevealed
+            // The tree is laid out once per page of replies, not on every change to the screen (a translation, a poll).
+            val tree = remember(state.replies, prefs.threadedReplies) { if (prefs.threadedReplies) ThreadTree.rows(ThreadTree.nodes(state.replies)) else null }
             WithReadingColumn(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 48.dp), list) { column ->
                 LazyColumn(
                     state = list,
@@ -185,7 +188,7 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
                     if (zenHidden) {
                         item(key = "zen") { ZenReplies(vm::revealReplies) }
                     } else {
-                        replyItems(state, actions, prefs.threadedReplies)
+                        replyItems(state.replies, tree, actions)
                         item(key = "footer") { ThreadEnd(state, vm) }
                     }
                 }
@@ -232,16 +235,15 @@ private fun Gap(reason: String?, screenName: String?, id: String, actions: PostA
     )
 }
 
-/** The replies: threads in X's order, or a tree with the deeper branches left to "Continue thread". */
-private fun LazyListScope.replyItems(state: PostUi, actions: PostActions, threaded: Boolean) {
-    if (!threaded) {
-        items(state.replies, key = { "reply-" + it.id }, contentType = { "thread" }) { thread ->
+/** The [replies]: threads in X's order, or, with the [tree] of them laid out, a tree with the deeper branches left to "Continue thread". */
+private fun LazyListScope.replyItems(replies: List<XThread>, tree: List<ThreadRow>?, actions: PostActions) {
+    if (tree == null) {
+        items(replies, key = { "reply-" + it.id }, contentType = { if (it.posts.size > 1) "thread" else "post" }) { thread ->
             Box(itemMotion(LocalReducedMotion.current)) { ThreadRows(thread, actions) }
         }
         return
     }
-    val rows = ThreadTree.rows(ThreadTree.nodes(state.replies))
-    items(rows, key = { row -> rowKey(row) }, contentType = { row -> if (row is ThreadRow.Reply) "thread" else "continue" }) { row ->
+    items(tree, key = { row -> rowKey(row) }, contentType = { row -> if (row is ThreadRow.Reply) "thread" else "continue" }) { row ->
         when (row) {
             is ThreadRow.Reply -> Box(itemMotion(LocalReducedMotion.current).padding(start = (ThreadTree.indentLevels(row.visualDepth) * 40).dp)) {
                 ThreadRows(row.node.thread, actions)
