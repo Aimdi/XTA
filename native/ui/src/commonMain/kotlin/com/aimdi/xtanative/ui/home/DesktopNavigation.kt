@@ -22,6 +22,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalFocusManager
@@ -515,13 +516,27 @@ class DesktopActions(
         opened?.takeIf { it in columnOrder() }?.let { column -> lists.lastOrNull { listColumns[it] == column }?.let { return it } }
         return pointed ?: lists.firstOrNull()
     }
+
+    /**
+     * The list a hardware keyboard's keys move off the desktop
+     * ([onHardwareKey]): [readList]'s while any of it is on screen, else the
+     * first list that is. A finger that swiped to another of Home's pages
+     * last touched the list of the page it left, which is out of sight now.
+     */
+    internal fun shownList(): ScrollableState? {
+        val read = readList()
+        return read?.takeIf(::onScreen) ?: lists.firstOrNull(::onScreen) ?: read
+    }
+
+    private fun onScreen(list: ScrollableState): Boolean =
+        listPlaces[list]?.takeIf { it.isAttached }?.boundsInWindow()?.let { it.width > 0f && it.height > 0f } ?: false
 }
 
 /**
  * Lets the desktop's keys move [list] (DesktopKeys: ↑ ↓, Page Up and Down,
  * Space, Home, End) while it is on screen, and makes it the one they move
  * while the pointer is over it. In a [ReadColumn], Ctrl+← and Ctrl+→ choose
- * it with its column. Nothing off the desktop.
+ * it with its column. Off the desktop, for a hardware keyboard alone ([HardwareKeys]).
  */
 @Composable
 fun Modifier.movedByKeys(list: LazyListState): Modifier = keyMoved(list)
@@ -531,7 +546,7 @@ fun Modifier.movedByKeys(list: LazyListState): Modifier = keyMoved(list)
  * keys as a list is ([movedByKeys]): ↑ ↓, Page Up and Down, Space, Home and
  * End, while nothing in it keeps the keys (a field, a slider, a dialog).
  * Put it before the [verticalScroll] of the same [scroll]; or use
- * [verticalScrollByKeys], which does both. Nothing off the desktop.
+ * [verticalScrollByKeys], which does both. Off the desktop, for a hardware keyboard alone ([HardwareKeys]).
  */
 @Composable
 fun Modifier.movedByKeys(scroll: ScrollState): Modifier = keyMoved(scroll)
@@ -545,8 +560,10 @@ private fun Modifier.keyMoved(list: ScrollableState): Modifier {
     // In a sheet, its own keys move it ([sheetKeys]); the window's never reach it. A sheet over a video full screen has only the host's.
     LocalSheetKeys.current?.let { sheet ->
         if ((LocalDesktopActions.current ?: LocalDesktopActionsHost.current.actions) != null) return movedInSheet(sheet, list)
+        // Off the desktop a sheet is a window of its own, which a hardware keyboard's reading keys never reach.
+        return this
     }
-    val actions = LocalDesktopActions.current ?: return this
+    val actions = readingKeyActions() ?: return this
     val column = LocalReadColumn.current
     DisposableEffect(actions, list, column) {
         actions.addList(list, column)
@@ -642,7 +659,7 @@ expect fun DesktopNavigation(
  */
 @Composable
 fun FindsWithKeys(find: () -> Unit) {
-    val actions = LocalDesktopActions.current ?: return
+    val actions = readingKeyActions() ?: return
     val latest by rememberUpdatedState(find)
     val owner = remember { Any() }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.addFinder(owner) { latest() } }
@@ -658,11 +675,11 @@ class PageFinder(val open: () -> Unit, val step: (Int) -> Boolean)
  * the one shown, as a browser's find in page: [open] opens it with the
  * keyboard in its field, [step] goes to the next match or (-1) the one
  * before, answering false while it is closed. / keeps going to the search.
- * Nothing off the desktop.
+ * Off the desktop, for a hardware keyboard alone ([HardwareKeys]).
  */
 @Composable
 fun FindsInPageWithKeys(open: () -> Unit, step: (Int) -> Boolean) {
-    val actions = LocalDesktopActions.current ?: return
+    val actions = readingKeyActions() ?: return
     val latestOpen by rememberUpdatedState(open)
     val latestStep by rememberUpdatedState(step)
     val owner = remember { Any() }
@@ -721,10 +738,10 @@ fun SelectsWithKeys(selecting: Boolean, selectAll: () -> Boolean, remove: () -> 
     DisposableEffect(actions) { onDispose { actions.removeSelection(owner) } }
 }
 
-/** A search field that Ctrl+F and / put the keyboard in while it is shown ([FindsWithKeys]). Nothing off the desktop. */
+/** A search field that Ctrl+F and / put the keyboard in while it is shown ([FindsWithKeys]). Off the desktop, for a hardware keyboard alone ([HardwareKeys]). */
 @Composable
 fun Modifier.foundWithKeys(): Modifier {
-    if (LocalDesktopActions.current == null) return this
+    if (readingKeyActions() == null) return this
     val focus = remember { FocusRequester() }
     FindsWithKeys { runCatching { focus.requestFocus() } }
     return focusRequester(focus)
@@ -735,7 +752,7 @@ fun Modifier.foundWithKeys(): Modifier {
  * for F5 and Ctrl+R, [turn] for ← and →, and [isOpen] with [close] for what
  * going back closes first; [readsOpen] when what is open is a column beside
  * the page that the reading keys move rather than something over it (the
- * Deck's detail). Nothing off the desktop.
+ * Deck's detail). Off the desktop, for a hardware keyboard alone ([HardwareKeys]).
  */
 @Composable
 internal fun DesktopShortcuts(
@@ -746,7 +763,7 @@ internal fun DesktopShortcuts(
     jump: (Int) -> Unit = {},
     readsOpen: () -> Boolean = { false },
 ) {
-    val actions = LocalDesktopActions.current ?: return
+    val actions = readingKeyActions() ?: return
     val latestRefresh by rememberUpdatedState(refresh)
     val latestTurn by rememberUpdatedState(turn)
     val latestJump by rememberUpdatedState(jump)
