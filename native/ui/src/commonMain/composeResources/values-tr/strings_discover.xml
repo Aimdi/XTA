@@ -71,8 +71,8 @@
     <string name="discover_community_created">%1$s tarihinde oluşturuldu</string>
     <string name="discover_community_members">Üyeler</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d üye</item>
-        <item quantity="other">%1$d üye</item>
+        <item quantity="one">%1$s üye</item>
+        <item quantity="other">%1$s üye</item>
     </plurals>
     <string name="discover_list_import_title">X listesini grup olarak içe aktar</string>
     <string name="discover_list_import_intro">Bir X listesini abonelik grubu olarak içe aktarmak için aşağıya listenin bağlantısını veya kimliğini girin</string>

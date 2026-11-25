@@ -71,8 +71,8 @@
     <string name="discover_community_created">Loodud %1$s</string>
     <string name="discover_community_members">Liikmed</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d liige</item>
-        <item quantity="other">%1$d liiget</item>
+        <item quantity="one">%1$s liige</item>
+        <item quantity="other">%1$s liiget</item>
     </plurals>
     <string name="discover_list_import_title">Impordi X-i loend rühmana</string>
     <string name="discover_list_import_intro">X-i loendi importimiseks tellimuste rühmana sisesta allpool loendi link või selle ID</string>

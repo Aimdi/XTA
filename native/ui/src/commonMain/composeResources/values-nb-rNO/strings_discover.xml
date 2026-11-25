@@ -71,8 +71,8 @@
     <string name="discover_community_created">Opprettet %1$s</string>
     <string name="discover_community_members">Medlemmer</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d medlem</item>
-        <item quantity="other">%1$d medlemmer</item>
+        <item quantity="one">%1$s medlem</item>
+        <item quantity="other">%1$s medlemmer</item>
     </plurals>
     <string name="discover_list_import_title">Importer en X-liste som gruppe</string>
     <string name="discover_list_import_intro">For å importere en X-liste som abonnementsgruppe, skriv inn lenken til listen eller dens ID nedenfor</string>

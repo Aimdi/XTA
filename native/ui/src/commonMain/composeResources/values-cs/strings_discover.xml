@@ -73,10 +73,10 @@
     <string name="discover_community_created">Vytvořeno %1$s</string>
     <string name="discover_community_members">Členové</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d člen</item>
-        <item quantity="few">%1$d členové</item>
-        <item quantity="many">%1$d člena</item>
-        <item quantity="other">%1$d členů</item>
+        <item quantity="one">%1$s člen</item>
+        <item quantity="few">%1$s členové</item>
+        <item quantity="many">%1$s člena</item>
+        <item quantity="other">%1$s členů</item>
     </plurals>
     <string name="discover_list_import_title">Importovat seznam z X jako skupinu</string>
     <string name="discover_list_import_intro">Chcete-li importovat seznam z X jako skupinu odběrů, zadejte níže odkaz na seznam nebo jeho ID</string>

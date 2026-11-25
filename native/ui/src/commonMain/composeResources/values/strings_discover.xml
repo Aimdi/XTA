@@ -81,8 +81,8 @@
     <string name="discover_community_created">Created %1$s</string>
     <string name="discover_community_members">Members</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d member</item>
-        <item quantity="other">%1$d members</item>
+        <item quantity="one">%1$s member</item>
+        <item quantity="other">%1$s members</item>
     </plurals>
 
     <string name="discover_list_import_title">Import an X list as a group</string>

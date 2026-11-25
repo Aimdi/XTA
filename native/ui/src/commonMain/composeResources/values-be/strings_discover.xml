@@ -73,10 +73,10 @@
     <string name="discover_community_created">Створана %1$s</string>
     <string name="discover_community_members">Удзельнікі</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d удзельнік</item>
-        <item quantity="few">%1$d удзельнікі</item>
-        <item quantity="many">%1$d удзельнікаў</item>
-        <item quantity="other">%1$d удзельніка</item>
+        <item quantity="one">%1$s удзельнік</item>
+        <item quantity="few">%1$s удзельнікі</item>
+        <item quantity="many">%1$s удзельнікаў</item>
+        <item quantity="other">%1$s удзельніка</item>
     </plurals>
     <string name="discover_list_import_title">Імпартаваць спіс X як групу</string>
     <string name="discover_list_import_intro">Каб імпартаваць спіс X як групу падпісак, увядзіце ніжэй спасылку на спіс або яго ідэнтыфікатар</string>

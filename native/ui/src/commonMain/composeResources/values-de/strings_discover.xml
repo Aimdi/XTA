@@ -71,8 +71,8 @@
     <string name="discover_community_created">Erstellt am %1$s</string>
     <string name="discover_community_members">Mitglieder</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d Mitglied</item>
-        <item quantity="other">%1$d Mitglieder</item>
+        <item quantity="one">%1$s Mitglied</item>
+        <item quantity="other">%1$s Mitglieder</item>
     </plurals>
     <string name="discover_list_import_title">X-Liste als Gruppe importieren</string>
     <string name="discover_list_import_intro">Um eine X-Liste als Abo-Gruppe zu importieren, gib unten den Link zur Liste oder ihre ID ein</string>

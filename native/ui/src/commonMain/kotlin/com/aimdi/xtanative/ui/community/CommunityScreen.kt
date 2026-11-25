@@ -55,6 +55,7 @@ import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.WithReadingColumn
+import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.datePattern
 import com.aimdi.xtanative.ui.common.swipeTabs
@@ -192,8 +193,9 @@ fun CommunityRow(community: XCommunity, onOpen: () -> Unit) {
         Modifier.fillMaxWidth().clickable(onClick = onOpen).padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // A banner is about three times as wide as it is tall: shown in that shape, not cut to a square.
         Box(
-            Modifier.size(48.dp).clip(RoundedCornerShape(8.dp)).background(MaterialTheme.colorScheme.surfaceContainerHighest),
+            Modifier.size(width = BANNER_THUMB_WIDTH, height = BANNER_THUMB_HEIGHT).clip(RoundedCornerShape(8.dp)).background(MaterialTheme.colorScheme.surfaceContainerHighest),
             contentAlignment = Alignment.Center,
         ) {
             val banner = community.bannerUrl
@@ -210,11 +212,16 @@ fun CommunityRow(community: XCommunity, onOpen: () -> Unit) {
     }
 }
 
+/** "20.7K members", the number as the app writes counts in the reader's language ([countText]). */
 @Composable
 private fun memberCount(community: XCommunity): String {
     val count = community.memberCount.coerceIn(0, Int.MAX_VALUE.toLong()).toInt()
-    return pluralStringResource(Res.plurals.discover_member_count, count, count)
+    return pluralStringResource(Res.plurals.discover_member_count, count, countText(community.memberCount.coerceAtLeast(0)))
 }
+
+/** A community's banner in a list: its own shape, about 3:1, at the height of a row's two lines. */
+private val BANNER_THUMB_WIDTH = 96.dp
+private val BANNER_THUMB_HEIGHT = 32.dp
 
 /** Banner, name, topic and the start of the description; the member count opens the members. */
 @Composable

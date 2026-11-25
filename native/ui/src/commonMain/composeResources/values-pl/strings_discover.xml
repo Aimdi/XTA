@@ -73,10 +73,10 @@
     <string name="discover_community_created">Utworzono %1$s</string>
     <string name="discover_community_members">Członkowie</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d członek</item>
-        <item quantity="few">%1$d członków</item>
-        <item quantity="many">%1$d członków</item>
-        <item quantity="other">%1$d członka</item>
+        <item quantity="one">%1$s członek</item>
+        <item quantity="few">%1$s członków</item>
+        <item quantity="many">%1$s członków</item>
+        <item quantity="other">%1$s członka</item>
     </plurals>
     <string name="discover_list_import_title">Importuj listę z X jako grupę</string>
     <string name="discover_list_import_intro">Aby zaimportować listę z X jako grupę subskrypcji, wpisz poniżej link do listy lub jej ID</string>

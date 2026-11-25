@@ -71,8 +71,8 @@
     <string name="discover_community_created">Aangemaakt op %1$s</string>
     <string name="discover_community_members">Leden</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d lid</item>
-        <item quantity="other">%1$d leden</item>
+        <item quantity="one">%1$s lid</item>
+        <item quantity="other">%1$s leden</item>
     </plurals>
     <string name="discover_list_import_title">Een X-lijst importeren als groep</string>
     <string name="discover_list_import_intro">Voer hieronder de link of het ID van de X-lijst in om deze als abonnementengroep te importeren</string>

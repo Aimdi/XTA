@@ -70,7 +70,7 @@
     <string name="discover_community_created">%1$sに作成</string>
     <string name="discover_community_members">メンバー</string>
     <plurals name="discover_member_count">
-        <item quantity="other">%1$d人</item>
+        <item quantity="other">%1$s人</item>
     </plurals>
     <string name="discover_list_import_title">Xのリストをグループとしてインポート</string>
     <string name="discover_list_import_intro">Xのリストを購読グループとしてインポートするには、リストのリンクまたはIDを以下に入力してください</string>

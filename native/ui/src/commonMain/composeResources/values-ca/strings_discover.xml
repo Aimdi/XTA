@@ -71,8 +71,8 @@
     <string name="discover_community_created">Creada el %1$s</string>
     <string name="discover_community_members">Membres</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d membre</item>
-        <item quantity="other">%1$d membres</item>
+        <item quantity="one">%1$s membre</item>
+        <item quantity="other">%1$s membres</item>
     </plurals>
     <string name="discover_list_import_title">Importa una llista d'X com a grup</string>
     <string name="discover_list_import_intro">Per importar una llista d'X com a grup de subscripcions, introdueix a sota l'enllaç de la llista o el seu ID</string>
