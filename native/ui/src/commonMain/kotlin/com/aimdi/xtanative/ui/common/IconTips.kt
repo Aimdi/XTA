@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.common
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 
 /**
  * [content], an icon button, with [label] shown beside the pointer while it
@@ -19,3 +20,18 @@ expect fun IconTip(label: String, content: @Composable () -> Unit)
  */
 @Composable
 internal expect fun Modifier.keyboardFocusRing(): Modifier
+
+/**
+ * The same ring, drawn [outset] beyond the bounds, for a word that is a
+ * button ("Show more"): the icon ring's inset would cross its letters.
+ */
+@Composable
+internal expect fun Modifier.keyboardFocusRing(outset: Dp): Modifier
+
+/**
+ * Focus that a click may give but Tab passes by: selectable text takes the
+ * focus when the mouse selects in it, so Ctrl+C copies the selection, but
+ * the keys can neither select nor copy there, so a Tab stop on it showed
+ * nothing and did nothing. Nothing on Android, where no key moves it.
+ */
+internal expect fun Modifier.pointerOnlyFocus(): Modifier

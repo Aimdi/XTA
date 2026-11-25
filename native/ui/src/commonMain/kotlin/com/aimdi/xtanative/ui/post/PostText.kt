@@ -43,6 +43,8 @@ import com.aimdi.xtanative.networks.CryptoAddresses
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.Motion
 import com.aimdi.xtanative.ui.common.clickableNoRipple
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
+import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.common.foundIn
 import com.aimdi.xtanative.ui.common.rememberCopyContract
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -173,14 +175,14 @@ fun ExpandablePostText(
                 modifier = (if (clipped && folds) Modifier.fadingBottom() else Modifier).tagPresses(text, laidOut) { topic = it }.linkMiddleClicks(text, laidOut, actions.openInBrowser).linkDrags(text, laidOut).then(found.modifier),
             )
         }
-        if (selectable) SelectionContainer { drawn() } else drawn()
+        if (selectable) SelectionContainer(Modifier.pointerOnlyFocus()) { drawn() } else drawn()
         if (clipped && folds) {
             Text(
                 stringResource(Res.string.posts_show_more),
                 color = linkColor,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.heightIn(min = 36.dp).padding(top = 8.dp, end = 12.dp).clickableNoRipple(onClick = unfold),
+                modifier = Modifier.heightIn(min = 36.dp).padding(top = 8.dp, end = 12.dp).keyboardFocusRing(outset = 2.dp).clickableNoRipple(onClick = unfold),
             )
         }
     }

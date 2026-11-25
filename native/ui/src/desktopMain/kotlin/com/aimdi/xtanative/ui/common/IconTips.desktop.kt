@@ -14,7 +14,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -72,16 +75,32 @@ private val RING_WIDTH = 2.dp
  * ([KeyboardFocusLook]), as the ripple shows it no more than faintly.
  */
 @Composable
-internal actual fun Modifier.keyboardFocusRing(): Modifier {
+internal actual fun Modifier.keyboardFocusRing(): Modifier = ring(RING_INSET)
+
+@Composable
+internal actual fun Modifier.keyboardFocusRing(outset: Dp): Modifier = ring(-outset)
+
+/** The keyboard's ring [inset] inside the bounds (outside where negative), its ends round. */
+@Composable
+private fun Modifier.ring(inset: Dp): Modifier {
     var focused by remember { mutableStateOf(false) }
     val color = MaterialTheme.colorScheme.primary
     return onFocusChanged { focused = it.hasFocus && KeyboardFocusLook.keyboard }.drawWithContent {
         drawContent()
         if (!focused) return@drawWithContent
-        val inset = RING_INSET.toPx()
-        val ring = Size(size.width - 2 * inset, size.height - 2 * inset)
+        val by = inset.toPx()
+        val ring = Size(size.width - 2 * by, size.height - 2 * by)
         if (ring.minDimension <= 0f) return@drawWithContent
         val radius = ring.minDimension / 2
-        drawRoundRect(color, Offset(inset, inset), ring, CornerRadius(radius, radius), style = Stroke(RING_WIDTH.toPx()))
+        drawRoundRect(color, Offset(by, by), ring, CornerRadius(radius, radius), style = Stroke(RING_WIDTH.toPx()))
     }
+}
+
+/**
+ * Read without being followed: a mode turning to the keyboard must not
+ * take away the focus a selection already holds (Ctrl+C, a key, turns it),
+ * only keep Tab from stopping there.
+ */
+internal actual fun Modifier.pointerOnlyFocus(): Modifier = focusProperties {
+    canFocus = !Snapshot.withoutReadObservation { KeyboardFocusLook.keyboard }
 }
