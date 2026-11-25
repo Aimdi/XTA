@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.saved
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -223,6 +224,8 @@ fun NoteEditorDialog(
             },
             shape = shape,
             color = MaterialTheme.colorScheme.background,
+            // A card has an edge, as the rail's menu has, or on Lights out's black it is lost in the dimmed page.
+            border = if (card) BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant) else null,
         ) {
             Box(Modifier.fillMaxSize().then(if (card) Modifier else Modifier.systemBarsPadding().imePadding()), contentAlignment = Alignment.TopCenter) {
                 Column(Modifier.widthIn(max = 720.dp).fillMaxSize()) {

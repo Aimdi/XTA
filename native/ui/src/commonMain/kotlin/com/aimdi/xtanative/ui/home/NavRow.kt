@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -47,11 +48,14 @@ internal object NavRowLook {
     const val SELECTED_HOVER_ALPHA = 0.18f
     const val HOVER_ALPHA = 0.06f
 
-    /** How much of the text colour washes the row. */
-    fun fillAlpha(selected: Boolean, hovered: Boolean): Float = when {
+    /** The pointer's wash on a dark page, where light text at [HOVER_ALPHA] barely shows on black (Lights out). */
+    const val DARK_HOVER_ALPHA = 0.10f
+
+    /** How much of the text colour washes the row, on a [dark] page or a light one. */
+    fun fillAlpha(selected: Boolean, hovered: Boolean, dark: Boolean = false): Float = when {
         selected && hovered -> SELECTED_HOVER_ALPHA
         selected -> SELECTED_ALPHA
-        hovered -> HOVER_ALPHA
+        hovered -> if (dark) DARK_HOVER_ALPHA else HOVER_ALPHA
         else -> 0f
     }
 
@@ -95,7 +99,7 @@ internal fun NavRowFrame(
                 .fillMaxWidth()
                 .heightIn(min = minHeight)
                 .clip(shape)
-                .background(colors.onSurface.copy(alpha = NavRowLook.fillAlpha(selected, hovered)))
+                .background(colors.onSurface.copy(alpha = NavRowLook.fillAlpha(selected, hovered, dark = colors.background.luminance() < 0.5f)))
                 .then(if (ring) Modifier.border(2.dp, colors.primary, shape) else Modifier)
                 .selectable(selected, interactionSource = interactions, indication = ripple(), role = role, onClick = onClick)
                 .padding(start = 16.dp, end = 16.dp),

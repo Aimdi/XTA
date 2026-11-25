@@ -15,6 +15,14 @@ class NavRowLookTest {
     }
 
     @Test
+    fun onADarkPageThePointerWashesMoreYetTheSelectedRowStaysStrongest() {
+        val darkHover = NavRowLook.fillAlpha(selected = false, hovered = true, dark = true)
+        assertTrue(darkHover > NavRowLook.fillAlpha(selected = false, hovered = true, dark = false))
+        assertTrue(NavRowLook.fillAlpha(selected = true, hovered = false, dark = true) > darkHover)
+        assertEquals(NavRowLook.fillAlpha(selected = true, hovered = true), NavRowLook.fillAlpha(selected = true, hovered = true, dark = true))
+    }
+
+    @Test
     fun aFocusIsARingOnlyWhereTheKeyboardMovedIt() {
         assertTrue(NavRowLook.ring(focused = true, keyboard = true))
         assertFalse(NavRowLook.ring(focused = true, keyboard = false), "a click focuses too")
