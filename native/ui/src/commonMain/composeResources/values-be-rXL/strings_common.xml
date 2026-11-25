@@ -45,4 +45,5 @@
     <string name="find_in_page">Pošuk na staroncy</string>
     <string name="find_previous_match">Papiaredni vynik</string>
     <string name="find_next_match">Nastupny vynik</string>
+    <string name="loading">Zahruzka…</string>
 </resources>

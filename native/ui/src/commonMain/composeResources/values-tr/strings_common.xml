@@ -45,4 +45,5 @@
     <string name="find_in_page">Sayfada bul</string>
     <string name="find_previous_match">Önceki eşleşme</string>
     <string name="find_next_match">Sonraki eşleşme</string>
+    <string name="loading">Yükleniyor…</string>
 </resources>

@@ -45,4 +45,5 @@
     <string name="find_in_page">Bilatu orrian</string>
     <string name="find_previous_match">Aurreko bat-etortzea</string>
     <string name="find_next_match">Hurrengo bat-etortzea</string>
+    <string name="loading">Kargatzen…</string>
 </resources>

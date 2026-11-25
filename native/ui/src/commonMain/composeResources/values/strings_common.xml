@@ -45,4 +45,5 @@
     <string name="find_in_page">Find in page</string>
     <string name="find_previous_match">Previous match</string>
     <string name="find_next_match">Next match</string>
+    <string name="loading">Loading…</string>
 </resources>

@@ -45,4 +45,5 @@
     <string name="find_in_page">Zoeken op pagina</string>
     <string name="find_previous_match">Vorige overeenkomst</string>
     <string name="find_next_match">Volgende overeenkomst</string>
+    <string name="loading">Laden…</string>
 </resources>

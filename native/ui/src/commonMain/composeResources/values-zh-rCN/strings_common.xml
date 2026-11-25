@@ -45,4 +45,5 @@
     <string name="find_in_page">在页面中查找</string>
     <string name="find_previous_match">上一个匹配项</string>
     <string name="find_next_match">下一个匹配项</string>
+    <string name="loading">正在加载…</string>
 </resources>

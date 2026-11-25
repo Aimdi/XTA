@@ -45,4 +45,5 @@
     <string name="find_in_page">البحث في الصفحة</string>
     <string name="find_previous_match">التطابق السابق</string>
     <string name="find_next_match">التطابق التالي</string>
+    <string name="loading">جارٍ التحميل…</string>
 </resources>

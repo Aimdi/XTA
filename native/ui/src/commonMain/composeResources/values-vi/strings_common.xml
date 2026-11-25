@@ -45,4 +45,5 @@
     <string name="find_in_page">Tìm trong trang</string>
     <string name="find_previous_match">Kết quả trước</string>
     <string name="find_next_match">Kết quả tiếp theo</string>
+    <string name="loading">Đang tải…</string>
 </resources>

@@ -45,4 +45,5 @@
     <string name="find_in_page">Cerca a la pàgina</string>
     <string name="find_previous_match">Coincidència anterior</string>
     <string name="find_next_match">Coincidència següent</string>
+    <string name="loading">S’està carregant…</string>
 </resources>

@@ -45,4 +45,5 @@
     <string name="find_in_page">Найти на странице</string>
     <string name="find_previous_match">Предыдущее совпадение</string>
     <string name="find_next_match">Следующее совпадение</string>
+    <string name="loading">Загрузка…</string>
 </resources>

@@ -45,4 +45,5 @@
     <string name="find_in_page">Najít na stránce</string>
     <string name="find_previous_match">Předchozí shoda</string>
     <string name="find_next_match">Další shoda</string>
+    <string name="loading">Načítání…</string>
 </resources>

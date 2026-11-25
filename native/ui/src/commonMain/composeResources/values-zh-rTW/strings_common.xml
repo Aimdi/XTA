@@ -45,4 +45,5 @@
     <string name="find_in_page">在頁面中尋找</string>
     <string name="find_previous_match">上一個符合項目</string>
     <string name="find_next_match">下一個符合項目</string>
+    <string name="loading">載入中…</string>
 </resources>

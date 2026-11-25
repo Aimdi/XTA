@@ -45,4 +45,5 @@
     <string name="find_in_page">Знайти на сторінці</string>
     <string name="find_previous_match">Попередній збіг</string>
     <string name="find_next_match">Наступний збіг</string>
+    <string name="loading">Завантаження…</string>
 </resources>

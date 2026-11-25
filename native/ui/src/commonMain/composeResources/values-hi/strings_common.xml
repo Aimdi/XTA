@@ -45,4 +45,5 @@
     <string name="find_in_page">पेज में खोजें</string>
     <string name="find_previous_match">पिछला मिलान</string>
     <string name="find_next_match">अगला मिलान</string>
+    <string name="loading">लोड हो रहा है…</string>
 </resources>

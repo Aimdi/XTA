@@ -45,4 +45,5 @@
     <string name="find_in_page">Cari di halaman</string>
     <string name="find_previous_match">Kecocokan sebelumnya</string>
     <string name="find_next_match">Kecocokan berikutnya</string>
+    <string name="loading">Memuat…</string>
 </resources>

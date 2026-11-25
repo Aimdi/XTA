@@ -45,4 +45,5 @@
     <string name="find_in_page">Otsi lehelt</string>
     <string name="find_previous_match">Eelmine vaste</string>
     <string name="find_next_match">Järgmine vaste</string>
+    <string name="loading">Laadimine…</string>
 </resources>

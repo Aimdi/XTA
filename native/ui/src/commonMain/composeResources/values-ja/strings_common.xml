@@ -45,4 +45,5 @@
     <string name="find_in_page">ページ内を検索</string>
     <string name="find_previous_match">前の一致</string>
     <string name="find_next_match">次の一致</string>
+    <string name="loading">読み込み中…</string>
 </resources>
