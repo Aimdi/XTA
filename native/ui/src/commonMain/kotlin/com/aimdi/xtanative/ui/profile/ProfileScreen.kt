@@ -82,6 +82,7 @@ import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeepsClearOfStickyHeader
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemRow
@@ -92,6 +93,7 @@ import com.aimdi.xtanative.ui.common.clickableNoRipple
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.monthText
 import com.aimdi.xtanative.ui.common.pointerOnlyFocus
+import com.aimdi.xtanative.ui.common.rememberStickyHeaderRoom
 import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -182,6 +184,7 @@ fun ProfileScreen(
     var sheet by rememberSaveable { mutableStateOf(ProfileSheet.NONE) }
     val tab = state.of(state.tab)
     val list = rememberLazyListState()
+    val room = rememberStickyHeaderRoom(list, TABS_KEY)
     val scope = rememberCoroutineScope()
     val nearEnd by remember(list) {
         derivedStateOf {
@@ -254,6 +257,7 @@ fun ProfileScreen(
                 val tabbed = state.complete && user != null
                 // A wide window keeps the profile in the reading column, as the feeds are.
                 WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp), list) { column ->
+                KeepsClearOfStickyHeader(room) {
                 LazyColumn(
                     state = list,
                     contentPadding = column,
@@ -271,7 +275,7 @@ fun ProfileScreen(
                         }
                     }
                     if (state.complete && user != null) {
-                        stickyHeader(key = "tabs", contentType = "tabs") { Tabs(state.tab, select) }
+                        stickyHeader(key = TABS_KEY, contentType = "tabs") { Tabs(state.tab, select, room.header) }
                         filterBar(state, vm)
                         val gated = state.tab != ProfileTab.SAVED && ProfileHeader.postsGated(user, session?.accounts.orEmpty().map { it.screenName })
                         when {
@@ -288,6 +292,7 @@ fun ProfileScreen(
                     }
                 }
                 }
+                }
             }
         }
     }
@@ -301,6 +306,9 @@ fun ProfileScreen(
         ProfileSheet.FOLLOWED_BY -> FollowedBySheet(follow.followedBy, actions, onDismiss = { sheet = ProfileSheet.NONE })
     }
 }
+
+/** The key of the profile's sticky tabs in its list. */
+private const val TABS_KEY = "tabs"
 
 /** The sheets a profile opens over itself. */
 enum class ProfileSheet { NONE, FILTERS, NOTE, FOLLOWED_BY }
@@ -418,8 +426,8 @@ private fun <T> FilterBar(selected: T, options: List<Filter<T>>, onSelect: (T) -
 }
 
 @Composable
-private fun Tabs(selected: ProfileTab, onSelect: (ProfileTab) -> Unit) {
-    TabRow(selectedTabIndex = selected.ordinal, containerColor = MaterialTheme.colorScheme.background, divider = { Hairline() }) {
+private fun Tabs(selected: ProfileTab, onSelect: (ProfileTab) -> Unit, modifier: Modifier = Modifier) {
+    TabRow(selectedTabIndex = selected.ordinal, modifier = modifier, containerColor = MaterialTheme.colorScheme.background, divider = { Hairline() }) {
         ProfileTab.entries.forEach { tab ->
             Tab(
                 selected = tab == selected,

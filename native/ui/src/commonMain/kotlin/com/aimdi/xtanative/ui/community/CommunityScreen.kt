@@ -51,6 +51,8 @@ import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.rememberStickyHeaderRoom
+import com.aimdi.xtanative.ui.common.KeepsClearOfStickyHeader
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.TipText
@@ -102,6 +104,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
     val state by vm.ui.collectAsStateWithLifecycle()
     val posts by vm.posts.state.collectAsStateWithLifecycle()
     val list = rememberLazyListState()
+    val room = rememberStickyHeaderRoom(list, TABS_KEY)
     if (state.tab == CommunityTab.TOP) LoadMoreNearEnd(list, posts, vm::morePosts)
     val layout = rememberFeedLayout(posts.items)
     // F5 and Ctrl+R read the community's posts again (the community, once it failed); ← → and Ctrl+Tab turn its tabs, as on Home.
@@ -135,9 +138,9 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
                 FeedSkeleton(Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp), count = 4)
             }
             // Padding, not content padding: the tabs stick below the bar, not under it.
-            else -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding()), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize().then(below).swipeTabs(CommunityTab.entries, state.tab, vm::select)) {
+            else -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding()), list) { column -> KeepsClearOfStickyHeader(room) { LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize().then(below).swipeTabs(CommunityTab.entries, state.tab, vm::select)) {
                 item(key = "header", contentType = "header") { CommunityHeader(community) { openMembers(community.id) } }
-                stickyHeader(key = "tabs", contentType = "tabs") { CommunityTabs(state.tab, vm::select) }
+                stickyHeader(key = TABS_KEY, contentType = "tabs") { CommunityTabs(state.tab, vm::select, room.header) }
                 when (state.tab) {
                     CommunityTab.TOP -> {
                         feedThreads(posts.items, layout, actions, keyOf = { "post-" + it.id }) { thread ->
@@ -147,10 +150,13 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
                     }
                     CommunityTab.ABOUT -> item(key = "about", contentType = "about") { CommunityAbout(community) }
                 }
-            } }
+            } } }
         }
     }
 }
+
+/** The key of the community's sticky tabs in its list. */
+private const val TABS_KEY = "tabs"
 
 /** A community's members, each opening their profile. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -273,9 +279,10 @@ private fun CommunityHeader(community: XCommunity, onMembers: () -> Unit) {
 }
 
 @Composable
-private fun CommunityTabs(selected: CommunityTab, onSelect: (CommunityTab) -> Unit) {
+private fun CommunityTabs(selected: CommunityTab, onSelect: (CommunityTab) -> Unit, modifier: Modifier = Modifier) {
     TabRow(
         selectedTabIndex = selected.ordinal,
+        modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background,
         divider = { Hairline() },
     ) {
