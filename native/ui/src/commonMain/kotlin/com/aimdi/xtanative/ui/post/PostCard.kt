@@ -59,6 +59,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_subscribers_only_of_auth
 import com.aimdi.xtanative.ui.generated.resources.posts_thread
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_view_quoted
+import com.aimdi.xtanative.ui.common.pressKeepsPlace
 import com.aimdi.xtanative.ui.home.keyedPost
 import com.aimdi.xtanative.ui.media.LiveRooms
 import com.aimdi.xtanative.ui.media.LocalLivePlayer
@@ -176,6 +177,7 @@ fun PostCard(
             }
             .recordedIn(picture)
             .opensInWindow(inWindow, presses)
+            .pressKeepsPlace()
             .opening(rememberDoubleTapLike(shown, scope.prefs, actions)) {
                 if (presses.take() == PostPress.TAP_IN_WINDOW && inWindow != null) inWindow() else actions.openPost(shown.id)
             }
