@@ -144,6 +144,7 @@ fun ExpandablePostText(
     var expanded by rememberSaveable(post.id, post.text) { mutableStateOf(false) }
     // Kept as well: a screen coming back draws its Show more in the first frame, rather than a frame later 36 dp taller,
     // which moved a list read to its end down once the place it came back to had been held to the shorter text.
+    // Each folded layout then says whether it still folds (ShowMore.folds), so a wider window or smaller text drops it.
     var folds by rememberSaveable(post.id, post.text, maxLines) { mutableStateOf(false) }
     var unfolding by remember(post.id) { mutableStateOf(false) }
     val clipped = maxLines != null && !expanded
@@ -170,7 +171,7 @@ fun ExpandablePostText(
                 onTextLayout = { layout ->
                     laidOut.take(layout)
                     found.laidOut(layout)
-                    if (clipped && layout.hasVisualOverflow) folds = true
+                    folds = ShowMore.folds(folds, clipped, layout.hasVisualOverflow)
                 },
                 modifier = (if (clipped && folds) Modifier.fadingBottom() else Modifier).tagPresses(text, laidOut) { topic = it }.linkMiddleClicks(text, laidOut, actions.openInBrowser).linkDrags(text, laidOut).then(found.modifier),
             )
@@ -195,6 +196,14 @@ fun ExpandablePostText(
  * fling; a text that never folds, or has finished unfolding, has no need of it.
  */
 internal object ShowMore {
+    /**
+     * Whether the text folds after a layout that [overflows] or not: only a
+     * [clipped] layout tells (an unfolded one never overflows), so what was
+     * kept stands until such a layout says otherwise, and is right in a
+     * returning screen's first frame.
+     */
+    fun folds(was: Boolean, clipped: Boolean, overflows: Boolean): Boolean = if (clipped) overflows else was
+
     fun resizes(reduced: Boolean, folds: Boolean, clipped: Boolean, unfolding: Boolean): Boolean =
         !reduced && folds && (clipped || unfolding)
 }
