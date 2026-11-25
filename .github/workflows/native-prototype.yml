@@ -487,6 +487,26 @@ jobs:
           python3 -I native/tool/plugin_abi.py --app "${app:?no lib/app in the tarball of $last}" native/plugins/build/out/desktop/*.jar \
             || { echo "These plugins need what $last's app lacks, at the same plugin API $api: move PLUGIN_API_VERSION up"; exit 1; }
 
+      # native/tool/mock-x: a JDK server answering from recorded responses.
+      - name: Serve the stand-in for X
+        run: |
+          (cd native && ./gradlew :mock-x:installDist --console=plain)
+          nohup native/tool/mock-x/build/install/mock-x/bin/mock-x > "$RUNNER_TEMP/mock-x.log" 2>&1 &
+          for _ in $(seq 1 90); do
+            if curl -s -o /dev/null http://127.0.0.1:8787/; then break; fi
+            sleep 1
+          done
+          curl -s -o /dev/null -w 'stand-in answers %{http_code}\n' http://127.0.0.1:8787/
+
+      # The classes a start loads, from which each user's first start makes the
+      # class-data sharing archive later starts read (packaging/linux/xta-native-launch).
+      - name: List the classes a start loads
+        env:
+          SKIKO_RENDER_API: SOFTWARE
+        run: |
+          command -v xvfb-run > /dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq xvfb > /dev/null; }
+          bash native/tool/cds_classlist.sh native/desktop/build/compose/binaries/main/app/xta-native http://127.0.0.1:8787
+
       - name: Pack the tarball and the PKGBUILD
         run: |
           bash native/tool/package_desktop.sh native/desktop/build/compose/binaries/main/app/xta-native "$VERSION_NAME" "$RUNNER_TEMP/desktop"
@@ -528,17 +548,6 @@ jobs:
             ${{ runner.temp }}/desktop/xta-native-desktop-*.tar.gz
             ${{ runner.temp }}/desktop/xta-native-*.pkg.tar.zst
             ${{ runner.temp }}/desktop/PKGBUILD
-
-      # native/tool/mock-x: a JDK server answering from recorded responses.
-      - name: Serve the stand-in for X
-        run: |
-          (cd native && ./gradlew :mock-x:installDist --console=plain)
-          nohup native/tool/mock-x/build/install/mock-x/bin/mock-x > "$RUNNER_TEMP/mock-x.log" 2>&1 &
-          for _ in $(seq 1 90); do
-            if curl -s -o /dev/null http://127.0.0.1:8787/; then break; fi
-            sleep 1
-          done
-          curl -s -o /dev/null -w 'stand-in answers %{http_code}\n' http://127.0.0.1:8787/
 
       # Skia draws in software: the virtual display has no GPU.
       - name: Open it against the stand-in

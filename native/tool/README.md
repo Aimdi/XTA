@@ -215,6 +215,23 @@ say that videos go to the system's player and stay up; otherwise the video
 has to play to its end, its frames drawn and on the screen, and the podcast
 player has to play.
 
+## Faster desktop starts (`cds_classlist.sh`)
+
+```bash
+bash native/tool/cds_classlist.sh <app dir> <stand-in url> [--display]
+```
+
+runs the app made by `createDistributable` against `mock-x` until Home shows
+its posts and writes the classes it loaded to `lib/app/xta-native.classlist`
+(the desktop job, before packing). The tarball's and the Arch package's
+`bin/xta-native-launch` (`packaging/linux/`) makes each user's class-data
+sharing archive from it on the first start, in the background, under
+`$XDG_CACHE_HOME/xta-native/cds`, and starts after that map the classes from
+it: about half the time and processor to Home's first posts, and some 40 MB
+less memory. Java 17 takes such an archive only at the folder it was made
+for, which is why it is not made at build time. Without the list, the
+archive or with one Java finds out of date, starts are as before.
+
 ## The skills' checks (`skills/`)
 
 ```bash
