@@ -45,14 +45,16 @@ val LocalWideFrame = staticCompositionLocalOf<WideFrame?> { null }
  * [content] over the whole window, the frame's column included: the media
  * viewer, which is shown in the screens' place beside the column but grows
  * over it at the start edge (drawn after the column, so above it). Where
- * there is no frame, [content] as it is.
+ * there is no frame, [content] as it is. Either way [content] sits in the
+ * same place of the composition, so a window resized across the frame's
+ * width keeps the viewer as it was (its page, zoom and video).
  */
 @Composable
 fun FullWindow(content: @Composable () -> Unit) {
-    val frame = LocalWideFrame.current ?: return content()
+    val frame = LocalWideFrame.current
     Box(
         Modifier.layout { measurable, constraints ->
-            val extra = frame.inset.dp.roundToPx()
+            val extra = fullWindowGrowth(frame).dp.roundToPx()
             val wider = constraints.copy(
                 minWidth = constraints.minWidth + extra,
                 maxWidth = if (constraints.hasBoundedWidth) constraints.maxWidth + extra else constraints.maxWidth,
@@ -62,3 +64,6 @@ fun FullWindow(content: @Composable () -> Unit) {
         },
     ) { content() }
 }
+
+/** How far, in dp, a screen over the whole window ([FullWindow]) grows past the screens' start edge: over the frame's navigation, or not at all where there is none. */
+internal fun fullWindowGrowth(frame: WideFrame?): Int = frame?.inset ?: 0

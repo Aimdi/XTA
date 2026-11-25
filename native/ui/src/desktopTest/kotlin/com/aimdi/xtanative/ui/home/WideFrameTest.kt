@@ -68,4 +68,13 @@ class WideFrameTest {
         assertEquals(FrameMark(group = "g1"), FrameMarks.ofStack(group, home, HomeBar.FEED, defaultBar))
         assertEquals(FrameMark(), FrameMarks.ofStack(listOf(FrameRoute("intro")), home, null, defaultBar))
     }
+
+    @Test
+    fun aScreenOverTheWholeWindowGrowsOverTheNavigationOnlyWhereThereIsOne() {
+        assertEquals(0, fullWindowGrowth(null), "no frame: in the screens' own place")
+        val frame = WideFrame()
+        assertEquals(HomeWide.FRAME_INSET, fullWindowGrowth(frame))
+        frame.inset = HomeWide.inset(FrameKind.RAIL)
+        assertEquals(HomeWide.RAIL_WIDTH + 1, fullWindowGrowth(frame), "over the rail, as the window narrows")
+    }
 }
