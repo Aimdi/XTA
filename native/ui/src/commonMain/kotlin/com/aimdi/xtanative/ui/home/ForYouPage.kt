@@ -13,11 +13,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -40,19 +36,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.common.FeedSkeleton
-import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.PostSkeleton
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.ReadFailureNotice
 import com.aimdi.xtanative.ui.common.WithReadingColumn
-import com.aimdi.xtanative.ui.common.problemText
+import com.aimdi.xtanative.ui.common.readFailureText
 import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.feed.feedThreads
 import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import com.aimdi.xtanative.ui.feed.rememberNearEnd
 import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.dismiss
 import com.aimdi.xtanative.ui.generated.resources.home_for_you_empty
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
@@ -133,7 +128,7 @@ private fun ForYouList(state: ForYouUi, vm: ForYouViewModel, actions: PostAction
     WithReadingColumn(contentPadding, list) { padding ->
         LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
             state.notice?.let { notice ->
-                item(key = "notice", contentType = "notice") { RefreshNotice(notice, vm::dismissNotice) }
+                item(key = "notice", contentType = "notice") { RefreshNotice(notice, { vm.refresh() }, vm::dismissNotice) }
             }
             feedThreads(state.threads, layout, actions, divider = divider) { thread -> ThreadRows(thread, actions) }
             item(key = "footer", contentType = "footer") {
@@ -149,17 +144,17 @@ private fun ForYouList(state: ForYouUi, vm: ForYouViewModel, actions: PostAction
     }
 }
 
-/** A refresh that failed over the posts shown. */
+/** A refresh that failed over the posts shown: why, and Retry, ⓘ and Close, as Following's failed refresh says it. */
 @Composable
-private fun RefreshNotice(problem: Problem, onDismiss: () -> Unit) {
+private fun RefreshNotice(problem: Problem, onRetry: () -> Unit, onDismiss: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(start = 16.dp, top = 4.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(
-            problemText(problem),
+            readFailureText(problem),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(1f),
         )
-        IconTip(stringResource(Res.string.dismiss)) { IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, stringResource(Res.string.dismiss)) } }
+        ReadFailureNotice(problem, onRetry, onDismiss = onDismiss)
     }
 }
 
