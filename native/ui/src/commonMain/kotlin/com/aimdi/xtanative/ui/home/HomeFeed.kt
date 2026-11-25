@@ -109,7 +109,8 @@ import org.jetbrains.compose.resources.stringResource
 
 /** Where the feed page's controls lead, in the shell that holds the drawer, the sheets and what opens over Home. */
 internal class FeedPageCalls(
-    val openMenu: () -> Unit,
+    /** The account menu opened; null while it stands beside Home ([PluginSwitcher.offersMenu]). */
+    val openMenu: (() -> Unit)?,
     val openSheet: (HomeSheet) -> Unit,
     val openLayer: (HomeLayer) -> Unit,
     /** The timeline at an index of [HomeUi.tabs] shown; the one shown, back to its top. */
@@ -476,9 +477,11 @@ private fun PluginSheet(
                 onDismiss()
                 calls.openSheet(HomeSheet.STRIP)
             },
-            onMenu = {
-                onDismiss()
-                calls.openMenu()
+            onMenu = calls.openMenu?.let { open ->
+                {
+                    onDismiss()
+                    open()
+                }
             },
             onManage = {
                 onDismiss()

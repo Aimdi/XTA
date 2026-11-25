@@ -82,6 +82,13 @@ internal object PluginSwitcher {
         return recent.filter { it in ids }.distinct() + ids.filterNot { it in recent }
     }
 
+    /**
+     * Whether the sheet offers the way to the account menu: not while the
+     * menu stands beside Home ([wide], the sidebar shown), unless the window's
+     * navigation is only a rail, whose menu opens over the window ([railMenu]).
+     */
+    fun offersMenu(wide: Boolean, railMenu: Boolean): Boolean = !wide || railMenu
+
     /** XTA's own timelines among Home's [tabs], which the sheet names as words: Following and X. */
     fun timelines(tabs: List<HomeTab>): List<HomeTab> = tabs.filter { it == HomeTab.Following || it == HomeTab.ForYou }
 }
@@ -109,8 +116,8 @@ internal class SwitcherCalls(
     val onNetwork: (String) -> Unit,
     /** Add timeline: the sheet that pins networks to Home. */
     val onAdd: () -> Unit,
-    /** The account menu, which no bar has a mark for. */
-    val onMenu: () -> Unit,
+    /** The account menu, which no bar has a mark for; null while it stands beside Home ([PluginSwitcher.offersMenu]). */
+    val onMenu: (() -> Unit)?,
     val onManage: () -> Unit,
     val onSettings: () -> Unit,
     val onDismiss: () -> Unit,
@@ -124,7 +131,7 @@ private fun SwitcherCalls.closingWith(closer: SheetCloser): SwitcherCalls = Swit
     onGroup = closer.closing(onGroup),
     onNetwork = closer.closing(onNetwork),
     onAdd = closer.closing(onAdd),
-    onMenu = closer.closing(onMenu),
+    onMenu = onMenu?.let { closer.closing(it) },
     onManage = closer.closing(onManage),
     onSettings = closer.closing(onSettings),
     onDismiss = onDismiss,
@@ -168,7 +175,7 @@ internal fun PluginSwitcherSheet(ui: HomeUi, networks: HomeNetworks, shown: Home
                     plugin.items?.invoke(this, close)
                     plugin.appEntries(this, close)
                 }
-                MenuRow(calls)
+                calls.onMenu?.let { MenuRow(it, calls.onAvatar) }
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             TimelineWords(ui, shown, unread, calls)
@@ -233,13 +240,13 @@ private fun SheetHead(shown: HomeTab?, ui: HomeUi, networks: HomeNetworks, plugi
 
 /** The way to the account menu, a row as the entries above it; a long press sets the reader's mark. */
 @Composable
-private fun MenuRow(calls: SwitcherCalls) {
+private fun MenuRow(onMenu: () -> Unit, onAvatar: () -> Unit) {
     val avatar = stringResource(Res.string.settings_avatar_title)
     DropdownMenuItem(
         text = { Text(stringResource(Res.string.home_open_menu)) },
         leadingIcon = { Icon(Icons.Filled.Menu, contentDescription = null) },
-        onClick = calls.onMenu,
-        modifier = Modifier.longPressOver { calls.onAvatar() }.semantics { onLongClick(avatar) { calls.onAvatar(); true } },
+        onClick = onMenu,
+        modifier = Modifier.longPressOver { onAvatar() }.semantics { onLongClick(avatar) { onAvatar(); true } },
     )
 }
 

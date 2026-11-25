@@ -235,7 +235,7 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean, wide: Boolean, frame:
     LaunchedEffect(wide, shell.drawer.targetValue) { if (wide && shell.drawer.targetValue == DrawerValue.Open) shell.drawer.snapTo(DrawerValue.Closed) }
     val feedCalls = FeedPageCalls(
         // In a wide window the menu stands open beside Home; beside the desktop's rail, the rail opens it over the window.
-        openMenu = { openMenu(shell, frame, scope) },
+        openMenu = { openMenu(shell, frame, scope) }.takeIf { PluginSwitcher.offersMenu(wide, railMenu = frame?.openMenu != null) },
         openSheet = { shell.sheet = it },
         openLayer = { shell.layer = it },
         onTab = { shell.turnTo(ui, it) },
@@ -618,7 +618,7 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
                 onMenu = {
                     close()
                     openMenu(shell, frame, scope)
-                },
+                }.takeIf { PluginSwitcher.offersMenu(shell.wide, railMenu = frame?.openMenu != null) },
                 onManage = {
                     close()
                     parts.routes.openIfExists(HomeDestination.PLUGINS.route)
