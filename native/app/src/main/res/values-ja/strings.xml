@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">XTA Native</string>
+    <string name="shortcut_search">検索</string>
+    <string name="shortcut_saved">保存済み</string>
+    <string name="shortcut_subscriptions">登録アカウント</string>
+</resources>

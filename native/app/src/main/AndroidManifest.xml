@@ -52,6 +52,10 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- A long press on the icon: the search, Saved and Subscriptions (res/xml/shortcuts.xml). -->
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
             <!-- Text shared from another app: an X link opens its post, another link its page, anything else is searched. -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />

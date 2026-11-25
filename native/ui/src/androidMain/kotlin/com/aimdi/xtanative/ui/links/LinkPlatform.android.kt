@@ -44,6 +44,13 @@ internal actual fun SharedTextEffect(onText: (String) -> Unit) = IntentEffect(::
 @Composable
 internal actual fun IncomingLinkEffect(onLink: (String) -> Unit) = IntentEffect(::viewedLink, onLink)
 
+/**
+ * The launcher shortcut the app is started with (res/xml/shortcuts.xml), by
+ * its intent's action, as [IncomingLinkEffect] hands a link.
+ */
+@Composable
+internal actual fun LauncherShortcutEffect(onShortcut: (String) -> Unit) = IntentEffect(::shortcutAction, onShortcut)
+
 /** Hands [onFound] what [read] finds in the intent the activity was started with, once, and in each one that reaches it afterwards. */
 @Composable
 private fun IntentEffect(read: (Intent?) -> String?, onFound: (String) -> Unit) {
@@ -77,6 +84,13 @@ private fun sharedText(intent: Intent?): String? {
     } catch (_: RuntimeException) {
         ""
     }
+}
+
+/** A shortcut's action; not again when the app is reopened from the recent apps with the shortcut's intent. */
+private fun shortcutAction(intent: Intent?): String? {
+    val started = intent?.takeIf { LauncherShortcut.isOne(it.action) } ?: return null
+    if (started.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0) return null
+    return started.action
 }
 
 private fun viewedLink(intent: Intent?): String? =

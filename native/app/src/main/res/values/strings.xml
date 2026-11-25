@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The launcher's label, which the manifest can only take from here. The
-     screens' strings are Compose resources in :ui (ui/src/commonMain/composeResources). -->
+<!-- What Android itself shows, which it can only take from here: the launcher's label, the
+     shortcuts under the app's icon (xml/shortcuts.xml), in the screens' own words. The screens'
+     strings are Compose resources in :ui (ui/src/commonMain/composeResources). -->
 <resources>
     <string name="app_name">XTA Native</string>
+    <string name="shortcut_search">Search</string>
+    <string name="shortcut_saved">Saved</string>
+    <string name="shortcut_subscriptions">Subscriptions</string>
 </resources>

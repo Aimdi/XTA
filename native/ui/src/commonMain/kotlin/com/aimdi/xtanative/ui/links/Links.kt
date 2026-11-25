@@ -69,6 +69,13 @@ internal expect fun SharedTextEffect(onText: (String) -> Unit)
 internal expect fun IncomingLinkEffect(onLink: (String) -> Unit)
 
 /**
+ * Hands [onShortcut] the action of a launcher shortcut the app is started with
+ * ([LauncherShortcut]). Only Android's launcher has them.
+ */
+@Composable
+internal expect fun LauncherShortcutEffect(onShortcut: (String) -> Unit)
+
+/**
  * The frame the app's screens open links in: one [LinkOpener] for all of
  * them, and the links Compose draws in text (which open through the
  * [LocalUriHandler]) going through it, so a link in a post opens what XTA

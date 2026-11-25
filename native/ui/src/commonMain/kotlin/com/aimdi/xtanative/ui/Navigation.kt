@@ -62,6 +62,7 @@ import com.aimdi.xtanative.ui.importer.ImportScreen
 import com.aimdi.xtanative.ui.intro.IntroFlow
 import com.aimdi.xtanative.ui.intro.IntroScreen
 import com.aimdi.xtanative.ui.links.BindLinkScreens
+import com.aimdi.xtanative.ui.links.LauncherShortcutEffect
 import com.aimdi.xtanative.ui.links.LinkBrowserScreen
 import com.aimdi.xtanative.ui.links.LinkScreens
 import com.aimdi.xtanative.ui.links.LocalLinks
@@ -429,6 +430,10 @@ fun XtaNativeRoot() {
     if (secondary == null) {
         ConfirmClose()
         UpdateCheck()
+        // A shortcut under the app's icon (Android's launcher) opens its screen over the one shown.
+        LauncherShortcutEffect { action ->
+            LauncherShortcuts.route(action, nav.currentDestination?.route)?.let { route -> runCatching { nav.navigate(route) { launchSingleTop = true } } }
+        }
     }
 }
 

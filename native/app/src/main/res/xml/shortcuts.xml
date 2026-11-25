@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What a long press on the app's icon offers: the search, Saved and Subscriptions. Each starts the
+     activity with an action of its own, which the screens read as they read a link handed to the app
+     (LauncherShortcuts in :ui). The package is the manifest's; the app has one id for every build. -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_search"
+        android:shortcutId="search"
+        android:shortcutShortLabel="@string/shortcut_search">
+        <intent
+            android:action="com.aimdi.xtanative.shortcut.SEARCH"
+            android:targetClass="com.aimdi.xtanative.MainActivity"
+            android:targetPackage="com.aimdi.xtanative" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_saved"
+        android:shortcutId="saved"
+        android:shortcutShortLabel="@string/shortcut_saved">
+        <intent
+            android:action="com.aimdi.xtanative.shortcut.SAVED"
+            android:targetClass="com.aimdi.xtanative.MainActivity"
+            android:targetPackage="com.aimdi.xtanative" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_subscriptions"
+        android:shortcutId="subscriptions"
+        android:shortcutShortLabel="@string/shortcut_subscriptions">
+        <intent
+            android:action="com.aimdi.xtanative.shortcut.SUBSCRIPTIONS"
+            android:targetClass="com.aimdi.xtanative.MainActivity"
+            android:targetPackage="com.aimdi.xtanative" />
+    </shortcut>
+</shortcuts>

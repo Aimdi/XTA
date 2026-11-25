@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">XTA Native</string>
+    <string name="shortcut_search">Ara</string>
+    <string name="shortcut_saved">Kaydedilmiş</string>
+    <string name="shortcut_subscriptions">Abonelikler</string>
+</resources>

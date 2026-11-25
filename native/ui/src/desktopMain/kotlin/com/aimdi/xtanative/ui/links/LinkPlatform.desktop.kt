@@ -15,6 +15,10 @@ internal actual fun rememberLinkPlatform(): LinkPlatform = DesktopLinks
 @Composable
 internal actual fun SharedTextEffect(onText: (String) -> Unit) = Unit
 
+/** The desktop's launcher has no shortcuts of the app's. */
+@Composable
+internal actual fun LauncherShortcutEffect(onShortcut: (String) -> Unit) = Unit
+
 /** Hands [onLink] each link `xta-native <url>` opened here ([DesktopIncomingLinks]). */
 @Composable
 internal actual fun IncomingLinkEffect(onLink: (String) -> Unit) {
