@@ -51,6 +51,12 @@ android {
         // that call it (plugins/android.gradle), so no plugin would link.
         minSdk = 26
         targetSdk = 35
+        // The app speaks 29 languages; the libraries' own strings (Media3's player, AndroidX) come in
+        // some eighty, which only weigh on the APK's resource table.
+        resourceConfigurations += listOf(
+            "en", "ar", "be", "be-rXL", "ca", "cs", "de", "eo", "es", "et", "eu", "fr", "hi", "in", "it", "ja", "ko",
+            "nb", "nb-rNO", "nl", "pl", "pt", "pt-rBR", "ro", "ru", "tr", "uk", "vi", "zh-rCN", "zh-rTW",
+        )
         versionCode = (System.getenv("NATIVE_VERSION_CODE") ?: "1").toInt()
         versionName = System.getenv("NATIVE_VERSION_NAME") ?: "0.1.0"
         buildConfigField("String", "MOCK_X", "\"$mockX\"")

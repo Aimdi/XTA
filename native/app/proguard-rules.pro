@@ -34,7 +34,11 @@
 -keep public class com.aimdi.xtanative.networks.* { public protected *; }
 -keep public class com.aimdi.xtanative.ui.** { public protected *; }
 -keep public class com.aimdi.xtanative.data.** { public protected *; }
--keep public class kotlin.** { public protected *; }
+# Kotlin's own description of each class (kotlin.Metadata) is for compilers and
+# kotlin-reflect; a plugin already compiled, and the app, which reflects on
+# nothing, run without it. Leaving the annotation out of what is kept lets R8
+# drop it from every class, which is a good part of a megabyte of the APK.
+-keep public class !kotlin.Metadata, kotlin.** { public protected *; }
 -keep public class kotlinx.coroutines.** { public protected *; }
 -keep public class kotlinx.serialization.** { public protected *; }
 -keep public class androidx.compose.runtime.** { public protected *; }

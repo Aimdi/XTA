@@ -148,7 +148,14 @@ jobs:
           apk=app/build/outputs/apk/release/app-release.apk
           cp "$apk" "$RUNNER_TEMP/xta-native-$VERSION_NAME.apk"
           echo "APK: $(stat -c %s "$apk") bytes"
-          unzip -lv "$apk" | sort -k1 -n -r | head -12
+          unzip -lv "$apk" | sort -k1 -n -r | head -12 || true
+          # What the APK's bytes are, compressed, by kind: where a megabyte to save would be.
+          unzip -lv "$apk" | awk 'NF==8 && $1 ~ /^[0-9]+$/ { n=$8; k="other"
+            if (n ~ /\.dex$/) k="code (dex)"; else if (n ~ /^assets\/composeResources/) k="screen strings and pictures"
+            else if (n ~ /^assets\//) k="other assets"; else if (n == "resources.arsc") k="resource table"
+            else if (n ~ /^res\//) k="android resources"; else if (n ~ /^lib\//) k="native code"
+            else if (n ~ /^META-INF\//) k="META-INF"; else if (n ~ /^kotlin\// || n ~ /\.kotlin_builtins$/) k="kotlin builtins"
+            size[k]+=$3; count[k]++ } END { for (k in size) printf "%10d bytes  %5d files  %s\n", size[k], count[k], k }' | sort -n -r
           {
             echo "### XTA Native $VERSION_NAME"
             echo
