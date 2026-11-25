@@ -43,6 +43,7 @@ import com.aimdi.xtanative.ui.chrome.ConfirmClose
 import com.aimdi.xtanative.ui.chrome.OfflineFrame
 import com.aimdi.xtanative.ui.chrome.SwipeBackCard
 import com.aimdi.xtanative.ui.chrome.UpdateCheck
+import com.aimdi.xtanative.ui.chrome.push
 import com.aimdi.xtanative.ui.common.CenteredPage
 import com.aimdi.xtanative.ui.common.LocalProblemActions
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
@@ -312,48 +313,48 @@ fun XtaNativeRoot() {
     val actions = remember(nav, links) {
         PostActions(
             // A post opens as a card over a picture of the screen it is opened from.
-            openPost = { id -> backs.open(opening) { nav.navigate(Routes.post(id)) } },
-            openProfile = { name -> nav.navigate(Routes.profile(name)) },
-            openMedia = { postId, index -> nav.navigate(Routes.media(postId, index)) },
+            openPost = { id -> backs.open(opening) { nav.push(Routes.post(id)) } },
+            openProfile = { name -> nav.push(Routes.profile(name)) },
+            openMedia = { postId, index -> nav.push(Routes.media(postId, index)) },
             // A search with no words yet (the desktop entry's "New search") opens with its field ready to type in.
-            search = { query -> nav.navigate(Routes.search(query, null, focus = query.isBlank())) },
-            openQuotes = { id -> nav.navigate(Routes.quotes(id)) },
-            openReposters = { id -> nav.navigate(Routes.reposters(id)) },
-            openArticle = { postId -> nav.navigate(Routes.article(postId)) },
-            openFollows = { name, followers -> nav.navigate(Routes.follows(name, followers)) },
+            search = { query -> nav.push(Routes.search(query, null, focus = query.isBlank())) },
+            openQuotes = { id -> nav.push(Routes.quotes(id)) },
+            openReposters = { id -> nav.push(Routes.reposters(id)) },
+            openArticle = { postId -> nav.push(Routes.article(postId)) },
+            openFollows = { name, followers -> nav.push(Routes.follows(name, followers)) },
             openLink = { url -> links?.open(url) },
             openInBrowser = { url -> links?.openOutside(url) },
-            openImage = { url, name -> nav.navigate(Routes.image(url, name)) },
-            openUser = { name, id -> nav.navigate(Routes.profile(name, id)) },
+            openImage = { url, name -> nav.push(Routes.image(url, name)) },
+            openUser = { name, id -> nav.push(Routes.profile(name, id)) },
         )
     }
     val searchActions = remember(nav) {
         SearchActions(
-            openCommunity = { id -> nav.navigate(Routes.community(id)) },
-            openAntennas = { nav.navigate(Routes.ANTENNAS) },
-            openLibrary = { query -> nav.navigate(Routes.library(query)) },
+            openCommunity = { id -> nav.push(Routes.community(id)) },
+            openAntennas = { nav.push(Routes.ANTENNAS) },
+            openLibrary = { query -> nav.push(Routes.library(query)) },
         )
     }
     val trendsActions = remember(nav) {
         TrendsActions(
-            openSearch = { query -> nav.navigate(Routes.search(query)) },
-            openPeople = { nav.navigate(Routes.search(null, SearchTab.PEOPLE.routeName)) },
-            openAntennas = { nav.navigate(Routes.ANTENNAS) },
-            openLibrary = { query -> nav.navigate(Routes.library(query)) },
+            openSearch = { query -> nav.push(Routes.search(query)) },
+            openPeople = { nav.push(Routes.search(null, SearchTab.PEOPLE.routeName)) },
+            openAntennas = { nav.push(Routes.ANTENNAS) },
+            openLibrary = { query -> nav.push(Routes.library(query)) },
         )
     }
-    val livePlayer = remember(nav) { { live: XLive -> nav.navigate(Routes.live(live)) } }
-    val homeRoutes = remember(nav) { HomeRoutes(exists = nav::hasRoute, open = { route -> nav.navigate(route) }) }
+    val livePlayer = remember(nav) { { live: XLive -> nav.push(Routes.live(live)) } }
+    val homeRoutes = remember(nav) { HomeRoutes(exists = nav::hasRoute, open = { route -> nav.push(route) }) }
     val plugins = LocalPlugins.current
     val linkScreens = remember(nav, actions, plugins) {
         LinkScreens(
             post = actions.openPost,
-            profile = { name, tab -> nav.navigate(Routes.profile(name, tab = ProfileTab.of(tab))) },
+            profile = { name, tab -> nav.push(Routes.profile(name, tab = ProfileTab.of(tab))) },
             search = actions.search,
-            searchOn = { query, tab -> nav.navigate(Routes.search(query, tab.routeName, focus = query.isBlank())) },
-            browser = { url, from -> nav.navigate(Routes.browser(url, from)) },
-            community = { id, about -> true.also { nav.navigate(if (about) Routes.communityAbout(id) else Routes.community(id)) } },
-            list = { id -> true.also { nav.navigate(Routes.list(id)) } },
+            searchOn = { query, tab -> nav.push(Routes.search(query, tab.routeName, focus = query.isBlank())) },
+            browser = { url, from -> nav.push(Routes.browser(url, from)) },
+            community = { id, about -> true.also { nav.push(if (about) Routes.communityAbout(id) else Routes.community(id)) } },
+            list = { id -> true.also { nav.push(Routes.list(id)) } },
             live = { link -> true.also { LiveRooms.open(LiveRooms.of(link), livePlayer, browser = { url -> links?.openOutside(url) }) } },
             plugin = plugins::openOnScreen,
             mightAskPlugin = plugins::mightOpenLater,
@@ -373,10 +374,10 @@ fun XtaNativeRoot() {
     val postWindows = remember { windowOpener()?.let { open -> { id: String -> open(Routes.post(id)) } } }
 
     // A grid's tiles open the viewer over everything it has loaded (media_grid_lightbox.dart).
-    val galleries = remember(nav) { { gallery: MediaGallery, at: Int -> nav.navigate(Routes.gallery(Galleries.put(gallery), at, gallery.pages().getOrNull(at))) } }
+    val galleries = remember(nav) { { gallery: MediaGallery, at: Int -> nav.push(Routes.gallery(Galleries.put(gallery), at, gallery.pages().getOrNull(at))) } }
     // A read failure's Add account opens the sign-in, and its Diagnostics the settings page.
     val problems = remember(nav) {
-        ProblemActions(addAccount = { nav.navigate(Routes.SIGN_IN) }, diagnostics = { nav.navigate(SettingsRoutes.of(SettingsSection.DIAGNOSTICS)) })
+        ProblemActions(addAccount = { nav.push(Routes.SIGN_IN) }, diagnostics = { nav.push(SettingsRoutes.of(SettingsSection.DIAGNOSTICS)) })
     }
     CompositionLocalProvider(
         LocalGalleryOpener provides galleries,
@@ -387,11 +388,11 @@ fun XtaNativeRoot() {
         // Ctrl+F and / on a screen with no search of its own open the search, its field ready: not over the
         // intro, the sign-in or an import, not over a plugin's pages (they keep their own keys), and not a
         // second search over one still opening.
-        val openSearch = remember(nav) { { if (SearchKeys.opensSearchOver(nav.currentDestination?.route)) nav.navigate(Routes.search(null)) } }
+        val openSearch = remember(nav) { { if (SearchKeys.opensSearchOver(nav.currentDestination?.route)) nav.push(Routes.search(null)) } }
         // Ctrl+, goes back to the settings where they are open below (Read aloud, the licences, the plugin store),
         // else opens them, unless a screen that must be finished first is shown.
         val openSettings = remember(nav) {
-            { if (!nav.popBackStack(Routes.SETTINGS, inclusive = false) && SearchKeys.opensSettingsOver(nav.currentDestination?.route)) nav.navigate(Routes.SETTINGS) }
+            { if (!nav.popBackStack(Routes.SETTINGS, inclusive = false) && SearchKeys.opensSettingsOver(nav.currentDestination?.route)) nav.push(Routes.SETTINGS) }
         }
         // Alt+Home goes back to Home, as a browser's goes to its home page, and to Home's start page there (not
         // Saved or another page last picked on its bar); nothing where Home is not below.
@@ -413,7 +414,7 @@ fun XtaNativeRoot() {
         val goForward = remember(nav, forward, backs, opening) {
             {
                 forward.next()?.let { step ->
-                    val open = { runCatching { nav.navigate(step.route) }.onFailure { forward.clear() }; Unit }
+                    val open = { runCatching { nav.push(step.route) }.onFailure { forward.clear() }; Unit }
                     // A post opens as a card over a picture of the screen, as it does when clicked; one that
                     // does not open (another still opening) leaves the step to go forward to.
                     if (step.pattern == Routes.POST) backs.open(opening, abandoned = { forward.putBack(step) }, navigate = open) else open()
@@ -424,7 +425,7 @@ fun XtaNativeRoot() {
         DesktopNavigation(nav, openSearch, openSettings, openHome, goForward) { OfflineFrame { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) } }
     }
     if (askSignIn) {
-        NotLoggedInDialog(onImportBackup = { nav.navigate(Routes.IMPORT) }, onLogin = { nav.navigate(Routes.SIGN_IN) }, onDismiss = { askSignIn = false })
+        NotLoggedInDialog(onImportBackup = { nav.push(Routes.IMPORT) }, onLogin = { nav.push(Routes.SIGN_IN) }, onDismiss = { askSignIn = false })
     }
     if (secondary == null) {
         ConfirmClose()
@@ -453,7 +454,7 @@ private fun OpenVoiceSettingsWhenAsked(nav: NavHostController, shown: () -> Unit
     val speech = LocalSpeech.current ?: return
     LaunchedEffect(speech, nav) {
         speech.voiceSettingsAsked.collect {
-            nav.navigate(Routes.SPEECH_SETTINGS)
+            nav.push(Routes.SPEECH_SETTINGS)
             shown()
         }
     }
@@ -506,7 +507,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
                     graph.keep { graph.settings.update(IntroFlow::finished) }
                     nav.startOver(Routes.HOME)
                 },
-                onSignIn = { nav.navigate(Routes.SIGN_IN) },
+                onSignIn = { nav.push(Routes.SIGN_IN) },
             )
         }
         composable(Routes.SIGN_IN) {
@@ -518,8 +519,8 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
         composable(Routes.INTRO) {
             IntroScreen(
                 onFinished = { nav.startOver(Routes.HOME) },
-                onImport = { nav.navigate(Routes.IMPORT) },
-                onOpen = { route -> nav.navigate(route) },
+                onImport = { nav.push(Routes.IMPORT) },
+                onOpen = { route -> nav.push(route) },
             )
         }
         composable(Routes.HOME) {
@@ -565,7 +566,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
                 userId = entry.text("id"),
                 openingTab = ProfileTab.ofRoute(entry.text("tab")),
             ) { query ->
-                nav.navigate(Routes.search(query, SearchTab.LATEST.routeName, focus = true))
+                nav.push(Routes.search(query, SearchTab.LATEST.routeName, focus = true))
             }
         }
         composable(
@@ -596,7 +597,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
                 entry.arguments?.read { getIntOrNull("index") } ?: 0,
                 fallbackPostId = entry.text("post"),
                 fallbackIndex = entry.arguments?.read { getIntOrNull("at") } ?: 0,
-                openPost = { id, media -> nav.navigate(Routes.post(id, media)) },
+                openPost = { id, media -> nav.push(Routes.post(id, media)) },
                 onClose = { nav.popBackStack() },
             )
         }
@@ -615,10 +616,10 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             TrendsScreen(trendsActions, onBack = { nav.popBackStack() })
         }
         composable(Routes.COMMUNITY, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
-            CommunityScreen(entry.text("id").orEmpty(), about = false, actions, openMembers = { id -> nav.navigate(Routes.communityMembers(id)) }, onBack = { nav.popBackStack() })
+            CommunityScreen(entry.text("id").orEmpty(), about = false, actions, openMembers = { id -> nav.push(Routes.communityMembers(id)) }, onBack = { nav.popBackStack() })
         }
         composable(Routes.COMMUNITY_ABOUT, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
-            CommunityScreen(entry.text("id").orEmpty(), about = true, actions, openMembers = { id -> nav.navigate(Routes.communityMembers(id)) }, onBack = { nav.popBackStack() })
+            CommunityScreen(entry.text("id").orEmpty(), about = true, actions, openMembers = { id -> nav.push(Routes.communityMembers(id)) }, onBack = { nav.popBackStack() })
         }
         composable(Routes.COMMUNITY_MEMBERS, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             CommunityMembersScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() })
@@ -627,7 +628,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             ListImportScreen(entry.text("id"), onBack = { nav.popBackStack() })
         }
         composable(Routes.ANTENNAS) {
-            AntennasScreen(openAntenna = { id -> nav.navigate(Routes.antenna(id)) }, onBack = { nav.popBackStack() })
+            AntennasScreen(openAntenna = { id -> nav.push(Routes.antenna(id)) }, onBack = { nav.popBackStack() })
         }
         composable(Routes.ANTENNA, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             AntennaFeedScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() })
@@ -660,7 +661,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
         composable(Routes.SETTINGS) {
             SettingsScreen(
                 onBack = { nav.popBackStack() },
-                onOpen = { route -> nav.navigate(route) },
+                onOpen = { route -> nav.push(route) },
                 onIntroAgain = { nav.startOver(Routes.INTRO) },
             )
         }
@@ -671,7 +672,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             CenteredPage {
                 LibrarySearchScreen(
                     entry.text("q"),
-                    open = { target -> if (target is LibraryTarget.XPost) actions.openPost(target.id) else nav.navigate(Routes.of(target)) },
+                    open = { target -> if (target is LibraryTarget.XPost) actions.openPost(target.id) else nav.push(Routes.of(target)) },
                     onBack = { nav.popBackStack() },
                 )
             }
@@ -691,9 +692,9 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             val plugins = LocalPlugins.current
             OfflineLibraryScreen(
                 onBack = { nav.popBackStack() },
-                openMedia = { id -> nav.navigate(Routes.offlineMedia(id)) },
+                openMedia = { id -> nav.push(Routes.offlineMedia(id)) },
                 // In the reader of the plugin it came from (RSS's, Substack's), else the archive's page of the copy.
-                openArticle = { article -> if (!plugins.openOffline(article)) nav.navigate(Routes.archive(article.id)) },
+                openArticle = { article -> if (!plugins.openOffline(article)) nav.push(Routes.archive(article.id)) },
             )
         }
         composable(
@@ -719,7 +720,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
                 entry.text("section").orEmpty(),
                 entry.text("focus"),
                 onBack = { nav.popBackStack() },
-                onOpen = { route -> nav.navigate(route) },
+                onOpen = { route -> nav.push(route) },
                 onStartOver = { nav.startOver(Routes.IMPORT) },
             )
         }
@@ -727,13 +728,13 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             BackupScreen(onBack = { nav.popBackStack() })
         }
         composable(SettingsRoutes.LICENCES) {
-            LicencesScreen(onOpen = { module -> nav.navigate(SettingsRoutes.licence(module)) }, onBack = { nav.popBackStack() })
+            LicencesScreen(onOpen = { module -> nav.push(SettingsRoutes.licence(module)) }, onBack = { nav.popBackStack() })
         }
         composable(Routes.LICENCE, arguments = listOf(navArgument("module") { type = NavType.StringType; nullable = true; defaultValue = null })) { entry ->
             LicenceScreen(entry.text("module").orEmpty(), onBack = { nav.popBackStack() })
         }
         composable(Routes.SUBSCRIPTIONS_IMPORT) {
-            ImportFollowingScreen(onBack = { nav.popBackStack() }, onSortUngrouped = { nav.navigate(Routes.SUBSCRIPTIONS_SORT) })
+            ImportFollowingScreen(onBack = { nav.popBackStack() }, onSortUngrouped = { nav.push(Routes.SUBSCRIPTIONS_SORT) })
         }
         composable(
             Routes.SUBSCRIPTIONS_IMPORT_LIST,
@@ -744,7 +745,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
         composable(Routes.SUBSCRIPTIONS_SORT) {
             SortUngroupedScreen(
                 onBack = { nav.popBackStack() },
-                onSortOneByOne = { ids -> nav.navigate(Routes.sortOne(ids)) },
+                onSortOneByOne = { ids -> nav.push(Routes.sortOne(ids)) },
                 onApplied = { leftovers ->
                     if (leftovers.isEmpty()) {
                         nav.popBackStack()
@@ -835,24 +836,24 @@ private fun NavHostController.backToHome() {
 private fun subscriptionsNavigation(nav: NavHostController, actions: PostActions) = SubscriptionsNavigation(
     openProfile = actions.openUser,
     search = actions.search,
-    openGroup = { id -> nav.navigate(Routes.group(id)) },
-    importFollowing = { nav.navigate(Routes.SUBSCRIPTIONS_IMPORT) },
-    importList = { nav.navigate(Routes.importList(null)) },
-    sortUngrouped = { nav.navigate(Routes.SUBSCRIPTIONS_SORT) },
-    settings = { nav.navigate(Routes.SETTINGS) },
-    antennas = { nav.navigate(Routes.ANTENNAS) },
-    deck = { nav.navigate(Routes.DECK) },
-    discoverGroup = { id -> nav.navigate(Routes.groupDiscover(id)) },
+    openGroup = { id -> nav.push(Routes.group(id)) },
+    importFollowing = { nav.push(Routes.SUBSCRIPTIONS_IMPORT) },
+    importList = { nav.push(Routes.importList(null)) },
+    sortUngrouped = { nav.push(Routes.SUBSCRIPTIONS_SORT) },
+    settings = { nav.push(Routes.SETTINGS) },
+    antennas = { nav.push(Routes.ANTENNAS) },
+    deck = { nav.push(Routes.DECK) },
+    discoverGroup = { id -> nav.push(Routes.groupDiscover(id)) },
 )
 
 /** Where Saved leads, whether it is a page of Home's bar or a screen of its own. */
 private fun savedLinks(nav: NavHostController) = SavedLinks(
-    openFolders = { nav.navigate(Routes.SAVED_FOLDERS) },
-    openThread = { rootId -> nav.navigate(Routes.noteThread(rootId)) },
-    openDownloads = { nav.navigate(Routes.DOWNLOADS) },
-    openOffline = { nav.navigate(Routes.OFFLINE) },
-    openSettings = { nav.navigate(Routes.SETTINGS) },
-    searchLibrary = { nav.navigate(Routes.library(null)) },
+    openFolders = { nav.push(Routes.SAVED_FOLDERS) },
+    openThread = { rootId -> nav.push(Routes.noteThread(rootId)) },
+    openDownloads = { nav.push(Routes.DOWNLOADS) },
+    openOffline = { nav.push(Routes.OFFLINE) },
+    openSettings = { nav.push(Routes.SETTINGS) },
+    searchLibrary = { nav.push(Routes.library(null)) },
 )
 
 /** Where Ctrl+F and / open the app's search, on a screen with no search field of its own. */
