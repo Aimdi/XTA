@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.common.ListScrollbar
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
 import com.aimdi.xtanative.ui.generated.resources.keys_alt
@@ -147,15 +150,20 @@ object DesktopShortcuts {
     )
 }
 
-/** The list of the desktop's keys ([DesktopShortcuts]), over the page until closed (Esc, or its button). */
+/** The list of the desktop's keys ([DesktopShortcuts]), with the desktop's scrollbar beside it, over the page until closed (Esc, or its button). */
 @Composable
 internal fun ShortcutsDialog(onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.keys_title)) },
         text = {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                items(DesktopShortcuts.all) { shortcut -> ShortcutRow(shortcut) }
+            val list = rememberLazyListState()
+            Box {
+                // The bar's own lane at the end, so it never covers the keys.
+                LazyColumn(Modifier.padding(end = 12.dp), state = list, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    items(DesktopShortcuts.all) { shortcut -> ShortcutRow(shortcut) }
+                }
+                ListScrollbar(list, Modifier.align(Alignment.TopEnd))
             }
         },
         confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.close)) } },
