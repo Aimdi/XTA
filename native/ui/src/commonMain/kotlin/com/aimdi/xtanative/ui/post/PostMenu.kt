@@ -25,6 +25,9 @@ import com.aimdi.xtanative.ui.common.LocalProfileFilters
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_hide_from
 import com.aimdi.xtanative.ui.generated.resources.posts_show_from
+import com.aimdi.xtanative.ui.generated.resources.reader_speech_listen
+import com.aimdi.xtanative.ui.generated.resources.reader_speech_stop_listening
+import com.aimdi.xtanative.ui.media.ReaderIcons
 import com.aimdi.xtanative.ui.plugins.PluginMenuRow
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
@@ -36,6 +39,8 @@ import com.aimdi.xtanative.ui.saved.LocalKeeper
 import com.aimdi.xtanative.ui.saved.NoteSheet
 import com.aimdi.xtanative.ui.saved.SaveSheet
 import com.aimdi.xtanative.ui.saved.isSaved
+import com.aimdi.xtanative.ui.speech.LocalSpeech
+import com.aimdi.xtanative.ui.speech.SpeechTexts
 import org.jetbrains.compose.resources.stringResource
 
 /** What an X post's ⋯ sheet opens once it has closed: the note on the post, its folders, its author's groups; or nothing more. */
@@ -92,8 +97,32 @@ private fun MenuSheet(post: XPost, actions: PostActions, onDismiss: () -> Unit, 
     val inWindow = remember(windows, shown.id) { windows?.let { open -> { open(shown.id) } } }
     PostMenuSurface(onDismiss) {
         PostMenuRows(menu, saved, handlers, onDone = { onStep(MenuStep.CLOSED) }, newWindow = inWindow)
+        ListenRow(post, onDone = { onStep(MenuStep.CLOSED) })
         LocalProfileFilters.current?.let { filters -> HideAuthorRow(post, filters, onDone = { onStep(MenuStep.CLOSED) }) }
     }
+}
+
+/**
+ * "Listen" in a card's menu: reads the post aloud without opening it, as the
+ * opened post's bar does, and stops it when pressed while it is read. None
+ * for a post with no words to read, or where nothing reads aloud.
+ */
+@Composable
+private fun ListenRow(post: XPost, onDone: () -> Unit) {
+    val speech = LocalSpeech.current ?: return
+    val title = SpeechTexts.title(post)
+    val text = remember(post) { SpeechTexts.thread(listOf(post)) }
+    if (text.isEmpty()) return
+    val playback by speech.playback.collectAsState()
+    val reading = playback.speaking && playback.title == title
+    PluginMenuRow(
+        if (reading) ReaderIcons.StopCircle else ReaderIcons.RecordVoiceOverOutlined,
+        stringResource(if (reading) Res.string.reader_speech_stop_listening else Res.string.reader_speech_listen),
+        onClick = {
+            onDone()
+            speech.toggle(title, text)
+        },
+    )
 }
 
 /**
