@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.style.TextOverflow
@@ -205,7 +206,7 @@ fun PostCard(
                         enabled = PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName),
                     ) { actions.openUser(shown.author.screenName, shown.author.id) },
                 contentAlignment = Alignment.Center,
-            ) { PostAvatar(shown, scope, actions, AvatarSize) }
+            ) { PostAvatar(shown, scope, actions, AvatarSize, inTarget = true) }
             Spacer(Modifier.width((PostGeometry.COLUMN_START - PostGeometry.AVATAR_START - PostGeometry.TOUCH_TARGET).dp))
             val buttons = if (translation != null) 2 else 1
             Box(Modifier.weight(1f)) {
@@ -278,19 +279,23 @@ private fun ContextLines(post: XPost, actions: PostActions, pinned: Boolean, fir
     }
 }
 
-/** The author's picture, opening the profile, with the author's card where the pointer rests on it; a plain face in non-confirmation-bias mode; XTA's follow badge on it. */
+/**
+ * The author's picture, opening the profile, with the author's card where the pointer rests on it; a plain face in non-confirmation-bias mode; XTA's follow badge on it.
+ * [inTarget] where a 48 dp target round it opens the author too: that target is Tab's stop, not the picture again.
+ */
 @Composable
-internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, size: Dp) {
+internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, size: Dp, inTarget: Boolean = false) {
     if (!PostView.showsAuthor(post, scope.prefs, scope.profileScreenName)) {
         Icon(Icons.Filled.AccountCircle, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(size))
         return
     }
     val open = { actions.openUser(post.author.screenName, post.author.id) }
+    val picture = if (inTarget) Modifier.focusProperties { canFocus = false } else Modifier
     AuthorHoverCard(post.author, post.author.largeAvatarUrl, open) {
         if (scope.prefs.followBadge) {
-            FollowBadge(post.author, size) { Avatar(post.author.largeAvatarUrl, size, onClick = open) }
+            FollowBadge(post.author, size) { Avatar(post.author.largeAvatarUrl, size, picture, onClick = open) }
         } else {
-            Avatar(post.author.largeAvatarUrl, size, onClick = open)
+            Avatar(post.author.largeAvatarUrl, size, picture, onClick = open)
         }
     }
 }
