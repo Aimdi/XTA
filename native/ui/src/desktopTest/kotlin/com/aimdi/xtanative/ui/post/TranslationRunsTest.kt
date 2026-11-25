@@ -16,12 +16,12 @@ import kotlin.test.assertSame
 
 class TranslationRunsTest {
     private val post = XPost("1", XUser("u", "u", "U"), null, "hallo")
-    private val english = post.copy(text = "hello")
+    private val english = TranslatedText { it.copy(text = "hello") }
 
     @Test
     fun `a translation goes on when the card that asked for it leaves`() = runBlocking {
         val runs = TranslationRuns(CoroutineScope(Job() + Dispatchers.Default))
-        val answer = CompletableDeferred<XPost>()
+        val answer = CompletableDeferred<TranslatedText>()
         val card = CoroutineScope(Job())
         val first = PostTranslation(post, runs.of("k"), runs) { answer.await() }
         first.translate()
@@ -55,6 +55,18 @@ class TranslationRunsTest {
         fail = false
         translation.translate()
         assertEquals(TranslationStatus.TRANSLATED, translation.status)
+    }
+
+    @Test
+    fun `the translation is shown on the post as it is now, not as it was when it was asked`() = runBlocking {
+        val runs = TranslationRuns(CoroutineScope(Job() + Dispatchers.Unconfined))
+        PostTranslation(post, runs.of("k"), runs) { english }.translate()
+        val later = post.copy(likeCount = 7)
+        val back = PostTranslation(later, runs.of("k"), runs) { error("asked twice") }
+        back.translate()
+        assertEquals("hello", back.shown.text)
+        assertEquals(7L, back.shown.likeCount)
+        assertSame(back.shown, back.shown)
     }
 
     @Test

@@ -33,7 +33,16 @@ import kotlinx.coroutines.launch
 internal class TranslationRun {
     var status by mutableStateOf(TranslationStatus.ORIGINAL)
     var problem by mutableStateOf<TranslationProblem?>(null)
-    var translated by mutableStateOf<XPost?>(null)
+    var translated by mutableStateOf<TranslatedText?>(null)
+}
+
+/**
+ * What a translation gave, and only that (X's [com.aimdi.xtanative.services.ai.Translation]
+ * or a service's text): it is put on the post as the card has it now, so
+ * counts, polls and media read since stay current while it is shown.
+ */
+internal fun interface TranslatedText {
+    fun on(post: XPost): XPost
 }
 
 /**
@@ -56,7 +65,7 @@ internal class TranslationRuns(
      * Translates [run] with [ask], unless it is under way: a translation
      * already given is shown again without asking X twice.
      */
-    fun start(run: TranslationRun, ask: suspend () -> XPost) {
+    fun start(run: TranslationRun, ask: suspend () -> TranslatedText) {
         if (run.status == TranslationStatus.TRANSLATING) return
         if (run.translated != null) {
             run.status = TranslationStatus.TRANSLATED
@@ -97,13 +106,19 @@ class PostTranslation internal constructor(
     private val post: XPost,
     private val run: TranslationRun,
     private val runs: TranslationRuns,
-    private val ask: suspend () -> XPost,
+    private val ask: suspend () -> TranslatedText,
 ) {
     val status: TranslationStatus get() = run.status
     val problem: TranslationProblem? get() = run.problem
 
-    /** What the card draws: the translation while it is shown, else the post. */
-    val shown: XPost get() = run.translated?.takeIf { status == TranslationStatus.TRANSLATED } ?: post
+    private var applied: Pair<TranslatedText, XPost>? = null
+
+    /** What the card draws: [post] with the translation while it is shown (made once per translation), else the post. */
+    val shown: XPost get() {
+        val translated = run.translated?.takeIf { status == TranslationStatus.TRANSLATED } ?: return post
+        applied?.takeIf { it.first === translated }?.let { return it.second }
+        return translated.on(post).also { applied = translated to it }
+    }
 
     /** Translates, or shows the translation already given; it goes on when the card leaves. */
     fun translate() = runs.start(run, ask)
@@ -138,13 +153,13 @@ internal fun rememberPostTranslation(post: XPost, scope: PostScope): PostTransla
         val run = runs.of(TranslationRuns.key(post.id, target, service.takeIf { it.enabled }))
         if (service.enabled) {
             PostTranslation(post, run, runs) {
-                val translated = translations.translate(ServiceTranslation.text(post), target, service)
+                val text = translations.translate(ServiceTranslation.text(post), target, service)?.text
                     ?: throw TranslationException(TranslationFailure.NOT_CONFIGURED)
-                ServiceTranslation.applied(post, translated.text)
+                TranslatedText { now -> ServiceTranslation.applied(now, text) }
             }
         } else {
             val translator = XTranslator({ id, language -> client.translate(id, language) }, TranslationMemory.shared)
-            PostTranslation(post, run, runs) { translator.translate(post.id, post.lang, target).applyTo(post) }
+            PostTranslation(post, run, runs) { TranslatedText(translator.translate(post.id, post.lang, target)::applyTo) }
         }
     }
     val all = scope.translateAll
