@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import android.os.Build
+import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
@@ -13,8 +14,16 @@ internal actual fun ProvidePlatformLook(content: @Composable () -> Unit) = conte
 @Composable
 internal actual fun systemPrefersDark(): Boolean = isSystemInDarkTheme()
 
+/**
+ * Whether the phone's own "Remove animations" is on (Settings ›
+ * Accessibility), which sets the animator scale to nothing; read each time
+ * the theme is drawn anew.
+ */
 @Composable
-internal actual fun systemReducesMotion(): Boolean = false
+internal actual fun systemReducesMotion(): Boolean {
+    val resolver = LocalContext.current.contentResolver
+    return runCatching { Settings.Global.getFloat(resolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f }.getOrDefault(false)
+}
 
 /**
  * The accent Android draws its own screens with since Android 12 (Material

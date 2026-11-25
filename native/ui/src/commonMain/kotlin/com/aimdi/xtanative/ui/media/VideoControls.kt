@@ -62,6 +62,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -79,6 +80,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -395,6 +397,8 @@ private fun PositionText(state: VideoState) {
 @Composable
 private fun SeekBar(state: VideoState, modifier: Modifier, onTouch: () -> Unit, onSeek: (Long) -> Unit) {
     var dragged by remember { mutableStateOf<Float?>(null) }
+    var barWidth by remember { mutableIntStateOf(0) }
+    var timeWidth by remember { mutableIntStateOf(0) }
     val accent = MaterialTheme.colorScheme.primary
     val label = stringResource(Res.string.reader_video)
     val played = dragged ?: VideoRules.fraction(state.positionMs, state.durationMs)
@@ -404,6 +408,7 @@ private fun SeekBar(state: VideoState, modifier: Modifier, onTouch: () -> Unit, 
         modifier
             .fillMaxWidth()
             .height(48.dp)
+            .onSizeChanged { barWidth = it.width }
             .clearAndSetSemantics {
                 contentDescription = label
                 stateDescription = position
@@ -448,7 +453,33 @@ private fun SeekBar(state: VideoState, modifier: Modifier, onTouch: () -> Unit, 
             drawRoundRect(accent, Offset(0f, top), Size(size.width * played, height), radius)
             drawCircle(accent, radius = 6.dp.toPx(), center = Offset(size.width * played, size.height / 2f))
         }
+        // While the finger moves along the bar, the time it would seek to rides above it.
+        dragged?.takeIf { state.durationMs > 0 }?.let { at ->
+            Text(
+                VideoRules.timeText((at * state.durationMs).toLong()),
+                color = Color.White,
+                fontSize = 12.sp,
+                maxLines = 1,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .offset { IntOffset(SeekTime.left(at, barWidth, timeWidth), -SEEK_TIME_RISE.roundToPx()) }
+                    .onSizeChanged { timeWidth = it.width }
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(Color.Black.copy(alpha = 0.7f))
+                    .padding(horizontal = 6.dp, vertical = 2.dp),
+            )
+        }
     }
+}
+
+/** How far above the bar's top the time being sought stands, clear of the finger. */
+private val SEEK_TIME_RISE = 22.dp
+
+/** Where the time being sought stands along the seek bar. */
+internal object SeekTime {
+    /** The label's left edge: centred on the place [fraction] of [barWidth], kept whole within the bar. */
+    fun left(fraction: Float, barWidth: Int, labelWidth: Int): Int =
+        ((fraction * barWidth).toInt() - labelWidth / 2).coerceIn(0, (barWidth - labelWidth).coerceAtLeast(0))
 }
 
 /** "10 s" in a round badge at the side a double tap skipped to. */

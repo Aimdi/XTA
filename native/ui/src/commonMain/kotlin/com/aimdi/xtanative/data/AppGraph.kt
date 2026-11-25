@@ -43,6 +43,7 @@ import com.aimdi.xtanative.store.settings.CrashReportPrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.downloads.Downloading
 import com.aimdi.xtanative.ui.downloads.PlatformFiles
+import com.aimdi.xtanative.ui.media.VideoPlaces
 import com.aimdi.xtanative.ui.saved.Keeper
 import com.aimdi.xtanative.ui.settings.ChromeAvatar
 import com.aimdi.xtanative.ui.settings.DeviceBackup
@@ -235,6 +236,8 @@ class AppGraph(
             if (mockX == null) scope.launch { crashReporter.sendKept() }
         }
         scope.launch { sessions.load() }
+        // Where long videos were left, taken up from the last run.
+        VideoPlaces.keepIn(File(files, "video_places.json"), scope)
         // Files a deleted note's undo set aside, left by the last run: no undo is offered any more.
         scope.launch { runCatching { localPosts.discardSetAside() } }
         scope.launch {
