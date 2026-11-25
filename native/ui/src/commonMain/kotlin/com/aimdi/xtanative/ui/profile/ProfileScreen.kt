@@ -194,7 +194,10 @@ fun ProfileScreen(
     // Each tab keeps its own place in the list ([ProfileTabScroll]), moved to in the frame the tab turns.
     val tabScroll = remember(list) { ProfileTabScroll() }
     val select: (ProfileTab) -> Unit = { to ->
-        tabScroll.turned(state.tab, to, ScrollSpot(list.firstVisibleItemIndex, list.firstVisibleItemScrollOffset))?.let { list.requestScrollToItem(it.index, it.offset) }
+        // The tab row's place: under the header, and under a problem's row while one shows.
+        val tabRow = ProfileTabScroll.itemsAbove(state.failure != null, state.loading && !state.complete, state.problem != null).size
+        tabScroll.turned(state.tab, to, ScrollSpot(list.firstVisibleItemIndex, list.firstVisibleItemScrollOffset), tabRow)
+            ?.let { list.requestScrollToItem(it.index, it.offset) }
         vm.select(to)
     }
     val user = state.user
@@ -255,14 +258,16 @@ fun ProfileScreen(
                     contentPadding = column,
                     modifier = Modifier.fillMaxSize().swipeTabs(if (tabbed) ProfileTab.entries else emptyList(), state.tab, select),
                 ) {
-                    item(key = "header", contentType = "header") {
-                        Header(state, follow, screenName, actions, onSheet = { sheet = it })
-                    }
                     val problem = state.problem
-                    when {
-                        failure != null -> item(key = "failure") { FailurePage(failure) }
-                        state.loading && !state.complete -> item(key = "loading") { LoadingRow() }
-                        problem != null -> item(key = "problem") { ProblemRow(problem, { vm.load() }) }
+                    ProfileTabScroll.itemsAbove(failure != null, state.loading && !state.complete, problem != null).forEach { top ->
+                        when (top) {
+                            ProfileTop.HEADER -> item(key = top.key, contentType = top.key) {
+                                Header(state, follow, screenName, actions, onSheet = { sheet = it })
+                            }
+                            ProfileTop.FAILURE -> failure?.let { item(key = top.key) { FailurePage(it) } }
+                            ProfileTop.LOADING -> item(key = top.key) { LoadingRow() }
+                            ProfileTop.PROBLEM -> problem?.let { item(key = top.key) { ProblemRow(it, { vm.load() }) } }
+                        }
                     }
                     if (state.complete && user != null) {
                         stickyHeader(key = "tabs", contentType = "tabs") { Tabs(state.tab, select) }
