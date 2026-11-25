@@ -32,6 +32,9 @@ class CardBacks {
     private val kept = LinkedHashMap<String, ImageBitmap>()
     private val watched = HashSet<String>()
 
+    /** How the screens are pictured; a test's stand-in in tests. */
+    internal var pictured: suspend () -> ImageBitmap? = { picture() }
+
     /** [content], the app's screens, drawn so that they can be pictured. */
     @Composable
     fun Recorded(content: @Composable () -> Unit) {
@@ -52,18 +55,20 @@ class CardBacks {
      * Pictures the screens, then runs [navigate]: a picture that cannot be
      * taken leaves the card on its dark stage. [abandoned] runs instead when
      * nothing is navigated: another card still opening, or the picture's
-     * work cancelled.
+     * work cancelled. A [navigate] that opens nothing (false: the second tap
+     * of a double-tap) drops the picture, so a card opened later without one
+     * does not take it.
      */
-    fun open(scope: CoroutineScope, abandoned: () -> Unit = {}, navigate: () -> Unit) {
+    fun open(scope: CoroutineScope, abandoned: () -> Unit = {}, navigate: () -> Boolean) {
         if (opening) return abandoned()
         opening = true
         val job = scope.launch {
             try {
-                pending = picture()
+                pending = pictured()
             } finally {
                 opening = false
             }
-            navigate()
+            if (!navigate()) pending = null
         }
         job.invokeOnCompletion { cause -> if (cause != null) abandoned() }
     }
@@ -82,11 +87,14 @@ class CardBacks {
                 },
             )
         }
-        kept[id] ?: pending?.also {
-            kept[id] = it
-            pending = null
-            trim()
-        }
+        take(id)
+    }
+
+    /** The picture kept for screen [id], or the one just taken, which is then [id]'s. */
+    internal fun take(id: String): ImageBitmap? = kept[id] ?: pending?.also {
+        kept[id] = it
+        pending = null
+        trim()
     }
 
     private suspend fun picture(): ImageBitmap? {

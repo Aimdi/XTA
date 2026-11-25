@@ -34,11 +34,15 @@ internal class NavRepeats {
 
 private val repeats = WeakHashMap<NavHostController, NavRepeats>()
 
-/** [route] opened over the screen on top, unless it is the screen that was just opened there ([NavRepeats]). */
-internal fun NavHostController.push(route: String) {
+/**
+ * [route] opened over the screen on top, unless it is the screen that was
+ * just opened there ([NavRepeats]); whether it was opened.
+ */
+internal fun NavHostController.push(route: String): Boolean {
     val guard = synchronized(repeats) { repeats.getOrPut(this) { NavRepeats() } }
     val now = System.currentTimeMillis()
-    if (!guard.allows(route, currentBackStackEntry?.id, now)) return
+    if (!guard.allows(route, currentBackStackEntry?.id, now)) return false
     navigate(route)
     guard.pushed(route, currentBackStackEntry?.id, now)
+    return true
 }

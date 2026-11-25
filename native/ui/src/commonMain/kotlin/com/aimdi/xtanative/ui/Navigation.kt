@@ -343,7 +343,7 @@ fun XtaNativeRoot() {
             openLibrary = { query -> nav.push(Routes.library(query)) },
         )
     }
-    val livePlayer = remember(nav) { { live: XLive -> nav.push(Routes.live(live)) } }
+    val livePlayer = remember(nav) { { live: XLive -> nav.push(Routes.live(live)); Unit } }
     val homeRoutes = remember(nav) { HomeRoutes(exists = nav::hasRoute, open = { route -> nav.push(route) }) }
     val plugins = LocalPlugins.current
     val linkScreens = remember(nav, actions, plugins) {
@@ -374,7 +374,12 @@ fun XtaNativeRoot() {
     val postWindows = remember { windowOpener()?.let { open -> { id: String -> open(Routes.post(id)) } } }
 
     // A grid's tiles open the viewer over everything it has loaded (media_grid_lightbox.dart).
-    val galleries = remember(nav) { { gallery: MediaGallery, at: Int -> nav.push(Routes.gallery(Galleries.put(gallery), at, gallery.pages().getOrNull(at))) } }
+    val galleries = remember(nav) {
+        { gallery: MediaGallery, at: Int ->
+            nav.push(Routes.gallery(Galleries.put(gallery), at, gallery.pages().getOrNull(at)))
+            Unit
+        }
+    }
     // A read failure's Add account opens the sign-in, and its Diagnostics the settings page.
     val problems = remember(nav) {
         ProblemActions(addAccount = { nav.push(Routes.SIGN_IN) }, diagnostics = { nav.push(SettingsRoutes.of(SettingsSection.DIAGNOSTICS)) })
@@ -414,7 +419,7 @@ fun XtaNativeRoot() {
         val goForward = remember(nav, forward, backs, opening) {
             {
                 forward.next()?.let { step ->
-                    val open = { runCatching { nav.push(step.route) }.onFailure { forward.clear() }; Unit }
+                    val open = { runCatching { nav.push(step.route) }.onFailure { forward.clear() }.getOrDefault(false) }
                     // A post opens as a card over a picture of the screen, as it does when clicked; one that
                     // does not open (another still opening) leaves the step to go forward to.
                     if (step.pattern == Routes.POST) backs.open(opening, abandoned = { forward.putBack(step) }, navigate = open) else open()
