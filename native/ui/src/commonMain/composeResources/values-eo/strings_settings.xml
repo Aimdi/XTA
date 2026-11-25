@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">Kaŝas afiŝojn enhavantajn ĉi tiujn vortojn en ĉiu fluo. La propraj silentigitaj vortoj de grupo aldoniĝas al ili. Unuopa vorto kongruas nur kun tutaj vortoj; frazo kongruas ĉie.</string>
     <string name="settings_image_quality">Kvalito de bildoj</string>
     <string name="settings_load_manually">Ŝargi aŭdvidaĵojn permane</string>
     <string name="settings_load_manually_description">Bildoj kaj videoj ne ŝargiĝos ĝis vi tuŝos ilin, por ŝpari moldatumojn.</string>

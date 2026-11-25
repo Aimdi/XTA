@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">모든 피드에서 이 단어가 포함된 게시물을 숨깁니다. 그룹의 자체 뮤트한 단어는 여기에 더해집니다. 한 단어는 온전한 단어에만, 구절은 어디서든 일치합니다.</string>
     <string name="settings_image_quality">이미지 화질</string>
     <string name="settings_load_manually">미디어 수동으로 불러오기</string>
     <string name="settings_load_manually_description">모바일 데이터를 절약하기 위해 이미지와 동영상은 탭하기 전까지 불러오지 않습니다.</string>

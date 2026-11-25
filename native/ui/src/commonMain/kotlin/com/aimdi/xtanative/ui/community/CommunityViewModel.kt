@@ -8,6 +8,7 @@ import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.feed.HiddenPosts
+import com.aimdi.xtanative.ui.feed.MutedEverywhere
 import com.aimdi.xtanative.ui.search.Narrowed
 import com.aimdi.xtanative.ui.search.Page
 import com.aimdi.xtanative.ui.search.PageEnd
@@ -39,6 +40,8 @@ class CommunityViewModel(private val graph: AppGraph, private val id: String, ab
     init {
         load()
         viewModelScope.launch { HiddenPosts.of(graph.profileFilters).collect { hidden -> posts.narrow { HiddenPosts.withoutAuthors(it, hidden) } } }
+        // The words muted in every feed: a community folds nothing, so a word set to fold hides here.
+        viewModelScope.launch { MutedEverywhere.of(graph.settings).collect { muted -> posts.narrow { MutedEverywhere.shown(it, muted) } } }
     }
 
     fun load() {
@@ -62,7 +65,8 @@ class CommunityViewModel(private val graph: AppGraph, private val id: String, ab
                 val page = graph.client.communityPosts(id, cursor)
                 graph.posts.remember(page.threads)
                 state.update { it.copy(pinnedIds = it.pinnedIds + page.pinnedIds) }
-                Narrowed(HiddenPosts.withoutAuthors(page.threads, graph.profileFilters.filters()), page.threads.size, page.bottomCursor)
+                val kept = HiddenPosts.withoutAuthors(page.threads, graph.profileFilters.filters())
+                Narrowed(MutedEverywhere.shown(kept, MutedEverywhere.of(graph.settings.load())), page.threads.size, page.bottomCursor)
             }
         }
     }

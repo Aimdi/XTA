@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">Скрывает посты с этими словами во всех лентах. Собственные скрытые слова группы добавляются к этим. Одно слово совпадает только целиком, фраза — в любом месте.</string>
     <string name="settings_image_quality">Качество изображений</string>
     <string name="settings_load_manually">Загружать медиа вручную</string>
     <string name="settings_load_manually_description">Изображения и видео будут загружаться только после нажатия, чтобы экономить мобильный трафик.</string>

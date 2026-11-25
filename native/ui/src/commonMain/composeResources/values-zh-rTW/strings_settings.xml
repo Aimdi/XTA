@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">在所有動態中隱藏包含這些字詞的貼文。群組自己的封鎖字詞會額外加上。單一詞只比對完整詞，詞組則在任意位置比對。</string>
     <string name="settings_image_quality">圖片品質</string>
     <string name="settings_load_manually">手動載入媒體</string>
     <string name="settings_load_manually_description">為節省行動數據，圖片和影片在點按前不會載入。</string>

@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">Хавае пасты з гэтымі словамі ва ўсіх стужках. Уласныя прыглушаныя словы групы дадаюцца да гэтых. Адно слова супадае толькі цалкам, фраза — у любым месцы.</string>
     <string name="settings_image_quality">Якасць выяў</string>
     <string name="settings_load_manually">Загружаць медыя ўручную</string>
     <string name="settings_load_manually_description">Выявы і відэа не будуць загружацца, пакуль вы іх не націснеце — каб эканоміць мабільны трафік.</string>

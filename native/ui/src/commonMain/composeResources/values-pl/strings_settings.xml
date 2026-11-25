@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">Ukrywa wpisy zawierające te słowa w każdym kanale. Własne wyciszone słowa grupy są do nich dodawane. Jedno słowo pasuje tylko do całych słów, fraza pasuje w dowolnym miejscu.</string>
     <string name="settings_image_quality">Jakość obrazów</string>
     <string name="settings_load_manually">Ładuj multimedia ręcznie</string>
     <string name="settings_load_manually_description">Obrazy i filmy będą ładowane dopiero po dotknięciu, aby oszczędzać dane komórkowe.</string>

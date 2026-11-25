@@ -167,6 +167,13 @@ object PostsPrefs : PrefSection() {
     val languages = text("feed.languages", "")
     val languageAction = choice("feed.language_action", LanguageFilterAction.OFF, LanguageFilterAction.entries)
 
+    /**
+     * The words muted in every X feed, as `MutedKeywords.encodeStored` writes
+     * them (a JSON array of term, expiry and action; empty with none). A
+     * group's own muted words add to these.
+     */
+    val mutedWords = text("feed.muted_words", "", seeded = false)
+
     /** When For you last cached a first page (ISO-8601), for the strip's unread dot. */
     val forYouNewestCachedAt = text("feed.for_you_newest_cached_at", "", seeded = false)
 

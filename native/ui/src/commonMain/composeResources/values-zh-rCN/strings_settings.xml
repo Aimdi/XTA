@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">隐藏</string>
     <string name="settings_language_filter_fold">折叠</string>
     <string name="settings_language_filter_action">其他语言的帖子</string>
+    <string name="settings_muted_words_description">在所有信息流中隐藏包含这些词的帖子。群组自己的屏蔽词会在此基础上叠加。单个词只匹配完整词，词组在任意位置匹配。</string>
     <string name="settings_image_quality">图片质量</string>
     <string name="settings_load_manually">手动加载媒体</string>
     <string name="settings_load_manually_description">为节省移动数据，图片和视频在点按前不会加载。</string>

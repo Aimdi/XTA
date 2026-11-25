@@ -71,8 +71,13 @@ import com.aimdi.xtanative.store.settings.ThemeBackground
 import com.aimdi.xtanative.store.settings.ThemePrefs
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.groups_muted
+import com.aimdi.xtanative.ui.generated.resources.settings_muted_words_description
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login_description
+import com.aimdi.xtanative.ui.feed.MutedEverywhere
+import com.aimdi.xtanative.ui.feed.MutedEverywhereActions
+import com.aimdi.xtanative.ui.group.MutedWords
 import com.aimdi.xtanative.ui.links.BrowserPickerRow
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.speech.VoiceSettingsSheet
@@ -295,6 +300,9 @@ internal fun PostsSettings(title: String, vm: SettingsViewModel, focus: String?,
 
             SettingsHeader(stringResource(Res.string.settings_language_filter), stringResource(Res.string.settings_language_filter_description))
             LanguageFilterRows(settings, vm)
+
+            SettingsHeader(stringResource(Res.string.groups_muted), stringResource(Res.string.settings_muted_words_description))
+            MutedEverywhereRows(settings, vm, focus)
         }
     }
     if (confirmAll) {
@@ -310,6 +318,17 @@ internal fun PostsSettings(title: String, vm: SettingsViewModel, focus: String?,
             confirmAll = false
             vm.updateSession { it.withoutOwnChoices(replies = true).withoutOwnChoices(replies = false) }
         }
+    }
+}
+
+/** The words muted in every feed, edited as a group's own are (the same chips and options). */
+@Composable
+private fun MutedEverywhereRows(settings: Settings, vm: SettingsViewModel, focus: String?) {
+    val stored = settings[PostsPrefs.mutedWords]
+    val keywords = remember(stored) { MutedEverywhere.of(settings) }
+    val actions = remember(vm) { MutedEverywhereActions(vm::update) }
+    Column(Modifier.fillMaxWidth().focusedSetting(focus == PostsPrefs.mutedWords.key).padding(horizontal = 16.dp, vertical = 8.dp)) {
+        MutedWords(keywords, actions)
     }
 }
 

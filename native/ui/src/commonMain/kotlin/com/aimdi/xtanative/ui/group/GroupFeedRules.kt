@@ -16,6 +16,8 @@ import com.aimdi.xtanative.store.saved.ProfileFilters
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.feed.HiddenPosts
+import com.aimdi.xtanative.ui.feed.MutedEverywhere
+import com.aimdi.xtanative.ui.feed.MutedWordList
 import java.time.Duration
 import java.time.Instant
 
@@ -27,6 +29,8 @@ data class FeedPrefs(
     val zenPageCap: Int = 5,
     val readingPosition: Boolean = true,
     val hideUnrelatedWarning: Boolean = false,
+    /** The words muted in every feed (Settings › Posts), which a group's own add to. */
+    val mutedEverywhere: List<MutedKeyword> = emptyList(),
 ) {
     /** The zen feed's pages per session; null without zen mode. */
     val pageCap: Int? get() = zenPageCap.takeIf { zen }
@@ -39,6 +43,7 @@ data class FeedPrefs(
             zenPageCap = settings[PostsPrefs.zenPageCap],
             readingPosition = settings[PostsPrefs.rememberReadingPosition],
             hideUnrelatedWarning = settings[PostsPrefs.hideUnrelatedPostWarnings],
+            mutedEverywhere = MutedEverywhere.of(settings),
         )
     }
 }
@@ -56,12 +61,16 @@ object GroupFeedRules {
      * [groupId]'s plan (the Following feed's for null, as XTA's Following is
      * its group `-1`), with [alsoRead] read alongside a group, the language
      * filter, zen mode and the reposts and replies the reader hid on profiles
-     * ([hidden]) added, and the rules reading what X says of each post.
+     * ([hidden]) added, and the rules reading what X says of each post. The
+     * words muted in every feed join the feed's own in its rules, so they hide
+     * and fold as its own do, and changing them reads the feed again as
+     * changing its own does ([GroupFeedPlan.readKey]).
      */
     fun plan(session: Session, prefs: FeedPrefs, groupId: String?, alsoRead: Set<String>, hidden: ProfileFilters = ProfileFilters()): GroupFeedPlan {
         val plan = session.feedPlan(groupId, groupId?.let { alsoRead - it }.orEmpty())
         val language = LanguageFilter(LanguageFilter.parseLanguages(prefs.languages), prefs.languageAction)
-        return plan.copy(shaping = HiddenPosts.shaping(hidden, plan.shaping.copy(language = language, zen = prefs.zen, facts = XPostFacts)))
+        val rules = MutedEverywhere.added(plan.shaping.rules, prefs.mutedEverywhere)
+        return plan.copy(shaping = HiddenPosts.shaping(hidden, plan.shaping.copy(rules = rules, language = language, zen = prefs.zen, facts = XPostFacts)))
     }
 
     /** What the rules read of a post, as XTA reads a tweet: whether X marks it sensitive, and its language; a repost's are the reposted post's. */
@@ -95,23 +104,18 @@ object GroupFeedRules {
     fun withSort(settings: FeedSettings, sort: FeedSort): FeedSettings = if (settings.sort == sort) settings else settings.copy(sort = sort)
 
     /** [settings] with what was typed muted too: each term once, whatever its case. */
-    fun withMuted(settings: FeedSettings, typed: String): FeedSettings {
-        val terms = MutedKeywords.parseTyped(typed)
-        if (terms.isEmpty()) return settings
-        val known = settings.rules.mutedKeywords.mapTo(HashSet()) { it.term.lowercase() }
-        val added = terms.filter { known.add(it.lowercase()) }.map { MutedKeyword(it) }
-        return withKeywords(settings, settings.rules.mutedKeywords + added)
-    }
+    fun withMuted(settings: FeedSettings, typed: String): FeedSettings =
+        if (MutedKeywords.parseTyped(typed).isEmpty()) settings else withKeywords(settings, MutedWordList.added(settings.rules.mutedKeywords, typed))
 
     fun withoutMuted(settings: FeedSettings, term: String): FeedSettings =
-        withKeywords(settings, settings.rules.mutedKeywords.filterNot { it.term == term })
+        withKeywords(settings, MutedWordList.removed(settings.rules.mutedKeywords, term))
 
     fun withAction(settings: FeedSettings, term: String, action: KeywordAction): FeedSettings =
-        withKeywords(settings, settings.rules.mutedKeywords.map { if (it.term == term) it.copy(action = action) else it })
+        withKeywords(settings, MutedWordList.withAction(settings.rules.mutedKeywords, term, action))
 
     /** [term] muted for [duration] from [now], or for good with null. */
     fun withExpiry(settings: FeedSettings, term: String, duration: Duration?, now: Instant): FeedSettings =
-        withKeywords(settings, settings.rules.mutedKeywords.map { if (it.term == term) it.copy(until = duration?.let(now::plus)) else it })
+        withKeywords(settings, MutedWordList.withExpiry(settings.rules.mutedKeywords, term, duration, now))
 
     private fun withKeywords(settings: FeedSettings, keywords: List<MutedKeyword>) =
         settings.copy(rules = settings.rules.copy(mutedKeywords = keywords))
@@ -124,7 +128,7 @@ object GroupFeedRules {
     fun thresholdChoices(value: Int): List<Int> = if (value in THRESHOLDS) THRESHOLDS else THRESHOLDS + value
 
     /** The expiries a muted word may get, in XTA's order: never, a day, a week, a month. */
-    val EXPIRIES: List<Duration?> = listOf(null, Duration.ofDays(1), Duration.ofDays(7), Duration.ofDays(30))
+    val EXPIRIES: List<Duration?> get() = MutedWordList.EXPIRIES
 
     /** The languages as typed, trimmed; with none, the filter has nothing to keep and goes off. */
     fun languagePrefs(typed: String, action: LanguageAction): Pair<String, LanguageAction> {

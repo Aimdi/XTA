@@ -11,11 +11,13 @@ import com.aimdi.xtanative.core.feed.LanguageAction
 import com.aimdi.xtanative.core.feed.MutedKeyword
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.store.saved.ProfileFilters
 import com.aimdi.xtanative.store.settings.LanguageFilterAction
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.feed.MutedEverywhere
 import java.time.Duration
 import java.time.Instant
 import kotlin.test.Test
@@ -115,6 +117,26 @@ class GroupFeedRulesTest {
         assertNull(GroupFeedRules.withExpiry(settings, "black friday", null, now).rules.mutedKeywords[1].until)
         assertEquals(listOf("black friday"), GroupFeedRules.withoutMuted(settings, "Spoilers").rules.mutedKeywords.map { it.term })
         assertSame(settings, GroupFeedRules.withMuted(settings, " , "))
+    }
+
+    @Test
+    fun theWordsMutedEverywhereJoinTheGroupsOwnWhichWin() {
+        val own = listOf(MutedKeyword("Spoilers", action = KeywordAction.FOLD))
+        val grouped = session.copy(feeds = mapOf("g" to FeedSettings(rules = FeedRules(mutedKeywords = own))))
+        val settings = MutedEverywhere.edited(Settings()) { listOf(MutedKeyword("spoilers"), MutedKeyword("crypto")) }
+        val prefs = FeedPrefs.of(settings)
+        val plan = GroupFeedRules.plan(grouped, prefs, "g", emptySet())
+        assertEquals(own + MutedKeyword("crypto"), plan.shaping.rules.mutedKeywords)
+        assertEquals(own, grouped.settingsOf("g").rules.mutedKeywords, "the group's own list is what its settings show and keep")
+        assertEquals(listOf("spoilers", "crypto"), GroupFeedRules.plan(grouped, prefs, null, emptySet()).shaping.rules.mutedKeywords.map { it.term }, "Following too")
+        val now = Instant.parse("2026-01-01T00:00:00Z")
+        fun thread(id: String, text: String) = XThread(id, listOf(XPost(id, XUser("1", "user1", "User 1"), now, text)))
+        val shaped = plan.shaping.shape(listOf(thread("1", "crypto news"), thread("2", "spoilers ahead"), thread("3", "a walk")), now)
+        assertEquals(setOf("2", "3"), shaped.threads.mapTo(HashSet()) { it.id }, "a word muted everywhere hides in a group")
+        assertEquals(mapOf("2" to "Spoilers"), shaped.foldReasons, "and the group's own choice for a word stands")
+        val before = GroupFeedRules.plan(grouped, FeedPrefs(), "g", emptySet())
+        assertEquals(own, before.shaping.rules.mutedKeywords)
+        assertFalse(before.readKey == plan.readKey, "a change reads the feed again, as a change to the group's own words does")
     }
 
     @Test

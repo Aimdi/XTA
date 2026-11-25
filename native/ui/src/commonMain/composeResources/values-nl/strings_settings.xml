@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">Verberg berichten met deze woorden in elke feed. De eigen genegeerde woorden van een groep komen hier nog bij. Eén woord matcht alleen hele woorden; een woordgroep matcht overal.</string>
     <string name="settings_image_quality">Beeldkwaliteit</string>
     <string name="settings_load_manually">Media handmatig laden</string>
     <string name="settings_load_manually_description">Afbeeldingen en video's worden pas geladen als je erop tikt, om mobiele data te besparen.</string>

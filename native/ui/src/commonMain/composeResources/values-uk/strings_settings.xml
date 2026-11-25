@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">Приховує пости з цими словами в усіх стрічках. Власні приховані слова групи додаються до цих. Одне слово збігається лише цілком, фраза — будь-де.</string>
     <string name="settings_image_quality">Якість зображень</string>
     <string name="settings_load_manually">Завантажувати медіа вручну</string>
     <string name="settings_load_manually_description">Зображення та відео завантажуватимуться лише після дотику, щоб заощаджувати мобільний трафік.</string>

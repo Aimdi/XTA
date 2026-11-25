@@ -1,5 +1,9 @@
 package com.aimdi.xtanative.store.settings
 
+import com.aimdi.xtanative.core.feed.KeywordAction
+import com.aimdi.xtanative.core.feed.MutedKeyword
+import com.aimdi.xtanative.core.feed.MutedKeywords
+import java.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -160,6 +164,19 @@ class SettingsTest {
     @Test
     fun anExportOfNeitherCarriesNoSettings() {
         assertNull(exportSample().exported(includeSettings = false, includeSubscriptions = false))
+    }
+
+    @Test
+    fun theWordsMutedInEveryFeedTravelWithABackupAsTheyWereStored() {
+        val words = listOf(MutedKeyword("spoilers", Instant.parse("2026-01-08T00:00:00Z"), KeywordAction.FOLD), MutedKeyword("black friday"))
+        assertEquals("", Settings()[PostsPrefs.mutedWords])
+        assertNull(Settings().preferences()["feed.muted_words"], "XTA has no such key, so none is seeded")
+        val settings = Settings().with(PostsPrefs.mutedWords, MutedKeywords.encodeStored(words))
+        assertEquals(words, MutedKeywords.parseStored(settings[PostsPrefs.mutedWords]))
+        val exported = settings.exported(includeSettings = true, includeSubscriptions = false)!!
+        val restored = Settings().restoring(exported)
+        assertEquals(words, MutedKeywords.parseStored(restored[PostsPrefs.mutedWords]))
+        assertFalse("feed.muted_words" in settings.exported(includeSettings = false, includeSubscriptions = true).orEmpty(), "a setting, not a subscription")
     }
 
     @Test

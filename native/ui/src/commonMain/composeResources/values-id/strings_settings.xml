@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">Sembunyikan postingan yang memuat kata-kata ini di semua feed. Kata yang dibisukan milik sebuah grup ditambahkan ke daftar ini. Satu kata hanya cocok dengan kata utuh; sebuah frasa cocok di mana saja.</string>
     <string name="settings_image_quality">Kualitas gambar</string>
     <string name="settings_load_manually">Muat media secara manual</string>
     <string name="settings_load_manually_description">Gambar dan video tidak akan dimuat sampai Anda mengetuknya, untuk menghemat data seluler.</string>

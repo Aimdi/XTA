@@ -63,6 +63,8 @@ import com.aimdi.xtanative.ui.common.ColumnScrollbar
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.groups_muted
+import com.aimdi.xtanative.ui.generated.resources.settings_muted_words_description
 import com.aimdi.xtanative.ui.generated.resources.saved_clear_search
 import com.aimdi.xtanative.ui.generated.resources.settings_proxy
 import com.aimdi.xtanative.ui.generated.resources.settings_proxy_description
@@ -287,6 +289,7 @@ private val INDEX = listOf(
     Indexed(SettingsSection.POSTS, PostsPrefs.calmMode.key, Res.string.settings_calm_mode, Res.string.settings_calm_mode_description),
     Indexed(SettingsSection.POSTS, PostsPrefs.zenPageCap.key, Res.string.settings_zen_page_cap, Res.string.settings_zen_page_cap_description),
     Indexed(SettingsSection.POSTS, PostsPrefs.rememberReadingPosition.key, Res.string.settings_reading_position, Res.string.settings_reading_position_description),
+    Indexed(SettingsSection.POSTS, PostsPrefs.mutedWords.key, Res.string.groups_muted, Res.string.settings_muted_words_description),
     Indexed(SettingsSection.MEDIA, MediaPrefs.loadManually.key, Res.string.settings_load_manually, Res.string.settings_load_manually_description),
     Indexed(SettingsSection.MEDIA, MediaPrefs.imageQuality.key, Res.string.settings_image_quality, Res.string.settings_save_bandwidth),
     Indexed(SettingsSection.MEDIA, MediaPrefs.saveDataOnMobile.key, Res.string.settings_save_data_mobile, Res.string.settings_save_data_mobile_description),

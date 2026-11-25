@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">Hide posts containing these words in every feed. A group's own muted words add to these. A single word matches whole words only; a phrase matches anywhere.</string>
     <string name="settings_image_quality">Image quality</string>
     <string name="settings_load_manually">Load media manually</string>
     <string name="settings_load_manually_description">Photos and videos won't load until you tap them, to save mobile data.</string>

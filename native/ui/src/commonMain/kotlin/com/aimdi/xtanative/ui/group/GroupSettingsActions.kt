@@ -9,6 +9,7 @@ import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.store.settings.LanguageFilterAction
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.feed.MutedWordsActions
 import java.time.Duration
 import java.time.Instant
 import kotlinx.coroutines.CoroutineScope
@@ -19,7 +20,7 @@ import kotlinx.coroutines.launch
  * _settings.dart, group_custom_settings.dart): the group's own choices in the
  * session, and the reader's language filter and warnings in the settings.
  */
-class GroupSettingsActions(private val graph: AppGraph, private val groupId: String, private val scope: CoroutineScope) {
+class GroupSettingsActions(private val graph: AppGraph, private val groupId: String, private val scope: CoroutineScope) : MutedWordsActions {
     private fun feed(change: (FeedSettings) -> FeedSettings) {
         scope.launch { graph.sessions.update { it.withSettings(groupId, change(it.settingsOf(groupId))) } }
     }
@@ -43,13 +44,13 @@ class GroupSettingsActions(private val graph: AppGraph, private val groupId: Str
 
     fun setMinReposts(value: Int) = feed { GroupFeedRules.withMinReposts(it, value) }
 
-    fun mute(typed: String) = feed { GroupFeedRules.withMuted(it, typed) }
+    override fun mute(typed: String) = feed { GroupFeedRules.withMuted(it, typed) }
 
-    fun unmute(term: String) = feed { GroupFeedRules.withoutMuted(it, term) }
+    override fun unmute(term: String) = feed { GroupFeedRules.withoutMuted(it, term) }
 
-    fun setKeywordAction(term: String, action: KeywordAction) = feed { GroupFeedRules.withAction(it, term, action) }
+    override fun setKeywordAction(term: String, action: KeywordAction) = feed { GroupFeedRules.withAction(it, term, action) }
 
-    fun setKeywordExpiry(term: String, duration: Duration?) = feed { GroupFeedRules.withExpiry(it, term, duration, Instant.now()) }
+    override fun setKeywordExpiry(term: String, duration: Duration?) = feed { GroupFeedRules.withExpiry(it, term, duration, Instant.now()) }
 
     fun toggleDeck() {
         scope.launch { graph.sessions.update { it.toggledDeck(groupId) } }

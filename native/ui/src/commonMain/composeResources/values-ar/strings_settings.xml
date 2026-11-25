@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">يخفي المنشورات التي تحتوي هذه الكلمات في كل الموجزات. الكلمات المكتومة الخاصة بكل مجموعة تُضاف إلى هذه. الكلمة المفردة تُطابق الكلمات الكاملة فقط، والعبارة تُطابق في أي موضع.</string>
     <string name="settings_image_quality">جودة الصور</string>
     <string name="settings_load_manually">تحميل الوسائط يدويًا</string>
     <string name="settings_load_manually_description">لن يتم تحميل الصور والفيديوهات إلا عند النقر عليها، لتوفير بيانات الجوّال.</string>

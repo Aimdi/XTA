@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Schavać</string>
     <string name="settings_language_filter_fold">Zharnuć</string>
     <string name="settings_language_filter_action">Dopisy na inšych movach</string>
+    <string name="settings_muted_words_description">Chavaje pasty z hetymi słovami va ŭsich stužkach. Ułasnyja pryhlušanyja słovy hrupy dadajucca da hetych. Adno słova supadaje tolki całkam, fraza — u lubym miescy.</string>
     <string name="settings_image_quality">Jakasć vyjaŭ</string>
     <string name="settings_load_manually">Zahružać medyja ŭručnuju</string>
     <string name="settings_load_manually_description">Vyjavy i videa nie buduć zahružacca, pakul vy ich nie nacisniecie — kab ekanomić mabilny trafik.</string>

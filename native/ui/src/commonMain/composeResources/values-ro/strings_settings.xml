@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">Ascunde postările care conțin aceste cuvinte în toate fluxurile. Cuvintele ignorate proprii unui grup se adaugă la acestea. Un singur cuvânt se potrivește doar cu cuvinte întregi; o expresie se potrivește oriunde.</string>
     <string name="settings_image_quality">Calitatea imaginilor</string>
     <string name="settings_load_manually">Încarcă manual conținutul media</string>
     <string name="settings_load_manually_description">Imaginile și videoclipurile se încarcă doar când le atingi, pentru a economisi date mobile.</string>

@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">Skjuler innlegg som inneholder disse ordene i alle feeder. En gruppes egne dempede ord kommer i tillegg. Ett ord treffer bare hele ord; en frase treffer hvor som helst.</string>
     <string name="settings_image_quality">Bildekvalitet</string>
     <string name="settings_load_manually">Last inn medier manuelt</string>
     <string name="settings_load_manually_description">Bilder og videoer lastes ikke inn før du trykker på dem, for å spare mobildata.</string>

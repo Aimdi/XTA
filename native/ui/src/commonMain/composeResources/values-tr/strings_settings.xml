@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">Bu kelimeleri içeren gönderileri tüm akışlarda gizler. Bir grubun kendi sessize alınan kelimeleri bunlara eklenir. Tek kelime yalnızca tam kelimeyle eşleşir; bir ifade her yerde eşleşir.</string>
     <string name="settings_image_quality">Görüntü kalitesi</string>
     <string name="settings_load_manually">Medyayı elle yükle</string>
     <string name="settings_load_manually_description">Mobil veriden tasarruf etmek için görüntüler ve videolar siz dokunana kadar yüklenmez.</string>

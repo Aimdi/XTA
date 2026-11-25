@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">Ẩn bài viết chứa những từ này trong mọi bảng tin. Các từ đã tắt tiếng riêng của một nhóm được cộng thêm vào danh sách này. Một từ đơn chỉ khớp trọn từ; một cụm từ khớp ở bất kỳ đâu.</string>
     <string name="settings_image_quality">Chất lượng hình ảnh</string>
     <string name="settings_load_manually">Tải phương tiện thủ công</string>
     <string name="settings_load_manually_description">Hình ảnh và video sẽ không tải cho đến khi bạn chạm vào, để tiết kiệm dữ liệu di động.</string>

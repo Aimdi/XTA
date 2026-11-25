@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">Skryje příspěvky s těmito slovy ve všech kanálech. Vlastní ztišená slova skupiny se k nim přidávají. Jedno slovo odpovídá jen celým slovům, fráze kdekoli.</string>
     <string name="settings_image_quality">Kvalita obrázků</string>
     <string name="settings_load_manually">Načítat média ručně</string>
     <string name="settings_load_manually_description">Obrázky a videa se načtou až po klepnutí, aby se šetřila mobilní data.</string>

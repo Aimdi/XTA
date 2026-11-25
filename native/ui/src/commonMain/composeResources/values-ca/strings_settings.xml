@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">Amaga les publicacions amb aquestes paraules a tots els canals. Les paraules silenciades pròpies d'un grup s'hi afegeixen. Una sola paraula només coincideix amb paraules senceres; una frase coincideix a qualsevol lloc.</string>
     <string name="settings_image_quality">Qualitat de les imatges</string>
     <string name="settings_load_manually">Carregar els mèdia manualment</string>
     <string name="settings_load_manually_description">Les imatges i els vídeos només es carreguen en tocar-los, per estalviar dades mòbils.</string>

@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Ausblenden</string>
     <string name="settings_language_filter_fold">Einklappen</string>
     <string name="settings_language_filter_action">Beiträge in anderen Sprachen</string>
+    <string name="settings_muted_words_description">Blende Beiträge mit diesen Wörtern in jedem Feed aus. Die eigenen stummgeschalteten Wörter einer Gruppe kommen hinzu. Ein einzelnes Wort trifft nur ganze Wörter, eine Wortgruppe überall.</string>
     <string name="settings_image_quality">Bildqualität</string>
     <string name="settings_load_manually">Medien manuell laden</string>
     <string name="settings_load_manually_description">Fotos und Videos werden erst beim Antippen geladen, um mobile Daten zu sparen.</string>

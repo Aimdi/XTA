@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">हर फ़ीड में इन शब्दों वाली पोस्ट छिपाएँ। किसी समूह के अपने म्यूट किए शब्द इनमें जुड़ते हैं। एक शब्द केवल पूरे शब्द से मेल खाता है; वाक्यांश कहीं भी मेल खाता है।</string>
     <string name="settings_image_quality">छवि गुणवत्ता</string>
     <string name="settings_load_manually">मीडिया मैन्युअल रूप से लोड करें</string>
     <string name="settings_load_manually_description">मोबाइल डेटा बचाने के लिए छवियाँ और वीडियो तब तक लोड नहीं होंगे जब तक आप उन्हें टैप न करें।</string>

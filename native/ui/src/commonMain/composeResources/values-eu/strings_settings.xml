@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
     <string name="settings_language_filter_action">Posts in other languages</string>
+    <string name="settings_muted_words_description">Hitz hauek dituzten argitalpenak jario guztietan ezkutatzen ditu. Talde baten isilarazitako hitzak hauei gehitzen zaizkie. Hitz bakarrak hitz osoak baino ez ditu bat egiten; esaldi batek edonon.</string>
     <string name="settings_image_quality">Irudien kalitatea</string>
     <string name="settings_load_manually">Kargatu multimedia eskuz</string>
     <string name="settings_load_manually_description">Irudiak eta bideoak ez dira kargatuko haiek ukitu arte, datu mugikorrak aurrezteko.</string>

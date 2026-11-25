@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Ocultar</string>
     <string name="settings_language_filter_fold">Plegar</string>
     <string name="settings_language_filter_action">Publicaciones en otros idiomas</string>
+    <string name="settings_muted_words_description">Oculta las publicaciones con estas palabras en todos los feeds. Las palabras silenciadas propias de un grupo se suman a estas. Una sola palabra coincide solo con palabras completas; una frase coincide en cualquier parte.</string>
     <string name="settings_image_quality">Calidad de las imágenes</string>
     <string name="settings_load_manually">Cargar los medios manualmente</string>
     <string name="settings_load_manually_description">Las imágenes y los vídeos solo se cargan al tocarlos, para ahorrar datos móviles.</string>

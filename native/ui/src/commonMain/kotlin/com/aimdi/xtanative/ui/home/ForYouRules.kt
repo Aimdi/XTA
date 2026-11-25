@@ -1,8 +1,11 @@
 package com.aimdi.xtanative.ui.home
 
+import com.aimdi.xtanative.core.feed.MutedKeyword
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.store.saved.ProfileFilters
 import com.aimdi.xtanative.ui.feed.HiddenPosts
+import com.aimdi.xtanative.ui.feed.MutedEverywhere
+import java.time.Instant
 
 /** How Home's For you reads X's home timeline, as XTA's For you tab does. */
 object ForYouRules {
@@ -27,9 +30,12 @@ object ForYouRules {
      * [threads] as For you shows them under the profiles' [filters]: without
      * the posts of an account hidden altogether, whoever reposted them. The
      * reposts' and replies' filters are for the feeds of accounts followed;
-     * For you already reads no replies.
+     * For you already reads no replies. The posts with a word of [muted]
+     * (Settings › Posts) are left out too; For you folds nothing, so a word
+     * set to fold hides here.
      */
-    fun shown(threads: List<XThread>, filters: ProfileFilters): List<XThread> = HiddenPosts.withoutAuthors(threads, filters)
+    fun shown(threads: List<XThread>, filters: ProfileFilters, muted: List<MutedKeyword> = emptyList(), now: Instant = Instant.now()): List<XThread> =
+        MutedEverywhere.shown(HiddenPosts.withoutAuthors(threads, filters), muted, now)
 
     /** [more] under [shown], each thread once. */
     fun appended(shown: List<XThread>, more: List<XThread>): List<XThread> {

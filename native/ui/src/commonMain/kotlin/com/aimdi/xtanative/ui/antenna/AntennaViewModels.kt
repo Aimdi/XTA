@@ -8,6 +8,7 @@ import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.store.antenna.Antenna
 import com.aimdi.xtanative.store.antenna.AntennaQuery
 import com.aimdi.xtanative.ui.feed.HiddenPosts
+import com.aimdi.xtanative.ui.feed.MutedEverywhere
 import com.aimdi.xtanative.ui.search.Narrowed
 import com.aimdi.xtanative.ui.search.Page
 import com.aimdi.xtanative.ui.search.PageEnd
@@ -120,6 +121,8 @@ class AntennaFeedViewModel(private val graph: AppGraph, private val id: String) 
             all.firstOrNull { it.id == id }?.let(::read)
         }
         viewModelScope.launch { HiddenPosts.of(graph.profileFilters).collect { hidden -> posts.narrow { HiddenPosts.withoutAuthors(it, hidden) } } }
+        // The words muted in every feed: an antenna folds nothing, so a word set to fold hides here.
+        viewModelScope.launch { MutedEverywhere.of(graph.settings).collect { muted -> posts.narrow { MutedEverywhere.shown(it, muted) } } }
     }
 
     private fun read(antenna: Antenna) {
@@ -130,7 +133,8 @@ class AntennaFeedViewModel(private val graph: AppGraph, private val id: String) 
             PastEmptied.read(from) { cursor ->
                 val page = graph.client.search(query, cursor, product = AntennaQuery.PRODUCT)
                 graph.posts.remember(page.threads)
-                Narrowed(HiddenPosts.withoutAuthors(AntennaFeed.kept(antenna, page.threads, followed), graph.profileFilters.filters()), page.threads.size, page.bottomCursor)
+                val kept = HiddenPosts.withoutAuthors(AntennaFeed.kept(antenna, page.threads, followed), graph.profileFilters.filters())
+                Narrowed(MutedEverywhere.shown(kept, MutedEverywhere.of(graph.settings.load())), page.threads.size, page.bottomCursor)
             }
         }
     }

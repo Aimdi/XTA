@@ -2,10 +2,13 @@ package com.aimdi.xtanative.ui.home
 
 import com.aimdi.xtanative.core.feed.FeedPause
 import com.aimdi.xtanative.core.feed.FeedStops
+import com.aimdi.xtanative.core.feed.KeywordAction
+import com.aimdi.xtanative.core.feed.MutedKeyword
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.store.saved.ProfileFilters
+import java.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -41,6 +44,17 @@ class ForYouRulesTest {
         val threads = listOf(thread(post("1")), thread(post("2")), thread(post("3", reposted = post("2"))), thread(post("5", reposted = post("6"))))
         assertEquals(listOf("1", "5"), ForYouRules.shown(threads, hidden).map { it.id }, "the reposts' filter is for the feeds of accounts followed")
         assertTrue(ForYouRules.shown(threads, ProfileFilters()) === threads)
+    }
+
+    @Test
+    fun aWordMutedEverywhereIsOutOfForYouWhetherItHidesOrFolds() {
+        val now = Instant.parse("2026-01-01T00:00:00Z")
+        val threads = listOf(thread(post("1")), thread(post("2")), thread(post("3", reposted = post("4"))), thread(post("5")))
+        val muted = listOf(MutedKeyword("post 2"), MutedKeyword("4", action = KeywordAction.FOLD), MutedKeyword("5", until = now.minusSeconds(1)))
+        assertEquals(listOf("1", "5"), ForYouRules.shown(threads, ProfileFilters(), muted, now).map { it.id }, "For you folds nothing, and an expired word mutes nothing")
+        val hidden = ProfileFilters(hiddenAll = mapOf("u1" to "u1"))
+        assertEquals(listOf("5"), ForYouRules.shown(threads, hidden, muted, now).map { it.id }, "beside the accounts hidden")
+        assertTrue(ForYouRules.shown(threads, ProfileFilters(), emptyList(), now) === threads)
     }
 
     @Test

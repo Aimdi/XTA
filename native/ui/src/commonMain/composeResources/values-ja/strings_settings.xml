@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">非表示</string>
     <string name="settings_language_filter_fold">折りたたむ</string>
     <string name="settings_language_filter_action">他の言語の投稿</string>
+    <string name="settings_muted_words_description">すべてのフィードで、これらの語を含む投稿を隠します。グループ独自のミュートする語はこれに追加されます。単語は語全体にのみ一致し、フレーズはどこでも一致します。</string>
     <string name="settings_image_quality">画像の画質</string>
     <string name="settings_load_manually">メディアを手動で読み込む</string>
     <string name="settings_load_manually_description">モバイルデータを節約するため、画像や動画はタップするまで読み込まれません。</string>

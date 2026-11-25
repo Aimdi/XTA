@@ -103,6 +103,7 @@
     <string name="settings_language_filter_hide">Masquer</string>
     <string name="settings_language_filter_fold">Replier</string>
     <string name="settings_language_filter_action">Posts dans d’autres langues</string>
+    <string name="settings_muted_words_description">Masquez les publications contenant ces mots dans tous les fils. Les mots masqués propres à un groupe s'y ajoutent. Un mot seul ne correspond qu'aux mots entiers ; une expression correspond partout.</string>
     <string name="settings_image_quality">Qualité des images</string>
     <string name="settings_load_manually">Charger les médias manuellement</string>
     <string name="settings_load_manually_description">Les images et les vidéos ne se chargent qu'une fois touchées, afin d'économiser les données mobiles.</string>
