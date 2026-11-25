@@ -49,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -131,7 +132,7 @@ private fun RailItem(label: String, selected: Boolean, onClick: () -> Unit, modi
                 modifier
                     .size(width = RAIL_ITEM_WIDTH, height = RAIL_ITEM_HEIGHT)
                     .clip(CircleShape)
-                    .background(colors.onSurface.copy(alpha = NavRowLook.fillAlpha(selected, hovered)))
+                    .background(colors.onSurface.copy(alpha = NavRowLook.fillAlpha(selected, hovered, dark = colors.background.luminance() < 0.5f)))
                     .selectable(selected, interactionSource = interactions, indication = ripple(), role = Role.Tab, onClick = onClick)
                     .semantics { contentDescription = label },
                 contentAlignment = Alignment.Center,
