@@ -9,6 +9,9 @@ enum class LauncherShortcut {
     SEARCH,
     SAVED,
     SUBSCRIPTIONS,
+
+    /** Not under the icon: where a tap on the downloads' notification leads. */
+    DOWNLOADS,
     ;
 
     companion object {

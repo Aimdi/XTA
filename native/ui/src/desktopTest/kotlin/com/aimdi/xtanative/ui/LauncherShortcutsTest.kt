@@ -18,6 +18,8 @@ class LauncherShortcutsTest {
         assertEquals(Routes.SAVED, LauncherShortcuts.route(action("SAVED"), Routes.HOME))
         assertEquals(Routes.SUBSCRIPTIONS, LauncherShortcuts.route(action("SUBSCRIPTIONS"), Routes.HOME))
         assertEquals(Routes.SAVED, LauncherShortcuts.route(action("SAVED"), Routes.SUBSCRIPTIONS), "over another screen too")
+        assertEquals(Routes.DOWNLOADS, LauncherShortcuts.route(action("DOWNLOADS"), Routes.HOME), "the downloads' notification")
+        assertNull(LauncherShortcuts.route(action("DOWNLOADS"), Routes.DOWNLOADS))
     }
 
     @Test

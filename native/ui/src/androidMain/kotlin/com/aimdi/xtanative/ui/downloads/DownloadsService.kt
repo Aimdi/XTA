@@ -13,6 +13,7 @@ import android.os.IBinder
 import android.os.PowerManager
 import com.aimdi.xtanative.store.downloads.DownloadCenterState
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.links.LauncherShortcut
 import com.aimdi.xtanative.ui.generated.resources.downloads_downloading
 import com.aimdi.xtanative.ui.generated.resources.downloads_title
 import kotlin.coroutines.cancellation.CancellationException
@@ -40,9 +41,12 @@ class DownloadNotifications(private val context: Context, private val state: Sta
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var channel = false
 
+    /** Tapping the notification opens the downloads list. */
     private val openApp: PendingIntent? by lazy {
         context.packageManager.getLaunchIntentForPackage(context.packageName)?.let {
-            PendingIntent.getActivity(context, REQUEST, it, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+            // The app's own activity, told to show the downloads list ([LauncherShortcut.DOWNLOADS]).
+            val downloads = it.setAction(LauncherShortcut.PREFIX + LauncherShortcut.DOWNLOADS.name)
+            PendingIntent.getActivity(context, REQUEST, downloads, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         }
     }
 
