@@ -76,6 +76,7 @@ import com.aimdi.xtanative.ui.article.ArticlePreviewCard
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.FeedSkeleton
+import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.PostSkeleton
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemRow
@@ -182,7 +183,12 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
                     focalItems(state, id, actions, vm, prefs, startMedia)
                     val problem = state.problem
                     when {
-                        state.loading && state.replies.isEmpty() -> item(key = "loading") { FeedSkeleton(count = PostLoading.placeholders(state.focal?.replyCount)) }
+                        state.loading && state.replies.isEmpty() -> item(key = "loading") {
+                            when (val count = PostLoading.placeholders(state.focal?.replyCount)) {
+                                0 -> LoadingRow()
+                                else -> FeedSkeleton(count = count)
+                            }
+                        }
                         problem != null -> item(key = "problem") { ProblemRow(problem, { vm.load() }, context = stringResource(Res.string.posts_unable_to_load_the_tweet)) }
                     }
                     if (zenHidden) {
@@ -203,7 +209,7 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
 internal object PostLoading {
     private const val MOST = 3
 
-    /** For a post not at hand yet ([replyCount] null), it and two replies; otherwise one per reply X counted, up to [MOST], and none when it counted none. */
+    /** For a post not at hand yet ([replyCount] null), it and two replies; otherwise one per reply X counted, up to [MOST], and none when it counted none (a small spinner then, [LoadingRow]). */
     fun placeholders(replyCount: Long?): Int = when (replyCount) {
         null -> MOST
         else -> replyCount.coerceIn(0, MOST.toLong()).toInt()
