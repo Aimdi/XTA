@@ -172,7 +172,7 @@ internal fun HomeFilterSheet(ui: HomeUi, onApply: (HomeFilterDraft) -> Unit, onD
                 TextButton(onClick = { draft = HomeFilterDraft.NONE_OFF }, modifier = Modifier.weight(1f)) {
                     Text(stringResource(Res.string.home_filter_reset))
                 }
-                Button(onClick = { onApply(draft) }, enabled = draft.keepsAnAccount(accountIds), modifier = Modifier.weight(1f)) {
+                Button(onClick = { closer.close { onApply(draft) } }, enabled = draft.keepsAnAccount(accountIds), modifier = Modifier.weight(1f)) {
                     Text(stringResource(Res.string.home_filter_apply))
                 }
             }
