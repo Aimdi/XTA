@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.ui.common
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -26,8 +28,14 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.collapse
 import androidx.compose.ui.semantics.dismiss as dismissAction
@@ -44,6 +52,7 @@ import com.aimdi.xtanative.ui.home.LocalSheetKeys
 import com.aimdi.xtanative.ui.home.rememberSheetKeys
 import com.aimdi.xtanative.ui.home.sheetKeys
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -110,7 +119,9 @@ internal fun KeyedSheet(
     closer.reduced = LocalReducedMotion.current
     val inside: @Composable ColumnScope.() -> Unit = {
         keys.focus = LocalFocusManager.current
-        CompositionLocalProvider(LocalSheetKeys provides keys, LocalSheetCloser provides closer) { content() }
+        Column(Modifier.fillMaxWidth().pressesFor(closer)) {
+            CompositionLocalProvider(LocalSheetKeys provides keys, LocalSheetCloser provides closer) { content() }
+        }
     }
     if (border == null) {
         ModalBottomSheet(
@@ -169,6 +180,34 @@ private fun HandleWithActions(sheetState: SheetState, scope: CoroutineScope, clo
 }
 
 /**
+ * Tells [closer] of the presses on the sheet's content, which stop its slide
+ * under way (Material's sheet takes a press while it moves as the start of a
+ * drag): each press, whether it moved past the touch slop (measured in the
+ * window, as the sheet follows a drag), and its release. Watched before the
+ * sheet's own drag sees them ([PointerEventPass.Initial]), and never consumed.
+ */
+private fun Modifier.pressesFor(closer: SheetCloser): Modifier = composed {
+    val place = remember { arrayOfNulls<LayoutCoordinates>(1) }
+    onGloballyPositioned { place[0] = it }.pointerInput(closer) {
+        awaitEachGesture {
+            val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+            val inWindow = { at: Offset -> place[0]?.takeIf { it.isAttached }?.localToRoot(at) ?: at }
+            val start = inWindow(down.position)
+            closer.pressDown()
+            try {
+                while (true) {
+                    val change = awaitPointerEvent(PointerEventPass.Initial).changes.firstOrNull { it.id == down.id } ?: break
+                    if (!change.pressed) break
+                    if ((inWindow(change.position) - start).getDistance() > viewConfiguration.touchSlop) closer.pressDragged()
+                }
+            } finally {
+                closer.pressUp()
+            }
+        }
+    }
+}
+
+/**
  * Whether the sheet came to rest open, once whatever moves it now has
  * settled: after a frame (so a dismissal that stopped a slide has begun its
  * own), when it sits at the place it is heading for.
@@ -189,6 +228,9 @@ private suspend fun SheetState.settledOpen(): Boolean {
  * being dismissed another way (a click on the scrim, Esc, back) still does
  * the work, once, when the sheet goes ([dismissed]); a slide the reader stops
  * by dragging the sheet back leaves it open ([settledOpen]), the press undone.
+ * A slide stopped by a press that did not drag (the second click of a
+ * double-click, which Material's sheet takes as a drag's start) goes on once
+ * the press is let go, the work still done once.
  */
 @Stable
 internal class SheetCloser(
@@ -204,6 +246,15 @@ internal class SheetCloser(
     private var pending: (() -> Unit)? = null
     private var press = 0
 
+    /** Whether a pointer is down on the sheet ([pressDown], [pressUp]). */
+    private val held = MutableStateFlow(false)
+
+    /**
+     * Whether the last press came while the sheet slid (stopping it) and has
+     * not dragged: a click, not the reader pulling the sheet back.
+     */
+    private var tapped = false
+
     /** Slides the sheet away, then dismisses it and runs [then]. */
     fun close(then: () -> Unit = {}) {
         if (closing) return
@@ -215,9 +266,42 @@ internal class SheetCloser(
             closing = false
             when (cause) {
                 null -> dismissed()
-                else -> scope.launch { if (settledOpen() && press == thisPress) pending = null }
+                else -> scope.launch { stopped(thisPress) }
             }
         }
+    }
+
+    /**
+     * The slide of [thisPress] was stopped: once the pointer is let go and the
+     * sheet rests open, it slides on if a click stopped it ([tapped]; the
+     * sheet's own settling after that click may stop the next slide too), or
+     * the press is undone.
+     */
+    private suspend fun stopped(thisPress: Int) {
+        held.first { !it }
+        if (!settledOpen() || press != thisPress) return
+        val then = pending
+        pending = null
+        if (tapped && then != null) {
+            tapped = false
+            close(then)
+        }
+    }
+
+    /** A pointer went down on the sheet: while it slides, that stops it. */
+    fun pressDown() {
+        tapped = closing
+        held.value = true
+    }
+
+    /** The press moved past the touch slop: a drag, which keeps the sheet where the reader leaves it. */
+    fun pressDragged() {
+        tapped = false
+    }
+
+    /** The press was let go. */
+    fun pressUp() {
+        held.value = false
     }
 
     /**
