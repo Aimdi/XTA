@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.home
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /** F6 between the page and the navigation beside it (the wide frame's column or rail), and where the frame shows which. */
@@ -37,6 +38,34 @@ class FrameRegionTest {
         assertTrue(actions.otherRegion { toPage++ }, "only its own owner takes it away")
         actions.dropRegion(region)
         assertFalse(actions.otherRegion { toPage++ })
+    }
+
+    @Test
+    fun tabFromTheFrameGoesToThePageNotIntoTheNavigation() {
+        assertEquals(DeskAction.ENTER_PAGE, DesktopKeys.action(DeskKey.TAB, alt = false, ctrl = false, focusInside = false, canGoBack = true, somethingOpen = false))
+        val actions = DesktopActions()
+        assertNull(actions.enterPage(), "no navigation beside the screens: Tab enters the window as before")
+        var paged = 0
+        var entered = 0
+        actions.setRegion(FrameRegion(enter = { entered++; true }, holds = { false }, page = { paged++; true }))
+        assertEquals(true, actions.enterPage())
+        assertEquals(1 to 0, paged to entered, "the page, not the navigation")
+        actions.setRegion(FrameRegion(enter = { true }, holds = { false }, page = { false }))
+        assertEquals(false, actions.enterPage(), "a page with nothing to focus says so")
+        actions.setRegion(FrameRegion(enter = { true }, holds = { false }))
+        assertEquals(false, actions.enterPage())
+    }
+
+    @Test
+    fun thePagesStartTakesTheFocusOnlyOnTheWayToThePage() {
+        val focus = FrameFocus()
+        var stepped = 0
+        focus.move = { stepped++; true }
+        assertFalse(focus.entering, "Tab's own walk passes it by")
+        assertFalse(focus.toPage(), "nothing composed: nothing took the keys")
+        assertEquals(0, stepped, "no step on from a start that took no focus")
+        assertFalse(focus.entering, "and it takes none afterwards")
+        assertFalse(focus.enter())
     }
 
     @Test

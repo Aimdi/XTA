@@ -75,6 +75,7 @@ import com.aimdi.xtanative.ui.home.HomeRoutes
 import com.aimdi.xtanative.ui.home.HomeScreen
 import com.aimdi.xtanative.ui.home.HomeWide
 import com.aimdi.xtanative.ui.home.LocalWideFrame
+import com.aimdi.xtanative.ui.home.PageStart
 import com.aimdi.xtanative.ui.home.RailMenu
 import com.aimdi.xtanative.ui.home.ReachedByF6
 import com.aimdi.xtanative.ui.home.WideFrame
@@ -897,6 +898,7 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Com
                 VerticalDivider()
             }
             Box(Modifier.weight(1f).fillMaxHeight().then(if (kind != FrameKind.NONE && !viewer) Modifier.clipToBounds() else Modifier)) {
+                PageStart(focus)
                 CompositionLocalProvider(LocalWideFrame provides frame.takeIf { kind != FrameKind.NONE }, content = content)
             }
         }

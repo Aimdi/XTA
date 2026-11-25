@@ -142,8 +142,10 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         DeskAction.REFRESH -> actions.refresh()
         DeskAction.PREVIOUS_PAGE -> actions.turn(-1)
         DeskAction.NEXT_PAGE -> actions.turn(1)
-        // The frame holds the focus as a whole; Tab's own traversal does not go into it.
-        DeskAction.ENTER_PAGE -> focusManager.moveFocus(FocusDirection.Enter)
+        // The frame holds the focus as a whole; Tab's own traversal does not go into it. Tab goes to the page beside
+        // the window's navigation, which stands first in the window; Shift+Tab, the way back, into the navigation.
+        DeskAction.ENTER_PAGE ->
+            (tabbing[0] != TabStep.BACKWARD && actions.enterPage() == true) || focusManager.moveFocus(FocusDirection.Enter)
         DeskAction.LEAVE_APP -> {
             AppClosing.ask()
             true

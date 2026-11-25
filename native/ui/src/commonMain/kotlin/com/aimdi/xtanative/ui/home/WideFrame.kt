@@ -1,7 +1,10 @@
 package com.aimdi.xtanative.ui.home
 
 import androidx.compose.foundation.focusGroup
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
@@ -16,10 +19,12 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -156,30 +161,74 @@ internal fun frameModel(home: ViewModelStoreOwner): HomeViewModel {
 /**
  * Where F6 puts the keys in the frame's navigation ([FrameRegion]): on the
  * row of where the reader is ([marked]), else on its first control
- * ([whole]); [holds] while something in it has the focus.
+ * ([whole]); [holds] while something in it has the focus. [page] is the
+ * start of the screens' place beside it ([PageStart]), from where Tab from
+ * the window's frame goes on to the page's first control.
  */
 @Stable
 class FrameFocus {
     val marked = FocusRequester()
     val whole = FocusRequester()
+    val page = FocusRequester()
     var holds = false
 
-    /** The keys into the navigation; false where nothing in it took them. */
-    fun enter(): Boolean = runCatching { marked.requestFocus() }.isSuccess || runCatching { whole.requestFocus() }.isSuccess
+    /** Whether the page's start ([PageStart]) takes the focus now: only on the way to the page's first control, never for Tab's own walk. */
+    internal var entering = false
 
-    val region = FrameRegion(enter = ::enter, holds = { holds })
+    /** A step of the keyboard's focus from where it is ([PageStart] sets it). */
+    internal var move: (FocusDirection) -> Boolean = { false }
+
+    /** The keys into the navigation; false where nothing in it took them. */
+    fun enter(): Boolean = marked.enters() || whole.enters()
+
+    /**
+     * The keys onto the page's first control, the one at its top start (a
+     * screen's Back): onto the page's start ([PageStart]), at its top start
+     * corner, then down from there to the nearest control; where that finds
+     * none in the page, the next in Tab's own order. A plain Enter would pick
+     * the start-most control instead (a list's row before the bar above it),
+     * and Tab's order has a screen's bar last. The navigation takes no focus
+     * meanwhile. False where nothing in the page took the keys.
+     */
+    fun toPage(): Boolean {
+        entering = true
+        try {
+            return page.enters() && (move(FocusDirection.Down) || move(FocusDirection.Next))
+        } finally {
+            entering = false
+        }
+    }
+
+    val region = FrameRegion(enter = ::enter, holds = { holds }, page = ::toPage)
 }
+
+/** Whether the focus went into what this is on, false too where it is on nothing (not composed). */
+private fun FocusRequester.enters(): Boolean = runCatching { requestFocus(FocusDirection.Enter) }.getOrDefault(false)
 
 /**
  * The frame's navigation as one place for the keys ([focus]): F6 reaches it
  * whole, and while something is [covered] by a media viewer over the whole
- * window, Tab passes it by, as nothing in it can be seen.
+ * window, Tab passes it by, as nothing in it can be seen; nor does the
+ * keyboard's way into the page ([FrameFocus.toPage]) stop in it.
  */
 fun Modifier.frameNavigation(focus: FrameFocus, covered: Boolean): Modifier =
     onFocusChanged { focus.holds = it.hasFocus }
         .focusRequester(focus.whole)
-        .focusProperties { onEnter = { if (covered) cancelFocusChange() } }
+        .focusProperties { onEnter = { if (covered || focus.entering) cancelFocusChange() } }
         .focusGroup()
+
+/**
+ * The start of the screens' place beside the frame's navigation, put first
+ * in it: Tab from the window's frame comes here ([FrameFocus.toPage]) and
+ * steps on at once to the page's first control. It takes no focus otherwise
+ * and shows nothing.
+ */
+@Composable
+fun PageStart(focus: FrameFocus) {
+    val manager = LocalFocusManager.current
+    SideEffect { focus.move = manager::moveFocus }
+    Box(Modifier.size(1.dp).focusRequester(focus.page).focusProperties { canFocus = focus.entering }.focusable())
+}
 
 /**
  * Home in the wide window's frame: tells the frame the bar's page shown and
