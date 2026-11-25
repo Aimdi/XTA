@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">清除圖片快取？</string>
     <string name="settings_image_cache_clear_description">下次查看時會重新下載圖片。</string>
     <string name="settings_image_cache_clear">清除</string>
+    <string name="settings_video_cache">影片快取</string>
+    <string name="settings_video_cache_size">此裝置上已使用 %1$s。達到 %2$s 後，最舊的影片會被清除。</string>
+    <string name="settings_video_cache_clear_question">清除影片快取？</string>
+    <string name="settings_video_cache_clear_description">下次播放時會重新下載影片。</string>
     <string name="settings_unable_to_import">無法匯入</string>
     <string name="settings_import_unsupported">此備份由較新版本的 XTA 建立。請先更新應用程式，再重新匯入。</string>
     <string name="settings_imported">資料匯入成功</string>

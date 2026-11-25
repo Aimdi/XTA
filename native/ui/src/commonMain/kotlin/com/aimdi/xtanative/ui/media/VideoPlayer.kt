@@ -36,6 +36,19 @@ internal fun interface VideoPlayers {
 @Composable
 internal expect fun rememberVideoPlayers(): VideoPlayers?
 
+/** The videos kept on disk for playing again ([VideoCaching]): how much they take, and a way to drop them. */
+internal interface VideoCacheControl {
+    /** Bytes on disk now. */
+    fun size(): Long
+
+    /** Drops every video kept; what plays now reads from the network again. */
+    fun clear()
+}
+
+/** The platform's video cache; null where the player keeps none on disk (the desktop). */
+@Composable
+internal expect fun rememberVideoCache(): VideoCacheControl?
+
 /** Whether the phone saves data now (Android's Data Saver), when videos wait for a tap; never on the desktop. */
 @Composable
 internal expect fun rememberDataSaver(): Boolean

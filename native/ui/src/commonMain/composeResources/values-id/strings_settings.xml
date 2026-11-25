@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Hapus cache gambar?</string>
     <string name="settings_image_cache_clear_description">Gambar akan diunduh lagi saat Anda melihatnya berikutnya.</string>
     <string name="settings_image_cache_clear">Hapus</string>
+    <string name="settings_video_cache">Cache video</string>
+    <string name="settings_video_cache_size">%1$s di perangkat ini. Setelah mencapai %2$s, video terlama dihapus untuk memberi ruang.</string>
+    <string name="settings_video_cache_clear_question">Kosongkan cache video?</string>
+    <string name="settings_video_cache_clear_description">Video akan diunduh lagi saat Anda memutarnya berikutnya.</string>
     <string name="settings_unable_to_import">Tidak bisa mengimpor</string>
     <string name="settings_import_unsupported">Cadangan ini dibuat oleh versi XTA yang lebih baru. Perbarui aplikasi, lalu impor lagi.</string>
     <string name="settings_imported">Data berhasil diimpor</string>

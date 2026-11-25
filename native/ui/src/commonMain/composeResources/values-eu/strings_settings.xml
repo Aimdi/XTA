@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Irudien cachea garbitu?</string>
     <string name="settings_image_cache_clear_description">Irudiak berriro deskargatuko dira hurrengoan ikusten dituzunean.</string>
     <string name="settings_image_cache_clear">Garbitu</string>
+    <string name="settings_video_cache">Bideoen cachea</string>
+    <string name="settings_video_cache_size">%1$s gailu honetan. %2$s-ra iristean, bideo zaharrenek lekua egiten dute.</string>
+    <string name="settings_video_cache_clear_question">Bideoen cachea garbitu?</string>
+    <string name="settings_video_cache_clear_description">Bideoak berriro deskargatuko dira erreproduzitzen dituzun hurrengoan.</string>
     <string name="settings_unable_to_import">Ezin da inportatu</string>
     <string name="settings_import_unsupported">Babeskopia hau XTA-en bertsio berriago batekin egin da. Eguneratu aplikazioa eta inportatu berriro.</string>
     <string name="settings_imported">Datuak behar bezala inportatu dira</string>

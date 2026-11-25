@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Golești memoria cache pentru imagini?</string>
     <string name="settings_image_cache_clear_description">Imaginile se vor descărca din nou data viitoare când le vezi.</string>
     <string name="settings_image_cache_clear">Golește</string>
+    <string name="settings_video_cache">Cache video</string>
+    <string name="settings_video_cache_size">%1$s pe acest dispozitiv. La %2$s, cele mai vechi videoclipuri fac loc.</string>
+    <string name="settings_video_cache_clear_question">Golești cache-ul video?</string>
+    <string name="settings_video_cache_clear_description">Videoclipurile se vor descărca din nou la următoarea redare.</string>
     <string name="settings_unable_to_import">Nu se poate importa</string>
     <string name="settings_import_unsupported">Această copie de rezervă a fost creată cu o versiune mai nouă de XTA. Actualizează aplicația și importă-o din nou.</string>
     <string name="settings_imported">Date importate cu succes</string>

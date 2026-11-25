@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Görsel önbelleği temizlensin mi?</string>
     <string name="settings_image_cache_clear_description">Görseller bir sonraki görüşünüzde yeniden indirilir.</string>
     <string name="settings_image_cache_clear">Temizle</string>
+    <string name="settings_video_cache">Video önbelleği</string>
+    <string name="settings_video_cache_size">Bu cihazda %1$s. %2$s boyutuna ulaşınca en eski videolar yer açar.</string>
+    <string name="settings_video_cache_clear_question">Video önbelleği temizlensin mi?</string>
+    <string name="settings_video_cache_clear_description">Videolar bir sonraki oynatışınızda yeniden indirilir.</string>
     <string name="settings_unable_to_import">İçe aktarılamıyor</string>
     <string name="settings_import_unsupported">Bu yedek, XTA'in daha yeni bir sürümüyle oluşturulmuş. Uygulamayı güncelleyip yeniden içe aktarın.</string>
     <string name="settings_imported">Veriler başarıyla içe aktarıldı</string>

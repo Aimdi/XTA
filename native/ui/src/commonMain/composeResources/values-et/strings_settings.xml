@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Kas tühjendada piltide vahemälu?</string>
     <string name="settings_image_cache_clear_description">Pildid laaditakse uuesti alla, kui sa neid järgmine kord näed.</string>
     <string name="settings_image_cache_clear">Tühjenda</string>
+    <string name="settings_video_cache">Videote vahemälu</string>
+    <string name="settings_video_cache_size">%1$s selles seadmes. Kui maht jõuab %2$s-ni, teevad vanimad videod ruumi.</string>
+    <string name="settings_video_cache_clear_question">Kas tühjendada videote vahemälu?</string>
+    <string name="settings_video_cache_clear_description">Videod laaditakse järgmisel esitamisel uuesti alla.</string>
     <string name="settings_unable_to_import">Ei ole võimalik importida</string>
     <string name="settings_import_unsupported">See varukoopia on tehtud XTAi uuema versiooniga. Uuenda rakendust ja impordi see uuesti.</string>
     <string name="settings_imported">Andmete importimine õnnestus</string>

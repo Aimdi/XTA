@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">इमेज कैश साफ़ करें?</string>
     <string name="settings_image_cache_clear_description">अगली बार देखने पर तस्वीरें फिर से डाउनलोड होंगी।</string>
     <string name="settings_image_cache_clear">साफ़ करें</string>
+    <string name="settings_video_cache">वीडियो कैश</string>
+    <string name="settings_video_cache_size">इस डिवाइस पर %1$s। %2$s तक पहुँचने पर सबसे पुराने वीडियो हटा दिए जाते हैं।</string>
+    <string name="settings_video_cache_clear_question">वीडियो कैश साफ़ करें?</string>
+    <string name="settings_video_cache_clear_description">अगली बार चलाने पर वीडियो फिर से डाउनलोड होंगे।</string>
     <string name="settings_unable_to_import">आयात नहीं किया जा सका</string>
     <string name="settings_import_unsupported">यह बैकअप XTA के नए संस्करण से बनाया गया है। ऐप अपडेट करें, फिर इसे दोबारा आयात करें।</string>
     <string name="settings_imported">डेटा सफलतापूर्वक आयात किया गया</string>

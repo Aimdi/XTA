@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">画像キャッシュを消去しますか？</string>
     <string name="settings_image_cache_clear_description">画像は次に表示するときに再ダウンロードされます。</string>
     <string name="settings_image_cache_clear">消去</string>
+    <string name="settings_video_cache">動画キャッシュ</string>
+    <string name="settings_video_cache_size">この端末で %1$s。%2$s に達すると古い動画から削除されます。</string>
+    <string name="settings_video_cache_clear_question">動画キャッシュを消去しますか？</string>
+    <string name="settings_video_cache_clear_description">動画は次に再生するときに再度ダウンロードされます。</string>
     <string name="settings_unable_to_import">インポートできませんでした</string>
     <string name="settings_import_unsupported">このバックアップは新しいバージョンの XTA で作成されています。アプリを更新してから、もう一度インポートしてください。</string>
     <string name="settings_imported">データのインポートに成功しました</string>

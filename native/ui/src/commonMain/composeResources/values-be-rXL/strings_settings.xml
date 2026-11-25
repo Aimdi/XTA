@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Ačyscić keš vyjaŭ?</string>
     <string name="settings_image_cache_clear_description">Vyjavy spampujucca znoŭ, kali vy ŭbačycie ich nastupnym razam.</string>
     <string name="settings_image_cache_clear">Ačyscić</string>
+    <string name="settings_video_cache">Keš videa</string>
+    <string name="settings_video_cache_size">%1$s na hetaj pryladzie. Kali jon dasiahaje %2$s, najstarejšyja videa vydalajucca.</string>
+    <string name="settings_video_cache_clear_question">Ačyscić keš videa?</string>
+    <string name="settings_video_cache_clear_description">Videa spampujucca znoŭ, kali vy ich nastupny raz prajhrajecie.</string>
     <string name="settings_unable_to_import">Nie atrymoŭvajecca impartavać</string>
     <string name="settings_import_unsupported">Hetaja rezervovaja kopija stvorana naviejšaj versijaj XTA. Abnavicie prahramu i paŭtarycie impart.</string>
     <string name="settings_imported">Dadzienyja paśpiachova impartavany</string>

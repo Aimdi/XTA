@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Wyczyścić pamięć podręczną obrazów?</string>
     <string name="settings_image_cache_clear_description">Obrazy zostaną pobrane ponownie, gdy następnym razem je zobaczysz.</string>
     <string name="settings_image_cache_clear">Wyczyść</string>
+    <string name="settings_video_cache">Pamięć podręczna wideo</string>
+    <string name="settings_video_cache_size">%1$s na tym urządzeniu. Po osiągnięciu %2$s najstarsze filmy ustępują miejsca.</string>
+    <string name="settings_video_cache_clear_question">Wyczyścić pamięć podręczną wideo?</string>
+    <string name="settings_video_cache_clear_description">Filmy zostaną pobrane ponownie przy następnym odtworzeniu.</string>
     <string name="settings_unable_to_import">Nie można zaimportować</string>
     <string name="settings_import_unsupported">Ta kopia zapasowa powstała w nowszej wersji XTA. Zaktualizuj aplikację i zaimportuj ją ponownie.</string>
     <string name="settings_imported">Dane zostały zaimportowane</string>

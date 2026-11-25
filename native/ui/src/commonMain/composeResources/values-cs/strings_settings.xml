@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Vymazat mezipaměť obrázků?</string>
     <string name="settings_image_cache_clear_description">Obrázky se znovu stáhnou, až je příště uvidíte.</string>
     <string name="settings_image_cache_clear">Vymazat</string>
+    <string name="settings_video_cache">Mezipaměť videí</string>
+    <string name="settings_video_cache_size">%1$s v tomto zařízení. Po dosažení %2$s uvolňují místo nejstarší videa.</string>
+    <string name="settings_video_cache_clear_question">Vymazat mezipaměť videí?</string>
+    <string name="settings_video_cache_clear_description">Videa se při příštím přehrání stáhnou znovu.</string>
     <string name="settings_unable_to_import">Import se nezdařil</string>
     <string name="settings_import_unsupported">Tato záloha byla vytvořena novější verzí XTA. Aktualizujte aplikaci a import zopakujte.</string>
     <string name="settings_imported">Data úspěšně importována</string>

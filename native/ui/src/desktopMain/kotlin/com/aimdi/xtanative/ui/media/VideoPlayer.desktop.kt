@@ -31,3 +31,7 @@ internal class MpvVideoPlayer private constructor(private val core: MpvVideoCore
         VideoSurface(frames, crop = fill, modifier = modifier, shows = { it == core.playing })
     }
 }
+
+/** libmpv keeps no videos on disk. */
+@Composable
+internal actual fun rememberVideoCache(): VideoCacheControl? = null

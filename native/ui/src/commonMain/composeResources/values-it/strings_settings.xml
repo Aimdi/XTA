@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Svuotare la cache delle immagini?</string>
     <string name="settings_image_cache_clear_description">Le immagini verranno riscaricate la prossima volta che le vedrai.</string>
     <string name="settings_image_cache_clear">Svuota</string>
+    <string name="settings_video_cache">Cache dei video</string>
+    <string name="settings_video_cache_size">%1$s su questo dispositivo. Raggiunti %2$s, i video più vecchi fanno spazio.</string>
+    <string name="settings_video_cache_clear_question">Svuotare la cache dei video?</string>
+    <string name="settings_video_cache_clear_description">I video verranno scaricati di nuovo alla prossima riproduzione.</string>
     <string name="settings_unable_to_import">Impossibile importare</string>
     <string name="settings_import_unsupported">Questo backup è stato creato con una versione più recente di XTA. Aggiorna l'app e importalo di nuovo.</string>
     <string name="settings_imported">Dati importati con successo</string>

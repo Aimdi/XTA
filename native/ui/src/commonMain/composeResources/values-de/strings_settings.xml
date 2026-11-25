@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Bild-Cache leeren?</string>
     <string name="settings_image_cache_clear_description">Bilder werden erneut geladen, wenn du sie das nächste Mal siehst.</string>
     <string name="settings_image_cache_clear">Leeren</string>
+    <string name="settings_video_cache">Video-Cache</string>
+    <string name="settings_video_cache_size">%1$s auf diesem Gerät. Ab %2$s machen die ältesten Videos Platz.</string>
+    <string name="settings_video_cache_clear_question">Video-Cache leeren?</string>
+    <string name="settings_video_cache_clear_description">Videos werden beim nächsten Abspielen erneut heruntergeladen.</string>
     <string name="settings_unable_to_import">Import nicht möglich</string>
     <string name="settings_import_unsupported">Diese Sicherung stammt aus einer neueren XTA-Version. Aktualisiere die App und importiere sie dann erneut.</string>
     <string name="settings_imported">Daten erfolgreich importiert</string>

@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Vols buidar la memòria cau d'imatges?</string>
     <string name="settings_image_cache_clear_description">Les imatges es tornaran a baixar la propera vegada que les vegis.</string>
     <string name="settings_image_cache_clear">Buida</string>
+    <string name="settings_video_cache">Memòria cau de vídeos</string>
+    <string name="settings_video_cache_size">%1$s en aquest dispositiu. Quan arriba a %2$s, els vídeos més antics fan lloc.</string>
+    <string name="settings_video_cache_clear_question">Vols buidar la memòria cau de vídeos?</string>
+    <string name="settings_video_cache_clear_description">Els vídeos es tornaran a baixar la pròxima vegada que els reprodueixis.</string>
     <string name="settings_unable_to_import">No s'ha pogut importar</string>
     <string name="settings_import_unsupported">Aquesta còpia de seguretat s'ha fet amb una versió més nova del XTA. Actualitza l'aplicació i torna-la a importar.</string>
     <string name="settings_imported">Dades importades correctament</string>

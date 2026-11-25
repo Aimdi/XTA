@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Ĉu malplenigi la bildkaŝmemoron?</string>
     <string name="settings_image_cache_clear_description">Bildoj elŝutiĝos denove, kiam vi venontfoje vidos ilin.</string>
     <string name="settings_image_cache_clear">Malplenigi</string>
+    <string name="settings_video_cache">Kaŝmemoro de videoj</string>
+    <string name="settings_video_cache_size">%1$s en ĉi tiu aparato. Kiam ĝi atingas %2$s, la plej malnovaj videoj cedas lokon.</string>
+    <string name="settings_video_cache_clear_question">Ĉu malplenigi la kaŝmemoron de videoj?</string>
+    <string name="settings_video_cache_clear_description">Videoj elŝutiĝos denove, kiam vi sekvafoje ludos ilin.</string>
     <string name="settings_unable_to_import">Ne eblas importi</string>
     <string name="settings_import_unsupported">Ĉi tiu sekurkopio estis kreita per pli nova versio de XTA. Ĝisdatigu la aplikaĵon kaj reimportu ĝin.</string>
     <string name="settings_imported">Datumoj importiĝis sukcese</string>

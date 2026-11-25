@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Очистити кеш зображень?</string>
     <string name="settings_image_cache_clear_description">Зображення завантажаться знову, коли ви побачите їх наступного разу.</string>
     <string name="settings_image_cache_clear">Очистити</string>
+    <string name="settings_video_cache">Кеш відео</string>
+    <string name="settings_video_cache_size">%1$s на цьому пристрої. Коли він сягає %2$s, найстаріші відео видаляються.</string>
+    <string name="settings_video_cache_clear_question">Очистити кеш відео?</string>
+    <string name="settings_video_cache_clear_description">Відео завантажаться знову під час наступного відтворення.</string>
     <string name="settings_unable_to_import">Не вдалося імпортувати</string>
     <string name="settings_import_unsupported">Цю резервну копію створено новішою версією XTA. Оновіть застосунок і повторіть імпорт.</string>
     <string name="settings_imported">Дані успішно імпортовано</string>

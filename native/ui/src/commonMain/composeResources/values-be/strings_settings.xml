@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Ачысціць кэш выяў?</string>
     <string name="settings_image_cache_clear_description">Выявы спампуюцца зноў, калі вы ўбачыце іх наступным разам.</string>
     <string name="settings_image_cache_clear">Ачысціць</string>
+    <string name="settings_video_cache">Кэш відэа</string>
+    <string name="settings_video_cache_size">%1$s на гэтай прыладзе. Калі ён дасягае %2$s, найстарэйшыя відэа выдаляюцца.</string>
+    <string name="settings_video_cache_clear_question">Ачысціць кэш відэа?</string>
+    <string name="settings_video_cache_clear_description">Відэа спампуюцца зноў, калі вы іх наступны раз прайграеце.</string>
     <string name="settings_unable_to_import">Не атрымоўваецца імпартаваць</string>
     <string name="settings_import_unsupported">Гэтая рэзервовая копія створана навейшай версіяй XTA. Абнавіце праграму і паўтарыце імпарт.</string>
     <string name="settings_imported">Дадзеныя паспяхова імпартаваны</string>

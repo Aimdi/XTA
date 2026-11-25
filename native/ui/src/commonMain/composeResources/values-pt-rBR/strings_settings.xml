@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Limpar o cache de imagens?</string>
     <string name="settings_image_cache_clear_description">As imagens serão baixadas de novo na próxima vez que você as vir.</string>
     <string name="settings_image_cache_clear">Limpar</string>
+    <string name="settings_video_cache">Cache de vídeos</string>
+    <string name="settings_video_cache_size">%1$s neste dispositivo. Ao chegar a %2$s, os vídeos mais antigos dão lugar.</string>
+    <string name="settings_video_cache_clear_question">Limpar o cache de vídeos?</string>
+    <string name="settings_video_cache_clear_description">Os vídeos serão baixados de novo na próxima vez que você os reproduzir.</string>
     <string name="settings_unable_to_import">Não foi possível importar</string>
     <string name="settings_import_unsupported">Este backup foi criado por uma versão mais nova do XTA. Atualize o app e importe novamente.</string>
     <string name="settings_imported">Dados importados com sucesso</string>

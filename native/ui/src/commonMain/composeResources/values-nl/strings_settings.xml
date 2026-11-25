@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Afbeeldingscache wissen?</string>
     <string name="settings_image_cache_clear_description">Afbeeldingen worden opnieuw gedownload wanneer je ze weer ziet.</string>
     <string name="settings_image_cache_clear">Wissen</string>
+    <string name="settings_video_cache">Videocache</string>
+    <string name="settings_video_cache_size">%1$s op dit apparaat. Bij %2$s maken de oudste video's plaats.</string>
+    <string name="settings_video_cache_clear_question">Videocache wissen?</string>
+    <string name="settings_video_cache_clear_description">Video's worden opnieuw gedownload wanneer je ze weer afspeelt.</string>
     <string name="settings_unable_to_import">Kan niet importeren</string>
     <string name="settings_import_unsupported">Deze back-up is gemaakt met een nieuwere versie van XTA. Werk de app bij en importeer hem opnieuw.</string>
     <string name="settings_imported">Gegevens succesvol geïmporteerd</string>

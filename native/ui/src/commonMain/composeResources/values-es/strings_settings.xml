@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">¿Vaciar la caché de imágenes?</string>
     <string name="settings_image_cache_clear_description">Las imágenes se volverán a descargar la próxima vez que las veas.</string>
     <string name="settings_image_cache_clear">Vaciar</string>
+    <string name="settings_video_cache">Caché de vídeos</string>
+    <string name="settings_video_cache_size">%1$s en este dispositivo. Al llegar a %2$s, los vídeos más antiguos dejan sitio.</string>
+    <string name="settings_video_cache_clear_question">¿Vaciar la caché de vídeos?</string>
+    <string name="settings_video_cache_clear_description">Los vídeos se descargarán de nuevo la próxima vez que los reproduzcas.</string>
     <string name="settings_unable_to_import">No se puede importar</string>
     <string name="settings_import_unsupported">Esta copia de seguridad se creó con una versión más reciente de XTA. Actualiza la aplicación e impórtala de nuevo.</string>
     <string name="settings_imported">Datos importados con éxito</string>

@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Tømme bildebufferen?</string>
     <string name="settings_image_cache_clear_description">Bildene lastes ned på nytt neste gang du ser dem.</string>
     <string name="settings_image_cache_clear">Tøm</string>
+    <string name="settings_video_cache">Videobuffer</string>
+    <string name="settings_video_cache_size">%1$s på denne enheten. Når den når %2$s, viker de eldste videoene plass.</string>
+    <string name="settings_video_cache_clear_question">Tømme videobufferen?</string>
+    <string name="settings_video_cache_clear_description">Videoer lastes ned på nytt neste gang du spiller dem av.</string>
     <string name="settings_unable_to_import">Kan ikke importere</string>
     <string name="settings_import_unsupported">Denne sikkerhetskopien ble laget med en nyere versjon av XTA. Oppdater appen og importer den på nytt.</string>
     <string name="settings_imported">Data importert</string>

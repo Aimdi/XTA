@@ -21,3 +21,20 @@ internal actual fun rememberDataSaver(): Boolean {
             connectivity.restrictBackgroundStatus == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED
     }
 }
+
+/** Media3's cache on disk ([VideoDiskCache]): its size, and every video it keeps dropped; null when it could not be opened. */
+@Composable
+internal actual fun rememberVideoCache(): VideoCacheControl? {
+    val context = LocalContext.current
+    return remember(context) {
+        VideoDiskCache.of(context)?.let { cache ->
+            object : VideoCacheControl {
+                override fun size(): Long = cache.cacheSpace
+
+                override fun clear() {
+                    cache.keys.toList().forEach { key -> runCatching { cache.removeResource(key) } }
+                }
+            }
+        }
+    }
+}

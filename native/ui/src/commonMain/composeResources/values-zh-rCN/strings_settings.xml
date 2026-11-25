@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">清除图片缓存？</string>
     <string name="settings_image_cache_clear_description">下次查看时会重新下载图片。</string>
     <string name="settings_image_cache_clear">清除</string>
+    <string name="settings_video_cache">视频缓存</string>
+    <string name="settings_video_cache_size">此设备上已占用 %1$s。达到 %2$s 后，最早的视频会被清除。</string>
+    <string name="settings_video_cache_clear_question">清除视频缓存？</string>
+    <string name="settings_video_cache_clear_description">下次播放时会重新下载视频。</string>
     <string name="settings_unable_to_import">无法导入</string>
     <string name="settings_import_unsupported">此备份由更新版本的 XTA 创建。请先更新应用，再重新导入。</string>
     <string name="settings_imported">数据导入成功</string>

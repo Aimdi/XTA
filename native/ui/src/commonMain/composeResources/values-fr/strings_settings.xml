@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Vider le cache des images ?</string>
     <string name="settings_image_cache_clear_description">Les images seront retéléchargées la prochaine fois que vous les verrez.</string>
     <string name="settings_image_cache_clear">Vider</string>
+    <string name="settings_video_cache">Cache des vidéos</string>
+    <string name="settings_video_cache_size">%1$s sur cet appareil. Au-delà de %2$s, les vidéos les plus anciennes laissent la place.</string>
+    <string name="settings_video_cache_clear_question">Vider le cache des vidéos ?</string>
+    <string name="settings_video_cache_clear_description">Les vidéos seront téléchargées à nouveau à leur prochaine lecture.</string>
     <string name="settings_unable_to_import">Impossible d'importer</string>
     <string name="settings_import_unsupported">Cette sauvegarde a été créée avec une version plus récente de XTA. Mettez l'application à jour, puis réimportez-la.</string>
     <string name="settings_imported">Données importées avec succès</string>

@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">이미지 캐시를 지울까요?</string>
     <string name="settings_image_cache_clear_description">이미지는 다음에 볼 때 다시 내려받습니다.</string>
     <string name="settings_image_cache_clear">지우기</string>
+    <string name="settings_video_cache">동영상 캐시</string>
+    <string name="settings_video_cache_size">이 기기에 %1$s. %2$s에 이르면 가장 오래된 동영상부터 삭제됩니다.</string>
+    <string name="settings_video_cache_clear_question">동영상 캐시를 지울까요?</string>
+    <string name="settings_video_cache_clear_description">동영상은 다음에 재생할 때 다시 다운로드됩니다.</string>
     <string name="settings_unable_to_import">가져올 수 없습니다</string>
     <string name="settings_import_unsupported">이 백업은 더 새로운 버전의 XTA에서 만들었습니다. 앱을 업데이트한 뒤 다시 가져오세요.</string>
     <string name="settings_imported">데이터가 성공적으로 내보내졌습니다</string>

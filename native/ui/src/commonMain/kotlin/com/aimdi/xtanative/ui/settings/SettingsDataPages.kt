@@ -80,6 +80,8 @@ import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_refresh
 import com.aimdi.xtanative.ui.importer.rememberBackupChooser
+import com.aimdi.xtanative.ui.media.VideoCaching
+import com.aimdi.xtanative.ui.media.rememberVideoCache
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -213,6 +215,7 @@ internal fun DataSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
             NavigationRow(stringResource(Res.string.settings_downloads), icon = Icons.Outlined.KeyboardArrowDown) { onOpen(SettingsRoutes.DOWNLOADS) }
             NavigationRow(stringResource(Res.string.settings_offline), icon = Icons.Outlined.Done) { onOpen(SettingsRoutes.OFFLINE) }
             ImageCacheRow()
+            VideoCacheRow()
             NavigationRow(stringResource(Res.string.settings_import), stringResource(Res.string.settings_import_description), Icons.Outlined.AddCircle, chevron = false, onClick = choose)
             NavigationRow(stringResource(Res.string.settings_export), stringResource(Res.string.settings_export_description), Icons.AutoMirrored.Outlined.ExitToApp) {
                 onOpen(SettingsRoutes.BACKUP)
@@ -223,6 +226,39 @@ internal fun DataSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
         }
     }
     RestoreDialog(offered, vm, snackbar, onClose = { offered = null })
+}
+
+/** How much the video cache holds, and a way to empty it; nothing where the platform keeps none. */
+@Composable
+private fun VideoCacheRow() {
+    val cache = rememberVideoCache() ?: return
+    val scope = rememberCoroutineScope()
+    var revision by remember { mutableIntStateOf(0) }
+    var confirm by remember { mutableStateOf(false) }
+    val size by produceState<Long?>(null, revision) {
+        value = withContext(Dispatchers.IO) { runCatching { cache.size() }.getOrNull() }
+    }
+    NavigationRow(
+        stringResource(Res.string.settings_video_cache),
+        size?.let { stringResource(Res.string.settings_video_cache_size, formatByteSize(it), formatByteSize(VideoCaching.MAX_BYTES)) },
+        Icons.Outlined.Delete,
+        chevron = false,
+    ) { confirm = true }
+    if (confirm) {
+        ConfirmDialog(
+            stringResource(Res.string.settings_video_cache_clear_question),
+            stringResource(Res.string.settings_video_cache_clear_description),
+            stringResource(Res.string.settings_image_cache_clear),
+            stringResource(Res.string.settings_cancel),
+            onDismiss = { confirm = false },
+        ) {
+            confirm = false
+            scope.launch {
+                withContext(Dispatchers.IO) { runCatching { cache.clear() } }
+                revision++
+            }
+        }
+    }
 }
 
 /** How much the picture cache holds, and a way to empty it. */

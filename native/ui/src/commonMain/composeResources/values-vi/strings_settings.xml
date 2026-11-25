@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Xóa bộ nhớ đệm hình ảnh?</string>
     <string name="settings_image_cache_clear_description">Hình ảnh sẽ được tải lại vào lần tới bạn xem.</string>
     <string name="settings_image_cache_clear">Xóa</string>
+    <string name="settings_video_cache">Bộ nhớ đệm video</string>
+    <string name="settings_video_cache_size">%1$s trên thiết bị này. Khi đạt %2$s, các video cũ nhất sẽ nhường chỗ.</string>
+    <string name="settings_video_cache_clear_question">Xóa bộ nhớ đệm video?</string>
+    <string name="settings_video_cache_clear_description">Video sẽ được tải lại vào lần phát tiếp theo.</string>
     <string name="settings_unable_to_import">Không thể nhập</string>
     <string name="settings_import_unsupported">Bản sao lưu này được tạo bởi phiên bản XTA mới hơn. Hãy cập nhật ứng dụng rồi nhập lại.</string>
     <string name="settings_imported">Dữ liệu đã được nhập thành công</string>

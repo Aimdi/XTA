@@ -205,6 +205,10 @@
     <string name="settings_image_cache_clear_question">Limpar a cache de imagens?</string>
     <string name="settings_image_cache_clear_description">As imagens voltam a ser transferidas da próxima vez que as vir.</string>
     <string name="settings_image_cache_clear">Limpar</string>
+    <string name="settings_video_cache">Cache de vídeos</string>
+    <string name="settings_video_cache_size">%1$s neste dispositivo. Ao atingir %2$s, os vídeos mais antigos dão lugar.</string>
+    <string name="settings_video_cache_clear_question">Limpar a cache de vídeos?</string>
+    <string name="settings_video_cache_clear_description">Os vídeos serão transferidos de novo da próxima vez que os reproduzir.</string>
     <string name="settings_unable_to_import">Não foi possível importar</string>
     <string name="settings_import_unsupported">Esta cópia de segurança foi criada por uma versão mais recente do XTA. Atualiza a aplicação e importa-a novamente.</string>
     <string name="settings_imported">Dados importados com sucesso</string>
