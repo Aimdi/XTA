@@ -8,9 +8,11 @@ import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.store.antenna.Antenna
 import com.aimdi.xtanative.store.antenna.AntennaQuery
 import com.aimdi.xtanative.ui.feed.HiddenPosts
+import com.aimdi.xtanative.ui.search.Narrowed
 import com.aimdi.xtanative.ui.search.Page
 import com.aimdi.xtanative.ui.search.PageEnd
 import com.aimdi.xtanative.ui.search.PagedRead
+import com.aimdi.xtanative.ui.search.PastEmptied
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -123,11 +125,13 @@ class AntennaFeedViewModel(private val graph: AppGraph, private val id: String) 
     private fun read(antenna: Antenna) {
         val query = AntennaQuery.search(antenna)
         val followed = AntennaFeed.followedIds(graph.sessions.state.value)
-        posts.start(viewModelScope) { cursor ->
+        posts.start(viewModelScope) { from ->
             if (query.isEmpty()) return@start Page(emptyList(), null)
-            val page = graph.client.search(query, cursor, product = AntennaQuery.PRODUCT)
-            graph.posts.remember(page.threads)
-            Page(HiddenPosts.withoutAuthors(AntennaFeed.kept(antenna, page.threads, followed), graph.profileFilters.filters()), page.bottomCursor)
+            PastEmptied.read(from) { cursor ->
+                val page = graph.client.search(query, cursor, product = AntennaQuery.PRODUCT)
+                graph.posts.remember(page.threads)
+                Narrowed(HiddenPosts.withoutAuthors(AntennaFeed.kept(antenna, page.threads, followed), graph.profileFilters.filters()), page.threads.size, page.bottomCursor)
+            }
         }
     }
 

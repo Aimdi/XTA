@@ -8,9 +8,11 @@ import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.feed.HiddenPosts
+import com.aimdi.xtanative.ui.search.Narrowed
 import com.aimdi.xtanative.ui.search.Page
 import com.aimdi.xtanative.ui.search.PageEnd
 import com.aimdi.xtanative.ui.search.PagedRead
+import com.aimdi.xtanative.ui.search.PastEmptied
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -55,11 +57,13 @@ class CommunityViewModel(private val graph: AppGraph, private val id: String, ab
     }
 
     private fun readPosts() {
-        posts.start(viewModelScope) { cursor ->
-            val page = graph.client.communityPosts(id, cursor)
-            graph.posts.remember(page.threads)
-            state.update { it.copy(pinnedIds = it.pinnedIds + page.pinnedIds) }
-            Page(HiddenPosts.withoutAuthors(page.threads, graph.profileFilters.filters()), page.bottomCursor)
+        posts.start(viewModelScope) { from ->
+            PastEmptied.read(from) { cursor ->
+                val page = graph.client.communityPosts(id, cursor)
+                graph.posts.remember(page.threads)
+                state.update { it.copy(pinnedIds = it.pinnedIds + page.pinnedIds) }
+                Narrowed(HiddenPosts.withoutAuthors(page.threads, graph.profileFilters.filters()), page.threads.size, page.bottomCursor)
+            }
         }
     }
 

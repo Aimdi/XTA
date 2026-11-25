@@ -64,3 +64,26 @@ data class Paged<T>(
         fun <T> reading(): Paged<T> = Paged(loading = true)
     }
 }
+
+/** One page as it was read ([read] posts) and what a filter [kept] of it. */
+data class Narrowed<T>(val kept: List<T>, val read: Int, val next: String?)
+
+/**
+ * Reading on past pages a filter emptied: in a list a page with nothing in
+ * it ends ([PageEnd.POSTS]), a page whose posts were all hidden (accounts
+ * the reader hid, an antenna's own rules) must not end it. At most [HOPS]
+ * pages are read for one, so a filter that hides everything still stops.
+ */
+object PastEmptied {
+    const val HOPS = 3
+
+    suspend fun <T> read(cursor: String?, page: suspend (cursor: String?) -> Narrowed<T>): Page<T> {
+        var at = cursor
+        repeat(HOPS) {
+            val one = page(at)
+            if (one.kept.isNotEmpty() || one.read == 0 || one.next == null) return Page(one.kept, one.next)
+            at = one.next
+        }
+        return Page(emptyList(), at)
+    }
+}
