@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.ui.feed
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,7 +33,9 @@ import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemRow
+import com.aimdi.xtanative.ui.common.resizing
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_fold_hide_again
 import com.aimdi.xtanative.ui.generated.resources.groups_fold_matched
@@ -53,7 +54,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun FoldedThread(thread: XThread, reason: String, actions: PostActions) {
     var open by rememberSaveable(thread.id) { mutableStateOf(false) }
-    Column(Modifier.animateContentSize()) {
+    Column(Modifier.resizing(LocalReducedMotion.current)) {
         Row(
             Modifier.fillMaxWidth().heightIn(min = 48.dp).clickable { open = !open }.padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,

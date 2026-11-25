@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.AbsoluteAlignment
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.Motion
 import java.io.ByteArrayOutputStream
 import java.net.IDN
 import java.nio.ByteBuffer
@@ -307,4 +308,4 @@ private val PILL_MARGIN = 6.dp
 /** The pill is at most this share of the window's width; a longer address ends in an ellipsis. */
 private const val MAX_WIDTH_SHARE = 0.5f
 
-private const val FADE_MS = 120
+private const val FADE_MS = Motion.FAST_MS

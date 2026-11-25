@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import com.aimdi.xtanative.ui.common.Motion
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_media
 import kotlinx.coroutines.Job
@@ -226,7 +227,7 @@ internal fun ZoomablePhoto(
 }
 
 /** XTA's quick motion, in milliseconds (motion.dart's kXtaMotionFast). */
-internal const val MOTION_FAST_MS = 120
+internal const val MOTION_FAST_MS = Motion.FAST_MS
 
 /** XTA's standard motion (kXtaMotionStandard). */
-internal const val MOTION_STANDARD_MS = 180
+internal const val MOTION_STANDARD_MS = Motion.STANDARD_MS

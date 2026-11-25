@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.ui.group
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,7 +30,9 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.feed.FeedSort
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.rememberSheetState
+import com.aimdi.xtanative.ui.common.resizing
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_catch_up_mode
 import com.aimdi.xtanative.ui.generated.resources.groups_catch_up_mode_description
@@ -78,7 +79,7 @@ fun FeedSettingsSheet(state: GroupFeedUi, actions: GroupSettingsActions, onCusto
             if (!following) {
                 SwitchRow(if (state.inDeck) Res.string.groups_deck_unpin else Res.string.groups_deck_pin, Res.string.groups_deck, state.inDeck) { actions.toggleDeck() }
             }
-            Column(Modifier.animateContentSize()) {
+            Column(Modifier.resizing(LocalReducedMotion.current)) {
                 Row(
                     Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable { orders = !orders }.padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
