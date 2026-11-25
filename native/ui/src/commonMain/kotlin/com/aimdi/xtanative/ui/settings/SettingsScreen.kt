@@ -11,28 +11,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material.icons.outlined.Build
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material.icons.outlined.Face
-import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -70,7 +60,9 @@ import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login_descri
 import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.intro.IntroFlow
+import com.aimdi.xtanative.ui.media.ReaderIcons
 import com.aimdi.xtanative.ui.post.PostIcons
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -150,7 +142,7 @@ private fun SettingsHome(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, sna
     NavigationRow(
         stringResource(Res.string.settings_plugin_store),
         stringResource(Res.string.settings_plugin_store_description),
-        Icons.Outlined.AddCircle,
+        SettingsIcons.ExtensionOutlined,
     ) { onOpen(SettingsRoutes.PLUGINS) }
     SettingsHeader(stringResource(Res.string.settings_data))
     SectionRow(SettingsSection.DATA, onOpen)
@@ -178,17 +170,17 @@ private fun SectionRow(section: SettingsSection, onOpen: (String) -> Unit) {
 private fun sectionIcon(section: SettingsSection): ImageVector = when (section) {
     SettingsSection.GENERAL -> Icons.Outlined.Settings
     SettingsSection.POSTS -> Icons.AutoMirrored.Outlined.List
-    SettingsSection.MEDIA -> Icons.Outlined.PlayArrow
+    SettingsSection.MEDIA -> GroupIcons.PhotoLibraryOutlined
     SettingsSection.HOME -> Icons.Outlined.Home
-    SettingsSection.THEME -> Icons.Outlined.Star
-    SettingsSection.ACCESSIBILITY -> Icons.Outlined.Face
-    SettingsSection.SPEECH -> Icons.Outlined.Notifications
+    SettingsSection.THEME -> SettingsIcons.PaletteOutlined
+    SettingsSection.ACCESSIBILITY -> SettingsIcons.Accessibility
+    SettingsSection.SPEECH -> ReaderIcons.RecordVoiceOverOutlined
     SettingsSection.TRANSLATION -> PostIcons.Translate
     SettingsSection.ACCOUNT -> Icons.Outlined.AccountCircle
-    SettingsSection.DATA -> Icons.AutoMirrored.Outlined.ExitToApp
-    SettingsSection.SYNC -> Icons.Outlined.Refresh
-    SettingsSection.AI -> Icons.Outlined.Create
-    SettingsSection.DIAGNOSTICS -> Icons.Outlined.CheckCircle
+    SettingsSection.DATA -> GroupIcons.SwapVert
+    SettingsSection.SYNC -> SettingsIcons.Sync
+    SettingsSection.AI -> GroupIcons.AutoAwesomeOutlined
+    SettingsSection.DIAGNOSTICS -> GroupIcons.CheckCircleOutline
 }
 
 /** Settings › App info (_about.dart): the version, where XTA lives, its licences, and the first-launch cards again. */
@@ -199,14 +191,14 @@ private fun AboutRows(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snackb
     val scope = rememberCoroutineScope()
     val version = vm.graph.version.ifEmpty { "dev" }
     val copied = stringResource(Res.string.settings_version_copied)
-    NavigationRow(stringResource(Res.string.settings_version_label), version, Icons.Outlined.Info, chevron = false) {
+    NavigationRow(stringResource(Res.string.settings_version_label), version, GroupIcons.InfoOutline, chevron = false) {
         copyText(version)
         scope.launch { snackbar.showSnackbar(copied) }
     }
-    NavigationRow(stringResource(Res.string.settings_contribute), stringResource(Res.string.settings_contribute_description), Icons.Outlined.Favorite, chevron = false) {
+    NavigationRow(stringResource(Res.string.settings_contribute), stringResource(Res.string.settings_contribute_description), Icons.Outlined.FavoriteBorder, chevron = false) {
         runCatching { links.openUri(REPOSITORY) }
     }
-    NavigationRow(stringResource(Res.string.settings_report_bug), stringResource(Res.string.settings_report_bug_description), Icons.Outlined.Warning, chevron = false) {
+    NavigationRow(stringResource(Res.string.settings_report_bug), stringResource(Res.string.settings_report_bug_description), GroupIcons.WarningAmber, chevron = false) {
         runCatching { links.openUri("$REPOSITORY/issues") }
     }
     NavigationRow(stringResource(Res.string.settings_licenses), stringResource(Res.string.settings_licenses_description), Icons.AutoMirrored.Outlined.List) {
@@ -214,7 +206,7 @@ private fun AboutRows(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snackb
     }
     // The desktop's log, for a bug report: where it is, opened in the file manager.
     logsFolder?.let { folder ->
-        NavigationRow(stringResource(Res.string.settings_open_logs), folder, Icons.Outlined.Build, chevron = false) { openLogsFolder() }
+        NavigationRow(stringResource(Res.string.settings_open_logs), folder, SettingsIcons.FolderOutlined, chevron = false) { openLogsFolder() }
     }
     NavigationRow(stringResource(Res.string.settings_intro_again), stringResource(Res.string.settings_intro_again_description), Icons.Outlined.Refresh, chevron = false) {
         vm.graph.keep {
