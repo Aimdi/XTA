@@ -57,6 +57,10 @@ object PostView {
         post.shown.communityId?.takeIf { !quoted && it.isNotEmpty() }?.let(ContextLine::Community),
     )
 
+    /** [lines] as a community's own page shows them: its posts do not each say they are in [community], the page it is. */
+    fun inCommunityPage(lines: List<ContextLine>, community: String?): List<ContextLine> =
+        if (community == null) lines else lines.filterNot { it is ContextLine.Community && it.id == community }
+
     /**
      * Whom [shown] answers, for "Replying to @name" under its header: never in
      * a quote, nor mid-thread, where the post answered is just above.

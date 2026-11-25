@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -76,6 +77,7 @@ import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_nex
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
 import com.aimdi.xtanative.ui.home.DesktopKeys
 import com.aimdi.xtanative.ui.home.DesktopShortcuts
+import com.aimdi.xtanative.ui.post.LocalCommunityPage
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.search.DiscoverIcons
@@ -137,7 +139,9 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
                 stickyHeader(key = "tabs", contentType = "tabs") { CommunityTabs(state.tab, vm::select) }
                 when (state.tab) {
                     CommunityTab.TOP -> {
-                        feedThreads(posts.items, layout, actions, keyOf = { "post-" + it.id }) { thread -> ThreadRows(thread, actions, pinnedIds = state.pinnedIds) }
+                        feedThreads(posts.items, layout, actions, keyOf = { "post-" + it.id }) { thread ->
+                            CompositionLocalProvider(LocalCommunityPage provides community.id) { ThreadRows(thread, actions, pinnedIds = state.pinnedIds) }
+                        }
                         pageStatus(posts, Res.string.discover_no_results, vm::retryPosts, vm::morePosts, firstFailed = Res.string.problem_unable_to_load_the_tweets, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets, rows = PageRows.POSTS)
                     }
                     CommunityTab.ABOUT -> item(key = "about", contentType = "about") { CommunityAbout(community) }
@@ -245,8 +249,9 @@ private fun CommunityHeader(community: XCommunity, onMembers: () -> Unit) {
             community.topic?.let { topic ->
                 Text(topic, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
+            // In full, and only here: X keeps a community's description short, so About does not say it again.
             CommunityPage.description(community)?.let { description ->
-                TipText(description, maxLines = 3, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 8.dp))
+                SelectionContainer { Text(description, modifier = Modifier.padding(top = 8.dp)) }
             }
         }
         Row(
@@ -287,17 +292,16 @@ private fun CommunityTabs(selected: CommunityTab, onSelect: (CommunityTab) -> Un
     }
 }
 
-/** The description in full, the rules, and when the community was made. */
+/** The rules and when the community was made; the description is the header's, just above. */
 @Composable
 private fun CommunityAbout(community: XCommunity) {
     Column(Modifier.fillMaxWidth().padding(16.dp)) {
-        CommunityPage.description(community)?.let { description -> SelectionContainer { Text(description) } }
         val rules = CommunityPage.numberedRules(community)
         if (rules.isNotEmpty()) {
             Text(
                 stringResource(Res.string.discover_community_rules),
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = 24.dp, bottom = 4.dp),
+                modifier = Modifier.padding(bottom = 4.dp),
             )
             rules.forEach { (number, rule) ->
                 Row(Modifier.padding(vertical = 8.dp)) {

@@ -259,9 +259,12 @@ internal fun rememberDoubleTapLike(post: XPost, prefs: PostPrefs, actions: PostA
     return like.takeIf { prefs.doubleTapLike }
 }
 
+/** The community whose own page the cards are on, if they are: they leave out its line ([PostView.inCommunityPage]). */
+internal val LocalCommunityPage = staticCompositionLocalOf<String?> { null }
+
 @Composable
 private fun ContextLines(post: XPost, actions: PostActions, pinned: Boolean, firstOfThread: Boolean) {
-    PostView.contextLines(post, pinned, firstOfThread, quoted = false).forEach { line ->
+    PostView.inCommunityPage(PostView.contextLines(post, pinned, firstOfThread, quoted = false), LocalCommunityPage.current).forEach { line ->
         when (line) {
             is ContextLine.Reposted -> ContextRow(XIcons.Repost, stringResource(Res.string.posts_reposted, line.by.name, agoText(post.createdAt))) {
                 actions.openUser(line.by.screenName, line.by.id)
