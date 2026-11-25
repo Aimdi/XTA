@@ -73,6 +73,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.onSecondaryClickIf
@@ -401,8 +402,9 @@ internal fun barLabel(page: BarPage, ui: HomeUi): String = when (page) {
 internal fun NetworksSheet(ui: HomeUi, networks: HomeNetworks, current: String?, onPick: (String) -> Unit, onAdd: () -> Unit, onDismiss: () -> Unit) {
     val onBar = HomeBar.networks(ui.bar)
     val (recent, rest) = AltMicroblogging.sections(onBar, ui.recentNetworks, ui.microblogsGrouped)
-    val sheet = NetworkRows(ui, networks, current, AltMicroblogging.members(onBar), onPick)
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.background) {
+        val closer = LocalSheetCloser.current
+        val sheet = NetworkRows(ui, networks, current, AltMicroblogging.members(onBar), closer.closing(onPick))
         LazyColumn(Modifier.padding(bottom = 16.dp), state = rememberSheetList()) {
             item(key = "title") {
                 Text(stringResource(Res.string.home_networks), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp))
@@ -411,7 +413,7 @@ internal fun NetworksSheet(ui: HomeUi, networks: HomeNetworks, current: String?,
             networkSection("all", rest, Res.string.home_networks_all, sheet)
             item(key = "add") {
                 HorizontalDivider()
-                Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(onClick = onAdd).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(onClick = closer.closing(onAdd)).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Filled.Add, contentDescription = null)
                     Text(stringResource(Res.string.home_add_timeline), modifier = Modifier.padding(start = 16.dp))
                 }

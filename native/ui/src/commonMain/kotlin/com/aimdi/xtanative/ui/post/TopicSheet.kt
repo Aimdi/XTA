@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSessions
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.topic_follow
@@ -38,12 +39,15 @@ internal fun TopicSheet(topic: String, onDismiss: () -> Unit) {
     val session by sessions.state.collectAsStateWithLifecycle()
     val followed = session?.let { TopicLinks.isFollowed(it, topic) } ?: false
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        val closer = LocalSheetCloser.current
         Column(Modifier.padding(bottom = 16.dp)) {
             MenuRow(if (followed) Icons.Outlined.Check else TagIcon, stringResource(if (followed) Res.string.topic_following else Res.string.topic_follow)) {
-                onDismiss()
-                keeper.keep {
-                    sessions.update { TopicLinks.toggled(it, topic, System.currentTimeMillis()) }
-                    KeepNotices.say(if (followed) getString(Res.string.topic_unsubscribe) else getString(Res.string.topic_follow_done, topic))
+                // Said once the sheet has gone, so the notice is not behind it.
+                closer.close {
+                    keeper.keep {
+                        sessions.update { TopicLinks.toggled(it, topic, System.currentTimeMillis()) }
+                        KeepNotices.say(if (followed) getString(Res.string.topic_unsubscribe) else getString(Res.string.topic_follow_done, topic))
+                    }
                 }
             }
         }

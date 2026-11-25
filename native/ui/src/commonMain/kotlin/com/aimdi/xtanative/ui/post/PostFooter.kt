@@ -58,6 +58,7 @@ import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.services.ai.TranslationStatus
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSessions
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
@@ -401,9 +402,10 @@ private fun BadgeDisc(avatar: Dp, subscribe: String, addToGroup: String, onFollo
 @Composable
 private fun SubscribeSheet(onSubscribe: () -> Unit, onGroups: () -> Unit, onDismiss: () -> Unit) {
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        val closer = LocalSheetCloser.current
         Column(Modifier.padding(bottom = 16.dp)) {
-            MenuRow(GroupIcons.PersonAdd, stringResource(Res.string.posts_subscribe), onSubscribe)
-            MenuRow(PostIcons.GroupAdd, stringResource(Res.string.posts_add_to_group), onGroups)
+            MenuRow(GroupIcons.PersonAdd, stringResource(Res.string.posts_subscribe), closer.closing(onSubscribe))
+            MenuRow(PostIcons.GroupAdd, stringResource(Res.string.posts_add_to_group), closer.closing(onGroups))
         }
     }
 }

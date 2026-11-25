@@ -38,6 +38,7 @@ import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.rememberSheetState
@@ -126,16 +127,17 @@ fun GroupSwitcherSheet(
             Text(stringResource(Res.string.groups_none_yet), modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 32.dp))
             return@KeyedSheet
         }
+        val closer = LocalSheetCloser.current
         LazyColumn(Modifier.padding(bottom = 16.dp), state = rememberSheetList()) {
             item(key = "hint") { CombineHint(state.alsoRead.size, onClear) }
             items(state.groups, key = { it.id }) { group ->
-                SwitcherRow(group, current = group.id == currentId, combined = group.id in state.alsoRead, onClick = { onSwitch(group.id) }, onLongClick = {
+                SwitcherRow(group, current = group.id == currentId, combined = group.id in state.alsoRead, onClick = { closer.close { onSwitch(group.id) } }, onLongClick = {
                     if (group.id != currentId) onToggle(group.id)
                 })
             }
             item(key = "create") {
                 HorizontalDivider()
-                Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(onClick = onCreate).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(onClick = closer.closing(onCreate)).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Filled.Add, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Text(stringResource(Res.string.groups_create), color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 16.dp))
                 }

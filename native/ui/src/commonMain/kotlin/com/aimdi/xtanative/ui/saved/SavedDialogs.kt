@@ -48,6 +48,7 @@ import com.aimdi.xtanative.core.x.model.XConversation
 import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedPost
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.LocalXClient
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.dialogDefault
@@ -195,7 +196,7 @@ private fun SheetRow(icon: androidx.compose.ui.graphics.vector.ImageVector, labe
     ListItem(
         headlineContent = { Text(label) },
         leadingContent = { Icon(icon, contentDescription = null) },
-        modifier = Modifier.clickable(onClick = onClick).padding(horizontal = 8.dp),
+        modifier = Modifier.clickable(onClick = LocalSheetCloser.current.closing(onClick)).padding(horizontal = 8.dp),
     )
 }
 

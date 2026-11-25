@@ -76,6 +76,7 @@ import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -429,10 +430,11 @@ private fun AddColumnSheet(choices: List<DeckColumn>, networks: HomeNetworks, on
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
         )
+        val closer = LocalSheetCloser.current
         LazyColumn(Modifier.fillMaxWidth().navigationBarsPadding(), state = rememberSheetList()) {
             items(choices, key = { it.id }) { column ->
                 Row(
-                    Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable { onPick(column) }.padding(horizontal = 24.dp),
+                    Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable { closer.close { onPick(column) } }.padding(horizontal = 24.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {

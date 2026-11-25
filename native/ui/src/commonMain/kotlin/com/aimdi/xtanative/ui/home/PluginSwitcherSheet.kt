@@ -50,6 +50,8 @@ import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
+import com.aimdi.xtanative.ui.common.SheetCloser
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.longPressOver
 import com.aimdi.xtanative.ui.common.rememberSheetState
@@ -115,6 +117,19 @@ internal class SwitcherCalls(
     val onAvatar: () -> Unit = {},
 )
 
+/** These calls run once the sheet has slid away ([SheetCloser]); each already closes it. */
+private fun SwitcherCalls.closingWith(closer: SheetCloser): SwitcherCalls = SwitcherCalls(
+    onTimeline = closer.closing(onTimeline),
+    onGroup = closer.closing(onGroup),
+    onNetwork = closer.closing(onNetwork),
+    onAdd = closer.closing(onAdd),
+    onMenu = closer.closing(onMenu),
+    onManage = closer.closing(onManage),
+    onSettings = closer.closing(onSettings),
+    onDismiss = onDismiss,
+    onAvatar = closer.closing(onAvatar),
+)
+
 /**
  * Home's one sheet, which every timeline's mark opens and a hold of Home on
  * the bar: the timeline [shown] as a profile's head is drawn (its mark, its
@@ -128,24 +143,28 @@ internal class SwitcherCalls(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PluginSwitcherSheet(ui: HomeUi, networks: HomeNetworks, shown: HomeTab?, unread: Set<String>, calls: SwitcherCalls, plugin: SheetPlugin? = null) {
+    val given = calls
     val ids = remember(ui.tabs, ui.recentNetworks) { PluginSwitcher.networks(ui.tabs, ui.recentNetworks) }
     val title = stringResource(Res.string.home_switcher_title)
     val shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
     // Whole at once, and the page's own colour under a hairline, as the app's screens are flat.
     KeyedSheet(
-        onDismissRequest = calls.onDismiss,
+        onDismissRequest = given.onDismiss,
         sheetState = rememberSheetState(alwaysFull = true),
         shape = shape,
         containerColor = MaterialTheme.colorScheme.background,
         tonalElevation = 0.dp,
         modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape).semantics { paneTitle = title },
     ) {
+        val closer = LocalSheetCloser.current
+        val calls = remember(given, closer) { given.closingWith(closer) }
+        val close = remember(closer) { { closer.close() } }
         Column(Modifier.verticalScrollByKeys(rememberScrollState()).padding(bottom = 12.dp)) {
             SheetHead(shown, ui, networks, plugin)
             Column(Modifier.padding(horizontal = 4.dp, vertical = 6.dp)) {
                 if (plugin != null) {
-                    plugin.items?.invoke(this, calls.onDismiss)
-                    plugin.appEntries(this, calls.onDismiss)
+                    plugin.items?.invoke(this, close)
+                    plugin.appEntries(this, close)
                 }
                 MenuRow(calls)
             }
@@ -191,11 +210,12 @@ private fun SheetHead(shown: HomeTab?, ui: HomeUi, networks: HomeNetworks, plugi
             if (shown != null) TimelineMark(shown, networks, 30.dp)
         }
         Spacer(Modifier.weight(1f))
+        val closer = LocalSheetCloser.current
         plugin?.onSettings?.let { settings ->
-            IconTip(stringResource(Res.string.settings)) { IconButton(onClick = settings) { Icon(GroupIcons.Tune, stringResource(Res.string.settings)) } }
+            IconTip(stringResource(Res.string.settings)) { IconButton(onClick = closer.closing(settings)) { Icon(GroupIcons.Tune, stringResource(Res.string.settings)) } }
         }
         plugin?.onSwitchAccount?.let { switch ->
-            TextButton(onClick = switch, modifier = Modifier.heightIn(min = 48.dp)) {
+            TextButton(onClick = closer.closing(switch), modifier = Modifier.heightIn(min = 48.dp)) {
                 Text(stringResource(Res.string.home_switch_account), fontWeight = FontWeight.Bold, color = accent, maxLines = 1)
                 Icon(GroupIcons.ExpandMore, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 4.dp).size(18.dp))
             }

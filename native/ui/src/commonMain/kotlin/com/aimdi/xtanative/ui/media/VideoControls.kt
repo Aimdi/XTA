@@ -80,6 +80,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_download
@@ -475,19 +476,20 @@ private fun FailedOverlay(playback: VideoPlayback) {
 private fun VideoSheets(sheet: VideoSheet?, state: VideoState, playback: VideoPlayback, chrome: VideoChrome, show: (VideoSheet?) -> Unit) {
     sheet ?: return
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = { show(null) }) {
+        val closer = LocalSheetCloser.current
         Column(Modifier.verticalScrollByKeys(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) {
             when (sheet) {
                 VideoSheet.MORE -> MoreRows(state, playback, chrome, show)
                 VideoSheet.SPEED -> VideoRules.SPEEDS.reversed().forEach { speed ->
                     CheckRow(stringResource(Res.string.reader_video_speed_value, VideoRules.speedText(speed)), kotlin.math.abs(speed - state.speed) < 0.01) {
-                        show(null)
                         playback.setSpeed(speed)
+                        closer.close()
                     }
                 }
                 VideoSheet.QUALITY -> state.qualities.forEach { quality ->
                     CheckRow(quality.label, quality.url == state.url) {
-                        show(null)
                         playback.setQuality(quality.url)
+                        closer.close()
                     }
                 }
             }
@@ -498,24 +500,24 @@ private fun VideoSheets(sheet: VideoSheet?, state: VideoState, playback: VideoPl
 /** The ⋮ menu's rows, in XTA's order: speed, quality, subtitles, fit or fill, download. */
 @Composable
 private fun MoreRows(state: VideoState, playback: VideoPlayback, chrome: VideoChrome, show: (VideoSheet?) -> Unit) {
+    val closer = LocalSheetCloser.current
     SheetRow(ReaderIcons.Speed, stringResource(Res.string.reader_video_speed)) { show(VideoSheet.SPEED) }
     if (state.qualities.size > 1) SheetRow(ReaderIcons.HighQuality, stringResource(Res.string.reader_video_quality)) { show(VideoSheet.QUALITY) }
     if (state.hasSubtitles) {
         SheetRow(if (state.subtitles) ReaderIcons.ClosedCaption else ReaderIcons.ClosedCaptionOff, stringResource(Res.string.reader_video_subtitles), checked = state.subtitles) {
-            show(null)
             playback.setSubtitles(!state.subtitles)
+            closer.close()
         }
     }
     chrome.onToggleFill?.let { toggle ->
         SheetRow(if (chrome.fill) ReaderIcons.FullscreenExit else ReaderIcons.AspectRatio, stringResource(if (chrome.fill) Res.string.reader_video_fit else Res.string.reader_video_fill)) {
-            show(null)
             toggle()
+            closer.close()
         }
     }
     chrome.onDownload?.let { download ->
         SheetRow(ReaderIcons.Download, stringResource(Res.string.reader_download)) {
-            show(null)
-            download()
+            closer.close(download)
         }
     }
 }

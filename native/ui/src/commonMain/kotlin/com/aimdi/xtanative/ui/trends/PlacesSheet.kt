@@ -34,6 +34,7 @@ import com.aimdi.xtanative.core.x.model.XTrendPlace
 import com.aimdi.xtanative.core.x.model.XTrendPlaces
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
@@ -53,11 +54,12 @@ internal fun PlacesSheet(vm: TrendsViewModel, places: XTrendPlaces, onDismiss: (
     val picker by vm.places.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { vm.loadPlaces() }
     var open by remember { mutableStateOf(emptySet<String>()) }
-    val pick = { place: XTrendPlace ->
-        vm.add(place)
-        onDismiss()
-    }
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        val closer = LocalSheetCloser.current
+        val pick = { place: XTrendPlace ->
+            vm.add(place)
+            closer.close()
+        }
         val problem = picker.problem
         when {
             picker.loading -> LoadingRow()

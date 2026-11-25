@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.profile
 
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.tabLeavesField
 import androidx.compose.foundation.background
@@ -228,13 +229,13 @@ private fun followedByText(followedBy: FollowedBy): String? = when (val label = 
 @Composable
 internal fun FollowedBySheet(followedBy: FollowedBy, actions: PostActions, onDismiss: () -> Unit) {
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        val closer = LocalSheetCloser.current
         Column(Modifier.verticalScrollByKeys(rememberScrollState()).padding(bottom = 24.dp)) {
             Text(stringResource(Res.string.posts_followed_by_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             followedBy.followers.forEach { member ->
                 Row(
                     Modifier.fillMaxWidth().clickable {
-                        onDismiss()
-                        actions.openUser(member.screenName, member.id)
+                        closer.close { actions.openUser(member.screenName, member.id) }
                     }.padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
