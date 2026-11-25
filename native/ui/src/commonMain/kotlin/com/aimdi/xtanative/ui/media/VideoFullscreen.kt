@@ -29,6 +29,17 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.key.isShiftPressed
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.platform.LocalFocusManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.shortcutKey
 import com.aimdi.xtanative.ui.home.HoldsKeys
@@ -92,15 +103,26 @@ private fun FullscreenLayer(video: FullscreenVideo, onClose: () -> Unit) {
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
     // Left, it hands the keys back to the viewer or the page under it.
     HoldsKeys(focus)
+    val keys = remember(focus) { ControlsKeys(focus) }
+    val tab = rememberFullscreenTab(keys)
     Box(
         Modifier
             .fillMaxSize()
             .background(Color.Black)
             // Nothing under it is touched while it is up, picture-in-picture included.
             .pointerInput(Unit) { awaitPointerEventScope { while (true) awaitPointerEvent().changes.forEach { it.consume() } } }
+            // Tab goes round its controls, whichever has the focus, and never on to the page under it.
+            .onPreviewKeyEvent(tab::onKey)
+            // The video's keys and Esc, from its own focus or any control's.
             .onKeyEvent { event -> (event.type == KeyEventType.KeyDown || typedChar(event) != null) && fullscreenKey(event, player, onClose) }
+            .onFocusChanged { tab.onLayer = it.isFocused }
             // It holds the keys, yet Tab goes round the video's controls without stopping on it, where nothing would show.
             .skippedByTab()
+            .focusProperties {
+                if (tab.stepping) canFocus = false
+                // The focus stays in full screen while it is up: the page under it shows nothing of a focus, and would take the keys.
+                onExit = { cancelFocusChange() }
+            }
             .focusRequester(focus)
             .focusable(),
     ) {
@@ -115,10 +137,80 @@ private fun FullscreenLayer(video: FullscreenVideo, onClose: () -> Unit) {
                 onDownload = video.onDownload,
                 onTurn = if (FullscreenTurns) ({ sideways = !sideways }) else null,
                 onClose = onClose,
+                keys = keys,
             )
             VideoControls(player, chrome, Modifier.fillMaxSize().safeDrawingPadding())
         }
     }
+}
+
+/**
+ * Tab and Shift+Tab in a video full screen ([VideoRules.fullscreenTab]):
+ * round its controls, whichever has the focus, wrapping at the ends; the
+ * controls shown first when hidden. [onLayer] while full screen's own focus
+ * has it; [stepping] while a step is being taken, when that focus is no stop.
+ */
+private class FullscreenTabs(private val keys: ControlsKeys, private val focusManager: FocusManager, private val scope: CoroutineScope) {
+    var onLayer = false
+    var stepping = false
+        private set
+
+    fun onKey(event: KeyEvent): Boolean {
+        val tab = event.key == Key.Tab || typedChar(event) == '\t'
+        if (!tab || event.isCtrlPressed || event.isAltPressed) return false
+        if (event.type != KeyEventType.KeyDown) return true
+        val forward = !event.isShiftPressed
+        when (VideoRules.fullscreenTab(keys.shown, onControl = !onLayer)) {
+            FullscreenTab.SHOW -> {
+                keys.show()
+                // Once they are drawn.
+                scope.launch {
+                    withFrameNanos {}
+                    withFrameNanos {}
+                    enter(forward)
+                }
+            }
+            FullscreenTab.ENTER -> enter(forward)
+            // At an end the step is refused (onExit), or lands on full screen's own focus: round to the other end.
+            FullscreenTab.MOVE -> step { if (!focusManager.moveFocus(if (forward) FocusDirection.Next else FocusDirection.Previous) || onLayer) enterNow(forward) }
+        }
+        return true
+    }
+
+    private fun enter(forward: Boolean) = step { enterNow(forward) }
+
+    /** Into the first control, or the last, from full screen's own focus: taken back first from a control at the end. */
+    private fun enterNow(forward: Boolean) {
+        if (!onLayer) {
+            stepping = false
+            runCatching { keys.holder.requestFocus() }
+            stepping = true
+        }
+        // Next, not Enter: Enter picks the control nearest the top-start corner, not the first in Tab's order.
+        if (!focusManager.moveFocus(FocusDirection.Next) || forward) return
+        repeat(MAX_CONTROLS) { if (!focusManager.moveFocus(FocusDirection.Next)) return }
+    }
+
+    private inline fun step(move: () -> Unit) {
+        stepping = true
+        try {
+            move()
+        } finally {
+            stepping = false
+        }
+    }
+
+    private companion object {
+        /** More than full screen ever shows: a bound on the walk to the last one. */
+        const val MAX_CONTROLS = 16
+    }
+}
+
+@Composable
+private fun rememberFullscreenTab(keys: ControlsKeys): FullscreenTabs {
+    val focusManager = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
+    return remember(keys, focusManager, scope) { FullscreenTabs(keys, focusManager, scope) }
 }
 
 /** Picture-in-picture where the platform has it (video_pip.dart): whether the app is shrunk into its floating window now, and asking for it. */

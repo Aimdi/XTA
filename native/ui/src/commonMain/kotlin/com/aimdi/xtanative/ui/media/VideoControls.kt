@@ -42,6 +42,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +52,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -103,6 +107,7 @@ import com.aimdi.xtanative.ui.generated.resources.video_fullscreen_exit
 import com.aimdi.xtanative.ui.generated.resources.video_picture_in_picture
 import com.aimdi.xtanative.ui.generated.resources.video_rotate
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
+import com.aimdi.xtanative.ui.theme.keyboardFocusShown
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
@@ -128,7 +133,30 @@ internal class VideoChrome(
     val onDownload: (() -> Unit)? = null,
     val onTurn: (() -> Unit)? = null,
     val onClose: (() -> Unit)? = null,
+    val keys: ControlsKeys? = null,
 )
+
+/**
+ * Full screen's keys and its controls between them: [show] brings the
+ * controls up for Tab, which can only reach them shown; [shown] says
+ * whether they are; and [holder], the full screen's own focus, gets the
+ * keys back when the controls hide with the focus on one of them, so Esc
+ * and the video's keys never go dead.
+ */
+@Stable
+internal class ControlsKeys(val holder: FocusRequester) {
+    /** Goes up each time the controls are asked to show. */
+    var asked by mutableIntStateOf(0)
+        private set
+
+    /** Whether the controls are shown now, set by them. */
+    var shown = false
+        internal set
+
+    fun show() {
+        asked++
+    }
+}
 
 /**
  * XTA's video controls (_video_controls.dart): a tap shows or hides them, and
@@ -147,11 +175,25 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
     var skipped by remember { mutableIntStateOf(0) }
     var sheet by remember { mutableStateOf<VideoSheet?>(null) }
     val touch: () -> Unit = { touches++ }
-    LaunchedEffect(visible, touches, sheet) {
-        if (visible && sheet == null) {
+    // A control the keyboard moved to keeps them up: hidden, it would take the focus with it.
+    var keyFocusInside by remember { mutableStateOf(false) }
+    val keyboard = keyboardFocusShown()
+    LaunchedEffect(visible, touches, sheet, keyFocusInside && keyboard) {
+        if (VideoRules.controlsHide(visible, sheet != null, keyFocusInside && keyboard)) {
             delay(VideoRules.CONTROLS_SHOWN_MS)
             visible = false
         }
+    }
+    chrome.keys?.let { keys ->
+        SideEffect { keys.shown = visible }
+        LaunchedEffect(keys.asked) {
+            if (keys.asked > 0) {
+                visible = true
+                touch()
+            }
+        }
+        // Hiding with the focus on one of them: the keys to full screen's own focus, while the control is still there to leave.
+        LaunchedEffect(visible) { if (!visible && keyFocusInside) runCatching { keys.holder.requestFocus() } }
     }
     LaunchedEffect(skipped) {
         if (skipped != 0) {
@@ -198,7 +240,7 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
             },
     ) {
         AnimatedVisibility(visible, enter = fadeIn(tween(MOTION_STANDARD_MS)), exit = fadeOut(tween(MOTION_STANDARD_MS))) {
-            Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.45f))) {
+            Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.45f)).onFocusChanged { keyFocusInside = it.hasFocus }) {
                 PlayPauseButton(state, Modifier.align(Alignment.Center)) {
                     touch()
                     playback.playOrPause()

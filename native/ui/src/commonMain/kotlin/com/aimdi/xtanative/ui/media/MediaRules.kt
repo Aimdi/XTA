@@ -127,6 +127,9 @@ object ViewerKeys {
     private val ZOOM_KEYS = setOf(ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET)
 }
 
+/** What Tab does in a video full screen ([VideoRules.fullscreenTab]). */
+enum class FullscreenTab { SHOW, ENTER, MOVE }
+
 /** The rules of the media viewer's videos (_video.dart, _video_controls.dart, video_quality.dart). */
 object VideoRules {
     /** Seconds a double tap on either half of a video skips. */
@@ -146,6 +149,28 @@ object VideoRules {
 
     /** How long the controls stay after the last touch. */
     const val CONTROLS_SHOWN_MS = 3_000L
+
+    /**
+     * Whether shown controls ([visible]) hide by themselves after
+     * [CONTROLS_SHOWN_MS]: not while a menu of theirs is open ([sheetOpen]),
+     * nor while the keyboard has moved the focus onto one of them
+     * ([keyFocused]), which would leave with them and take the keys along.
+     */
+    fun controlsHide(visible: Boolean, sheetOpen: Boolean, keyFocused: Boolean): Boolean = visible && !sheetOpen && !keyFocused
+
+    /**
+     * What Tab does in a video full screen: with its controls hidden it
+     * shows them first ([FullscreenTab.SHOW]); on full screen's own focus,
+     * which shows nothing, it goes to the first control, or with Shift the
+     * last ([FullscreenTab.ENTER]); on a control, to the next one, wrapping
+     * round at the ends inside full screen, never to the page under it
+     * ([FullscreenTab.MOVE]).
+     */
+    fun fullscreenTab(controlsShown: Boolean, onControl: Boolean): FullscreenTab = when {
+        !controlsShown -> FullscreenTab.SHOW
+        !onControl -> FullscreenTab.ENTER
+        else -> FullscreenTab.MOVE
+    }
 
     /** The progressive MP4s, highest bitrate first: X's HLS playlist plays poorly, and cannot be saved as a file. */
     fun qualities(media: XMedia): List<VideoQuality> =
