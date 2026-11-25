@@ -102,14 +102,16 @@ internal fun ForYouPage(toTop: Int, actions: PostActions, contentPadding: Paddin
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { inline?.pause() }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { inline?.resume() }
 
-    PullToRefreshBox(isRefreshing = state.refreshing, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize()) {
-        val problem = state.problem
+    val problem = state.problem
+    val bones = !state.noAccount && state.threads.isEmpty() && problem == null && !(state.answered && !state.refreshing)
+    // The bones are the sign it loads: no spinner over them.
+    PullToRefreshBox(isRefreshing = state.refreshing && !bones, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize()) {
         when {
             // XTA's no-account screen, whose Add account signs in.
             state.noAccount -> PageMessage(null) { ProblemView(Problem.NoAccount, { vm.refresh() }) }
             state.threads.isEmpty() && problem != null -> PageMessage(null) { ProblemView(problem, { vm.refresh() }, context = stringResource(Res.string.problem_unable_to_load_the_tweets)) }
             state.threads.isEmpty() && state.answered && !state.refreshing -> PageMessage(stringResource(Res.string.home_for_you_empty)) {}
-            state.threads.isEmpty() -> Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(top = contentPadding.calculateTopPadding())) { FeedSkeleton() }
+            bones -> Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(top = contentPadding.calculateTopPadding())) { FeedSkeleton() }
             else -> CompositionLocalProvider(LocalInlinePlayer provides inline) {
                 ForYouList(state, vm, actions, list, contentPadding)
             }

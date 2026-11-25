@@ -181,20 +181,32 @@ fun GroupFeedBody(
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { inline?.resume() }
 
     val buckets = remember(run.shown.threads, plugin.shown) { FeedMix.place(run.shown.threads, plugin.shown) }
-    PullToRefreshBox(isRefreshing = run.refreshing, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize().readVisibility(vm::visible)) {
-        val problem = run.problem
-        val threads = run.shown.threads
-        when {
-            state.missing -> Whole { ProblemView(Problem.Other, { vm.refresh() }, context = stringResource(Res.string.unable_to_load_the_group)) }
-            // A group is empty when it has nothing from any network: the Following feed may have the plugins' alone.
-            state.loaded && state.memberCount == 0 && plugin.shown.isEmpty() && !plugin.loading -> Whole { Message(stringResource(Res.string.groups_no_members)) }
-            threads.isEmpty() && plugin.shown.isNotEmpty() -> PluginPostsOnly(plugin.shown, plugins, list, contentPadding, problem) { vm.refresh() }
-            threads.isEmpty() && problem != null -> Whole { ProblemView(problem, { vm.refresh() }) }
-            threads.isEmpty() && plugin.loading -> SkeletonPage(contentPadding)
-            threads.isEmpty() && run.answered && run.shown.pause == FeedPause.CAUGHT_UP -> Whole { CaughtUpCard(run.shown.catchUpMessage, run, vm) }
-            threads.isEmpty() && run.answered && !run.refreshing -> Whole { Message(stringResource(Res.string.groups_feed_empty)) }
-            threads.isEmpty() -> SkeletonPage(contentPadding)
-            mediaOnly -> FeedMediaGrid(
+    val problem = run.problem
+    val threads = run.shown.threads
+    val shows = when {
+        state.missing -> FeedShows.MISSING
+        // A group is empty when it has nothing from any network: the Following feed may have the plugins' alone.
+        state.loaded && state.memberCount == 0 && plugin.shown.isEmpty() && !plugin.loading -> FeedShows.NO_MEMBERS
+        threads.isEmpty() && plugin.shown.isNotEmpty() -> FeedShows.PLUGIN_POSTS
+        threads.isEmpty() && problem != null -> FeedShows.PROBLEM
+        threads.isEmpty() && plugin.loading -> FeedShows.BONES
+        threads.isEmpty() && run.answered && run.shown.pause == FeedPause.CAUGHT_UP -> FeedShows.CAUGHT_UP
+        threads.isEmpty() && run.answered && !run.refreshing -> FeedShows.EMPTY
+        threads.isEmpty() -> FeedShows.BONES
+        mediaOnly -> FeedShows.MEDIA
+        else -> FeedShows.POSTS
+    }
+    // The bones are the sign it loads: no spinner over them.
+    PullToRefreshBox(isRefreshing = run.refreshing && shows != FeedShows.BONES, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize().readVisibility(vm::visible)) {
+        when (shows) {
+            FeedShows.MISSING -> Whole { ProblemView(Problem.Other, { vm.refresh() }, context = stringResource(Res.string.unable_to_load_the_group)) }
+            FeedShows.NO_MEMBERS -> Whole { Message(stringResource(Res.string.groups_no_members)) }
+            FeedShows.PLUGIN_POSTS -> PluginPostsOnly(plugin.shown, plugins, list, contentPadding, problem) { vm.refresh() }
+            FeedShows.PROBLEM -> Whole { ProblemView(problem ?: Problem.Other, { vm.refresh() }) }
+            FeedShows.BONES -> SkeletonPage(contentPadding)
+            FeedShows.CAUGHT_UP -> Whole { CaughtUpCard(run.shown.catchUpMessage, run, vm) }
+            FeedShows.EMPTY -> Whole { Message(stringResource(Res.string.groups_feed_empty)) }
+            FeedShows.MEDIA -> FeedMediaGrid(
                 threads,
                 canLoadMore = run.shown.canLoadMore && run.moreProblem == null && !run.fromCache,
                 foot = MediaFoot(run.loadingMore, run.moreProblem) { vm.loadMore() },
@@ -204,7 +216,7 @@ fun GroupFeedBody(
                 onMore = vm::loadMore,
                 updates = remember(vm) { vm.ui.map { it.run.shown.threads }.distinctUntilChanged() },
             )
-            else -> CompositionLocalProvider(LocalInlinePlayer provides inline) {
+            FeedShows.POSTS -> CompositionLocalProvider(LocalInlinePlayer provides inline) {
                 FeedList(state, vm, actions, list, contentPadding, FeedPlugins(buckets, plugin.shown, plugins))
             }
         }
@@ -332,6 +344,9 @@ private fun StaleNotice(problem: Problem, savedAt: Long?, vm: GroupFeedViewModel
         ReadFailureNotice(problem, { vm.refresh() }, contextMessage = age, onDismiss = vm::dismissStale)
     }
 }
+
+/** What a group's feed shows in its place, decided before the pull to refresh around it. */
+private enum class FeedShows { MISSING, NO_MEMBERS, PLUGIN_POSTS, PROBLEM, BONES, CAUGHT_UP, EMPTY, MEDIA, POSTS }
 
 /** The first page on its way: post-shaped bones, still pulled to refresh (XTA's TweetFeedSkeleton). */
 @Composable
