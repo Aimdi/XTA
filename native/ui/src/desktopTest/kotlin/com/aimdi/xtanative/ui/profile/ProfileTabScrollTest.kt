@@ -2,7 +2,9 @@ package com.aimdi.xtanative.ui.profile
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /** Each profile tab keeps its own place in the list they share. */
 class ProfileTabScrollTest {
@@ -53,5 +55,8 @@ class ProfileTabScrollTest {
         assertEquals(listOf(ProfileTop.HEADER, ProfileTop.PROBLEM), ProfileTabScroll.itemsAbove(failed = false, firstLoad = false, problem = true))
         assertEquals(listOf(ProfileTop.HEADER, ProfileTop.FAILURE), ProfileTabScroll.itemsAbove(failed = true, firstLoad = true, problem = true))
         assertEquals(2, ProfileTabScroll.itemsAbove(failed = false, firstLoad = true, problem = false).size)
+        assertEquals(listOf(ProfileTop.FAILURE), ProfileTabScroll.itemsAbove(failed = true, firstLoad = false, problem = false, header = false), "not found: no name above it")
+        assertTrue(ProfileFailure.SUSPENDED.keepsHeader && ProfileFailure.PRIVATE.keepsHeader)
+        assertFalse(ProfileFailure.NOT_FOUND.keepsHeader || ProfileFailure.PAGE_NOT_FOUND.keepsHeader)
     }
 }

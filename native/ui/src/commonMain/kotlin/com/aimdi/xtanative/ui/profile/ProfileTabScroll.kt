@@ -32,12 +32,12 @@ internal class ProfileTabScroll {
     companion object {
         /**
          * The items of the profile's list above its tab row, in order: the
-         * header, then the failure, the first load's row or the problem's,
-         * when one shows. The list is drawn from these, and their count is
-         * the tab row's place.
+         * header (unless [header] is false: a profile not found), then the
+         * failure, the first load's row or the problem's, when one shows.
+         * The list is drawn from these, and their count is the tab row's place.
          */
-        fun itemsAbove(failed: Boolean, firstLoad: Boolean, problem: Boolean): List<ProfileTop> =
-            listOf(ProfileTop.HEADER) + listOfNotNull(
+        fun itemsAbove(failed: Boolean, firstLoad: Boolean, problem: Boolean, header: Boolean = true): List<ProfileTop> =
+            listOfNotNull(ProfileTop.HEADER.takeIf { header }) + listOfNotNull(
                 when {
                     failed -> ProfileTop.FAILURE
                     firstLoad -> ProfileTop.LOADING

@@ -195,7 +195,7 @@ fun ProfileScreen(
     val tabScroll = remember(list) { ProfileTabScroll() }
     val select: (ProfileTab) -> Unit = { to ->
         // The tab row's place: under the header, and under a problem's row while one shows.
-        val tabRow = ProfileTabScroll.itemsAbove(state.failure != null, state.loading && !state.complete, state.problem != null).size
+        val tabRow = ProfileTabScroll.itemsAbove(state.failure != null, state.loading && !state.complete, state.problem != null, header = state.failure?.keepsHeader != false).size
         tabScroll.turned(state.tab, to, ScrollSpot(list.firstVisibleItemIndex, list.firstVisibleItemScrollOffset), tabRow)
             ?.let { list.requestScrollToItem(it.index, it.offset) }
         vm.select(to)
@@ -259,7 +259,7 @@ fun ProfileScreen(
                     modifier = Modifier.fillMaxSize().swipeTabs(if (tabbed) ProfileTab.entries else emptyList(), state.tab, select),
                 ) {
                     val problem = state.problem
-                    ProfileTabScroll.itemsAbove(failure != null, state.loading && !state.complete, problem != null).forEach { top ->
+                    ProfileTabScroll.itemsAbove(failure != null, state.loading && !state.complete, problem != null, header = failure?.keepsHeader != false).forEach { top ->
                         when (top) {
                             ProfileTop.HEADER -> item(key = top.key, contentType = top.key) {
                                 Header(state, follow, screenName, actions, onSheet = { sheet = it })
