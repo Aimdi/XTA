@@ -41,6 +41,7 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_video
 import com.aimdi.xtanative.ui.generated.resources.reader_video_length
 import com.aimdi.xtanative.ui.generated.resources.reader_video_open_sound
+import com.aimdi.xtanative.ui.post.PlayBadge
 import com.aimdi.xtanative.ui.post.settingsNow
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
@@ -52,8 +53,8 @@ import org.jetbrains.compose.resources.stringResource
  * unless the reader turned it on), once most of it has stayed in view a
  * moment (in a feed, while it is the tile seen most: [MostSeen]), pauses
  * when it leaves, and plays on from there when it is back. Its corners hold
- * the time left (with a small ▶ while nothing starts it by itself) and the
- * mute switch; a tap anywhere else opens it full screen with its sound,
+ * the time left and the mute switch, with a round ▶ in the middle while
+ * nothing starts it by itself; a tap anywhere else opens it full screen with its sound,
  * going on from where it was. [poster] is the tile's picture, kept over the
  * video until its first frame; [post] names a saved file. Where nothing
  * plays in place, only the corner shows and the tile's tap opens the viewer.
@@ -78,7 +79,10 @@ internal fun TileVideo(
     modifier: Modifier = Modifier,
     download: @Composable () -> ((VideoPlayer) -> Unit)?,
 ) {
-    val tiles = rememberTilePlayer() ?: return Box(modifier) { TileCorner(VideoRules.cornerTimeMs(null, durationMs), play = true, Modifier.align(Alignment.BottomStart)) }
+    val tiles = rememberTilePlayer() ?: return Box(modifier) {
+        PlayBadge(Modifier.align(Alignment.Center))
+        TileCorner(VideoRules.cornerTimeMs(null, durationMs), play = false, Modifier.align(Alignment.BottomStart))
+    }
     val settings = settingsNow(LocalSettingsStore.current)
     val key = remember { Any() }
     var seen by remember { mutableStateOf(false) }
@@ -224,14 +228,17 @@ private fun TileLabels(durationMs: Long?): TileLabels {
 }
 
 /**
- * A video waiting in its tile: its length in the corner, with a small ▶
- * while nothing starts it by itself; with Autoplay, the mute switch says
- * how it will start. A tap opens it full screen with sound.
+ * A video waiting in its tile: its length in the corner, and the round play
+ * sign in the middle while nothing starts it by itself, so it reads as a
+ * video, not a still; with Autoplay, the mute switch says how it will start.
+ * A tap opens it full screen with sound.
  */
 @Composable
 private fun IdleTile(autoplay: Boolean, muted: Boolean, durationMs: Long?, labels: TileLabels, onOpen: () -> Unit, modifier: Modifier) {
     Box(modifier.clickable(interactionSource = null, indication = rememberPictureIndication(), onClickLabel = labels.onClick, role = Role.Button, onClick = onOpen).semantics { contentDescription = labels.description }) {
-        TileCorner(VideoRules.cornerTimeMs(null, durationMs), play = VideoRules.cornerPlay(autoplay, holding = false), Modifier.align(Alignment.BottomStart))
+        val waits = VideoRules.cornerPlay(autoplay, holding = false)
+        if (waits) PlayBadge(Modifier.align(Alignment.Center))
+        TileCorner(VideoRules.cornerTimeMs(null, durationMs), play = false, Modifier.align(Alignment.BottomStart))
         if (autoplay) {
             val chosen by VideoMute.choice.collectAsState()
             MuteCorner(chosen ?: muted, onToggle = { VideoMute.set(!(chosen ?: muted)) }, Modifier.align(Alignment.BottomEnd), disc = TileMuteDisc, inset = TileInset)
