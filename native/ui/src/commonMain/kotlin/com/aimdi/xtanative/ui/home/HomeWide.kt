@@ -13,6 +13,9 @@ object HomeWide {
     /** The navigation column's width, in dp. */
     const val SIDEBAR_WIDTH = 320
 
+    /** The column and its dividing line, in dp: how far the screens beside it stand from the window's start edge. */
+    const val FRAME_INSET = SIDEBAR_WIDTH + 1
+
     /** The narrowest a timeline is read at beside another, in dp. */
     const val COLUMN_MIN = 420f
 

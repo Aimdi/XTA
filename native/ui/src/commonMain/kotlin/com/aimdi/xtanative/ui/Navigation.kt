@@ -8,8 +8,12 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -22,6 +26,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -31,6 +36,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.savedstate.read
+import com.aimdi.xtanative.core.session.DeckGroups
 import com.aimdi.xtanative.core.x.model.XLive
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.antenna.AntennaFeedScreen
@@ -55,10 +61,18 @@ import com.aimdi.xtanative.ui.group.GroupDiscoveryScreen
 import com.aimdi.xtanative.ui.group.GroupFeedScreen
 import com.aimdi.xtanative.ui.home.DeckScreen
 import com.aimdi.xtanative.ui.home.DesktopNavigation
+import com.aimdi.xtanative.ui.home.FrameCalls
+import com.aimdi.xtanative.ui.home.FrameRoute
+import com.aimdi.xtanative.ui.home.FramedSidebar
+import com.aimdi.xtanative.ui.home.FullWindow
 import com.aimdi.xtanative.ui.home.HomeBarScreens
 import com.aimdi.xtanative.ui.home.HomeRequests
 import com.aimdi.xtanative.ui.home.HomeRoutes
 import com.aimdi.xtanative.ui.home.HomeScreen
+import com.aimdi.xtanative.ui.home.HomeWide
+import com.aimdi.xtanative.ui.home.LocalWideFrame
+import com.aimdi.xtanative.ui.home.WideFrame
+import com.aimdi.xtanative.ui.home.rememberLeaveField
 import com.aimdi.xtanative.ui.importer.ImportScreen
 import com.aimdi.xtanative.ui.intro.IntroFlow
 import com.aimdi.xtanative.ui.intro.IntroScreen
@@ -81,6 +95,7 @@ import com.aimdi.xtanative.ui.offline.OfflineMediaScreen
 import com.aimdi.xtanative.ui.pluginstore.AttachPluginNavigation
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.pluginstore.PluginCards
+import com.aimdi.xtanative.ui.pluginstore.PluginRoutes
 import com.aimdi.xtanative.ui.pluginstore.PluginSheetHost
 import com.aimdi.xtanative.ui.pluginstore.pluginScreens
 import com.aimdi.xtanative.ui.post.LocalPostWindows
@@ -108,6 +123,7 @@ import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import com.aimdi.xtanative.ui.settings.SettingsScreen
 import com.aimdi.xtanative.ui.settings.SettingsSection
 import com.aimdi.xtanative.ui.settings.SettingsSectionScreen
+import com.aimdi.xtanative.ui.settings.isDesktop
 import com.aimdi.xtanative.ui.signin.NotLoggedInDialog
 import com.aimdi.xtanative.ui.signin.SignInReminder
 import com.aimdi.xtanative.ui.signin.SignInScreen
@@ -486,7 +502,8 @@ private class ScreenActions(val posts: PostActions, val search: SearchActions, v
 private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
     val reduced = rememberUpdatedState(LocalReducedMotion.current)
     val motion = remember(reduced) { ScreenMotion(reduced) }
-    all.backs.Recorded { ScreenHost(nav, start, all, motion) }
+    // In a wide desktop window the navigation column stands beside every screen; only the screens are pictured under a card.
+    WideFramed(nav, all.home) { all.backs.Recorded { ScreenHost(nav, start, all, motion) } }
     // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved).
     KeepHost()
     // The sheets plugins open over the screens: a post's folders, its note, its menu, an account's groups. The main window's alone, so each shows once.
@@ -588,7 +605,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             popEnterTransition = motion.fadeEnter,
             popExitTransition = motion.fadeExit,
         ) { entry ->
-            MediaViewer(entry.text("postId").orEmpty(), entry.arguments?.read { getIntOrNull("index") } ?: 0, onClose = { nav.popBackStack() })
+            FullWindow { MediaViewer(entry.text("postId").orEmpty(), entry.arguments?.read { getIntOrNull("index") } ?: 0, onClose = { nav.popBackStack() }) }
         }
         composable(
             Routes.GALLERY,
@@ -603,14 +620,16 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             popEnterTransition = motion.fadeEnter,
             popExitTransition = motion.fadeExit,
         ) { entry ->
-            GalleryViewer(
-                entry.text("key").orEmpty(),
-                entry.arguments?.read { getIntOrNull("index") } ?: 0,
-                fallbackPostId = entry.text("post"),
-                fallbackIndex = entry.arguments?.read { getIntOrNull("at") } ?: 0,
-                openPost = { id, media -> nav.push(Routes.post(id, media)) },
-                onClose = { nav.popBackStack() },
-            )
+            FullWindow {
+                GalleryViewer(
+                    entry.text("key").orEmpty(),
+                    entry.arguments?.read { getIntOrNull("index") } ?: 0,
+                    fallbackPostId = entry.text("post"),
+                    fallbackIndex = entry.arguments?.read { getIntOrNull("at") } ?: 0,
+                    openPost = { id, media -> nav.push(Routes.post(id, media)) },
+                    onClose = { nav.popBackStack() },
+                )
+            }
         }
         composable(
             Routes.SEARCH,
@@ -664,7 +683,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             popEnterTransition = motion.fadeEnter,
             popExitTransition = motion.fadeExit,
         ) { entry ->
-            ImageViewer(entry.text("url").orEmpty(), entry.text("name").orEmpty(), onClose = { nav.popBackStack() })
+            FullWindow { ImageViewer(entry.text("url").orEmpty(), entry.text("name").orEmpty(), onClose = { nav.popBackStack() }) }
         }
         composable(Routes.SPEECH_SETTINGS) {
             VoiceSettingsScreen(onBack = { nav.popBackStack() })
@@ -821,6 +840,78 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
         pluginScreens(nav, motion.fadeEnter, motion.fadeExit, all.pluginCards)
     }
 }
+
+/** The screens over the whole window, the wide frame's column included: the media viewers ([FullWindow]). */
+private val FULL_WINDOW = setOf(Routes.MEDIA, Routes.GALLERY, Routes.IMAGE, PluginRoutes.MEDIA)
+
+/**
+ * The screens ([content]) beside the navigation column of a wide desktop
+ * window ([WideFrame]), once Home is in the navigation: the column stays
+ * put while the screens change, and the screens slide within their own
+ * place. A media viewer grows over the column; while one shows, or comes
+ * or goes, the screens' place lets it. Off the desktop, in a post's own
+ * window and in a narrow window, the screens alone, as before.
+ */
+@Composable
+private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Composable () -> Unit) {
+    if (!isDesktop || LocalSecondaryWindow.current != null) return content()
+    val frame = remember { WideFrame() }
+    val stack by nav.currentBackStack.collectAsStateWithLifecycle()
+    val visible by nav.visibleEntries.collectAsStateWithLifecycle()
+    val home = stack.lastOrNull { it.destination.route == Routes.HOME }
+    // A row clicked keeps no focus: the keys go back to the screen beside the column, its reading keys at work at once.
+    val leaveRow = rememberLeaveField()
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val framedHome = home?.takeIf { HomeWide.sidebar(maxWidth.value) }
+        val wide = framedHome != null
+        val viewer = visible.any { it.destination.route in FULL_WINDOW }
+        val deckFits = DeckGroups.fits(maxWidth.value, minOf(maxWidth, maxHeight).value)
+        Row(Modifier.fillMaxSize()) {
+            if (framedHome != null) {
+                val screens = stack.map { entry -> FrameRoute(entry.destination.route, entry.text("id")?.takeIf { entry.destination.route == Routes.GROUP }) }
+                FramedSidebar(framedHome, frame, screens, Routes.HOME, deckFits, routes, frameCalls(nav, frame, routes, leaveRow))
+                VerticalDivider()
+            }
+            Box(Modifier.weight(1f).fillMaxHeight().then(if (wide && !viewer) Modifier.clipToBounds() else Modifier)) {
+                CompositionLocalProvider(LocalWideFrame provides frame.takeIf { wide }, content = content)
+            }
+        }
+    }
+}
+
+/**
+ * What the column's rows do: a page of Home's bar turns Home to it (Home's
+ * own tap on Home, else back to Home on that page); a screen of the menu or
+ * a group opens over Home, what was open over Home closed, as a desktop
+ * app's sidebar leads from one place to the next; the one shown stays.
+ */
+private fun frameCalls(nav: NavHostController, frame: WideFrame, routes: HomeRoutes, leaveRow: () -> Unit) = FrameCalls(
+    page = { index, page ->
+        leaveRow()
+        val tap = frame.homeTap
+        if (nav.currentDestination?.route == Routes.HOME && tap != null) {
+            tap(index)
+        } else {
+            HomeRequests.showPage(page.id)
+            nav.popBackStack(Routes.HOME, inclusive = false)
+        }
+    },
+    screen = { route ->
+        leaveRow()
+        if (nav.currentDestination?.route?.substringBefore('?') != route) {
+            nav.popBackStack(Routes.HOME, inclusive = false)
+            routes.openIfExists(route)
+        }
+    },
+    group = { group ->
+        leaveRow()
+        val shown = nav.currentDestination?.route == Routes.GROUP && nav.currentBackStackEntry?.text("id") == group.id
+        if (!shown) {
+            nav.popBackStack(Routes.HOME, inclusive = false)
+            routes.openGroup(group.id)
+        }
+    },
+)
 
 /** Whether the app has a screen at [route] yet: Home leads only to those. */
 private fun NavHostController.hasRoute(route: String): Boolean = runCatching { graph.findNode(route) != null }.getOrDefault(false)

@@ -128,9 +128,11 @@ fun HomeScreen(actions: PostActions, routes: HomeRoutes, screens: HomeBarScreens
         Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
         return
     }
+    // In the desktop's wide frame ([WideFrame]) the column stands beside every screen, Home's look stays wide however narrow Home is.
+    val frame = LocalWideFrame.current
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val deckFits = DeckGroups.fits(maxWidth.value, minOf(maxWidth, maxHeight).value)
-        HomeShell(HomeParts(ui, vm, networks, actions, routes, screens), deckFits, HomeWide.sidebar(maxWidth.value))
+        HomeShell(HomeParts(ui, vm, networks, actions, routes, screens), deckFits, frame != null || HomeWide.sidebar(maxWidth.value), frame)
     }
 }
 
@@ -204,7 +206,7 @@ private fun rememberShell(ui: HomeUi): HomeShellState {
 }
 
 @Composable
-private fun HomeShell(parts: HomeParts, deckFits: Boolean, wide: Boolean) {
+private fun HomeShell(parts: HomeParts, deckFits: Boolean, wide: Boolean, frame: WideFrame?) {
     val ui = parts.ui
     val shell = rememberShell(ui)
     val scope = rememberCoroutineScope()
@@ -243,8 +245,10 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean, wide: Boolean) {
             if (FollowingBar.opensCustom(sort)) shell.layer = HomeLayer.FOLLOWING_CUSTOM
         },
     )
+    if (frame != null) FollowedByFrame(frame, page) { index -> barTapped(shell, ui, index) }
     Row(Modifier.fillMaxSize()) {
-        if (wide) {
+        // The frame's column stands beside every screen, Home's included.
+        if (wide && frame == null) {
             HomeSidebar(parts, shell, page, deckFits, unread)
             VerticalDivider()
         }
@@ -509,6 +513,13 @@ private fun TakeRequests(shell: HomeShellState, ui: HomeUi) {
         if (BarPage.Feed in ui.bar) shell.show(BarPage.Feed)
         if (ui.tabs.any { it.key == key }) shell.shownKey = key
     }
+    // A page of the bar picked in the wide frame's column while another screen was shown.
+    val askedPage by HomeRequests.page.collectAsStateWithLifecycle()
+    LaunchedEffect(askedPage, ui.bar) {
+        val id = askedPage ?: return@LaunchedEffect
+        HomeRequests.pageTaken(id)
+        ui.bar.firstOrNull { it.id == id }?.let(shell::show)
+    }
     // Alt+Home: the page Home starts on (Settings › Home's first page), not the one last picked on the bar or sidebar.
     val toStart by HomeRequests.start.collectAsStateWithLifecycle()
     LaunchedEffect(toStart) {
@@ -654,7 +665,7 @@ private fun openGroup(group: FollowGroup, routes: HomeRoutes, drawer: DrawerStat
  * marks, as XTA's unread store reads them; networks answer for themselves.
  */
 @Composable
-private fun unreadKeys(ui: HomeUi, vm: HomeViewModel, networks: HomeNetworks): Set<String> {
+internal fun unreadKeys(ui: HomeUi, vm: HomeViewModel, networks: HomeNetworks): Set<String> {
     val feeds by vm.unread.collectAsStateWithLifecycle()
     val lit = ui.tabs.filterIsInstance<HomeTab.Network>().filter { tab -> key(tab.id) { networks.unread(tab.id) } }
     return if (lit.isEmpty()) feeds else feeds + lit.map { it.key }

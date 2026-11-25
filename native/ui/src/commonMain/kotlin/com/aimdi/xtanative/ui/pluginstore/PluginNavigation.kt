@@ -31,6 +31,7 @@ import com.aimdi.xtanative.data.plugins.NavTarget
 import com.aimdi.xtanative.data.plugins.PluginSheet
 import com.aimdi.xtanative.data.plugins.RunningPlugin
 import com.aimdi.xtanative.data.plugins.SheetEntry
+import com.aimdi.xtanative.ui.home.FullWindow
 import com.aimdi.xtanative.ui.home.LocalHomeNetworks
 import com.aimdi.xtanative.ui.links.LinkOpener
 import com.aimdi.xtanative.ui.links.LinkScreens
@@ -241,13 +242,16 @@ fun NavGraphBuilder.pluginScreens(
         val key = entry.text("key").orEmpty()
         val shelved = remember(key) { plugins.media.get(key) }
         val openPost = shelved?.openPost
-        MediaPager(
-            shelved?.items.orEmpty(),
-            entry.arguments?.read { getIntOrNull("index") } ?: 0,
-            onClose = { nav.popBackStack() },
-            onDownload = shelved?.let { media -> { item -> plugins.download(media.source, item) } },
-            onOpenPost = openPost?.let { open -> { runCatching { open() } } },
-        )
+        // Over the whole window, the wide frame's column included, as the app's viewer.
+        FullWindow {
+            MediaPager(
+                shelved?.items.orEmpty(),
+                entry.arguments?.read { getIntOrNull("index") } ?: 0,
+                onClose = { nav.popBackStack() },
+                onDownload = shelved?.let { media -> { item -> plugins.download(media.source, item) } },
+                onOpenPost = openPost?.let { open -> { runCatching { open() } } },
+            )
+        }
     }
 }
 
