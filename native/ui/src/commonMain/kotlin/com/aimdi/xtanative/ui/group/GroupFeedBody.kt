@@ -255,7 +255,7 @@ private fun FeedList(state: GroupFeedUi, vm: GroupFeedViewModel, actions: PostAc
     WithReadingColumn(contentPadding, list) { padding ->
         LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
             run.stale?.let { stale -> item(key = "stale", contentType = "notice") { StaleNotice(stale, run.savedAt, vm) } }
-            itemsIndexed(threads, key = { _, thread -> thread.id }, contentType = { _, _ -> "thread" }) { index, thread ->
+            itemsIndexed(threads, key = { _, thread -> thread.id }, contentType = { index, thread -> layout.rowType(index, thread) }) { index, thread ->
                 Column(itemMotion(reduced)) {
                     if (index == divider) CaughtUpDivider()
                     Placed(mixed.buckets, index, mixed.plugins, layout, posts, drawKey) {

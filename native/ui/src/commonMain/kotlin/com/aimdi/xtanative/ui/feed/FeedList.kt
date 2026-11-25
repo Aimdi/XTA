@@ -64,7 +64,7 @@ fun LazyListScope.feedThreads(
 ) {
     // Only a stacked or folded row looks threads up by key: the map is made when one first does.
     val byKey by lazy { threads.associateBy(FeedLayout::xKey) }
-    itemsIndexed(threads, key = { _, thread -> keyOf(thread) }, contentType = { _, _ -> "thread" }) { index, thread ->
+    itemsIndexed(threads, key = { _, thread -> keyOf(thread) }, contentType = { index, thread -> layout.rowType(index, thread) }) { index, thread ->
         Column(itemMotion(LocalReducedMotion.current)) {
             if (index == divider) CaughtUpDivider()
             FeedThreadRow(layout.ofThread(index, thread), thread, actions, draw = { key -> byKey[key]?.let { row(it) } }) { row(thread) }

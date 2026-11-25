@@ -125,4 +125,22 @@ class FeedLayoutTest {
         threads.forEachIndexed { index, thread -> assertEquals(FeedPart.Plain, layout.ofThread(index, thread)) }
         assertEquals(FeedPart.Plain, FeedLayout.None.ofPost(sourced("rss", "r", 1)))
     }
+
+    @Test
+    fun eachKindOfRowHasAContentTypeOfItsOwn() {
+        val threads = listOf(
+            thread("1", 600, "https://news.example/a"),
+            XThread("2", listOf(post("2", 500), post("2b", 501))),
+            boost("3", 400),
+            boost("4", 300),
+            boost("5", 250),
+            thread("6", 200),
+            thread("7", 100, "https://news.example/a"),
+        )
+        val layout = FeedLayout.of(threads, collapseReposts = true)
+        assertEquals(
+            listOf(FeedLayout.ROW_STACK, FeedLayout.ROW_THREAD, FeedLayout.ROW_RUN, FeedLayout.ROW_HIDDEN, FeedLayout.ROW_HIDDEN, FeedLayout.ROW_POST, FeedLayout.ROW_HIDDEN),
+            threads.mapIndexed(layout::rowType),
+        )
+    }
 }
