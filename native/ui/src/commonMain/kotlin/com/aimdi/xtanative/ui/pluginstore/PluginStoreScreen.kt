@@ -89,6 +89,7 @@ import com.aimdi.xtanative.pluginhost.PluginStatus
 import com.aimdi.xtanative.pluginhost.PluginStoreState
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.RowSkeleton
 import com.aimdi.xtanative.ui.common.SearchPillShape
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
@@ -232,7 +233,10 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
         ) {
             WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 24.dp), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                 item(key = "search") { StoreSearchField(query, Modifier.focusRequester(searchFocus)) { query = it } }
-                if (store.catalogue.refreshing) item(key = "refreshing") { LinearProgressIndicator(Modifier.fillMaxWidth()) }
+                // The first read of the catalogue, nothing at hand yet: rows taking shape rather than a bar over an empty page.
+                if (store.catalogue.refreshing) item(key = "refreshing") {
+                    if (store.installed.isEmpty() && store.onOffer.isEmpty()) RowSkeleton(picture = RoundedCornerShape(8.dp), pictureSize = 28.dp) else LinearProgressIndicator(Modifier.fillMaxWidth())
+                }
                 if (store.catalogue.unreachable && !store.catalogue.refreshing) {
                     item(key = "unreachable") { Unreachable(store.catalogue.fetchedAt != null) { scope.launch { plugins.manager.refresh() } } }
                 }

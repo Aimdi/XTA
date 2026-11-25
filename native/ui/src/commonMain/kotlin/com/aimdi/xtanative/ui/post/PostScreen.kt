@@ -74,7 +74,8 @@ import com.aimdi.xtanative.ui.article.ArticleLayout
 import com.aimdi.xtanative.ui.article.ArticlePreviewCard
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
-import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.FeedSkeleton
+import com.aimdi.xtanative.ui.common.PostSkeleton
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.TipText
@@ -178,7 +179,7 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
                     focalItems(state, id, actions, vm, prefs, startMedia)
                     val problem = state.problem
                     when {
-                        state.loading && state.replies.isEmpty() -> item(key = "loading") { LoadingRow() }
+                        state.loading && state.replies.isEmpty() -> item(key = "loading") { FeedSkeleton(count = PostLoading.placeholders(state.focal?.replyCount)) }
                         problem != null -> item(key = "problem") { ProblemRow(problem, { vm.load() }, context = stringResource(Res.string.posts_unable_to_load_the_tweet)) }
                     }
                     if (zenHidden) {
@@ -192,6 +193,17 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
         }
         }
     }
+    }
+}
+
+/** How many placeholder posts an opened post shows while its thread loads. */
+internal object PostLoading {
+    private const val MOST = 3
+
+    /** For a post not at hand yet ([replyCount] null), it and two replies; otherwise one per reply X counted, up to [MOST], and none when it counted none. */
+    fun placeholders(replyCount: Long?): Int = when (replyCount) {
+        null -> MOST
+        else -> replyCount.coerceIn(0, MOST.toLong()).toInt()
     }
 }
 
@@ -271,7 +283,7 @@ private fun ContinueThread(row: ThreadRow.Continue, actions: PostActions) {
 private fun ThreadEnd(state: PostUi, vm: PostViewModel) {
     val more = state.moreProblem
     when {
-        state.loadingMore -> LoadingRow()
+        state.loadingMore -> PostSkeleton()
         more != null -> ProblemRow(more, vm::loadMore, context = stringResource(Res.string.posts_unable_to_load_the_next_page_of_replies))
         state.showMore != null -> Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
             TextButton(onClick = vm::showMoreReplies) {

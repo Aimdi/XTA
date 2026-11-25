@@ -400,7 +400,7 @@ private fun PostResults(read: PagedRead<XThread, String>, list: LazyListState, a
     WithReadingColumn(padding, list) { column ->
         LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             feedThreads(paged.items, layout, actions)
-            pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets)
+            pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets, rows = PageRows.POSTS)
         }
     }
 }
@@ -414,7 +414,7 @@ private fun MediaResults(vm: SearchViewModel, list: LazyListState, actions: Post
     LaunchedEffect(paged.loading) { if (paged.loading) list.scrollToItem(0) }
     WithReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         mediaGrid(grid)
-        pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets)
+        pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets, rows = PageRows.MEDIA)
     } }
 }
 
@@ -440,7 +440,7 @@ private fun CommunityResults(vm: SearchViewModel, list: LazyListState, searchAct
         items(paged.items, key = { it.id }, contentType = { "community" }) { community ->
             CommunityRow(community) { searchActions.openCommunity(community.id) }
         }
-        pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, icon = DiscoverIcons.Groups)
+        pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, icon = DiscoverIcons.Groups, rows = PageRows.COMMUNITIES)
     } }
 }
 

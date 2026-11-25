@@ -61,6 +61,33 @@ fun PostSkeleton(modifier: Modifier = Modifier) {
 }
 
 /**
+ * Placeholder rows while a list of accounts, communities or plugins loads:
+ * [count] rows of a picture ([picture]'s shape and [pictureSize]: round for
+ * people, a rounded square for communities and plugins) and two lines, sharing one pulse, so
+ * the list fills in place. Not scrollable itself.
+ */
+@Composable
+fun RowSkeleton(modifier: Modifier = Modifier, count: Int = 6, picture: Shape = CircleShape, pictureSize: Dp = 40.dp) {
+    val pulse = rememberSkeletonPulse()
+    val base = MaterialTheme.colorScheme.surfaceContainerHighest
+    val highlight = MaterialTheme.colorScheme.surfaceContainerHigh
+    val color = lerp(base, highlight, pulse.value)
+    Column(modifier.fillMaxWidth().padding(top = 4.dp)) {
+        repeat(count) {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp)) {
+                Bone(Modifier.size(pictureSize), color, picture)
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f).padding(top = 4.dp)) {
+                    Bone(Modifier.width(160.dp).height(12.dp), color)
+                    Spacer(Modifier.height(8.dp))
+                    Bone(Modifier.width(110.dp).height(12.dp), color)
+                }
+            }
+        }
+    }
+}
+
+/**
  * Placeholder tiles while a grid's first page loads (XTA's
  * PluginGridSkeleton): [count] square tiles in [columns] columns, sharing one
  * pulse. Not scrollable itself.

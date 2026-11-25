@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -49,9 +50,10 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
-import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.datePattern
@@ -77,6 +79,7 @@ import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.search.DiscoverIcons
 import com.aimdi.xtanative.ui.search.LoadMoreNearEnd
+import com.aimdi.xtanative.ui.search.PageRows
 import com.aimdi.xtanative.ui.search.PersonDivider
 import com.aimdi.xtanative.ui.search.PersonRow
 import com.aimdi.xtanative.ui.search.pageStatus
@@ -123,7 +126,10 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
         val below = Modifier.padding(top = padding.calculateTopPadding())
         when {
             community == null && problem != null -> ProblemView(problem, vm::load, below, context = stringResource(Res.string.problem_unable_to_load_the_community))
-            community == null -> LoadingRow(below)
+            // Posts taking shape in the reading column the community will fill.
+            community == null -> Box(below.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+                FeedSkeleton(Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp), count = 4)
+            }
             // Padding, not content padding: the tabs stick below the bar, not under it.
             else -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding()), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize().then(below).swipeTabs(CommunityTab.entries, state.tab, vm::select)) {
                 item(key = "header", contentType = "header") { CommunityHeader(community) { openMembers(community.id) } }
@@ -131,7 +137,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
                 when (state.tab) {
                     CommunityTab.TOP -> {
                         feedThreads(posts.items, layout, actions, keyOf = { "post-" + it.id }) { thread -> ThreadRows(thread, actions, pinnedIds = state.pinnedIds) }
-                        pageStatus(posts, Res.string.discover_no_results, vm::retryPosts, vm::morePosts, firstFailed = Res.string.problem_unable_to_load_the_tweets, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets)
+                        pageStatus(posts, Res.string.discover_no_results, vm::retryPosts, vm::morePosts, firstFailed = Res.string.problem_unable_to_load_the_tweets, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets, rows = PageRows.POSTS)
                     }
                     CommunityTab.ABOUT -> item(key = "about", contentType = "about") { CommunityAbout(community) }
                 }

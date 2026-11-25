@@ -36,6 +36,7 @@ import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_nex
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.search.EmptyNote
 import com.aimdi.xtanative.ui.search.LoadMoreNearEnd
+import com.aimdi.xtanative.ui.search.PageRows
 import com.aimdi.xtanative.ui.search.pageStatus
 import org.jetbrains.compose.resources.stringResource
 
@@ -70,7 +71,7 @@ fun AntennaFeedScreen(id: String, actions: PostActions, onBack: () -> Unit) {
                 val layout = rememberFeedLayout(posts.items)
                 LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                     feedThreads(posts.items, layout, actions)
-                    pageStatus(posts, Res.string.discover_no_posts_match, vm::retry, vm::more, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets)
+                    pageStatus(posts, Res.string.discover_no_posts_match, vm::retry, vm::more, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets, rows = PageRows.POSTS)
                 }
             }
         }

@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -27,7 +28,10 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.FeedSkeleton
+import com.aimdi.xtanative.ui.common.GridSkeleton
+import com.aimdi.xtanative.ui.common.PostSkeleton
+import com.aimdi.xtanative.ui.common.RowSkeleton
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.TipText
@@ -80,6 +84,7 @@ fun PersonDivider() {
  * What a paged list shows after its rows: the first page loading, failing
  * or bringing nothing ([icon] and [empty] say so), then the next page
  * loading or failing; [firstFailed] and [moreFailed] name what failed.
+ * Loading shows placeholders shaped as its rows ([rows]).
  */
 fun LazyListScope.pageStatus(
     paged: Paged<*>,
@@ -89,20 +94,35 @@ fun LazyListScope.pageStatus(
     icon: ImageVector? = null,
     firstFailed: StringResource? = null,
     moreFailed: StringResource? = null,
+    rows: PageRows = PageRows.PEOPLE,
 ) {
     val problem = paged.problem
     when {
-        paged.loading -> item(key = "status-loading", contentType = "status") { LoadingRow() }
+        paged.loading -> item(key = "status-loading", contentType = "status") { PagePlaceholder(rows, more = false) }
         problem != null -> item(key = "status-problem", contentType = "status") { ProblemView(problem, onRetry, context = firstFailed?.let { stringResource(it) }) }
         paged.empty -> item(key = "status-empty", contentType = "status") { EmptyNote(stringResource(empty), icon) }
     }
     item(key = "status-footer", contentType = "footer") {
         val more = paged.moreProblem
         when {
-            paged.loadingMore -> LoadingRow()
+            paged.loadingMore -> PagePlaceholder(rows, more = true)
             more != null -> ProblemRow(more, onMore, context = moreFailed?.let { stringResource(it) })
             else -> Spacer(Modifier.padding(bottom = 48.dp))
         }
+    }
+}
+
+/** What a paged list's rows are, for the placeholders shown while a page of them loads. */
+enum class PageRows { POSTS, PEOPLE, COMMUNITIES, MEDIA }
+
+/** Placeholders shaped as [rows]: a screenful while the first page loads, one row ([more]) while the next does. */
+@Composable
+private fun PagePlaceholder(rows: PageRows, more: Boolean) {
+    when (rows) {
+        PageRows.POSTS -> if (more) PostSkeleton() else FeedSkeleton(count = 4)
+        PageRows.PEOPLE -> RowSkeleton(count = if (more) 1 else 6)
+        PageRows.COMMUNITIES -> RowSkeleton(count = if (more) 1 else 6, picture = RoundedCornerShape(8.dp), pictureSize = 48.dp)
+        PageRows.MEDIA -> GridSkeleton(count = if (more) 3 else 9)
     }
 }
 
