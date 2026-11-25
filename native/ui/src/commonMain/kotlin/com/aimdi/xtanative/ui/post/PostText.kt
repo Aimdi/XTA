@@ -139,7 +139,9 @@ fun ExpandablePostText(
     if (text.isEmpty()) return
     // Kept by post, so a text unfolded stays so when the list scrolls it away and back, or the screen comes back.
     var expanded by rememberSaveable(post.id, post.text) { mutableStateOf(false) }
-    var folds by remember(post.id, post.text, maxLines) { mutableStateOf(false) }
+    // Kept as well: a screen coming back draws its Show more in the first frame, rather than a frame later 36 dp taller,
+    // which moved a list read to its end down once the place it came back to had been held to the shorter text.
+    var folds by rememberSaveable(post.id, post.text, maxLines) { mutableStateOf(false) }
     var unfolding by remember(post.id) { mutableStateOf(false) }
     val clipped = maxLines != null && !expanded
     val found = foundIn(findKey, text)
