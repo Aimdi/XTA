@@ -91,6 +91,7 @@ import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.clickableNoRipple
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.common.monthText
 import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.common.rememberStickyHeaderRoom
@@ -571,7 +572,7 @@ private fun Meta(user: XUser, actions: PostActions) {
 @Composable
 private fun MetaLine(icon: ImageVector, text: String, link: Boolean = false, onClick: (() -> Unit)? = null) {
     val grey = MaterialTheme.colorScheme.onSurfaceVariant
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = if (onClick != null) Modifier.clickableNoRipple(onClick) else Modifier) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = if (onClick != null) Modifier.keyboardFocusRing(outset = 2.dp).clickableNoRipple(onClick) else Modifier) {
         Icon(icon, null, tint = grey, modifier = Modifier.size(16.dp))
         TipText(
             text,
@@ -603,7 +604,7 @@ private fun Counts(user: XUser, actions: PostActions) {
                 },
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.clickableNoRipple { actions.openFollows(user.screenName, followers) },
+                modifier = Modifier.keyboardFocusRing(outset = 2.dp).clickableNoRipple { actions.openFollows(user.screenName, followers) },
             )
         }
     }
