@@ -7,6 +7,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -87,6 +88,21 @@ class TranslationRunsTest {
         var asked = 0
         PostTranslation(post, runs.of("a"), runs) { asked++; english }.translate()
         assertEquals(1, asked)
+    }
+
+    @Test
+    fun `a translation that hangs fails in time and can be tried again`() = runBlocking {
+        val runs = TranslationRuns(CoroutineScope(Job() + Dispatchers.Default), timeoutMillis = 50)
+        var hang = true
+        val translation = PostTranslation(post, runs.of("k"), runs) { if (hang) awaitCancellation() else english }
+        translation.translate()
+        withTimeout(5_000) { while (translation.status == TranslationStatus.TRANSLATING) kotlinx.coroutines.delay(10) }
+        assertEquals(TranslationStatus.FAILED, translation.status)
+        assertEquals(TranslationProblem.OTHER, translation.problem)
+        hang = false
+        translation.translate()
+        withTimeout(5_000) { while (translation.status != TranslationStatus.TRANSLATED) kotlinx.coroutines.delay(10) }
+        assertEquals("hello", translation.shown.text)
     }
 
     @Test

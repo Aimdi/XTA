@@ -23,8 +23,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 
 /**
  * One translation asked for: where it is, what it gave, why it failed. Kept
@@ -62,11 +64,14 @@ internal fun interface TranslatedText {
 /**
  * The translations asked for while the app runs, by post, target and
  * service; the [max] most recently asked are kept. They run in [scope], not
- * in the card's, which leaves with the card.
+ * in the card's, which leaves with the card, and fail past [timeoutMillis],
+ * so one that hangs can be tried again rather than translate until the app
+ * restarts.
  */
 internal class TranslationRuns(
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
     private val max: Int = 300,
+    private val timeoutMillis: Long = TIMEOUT_MILLIS,
 ) {
     private val kept = object : LinkedHashMap<String, TranslationRun>(64, 0.75f, true) {
         override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, TranslationRun>?): Boolean = size > max
@@ -89,13 +94,16 @@ internal class TranslationRuns(
         run.problem = null
         run.job = scope.launch {
             run.status = try {
-                val translated = ask()
+                val translated = withTimeout(timeoutMillis) { ask() }
                 // A translation forgotten while it came is not shown.
                 synchronized(run) {
                     ensureActive()
                     run.translated = translated
                 }
                 TranslationStatus.TRANSLATED
+            } catch (error: TimeoutCancellationException) {
+                run.problem = TranslationProblem.OTHER
+                TranslationStatus.FAILED
             } catch (error: CancellationException) {
                 run.status = TranslationStatus.ORIGINAL
                 throw error
@@ -115,6 +123,12 @@ internal class TranslationRuns(
     companion object {
         /** The one the screens share. */
         val shared = TranslationRuns()
+
+        /**
+         * How long a translation may take: past X's three tries of 30 s each
+         * a second apart, and a service's request of 30 s with room to spare.
+         */
+        const val TIMEOUT_MILLIS = 120_000L
 
         /** The key of [postId] translated into [target] by [service] (null for X's own translation). */
         fun key(postId: String, target: String, service: TranslationConfig?): String = "$postId|$target|${service?.hashCode() ?: 0}"
