@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerEventPass
@@ -37,12 +38,14 @@ import androidx.navigation.NavHostController
  * to the frame unless something in the page holds them; [takeKeys] takes
  * them from whatever in the page holds them. [screen] is the screen shown
  * now (the back stack's top entry), so a sheet knows whether it closes over
- * the screen it opened on.
+ * the screen it opened on. [tabbing] is whether Tab or Shift+Tab is moving
+ * the focus now ([skippedByTab]).
  */
 class DesktopActions(
     private val refocus: (FocusRequester?) -> Unit = {},
     private val takeKeys: () -> Unit = {},
     private val screen: () -> Any? = { null },
+    private val tabbing: () -> Boolean = { false },
 ) {
     private var owner: Any? = null
     private var refreshing: (() -> Unit)? = null
@@ -493,6 +496,9 @@ class DesktopActions(
     /** Whether an overlay holds the keys: its own Esc and arrows then come before the window's. */
     fun overlayHoldsKeys(): Boolean = holders.isNotEmpty()
 
+    /** Whether Tab or Shift+Tab is moving the focus now, from its press to its release. */
+    internal fun tabStepping(): Boolean = tabbing()
+
     /** [holder] going: the keys to the one under it, else back to the window's frame, so they always have a taker. */
     internal fun releaseKeys(holder: FocusRequester) {
         holders -= holder
@@ -841,6 +847,19 @@ fun HoldsKeys(focus: FocusRequester) {
         actions.holdKeys(focus)
         onDispose { actions.releaseKeys(focus) }
     }
+}
+
+/**
+ * The focus of an overlay that holds the keys ([HoldsKeys]) as one Tab steps
+ * over: it takes the focus when asked, so the overlay's keys work, yet is no
+ * stop of Tab's, where it would show nothing; Tab and Shift+Tab go round the
+ * controls inside it instead. Nothing off the desktop.
+ */
+@Composable
+fun Modifier.skippedByTab(): Modifier {
+    val actions = LocalDesktopActions.current
+    val host = LocalDesktopActionsHost.current
+    return focusProperties { canFocus = (actions ?: host.actions)?.tabStepping() != true }
 }
 
 /**

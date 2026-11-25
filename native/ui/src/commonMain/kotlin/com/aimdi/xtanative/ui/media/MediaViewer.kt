@@ -78,6 +78,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_media_previous
 import com.aimdi.xtanative.ui.generated.resources.reader_media_unknown
 import com.aimdi.xtanative.ui.generated.resources.reader_share_image
 import com.aimdi.xtanative.ui.home.HoldsKeys
+import com.aimdi.xtanative.ui.home.skippedByTab
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -213,6 +214,8 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
                     ViewerKey.NONE -> false
                 }
             }
+            // It holds the keys, yet Tab goes round the bar's buttons without stopping on it, where nothing would show.
+            .skippedByTab()
             .focusRequester(focus)
             .focusable(),
     ) {

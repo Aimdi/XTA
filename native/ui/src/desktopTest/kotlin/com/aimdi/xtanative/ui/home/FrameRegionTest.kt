@@ -101,4 +101,18 @@ class FrameRegionTest {
         assertEquals(HomeWide.RAIL_WIDTH + 1, HomeWide.inset(FrameKind.RAIL))
         assertEquals(0, HomeWide.inset(FrameKind.NONE))
     }
+
+    @Test
+    fun anOverlaysOwnFocusIsSteppedOverOnlyWhileTabMovesTheFocus() {
+        var tab: TabStep? = null
+        val actions = DesktopActions(tabbing = { tab != null })
+        assertFalse(actions.tabStepping(), "asked for, the viewer takes the focus")
+        tab = DesktopKeys.tabStep(DeskKey.TAB, shift = false, ctrl = false, alt = false)
+        assertTrue(actions.tabStepping())
+        tab = DesktopKeys.tabStep(DeskKey.TAB, shift = true, ctrl = false, alt = false)
+        assertTrue(actions.tabStepping(), "Shift+Tab steps over it too")
+        tab = DesktopKeys.tabStep(DeskKey.TAB, shift = false, ctrl = true, alt = false)
+        assertFalse(actions.tabStepping(), "Ctrl+Tab turns pages, it moves no focus")
+        assertFalse(DesktopActions().tabStepping())
+    }
 }

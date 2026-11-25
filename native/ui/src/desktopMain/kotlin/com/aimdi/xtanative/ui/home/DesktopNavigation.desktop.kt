@@ -96,6 +96,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     var showKeys by remember { mutableStateOf(false) }
     // The Tab step being taken, until the next key: should it wrap to the frame, the frame hands it on ([DesktopKeys.tabStep]).
     val tabbing = remember { arrayOfNulls<TabStep>(1) }
+    // Whether the frame is handing such a step on: it may go on after Tab is let go.
+    val tabbingOn = remember { booleanArrayOf(false) }
     // A frame later: what gives the keys back is still leaving when it asks. The frame takes them only if
     // nothing in the page has since (a screen that focuses its field as it opens keeps it).
     // A sheet swapped for another in the same frame closes before the next opens: by the time the frame
@@ -115,7 +117,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                 val held = created[0]?.let { it.sheetOpen() || it.overlayHoldsKeys() } == true
                 if (!held) runCatching { focus.requestFocus() }
             }
-        }, screen = { nav.currentBackStackEntry }).also { created[0] = it }
+        }, screen = { nav.currentBackStackEntry }, tabbing = { tabbing[0] != null || tabbingOn[0] }).also { created[0] = it }
     }
     // What is drawn above this frame (a video full screen) reaches the actions through the root's host.
     val host = LocalDesktopActionsHost.current
@@ -385,8 +387,9 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                 .onKeyEvent(::onTyped)
                 .onFocusChanged { state ->
                     // What had the keys inside the page went away with them (a button that closed what it was on):
-                    // the frame takes them back, so they never wait for a click.
-                    if (hasFocus && !state.hasFocus) actions.keysToFrame()
+                    // the frame takes them back, so they never wait for a click. Not as Tab wraps round, which lets go
+                    // of the focus for a moment: the keys would go back to an overlay's own focus, a stop showing nothing.
+                    if (hasFocus && !state.hasFocus && !actions.tabStepping()) actions.keysToFrame()
                     hasFocus = state.hasFocus
                     focusInside = state.hasFocus && !state.isFocused
                     // Tab ran off the end of the page's order and wrapped to the frame, which shows nothing:
@@ -394,7 +397,14 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                     val step = tabbing[0]
                     if (state.isFocused && step != null) {
                         tabbing[0] = null
-                        scope.launch { focusManager.moveFocus(if (step == TabStep.FORWARD) FocusDirection.Next else FocusDirection.Previous) }
+                        tabbingOn[0] = true
+                        scope.launch {
+                            try {
+                                focusManager.moveFocus(if (step == TabStep.FORWARD) FocusDirection.Next else FocusDirection.Previous)
+                            } finally {
+                                tabbingOn[0] = false
+                            }
+                        }
                     }
                 }
                 .focusRequester(focus)
