@@ -30,3 +30,11 @@ internal expect fun systemReducesMotion(): Boolean
  */
 @Composable
 internal expect fun systemAccent(): Long?
+
+/**
+ * Whether a focus shown now came from the keyboard, so a ring may mark it:
+ * on the desktop only after a key moved it ([KeyboardFocusLook]), as a click
+ * focuses too; always on Android, where a touch never focuses a row.
+ */
+@Composable
+internal expect fun keyboardFocusShown(): Boolean

@@ -89,3 +89,7 @@ internal actual fun systemAccent(): Long? {
     LaunchedEffect(scheme) { scheme.start() }
     return scheme.accent.collectAsState().value
 }
+
+/** Whether the keyboard moved the focus last, followed as it changes. */
+@Composable
+internal actual fun keyboardFocusShown(): Boolean = KeyboardFocusLook.keyboard

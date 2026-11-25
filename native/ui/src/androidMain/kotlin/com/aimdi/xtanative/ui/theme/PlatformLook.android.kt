@@ -14,3 +14,6 @@ internal actual fun systemReducesMotion(): Boolean = false
 
 @Composable
 internal actual fun systemAccent(): Long? = null
+
+@Composable
+internal actual fun keyboardFocusShown(): Boolean = true

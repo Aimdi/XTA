@@ -26,7 +26,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -282,12 +281,11 @@ private fun HomeSidebar(parts: HomeParts, shell: HomeShellState, page: BarPage, 
             onAvatar = { shell.sheet = HomeSheet.AVATAR },
             pages = {
                 itemsIndexed(ui.bar, key = { _, barPage -> "page-" + barPage.id }) { index, barPage ->
-                    NavigationDrawerItem(
-                        label = { TipText(barLabel(barPage, ui), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    NavRow(
+                        label = barLabel(barPage, ui),
                         selected = barPage == page,
                         onClick = { barTapped(shell, ui, index) },
                         icon = { BarPageIcon(barPage, barPage == page, ui, parts.networks) },
-                        modifier = Modifier.padding(horizontal = 12.dp),
                     )
                 }
             },

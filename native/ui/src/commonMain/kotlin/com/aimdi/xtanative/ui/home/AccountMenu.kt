@@ -1,18 +1,14 @@
 package com.aimdi.xtanative.ui.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -24,10 +20,8 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -72,7 +66,8 @@ import org.jetbrains.compose.resources.stringResource
  * reader took off it, and the groups, which are this app's lists and what the
  * reader reaches for most. In a wide window it stands open beside Home
  * ([HomeWide]), with the bar's pages ([pages]) under the account and
- * nothing to close ([onClose] null).
+ * nothing to close ([onClose] null). The row of the screen shown beside it
+ * ([current], its route) is marked as the bar's page is.
  */
 @Composable
 internal fun AccountMenu(
@@ -85,6 +80,7 @@ internal fun AccountMenu(
     onClose: (() -> Unit)?,
     onAvatar: () -> Unit,
     pages: LazyListScope.() -> Unit = {},
+    current: String? = null,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     val groups = DrawerGroups.listed(ui.session.groups, ui.session.feedGroups, routes.exists(HomeRoutes.GROUP))
@@ -94,24 +90,13 @@ internal fun AccountMenu(
             AccountHeader(ui.account, onClose = onClose, onAvatar = onAvatar, onSettings = { onGo(HomeDestination.SETTINGS.route) }.takeIf { routes.exists(HomeDestination.SETTINGS.route) })
         }
         pages()
-        item(key = "buttons") {
-            Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                HomeMenu.shown(HomeMenu.buttons, routes.exists, deckFits).forEach { destination ->
-                    TextButton(onClick = { onGo(destination.route) }) {
-                        Icon(iconOf(destination), contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text(labelOf(destination))
-                    }
-                }
-            }
-        }
-        items(HomeMenu.shown(HomeMenu.list, routes.exists, deckFits, onBar = ui.bar.mapTo(HashSet()) { it.id }), key = { it.route }) { destination ->
-            NavigationDrawerItem(
-                label = { Text(labelOf(destination)) },
-                selected = false,
+        // Search and Settings, then the screens beside the bar: one kind of row, the one shown marked.
+        items(HomeMenu.shown(HomeMenu.buttons, routes.exists, deckFits) + HomeMenu.shown(HomeMenu.list, routes.exists, deckFits, onBar = ui.bar.mapTo(HashSet()) { it.id }), key = { it.route }) { destination ->
+            NavRow(
+                label = labelOf(destination),
+                selected = destination.route == current,
                 onClick = { onGo(destination.route) },
                 icon = { Icon(iconOf(destination), contentDescription = null) },
-                modifier = Modifier.padding(horizontal = 12.dp),
             )
         }
         item(key = "groups") {
@@ -186,11 +171,7 @@ private fun GroupsHeader(count: Int, query: String, onQuery: (String) -> Unit) {
 /** A group: its mark (with the unread dot), name and size; pinned groups say so. */
 @Composable
 private fun GroupRow(group: FollowGroup, unread: Boolean, onClick: () -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().heightIn(min = 64.dp).clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
+    NavRowFrame(selected = false, onClick = onClick, shape = NavRowTallShape, minHeight = 64.dp, modifier = Modifier.padding(vertical = 2.dp)) {
         UnreadDot(unread) { GroupMark(group, 40.dp) }
         Column(Modifier.weight(1f)) {
             TipText(group.name, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
