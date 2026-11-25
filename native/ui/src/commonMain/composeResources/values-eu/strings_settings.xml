@@ -45,8 +45,6 @@
     <string name="settings_clean_links_description">Jarraipen-kodeak eta parametro alferrikakoak kendu esteka ireki edo partekatu aurretik</string>
     <string name="settings_disable_screenshots">Desgaitu pantaila-argazkiak</string>
     <string name="settings_disable_screenshots_hint">Saihestu pantaila-argazkiak ateratzea. Baliteke honek gailu guztietan ez funtzionatzea.</string>
-    <string name="settings_app_lock">Blokeatu aplikazioa</string>
-    <string name="settings_app_lock_hint">Eskatu hatz-marka, aurpegia edo pantailaren blokeoa XTA irekitzean. Pantailaren blokeoa behar da gailu honetan.</string>
     <string name="settings_default_tab">Fitxa lehenetsia</string>
     <string name="settings_default_tab_description">Aplikazioa irekitzean erakutsiko den fitxa</string>
     <string name="settings_default_feed_tab">Jario-fitxa lehenetsia</string>

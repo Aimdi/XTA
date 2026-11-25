@@ -45,8 +45,6 @@
     <string name="settings_clean_links_description">يزيل المتعقّبات والوسائط الزائدة قبل فتح الرابط أو مشاركته</string>
     <string name="settings_disable_screenshots">تعطيل لقطات الشاشة</string>
     <string name="settings_disable_screenshots_hint">منع التقاط لقطات الشاشة. قد لا يعمل هذا على جميع الأجهزة.</string>
-    <string name="settings_app_lock">قفل التطبيق</string>
-    <string name="settings_app_lock_hint">اطلب بصمة الإصبع أو الوجه أو قفل الشاشة عند فتح XTA. يتطلب وجود قفل شاشة على هذا الجهاز.</string>
     <string name="settings_default_tab">التبويب الافتراضي</string>
     <string name="settings_default_tab_description">أي تبويب يظهر عندما يفتح التطبيق</string>
     <string name="settings_default_feed_tab">علامة تبويب الخلاصة الافتراضية</string>

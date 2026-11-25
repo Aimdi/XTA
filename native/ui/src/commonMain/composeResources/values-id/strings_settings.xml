@@ -45,8 +45,6 @@
     <string name="settings_clean_links_description">Menghapus pelacak dan parameter sampah sebelum tautan dibuka atau dibagikan</string>
     <string name="settings_disable_screenshots">Nonaktifkan tangkap layar</string>
     <string name="settings_disable_screenshots_hint">Cegah tangkapan layar untuk diambil. Ini mungkin tidak bekerja pada semua perangkat.</string>
-    <string name="settings_app_lock">Kunci aplikasi</string>
-    <string name="settings_app_lock_hint">Minta sidik jari, wajah, atau kunci layar saat XTA dibuka. Perangkat ini harus memiliki kunci layar.</string>
     <string name="settings_default_tab">Bilah baku</string>
     <string name="settings_default_tab_description">Bilah mana yang ditampilkan ketika aplikasi dibuka</string>
     <string name="settings_default_feed_tab">Tab beranda default</string>

@@ -45,8 +45,6 @@
     <string name="settings_clean_links_description">Forigas spurilojn kaj superfluajn parametrojn antaŭ ol ligilo malfermiĝas aŭ estas kunhavigata</string>
     <string name="settings_disable_screenshots">Malŝalti ekrankopiojn</string>
     <string name="settings_disable_screenshots_hint">Eviti ekrankopiojn farote. Eble ne funkcii kun ĉiuj aparatoj.</string>
-    <string name="settings_app_lock">Ŝlosi la aplikaĵon</string>
-    <string name="settings_app_lock_hint">Peti fingrospuron, vizaĝon aŭ ekranŝloson, kiam XTA malfermiĝas. Necesas ekranŝloso en ĉi tiu aparato.</string>
     <string name="settings_default_tab">Langeto komenca</string>
     <string name="settings_default_tab_description">Kiu langeto vidiĝus kiam la apo malfermiĝus</string>
     <string name="settings_default_feed_tab">Defaŭlta flua langeto</string>

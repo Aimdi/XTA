@@ -14,6 +14,4 @@
         <item quantity="other">%1$d giấy phép</item>
     </plurals>
     <string name="chrome_offline_bar">Ngoại tuyến – đang hiển thị bản đã lưu</string>
-    <string name="app_lock_title">XTA đang bị khóa</string>
-    <string name="app_lock_unlock">Mở khóa</string>
 </resources>

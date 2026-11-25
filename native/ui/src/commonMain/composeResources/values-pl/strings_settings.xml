@@ -45,8 +45,6 @@
     <string name="settings_clean_links_description">Usuwa trackery i zbędne parametry, zanim link zostanie otwarty lub udostępniony</string>
     <string name="settings_disable_screenshots">Wyłącz zrzuty ekranu</string>
     <string name="settings_disable_screenshots_hint">Zapobiegaj robieniu zrzutów ekranu. Może to nie działać na wszystkich urządzeniach</string>
-    <string name="settings_app_lock">Blokuj aplikację</string>
-    <string name="settings_app_lock_hint">Wymagaj odcisku palca, twarzy lub blokady ekranu przy otwieraniu XTA. Urządzenie musi mieć ustawioną blokadę ekranu.</string>
     <string name="settings_default_tab">Domyślna karta</string>
     <string name="settings_default_tab_description">Karta wyświetlana po otwarciu aplikacji</string>
     <string name="settings_default_feed_tab">Domyślna karta kanału</string>

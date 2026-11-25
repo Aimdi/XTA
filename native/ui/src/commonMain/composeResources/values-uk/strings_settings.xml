@@ -45,8 +45,6 @@
     <string name="settings_clean_links_description">Прибирає трекери й зайві параметри перед відкриттям або надсиланням посилання</string>
     <string name="settings_disable_screenshots">Вимкнути знімки екрана</string>
     <string name="settings_disable_screenshots_hint">Запобігти зняттю знімків екрана. Це може не працювати на всіх пристроях.</string>
-    <string name="settings_app_lock">Блокувати застосунок</string>
-    <string name="settings_app_lock_hint">Запитувати відбиток пальця, обличчя або блокування екрана під час відкриття XTA. На пристрої має бути налаштоване блокування екрана.</string>
     <string name="settings_default_tab">Вкладка за замовчуванням</string>
     <string name="settings_default_tab_description">Яка вкладка відображатиметься під час відкриття додатка</string>
     <string name="settings_default_feed_tab">Вкладка стрічки за замовчуванням</string>

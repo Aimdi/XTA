@@ -27,9 +27,6 @@ object GeneralPrefs : PrefSection() {
 
     val disableScreenshots = flag("disable_screenshots", false)
 
-    /** Android: opening the app asks for the phone's fingerprint, face or screen lock. */
-    val appLock = flag("app_lock", false, seeded = false)
-
     /** The Home page the app opens on: `feed`, `subscriptions`, `trending`, `saved`, a network's id or `group-<id>`. */
     val initialTab = text("home.initial_tab", "feed")
 

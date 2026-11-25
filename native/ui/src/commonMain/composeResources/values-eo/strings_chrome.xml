@@ -15,6 +15,4 @@
         <item quantity="other">%1$d licencoj</item>
     </plurals>
     <string name="chrome_offline_bar">Senkonekte – montriĝas konservitaj kopioj</string>
-    <string name="app_lock_title">XTA estas ŝlosita</string>
-    <string name="app_lock_unlock">Malŝlosi</string>
 </resources>

@@ -19,6 +19,4 @@
         <item quantity="other">%1$d ترخيص</item>
     </plurals>
     <string name="chrome_offline_bar">غير متصل – تُعرض النسخ المحفوظة</string>
-    <string name="app_lock_title">XTA مقفل</string>
-    <string name="app_lock_unlock">فتح القفل</string>
 </resources>

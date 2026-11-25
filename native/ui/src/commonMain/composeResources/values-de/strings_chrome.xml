@@ -15,6 +15,4 @@
         <item quantity="other">%1$d Lizenzen</item>
     </plurals>
     <string name="chrome_offline_bar">Offline – gespeicherte Kopien werden angezeigt</string>
-    <string name="app_lock_title">XTA ist gesperrt</string>
-    <string name="app_lock_unlock">Entsperren</string>
 </resources>

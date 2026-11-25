@@ -45,8 +45,6 @@
     <string name="settings_clean_links_description">Bir bağlantı açılmadan veya paylaşılmadan önce izleyicileri ve gereksiz parametreleri temizler</string>
     <string name="settings_disable_screenshots">Ekran görüntülerini devre dışı bırak</string>
     <string name="settings_disable_screenshots_hint">Ekran görüntülerinin alınmasını engelleyin. Bu, tüm aygıtlarda çalışmayabilir.</string>
-    <string name="settings_app_lock">Uygulamayı kilitle</string>
-    <string name="settings_app_lock_hint">XTA açılırken parmak izi, yüz veya ekran kilidi istensin. Bu cihazda bir ekran kilidi ayarlı olmalıdır.</string>
     <string name="settings_default_tab">Varsayılan sekme</string>
     <string name="settings_default_tab_description">Uygulama açıldığında hangi sekmenin gösterileceğini belirler</string>
     <string name="settings_default_feed_tab">Varsayılan akış sekmesi</string>

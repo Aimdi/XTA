@@ -45,8 +45,6 @@
     <string name="settings_clean_links_description">リンクを開く・共有する前にトラッカーや不要なパラメータを取り除きます</string>
     <string name="settings_disable_screenshots">スクリーンショットを無効化</string>
     <string name="settings_disable_screenshots_hint">スクリーンショットの撮影を防止する。すべての端末で動作しない可能性があります。</string>
-    <string name="settings_app_lock">アプリをロック</string>
-    <string name="settings_app_lock_hint">XTA を開くときに指紋、顔、または画面ロックを求めます。この端末に画面ロックの設定が必要です。</string>
     <string name="settings_default_tab">デフォルトのタブ</string>
     <string name="settings_default_tab_description">アプリの起動時に表示するタブ</string>
     <string name="settings_default_feed_tab">デフォルトのフィードタブ</string>

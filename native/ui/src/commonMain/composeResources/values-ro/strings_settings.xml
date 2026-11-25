@@ -45,8 +45,6 @@
     <string name="settings_clean_links_description">Elimină trackerii și parametrii inutili înainte ca un link să fie deschis sau partajat</string>
     <string name="settings_disable_screenshots">Dezactivați capturile de ecran</string>
     <string name="settings_disable_screenshots_hint">Preveniți realizarea de capturi de ecran. Poate să nu funcționeze pe toate dispozitivele.</string>
-    <string name="settings_app_lock">Blochează aplicația</string>
-    <string name="settings_app_lock_hint">Cere amprenta, fața sau blocarea ecranului la deschiderea XTA. Este nevoie de o blocare a ecranului pe acest dispozitiv.</string>
     <string name="settings_default_tab">Fila implicită</string>
     <string name="settings_default_tab_description">Ce filă se afișează când se deschide aplicația</string>
     <string name="settings_default_feed_tab">Fila de flux implicită</string>

@@ -14,6 +14,4 @@
         <item quantity="other">라이선스 %1$d개</item>
     </plurals>
     <string name="chrome_offline_bar">오프라인 – 저장된 사본을 표시하는 중</string>
-    <string name="app_lock_title">XTA가 잠겨 있습니다</string>
-    <string name="app_lock_unlock">잠금 해제</string>
 </resources>

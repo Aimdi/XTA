@@ -45,8 +45,6 @@
     <string name="settings_clean_links_description">लिंक खोलने या साझा करने से पहले ट्रैकर और फालतू पैरामीटर हटा देता है</string>
     <string name="settings_disable_screenshots">स्क्रीनशॉट अक्षम करें</string>
     <string name="settings_disable_screenshots_hint">स्क्रीनशॉट लेने से रोकें। यह सभी उपकरणों पर काम नहीं कर सकता।</string>
-    <string name="settings_app_lock">ऐप लॉक करें</string>
-    <string name="settings_app_lock_hint">XTA खोलने पर फ़िंगरप्रिंट, चेहरा या स्क्रीन लॉक माँगें। इसके लिए इस डिवाइस पर स्क्रीन लॉक होना ज़रूरी है।</string>
     <string name="settings_default_tab">डिफ़ॉल्ट टैब</string>
     <string name="settings_default_tab_description">ऐप खुलने पर कौन सा टैब दिखाया जाता है</string>
     <string name="settings_default_feed_tab">डिफ़ॉल्ट फ़ीड टैब</string>

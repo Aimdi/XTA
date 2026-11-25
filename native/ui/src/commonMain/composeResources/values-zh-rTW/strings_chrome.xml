@@ -14,6 +14,4 @@
         <item quantity="other">%1$d 個授權</item>
     </plurals>
     <string name="chrome_offline_bar">離線 – 正在顯示已儲存的副本</string>
-    <string name="app_lock_title">XTA 已鎖定</string>
-    <string name="app_lock_unlock">解鎖</string>
 </resources>

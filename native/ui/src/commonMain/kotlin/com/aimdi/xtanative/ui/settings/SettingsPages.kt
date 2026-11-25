@@ -133,7 +133,6 @@ internal fun GeneralSettings(title: String, vm: SettingsViewModel, focus: String
             PrefSwitch(settings, GeneralPrefs.cleanLinks, stringResource(Res.string.settings_clean_links), stringResource(Res.string.settings_clean_links_description), vm, focus)
             if (!isDesktop) {
                 PrefSwitch(settings, GeneralPrefs.disableScreenshots, stringResource(Res.string.settings_disable_screenshots), stringResource(Res.string.settings_disable_screenshots_hint), vm, focus)
-                PrefSwitch(settings, GeneralPrefs.appLock, stringResource(Res.string.settings_app_lock), stringResource(Res.string.settings_app_lock_hint), vm, focus)
             }
 
             SettingsHeader(stringResource(Res.string.settings_default_tab))

@@ -45,8 +45,6 @@
     <string name="settings_clean_links_description">打开或分享链接前去掉跟踪器和多余参数</string>
     <string name="settings_disable_screenshots">禁用截屏</string>
     <string name="settings_disable_screenshots_hint">防止截屏。可能不适用于所有设备。</string>
-    <string name="settings_app_lock">锁定应用</string>
-    <string name="settings_app_lock_hint">打开 XTA 时要求验证指纹、面部或屏幕锁。此设备需要已设置屏幕锁。</string>
     <string name="settings_default_tab">默认页面</string>
     <string name="settings_default_tab_description">打开应用时显示哪个页面</string>
     <string name="settings_default_feed_tab">默认信息流标签</string>
