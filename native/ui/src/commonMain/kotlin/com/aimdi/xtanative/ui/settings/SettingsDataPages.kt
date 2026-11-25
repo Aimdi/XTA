@@ -75,6 +75,7 @@ import com.aimdi.xtanative.store.settings.DataPrefs
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.currentLocale
+import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -607,7 +608,7 @@ private fun RecentReads(lines: List<String>, shown: Boolean, onToggle: () -> Uni
         Icon(if (shown) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
     }
     if (shown) {
-        SelectionContainer {
+        SelectionContainer(Modifier.pointerOnlyFocus()) {
             Text(lines.joinToString("\n"), style = MaterialTheme.typography.bodySmall, modifier = Modifier.fillMaxWidth().padding(16.dp))
         }
     }

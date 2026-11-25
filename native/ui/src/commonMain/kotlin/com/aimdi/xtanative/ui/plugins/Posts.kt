@@ -69,6 +69,7 @@ import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.onSecondaryClickIf
+import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.pinned
 import com.aimdi.xtanative.ui.generated.resources.plugin_post_hide
@@ -334,7 +335,7 @@ fun NetworkFocalPost(post: NetworkPost, actions: NetworkPostActions, modifier: M
         CoverLine(post, revealed) { revealed = !revealed }
         if (!post.textCovered(revealed)) {
             // Selectable, as the app's opened X post is.
-            SelectionContainer(Modifier.padding(top = 12.dp)) {
+            SelectionContainer(Modifier.padding(top = 12.dp).pointerOnlyFocus()) {
                 LinkedText(post.text, actions.openMention, actions.openTag, style = TextStyle(fontSize = 17.sp, lineHeight = 24.sp))
             }
         }

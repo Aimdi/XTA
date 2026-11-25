@@ -91,6 +91,7 @@ import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.clickableNoRipple
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.monthText
+import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -509,7 +510,7 @@ private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actio
             Identity(user, screenName, state.note, noteEdit)
             if (!user?.description.isNullOrBlank()) {
                 val bio = remember(user) { user?.let(XText::bio).orEmpty() }
-                SelectionContainer { RunsText(bio, actions) }
+                SelectionContainer(Modifier.pointerOnlyFocus()) { RunsText(bio, actions) }
             }
             if (state.complete && user != null) {
                 Meta(user, actions)

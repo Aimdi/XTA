@@ -59,6 +59,7 @@ import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.datePattern
+import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.feed.feedThreads
 import com.aimdi.xtanative.ui.feed.rememberFeedLayout
@@ -251,7 +252,7 @@ private fun CommunityHeader(community: XCommunity, onMembers: () -> Unit) {
             }
             // In full, and only here: X keeps a community's description short, so About does not say it again.
             CommunityPage.description(community)?.let { description ->
-                SelectionContainer { Text(description, modifier = Modifier.padding(top = 8.dp)) }
+                SelectionContainer(Modifier.pointerOnlyFocus()) { Text(description, modifier = Modifier.padding(top = 8.dp)) }
             }
         }
         Row(

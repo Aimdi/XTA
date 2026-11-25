@@ -70,6 +70,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
+import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.discover_accounts
 import com.aimdi.xtanative.ui.generated.resources.discover_advanced_search
@@ -417,7 +418,7 @@ private fun QueryPreview(query: String) {
             .padding(16.dp),
     ) {
         Text(stringResource(Res.string.discover_search_term), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        SelectionContainer(Modifier.padding(top = 8.dp)) {
+        SelectionContainer(Modifier.padding(top = 8.dp).pointerOnlyFocus()) {
             Text(
                 query.ifEmpty { stringResource(Res.string.discover_not_set) },
                 color = if (query.isEmpty()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,

@@ -43,7 +43,7 @@ fun FullPageError(prefix: String, error: String, stack: String?, action: Pair<St
         Icon(Icons.Outlined.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 16.dp).size(36.dp))
         Text(stringResource(Res.string.problem_oops), fontSize = 18.sp, textAlign = TextAlign.Center)
         Text(prefix, color = hint, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 12.dp))
-        SelectionContainer(Modifier.widthIn(max = 720.dp).fillMaxWidth()) {
+        SelectionContainer(Modifier.widthIn(max = 720.dp).fillMaxWidth().pointerOnlyFocus()) {
             Column {
                 Text(error, color = hint, modifier = Modifier.padding(top = 12.dp))
                 if (!stack.isNullOrBlank()) Text(stack, color = hint, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 12.dp))

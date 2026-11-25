@@ -49,6 +49,7 @@ import com.aimdi.xtanative.services.article.ArticleBlock
 import com.aimdi.xtanative.services.article.ArticleEntity
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.foundIn
+import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.post.MediaGrid
 import com.aimdi.xtanative.ui.post.PostActions
 
@@ -115,7 +116,7 @@ fun ArticleBody(article: Article, actions: PostActions, modifier: Modifier = Mod
             header()
             HorizontalDivider(thickness = Dp.Hairline, color = MaterialTheme.colorScheme.outlineVariant, modifier = Modifier.padding(bottom = 16.dp))
         }
-        SelectionContainer {
+        SelectionContainer(Modifier.pointerOnlyFocus()) {
             Column {
                 items.forEachIndexed { index, item -> ArticleRow(item, ArticleLayout.rowKey(index), article, actions) }
             }

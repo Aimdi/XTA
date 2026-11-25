@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -22,6 +23,7 @@ import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.UpdatePrefs
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.chrome_update_available
+import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.chrome_update_copy
 import com.aimdi.xtanative.ui.generated.resources.chrome_update_download
@@ -93,7 +95,7 @@ private fun UpdateOffer(release: NativeRelease, file: String?, install: Pair<Upd
                 Text(stringResource(Res.string.chrome_update_view_version, release.version.joinToString(".")))
                 install?.let { (kind, command) ->
                     Text(stringResource(if (kind == UpdateFile.PACKAGE) Res.string.chrome_update_install_package else Res.string.chrome_update_install_tarball))
-                    SelectionContainer { Text(command, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall) }
+                    SelectionContainer(Modifier.pointerOnlyFocus()) { Text(command, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall) }
                     TextButton(onClick = { copyText(command) }) { Text(stringResource(Res.string.chrome_update_copy)) }
                 }
             }
