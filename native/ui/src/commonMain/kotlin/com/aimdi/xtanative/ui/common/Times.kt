@@ -28,13 +28,15 @@ internal expect fun datePattern(locale: Locale, skeleton: String): String
 @Composable
 internal expect fun timeOfDayText(then: Instant, locale: Locale): String
 
-/** "5m", "3h", "Oct 12": when a feed row's post was written. */
+/** "5m", "3h", "Oct 12": when a feed row's post was written, moving on at each whole minute while it is shown. */
 @Composable
 fun agoText(then: Instant?): String {
     if (then == null) return ""
     val zone = ZoneId.systemDefault()
     val locale = currentLocale()
-    return when (val ago = Formats.ago(then, Instant.now()) { it.atZone(zone).year }) {
+    // Measured against the shared minute clock, so "5m" becomes "6m" while the feed stays open.
+    val now = Instant.ofEpochMilli(minuteNow())
+    return when (val ago = Formats.ago(then, now) { it.atZone(zone).year }) {
         is Ago.Seconds -> stringResource(Res.string.ago_seconds, ago.n)
         is Ago.Minutes -> stringResource(Res.string.ago_minutes, ago.n)
         is Ago.Hours -> stringResource(Res.string.ago_hours, ago.n)
