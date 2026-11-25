@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.ui.post
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,6 +25,8 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.Motion
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -63,18 +67,24 @@ internal actual fun AuthorHoverCard(user: XUser, avatarUrl: String?, onOpen: () 
             .onPointerEvent(PointerEventType.Press, PointerEventPass.Initial) { over[0] = false; hide() },
     ) {
         content()
-        if (shown) {
+        // Faded in and out as the link hover's pill is; at once while motion is reduced.
+        val reduced = LocalReducedMotion.current
+        val visible = remember { MutableTransitionState(false) }
+        visible.targetState = shown
+        if (shown || (!reduced && !visible.isIdle)) {
             val density = LocalDensity.current
             Popup(
                 popupPositionProvider = remember(density) { BesideAuthor(density) },
                 onDismissRequest = ::hide,
                 properties = PopupProperties(focusable = false),
             ) {
-                Box(
-                    Modifier
-                        .onPointerEvent(PointerEventType.Enter) { over[1] = true; settle() }
-                        .onPointerEvent(PointerEventType.Exit) { over[1] = false; settle() },
-                ) { AuthorCardBody(user, avatarUrl) { hide(); onOpen() } }
+                AnimatedVisibility(visible, enter = Motion.fadeEnter(reduced), exit = Motion.fadeExit(reduced)) {
+                    Box(
+                        Modifier
+                            .onPointerEvent(PointerEventType.Enter) { over[1] = true; settle() }
+                            .onPointerEvent(PointerEventType.Exit) { over[1] = false; settle() },
+                    ) { AuthorCardBody(user, avatarUrl) { hide(); onOpen() } }
+                }
             }
         }
     }
