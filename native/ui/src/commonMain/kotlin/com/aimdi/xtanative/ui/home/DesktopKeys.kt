@@ -303,6 +303,13 @@ object DesktopKeys {
     }
 
     /**
+     * The Tab [step] still being taken once the window's focus is
+     * [windowFocused]: none when the window lost it, as Tab's release then
+     * goes to another window and would never end the step.
+     */
+    fun tabStepKept(step: TabStep?, windowFocused: Boolean): TabStep? = step.takeIf { windowFocused }
+
+    /**
      * Whether what has the focus inside the page ([focusInside]) keeps the
      * keys from [action]: a field being typed in ([typing]), or anything the
      * keyboard moved the focus to (Tab), where Space and Enter press it. A

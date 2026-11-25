@@ -37,6 +37,13 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun aTabStepEndsWhenTheWindowLosesTheFocusAsItsReleaseGoesElsewhere() {
+        assertEquals(TabStep.FORWARD, DesktopKeys.tabStepKept(TabStep.FORWARD, windowFocused = true))
+        assertNull(DesktopKeys.tabStepKept(TabStep.BACKWARD, windowFocused = false), "Tab held as the window lost the focus")
+        assertNull(DesktopKeys.tabStepKept(null, windowFocused = true))
+    }
+
+    @Test
     fun aButtonClickedKeepsNoKeysButAFieldOrWhatTabReachedDoes() {
         assertFalse(DesktopKeys.keysInside(focusInside = false, typing = false, clicked = false), "the frame itself has them")
         assertFalse(DesktopKeys.keysInside(focusInside = true, typing = false, clicked = true), "a tab, chip or refresh button clicked")

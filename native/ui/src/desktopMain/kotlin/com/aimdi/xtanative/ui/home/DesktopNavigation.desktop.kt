@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -46,6 +47,7 @@ import androidx.compose.ui.platform.InterceptPlatformTextInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -98,6 +100,9 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     val tabbing = remember { arrayOfNulls<TabStep>(1) }
     // Whether the frame is handing such a step on: it may go on after Tab is let go.
     val tabbingOn = remember { booleanArrayOf(false) }
+    // Tab held as the window loses the focus: its release goes to the other window, so the step ends here.
+    val window = LocalWindowInfo.current
+    LaunchedEffect(window) { snapshotFlow { window.isWindowFocused }.collect { tabbing[0] = DesktopKeys.tabStepKept(tabbing[0], it) } }
     // A frame later: what gives the keys back is still leaving when it asks. The frame takes them only if
     // nothing in the page has since (a screen that focuses its field as it opens keeps it).
     // A sheet swapped for another in the same frame closes before the next opens: by the time the frame
