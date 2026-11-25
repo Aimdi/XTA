@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -154,7 +155,8 @@ internal fun PluginSwitcherSheet(ui: HomeUi, networks: HomeNetworks, shown: Home
         shape = shape,
         containerColor = MaterialTheme.colorScheme.background,
         tonalElevation = 0.dp,
-        modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape).semantics { paneTitle = title },
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        modifier = Modifier.semantics { paneTitle = title },
     ) {
         val closer = LocalSheetCloser.current
         val calls = remember(given, closer) { given.closingWith(closer) }

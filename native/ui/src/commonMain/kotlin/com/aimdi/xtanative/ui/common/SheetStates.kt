@@ -1,10 +1,14 @@
 package com.aimdi.xtanative.ui.common
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -16,6 +20,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -63,6 +68,10 @@ internal fun rememberSheetState(alwaysFull: Boolean = false): SheetState {
  * Esc closes it, as before. A button in it that closes it does so through
  * [LocalSheetCloser], so the sheet slides away as a swipe or Esc has it go,
  * rather than vanishing.
+ *
+ * A [border] is drawn on the sheet as it slides, by a surface of its own
+ * inside Material's: a border in [modifier] would be drawn where the sheet
+ * rests before its slide moves it, a ghost frame at the window's top.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,6 +82,7 @@ internal fun KeyedSheet(
     shape: Shape = BottomSheetDefaults.ExpandedShape,
     containerColor: Color = BottomSheetDefaults.ContainerColor,
     tonalElevation: Dp = 0.dp,
+    border: BorderStroke? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val keys = rememberSheetKeys()
@@ -82,16 +92,37 @@ internal fun KeyedSheet(
         SheetCloser(scope, sheetState::hide, settledOpen = { sheetState.settledOpen() }) { dismiss() }
     }
     closer.reduced = LocalReducedMotion.current
+    val inside: @Composable ColumnScope.() -> Unit = {
+        keys.focus = LocalFocusManager.current
+        CompositionLocalProvider(LocalSheetKeys provides keys, LocalSheetCloser provides closer) { content() }
+    }
+    if (border == null) {
+        ModalBottomSheet(
+            onDismissRequest = closer::dismissed,
+            modifier = modifier.sheetKeys(keys),
+            sheetState = sheetState,
+            shape = shape,
+            containerColor = containerColor,
+            tonalElevation = tonalElevation,
+            content = inside,
+        )
+        return
+    }
     ModalBottomSheet(
         onDismissRequest = closer::dismissed,
         modifier = modifier.sheetKeys(keys),
         sheetState = sheetState,
         shape = shape,
-        containerColor = containerColor,
-        tonalElevation = tonalElevation,
+        containerColor = Color.Transparent,
+        tonalElevation = 0.dp,
+        dragHandle = null,
     ) {
-        keys.focus = LocalFocusManager.current
-        CompositionLocalProvider(LocalSheetKeys provides keys, LocalSheetCloser provides closer) { content() }
+        Surface(Modifier.fillMaxWidth(), shape = shape, color = containerColor, tonalElevation = tonalElevation, border = border) {
+            Column {
+                BottomSheetDefaults.DragHandle(Modifier.align(Alignment.CenterHorizontally))
+                inside()
+            }
+        }
     }
 }
 
