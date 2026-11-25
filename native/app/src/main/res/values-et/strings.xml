@@ -4,4 +4,5 @@
     <string name="shortcut_search">Otsi</string>
     <string name="shortcut_saved">Salvestatud</string>
     <string name="shortcut_subscriptions">Tellimused</string>
+    <string name="process_text_search">Otsi XTA-st</string>
 </resources>

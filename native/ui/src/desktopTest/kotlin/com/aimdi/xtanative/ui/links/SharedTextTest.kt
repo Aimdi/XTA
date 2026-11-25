@@ -50,4 +50,19 @@ class SharedTextTest {
         assertEquals("", SharedText.handed(null, null, null))
         assertEquals(SharedText.MAX_CHARS, SharedText.handed("a".repeat(100_000), null, null).length)
     }
+
+    @Test
+    fun textSelectedElsewhereIsReadAsSharedTextIs() {
+        assertEquals(TextHandOver.SHARED, SharedText.handOver("android.intent.action.SEND", "text/plain"))
+        assertEquals(TextHandOver.SELECTED, SharedText.handOver("android.intent.action.PROCESS_TEXT", "text/plain"))
+        assertEquals(null, SharedText.handOver("android.intent.action.PROCESS_TEXT", "text/html"))
+        assertEquals(null, SharedText.handOver("android.intent.action.SEND", "image/png"))
+        assertEquals(null, SharedText.handOver("android.intent.action.SEND", null))
+        assertEquals(null, SharedText.handOver("android.intent.action.VIEW", "text/plain"))
+        assertEquals(null, SharedText.handOver("android.intent.action.MAIN", null))
+        assertEquals(null, SharedText.handOver(null, "text/plain"))
+        // The same route: a selected link opens what it names, selected words are searched.
+        assertEquals(SharedStep.Link("https://x.com/maya/status/12", inPost = false), step("https://x.com/maya/status/12") { it })
+        assertEquals(SharedStep.Search("kotlin multiplatform"), step("kotlin multiplatform"))
+    }
 }

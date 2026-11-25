@@ -4,4 +4,5 @@
     <string name="shortcut_search">Søk</string>
     <string name="shortcut_saved">Lagret</string>
     <string name="shortcut_subscriptions">Abonnementer</string>
+    <string name="process_text_search">Søk i XTA</string>
 </resources>

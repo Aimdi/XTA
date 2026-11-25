@@ -4,4 +4,5 @@
     <string name="shortcut_search">Hledat</string>
     <string name="shortcut_saved">Uloženo</string>
     <string name="shortcut_subscriptions">Odběry</string>
+    <string name="process_text_search">Hledat v XTA</string>
 </resources>

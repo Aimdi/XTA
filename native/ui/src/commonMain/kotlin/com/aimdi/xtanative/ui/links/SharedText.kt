@@ -24,6 +24,9 @@ sealed interface SharedStep {
     data object Unable : SharedStep
 }
 
+/** How another app hands text to this one ([SharedText.handOver]). */
+enum class TextHandOver { SHARED, SELECTED }
+
 /**
  * The route of text shared to the app (main.dart's `_handleSharedText`): a
  * network's screen when one opens a link in it (a Threads post shared from
@@ -42,6 +45,26 @@ object SharedText {
      */
     fun handed(extra: CharSequence?, clipText: CharSequence?, clipUri: String?): String =
         (extra ?: clipText ?: clipUri)?.let { it.subSequence(0, minOf(it.length, MAX_CHARS)).toString() }.orEmpty()
+
+    /** Android's action for text shared to the app (Intent.ACTION_SEND). */
+    const val SEND = "android.intent.action.SEND"
+
+    /** Android's action for text selected in another app and sent here with "Search in XTA" (Intent.ACTION_PROCESS_TEXT). */
+    const val PROCESS_TEXT = "android.intent.action.PROCESS_TEXT"
+
+    /**
+     * How an intent of [action] and [type] hands text to the app: shared, or
+     * selected in another app; null for any other intent, and for anything
+     * but plain text. Both are read alike ([step]): a link opens what it
+     * names, words are searched. Selected text is only ever read: nothing is
+     * handed back to put in its place.
+     */
+    fun handOver(action: String?, type: String?): TextHandOver? = when {
+        type != "text/plain" -> null
+        action == SEND -> TextHandOver.SHARED
+        action == PROCESS_TEXT -> TextHandOver.SELECTED
+        else -> null
+    }
 
     /**
      * [openOnNetwork] opens a link on a network's screen when one reads it and

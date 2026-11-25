@@ -4,4 +4,5 @@
     <string name="shortcut_search">Zoeken</string>
     <string name="shortcut_saved">Opgeslagen</string>
     <string name="shortcut_subscriptions">Abonnementen</string>
+    <string name="process_text_search">Zoeken in XTA</string>
 </resources>

@@ -4,4 +4,5 @@
     <string name="shortcut_search">Пошук</string>
     <string name="shortcut_saved">Захаванае</string>
     <string name="shortcut_subscriptions">Падпіскі</string>
+    <string name="process_text_search">Пошук у XTA</string>
 </resources>

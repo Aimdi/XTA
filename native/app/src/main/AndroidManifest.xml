@@ -41,9 +41,14 @@
         <!-- A video full screen turns the screen to its shape and may shrink into picture-in-picture, as in XTA:
              the activity takes those changes itself, so what plays goes on through them. So it does a new text
              size, display size, dark mode or keyboard, which the screens follow as they draw (MainActivity).
-             A new language still makes the activity again: the screens' strings are looked up anew only then. -->
+             A new language still makes the activity again: the screens' strings are looked up anew only then.
+             One activity, in one task (singleTask): a link, shared or selected text or a shortcut that arrives
+             while the app is open reaches the screens already there (onNewIntent, which the screens listen
+             to), rather than a second copy of the app over them or inside the app it came from; a video in
+             picture-in-picture comes back full screen with it, as Android's guide for it asks. -->
         <activity
             android:name=".MainActivity"
+            android:launchMode="singleTask"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|fontScale|screenLayout|density|uiMode"
             android:exported="true"
             android:supportsPictureInPicture="true"
@@ -59,6 +64,13 @@
             <!-- Text shared from another app: an X link opens its post, another link its page, anything else is searched. -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <!-- Text selected in another app: its menu offers "Search in XTA", which reads the text as shared text
+                 is read (a link opens what it names, words are searched) and hands nothing back. -->
+            <intent-filter android:label="@string/process_text_search">
+                <action android:name="android.intent.action.PROCESS_TEXT" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>

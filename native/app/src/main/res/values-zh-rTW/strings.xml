@@ -4,4 +4,5 @@
     <string name="shortcut_search">搜尋</string>
     <string name="shortcut_saved">已儲存</string>
     <string name="shortcut_subscriptions">訂閱</string>
+    <string name="process_text_search">在 XTA 中搜尋</string>
 </resources>

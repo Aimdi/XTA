@@ -4,4 +4,5 @@
     <string name="shortcut_search">Ara</string>
     <string name="shortcut_saved">Kaydedilmiş</string>
     <string name="shortcut_subscriptions">Abonelikler</string>
+    <string name="process_text_search">XTA\'da ara</string>
 </resources>

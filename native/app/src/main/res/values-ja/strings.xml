@@ -4,4 +4,5 @@
     <string name="shortcut_search">検索</string>
     <string name="shortcut_saved">保存済み</string>
     <string name="shortcut_subscriptions">登録アカウント</string>
+    <string name="process_text_search">XTA で検索</string>
 </resources>

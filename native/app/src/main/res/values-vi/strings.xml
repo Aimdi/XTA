@@ -4,4 +4,5 @@
     <string name="shortcut_search">Tìm kiếm</string>
     <string name="shortcut_saved">Đã lưu</string>
     <string name="shortcut_subscriptions">Đăng ký</string>
+    <string name="process_text_search">Tìm kiếm trong XTA</string>
 </resources>

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- What Android itself shows, which it can only take from here: the launcher's label, the
-     shortcuts under the app's icon (xml/shortcuts.xml), in the screens' own words. The screens'
-     strings are Compose resources in :ui (ui/src/commonMain/composeResources). -->
+     shortcuts under the app's icon (xml/shortcuts.xml) and the entry other apps offer for
+     selected text (the manifest's PROCESS_TEXT), in the screens' own words. The screens' strings
+     are Compose resources in :ui (ui/src/commonMain/composeResources). -->
 <resources>
     <string name="app_name">XTA Native</string>
     <string name="shortcut_search">Search</string>
     <string name="shortcut_saved">Saved</string>
     <string name="shortcut_subscriptions">Subscriptions</string>
+    <string name="process_text_search">Search in XTA</string>
 </resources>

@@ -30,7 +30,8 @@ internal actual fun rememberLinkPlatform(): LinkPlatform {
 
 /**
  * The text another app shares here (an ACTION_SEND of text/plain, which the
- * app's manifest takes): the one the activity was started with, once, and
+ * app's manifest takes), or has selected and sends with "Search in XTA" (an
+ * ACTION_PROCESS_TEXT): the one the activity was started with, once, and
  * each one that reaches it afterwards.
  */
 @Composable
@@ -73,14 +74,22 @@ private fun IntentEffect(read: (Intent?) -> String?, onFound: (String) -> Unit) 
  * Shared text as XTA's SharedTextChannel reads it: not again when the app is
  * reopened from the recent apps with the share's intent, the clip's text or
  * URI (as text, never opened) when the share has no EXTRA_TEXT, and nothing
- * the sender's extras could throw on.
+ * the sender's extras could throw on. Text selected in another app and sent
+ * with "Search in XTA" (ACTION_PROCESS_TEXT) is read the same way, from its
+ * own extra, and nothing is handed back to replace it.
  */
 private fun sharedText(intent: Intent?): String? {
-    val handed = intent?.takeIf { it.action == Intent.ACTION_SEND && it.type == "text/plain" } ?: return null
+    val handed = intent ?: return null
+    val how = SharedText.handOver(handed.action, handed.type) ?: return null
     if (handed.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0) return null
     return try {
-        val clip = handed.clipData?.takeIf { it.itemCount > 0 }?.getItemAt(0)
-        SharedText.handed(handed.getCharSequenceExtra(Intent.EXTRA_TEXT), clip?.text, clip?.uri?.toString())
+        when (how) {
+            TextHandOver.SELECTED -> SharedText.handed(handed.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT), null, null)
+            TextHandOver.SHARED -> {
+                val clip = handed.clipData?.takeIf { it.itemCount > 0 }?.getItemAt(0)
+                SharedText.handed(handed.getCharSequenceExtra(Intent.EXTRA_TEXT), clip?.text, clip?.uri?.toString())
+            }
+        }
     } catch (_: RuntimeException) {
         ""
     }
