@@ -6,6 +6,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -24,13 +27,16 @@ const val ROLLING_COUNT_MILLIS = 300
 /** Whether a count moving from [from] to [to] rolls upwards: a rise, or a change whose numbers are not known (XTA's rollingCountRises). */
 fun rollingCountRises(from: Long?, to: Long?): Boolean = from == null || to == null || to >= from
 
-/** What a [RollingCount] remembers between compositions: the text it showed, and the roll under way. */
-private class Roll(var text: String, var value: Long?) {
-    var from: String? = null
-    var rises = true
-    var generation = 0
-    var started = 0
-}
+/**
+ * The text a count rolls out of on its way to [to]: the one it showed
+ * ([before]), when both are numbers shown and motion is not [reduced]; null
+ * changes it at once (a count that appears or goes, or the same text).
+ */
+fun rollingCountFrom(before: String, to: String, reduced: Boolean): String? =
+    before.takeIf { !reduced && it != to && it.isNotEmpty() && to.isNotEmpty() }
+
+/** What a [RollingCount] showed when its last composition was applied: written only then, read by the next. */
+private class Shown(var text: String, var value: Long?)
 
 /**
  * A count that rolls to its new number as X's does (XTA's RollingCount): the
@@ -38,31 +44,25 @@ private class Roll(var text: String, var value: Long?) {
  * rise and downwards for a fall, the line's width moving between theirs. Only
  * a change between two shown numbers rolls; a count that appears or goes,
  * and every change with reduced motion, changes at once. [value] is the
- * number [text] shows, which picks the direction.
+ * number [text] shows, which picks the direction. The roll's progress is
+ * read where the line is measured and placed, so its frames lay the line out
+ * again without composing it again.
  */
 @Composable
 fun RollingCount(text: String, value: Long?, style: TextStyle, color: Color, modifier: Modifier = Modifier) {
     val reduced = LocalReducedMotion.current
-    val roll = remember { Roll(text, value) }
-    if (roll.text != text) {
-        roll.from = roll.text.takeIf { !reduced && it.isNotEmpty() && text.isNotEmpty() }
-        roll.rises = rollingCountRises(roll.value, value)
-        roll.text = text
-        roll.value = value
-        roll.generation++
+    val shown = remember { Shown(text, value) }
+    // Worked out once per new text from what was last shown; what is shown is only written once the composition is applied.
+    val from = remember(text) { rollingCountFrom(shown.text, text, reduced) }
+    val rises = remember(text) { rollingCountRises(shown.value, value) }
+    SideEffect {
+        shown.text = text
+        shown.value = value
     }
-    val progress = remember { Animatable(1f) }
-    LaunchedEffect(roll.generation) {
-        if (roll.from == null) return@LaunchedEffect
-        progress.snapTo(0f)
-        roll.started = roll.generation
-        progress.animateTo(1f, tween(ROLLING_COUNT_MILLIS, easing = EaseOutCubic))
-        roll.from = null
-    }
-    val from = roll.from
-    val t = if (roll.started != roll.generation) 0f else progress.value
-    if (from == null || t >= 1f) return Text(text, modifier, color = color, style = style, maxLines = 1)
-    val rises = roll.rises
+    val progress = remember(text) { Animatable(if (from == null) 1f else 0f) }
+    LaunchedEffect(progress) { progress.animateTo(1f, tween(ROLLING_COUNT_MILLIS, easing = EaseOutCubic)) }
+    val done by remember(progress) { derivedStateOf { progress.value >= 1f } }
+    if (from == null || done) return Text(text, modifier, color = color, style = style, maxLines = 1)
     Layout(
         content = {
             Text(from, color = color, style = style, maxLines = 1)
@@ -73,6 +73,7 @@ fun RollingCount(text: String, value: Long?, style: TextStyle, color: Color, mod
         val free = constraints.copy(minWidth = 0, maxWidth = Constraints.Infinity)
         val (old, new) = measurables.map { it.measure(free) }
         val height = max(old.height, new.height)
+        val t = progress.value
         val width = (old.width + (new.width - old.width) * t).roundToInt()
         val travel = if (rises) -height else height
         layout(constraints.constrainWidth(width), constraints.constrainHeight(height)) {
