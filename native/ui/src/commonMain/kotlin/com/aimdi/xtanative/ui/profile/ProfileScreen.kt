@@ -1,5 +1,12 @@
 package com.aimdi.xtanative.ui.profile
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -76,6 +83,7 @@ import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
@@ -83,6 +91,7 @@ import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.clickableNoRipple
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.monthText
+import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -181,14 +190,21 @@ fun ProfileScreen(
     }
     LaunchedEffect(nearEnd, tab.threads.size, tab.tiles.size, state.tab) { if (nearEnd) vm.loadMore() }
     val scrolled by remember(list) { derivedStateOf { list.firstVisibleItemIndex > 3 } }
+    val reduced = LocalReducedMotion.current
+    // Each tab keeps its own place in the list ([ProfileTabScroll]), moved to in the frame the tab turns.
+    val tabScroll = remember(list) { ProfileTabScroll() }
+    val select: (ProfileTab) -> Unit = { to ->
+        tabScroll.turned(state.tab, to, ScrollSpot(list.firstVisibleItemIndex, list.firstVisibleItemScrollOffset))?.let { list.requestScrollToItem(it.index, it.offset) }
+        vm.select(to)
+    }
     val user = state.user
     val shownName = user?.screenName ?: screenName
     // F5 and Ctrl+R read the profile again; ← → and Ctrl+Tab turn its tabs, as on Home; going back closes its sheet first.
     // Not where the screen it is shown in keeps the keys ([ownKeys] false: the Deck's detail).
     if (ownKeys) DesktopShortcuts(
         refresh = vm::refresh,
-        turn = { by -> if (state.complete && user != null) DesktopKeys.turned(state.tab.ordinal, ProfileTab.entries.size, by)?.let { vm.select(ProfileTab.entries[it]) } },
-        jump = { digit -> if (state.complete && user != null) DesktopKeys.pageAt(digit, ProfileTab.entries.size)?.let { vm.select(ProfileTab.entries[it]) } },
+        turn = { by -> if (state.complete && user != null) DesktopKeys.turned(state.tab.ordinal, ProfileTab.entries.size, by)?.let { select(ProfileTab.entries[it]) } },
+        jump = { digit -> if (state.complete && user != null) DesktopKeys.pageAt(digit, ProfileTab.entries.size)?.let { select(ProfileTab.entries[it]) } },
         isOpen = { sheet != ProfileSheet.NONE },
         close = { sheet = ProfileSheet.NONE },
     )
@@ -209,8 +225,13 @@ fun ProfileScreen(
             )
         },
         floatingActionButton = {
-            if (scrolled) {
-                FloatingActionButton(onClick = { scope.launch { list.scrollToItem(0) } }) {
+            // It grows in and out of its corner, or simply shows and goes while motion is reduced.
+            AnimatedVisibility(
+                scrolled,
+                enter = if (reduced) EnterTransition.None else fadeIn() + scaleIn(initialScale = 0.6f),
+                exit = if (reduced) ExitTransition.None else fadeOut() + scaleOut(targetScale = 0.6f),
+            ) {
+                FloatingActionButton(onClick = { scope.launch { list.scrollToTop(reduced) } }) {
                     Icon(PostIcons.ArrowUpward, stringResource(Res.string.posts_scroll_to_top))
                 }
             }
@@ -232,7 +253,7 @@ fun ProfileScreen(
                 LazyColumn(
                     state = list,
                     contentPadding = column,
-                    modifier = Modifier.fillMaxSize().swipeTabs(if (tabbed) ProfileTab.entries else emptyList(), state.tab, vm::select),
+                    modifier = Modifier.fillMaxSize().swipeTabs(if (tabbed) ProfileTab.entries else emptyList(), state.tab, select),
                 ) {
                     item(key = "header", contentType = "header") {
                         Header(state, follow, screenName, actions, onSheet = { sheet = it })
@@ -244,7 +265,7 @@ fun ProfileScreen(
                         problem != null -> item(key = "problem") { ProblemRow(problem, { vm.load() }) }
                     }
                     if (state.complete && user != null) {
-                        stickyHeader(key = "tabs", contentType = "tabs") { Tabs(state.tab, vm::select) }
+                        stickyHeader(key = "tabs", contentType = "tabs") { Tabs(state.tab, select) }
                         filterBar(state, vm)
                         val gated = state.tab != ProfileTab.SAVED && ProfileHeader.postsGated(user, session?.accounts.orEmpty().map { it.screenName })
                         when {
