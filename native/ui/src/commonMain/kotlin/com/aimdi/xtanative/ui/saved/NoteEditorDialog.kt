@@ -198,7 +198,8 @@ fun NoteEditorDialog(
         val card = maxWidth >= CARD_FROM_WIDTH && maxHeight >= CARD_FROM_HEIGHT
         val shape = if (card) MaterialTheme.shapes.extraLarge else RectangleShape
         Surface(
-            (if (card) Modifier.widthIn(max = CARD_WIDTH).heightIn(max = minOf(maxHeight - 96.dp, CARD_MAX_HEIGHT)).fillMaxWidth() else Modifier.fillMaxSize())
+            // A card keeps clear of the system bars and the keyboard around it; a page across the screen, inside it.
+            (if (card) Modifier.systemBarsPadding().imePadding().widthIn(max = CARD_WIDTH).heightIn(max = minOf(maxHeight - 96.dp, CARD_MAX_HEIGHT)).fillMaxWidth() else Modifier.fillMaxSize())
                 .takesDroppedFiles(enabled = note != null && !state.busy, onDropped = dropped).onPreviewKeyEvent { event ->
                 val down = event.type == KeyEventType.KeyDown
                 val saves = down && NoteKeys.saves(shortcutKey(event) == Key.S, event.key == Key.Enter || event.key == Key.NumPadEnter, event.isCtrlPressed, event.isAltPressed || event.isShiftPressed)
@@ -223,7 +224,7 @@ fun NoteEditorDialog(
             shape = shape,
             color = MaterialTheme.colorScheme.background,
         ) {
-            Box(Modifier.fillMaxSize().systemBarsPadding().imePadding(), contentAlignment = Alignment.TopCenter) {
+            Box(Modifier.fillMaxSize().then(if (card) Modifier else Modifier.systemBarsPadding().imePadding()), contentAlignment = Alignment.TopCenter) {
                 Column(Modifier.widthIn(max = 720.dp).fillMaxSize()) {
                     EditorBar(title(target), state.busy, state.saving, NoteRules.canSave(target, state, editor.dirty), close, save)
                     HorizontalDivider()
