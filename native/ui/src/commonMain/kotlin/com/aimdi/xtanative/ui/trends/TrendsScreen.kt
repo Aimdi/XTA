@@ -78,6 +78,7 @@ import com.aimdi.xtanative.core.x.model.XTrend
 import com.aimdi.xtanative.core.x.model.XTrendPlace
 import com.aimdi.xtanative.core.x.model.XTrendPlaces
 import com.aimdi.xtanative.data.LocalGraph
+import com.aimdi.xtanative.ui.common.ActionsInTopBar
 import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
@@ -211,13 +212,19 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
                                 .pickedFromRecent(pick, shownRecent, field.text, searchRecent),
                         )
                     },
+                    actions = {
+                        if (ActionsInTopBar && plugin == null) {
+                            val add = stringResource(Res.string.discover_add_location)
+                            IconTip(add) { IconButton(onClick = { picking = true }) { Icon(Icons.Filled.Add, contentDescription = add) } }
+                        }
+                    },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
                 )
                 if (plugin == null) PlaceTabs(state.places, onShow = vm::show, onRemove = vm::remove)
             }
         },
         floatingActionButton = {
-            if (plugin == null) {
+            if (plugin == null && !ActionsInTopBar) {
                 FloatingActionButton(onClick = { picking = true }) {
                     Icon(Icons.Filled.Add, contentDescription = stringResource(Res.string.discover_add_location))
                 }

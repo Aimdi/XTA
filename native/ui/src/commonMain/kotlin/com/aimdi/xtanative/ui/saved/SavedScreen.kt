@@ -79,6 +79,7 @@ import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedSort
 import com.aimdi.xtanative.store.saved.SavedSource
 import com.aimdi.xtanative.store.saved.SavedTabs
+import com.aimdi.xtanative.ui.common.ActionsInTopBar
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.TipText
@@ -203,7 +204,7 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
                     onRemove = { dialog = SavedDialog.RemoveSelected },
                 )
             } else {
-                TitleBar(SavedNotice.of(view.tab), onBack, searchable = links.searchLibrary != null) { action ->
+                TitleBar(SavedNotice.of(view.tab), onBack, searchable = links.searchLibrary != null, onWrite = { dialog = SavedDialog.Compose(NoteTarget.Note()) }) { action ->
                     when (action) {
                         SavedMenuAction.SEARCH_LIBRARY -> links.searchLibrary?.invoke()
                         SavedMenuAction.CREATE_FOLDER -> dialog = SavedDialog.EditFolder(null)
@@ -217,7 +218,7 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
             }
         },
         floatingActionButton = {
-            if (!view.selecting) {
+            if (!view.selecting && !ActionsInTopBar) {
                 FloatingActionButton(onClick = { dialog = SavedDialog.Compose(NoteTarget.Note()) }) {
                     Icon(SavedIcons.EditNote, stringResource(Res.string.saved_write_note))
                 }
@@ -315,7 +316,7 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
 /** The title at 28 sp, the lock that says what stays on this device, and the archive's menu. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TitleBar(notice: SavedNotice, onBack: (() -> Unit)?, searchable: Boolean, onMenu: (SavedMenuAction) -> Unit) {
+private fun TitleBar(notice: SavedNotice, onBack: (() -> Unit)?, searchable: Boolean, onWrite: () -> Unit, onMenu: (SavedMenuAction) -> Unit) {
     val noticeText = onDeviceText(notice)
     TopAppBar(
         navigationIcon = {
@@ -337,7 +338,14 @@ private fun TitleBar(notice: SavedNotice, onBack: (() -> Unit)?, searchable: Boo
                 } }
             }
         },
-        actions = { SavedMenu(searchable, onMenu) },
+        actions = {
+            // On the desktop "Write a note" sits here, by the menu, rather than in a round button in the corner.
+            if (ActionsInTopBar) {
+                val write = stringResource(Res.string.saved_write_note)
+                IconTip(write) { IconButton(onClick = onWrite) { Icon(SavedIcons.EditNote, write) } }
+            }
+            SavedMenu(searchable, onMenu)
+        },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
     )
 }

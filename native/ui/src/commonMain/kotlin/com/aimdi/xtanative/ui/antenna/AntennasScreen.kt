@@ -73,6 +73,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.antenna.Antenna
 import com.aimdi.xtanative.store.antenna.AntennaScope
+import com.aimdi.xtanative.ui.common.ActionsInTopBar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
@@ -129,11 +130,18 @@ fun AntennasScreen(openAntenna: (String) -> Unit, onBack: () -> Unit) {
                     IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
                 },
                 title = { Text(stringResource(Res.string.discover_antennas)) },
+                actions = {
+                    // Not while the empty page offers its own button for the first antenna.
+                    if (ActionsInTopBar && !antennas.isNullOrEmpty()) {
+                        val add = stringResource(Res.string.discover_antenna_new)
+                        IconTip(add) { IconButton(onClick = { vm.edit() }) { Icon(Icons.Filled.Add, contentDescription = add) } }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { vm.edit() }) { Icon(Icons.Filled.Add, contentDescription = stringResource(Res.string.discover_antenna_new)) }
+            if (!ActionsInTopBar) FloatingActionButton(onClick = { vm.edit() }) { Icon(Icons.Filled.Add, contentDescription = stringResource(Res.string.discover_antenna_new)) }
         },
     ) { padding ->
         val list = antennas
