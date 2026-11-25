@@ -11,6 +11,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
+import android.view.Choreographer
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        StartMarks.mark("activity")
         lastNight = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         enableEdgeToEdge()
         // CI's voice check (tool/voice_screens.sh), which only a -PvoiceServer build answers.
@@ -49,6 +51,9 @@ class MainActivity : ComponentActivity() {
         val graph = app.graph
         // Settings › General › Lock the app: decided before the first frame, so a locked app draws no screen.
         arriveAtLock()
+        StartMarks.mark("settings read")
+        // The first frame drawn ends the start's marks (native/PERF.md).
+        Choreographer.getInstance().postFrameCallback { window.decorView.post { StartMarks.firstFrame() } }
         setContent {
             // Settings › General › Disable screenshots: Android's FLAG_SECURE on the window, as XTA's AndroidSecureWindow.
             // A locked app is kept out of screenshots the same way, until it is unlocked.

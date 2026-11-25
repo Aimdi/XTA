@@ -40,7 +40,10 @@ measure() {
   adb shell am start -W -n "$activity" > /dev/null
   sleep 10
   adb shell am force-stop "$pkg"
+  adb logcat -c > /dev/null 2>&1 || true
   echo "$label, installed: cold start $(cold_starts "$pkg" "$activity")" | tee -a "$out"
+  # Where each of those starts' time went, as the app marks it (StartMarks): the steps before its first frame.
+  adb logcat -d 2> /dev/null | tr -d '\r' | sed -n 's/.*XTA Native: start: /'"$label"', start steps: /p' | tail -5 | tee -a "$out" || true
   adb shell cmd package compile -m speed-profile -f "$pkg" > /dev/null
   echo "$label, compiled: cold start $(cold_starts "$pkg" "$activity")" | tee -a "$out"
   adb shell am force-stop "$pkg"
@@ -57,6 +60,13 @@ measure() {
 }
 
 : > "$out"
+# How fast this runner's emulator is today: the phone's own Settings, started cold the same way. A start
+# of the app reads against it, since one runner is a fifth slower than the next (native/PERF.md).
+settings=$(component com.android.settings || true)
+case "$settings" in
+  */*) echo "Reference, Android's Settings: cold start $(cold_starts com.android.settings "$settings" || true)" | tee -a "$out" || true ;;
+  *) echo "Reference: Android's Settings has no activity to start here" | tee -a "$out" ;;
+esac
 measure "XTA Native" com.aimdi.xtanative "$native_apk"
 if [ -f "$xta_apk" ]; then
   measure "XTA" com.aimdi.xta "$xta_apk"

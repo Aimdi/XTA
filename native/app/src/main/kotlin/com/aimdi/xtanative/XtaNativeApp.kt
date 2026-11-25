@@ -31,6 +31,7 @@ class XtaNativeApp : Application(), SingletonImageLoader.Factory {
 
     override fun onCreate() {
         super.onCreate()
+        StartMarks.mark("application")
         MainThreadWatchdog(this).start()
         System.setProperty(VoiceSources.RELEASE_TAG_PROPERTY, BuildConfig.RELEASE_TAG)
         if (BuildConfig.VOICE_SERVER.isNotEmpty()) System.setProperty(VoiceSources.SERVER_PROPERTY, BuildConfig.VOICE_SERVER)
@@ -43,9 +44,11 @@ class XtaNativeApp : Application(), SingletonImageLoader.Factory {
         )
         val catalogue = BuildConfig.PLUGIN_CATALOGUE.ifEmpty { null }
         plugins = if (catalogue != null) AppPlugins(filesDir, graph, androidPlugins(this), catalogue) else AppPlugins(filesDir, graph, androidPlugins(this))
+        StartMarks.mark("graph made")
         graph.start()
         plugins.start()
         DownloadNotifications(this, graph.downloads).start()
+        StartMarks.mark("application ready")
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader = appImageLoader(context)

@@ -13,10 +13,13 @@ CI ("XTA", `.github/workflows/native-prototype.yml`) measures every push:
   through R8's mapping). The whole report is the run's `apk-report`
   artifact; the top of it is in the job's log and summary.
 - **screens › Start, memory and size** runs `tool/compare.sh` on the
-  emulator: the median of five cold starts as installed, the same after
+  emulator: first Android's own Settings started cold five times, a
+  reference for that runner's speed (a start of the app is read as a ratio
+  to it); then the median of five cold starts as installed, the same after
   Android has compiled the app (`speed-profile`), and memory once the first
   screen is up, in total (PSS) and by where it is (Java heap, native heap,
-  code, graphics).
+  code, graphics). The app's own marks of each cold start (`StartMarks`,
+  milliseconds after its process began) are copied from the log.
 
 The emulator is slower than a phone and its numbers move a few percent from
 run to run: a change smaller than about 3% in start time or memory is noise
@@ -30,6 +33,7 @@ until a second run agrees. APK bytes are exact.
 | 235 | `c3257f66` | No Kotlin metadata; libraries' strings in 29 languages | 10,411,798 (−13.7%) | 759 ms | 702 ms | 125,358 kB |
 | 236 | `ca644027` | No parameter null checks; no compiler-only files | 10,288,232 (−14.7%) | 798 ms | 779 ms | 119,770 kB |
 | 237 | `7ba79455` | The string tables packed | 10,140,776 (−16.0%) | 798 ms | 752 ms | 117,511 kB |
+| 238 | `28ab943b` | Kept videos in the app's own player | 9,955,126 (−17.5%) | 974 ms | 858 ms | 118,338 kB |
 
 At the baseline the two dex files are 9,383,959 bytes packed (78% of the
 APK) and the resource table 659,364.
@@ -90,8 +94,20 @@ round's.
   end; nothing of the round touches the desktop's players. Taken for the
   runner's, to be confirmed by the next run.
 - **Kept videos in the app's own player**
-  (`ui/offline/OfflineVideo.android.kt`), not Media3's `PlayerView`: result
-  pending its first run.
+  (`ui/offline/OfflineVideo.android.kt`), not Media3's `PlayerView`: run
+  238, `androidx.recyclerview` and `androidx.media3.ui` are gone from the
+  dex (−97 kB of it), the Android resources 81,372 → 19,677 bytes and the
+  resource table 223,020 → 165,256: 186 kB of APK. The desktop job passed
+  again, so run 237's podcast failure was the runner's.
+- **The starts cannot be read yet.** Installed and compiled, run by run:
+  749/708, 759/702, 798/779, 798/752, 974/858 ms. Nothing in rounds 2 to 4
+  adds work before the first frame, and run 238's five launches agree with
+  each other (925 to 1,048), which is what a slower runner looks like, not a
+  slower app; but five runs rising is not proof either way. From the next
+  run the comparison starts Android's own Settings cold the same way, as a
+  reference for how fast that runner's emulator is, and the app writes down
+  where its start went (`StartMarks`: application, graph made, application
+  ready, activity, settings read, first frame).
 
 ## Next, in the order the measurements suggest
 
