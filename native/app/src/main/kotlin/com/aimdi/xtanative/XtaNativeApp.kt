@@ -10,11 +10,13 @@ import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.plugins.androidPlugins
 import com.aimdi.xtanative.ui.appImageLoader
 import com.aimdi.xtanative.ui.downloads.AndroidFiles
+import com.aimdi.xtanative.ui.downloads.DownloadNotifications
 import com.aimdi.xtanative.ui.speech.VoiceSources
 
 /**
  * The app graph on Android: the app's private files, the phone's connection,
- * the stand-in for X in a -PmockX build, and MediaStore for downloads; beside
+ * the stand-in for X in a -PmockX build, MediaStore for downloads and their
+ * notification; beside
  * it the plugins, kept in the private files' plugins/, offered by the
  * published catalogue or the one a -PpluginCatalogue build names. Where
  * voices download from is this build's: its prerelease's, or the server a
@@ -43,6 +45,7 @@ class XtaNativeApp : Application(), SingletonImageLoader.Factory {
         plugins = if (catalogue != null) AppPlugins(filesDir, graph, androidPlugins(this), catalogue) else AppPlugins(filesDir, graph, androidPlugins(this))
         graph.start()
         plugins.start()
+        DownloadNotifications(this, graph.downloads.state).start()
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader = appImageLoader(context)
