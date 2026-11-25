@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.desktop
 
 import androidx.compose.ui.platform.UriHandler
+import com.aimdi.xtanative.ui.common.ChildProcess
 import java.awt.Desktop
 import java.net.URI
 
@@ -13,7 +14,7 @@ import java.net.URI
 internal object SystemBrowser : UriHandler {
     override fun openUri(uri: String) {
         if (!uri.startsWith("https://") && !uri.startsWith("http://")) return
-        if (!browse(uri)) runCatching { ProcessBuilder("xdg-open", uri).start() }
+        if (!browse(uri)) runCatching { ChildProcess.start("xdg-open", uri) }
     }
 
     private fun browse(uri: String): Boolean = runCatching {

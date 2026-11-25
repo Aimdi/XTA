@@ -17,6 +17,11 @@
 # A dump that failed is remembered ($key.failed), so a start does not try
 # again with the same app; a folder whose path has a blank gets no archive
 # (JAVA_TOOL_OPTIONS splits at blanks).
+#
+# The reader's own JAVA_TOOL_OPTIONS is kept in XTA_NATIVE_ORIG_JTO (and
+# whether there was one in XTA_NATIVE_ORIG_JTO_SET): the programs the app
+# starts (xdg-open, a browser, a file manager) get it back instead of this
+# archive's options (ChildProcess in the app).
 set -u
 
 here=$(cd "$(dirname "$(readlink -f "$0")")" && pwd)
@@ -40,6 +45,12 @@ if [ -n "$list" ] && [ -f "$list" ] && [ -f "$config" ]; then
   } | cksum | cut -d' ' -f1)
   archive=$folder/$key.jsa
   if [ -s "$archive" ]; then
+    if [ "${JAVA_TOOL_OPTIONS+set}" = set ]; then
+      XTA_NATIVE_ORIG_JTO=$JAVA_TOOL_OPTIONS XTA_NATIVE_ORIG_JTO_SET=1
+    else
+      XTA_NATIVE_ORIG_JTO= XTA_NATIVE_ORIG_JTO_SET=0
+    fi
+    export XTA_NATIVE_ORIG_JTO XTA_NATIVE_ORIG_JTO_SET
     JAVA_TOOL_OPTIONS="-XX:SharedArchiveFile=$archive -Xshare:auto${JAVA_TOOL_OPTIONS:+ $JAVA_TOOL_OPTIONS}"
     export JAVA_TOOL_OPTIONS
   elif [ -e "$folder/$key.failed" ]; then

@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import com.aimdi.xtanative.services.links.LinkLaunch
+import com.aimdi.xtanative.ui.common.ChildProcess
 import java.awt.Desktop
 import java.net.URI
 
@@ -34,7 +35,7 @@ internal object DesktopLinks : LinkPlatform {
         val url = launch.url.trim()
         if (!url.startsWith("https://") && !url.startsWith("http://")) return
         SentOutside.sent(url)
-        if (!browse(url)) runCatching { ProcessBuilder("xdg-open", url).start() }
+        if (!browse(url)) runCatching { ChildProcess.start("xdg-open", url) }
     }
 
     private fun browse(url: String): Boolean = runCatching {
