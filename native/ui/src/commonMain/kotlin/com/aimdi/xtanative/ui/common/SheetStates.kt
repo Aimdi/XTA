@@ -13,7 +13,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -25,6 +27,7 @@ import com.aimdi.xtanative.ui.home.LocalSheetKeys
 import com.aimdi.xtanative.ui.home.rememberSheetKeys
 import com.aimdi.xtanative.ui.home.sheetKeys
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
@@ -75,10 +78,12 @@ internal fun KeyedSheet(
     val keys = rememberSheetKeys()
     val scope = rememberCoroutineScope()
     val dismiss by rememberUpdatedState(onDismissRequest)
-    val closer = remember(sheetState, scope) { SheetCloser(scope, sheetState::hide) { dismiss() } }
+    val closer = remember(sheetState, scope) {
+        SheetCloser(scope, sheetState::hide, settledOpen = { sheetState.settledOpen() }) { dismiss() }
+    }
     closer.reduced = LocalReducedMotion.current
     ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
+        onDismissRequest = closer::dismissed,
         modifier = modifier.sheetKeys(keys),
         sheetState = sheetState,
         shape = shape,
@@ -91,35 +96,66 @@ internal fun KeyedSheet(
 }
 
 /**
+ * Whether the sheet came to rest open, once whatever moves it now has
+ * settled: after a frame (so a dismissal that stopped a slide has begun its
+ * own), when it sits at the place it is heading for.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+private suspend fun SheetState.settledOpen(): Boolean {
+    withFrameNanos { }
+    snapshotFlow { currentValue == targetValue }.first { it }
+    return isVisible
+}
+
+/**
  * Closes the sheet it belongs to from a button in it: the sheet slides away
  * first ([slide]), then it is dismissed ([dismiss], the sheet's own
  * onDismissRequest) and the button's work done, so a pick does not make the
  * sheet vanish at once. While motion is [reduced] all of it happens at once.
- * A second press while it slides does nothing; a slide the reader stops
- * (dragging the sheet back) leaves it open, the press undone.
+ * A second press while it slides does nothing. A slide stopped by the sheet
+ * being dismissed another way (a click on the scrim, Esc, back) still does
+ * the work, once, when the sheet goes ([dismissed]); a slide the reader stops
+ * by dragging the sheet back leaves it open ([settledOpen]), the press undone.
  */
 @Stable
 internal class SheetCloser(
     private val scope: CoroutineScope?,
     private val slide: suspend () -> Unit,
+    private val settledOpen: suspend () -> Boolean = { true },
     private val dismiss: () -> Unit,
 ) {
     var reduced = false
     private var closing = false
 
+    /** The work of the press whose slide is under way or was stopped, until the sheet goes or stays. */
+    private var pending: (() -> Unit)? = null
+    private var press = 0
+
     /** Slides the sheet away, then dismisses it and runs [then]. */
     fun close(then: () -> Unit = {}) {
         if (closing) return
-        val finish = {
-            dismiss()
-            then()
-        }
-        if (reduced || scope == null) return finish()
+        pending = then
+        if (reduced || scope == null) return dismissed()
         closing = true
+        val thisPress = ++press
         scope.launch { slide() }.invokeOnCompletion { cause ->
             closing = false
-            if (cause == null) finish()
+            when (cause) {
+                null -> dismissed()
+                else -> scope.launch { if (settledOpen() && press == thisPress) pending = null }
+            }
         }
+    }
+
+    /**
+     * The sheet is dismissed, by its slide or any other way (the sheet's
+     * onDismissRequest): [dismiss], then the pending press's work, once.
+     */
+    fun dismissed() {
+        val then = pending
+        pending = null
+        dismiss()
+        then?.invoke()
     }
 
     /** [action] as a button that closes the sheet runs it: once the sheet has slid away. */
@@ -130,7 +166,7 @@ internal class SheetCloser(
 
     companion object {
         /** Outside a [KeyedSheet]: nothing slides, the work is done at once. */
-        val None = SheetCloser(null, {}, {})
+        val None = SheetCloser(null, {}) {}
     }
 }
 

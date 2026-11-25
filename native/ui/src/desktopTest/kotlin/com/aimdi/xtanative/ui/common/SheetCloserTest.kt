@@ -62,6 +62,41 @@ class SheetCloserTest {
     }
 
     @Test
+    fun aSlideStoppedByAClickOnTheScrimStillRunsThePickOnceTheSheetGoes() {
+        val scope = CoroutineScope(Dispatchers.Unconfined)
+        val settled = CompletableDeferred<Boolean>()
+        val closer = SheetCloser(
+            scope,
+            { throw CancellationException("scrim clicked") },
+            settledOpen = { settled.await() },
+        ) { steps += "dismiss" }
+        closer.close { steps += "pick" }
+        assertEquals(emptyList(), steps)
+        // The scrim's own slide ends hidden: the sheet's onDismissRequest.
+        closer.dismissed()
+        settled.complete(false)
+        assertEquals(listOf("dismiss", "pick"), steps)
+        // A later dismissal does not run the pick again.
+        closer.dismissed()
+        assertEquals(listOf("dismiss", "pick", "dismiss"), steps)
+        scope.cancel()
+    }
+
+    @Test
+    fun aSheetDraggedBackOpenDoesNotRunTheUndonePickWhenItIsDismissedLater() {
+        val scope = CoroutineScope(Dispatchers.Unconfined)
+        val closer = SheetCloser(
+            scope,
+            { throw CancellationException("dragged back") },
+            settledOpen = { true },
+        ) { steps += "dismiss" }
+        closer.close { steps += "pick" }
+        closer.dismissed()
+        assertEquals(listOf("dismiss"), steps)
+        scope.cancel()
+    }
+
+    @Test
     fun outsideASheetTheWorkIsDoneAtOnce() {
         SheetCloser.None.close { steps += "pick" }
         val action = SheetCloser.None.closing { value: Int -> steps += "picked $value" }
