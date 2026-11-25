@@ -64,6 +64,17 @@ object NoteRules {
     /** How full the note is, from 0 to 1, for the ring beside Save. */
     fun fullness(body: String): Float = (body.codePointCount(0, body.length).toFloat() / LocalPosts.MAX_LENGTH).coerceIn(0f, 1f)
 
+    /**
+     * How many characters are left once the note nears its limit (from
+     * [NEAR_FULL] of it on), for the ring and the count beside it; null
+     * before, when a ring would say nothing worth a glance.
+     */
+    fun charactersLeft(body: String): Int? =
+        if (fullness(body) < NEAR_FULL) null else (LocalPosts.MAX_LENGTH - body.codePointCount(0, body.length)).coerceAtLeast(0)
+
+    /** How full a note is when its ring starts to show. */
+    const val NEAR_FULL = 0.9f
+
     /** How far a note of a thread is indented, in dp: replies step in, at most two steps. */
     fun indent(depth: Int): Int = depth.coerceIn(0, 2) * 12
 

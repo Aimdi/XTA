@@ -85,6 +85,9 @@ class SaveSheetAndNotesTest {
         assertTrue(NoteRules.layout(media.take(1)).single)
         assertEquals(listOf(0, 12, 24, 24), listOf(0, 1, 2, 5).map(NoteRules::indent))
         assertEquals(0.5f, NoteRules.fullness("a".repeat(10_000)))
+        assertEquals(null, NoteRules.charactersLeft("a".repeat(10_000)), "no ring while the note is far from full")
+        assertEquals(2_000, NoteRules.charactersLeft("a".repeat(18_000)))
+        assertEquals(0, NoteRules.charactersLeft("a".repeat(20_000)))
         assertTrue(NoteRules.replyOpensThread(2))
         assertFalse(NoteRules.replyOpensThread(0))
     }
