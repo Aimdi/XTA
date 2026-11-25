@@ -69,6 +69,9 @@ The app id is `com.aimdi.xtanative`; JDK 17.
 - `native/RELEASE.md` / `native/PRERELEASE.md`: the notes a release and a
   prerelease publish.
 - `native/PARITY/`: the record of the port from the Flutter app.
+- `native/PERF.md`: what the Android app weighs and how fast it starts, how CI
+  measures it (`tool/apk_report.sh`, `tool/compare.sh`), what was tried and what
+  to try next. Read it before a size or speed change, and add the run's row after.
 
 ## Parsing reverse-engineered APIs
 

@@ -50,6 +50,8 @@ measure() {
   pss=$(adb shell dumpsys meminfo "$pkg" | tr -d '\r' | sed -n 's/.*TOTAL PSS: *\([0-9][0-9]*\).*/\1/p' | head -1)
   [ -n "$pss" ] || pss=$(adb shell dumpsys meminfo "$pkg" | tr -d '\r' | awk '$1 == "TOTAL" { print $2; exit }')
   echo "$label, memory after start: ${pss:-?} kB PSS" | tee -a "$out"
+  # Where that memory is (Java heap, native heap, code, graphics…), for the next round of making it less (native/PERF.md).
+  adb shell dumpsys meminfo "$pkg" | tr -d '\r' | sed -n '/App Summary/,/TOTAL/p' | awk 'NF >= 2 && /:/ { gsub(/^ +/, ""); print "'"$label"', memory: " $0 }' | tee -a "$out" || true
   echo "$label, APK: $(stat -c %s "$apk") bytes" | tee -a "$out"
   adb shell am force-stop "$pkg"
 }

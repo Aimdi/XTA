@@ -149,22 +149,26 @@ jobs:
           cp "$apk" "$RUNNER_TEMP/xta-native-$VERSION_NAME.apk"
           echo "APK: $(stat -c %s "$apk") bytes"
           unzip -lv "$apk" | sort -k1 -n -r | head -12 || true
-          # What the APK's bytes are, compressed, by kind: where a megabyte to save would be.
-          unzip -lv "$apk" | awk 'NF==8 && $1 ~ /^[0-9]+$/ { n=$8; k="other"
-            if (n ~ /\.dex$/) k="code (dex)"; else if (n ~ /^assets\/composeResources/) k="screen strings and pictures"
-            else if (n ~ /^assets\//) k="other assets"; else if (n == "resources.arsc") k="resource table"
-            else if (n ~ /^res\//) k="android resources"; else if (n ~ /^lib\//) k="native code"
-            else if (n ~ /^META-INF\//) k="META-INF"; else if (n ~ /^kotlin\// || n ~ /\.kotlin_builtins$/) k="kotlin builtins"
-            size[k]+=$3; count[k]++ } END { for (k in size) printf "%10d bytes  %5d files  %s\n", size[k], count[k], k }' | sort -n -r
+          # What the APK's bytes are, by kind and by package, kept for the next round of making it smaller (native/PERF.md).
+          bash tool/apk_report.sh "$apk" app/build/outputs/mapping/release/mapping.txt "$RUNNER_TEMP/apk-report"
           {
             echo "### XTA Native $VERSION_NAME"
             echo
             echo "APK: $(stat -c %s "$apk") bytes"
             echo
             echo '```'
-            unzip -lv "$apk" | sort -k1 -n -r | head -15
+            cat "$RUNNER_TEMP/apk-report/size-by-kind.txt"
+            echo
+            head -40 "$RUNNER_TEMP/apk-report/dex-top.txt" 2>/dev/null || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: apk-report
+          path: ${{ runner.temp }}/apk-report
+          if-no-files-found: ignore
 
       # The voice engine downloads with the first voice (docs/specs/downloadable-voice-engine.md):
       # the APK carries only the JNI shim that reaches it, built with the runner's NDK.
