@@ -57,3 +57,18 @@
 # Annotations jsoup's kept API names but the app does not ship.
 -dontwarn org.jspecify.annotations.**
 -dontwarn javax.annotation.**
+
+# Kotlin checks every parameter and platform value it was promised is not null
+# and throws at once when it is. In a release build that is a call and a name
+# at the head of nearly every function; without them a null goes on to where
+# it is used and fails there instead. `!!` (checkNotNull) is left as written.
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+    public static void checkNotNullParameter(java.lang.Object, java.lang.String);
+    public static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
+    public static void checkNotNullExpressionValue(java.lang.Object, java.lang.String);
+    public static void checkExpressionValueIsNotNull(java.lang.Object, java.lang.String);
+    public static void checkReturnedValueIsNotNull(java.lang.Object, java.lang.String);
+    public static void checkReturnedValueIsNotNull(java.lang.Object, java.lang.String, java.lang.String);
+    public static void checkFieldIsNotNull(java.lang.Object, java.lang.String);
+    public static void checkFieldIsNotNull(java.lang.Object, java.lang.String, java.lang.String);
+}

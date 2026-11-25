@@ -36,11 +36,13 @@ fi
 args=(dex packages --defined-only)
 [ -n "$mapping" ] && [ -f "$mapping" ] && args+=(--proguard-mappings "$mapping")
 # P/C/M/F, state, defined methods, referenced methods, bytes, name: the packages, largest first.
-if "$analyzer" "${args[@]}" "$apk" 2> "$out/apkanalyzer.log" | awk -F'\t' '$1 == "P" { printf "%10d bytes  %6d methods  %s\n", $5, $3, $6 }' | sort -n -r > "$out/dex-packages.txt" && [ -s "$out/dex-packages.txt" ]; then
+"$analyzer" "${args[@]}" "$apk" > "$out/apkanalyzer.txt" 2> "$out/apkanalyzer.log"
+if awk '$1 == "P" { printf "%10d bytes  %6d methods  %s\n", $5, $3, $6 }' "$out/apkanalyzer.txt" | sort -n -r > "$out/dex-packages.txt" && [ -s "$out/dex-packages.txt" ]; then
   head -100 "$out/dex-packages.txt" > "$out/dex-top.txt"
+  rm -f "$out/apkanalyzer.txt"
   echo "The code by package, largest first (a package counts what is under it):"
   head -70 "$out/dex-top.txt"
 else
-  echo "apk_report: apkanalyzer gave no packages:"; head -5 "$out/apkanalyzer.log"
+  echo "apk_report: apkanalyzer gave no packages; its first lines:"; head -5 "$out/apkanalyzer.txt" "$out/apkanalyzer.log"
 fi
 exit 0

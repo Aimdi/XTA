@@ -129,7 +129,17 @@ android {
     }
 
     packaging {
-        resources.excludes += setOf("/META-INF/{AL2.0,LGPL2.1}", "/META-INF/versions/9/OSGI-INF/MANIFEST.MF")
+        // Files only a compiler, kotlin-reflect or a debugger reads: Kotlin's module and builtin tables,
+        // the coroutines' debug probe, the libraries' version stamps.
+        resources.excludes += setOf(
+            "/META-INF/{AL2.0,LGPL2.1}",
+            "/META-INF/versions/9/OSGI-INF/MANIFEST.MF",
+            "/META-INF/*.kotlin_module",
+            "/META-INF/*.version",
+            "/kotlin/**.kotlin_builtins",
+            "/kotlin-tooling-metadata.json",
+            "DebugProbesKt.bin",
+        )
     }
 }
 
