@@ -109,13 +109,22 @@ fun ProblemView(problem: Problem, onRetry: () -> Unit, modifier: Modifier = Modi
     val actions = LocalProblemActions.current
     val answered = (problem as? Problem.Answer)?.code
     Column(modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        ProblemMark(look, answered?.let(XAnswers::emoji))
+        // X's answer's own mark where it has one, else the look's: a null here had hidden every look's mark behind the warning sign.
+        ProblemMark(look, answered?.let(XAnswers::emoji) ?: look.emoji)
         Text(answered?.let { xAnswerText(it) } ?: stringResource(titleOf(look)), fontSize = 18.sp, textAlign = TextAlign.Center)
         if (answered == null) Text(
-            detailsOf(look, problem),
+            detailsOf(look),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 12.dp),
+        )
+        // The status X answered with, for whoever reports it: under the words, small, not the message itself.
+        if (look == ProblemLook.HTTP) Text(
+            stringResource(Res.string.problem_http_text, (problem as? Problem.Refused)?.code ?: 0),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 8.dp),
         )
         if (context != null && look == ProblemLook.OTHER) {
             Text(context, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 12.dp))
@@ -214,12 +223,13 @@ private fun titleOf(look: ProblemLook): StringResource = when (look) {
     ProblemLook.OFFLINE -> Res.string.problem_offline_title
     ProblemLook.TIMED_OUT -> Res.string.problem_timed_out_title
     ProblemLook.SERVICE_UNAVAILABLE -> Res.string.problem_service_unavailable_title
-    ProblemLook.REQUEST_UNAVAILABLE -> Res.string.problem_request_unavailable_title
-    ProblemLook.HTTP, ProblemLook.OTHER -> Res.string.problem_oops
+    // A status the app has no words of its own for: X turned the request away, said calmly (its number follows, small).
+    ProblemLook.REQUEST_UNAVAILABLE, ProblemLook.HTTP -> Res.string.problem_request_unavailable_title
+    ProblemLook.OTHER -> Res.string.problem_oops
 }
 
 @Composable
-private fun detailsOf(look: ProblemLook, problem: Problem): String = when (look) {
+private fun detailsOf(look: ProblemLook): String = when (look) {
     ProblemLook.NO_ACCOUNT -> stringResource(Res.string.problem_no_account_text)
     ProblemLook.RATE_LIMITED -> stringResource(Res.string.problem_rate_limited_text)
     ProblemLook.NO_WORKING_ACCOUNT -> stringResource(Res.string.problem_no_working_account_text)
@@ -228,7 +238,6 @@ private fun detailsOf(look: ProblemLook, problem: Problem): String = when (look)
     ProblemLook.OFFLINE -> stringResource(Res.string.problem_offline_text)
     ProblemLook.TIMED_OUT -> stringResource(Res.string.problem_timed_out_text)
     ProblemLook.SERVICE_UNAVAILABLE -> stringResource(Res.string.problem_service_unavailable_text)
-    ProblemLook.REQUEST_UNAVAILABLE -> stringResource(Res.string.problem_request_unavailable_text)
-    ProblemLook.HTTP -> stringResource(Res.string.problem_http_text, (problem as? Problem.Refused)?.code ?: 0)
+    ProblemLook.REQUEST_UNAVAILABLE, ProblemLook.HTTP -> stringResource(Res.string.problem_request_unavailable_text)
     ProblemLook.OTHER -> stringResource(Res.string.problem_other)
 }
