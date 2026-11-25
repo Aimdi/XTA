@@ -528,6 +528,22 @@ class DesktopKeysTest {
         assertTrue(DesktopShortcuts.all.isNotEmpty())
         DesktopShortcuts.all.forEach { shortcut -> assertTrue(shortcut.keys.isNotEmpty() && shortcut.keys.all { it.isNotEmpty() }, "${shortcut.does}") }
         assertEquals(DesktopShortcuts.all.size, DesktopShortcuts.all.map { it.does }.distinct().size)
+        assertTrue(DesktopShortcuts.sections.none { it.shortcuts.isEmpty() }, "no group without keys")
+    }
+
+    @Test
+    fun theShortcutGroupsSplitIntoTwoColumnsOfAlikeHeightInTheirOrder() {
+        val (first, second) = DesktopShortcuts.twoColumns(DesktopShortcuts.sections)
+        assertEquals(DesktopShortcuts.sections, first + second)
+        assertTrue(first.isNotEmpty() && second.isNotEmpty())
+        val rows = { column: List<ShortcutSection> -> column.sumOf { it.shortcuts.size + 2 } }
+        val gap = kotlin.math.abs(rows(first) - rows(second))
+        // No other split point is closer.
+        (0..DesktopShortcuts.sections.size).forEach { at ->
+            val a = DesktopShortcuts.sections.take(at)
+            val b = DesktopShortcuts.sections.drop(at)
+            assertTrue(gap <= kotlin.math.abs(rows(a) - rows(b)))
+        }
     }
 
     @Test
