@@ -111,6 +111,7 @@ private fun FullscreenLayer(video: FullscreenVideo, onClose: () -> Unit) {
                 onToggleFill = { fill = !fill },
                 onDownload = video.onDownload,
                 onTurn = if (FullscreenTurns) ({ sideways = !sideways }) else null,
+                onClose = onClose,
             )
             VideoControls(player, chrome, Modifier.fillMaxSize().safeDrawingPadding())
         }

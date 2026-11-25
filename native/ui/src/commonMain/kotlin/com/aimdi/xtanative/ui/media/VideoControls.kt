@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
@@ -83,6 +84,7 @@ import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.close
 import com.aimdi.xtanative.ui.generated.resources.reader_download
 import com.aimdi.xtanative.ui.generated.resources.reader_more_options
 import com.aimdi.xtanative.ui.generated.resources.reader_video
@@ -113,7 +115,9 @@ private enum class VideoSheet { MORE, SPEED, QUALITY }
  * ([MuteCorner]) and the seek bar stops short of it. [onFullscreen] goes full
  * screen in place and leaves it full screen; [onPictureInPicture] shrinks
  * the app into a floating window where the platform has one; [onTurn]
- * turns full screen sideways and back, on a phone.
+ * turns full screen sideways and back, on a phone; [onClose] leaves full
+ * screen from a close button in the top-start corner, where a desktop's
+ * viewers keep theirs.
  */
 internal class VideoChrome(
     val fullscreen: Boolean = false,
@@ -123,6 +127,7 @@ internal class VideoChrome(
     val onToggleFill: (() -> Unit)? = null,
     val onDownload: (() -> Unit)? = null,
     val onTurn: (() -> Unit)? = null,
+    val onClose: (() -> Unit)? = null,
 )
 
 /**
@@ -199,6 +204,9 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
                     playback.playOrPause()
                 }
                 BottomBar(state, playback, chrome, touch, onMenu = { sheet = VideoSheet.MORE }, modifier = Modifier.align(Alignment.BottomCenter))
+                chrome.onClose?.let { close ->
+                    Box(Modifier.align(Alignment.TopStart).padding(4.dp)) { ControlButton(Icons.Filled.Close, stringResource(Res.string.close), close) }
+                }
             }
         }
         if (skipped != 0) SkipBadge(skipped, Modifier.align(if (skipped < 0) Alignment.CenterStart else Alignment.CenterEnd))
