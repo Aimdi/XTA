@@ -21,6 +21,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInWindow
@@ -235,7 +236,7 @@ private fun TileLabels(durationMs: Long?): TileLabels {
  */
 @Composable
 private fun IdleTile(autoplay: Boolean, muted: Boolean, durationMs: Long?, labels: TileLabels, onOpen: () -> Unit, modifier: Modifier) {
-    Box(modifier.clickable(interactionSource = null, indication = rememberPictureIndication(), onClickLabel = labels.onClick, role = Role.Button, onClick = onOpen).semantics { contentDescription = labels.description }) {
+    Box(modifier.tappedOnly().clickable(interactionSource = null, indication = rememberPictureIndication(), onClickLabel = labels.onClick, role = Role.Button, onClick = onOpen).semantics { contentDescription = labels.description }) {
         val waits = VideoRules.cornerPlay(autoplay, holding = false)
         if (waits) PlayBadge(Modifier.align(Alignment.Center))
         TileCorner(VideoRules.cornerTimeMs(null, durationMs), play = false, Modifier.align(Alignment.BottomStart))
@@ -260,7 +261,8 @@ private fun PlayingTile(player: VideoPlayer, alt: String?, poster: Any?, seen: B
     Box(
         modifier
             .background(Color.Black)
-            // No grey wash over the video under the pointer; a press and the keyboard's focus still show.
+            // No grey wash over the video under the pointer; a press still shows.
+            .tappedOnly()
             .clickable(interactionSource = null, indication = rememberPictureIndication(), onClickLabel = labels.onClick, role = Role.Button, onClick = onOpen)
             .semantics { contentDescription = labels.description },
     ) {
@@ -270,6 +272,14 @@ private fun PlayingTile(player: VideoPlayer, alt: String?, poster: Any?, seen: B
         MuteCorner(state.muted, onToggle = { toggleMute(player, state.muted) }, Modifier.align(Alignment.BottomEnd), disc = TileMuteDisc, inset = TileInset)
     }
 }
+
+/**
+ * A tile's tap, never a stop of Tab's: the media tile around it (a post's,
+ * a plugin's) already is one, the same size, so Tab stopped twice on a
+ * video and the second stop changed nothing on the screen. Enter there
+ * opens the video in the viewer.
+ */
+private fun Modifier.tappedOnly(): Modifier = focusProperties { canFocus = false }
 
 /** Pauses [player] once less than half of its tile has been seen for a moment, and plays it again when it is back. */
 @Composable
