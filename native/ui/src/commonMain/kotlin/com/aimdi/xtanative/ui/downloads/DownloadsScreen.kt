@@ -102,7 +102,7 @@ fun DownloadsScreen(onBack: () -> Unit) {
                 title = { Text(stringResource(Res.string.downloads_title)) },
                 navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 actions = {
-                    IconTip(stringResource(Res.string.downloads_clear_finished)) { IconButton(onClick = { scope.launch { queue.clearFinished() } }) {
+                    IconTip(stringResource(Res.string.downloads_clear_finished)) { IconButton(onClick = { scope.launch { queue.clearFinished() } }, enabled = hasClearableHistory(state.entries)) {
                         Icon(SavedIcons.PlaylistRemove, stringResource(Res.string.downloads_clear_finished))
                     } }
                 },
