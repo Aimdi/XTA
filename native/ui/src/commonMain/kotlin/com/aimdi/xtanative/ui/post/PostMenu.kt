@@ -1,12 +1,5 @@
 package com.aimdi.xtanative.ui.post
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -14,11 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.ui.plugins.PluginMenuRow
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.PostMenuHandlers
@@ -86,13 +77,6 @@ private fun MenuSheet(post: XPost, actions: PostActions, onDismiss: () -> Unit, 
     }
 }
 
+/** A row of a post's menu or sheet, laid out as [PluginMenuRow] lays one out (denser in a desktop's pointer menu). */
 @Composable
-internal fun MenuRow(icon: ImageVector, label: String, onClick: () -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().heightIn(min = 52.dp).clickable(onClick = onClick).padding(horizontal = 24.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(icon, contentDescription = null)
-        Text(label, modifier = Modifier.padding(start = 24.dp))
-    }
-}
+internal fun MenuRow(icon: ImageVector, label: String, onClick: () -> Unit) = PluginMenuRow(icon, label, onClick)

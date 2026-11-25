@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +35,7 @@ import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.post.LocalMenuRowMetrics
 import com.aimdi.xtanative.ui.theme.xSwitchColors
 
 /**
@@ -189,11 +191,13 @@ fun PluginCounts(counts: List<Pair<Long, String>>, modifier: Modifier = Modifier
 /** One entry of a sheet of actions, as the app's post menu draws its own: [icon], [label], the whole row a button. */
 @Composable
 fun PluginMenuRow(icon: ImageVector, label: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    // Denser in the desktop's pointer menu than in a phone's sheet.
+    val metrics = LocalMenuRowMetrics.current
     Row(
-        modifier.fillMaxWidth().heightIn(min = 52.dp).clickable(onClick = onClick).padding(horizontal = 24.dp),
+        modifier.fillMaxWidth().heightIn(min = metrics.minHeight).clickable(onClick = onClick).padding(horizontal = metrics.padding, vertical = metrics.verticalPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(icon, contentDescription = null)
-        Text(label, modifier = Modifier.padding(start = 24.dp))
+        Icon(icon, contentDescription = null, modifier = Modifier.size(metrics.iconSize))
+        Text(label, modifier = Modifier.padding(start = metrics.gap))
     }
 }

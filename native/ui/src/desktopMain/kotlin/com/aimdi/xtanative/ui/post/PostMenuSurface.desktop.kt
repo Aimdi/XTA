@@ -134,7 +134,11 @@ internal actual fun PostMenuSurface(onDismiss: () -> Unit, content: @Composable 
                         .verticalScroll(rememberScrollState())
                         .padding(vertical = 8.dp),
                 ) {
-                    CompositionLocalProvider(LocalRippleConfiguration provides if (byKeys) DesktopRipples else MouseRipples) { content() }
+                    CompositionLocalProvider(
+                        LocalRippleConfiguration provides if (byKeys) DesktopRipples else MouseRipples,
+                        // A pointer's menu: denser rows than a phone's sheet.
+                        LocalMenuRowMetrics provides MenuRowMetrics.Pointer,
+                    ) { content() }
                     Box(
                         Modifier
                             .size(0.dp)
