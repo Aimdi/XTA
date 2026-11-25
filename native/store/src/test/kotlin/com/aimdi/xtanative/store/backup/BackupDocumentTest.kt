@@ -291,5 +291,24 @@ class BackupDocumentTest {
         assertEquals(emptyList(), kept.withEveryNetwork().ehHistory, "XTA writes every table")
     }
 
+    @Test
+    fun theHiddenAccountsAreAKeyOfTheirOwnThatOlderFilesAndXtaDoWithout() {
+        val old = BackupDocument.parse(full)!!
+        assertNull(old.hiddenAccountFilters, "no backup had it before")
+        assertFalse(BackupKeys.HIDDEN_ACCOUNT_FILTERS in old.toJson().keys, "and none gains it by being read")
+
+        val hidden = listOf(FeedFilterRow("7", "tommy"))
+        val written = BackupDocument.parse(full)!!.copy(hiddenAccountFilters = hidden)
+        val read = BackupDocument.parse(written.encode())!!
+        assertEquals(hidden, read.hiddenAccountFilters)
+        assertEquals(old.toJson().keys.toList() + BackupKeys.HIDDEN_ACCOUNT_FILTERS, written.toJson().keys.toList(), "every key XTA reads stays where it was")
+        assertEquals(old, read.copy(hiddenAccountFilters = null), "and reads as it did")
+        assertEquals(3, read.counts()[BackupCategory.FILTERS], "counted with the other filters")
+
+        assertEquals(hidden, read.chosen(ExportChoice(filters = true)).hiddenAccountFilters)
+        assertNull(read.chosen(ExportChoice(filters = false)).hiddenAccountFilters, "they go with the filters or not at all")
+        assertEquals(1, BackupDocument(hiddenAccountFilters = hidden).counts()[BackupCategory.FILTERS])
+    }
+
     private fun resource(path: String): String = checkNotNull(javaClass.getResource(path)) { path }.readText()
 }

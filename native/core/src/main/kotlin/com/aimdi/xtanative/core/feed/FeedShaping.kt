@@ -71,8 +71,8 @@ object PostCaps {
 
 /**
  * What a reader can hide of one profile wherever it shows up (XTA's profile
- * feed settings): its reposts, or its replies to others. Both go by the
- * lower-case handle.
+ * feed settings): its reposts, its replies to others, or every post of its.
+ * All go by the lower-case handle.
  */
 object ProfileFilters {
     /**
@@ -89,6 +89,22 @@ object ProfileFilters {
 
     fun withoutReplies(threads: List<XThread>, hidden: Set<String>): List<XThread> =
         if (hidden.isEmpty()) threads else threads.filterNot { hidesReply(it, hidden) }
+
+    /** [threads] without those [hidesAuthor] hides. */
+    fun withoutAuthors(threads: List<XThread>, hidden: Set<String>): List<XThread> =
+        if (hidden.isEmpty()) threads else threads.filterNot { hidesAuthor(it, hidden) }
+
+    /**
+     * Whether [thread] opens with a post one of the [hidden] handles wrote, or
+     * with a repost of one: hiding an account's posts must not let them back
+     * in through someone else's repost. A post that only quotes the account
+     * is its author's own, and stays.
+     */
+    fun hidesAuthor(thread: XThread, hidden: Set<String>): Boolean {
+        if (hidden.isEmpty()) return false
+        val post = thread.posts.firstOrNull() ?: return false
+        return post.author.screenName.lowercase() in hidden || post.reposted?.author?.screenName?.lowercase() in hidden
+    }
 
     internal fun hidesRepost(thread: XThread, hidden: Set<String>): Boolean {
         val post = thread.posts.firstOrNull() ?: return false
@@ -118,6 +134,8 @@ data class FeedShaping(
     val hiddenReposts: Set<String> = emptySet(),
     /** Lower-case handles whose replies to others the reader hid. */
     val hiddenReplies: Set<String> = emptySet(),
+    /** Lower-case handles none of whose posts are shown, reposted by others or not. */
+    val hiddenAuthors: Set<String> = emptySet(),
     val facts: PostFacts = PostFacts.OF_POST,
 ) {
     /**
@@ -125,7 +143,8 @@ data class FeedShaping(
      * what is hidden never takes a place on a page.
      */
     fun keeps(thread: XThread, now: Instant): Boolean =
-        !ProfileFilters.hidesRepost(thread, hiddenReposts) &&
+        !ProfileFilters.hidesAuthor(thread, hiddenAuthors) &&
+            !ProfileFilters.hidesRepost(thread, hiddenReposts) &&
             !ProfileFilters.hidesReply(thread, hiddenReplies) &&
             rules.verdict(thread, MutedKeywords.active(rules.mutedKeywords, now), facts) != Verdict.Hide &&
             language.verdict(thread, facts) != Verdict.Hide

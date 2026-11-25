@@ -7,6 +7,9 @@
     <string name="posts_boosts">Republicaciones</string>
     <string name="posts_collapse">Contraer</string>
     <string name="posts_expand">Expandir</string>
+    <string name="posts_hide_all">Ocultar publicaciones</string>
+    <string name="posts_hide_all_description">No mostrar las publicaciones de este usuario en tus feeds, solo en este dispositivo. Su perfil se puede seguir leyendo.</string>
+    <string name="posts_hide_from">Ocultar publicaciones de @%1$s</string>
     <string name="posts_link_more">Más publicaciones con este enlace: %1$d</string>
     <string name="posts_community">Comunidad</string>
     <string name="posts_community_notes">Notas de la comunidad</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Mostrar siempre el contenido sensible</string>
     <string name="posts_sensitive_show">Mostrar</string>
     <string name="posts_show_additional_replies">Mostrar más respuestas</string>
+    <string name="posts_show_from">Mostrar publicaciones de @%1$s</string>
     <string name="posts_show_more">Clic para mostrar más</string>
     <string name="posts_show_original">Mostrar la publicación original</string>
     <string name="posts_sort_most_followers">Con más seguidores</string>

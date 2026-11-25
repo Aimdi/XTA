@@ -5,6 +5,7 @@ import com.aimdi.xtanative.core.feed.FeedStops
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.store.saved.ProfileFilters
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -32,6 +33,14 @@ class ForYouRulesTest {
     fun aRepostOfAReplyIsTheReposterAndStays() {
         val repost = post("5", reposted = post("6", replyTo = "1"))
         assertEquals(listOf("5"), ForYouRules.withoutReplies(listOf(thread(repost))).map { it.id })
+    }
+
+    @Test
+    fun anAccountTheReaderHidIsOutOfForYouAlsoWhenReposted() {
+        val hidden = ProfileFilters(hiddenAll = mapOf("u2" to "u2"), hiddenReposts = mapOf("u5" to "u5"))
+        val threads = listOf(thread(post("1")), thread(post("2")), thread(post("3", reposted = post("2"))), thread(post("5", reposted = post("6"))))
+        assertEquals(listOf("1", "5"), ForYouRules.shown(threads, hidden).map { it.id }, "the reposts' filter is for the feeds of accounts followed")
+        assertTrue(ForYouRules.shown(threads, ProfileFilters()) === threads)
     }
 
     @Test

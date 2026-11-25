@@ -7,6 +7,9 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Свернуть</string>
     <string name="posts_expand">Развернуть</string>
+    <string name="posts_hide_all">Скрыть посты</string>
+    <string name="posts_hide_all_description">Не показывать посты этого пользователя в ваших лентах, только на этом устройстве. Его профиль по-прежнему можно читать.</string>
+    <string name="posts_hide_from">Скрыть посты @%1$s</string>
     <string name="posts_link_more">Другие публикации с этой ссылкой: %1$d</string>
     <string name="posts_community">Сообщество</string>
     <string name="posts_community_notes">Заметки сообщества</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>
     <string name="posts_show_additional_replies">Показать больше ответов</string>
+    <string name="posts_show_from">Показывать посты @%1$s</string>
     <string name="posts_show_more">Нажмите, чтобы показать больше</string>
     <string name="posts_show_original">Показать оригинал поста</string>
     <string name="posts_sort_most_followers">Больше всего подписчиков</string>

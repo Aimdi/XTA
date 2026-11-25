@@ -7,6 +7,9 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Redueix</string>
     <string name="posts_expand">Amplia</string>
+    <string name="posts_hide_all">Amaga les publicacions</string>
+    <string name="posts_hide_all_description">No mostrar les publicacions d’aquest usuari als teus canals, només en aquest dispositiu. El seu perfil es pot continuar llegint.</string>
+    <string name="posts_hide_from">Amaga les publicacions de @%1$s</string>
     <string name="posts_link_more">Més publicacions amb aquest enllaç: %1$d</string>
     <string name="posts_community">Comunitat</string>
     <string name="posts_community_notes">Notes de la comunitat</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>
     <string name="posts_show_additional_replies">Mostra més respostes</string>
+    <string name="posts_show_from">Mostra les publicacions de @%1$s</string>
     <string name="posts_show_more">Fes clic per mostrar-ne més</string>
     <string name="posts_show_original">Mostra la publicació original</string>
     <string name="posts_sort_most_followers">Amb més seguidors</string>

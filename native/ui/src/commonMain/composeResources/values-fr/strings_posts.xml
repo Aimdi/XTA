@@ -7,6 +7,9 @@
     <string name="posts_boosts">Republications</string>
     <string name="posts_collapse">Réduire</string>
     <string name="posts_expand">Développer</string>
+    <string name="posts_hide_all">Masquer les publications</string>
+    <string name="posts_hide_all_description">Ne pas afficher les publications de cet utilisateur dans vos flux, sur cet appareil uniquement. Son profil reste consultable.</string>
+    <string name="posts_hide_from">Masquer les publications de @%1$s</string>
     <string name="posts_link_more">Autres publications avec ce lien : %1$d</string>
     <string name="posts_community">Communauté</string>
     <string name="posts_community_notes">Contexte ajouté par les lecteurs</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Toujours afficher les médias sensibles</string>
     <string name="posts_sensitive_show">Afficher</string>
     <string name="posts_show_additional_replies">Afficher plus de réponses</string>
+    <string name="posts_show_from">Afficher les publications de @%1$s</string>
     <string name="posts_show_more">Voir plus</string>
     <string name="posts_show_original">Afficher la publication d'origine</string>
     <string name="posts_sort_most_followers">Le plus d'abonnés</string>

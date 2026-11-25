@@ -69,6 +69,8 @@ data class DeviceContent(
     /** The accounts whose reposts, and whose replies, the feeds hide. */
     val repostFilters: List<FeedFilterRow> = emptyList(),
     val replyFilters: List<FeedFilterRow> = emptyList(),
+    /** The accounts whose every post the feeds hide. */
+    val hiddenAccountFilters: List<FeedFilterRow> = emptyList(),
     /** What the running plugins keep, by section name ([PluginBackups.exported]). */
     val pluginSections: Map<String, String> = emptyMap(),
     /** What the running plugins follow, as each app names it ([PluginBackups.accounts]): how their accounts go out in the groups. */
@@ -115,6 +117,8 @@ object BackupExport {
             likedPosts = content.likes.map { LikedPostRow(it.id, it.authorId, it.content?.toString()) },
             repostFilters = content.repostFilters,
             replyFilters = content.replyFilters,
+            // Not one of XTA's sections: left out while empty, so a backup without it is XTA's own, key for key.
+            hiddenAccountFilters = content.hiddenAccountFilters.takeIf { it.isNotEmpty() },
             readPositions = content.readPositions.map { (key, position) -> ReadPositionRow(key, position.threadId, position.createdAt?.let(XtaTime::iso)) },
             accounts = session.accounts.map { account ->
                 val health = content.accountHealth[account.id] ?: XAccountHealth()

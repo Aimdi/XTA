@@ -7,6 +7,9 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Inklappen</string>
     <string name="posts_expand">Uitklappen</string>
+    <string name="posts_hide_all">Berichten verbergen</string>
+    <string name="posts_hide_all_description">Berichten van deze gebruiker niet in je feeds tonen, alleen op dit apparaat. Het profiel blijft leesbaar.</string>
+    <string name="posts_hide_from">Berichten van @%1$s verbergen</string>
     <string name="posts_link_more">Meer berichten met deze link: %1$d</string>
     <string name="posts_community">Community</string>
     <string name="posts_community_notes">Communitynotities</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>
     <string name="posts_show_additional_replies">Meer reacties tonen</string>
+    <string name="posts_show_from">Berichten van @%1$s tonen</string>
     <string name="posts_show_more">Klik om meer te tonen</string>
     <string name="posts_show_original">Oorspronkelijk bericht tonen</string>
     <string name="posts_sort_most_followers">Meeste volgers</string>

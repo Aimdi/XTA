@@ -7,6 +7,9 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Collapse</string>
     <string name="posts_expand">Expand</string>
+    <string name="posts_hide_all">Hide posts</string>
+    <string name="posts_hide_all_description">Do not show this user's posts in your feeds, on this device only. Their profile stays readable.</string>
+    <string name="posts_hide_from">Hide posts from @%1$s</string>
     <string name="posts_link_more">More posts sharing this link: %1$d</string>
     <string name="posts_community">Community</string>
     <string name="posts_community_notes">Users added context</string>
@@ -40,6 +43,7 @@
     <string name="posts_no_posts">Couldn't find any posts by this user!</string>
     <string name="posts_no_quotes">Couldn't find any quotes of this post!</string>
     <string name="posts_no_retweets">Couldn't find anyone who retweeted this post!</string>
+    <string name="posts_show_from">Show posts from @%1$s</string>
     <string name="posts_unable_to_load_the_tweet">Unable to load the post</string>
     <string name="posts_unable_to_load_the_next_page_of_replies">Unable to load the next page of replies</string>
     <string name="posts_unable_to_load_who_retweeted">Unable to load who retweeted this post</string>

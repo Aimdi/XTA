@@ -7,6 +7,9 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Sbalit</string>
     <string name="posts_expand">Rozbalit</string>
+    <string name="posts_hide_all">Skrýt příspěvky</string>
+    <string name="posts_hide_all_description">Nezobrazovat příspěvky tohoto uživatele ve vašich kanálech, pouze na tomto zařízení. Jeho profil lze dál číst.</string>
+    <string name="posts_hide_from">Skrýt příspěvky od @%1$s</string>
     <string name="posts_link_more">Další příspěvky s tímto odkazem: %1$d</string>
     <string name="posts_community">Komunita</string>
     <string name="posts_community_notes">Komunitní poznámky</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>
     <string name="posts_show_additional_replies">Zobrazit další odpovědi</string>
+    <string name="posts_show_from">Zobrazovat příspěvky od @%1$s</string>
     <string name="posts_show_more">Kliknutím zobrazíte více</string>
     <string name="posts_show_original">Zobrazit původní příspěvek</string>
     <string name="posts_sort_most_followers">Nejvíc sledujících</string>

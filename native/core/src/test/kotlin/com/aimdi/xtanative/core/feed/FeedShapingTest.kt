@@ -68,6 +68,26 @@ class FeedShapingTest {
         assertEquals(listOf(replyToOther, plain), ProfileFilters.withoutReposts(listOf(replyToOther, plain, repost), setOf("tommy")), "a reply is not a repost")
     }
 
+    @Test
+    fun anAccountHiddenAltogetherStaysOutEvenRepostedButAQuoteOfItIsItsAuthorsPost() {
+        val own = thread(post(1, by = "1", screenName = "Tommy"))
+        val reposted = thread(post(2, by = "maya", repostOf = post(20, by = "1", screenName = "TOMMY")))
+        val itsRepost = thread(post(3, by = "1", screenName = "tommy", repostOf = post(30, by = "x")))
+        val quote = thread(post(4, by = "maya", quoted = post(40, by = "1", screenName = "tommy")))
+        val other = thread(post(5, by = "maya"))
+        val mention = thread(post(6, by = "maya", text = "hello @tommy", replyTo = "tommy"))
+        val all = listOf(own, reposted, itsRepost, quote, other, mention)
+
+        assertEquals(listOf(quote, other, mention), ProfileFilters.withoutAuthors(all, setOf("tommy")), "handles are matched whatever their case")
+        assertTrue(ProfileFilters.withoutAuthors(all, emptySet()) === all)
+        assertFalse(ProfileFilters.hidesAuthor(XThread("empty", emptyList()), setOf("tommy")))
+
+        val shaping = FeedShaping(hiddenAuthors = setOf("tommy"))
+        assertEquals(listOf("6", "5", "4"), ids(shaping.shape(all, now).threads), "a feed's shaping leaves them out as it reads")
+        assertEquals(listOf("4", "5", "6"), ids(shaping.again(all, now).threads), "and out of what it showed before the account was hidden")
+        assertEquals(all.size, FeedShaping().shape(all, now).threads.size)
+    }
+
     private class Languages(val byId: Map<String, String>) : PostFacts {
         override fun sensitive(post: XPost) = false
 

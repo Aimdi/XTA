@@ -7,6 +7,9 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Zwiń</string>
     <string name="posts_expand">Rozwiń</string>
+    <string name="posts_hide_all">Ukryj wpisy</string>
+    <string name="posts_hide_all_description">Nie pokazuj wpisów tego użytkownika w twoich kanałach, tylko na tym urządzeniu. Jego profil nadal można czytać.</string>
+    <string name="posts_hide_from">Ukryj wpisy od @%1$s</string>
     <string name="posts_link_more">Więcej wpisów z tym linkiem: %1$d</string>
     <string name="posts_community">Społeczność</string>
     <string name="posts_community_notes">Notatki społeczności</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>
     <string name="posts_show_additional_replies">Pokaż więcej odpowiedzi</string>
+    <string name="posts_show_from">Pokazuj wpisy od @%1$s</string>
     <string name="posts_show_more">Kliknij, aby wyświetlić więcej</string>
     <string name="posts_show_original">Pokaż oryginalny post</string>
     <string name="posts_sort_most_followers">Najwięcej obserwujących</string>

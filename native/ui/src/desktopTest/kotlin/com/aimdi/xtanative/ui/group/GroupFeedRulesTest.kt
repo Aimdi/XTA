@@ -69,10 +69,11 @@ class GroupFeedRulesTest {
 
     @Test
     fun theGroupsPlanHidesWhatTheReaderHidOnProfiles() {
-        val hidden = ProfileFilters(hiddenReposts = mapOf("1" to "user1"), hiddenReplies = mapOf("2" to "user2"))
+        val hidden = ProfileFilters(hiddenReposts = mapOf("1" to "user1"), hiddenReplies = mapOf("2" to "user2"), hiddenAll = mapOf("3" to "user3"))
         val plan = GroupFeedRules.plan(session, FeedPrefs(zen = true), "g", emptySet(), hidden)
         assertEquals(setOf("user1"), plan.shaping.hiddenReposts)
         assertEquals(setOf("user2"), plan.shaping.hiddenReplies)
+        assertEquals(setOf("user3"), plan.shaping.hiddenAuthors)
         assertTrue(plan.shaping.zen, "beside the reader's other filters")
         assertEquals(FeedSort.POPULAR, plan.shaping.sort, "and the group's own")
         assertTrue(GroupFeedRules.plan(session, FeedPrefs(), "g", emptySet()).shaping.hiddenReposts.isEmpty())

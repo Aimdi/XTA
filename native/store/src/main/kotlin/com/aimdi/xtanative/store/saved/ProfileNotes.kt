@@ -77,21 +77,31 @@ data class ProfileFilters(
     val hiddenReposts: Map<String, String> = emptyMap(),
     /** Lower-case handles by account id: the account's replies to others are not shown. */
     val hiddenReplies: Map<String, String> = emptyMap(),
+    /** Lower-case handles by account id: none of the account's posts are shown in the feeds. */
+    val hiddenAll: Map<String, String> = emptyMap(),
 ) {
     fun repostsHidden(userId: String): Boolean = userId in hiddenReposts
 
     fun repliesHidden(userId: String): Boolean = userId in hiddenReplies
 
+    /** Whether the reader hid every post of [userId] in the feeds. */
+    fun allHidden(userId: String): Boolean = userId in hiddenAll
+
     /** The handles a feed's shaping reads ([com.aimdi.xtanative.core.feed.FeedShaping.hiddenReposts]). */
     val hiddenRepostHandles: Set<String> get() = hiddenReposts.values.toSet()
 
     val hiddenReplyHandles: Set<String> get() = hiddenReplies.values.toSet()
+
+    /** The handles whose every post a feed leaves out ([com.aimdi.xtanative.core.feed.FeedShaping.hiddenAuthors]). */
+    val hiddenAllHandles: Set<String> get() = hiddenAll.values.toSet()
 }
 
 /**
  * The accounts whose reposts or replies to others the reader hid, in
  * `saved/profile-filters.json`: XTA's retweet_filter and reply_filter
- * tables. Feeds match them by handle, as XTA does.
+ * tables; and the accounts whose every post is hidden, which XTA did not
+ * have. Feeds match them by handle, as XTA does. Nothing here is told to a
+ * network: it is not X's mute or block.
  */
 class ProfileFiltersStore(dir: StoreDir) {
     private val stored = StoredJson(dir, "saved/profile-filters.json", ProfileFilters(), ::decode, ::encode)
@@ -109,13 +119,26 @@ class ProfileFiltersStore(dir: StoreDir) {
         stored.update { it.copy(hiddenReplies = toggled(it.hiddenReplies, userId, screenName, hidden)).orSame(it) }
     }
 
+    /** Every post of [userId] hidden in the feeds, or shown again; on this device only. */
+    suspend fun setAllHidden(userId: String, screenName: String, hidden: Boolean) {
+        stored.update { it.copy(hiddenAll = toggled(it.hiddenAll, userId, screenName, hidden)).orSame(it) }
+    }
+
+    /** The accounts whose every post is hidden, for the backup, in the filters' rows. */
+    suspend fun allHiddenContent(): List<FeedFilterRow> = rows(stored.get().hiddenAll)
+
+    /** The accounts whose every post is hidden replaced with a backup's rows; the other filters stay. */
+    suspend fun replaceAllHidden(rows: List<FeedFilterRow>) {
+        stored.update { it.copy(hiddenAll = byId(rows)).orSame(it) }
+    }
+
     /** Both filters for the backup, as XTA's rows. */
     suspend fun content(): Pair<List<FeedFilterRow>, List<FeedFilterRow>> =
         stored.get().let { filters -> rows(filters.hiddenReposts) to rows(filters.hiddenReplies) }
 
-    /** Both filters replaced with a backup's rows. */
+    /** Both filters replaced with a backup's rows; the accounts hidden altogether stay. */
     suspend fun replace(reposts: List<FeedFilterRow>, replies: List<FeedFilterRow>) {
-        stored.update { ProfileFilters(byId(reposts), byId(replies)) }
+        stored.update { it.copy(hiddenReposts = byId(reposts), hiddenReplies = byId(replies)) }
     }
 
     private companion object {
@@ -140,12 +163,14 @@ class ProfileFiltersStore(dir: StoreDir) {
             put("v", VERSION)
             put("reposts", JsonObject(filters.hiddenReposts.mapValues { JsonPrimitive(it.value) }))
             put("replies", JsonObject(filters.hiddenReplies.mapValues { JsonPrimitive(it.value) }))
+            put("all", JsonObject(filters.hiddenAll.mapValues { JsonPrimitive(it.value) }))
         }
 
         fun decode(root: J): ProfileFilters? {
             if (root["v"].int != VERSION) return null
             fun handles(section: J) = section.keys.mapNotNull { id -> section[id].string?.let { id to it.lowercase() } }.toMap()
-            return ProfileFilters(handles(root["reposts"]), handles(root["replies"]))
+            // A file from before "all" has no such section: no one is hidden.
+            return ProfileFilters(handles(root["reposts"]), handles(root["replies"]), handles(root["all"]))
         }
     }
 }

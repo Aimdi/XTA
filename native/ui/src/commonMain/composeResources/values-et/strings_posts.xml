@@ -7,6 +7,9 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Ahenda</string>
     <string name="posts_expand">Laienda</string>
+    <string name="posts_hide_all">Peida postitused</string>
+    <string name="posts_hide_all_description">Ära näita selle kasutaja postitusi sinu voogudes, ainult selles seadmes. Tema profiili saab endiselt lugeda.</string>
+    <string name="posts_hide_from">Peida kasutaja @%1$s postitused</string>
     <string name="posts_link_more">Veel sama lingiga postitusi: %1$d</string>
     <string name="posts_community">Kogukond</string>
     <string name="posts_community_notes">Kogukonna märkmed</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>
     <string name="posts_show_additional_replies">Näita rohkem vastuseid</string>
+    <string name="posts_show_from">Näita kasutaja @%1$s postitusi</string>
     <string name="posts_show_more">Klõpsake rohkem kuvamiseks</string>
     <string name="posts_show_original">Näita algset postitust</string>
     <string name="posts_sort_most_followers">Enim jälgijaid</string>

@@ -7,6 +7,7 @@ import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.Problem
+import com.aimdi.xtanative.ui.feed.HiddenPosts
 import com.aimdi.xtanative.ui.search.Page
 import com.aimdi.xtanative.ui.search.PageEnd
 import com.aimdi.xtanative.ui.search.PagedRead
@@ -35,6 +36,7 @@ class CommunityViewModel(private val graph: AppGraph, private val id: String, ab
 
     init {
         load()
+        viewModelScope.launch { HiddenPosts.of(graph.profileFilters).collect { hidden -> posts.narrow { HiddenPosts.withoutAuthors(it, hidden) } } }
     }
 
     fun load() {
@@ -57,7 +59,7 @@ class CommunityViewModel(private val graph: AppGraph, private val id: String, ab
             val page = graph.client.communityPosts(id, cursor)
             graph.posts.remember(page.threads)
             state.update { it.copy(pinnedIds = it.pinnedIds + page.pinnedIds) }
-            Page(page.threads, page.bottomCursor)
+            Page(HiddenPosts.withoutAuthors(page.threads, graph.profileFilters.filters()), page.bottomCursor)
         }
     }
 

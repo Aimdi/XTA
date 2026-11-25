@@ -317,6 +317,14 @@ object BackupRestore {
             upsert(replies, document.replyFilters) { it.userId }.orEmpty()
     }
 
+    /**
+     * The accounts whose every post is [hidden] with the backup's, by account;
+     * null when the file carries none, as every backup did before the app
+     * could hide an account: nothing changes then.
+     */
+    fun hiddenAccounts(hidden: List<FeedFilterRow>, document: BackupDocument): List<FeedFilterRow>? =
+        document.hiddenAccountFilters?.let { rows -> upsert(hidden, rows) { it.userId }.orEmpty() }
+
     fun antennas(document: BackupDocument, now: Long): List<Antenna>? = document.antennas?.map { row ->
         Antenna(row.id, row.name, row.includeTerms, row.excludeTerms, AntennaScope.of(row.scope), XtaTime.parse(row.createdAt)?.toEpochMilli() ?: now)
     }

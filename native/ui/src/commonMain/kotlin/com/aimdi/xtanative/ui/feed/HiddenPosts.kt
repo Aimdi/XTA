@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.feed
 
 import com.aimdi.xtanative.core.feed.FeedShaping
+import com.aimdi.xtanative.core.feed.ProfileFilters as FeedFilters
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.store.saved.ProfileFilters
 import com.aimdi.xtanative.store.saved.ProfileFiltersStore
@@ -13,9 +14,9 @@ import kotlinx.coroutines.flow.flow
 
 /**
  * What the reader hid of some accounts in every feed, from their profiles'
- * filters (XTA's retweet_filter and reply_filter): their reposts, or their
- * replies to others. XTA's feeds read the filters at each load; here a feed
- * follows them, and reads again when they change.
+ * filters (XTA's retweet_filter and reply_filter): their reposts, their
+ * replies to others, or every post of theirs. XTA's feeds read the filters
+ * at each load; here a feed follows them, and reads again when they change.
  */
 object HiddenPosts {
     /** The filters as [store] holds them: read first, then each time they change. */
@@ -26,7 +27,16 @@ object HiddenPosts {
 
     /** [shaping] hiding what [filters] hide, by the accounts' handles as XTA matches them. */
     fun shaping(filters: ProfileFilters, shaping: FeedShaping = FeedShaping()): FeedShaping =
-        shaping.copy(hiddenReposts = filters.hiddenRepostHandles, hiddenReplies = filters.hiddenReplyHandles)
+        shaping.copy(hiddenReposts = filters.hiddenRepostHandles, hiddenReplies = filters.hiddenReplyHandles, hiddenAuthors = filters.hiddenAllHandles)
+
+    /**
+     * [threads] without the posts of the accounts hidden altogether, for the
+     * feeds X fills by itself (For you, a community, an antenna): the reader
+     * chose none of their authors, so only "Hide posts" applies there, not
+     * the reposts' and replies' filters of the accounts followed.
+     */
+    fun withoutAuthors(threads: List<XThread>, filters: ProfileFilters): List<XThread> =
+        FeedFilters.withoutAuthors(threads, filters.hiddenAllHandles)
 
     /** [threads] without what [filters] hide: what a feed shows of its cache until X answers, as XTA's preview does. */
     fun visible(threads: List<XThread>, filters: ProfileFilters, now: Instant = Instant.now()): List<XThread> {

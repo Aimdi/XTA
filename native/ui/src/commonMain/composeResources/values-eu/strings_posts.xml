@@ -7,6 +7,9 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Tolestu</string>
     <string name="posts_expand">Zabaldu</string>
+    <string name="posts_hide_all">Ezkutatu argitalpenak</string>
+    <string name="posts_hide_all_description">Ez erakutsi erabiltzaile honen argitalpenak zure jarioetan, gailu honetan soilik. Bere profila irakurgarri geratzen da.</string>
+    <string name="posts_hide_from">Ezkutatu @%1$s erabiltzailearen argitalpenak</string>
     <string name="posts_link_more">Esteka hau duten argitalpen gehiago: %1$d</string>
     <string name="posts_community">Komunitatea</string>
     <string name="posts_community_notes">Komunitatearen oharrak</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>
     <string name="posts_show_additional_replies">Erakutsi erantzun gehiago</string>
+    <string name="posts_show_from">Erakutsi @%1$s erabiltzailearen argitalpenak</string>
     <string name="posts_show_more">Sakatu gehiago ikusteko</string>
     <string name="posts_show_original">Erakutsi jatorrizko argitalpena</string>
     <string name="posts_sort_most_followers">Jarraitzaile gehien dituztenak</string>

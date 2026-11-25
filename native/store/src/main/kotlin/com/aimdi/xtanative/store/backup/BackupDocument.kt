@@ -52,6 +52,8 @@ data class BackupDocument(
     val likedPosts: List<LikedPostRow>? = null,
     val repostFilters: List<FeedFilterRow>? = null,
     val replyFilters: List<FeedFilterRow>? = null,
+    /** The accounts whose every post the feeds hide. XTA Native's own: XTA reads past it, and a file without it changes none. */
+    val hiddenAccountFilters: List<FeedFilterRow>? = null,
     val readPositions: List<ReadPositionRow>? = null,
     /** The X sessions, only when "Export accounts" was chosen. */
     val accounts: List<AccountRow>? = null,
@@ -88,7 +90,7 @@ data class BackupDocument(
             BackupCategory.SAVED_POSTS to savedPosts?.size,
             BackupCategory.FOLDERS to savedFolders?.size,
             BackupCategory.LIKED_POSTS to likedPosts?.size,
-            BackupCategory.FILTERS to total(repostFilters, replyFilters),
+            BackupCategory.FILTERS to total(repostFilters, replyFilters, hiddenAccountFilters),
             BackupCategory.READ_POSITIONS to readPositions?.size,
             BackupCategory.ACCOUNTS to accounts?.size,
             BackupCategory.PROFILE_NOTES to profileNotes?.size,
@@ -119,6 +121,7 @@ data class BackupDocument(
             likedPosts = likedPosts.ifChosen(choice.likedPosts),
             repostFilters = repostFilters.ifChosen(choice.filters),
             replyFilters = replyFilters.ifChosen(choice.filters),
+            hiddenAccountFilters = hiddenAccountFilters.ifChosen(choice.filters),
             readPositions = readPositions.ifChosen(choice.readPositions),
             accounts = accounts.ifChosen(choice.accounts),
             profileNotes = profileNotes.ifChosen(choice.filters),
@@ -181,6 +184,7 @@ data class BackupDocument(
             put(BackupKeys.PROFILE_NOTES, profileNotes.json { it.toJson() })
             put(BackupKeys.ANTENNAS, antennas.json { it.toJson() })
             put(BackupKeys.LOCAL_POSTS, localPosts.json { it.toJson() })
+            hiddenAccountFilters?.let { put(BackupKeys.HIDDEN_ACCOUNT_FILTERS, it.json { row -> row.toJson() }) }
             pluginSections?.let { put(BackupKeys.PLUGIN_SECTIONS, JsonObject(it.mapValues { (_, text) -> JsonPrimitive(text) })) }
             webDavHistory?.let { put(BackupKeys.WEBDAV_HISTORY, it.json { version -> version.toJson() }) }
         },
@@ -218,6 +222,7 @@ data class BackupDocument(
                 likedPosts = root[BackupKeys.LIKED_POSTS].rows { LikedPostRow.from(it) },
                 repostFilters = root[BackupKeys.REPOST_FILTERS].rows { FeedFilterRow.from(it) },
                 replyFilters = root[BackupKeys.REPLY_FILTERS].rows { FeedFilterRow.from(it) },
+                hiddenAccountFilters = root[BackupKeys.HIDDEN_ACCOUNT_FILTERS].rows { FeedFilterRow.from(it) },
                 readPositions = root[BackupKeys.READ_POSITIONS].rows { ReadPositionRow.from(it) },
                 accounts = root[BackupKeys.ACCOUNTS].rows { AccountRow.from(it) },
                 profileNotes = root[BackupKeys.PROFILE_NOTES].rows { ProfileNoteRow.from(it) },
@@ -292,6 +297,9 @@ object BackupKeys {
     const val LIKED_POSTS = "likedTweets"
     const val REPOST_FILTERS = "retweetFilters"
     const val REPLY_FILTERS = "replyFilters"
+
+    /** XTA Native's own, written only when the document carries it. */
+    const val HIDDEN_ACCOUNT_FILTERS = "hiddenAccountFilters"
     const val READ_POSITIONS = "feedReadPositions"
     const val ACCOUNTS = "accounts"
     const val PROFILE_NOTES = "profileNotes"

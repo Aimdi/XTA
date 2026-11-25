@@ -20,6 +20,7 @@ import com.aimdi.xtanative.store.saved.XtaTweetJson
 import com.aimdi.xtanative.store.saved.profileArchive
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.ProfileTab as StoredTab
+import com.aimdi.xtanative.ui.feed.HiddenPosts
 import com.aimdi.xtanative.ui.media.MediaGridItem
 import com.aimdi.xtanative.ui.media.MediaGridItems
 import com.aimdi.xtanative.ui.post.cached
@@ -75,6 +76,9 @@ data class ProfileUi(
 
     val repostsHidden: Boolean get() = user?.let { filters.repostsHidden(it.id) } == true
     val repliesHidden: Boolean get() = user?.let { filters.repliesHidden(it.id) } == true
+
+    /** Every post of the account is hidden in the feeds; its profile still shows them. */
+    val allHidden: Boolean get() = user?.let { filters.allHidden(it.id) } == true
 }
 
 /** How the account is followed here: in XTA Native alone, never on X; its feed cap; who of the follows follows it. */
@@ -155,7 +159,8 @@ internal class ProfileViewModel(
             state.update { it.copy(tab = opening) }
             load()
         }
-        viewModelScope.launch { graph.profileFilters.filters().let { filters -> state.update { it.copy(filters = filters) } } }
+        // Followed, not read once: a post's menu on this very page hides the account too.
+        viewModelScope.launch { HiddenPosts.of(graph.profileFilters).collect { filters -> state.update { it.copy(filters = filters) } } }
     }
 
     /** The profile and its tab read again from X, as a pull asks. */
@@ -421,6 +426,9 @@ internal class ProfileViewModel(
     fun hideReposts(hidden: Boolean) = changeFilters { user -> graph.profileFilters.setRepostsHidden(user.id, user.screenName, hidden) }
 
     fun hideReplies(hidden: Boolean) = changeFilters { user -> graph.profileFilters.setRepliesHidden(user.id, user.screenName, hidden) }
+
+    /** Every post of the account out of the feeds, on this device only: X is told nothing, and the profile stays readable. */
+    fun hideAll(hidden: Boolean) = changeFilters { user -> graph.profileFilters.setAllHidden(user.id, user.screenName, hidden) }
 
     private fun changeFilters(change: suspend (XUser) -> Unit) {
         val user = state.value.user ?: return

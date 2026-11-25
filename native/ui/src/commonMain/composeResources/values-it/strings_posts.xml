@@ -7,6 +7,9 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Comprimi</string>
     <string name="posts_expand">Espandi</string>
+    <string name="posts_hide_all">Nascondi i post</string>
+    <string name="posts_hide_all_description">Non mostrare i post di questo utente nei tuoi feed, solo su questo dispositivo. Il suo profilo resta leggibile.</string>
+    <string name="posts_hide_from">Nascondi i post di @%1$s</string>
     <string name="posts_link_more">Altri post con questo link: %1$d</string>
     <string name="posts_community">Community</string>
     <string name="posts_community_notes">Note della community</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>
     <string name="posts_show_additional_replies">Mostra altre risposte</string>
+    <string name="posts_show_from">Mostra i post di @%1$s</string>
     <string name="posts_show_more">Clicca per mostrare di più</string>
     <string name="posts_show_original">Mostra il post originale</string>
     <string name="posts_sort_most_followers">Più follower</string>

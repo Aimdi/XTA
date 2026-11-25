@@ -14,7 +14,9 @@ import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.store.settings.AccountPrefs
+import com.aimdi.xtanative.store.saved.ProfileFilters
 import com.aimdi.xtanative.store.settings.PostsPrefs
+import com.aimdi.xtanative.ui.feed.HiddenPosts
 import com.aimdi.xtanative.ui.group.GroupFeedPaging
 import com.aimdi.xtanative.ui.group.ReadMarks
 import kotlinx.coroutines.CancellationException
@@ -60,7 +62,8 @@ data class ForYouUi(
 /**
  * For you (XTA's `x` source, its X timeline): the home timelines of the X
  * accounts left on in Home feed accounts, merged newest first, without
- * replies and without the posts of the groups kept off the home feeds, and in
+ * replies, without the posts of the groups kept off the home feeds and of
+ * the accounts whose posts the reader hid, and in
  * zen mode paused after its pages. It mixes in no other network: the plugins'
  * home-timeline posts join Following alone. With Settings › Posts › Remember
  * reading position it keeps where the reader left off (_for_you.dart): the
@@ -81,12 +84,22 @@ class ForYouViewModel(private val graph: AppGraph) : ViewModel() {
     private var refreshJob: Job? = null
     private var resets = 0
 
+    /** The profiles' filters as last heard of: what zen mode held back is shown under them. */
+    private var hidden = ProfileFilters()
+
+    private fun hide(filters: ProfileFilters) {
+        hidden = filters
+        state.update { it.copy(threads = ForYouRules.shown(it.threads, filters)) }
+    }
+
     /** The divider is placed once per visit, on the first page that has posts above the last read one. */
     private var placed = false
     private var atTop = true
 
     init {
         viewModelScope.launch { retryWhenBackOnline() }
+        // An account hidden while its posts are on screen leaves at once; one shown again comes back with the next read.
+        viewModelScope.launch { HiddenPosts.of(graph.profileFilters).collect(::hide) }
         viewModelScope.launch {
             state.update { it.copy(lastSeen = marks.position()) }
             combine(graph.sessions.state.filterNotNull(), graph.settings.settings) { session, settings ->
@@ -202,7 +215,8 @@ class ForYouViewModel(private val graph: AppGraph) : ViewModel() {
         if (!stops.canContinue) return
         val step = stops.resume()
         stops = step.stops
-        state.update { it.copy(threads = ForYouRules.appended(it.threads, step.shown), paused = false, hasMore = cursor != null) }
+        // What zen mode held back was read before the filters as they are now.
+        state.update { it.copy(threads = ForYouRules.appended(it.threads, ForYouRules.shown(step.shown, hidden)), paused = false, hasMore = cursor != null) }
         loadMore()
     }
 
@@ -221,6 +235,6 @@ class ForYouViewModel(private val graph: AppGraph) : ViewModel() {
 
     private suspend fun read(shape: Shape, cursor: String?): ForYouPage {
         val page = ForYou.page(shape.accounts, shape.off, cursor, reads, ForYouRules.PAGE_SIZE, shape.excluded)
-        return page.copy(threads = ForYouRules.withoutReplies(page.threads))
+        return page.copy(threads = ForYouRules.shown(ForYouRules.withoutReplies(page.threads), graph.profileFilters.filters()))
     }
 }

@@ -7,6 +7,9 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Thu gọn</string>
     <string name="posts_expand">Mở rộng</string>
+    <string name="posts_hide_all">Ẩn bài đăng</string>
+    <string name="posts_hide_all_description">Không hiển thị bài đăng của người dùng này trong bảng tin của bạn, chỉ trên thiết bị này. Hồ sơ của họ vẫn đọc được.</string>
+    <string name="posts_hide_from">Ẩn bài đăng của @%1$s</string>
     <string name="posts_link_more">Bài đăng khác chia sẻ liên kết này: %1$d</string>
     <string name="posts_community">Cộng đồng</string>
     <string name="posts_community_notes">Đã có người dùng thêm ghi chú</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>
     <string name="posts_show_additional_replies">Hiển thị thêm phản hồi</string>
+    <string name="posts_show_from">Hiện bài đăng của @%1$s</string>
     <string name="posts_show_more"> 
 Bấm để xem thêm</string>
     <string name="posts_show_original">Hiện bài đăng gốc</string>

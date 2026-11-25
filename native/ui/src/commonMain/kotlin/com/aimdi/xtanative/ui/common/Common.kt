@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.data.SessionStore
+import com.aimdi.xtanative.store.saved.ProfileFiltersStore
 import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_open_profile
@@ -44,6 +45,13 @@ val LocalOnline = staticCompositionLocalOf<Flow<Boolean>> { flowOf(true) }
  * for the shared parts that follow someone or a topic without the app graph.
  */
 val LocalSessions = staticCompositionLocalOf<SessionStore> { error("No session provided") }
+
+/**
+ * What the reader hides of some accounts in the feeds, for a post's menu,
+ * which hides its author's posts without the app graph. Null where no app
+ * provides it (a preview): the menu then has no such entry.
+ */
+val LocalProfileFilters = staticCompositionLocalOf<ProfileFiltersStore?> { null }
 
 /**
  * A round picture of someone, asked for as its server wants it ([pictureModel]: Pixiv's with its Referer).

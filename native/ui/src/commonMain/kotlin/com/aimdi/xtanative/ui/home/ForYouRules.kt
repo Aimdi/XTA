@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.ui.home
 
 import com.aimdi.xtanative.core.x.model.XThread
+import com.aimdi.xtanative.store.saved.ProfileFilters
+import com.aimdi.xtanative.ui.feed.HiddenPosts
 
 /** How Home's For you reads X's home timeline, as XTA's For you tab does. */
 object ForYouRules {
@@ -20,6 +22,14 @@ object ForYouRules {
             else -> thread.copy(posts = kept)
         }
     }
+
+    /**
+     * [threads] as For you shows them under the profiles' [filters]: without
+     * the posts of an account hidden altogether, whoever reposted them. The
+     * reposts' and replies' filters are for the feeds of accounts followed;
+     * For you already reads no replies.
+     */
+    fun shown(threads: List<XThread>, filters: ProfileFilters): List<XThread> = HiddenPosts.withoutAuthors(threads, filters)
 
     /** [more] under [shown], each thread once. */
     fun appended(shown: List<XThread>, more: List<XThread>): List<XThread> {

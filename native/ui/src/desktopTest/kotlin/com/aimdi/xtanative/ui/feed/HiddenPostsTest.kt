@@ -45,6 +45,19 @@ class HiddenPostsTest {
     }
 
     @Test
+    fun anAccountHiddenAltogetherIsOutOfEveryFeedWhoeverRepostsIt() {
+        val hidden = ProfileFilters(hiddenAll = mapOf("id-tommy" to "tommy"))
+        val repostOfTommy = XPost("6", XUser("id-maya", "maya", "maya"), null, "", reposted = XPost("r6", XUser("id-tommy", "Tommy", "Tommy"), null, ""))
+        val quoteOfTommy = XPost("7", XUser("id-maya", "maya", "maya"), null, "", quoted = XPost("q7", XUser("id-tommy", "tommy", "tommy"), null, ""))
+        val threads = listOf(thread(post("1", "Tommy")), thread(post("2", "maya")), thread(repostOfTommy), thread(quoteOfTommy), thread(post("5", "tommy", repost = true)))
+
+        assertEquals(setOf("tommy"), HiddenPosts.shaping(hidden).hiddenAuthors)
+        assertEquals(listOf("2", "7"), HiddenPosts.visible(threads, hidden).map { it.id }, "a group feed's shaping")
+        assertEquals(listOf("2", "7"), HiddenPosts.withoutAuthors(threads, hidden).map { it.id }, "the feeds X fills by itself")
+        assertEquals(threads, HiddenPosts.withoutAuthors(threads, filters), "which the reposts' and replies' filters do not touch")
+    }
+
+    @Test
     fun theFeedsFollowTheFiltersAsTheyChange(): Unit = runBlocking {
         val dir = Files.createTempDirectory("filters").toFile()
         try {
@@ -54,6 +67,8 @@ class HiddenPostsTest {
             assertEquals(ProfileFilters(), seen.receive(), "read even before anything else read them")
             store.setRepostsHidden("id-tommy", "Tommy", true)
             assertEquals(setOf("tommy"), seen.receive().hiddenRepostHandles)
+            store.setAllHidden("id-maya", "Maya", true)
+            assertEquals(setOf("maya"), seen.receive().hiddenAllHandles)
             feed.cancel()
         } finally {
             dir.deleteRecursively()

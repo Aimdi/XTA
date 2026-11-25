@@ -7,6 +7,9 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Restrânge</string>
     <string name="posts_expand">Extinde</string>
+    <string name="posts_hide_all">Ascunde postările</string>
+    <string name="posts_hide_all_description">Nu arăta postările acestui utilizator în fluxurile tale, doar pe acest dispozitiv. Profilul lui rămâne lizibil.</string>
+    <string name="posts_hide_from">Ascunde postările de la @%1$s</string>
     <string name="posts_link_more">Alte postări cu acest link: %1$d</string>
     <string name="posts_community">Comunitate</string>
     <string name="posts_community_notes">Note de comunitate</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>
     <string name="posts_show_additional_replies">Afișează mai multe răspunsuri</string>
+    <string name="posts_show_from">Arată postările de la @%1$s</string>
     <string name="posts_show_more">Faceți clic pentru a afișa mai mult</string>
     <string name="posts_show_original">Arată postarea originală</string>
     <string name="posts_sort_most_followers">Cei mai mulți urmăritori</string>

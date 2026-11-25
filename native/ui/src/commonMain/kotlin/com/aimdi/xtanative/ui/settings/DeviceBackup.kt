@@ -47,6 +47,7 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
             profileNotes = graph.profileNotes.content(),
             repostFilters = reposts,
             replyFilters = replies,
+            hiddenAccountFilters = graph.profileFilters.allHiddenContent(),
             pluginSections = graph.pluginBackups.exported(),
             networkAccounts = graph.pluginBackups.accounts(),
             kept = graph.kept.get(),
@@ -124,6 +125,7 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
     private suspend fun restoreProfiles(document: BackupDocument) {
         BackupRestore.profileNotes(graph.profileNotes.content(), document)?.let { graph.profileNotes.replace(it) }
         BackupRestore.profileFilters(graph.profileFilters.content(), document)?.let { (reposts, replies) -> graph.profileFilters.replace(reposts, replies) }
+        BackupRestore.hiddenAccounts(graph.profileFilters.allHiddenContent(), document)?.let { graph.profileFilters.replaceAllHidden(it) }
     }
 }
 

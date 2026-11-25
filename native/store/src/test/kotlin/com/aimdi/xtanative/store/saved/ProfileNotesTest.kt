@@ -56,4 +56,45 @@ class ProfileNotesTest {
         assertEquals(setOf("ann"), filters.filters().hiddenRepostHandles)
         assertTrue(filters.filters().hiddenReplies.isEmpty())
     }
+
+    @Test
+    fun anAccountsPostsAreHiddenAndShownAgainOnThisDevice(): Unit = runBlocking {
+        val filters = ProfileFiltersStore(dir)
+        assertFalse(filters.filters().allHidden("1"))
+        filters.setAllHidden("1", "Tommy", true)
+        filters.setRepliesHidden("2", "Maya", true)
+        val written = filters.filters()
+        filters.setAllHidden("1", "Tommy", true)
+        assertEquals(written, filters.filters(), "hiding twice changes nothing")
+
+        val read = ProfileFiltersStore(dir).filters()
+        assertTrue(read.allHidden("1"))
+        assertFalse(read.allHidden("2"))
+        assertEquals(setOf("tommy"), read.hiddenAllHandles, "matched by lower-case handle, like the other filters")
+        assertFalse(read.repostsHidden("1"), "the other filters are their own")
+        assertEquals(listOf(FeedFilterRow("1", "tommy")), filters.allHiddenContent())
+
+        filters.replace(listOf(FeedFilterRow("3", "Ann")), emptyList())
+        assertTrue(filters.filters().allHidden("1"), "a backup's reposts and replies leave the hidden accounts alone")
+        filters.replaceAllHidden(listOf(FeedFilterRow("4", "Bo"), FeedFilterRow("", "nobody")))
+        assertEquals(mapOf("4" to "bo"), filters.filters().hiddenAll)
+        assertEquals(setOf("ann"), filters.filters().hiddenRepostHandles)
+
+        filters.setAllHidden("4", "Bo", false)
+        filters.setAllHidden("9", "never", false)
+        assertTrue(ProfileFiltersStore(dir).filters().hiddenAll.isEmpty())
+    }
+
+    @Test
+    fun aFileFromBeforeAccountsCouldBeHiddenHidesNoOneAndKeepsItsFilters(): Unit = runBlocking {
+        val file = java.io.File(dir.root, "saved/profile-filters.json").apply { parentFile.mkdirs() }
+        file.writeText("""{"v":1,"reposts":{"1":"tommy"},"replies":{"2":"maya"}}""")
+        val filters = ProfileFiltersStore(dir)
+        assertEquals(ProfileFilters(hiddenReposts = mapOf("1" to "tommy"), hiddenReplies = mapOf("2" to "maya")), filters.filters())
+
+        filters.setAllHidden("3", "Ann", true)
+        val text = file.readText()
+        assertTrue(""""v":1""" in text && """"reposts":{"1":"tommy"}""" in text, "an older build still reads the file: $text")
+        assertTrue(""""all":{"3":"ann"}""" in text, text)
+    }
 }

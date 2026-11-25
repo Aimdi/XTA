@@ -58,6 +58,12 @@ class PagedRead<T, K>(private val end: PageEnd, private val key: (T) -> K) {
         current.value = Paged()
     }
 
+    /**
+     * What is shown, narrowed by [keep] without reading anything again: an
+     * account the reader just hid leaves the list at once.
+     */
+    fun narrow(keep: (List<T>) -> List<T>) = current.update { shown -> keep(shown.items).let { if (it.size == shown.items.size) shown else shown.copy(items = it) } }
+
     private suspend fun load(run: Int, cursor: String?, read: suspend (cursor: String?) -> Page<T>) {
         val page = try {
             read(cursor)

@@ -7,6 +7,9 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Skjul</string>
     <string name="posts_expand">Utvid</string>
+    <string name="posts_hide_all">Skjul innlegg</string>
+    <string name="posts_hide_all_description">Ikke vis denne brukerens innlegg i strømmene dine, bare på denne enheten. Profilen kan fortsatt leses.</string>
+    <string name="posts_hide_from">Skjul innlegg fra @%1$s</string>
     <string name="posts_link_more">Flere innlegg med denne lenken: %1$d</string>
     <string name="posts_community">Fellesskap</string>
     <string name="posts_community_notes">Fellesskapsnotater</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>
     <string name="posts_show_additional_replies">Vis flere svar</string>
+    <string name="posts_show_from">Vis innlegg fra @%1$s</string>
     <string name="posts_show_more">Klikk for å vise mer</string>
     <string name="posts_show_original">Vis det opprinnelige innlegget</string>
     <string name="posts_sort_most_followers">Flest følgere</string>

@@ -56,6 +56,8 @@ import com.aimdi.xtanative.ui.generated.resources.posts_followed_by_one
 import com.aimdi.xtanative.ui.generated.resources.posts_followed_by_three
 import com.aimdi.xtanative.ui.generated.resources.posts_followed_by_title
 import com.aimdi.xtanative.ui.generated.resources.posts_followed_by_two
+import com.aimdi.xtanative.ui.generated.resources.posts_hide_all
+import com.aimdi.xtanative.ui.generated.resources.posts_hide_all_description
 import com.aimdi.xtanative.ui.generated.resources.posts_hide_replies
 import com.aimdi.xtanative.ui.generated.resources.posts_hide_replies_description
 import com.aimdi.xtanative.ui.generated.resources.posts_hide_retweets
@@ -76,8 +78,9 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * What the feeds hide of this account (profile_feed_settings.dart): its
- * reposts, its replies to others, and for an account followed here, the
- * most of its posts one group feed load keeps.
+ * reposts, its replies to others, every post of its (XTA Native's own, a
+ * mute kept on this device), and for an account followed here, the most of
+ * its posts one group feed load keeps.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -87,6 +90,7 @@ internal fun FeedSettingsSheet(state: ProfileUi, follow: FollowUi, vm: ProfileVi
             Text(stringResource(Res.string.posts_filters), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
             SwitchRow(stringResource(Res.string.posts_hide_retweets), stringResource(Res.string.posts_hide_retweets_description), state.repostsHidden, vm::hideReposts)
             SwitchRow(stringResource(Res.string.posts_hide_replies), stringResource(Res.string.posts_hide_replies_description), state.repliesHidden, vm::hideReplies)
+            SwitchRow(stringResource(Res.string.posts_hide_all), stringResource(Res.string.posts_hide_all_description), state.allHidden, vm::hideAll)
             if (follow.followed) {
                 Text(stringResource(Res.string.posts_quiet_account), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 16.dp))
                 Text(

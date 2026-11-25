@@ -7,6 +7,9 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Daralt</string>
     <string name="posts_expand">Genişlet</string>
+    <string name="posts_hide_all">Gönderileri gizle</string>
+    <string name="posts_hide_all_description">Bu kullanıcının gönderileri akışlarınızda görünmesin; yalnızca bu cihazda geçerlidir. Profili okunmaya devam eder.</string>
+    <string name="posts_hide_from">@%1$s gönderilerini gizle</string>
     <string name="posts_link_more">Bu bağlantıyı paylaşan diğer gönderiler: %1$d</string>
     <string name="posts_community">Topluluk</string>
     <string name="posts_community_notes">Topluluk notları</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>
     <string name="posts_show_additional_replies">Daha fazla yanıt göster</string>
+    <string name="posts_show_from">@%1$s gönderilerini göster</string>
     <string name="posts_show_more">Daha fazlasını görmek için tıkla</string>
     <string name="posts_show_original">Özgün gönderiyi göster</string>
     <string name="posts_sort_most_followers">En çok takipçi</string>

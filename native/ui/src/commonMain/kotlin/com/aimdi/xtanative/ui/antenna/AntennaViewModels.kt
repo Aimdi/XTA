@@ -7,6 +7,7 @@ import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.store.antenna.Antenna
 import com.aimdi.xtanative.store.antenna.AntennaQuery
+import com.aimdi.xtanative.ui.feed.HiddenPosts
 import com.aimdi.xtanative.ui.search.Page
 import com.aimdi.xtanative.ui.search.PageEnd
 import com.aimdi.xtanative.ui.search.PagedRead
@@ -116,6 +117,7 @@ class AntennaFeedViewModel(private val graph: AppGraph, private val id: String) 
             known.value = true
             all.firstOrNull { it.id == id }?.let(::read)
         }
+        viewModelScope.launch { HiddenPosts.of(graph.profileFilters).collect { hidden -> posts.narrow { HiddenPosts.withoutAuthors(it, hidden) } } }
     }
 
     private fun read(antenna: Antenna) {
@@ -125,7 +127,7 @@ class AntennaFeedViewModel(private val graph: AppGraph, private val id: String) 
             if (query.isEmpty()) return@start Page(emptyList(), null)
             val page = graph.client.search(query, cursor, product = AntennaQuery.PRODUCT)
             graph.posts.remember(page.threads)
-            Page(AntennaFeed.kept(antenna, page.threads, followed), page.bottomCursor)
+            Page(HiddenPosts.withoutAuthors(AntennaFeed.kept(antenna, page.threads, followed), graph.profileFilters.filters()), page.bottomCursor)
         }
     }
 

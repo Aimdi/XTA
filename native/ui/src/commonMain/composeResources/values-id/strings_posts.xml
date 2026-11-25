@@ -7,6 +7,9 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Ciutkan</string>
     <string name="posts_expand">Perluas</string>
+    <string name="posts_hide_all">Sembunyikan postingan</string>
+    <string name="posts_hide_all_description">Jangan tampilkan postingan pengguna ini di feed Anda, hanya di perangkat ini. Profilnya tetap bisa dibaca.</string>
+    <string name="posts_hide_from">Sembunyikan postingan dari @%1$s</string>
     <string name="posts_link_more">Postingan lain dengan tautan ini: %1$d</string>
     <string name="posts_community">Komunitas</string>
     <string name="posts_community_notes">Catatan komunitas</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>
     <string name="posts_show_additional_replies">Tampilkan balasan lainnya</string>
+    <string name="posts_show_from">Tampilkan postingan dari @%1$s</string>
     <string name="posts_show_more">Klik untuk menampilkan lebih banyak</string>
     <string name="posts_show_original">Tampilkan postingan asli</string>
     <string name="posts_sort_most_followers">Pengikut terbanyak</string>

@@ -18,6 +18,7 @@ import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.store.crash.CrashIssue
 import com.aimdi.xtanative.ui.common.FullPageError
 import com.aimdi.xtanative.ui.common.LocalOnline
+import com.aimdi.xtanative.ui.common.LocalProfileFilters
 import com.aimdi.xtanative.ui.common.LocalSessions
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.LocalXClient
@@ -59,6 +60,7 @@ fun XtaNativeContent(graph: AppGraph, plugins: AppPlugins, window: SecondaryWind
         // The narrow parts, for what reads one or two of them rather than the whole graph.
         LocalSettingsStore provides graph.settings,
         LocalKeeper provides graph.keeper,
+        LocalProfileFilters provides graph.profileFilters,
         LocalOnline provides graph.online,
         LocalSessions provides graph.sessions,
         LocalXClient provides graph.client,

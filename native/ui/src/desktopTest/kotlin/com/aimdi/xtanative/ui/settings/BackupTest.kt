@@ -427,6 +427,26 @@ class DeviceBackupTest {
         assertEquals("stays", other.profileNotes.of("9")?.note, "a note replaces the one on its profile, as XTA's import does")
         assertTrue(other.profileFilters.filters().repostsHidden("42"))
         assertTrue(other.profileFilters.filters().repliesHidden("7"))
+        assertFalse(BackupKeys.HIDDEN_ACCOUNT_FILTERS in exported.toJson().keys, "no account is hidden: the file is XTA's, key for key")
+    }
+
+    @Test
+    fun theAccountsHiddenAltogetherGoOutAndComeBackAndAnOlderBackupLeavesThemAlone(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        graph.profileFilters.setAllHidden("42", "Tommy", true)
+        val exported = BackupDocument.parse(DeviceBackup(graph).export(ExportChoice(filters = true)))!!
+        assertEquals(listOf(FeedFilterRow("42", "tommy")), exported.hiddenAccountFilters)
+        assertNull(BackupDocument.parse(DeviceBackup(graph).export(ExportChoice(filters = false)))!!.hiddenAccountFilters)
+
+        val other = AppGraph(File(dir, "other"), flowOf(true), "test")
+        other.profileFilters.setAllHidden("9", "Maya", true)
+        DeviceBackup(other).restore(exported, includeReadPositions = false)
+        assertEquals(mapOf("9" to "maya", "42" to "tommy"), other.profileFilters.filters().hiddenAll, "added to the accounts hidden here, as the other filters are")
+
+        DeviceBackup(other).restore(backup(), includeReadPositions = false)
+        assertEquals(setOf("9", "42"), other.profileFilters.filters().hiddenAll.keys, "a backup from before the key hides and shows no one")
+        assertTrue(other.profileFilters.filters().repostsHidden("1"), "while its own filters come in")
+        assertNull(BackupRestore.hiddenAccounts(listOf(FeedFilterRow("9", "maya")), backup()))
     }
 
     @Test

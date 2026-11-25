@@ -7,6 +7,9 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Згарнуць</string>
     <string name="posts_expand">Разгарнуць</string>
+    <string name="posts_hide_all">Схаваць допісы</string>
+    <string name="posts_hide_all_description">Не паказваць допісы гэтага карыстальніка ў вашых стужках, толькі на гэтай прыладзе. Яго профіль па-ранейшаму можна чытаць.</string>
+    <string name="posts_hide_from">Схаваць допісы @%1$s</string>
     <string name="posts_link_more">Іншыя допісы з гэтай спасылкай: %1$d</string>
     <string name="posts_community">Супольнасць</string>
     <string name="posts_community_notes">Нататкі супольнасці</string>
@@ -71,6 +74,7 @@
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>
     <string name="posts_show_additional_replies">Паказаць дадатковыя адказы</string>
+    <string name="posts_show_from">Паказваць допісы @%1$s</string>
     <string name="posts_show_more">Націсніце, каб паказаць больш</string>
     <string name="posts_show_original">Паказаць арыгінал допісу</string>
     <string name="posts_sort_most_followers">Больш за ўсё падпісчыкаў</string>
