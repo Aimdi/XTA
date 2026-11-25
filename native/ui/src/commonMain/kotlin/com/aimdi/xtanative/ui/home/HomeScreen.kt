@@ -234,8 +234,8 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean, wide: Boolean, frame:
     shell.wide = wide
     LaunchedEffect(wide, shell.drawer.targetValue) { if (wide && shell.drawer.targetValue == DrawerValue.Open) shell.drawer.snapTo(DrawerValue.Closed) }
     val feedCalls = FeedPageCalls(
-        // In a wide window the menu stands open beside Home.
-        openMenu = { if (!wide) scope.launch { shell.drawer.open() } },
+        // In a wide window the menu stands open beside Home; beside the desktop's rail, the rail opens it over the window.
+        openMenu = { openMenu(shell, frame, scope) },
         openSheet = { shell.sheet = it },
         openLayer = { shell.layer = it },
         onTab = { shell.turnTo(ui, it) },
@@ -330,6 +330,15 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
         },
         content = { Box(Modifier.fillMaxSize().then(if (shell.wide) Modifier else Modifier.drawerEdge(shell.drawer))) { content() } },
     )
+}
+
+/**
+ * The account menu opened from Home (the timeline picker, its sheet): its
+ * drawer; in a wide window none, as the menu stands open beside Home, but
+ * beside the desktop's rail the whole menu over the window ([WideFrame.openMenu]).
+ */
+private fun openMenu(shell: HomeShellState, frame: WideFrame?, scope: CoroutineScope) {
+    if (!shell.wide) scope.launch { shell.drawer.open() } else frame?.openMenu?.invoke()
 }
 
 /** The bar's page shown, above the bar, which slips away as the page is scrolled down. */
@@ -564,6 +573,7 @@ private fun LoadedPostsSearch(tab: HomeTab?, actions: PostActions, onClose: () -
 @Composable
 private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: FollowingSettingsViewModel, unread: Set<String>) {
     val ui = parts.ui
+    val frame = LocalWideFrame.current
     val scope = rememberCoroutineScope()
     val close = { shell.sheet = null }
     LaunchedEffect(shell.sheet) { if (shell.sheet == HomeSheet.PICKER) parts.vm.reloadUnread() }
@@ -607,8 +617,7 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
                 onAdd = { shell.sheet = HomeSheet.STRIP },
                 onMenu = {
                     close()
-                    // In a wide window the menu stands open beside Home.
-                    if (!shell.wide) scope.launch { shell.drawer.open() }
+                    openMenu(shell, frame, scope)
                 },
                 onManage = {
                     close()

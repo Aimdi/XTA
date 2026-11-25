@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -15,11 +16,12 @@ import androidx.compose.ui.unit.dp
 // model and the app graph, so it lives apart, in WideFrame.kt, out of the plugins' reach (tool/plugin_api_reach.py).
 
 /**
- * The navigation column of a wide desktop window ([HomeWide]) standing
- * beside every screen, not Home's alone: it stays put while the screens
- * change beside it. Home, while it is shown in such a window, draws no column
- * of its own and tells this one its bar's page ([homePage]) and what a tap
- * on one of its pages does there ([homeTap]).
+ * The navigation column of a wide desktop window ([HomeWide]), or the rail
+ * of icons of a narrower one, standing beside every screen, not Home's
+ * alone: it stays put while the screens change beside it. Home, while it is
+ * shown in such a window, draws no column or bottom bar of its own and tells
+ * this one its bar's page ([homePage]) and what a tap on one of its pages
+ * does there ([homeTap]).
  */
 @Stable
 class WideFrame {
@@ -28,6 +30,12 @@ class WideFrame {
 
     /** Home's own tap on the page at an index of its bar (its page again goes back to the top); null while Home is not composed. */
     var homeTap by mutableStateOf<((Int) -> Unit)?>(null)
+
+    /** How far the screens stand from the window's start edge beside the navigation, in dp ([HomeWide.inset]). */
+    var inset by mutableIntStateOf(HomeWide.FRAME_INSET)
+
+    /** Opens the whole account menu over the window where the navigation is only a rail ([FrameKind.RAIL]); null beside the column, which shows it all. */
+    var openMenu by mutableStateOf<(() -> Unit)?>(null)
 }
 
 /** The wide window's navigation column around the screens; null where there is none (Android, a narrow window, a post's own window). */
@@ -41,10 +49,10 @@ val LocalWideFrame = staticCompositionLocalOf<WideFrame?> { null }
  */
 @Composable
 fun FullWindow(content: @Composable () -> Unit) {
-    if (LocalWideFrame.current == null) return content()
+    val frame = LocalWideFrame.current ?: return content()
     Box(
         Modifier.layout { measurable, constraints ->
-            val extra = HomeWide.FRAME_INSET.dp.roundToPx()
+            val extra = frame.inset.dp.roundToPx()
             val wider = constraints.copy(
                 minWidth = constraints.minWidth + extra,
                 maxWidth = if (constraints.hasBoundedWidth) constraints.maxWidth + extra else constraints.maxWidth,

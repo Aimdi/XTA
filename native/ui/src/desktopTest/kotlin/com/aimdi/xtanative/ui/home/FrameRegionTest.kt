@@ -5,7 +5,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-/** F6 between the page and the navigation beside it (the wide frame's column). */
+/** F6 between the page and the navigation beside it (the wide frame's column or rail), and where the frame shows which. */
 class FrameRegionTest {
     private fun f6(shift: Boolean = false, focusInside: Boolean = false, open: Boolean = false, ctrl: Boolean = false, alt: Boolean = false) =
         DesktopKeys.action(DeskKey.F6, alt, ctrl, focusInside, canGoBack = true, somethingOpen = open, shift = shift)
@@ -37,5 +37,23 @@ class FrameRegionTest {
         assertTrue(actions.otherRegion { toPage++ }, "only its own owner takes it away")
         actions.dropRegion(region)
         assertFalse(actions.otherRegion { toPage++ })
+    }
+
+    @Test
+    fun aDesktopWindowHasTheColumnTheRailOrNothingBesideItsScreens() {
+        assertEquals(FrameKind.NONE, HomeWide.frame(599f, rail = true))
+        assertEquals(FrameKind.RAIL, HomeWide.frame(600f, rail = true))
+        assertEquals(FrameKind.RAIL, HomeWide.frame(820f, rail = true))
+        assertEquals(FrameKind.RAIL, HomeWide.frame(999f, rail = true))
+        assertEquals(FrameKind.SIDEBAR, HomeWide.frame(1000f, rail = true))
+        assertEquals(FrameKind.NONE, HomeWide.frame(820f, rail = false), "a tablet keeps its bottom bar")
+        assertEquals(FrameKind.SIDEBAR, HomeWide.frame(1200f, rail = false))
+    }
+
+    @Test
+    fun theScreensStandBesideWhatIsThere() {
+        assertEquals(HomeWide.FRAME_INSET, HomeWide.inset(FrameKind.SIDEBAR))
+        assertEquals(HomeWide.RAIL_WIDTH + 1, HomeWide.inset(FrameKind.RAIL))
+        assertEquals(0, HomeWide.inset(FrameKind.NONE))
     }
 }

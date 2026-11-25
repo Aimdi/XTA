@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -8,12 +9,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -84,19 +90,32 @@ data class FrameRoute(val route: String?, val group: String? = null)
  * (as Home's own column has them), the row of where the reader is marked
  * ([stack], the navigation's screens, the shown last; Home's is [homeRoute]).
  * [home] is Home's place in the navigation, whose model it reads: the same
- * one Home reads, so both show one bar and one set of unread marks.
+ * one Home reads, so both show one bar and one set of unread marks. Where it
+ * opens over the window from the rail ([FramedRail]), [onClose] closes it;
+ * [focus], in the window's frame, is where F6 brings the keys.
  */
 @Composable
-fun FramedSidebar(home: ViewModelStoreOwner, frame: WideFrame, stack: List<FrameRoute>, homeRoute: String, deckFits: Boolean, routes: HomeRoutes, calls: FrameCalls) {
-    val graph = LocalGraph.current
+fun FramedSidebar(
+    home: ViewModelStoreOwner,
+    frame: WideFrame,
+    stack: List<FrameRoute>,
+    homeRoute: String,
+    deckFits: Boolean,
+    routes: HomeRoutes,
+    calls: FrameCalls,
+    modifier: Modifier = Modifier,
+    onClose: (() -> Unit)? = null,
+    focus: FrameFocus? = null,
+) {
+    val vm = frameModel(home)
     val networks = LocalHomeNetworks.current
-    val vm: HomeViewModel = viewModel(viewModelStoreOwner = home) { HomeViewModel(graph, networks.available, networks.missing) }
     val loaded by vm.ui.collectAsStateWithLifecycle()
     var avatar by rememberSaveable { mutableStateOf(false) }
-    Surface(Modifier.width(HomeWide.SIDEBAR_WIDTH.dp).fillMaxHeight(), color = MaterialTheme.colorScheme.background) {
+    Surface(modifier.width(HomeWide.SIDEBAR_WIDTH.dp).fillMaxHeight(), color = MaterialTheme.colorScheme.background) {
         val ui = loaded ?: return@Surface
         val unread = unreadKeys(ui, vm, networks)
         val mark = FrameMarks.ofStack(stack, homeRoute, frame.homePage, ui.bar.mapTo(HashSet()) { it.id })
+        val marked = focus?.let { Modifier.focusRequester(it.marked) } ?: Modifier
         AccountMenu(
             ui = ui,
             routes = routes,
@@ -104,7 +123,7 @@ fun FramedSidebar(home: ViewModelStoreOwner, frame: WideFrame, stack: List<Frame
             unread = unread,
             onGo = calls.screen,
             onGroup = calls.group,
-            onClose = null,
+            onClose = onClose,
             onAvatar = { avatar = true },
             pages = {
                 itemsIndexed(ui.bar, key = { _, barPage -> "page-" + barPage.id }) { index, barPage ->
@@ -114,15 +133,53 @@ fun FramedSidebar(home: ViewModelStoreOwner, frame: WideFrame, stack: List<Frame
                         selected = selected,
                         onClick = { calls.page(index, barPage) },
                         icon = { BarPageIcon(barPage, selected, ui, networks) },
+                        modifier = if (selected) marked else Modifier,
                     )
                 }
             },
             current = mark.screen,
             currentGroup = mark.group,
+            marked = marked,
         )
     }
     if (avatar) AvatarSheet(onDismiss = { avatar = false })
 }
+
+/** Home's model, read from Home's place in the navigation ([home]): the frame shows the bar and the unread marks Home shows. */
+@Composable
+internal fun frameModel(home: ViewModelStoreOwner): HomeViewModel {
+    val graph = LocalGraph.current
+    val networks = LocalHomeNetworks.current
+    return viewModel(viewModelStoreOwner = home) { HomeViewModel(graph, networks.available, networks.missing) }
+}
+
+/**
+ * Where F6 puts the keys in the frame's navigation ([FrameRegion]): on the
+ * row of where the reader is ([marked]), else on its first control
+ * ([whole]); [holds] while something in it has the focus.
+ */
+@Stable
+class FrameFocus {
+    val marked = FocusRequester()
+    val whole = FocusRequester()
+    var holds = false
+
+    /** The keys into the navigation; false where nothing in it took them. */
+    fun enter(): Boolean = runCatching { marked.requestFocus() }.isSuccess || runCatching { whole.requestFocus() }.isSuccess
+
+    val region = FrameRegion(enter = ::enter, holds = { holds })
+}
+
+/**
+ * The frame's navigation as one place for the keys ([focus]): F6 reaches it
+ * whole, and while something is [covered] by a media viewer over the whole
+ * window, Tab passes it by, as nothing in it can be seen.
+ */
+fun Modifier.frameNavigation(focus: FrameFocus, covered: Boolean): Modifier =
+    onFocusChanged { focus.holds = it.hasFocus }
+        .focusRequester(focus.whole)
+        .focusProperties { onEnter = { if (covered) cancelFocusChange() } }
+        .focusGroup()
 
 /**
  * Home in the wide window's frame: tells the frame the bar's page shown and

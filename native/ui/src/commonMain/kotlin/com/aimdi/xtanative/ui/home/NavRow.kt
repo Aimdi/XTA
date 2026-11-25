@@ -64,7 +64,7 @@ internal object NavRowLook {
 
 /** Material's ripple for a press only: [NavRowLook] draws the hover and the focus. */
 @OptIn(ExperimentalMaterial3Api::class)
-private val PressOnly = RippleConfiguration(rippleAlpha = RippleAlpha(pressedAlpha = 0.1f, focusedAlpha = 0f, draggedAlpha = 0.16f, hoveredAlpha = 0f))
+internal val PressOnly = RippleConfiguration(rippleAlpha = RippleAlpha(pressedAlpha = 0.1f, focusedAlpha = 0f, draggedAlpha = 0.16f, hoveredAlpha = 0f))
 
 /**
  * A row of the account menu lit by [NavRowLook], inset from the menu's edges

@@ -17,6 +17,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,7 +63,10 @@ import com.aimdi.xtanative.ui.group.GroupFeedScreen
 import com.aimdi.xtanative.ui.home.DeckScreen
 import com.aimdi.xtanative.ui.home.DesktopNavigation
 import com.aimdi.xtanative.ui.home.FrameCalls
+import com.aimdi.xtanative.ui.home.FrameFocus
+import com.aimdi.xtanative.ui.home.FrameKind
 import com.aimdi.xtanative.ui.home.FrameRoute
+import com.aimdi.xtanative.ui.home.FramedRail
 import com.aimdi.xtanative.ui.home.FramedSidebar
 import com.aimdi.xtanative.ui.home.FullWindow
 import com.aimdi.xtanative.ui.home.HomeBarScreens
@@ -71,7 +75,10 @@ import com.aimdi.xtanative.ui.home.HomeRoutes
 import com.aimdi.xtanative.ui.home.HomeScreen
 import com.aimdi.xtanative.ui.home.HomeWide
 import com.aimdi.xtanative.ui.home.LocalWideFrame
+import com.aimdi.xtanative.ui.home.RailMenu
+import com.aimdi.xtanative.ui.home.ReachedByF6
 import com.aimdi.xtanative.ui.home.WideFrame
+import com.aimdi.xtanative.ui.home.frameNavigation
 import com.aimdi.xtanative.ui.home.rememberLeaveField
 import com.aimdi.xtanative.ui.importer.ImportScreen
 import com.aimdi.xtanative.ui.intro.IntroFlow
@@ -845,35 +852,58 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
 private val FULL_WINDOW = setOf(Routes.MEDIA, Routes.GALLERY, Routes.IMAGE, PluginRoutes.MEDIA)
 
 /**
- * The screens ([content]) beside the navigation column of a wide desktop
- * window ([WideFrame]), once Home is in the navigation: the column stays
- * put while the screens change, and the screens slide within their own
- * place. A media viewer grows over the column; while one shows, or comes
- * or goes, the screens' place lets it. Off the desktop, in a post's own
- * window and in a narrow window, the screens alone, as before.
+ * The screens ([content]) beside the navigation of a desktop window
+ * ([WideFrame]), once Home is in the navigation: the column in a wide
+ * window, a rail of icons in a narrower one ([HomeWide.frame]), whose menu
+ * opens the whole column over the window. It stays put while the screens
+ * change, and the screens slide within their own place. A media viewer
+ * grows over it; while one shows, or comes or goes, the screens' place lets
+ * it, and Tab passes the navigation by. F6 moves the keys between it and the
+ * page. Off the desktop, in a post's own window and in a window narrower
+ * still, the screens alone, as before.
  */
 @Composable
 private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Composable () -> Unit) {
     if (!isDesktop || LocalSecondaryWindow.current != null) return content()
     val frame = remember { WideFrame() }
+    val focus = remember { FrameFocus() }
+    var menu by remember { mutableStateOf(false) }
     val stack by nav.currentBackStack.collectAsStateWithLifecycle()
     val visible by nav.visibleEntries.collectAsStateWithLifecycle()
     val home = stack.lastOrNull { it.destination.route == Routes.HOME }
     // A row clicked keeps no focus: the keys go back to the screen beside the column, its reading keys at work at once.
     val leaveRow = rememberLeaveField()
     BoxWithConstraints(Modifier.fillMaxSize()) {
-        val framedHome = home?.takeIf { HomeWide.sidebar(maxWidth.value) }
-        val wide = framedHome != null
+        val kind = if (home == null) FrameKind.NONE else HomeWide.frame(maxWidth.value, rail = true)
         val viewer = visible.any { it.destination.route in FULL_WINDOW }
         val deckFits = DeckGroups.fits(maxWidth.value, minOf(maxWidth, maxHeight).value)
+        val screens = stack.map { entry -> FrameRoute(entry.destination.route, entry.text("id")?.takeIf { entry.destination.route == Routes.GROUP }) }
+        val calls = frameCalls(nav, frame, routes, leaveRow)
+        val railMenu = menu && kind == FrameKind.RAIL
+        SideEffect {
+            frame.inset = HomeWide.inset(kind)
+            frame.openMenu = if (kind == FrameKind.RAIL) ({ menu = true }) else null
+        }
+        // A menu open over a rail is closed once the window has the column, or nothing beside its screens.
+        LaunchedEffect(kind) { if (kind != FrameKind.RAIL) menu = false }
+        if (kind != FrameKind.NONE) ReachedByF6(focus.region)
         Row(Modifier.fillMaxSize()) {
-            if (framedHome != null) {
-                val screens = stack.map { entry -> FrameRoute(entry.destination.route, entry.text("id")?.takeIf { entry.destination.route == Routes.GROUP }) }
-                FramedSidebar(framedHome, frame, screens, Routes.HOME, deckFits, routes, frameCalls(nav, frame, routes, leaveRow))
+            if (home != null && kind == FrameKind.SIDEBAR) {
+                FramedSidebar(home, frame, screens, Routes.HOME, deckFits, routes, calls, Modifier.frameNavigation(focus, covered = viewer), focus = focus)
                 VerticalDivider()
             }
-            Box(Modifier.weight(1f).fillMaxHeight().then(if (wide && !viewer) Modifier.clipToBounds() else Modifier)) {
-                CompositionLocalProvider(LocalWideFrame provides frame.takeIf { wide }, content = content)
+            if (home != null && kind == FrameKind.RAIL) {
+                FramedRail(home, frame, screens, Routes.HOME, calls, onMenu = { menu = true }, Modifier.frameNavigation(focus, covered = viewer || railMenu), focus)
+                VerticalDivider()
+            }
+            Box(Modifier.weight(1f).fillMaxHeight().then(if (kind != FrameKind.NONE && !viewer) Modifier.clipToBounds() else Modifier)) {
+                CompositionLocalProvider(LocalWideFrame provides frame.takeIf { kind != FrameKind.NONE }, content = content)
+            }
+        }
+        if (home != null) {
+            val close = { menu = false }
+            RailMenu(railMenu, onClose = close) {
+                FramedSidebar(home, frame, screens, Routes.HOME, deckFits, routes, calls.after(close), onClose = close)
             }
         }
     }
@@ -910,6 +940,22 @@ private fun frameCalls(nav: NavHostController, frame: WideFrame, routes: HomeRou
             nav.popBackStack(Routes.HOME, inclusive = false)
             routes.openGroup(group.id)
         }
+    },
+)
+
+/** These calls, each after [first] (the rail's menu closing as a row of it is picked). */
+private fun FrameCalls.after(first: () -> Unit) = FrameCalls(
+    page = { index, page ->
+        first()
+        page(index, page)
+    },
+    screen = { route ->
+        first()
+        screen(route)
+    },
+    group = { group ->
+        first()
+        group(group)
     },
 )
 

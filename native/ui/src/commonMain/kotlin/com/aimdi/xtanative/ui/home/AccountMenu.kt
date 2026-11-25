@@ -68,7 +68,8 @@ import org.jetbrains.compose.resources.stringResource
  * ([HomeWide]), with the bar's pages ([pages]) under the account and
  * nothing to close ([onClose] null). The row of the screen shown beside it
  * ([current], its route), or of the group shown ([currentGroup], its id),
- * is marked as the bar's page is.
+ * is marked as the bar's page is; [marked] goes on the marked screen's row
+ * (the focus F6 gives it).
  */
 @Composable
 internal fun AccountMenu(
@@ -83,6 +84,7 @@ internal fun AccountMenu(
     pages: LazyListScope.() -> Unit = {},
     current: String? = null,
     currentGroup: String? = null,
+    marked: Modifier = Modifier,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     val groups = DrawerGroups.listed(ui.session.groups, ui.session.feedGroups, routes.exists(HomeRoutes.GROUP))
@@ -99,6 +101,7 @@ internal fun AccountMenu(
                 selected = destination.route == current,
                 onClick = { onGo(destination.route) },
                 icon = { Icon(iconOf(destination), contentDescription = null) },
+                modifier = if (destination.route == current) marked else Modifier,
             )
         }
         item(key = "groups") {
