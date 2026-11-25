@@ -69,6 +69,8 @@ private val PressOnly = RippleConfiguration(rippleAlpha = RippleAlpha(pressedAlp
 /**
  * A row of the account menu lit by [NavRowLook], inset from the menu's edges
  * on [shape]: a page, a screen or a group. [content] lays out what is in it.
+ * A screen reader hears a page or a screen as a tab ([role]), and a group,
+ * which opens rather than being shown here, on [NavRowTallShape], as a button.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,6 +80,7 @@ internal fun NavRowFrame(
     modifier: Modifier = Modifier,
     shape: Shape = CircleShape,
     minHeight: Dp = 56.dp,
+    role: Role = if (shape == NavRowTallShape) Role.Button else Role.Tab,
     content: @Composable RowScope.() -> Unit,
 ) {
     val interactions = remember { MutableInteractionSource() }
@@ -94,7 +97,7 @@ internal fun NavRowFrame(
                 .clip(shape)
                 .background(colors.onSurface.copy(alpha = NavRowLook.fillAlpha(selected, hovered)))
                 .then(if (ring) Modifier.border(2.dp, colors.primary, shape) else Modifier)
-                .selectable(selected, interactionSource = interactions, indication = ripple(), role = Role.Tab, onClick = onClick)
+                .selectable(selected, interactionSource = interactions, indication = ripple(), role = role, onClick = onClick)
                 .padding(start = 16.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
