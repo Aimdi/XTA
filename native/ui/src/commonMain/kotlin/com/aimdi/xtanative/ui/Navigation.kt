@@ -68,6 +68,7 @@ import com.aimdi.xtanative.ui.home.DesktopNavigation
 import com.aimdi.xtanative.ui.home.FrameCalls
 import com.aimdi.xtanative.ui.home.FrameFocus
 import com.aimdi.xtanative.ui.home.FrameKind
+import com.aimdi.xtanative.ui.home.FrameMarks
 import com.aimdi.xtanative.ui.home.FrameRoute
 import com.aimdi.xtanative.ui.home.FramedRail
 import com.aimdi.xtanative.ui.home.FramedSidebar
@@ -77,6 +78,7 @@ import com.aimdi.xtanative.ui.home.HomeRequests
 import com.aimdi.xtanative.ui.home.HomeRoutes
 import com.aimdi.xtanative.ui.home.HomeScreen
 import com.aimdi.xtanative.ui.home.HomeWide
+import com.aimdi.xtanative.ui.home.LocalFrameRoots
 import com.aimdi.xtanative.ui.home.LocalWideFrame
 import com.aimdi.xtanative.ui.home.PageStart
 import com.aimdi.xtanative.ui.home.RailMenu
@@ -904,7 +906,8 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Com
             }
             Box(Modifier.weight(1f).fillMaxHeight().then(if (kind != FrameKind.NONE && !viewer) Modifier.clipToBounds() else Modifier)) {
                 PageStart(focus)
-                CompositionLocalProvider(LocalWideFrame provides frame.takeIf { kind != FrameKind.NONE }, content = content)
+                val roots = if (kind == FrameKind.NONE) emptySet() else FrameMarks.roots(screens, Routes.HOME).mapTo(HashSet<Any>()) { stack[it] }
+                CompositionLocalProvider(LocalWideFrame provides frame.takeIf { kind != FrameKind.NONE }, LocalFrameRoots provides roots, content = content)
             }
         }
         if (home != null) {

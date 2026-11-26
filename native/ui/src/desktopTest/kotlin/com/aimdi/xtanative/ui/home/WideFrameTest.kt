@@ -70,6 +70,19 @@ class WideFrameTest {
     }
 
     @Test
+    fun theColumnsOwnScreensRightOverHomeAreItsRootsAndNothingElse() {
+        val search = FrameRoute("search?q={q}&tab={tab}&focus={focus}")
+        assertEquals(setOf(2), FrameMarks.roots(listOf(FrameRoute("root"), FrameRoute(home), FrameRoute("downloads")), home))
+        assertEquals(setOf(1), FrameMarks.roots(listOf(FrameRoute(home), search, FrameRoute("profile/{screenName}?id={id}&tab={tab}")), home), "what Search opens is pushed")
+        assertEquals(emptySet(), FrameMarks.roots(listOf(FrameRoute(home), FrameRoute("post/{id}?media={media}"), search), home), "Search over a post goes back to it")
+        assertEquals(setOf(1), FrameMarks.roots(listOf(FrameRoute(home), FrameRoute("settings"), FrameRoute("settings/{id}?focus={focus}")), home), "a settings page over Settings is pushed")
+        assertEquals(emptySet(), FrameMarks.roots(listOf(FrameRoute(home), FrameRoute("profile/{screenName}?id={id}&tab={tab}")), home), "a profile is no menu entry")
+        assertEquals(emptySet(), FrameMarks.roots(listOf(FrameRoute("settings")), home), "nothing under it")
+        assertEquals(setOf(1), FrameMarks.roots(listOf(FrameRoute(home), FrameRoute("plugins")), home))
+        assertEquals(setOf(1), FrameMarks.roots(listOf(FrameRoute(home), FrameRoute("deck")), home))
+    }
+
+    @Test
     fun aScreenOverTheWholeWindowGrowsOverTheNavigationOnlyWhereThereIsOne() {
         assertEquals(0, fullWindowGrowth(null), "no frame: in the screens' own place")
         val frame = WideFrame()

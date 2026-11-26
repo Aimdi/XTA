@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
@@ -48,6 +47,7 @@ import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.TopBarBack
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -100,7 +100,7 @@ fun DownloadsScreen(onBack: () -> Unit) {
         topBar = {
             ColumnTopAppBar(
                 title = { Text(stringResource(Res.string.downloads_title)) },
-                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
+                navigationIcon = { TopBarBack(onBack) },
                 actions = {
                     IconTip(stringResource(Res.string.downloads_clear_finished)) { IconButton(onClick = { scope.launch { queue.clearFinished() } }, enabled = hasClearableHistory(state.entries)) {
                         Icon(SavedIcons.PlaylistRemove, stringResource(Res.string.downloads_clear_finished))

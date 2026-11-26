@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.home
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -11,6 +12,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 
 // The parts of the wide frame the media viewers read, plugins' among them. The column itself reads Home's
 // model and the app graph, so it lives apart, in WideFrame.kt, out of the plugins' reach (tool/plugin_api_reach.py).
@@ -40,6 +42,27 @@ class WideFrame {
 
 /** The wide window's navigation column around the screens; null where there is none (Android, a narrow window, a post's own window). */
 val LocalWideFrame = staticCompositionLocalOf<WideFrame?> { null }
+
+/**
+ * The screens the frame's navigation leads to straight (Search, Settings,
+ * Downloads, the deck…) while one stands right over Home: their places in
+ * the navigation, as the owners their screens are composed under
+ * ([LocalViewModelStoreOwner]). Empty where there is no frame.
+ */
+val LocalFrameRoots = compositionLocalOf<Set<Any>> { emptySet() }
+
+/**
+ * Whether the screen composed here is one the frame's column or rail leads
+ * to, shown right over Home beside it ([LocalFrameRoots]): the navigation
+ * beside it already leads everywhere, so its bar draws no Back of its own.
+ * Esc, Alt+Left and the mouse's back button still go back. False on a phone,
+ * in a narrow window, and for a screen opened over another.
+ */
+@Composable
+fun isFrameRoot(): Boolean {
+    val owner = LocalViewModelStoreOwner.current ?: return false
+    return LocalWideFrame.current != null && owner in LocalFrameRoots.current
+}
 
 /**
  * [content] over the whole window, the frame's column included: the media
