@@ -71,6 +71,7 @@ import com.aimdi.xtanative.networks.ehviewer.EhTagGroup
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.onContextClick
+import com.aimdi.xtanative.ui.plugins.pluginEdgeColor
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberImageRequest
@@ -142,7 +143,7 @@ private fun TagChip(app: EhApp, tag: EhTag, group: EhTagGroup, weak: Boolean) {
     val color = namespaceColor(group.namespace)
     val dark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
     val text = color ?: MaterialTheme.colorScheme.onSurface
-    val border = color?.copy(alpha = if (dark) 0.5f else 0.4f) ?: MaterialTheme.colorScheme.outlineVariant
+    val border = color?.copy(alpha = if (dark) 0.5f else 0.4f) ?: pluginEdgeColor()
     val fill = if (weak) Color.Transparent else color?.copy(alpha = if (dark) 0.16f else 0.09f) ?: MaterialTheme.colorScheme.surfaceContainerHighest
     val copied = pluginString(Strings.gallery_tag_copied, tag.raw)
     val spoken = if (weak) pluginString(Strings.gallery_weak_tag, tag.name) else tag.name

@@ -37,6 +37,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsTextAttachment
 import com.aimdi.xtanative.services.ai.TranslationStatus
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.pluginEdgeColor
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -128,7 +129,7 @@ internal fun TextAttachmentBlock(app: ThreadsApp, post: ThreadsPost, attachment:
     val long = ThreadsContentRules.attachmentFolds(attachment.text)
     val shape = RoundedCornerShape(12.dp)
     Column(
-        modifier.fillMaxWidth().clip(shape).border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, shape).padding(start = 12.dp, end = 12.dp, top = 10.dp),
+        modifier.fillMaxWidth().clip(shape).border(Dp.Hairline, pluginEdgeColor(), shape).padding(start = 12.dp, end = 12.dp, top = 10.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(PostIcons.TextSnippet, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(14.dp))

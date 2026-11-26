@@ -58,6 +58,7 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.plugins.onContextClick
+import com.aimdi.xtanative.ui.plugins.pluginEdgeColor
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /** What the reader chose, once the app's settings are read. */
@@ -153,7 +154,7 @@ internal fun TagChip(
     val dark = darkTheme()
     val text = color ?: MaterialTheme.colorScheme.onSurface
     val fill = color?.copy(alpha = if (dark) 0.16f else 0.09f) ?: MaterialTheme.colorScheme.surfaceContainerHighest
-    val border = color?.copy(alpha = if (dark) 0.5f else 0.4f) ?: MaterialTheme.colorScheme.outlineVariant
+    val border = color?.copy(alpha = if (dark) 0.5f else 0.4f) ?: pluginEdgeColor()
     val shape = RoundedCornerShape(10.dp)
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
     Box(Modifier.defaultMinSize(minHeight = 48.dp), contentAlignment = Alignment.Center) {

@@ -68,6 +68,7 @@ import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.NetworkBookmark
 import com.aimdi.xtanative.ui.plugins.onContextClick
+import com.aimdi.xtanative.ui.plugins.pluginEdgeColor
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
@@ -386,7 +387,7 @@ internal fun ThreadsQuote(app: ThreadsApp, quote: ThreadsPost, modifier: Modifie
         modifier
             .fillMaxWidth()
             .clip(shape)
-            .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, shape)
+            .border(Dp.Hairline, pluginEdgeColor(), shape)
             .clickable { app.openPost(quote) }
             .padding(12.dp),
     ) {
@@ -413,7 +414,7 @@ private fun QuoteUnavailable(modifier: Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .clip(shape)
-            .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, shape)
+            .border(Dp.Hairline, pluginEdgeColor(), shape)
             .padding(horizontal = 12.dp, vertical = 14.dp),
     )
 }

@@ -59,6 +59,7 @@ import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.pluginEdgeColor
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -146,7 +147,7 @@ private fun FilterPill(icon: ImageVector, label: String, active: Boolean, onClic
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
         color = Color.Transparent,
-        border = BorderStroke(1.dp, if (active) scheme.primary else scheme.outlineVariant),
+        border = BorderStroke(1.dp, if (active) scheme.primary else pluginEdgeColor()),
         modifier = Modifier.heightIn(min = 40.dp).widthIn(max = 240.dp),
     ) {
         Row(Modifier.padding(horizontal = 12.dp, vertical = 9.dp), verticalAlignment = Alignment.CenterVertically) {

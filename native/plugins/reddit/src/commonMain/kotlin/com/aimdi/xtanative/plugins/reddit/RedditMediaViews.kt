@@ -52,6 +52,7 @@ import com.aimdi.xtanative.ui.common.Graphemes
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.MediaTiles
 import com.aimdi.xtanative.ui.plugins.PluginPlatform
+import com.aimdi.xtanative.ui.plugins.pluginEdgeColor
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -336,4 +337,4 @@ private fun BrokenImage(url: String) {
 /** Rounded as a post's media, the theme's hairline drawn over it, and tinted under it so a picture still on its way is a frame, not a hole. */
 @Composable
 private fun Modifier.framed(shape: RoundedCornerShape = MediaShape): Modifier =
-    clip(shape).background(MaterialTheme.colorScheme.surfaceContainerHighest).border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, shape)
+    clip(shape).background(MaterialTheme.colorScheme.surfaceContainerHighest).border(Dp.Hairline, pluginEdgeColor(), shape)

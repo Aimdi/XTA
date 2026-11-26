@@ -57,6 +57,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivUser
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.onContextClick
+import com.aimdi.xtanative.ui.plugins.pluginEdgeColor
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /** Before a search: what to type, the recent searches, creators to look at (works only) and the tags trending now. */
@@ -117,7 +118,7 @@ private fun HistoryChip(label: String, icon: ImageVector? = null, onClick: () ->
     Surface(
         shape = RoundedCornerShape(8.dp),
         color = Color.Transparent,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        border = BorderStroke(1.dp, pluginEdgeColor()),
         modifier = Modifier.clip(RoundedCornerShape(8.dp)).then(onLongClick?.let { Modifier.onContextClick(it) } ?: Modifier).combinedClickable(onClick = onClick, onLongClick = onLongClick),
     ) {
         Row(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
