@@ -63,6 +63,7 @@ import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
+import com.aimdi.xtanative.ui.plugins.PluginReadingWidth
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -180,7 +181,7 @@ internal fun SubstackPublicationScreen(app: SubstackApp, opened: SubstackPublica
     val page = state.page
     val posts = SubstackFilters.publicationPosts(page.posts, state.filter, state.order, marks.readIds)
     val error = page.error
-    PluginScaffold(title = state.publication.displayName, onBack = app.host::back) { padding ->
+    PluginScaffold(title = state.publication.displayName, onBack = app.host::back, column = PluginReadingWidth) { padding ->
         PullToRefreshBox(isRefreshing = page.loading && page.posts.isNotEmpty(), onRefresh = model::refresh, modifier = Modifier.fillMaxSize().padding(padding)) {
             val scroll = rememberLazyListState()
             PluginReadingColumn(PaddingValues(), scroll) { column -> LazyColumn(Modifier.fillMaxSize(), state = scroll, contentPadding = column) {

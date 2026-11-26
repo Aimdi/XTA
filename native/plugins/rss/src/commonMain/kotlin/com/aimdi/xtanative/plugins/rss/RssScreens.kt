@@ -48,6 +48,7 @@ import com.aimdi.xtanative.ui.plugins.AddToGroupIcon
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
+import com.aimdi.xtanative.ui.plugins.PluginReadingWidth
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.networkProblemText
@@ -94,7 +95,7 @@ internal fun RssFeedScreen(app: RssApp, feed: RssFeed) {
     val items = rememberKept("rss-feed-${feed.id}") { scope -> OneRead<Page<RssItem>>(scope) { app.client.items(feed) }.also { it.load() } }
     val loaded by items.state.collectAsState()
     val read by app.read.collectAsState()
-    PluginScaffold(title = feed.name, onBack = app.host::back, actions = { AddToGroupButton(app.host, feed.id, pluginString(Strings.add_to_group)) { app.followIfNeeded(feed) } }) { padding ->
+    PluginScaffold(title = feed.name, onBack = app.host::back, column = PluginReadingWidth, actions = { AddToGroupButton(app.host, feed.id, pluginString(Strings.add_to_group)) { app.followIfNeeded(feed) } }) { padding ->
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             val shown = loaded.value?.items
             val error = loaded.error

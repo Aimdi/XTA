@@ -53,6 +53,7 @@ import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
+import com.aimdi.xtanative.ui.plugins.PluginReadingWidth
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RetryRow
@@ -82,6 +83,7 @@ internal fun MastodonThreadScreen(app: MastodonApp, target: MastodonTarget) {
     PluginScaffold(
         title = pluginString(Strings.thread),
         onBack = app.host::back,
+        column = PluginReadingWidth,
         actions = {
             IconTip(pluginString(Strings.thread_selected)) { IconButton(onClick = {
                 reader.focusSelected()

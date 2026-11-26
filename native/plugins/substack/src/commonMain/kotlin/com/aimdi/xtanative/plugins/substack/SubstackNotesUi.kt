@@ -51,6 +51,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
+import com.aimdi.xtanative.ui.plugins.PluginReadingWidth
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.TextRun
@@ -208,6 +209,7 @@ internal fun SubstackNoteScreen(app: SubstackApp, id: String) {
     PluginScaffold(
         title = pluginString(Strings.tab_notes),
         onBack = app.host::back,
+        column = PluginReadingWidth,
         actions = {
             if (url != null && note != null) {
                 IconTip(pluginString(Strings.share_link)) { IconButton(onClick = { share(url) }) { Icon(Icons.Default.Share, pluginString(Strings.share_link)) } }

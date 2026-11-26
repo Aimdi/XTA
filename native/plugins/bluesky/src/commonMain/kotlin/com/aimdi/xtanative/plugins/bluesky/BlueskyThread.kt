@@ -63,6 +63,7 @@ import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
+import com.aimdi.xtanative.ui.plugins.PluginReadingWidth
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -102,6 +103,7 @@ internal fun BlueskyThreadScreen(app: BlueskyApp, target: PostTarget) {
     PluginScaffold(
         title = pluginString(Strings.thread),
         onBack = app.host::back,
+        column = PluginReadingWidth,
         actions = {
             IconTip(pluginString(Strings.back_to_selected)) { IconButton(onClick = {
                 thread.closeContext()
