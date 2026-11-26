@@ -9,6 +9,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -88,5 +89,22 @@ class SettingsStoreTest {
         assertTrue(store.get(GeneralPrefs.introSeen), "it was no first launch")
         store.set(PostsPrefs.calmMode, true)
         assertTrue(SettingsStore(StoreDir(root)).get(PostsPrefs.calmMode))
+    }
+
+    @Test
+    fun aChangeIsMadeOffTheCallersThreadAndTheLastOneAskedIsKept() {
+        val window = java.util.concurrent.Executors.newSingleThreadExecutor { Thread(it, "window") }
+        try {
+            runBlocking(window.asCoroutineDispatcher()) {
+                val store = SettingsStore(StoreDir(root))
+                var madeOn = ""
+                store.update { madeOn = Thread.currentThread().name; it.with(MediaPrefs.gridColumns, 2) }
+                assertTrue(madeOn != "window", "made on $madeOn")
+                (1..5).map { columns -> launch { store.set(MediaPrefs.gridColumns, columns) } }.forEach { it.join() }
+                assertEquals(5, SettingsStore(StoreDir(root)).get(MediaPrefs.gridColumns))
+            }
+        } finally {
+            window.shutdown()
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.aimdi.xtanative.store.settings
 
 import com.aimdi.xtanative.store.StoreDir
 import java.io.IOException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -56,10 +58,16 @@ class SettingsStore(private val dir: StoreDir) {
         update { it.without(pref) }
     }
 
-    /** The settings changed by [transform], written and announced only when something did change. */
+    /**
+     * The settings changed by [transform], written and announced only when
+     * something did change. The change and its encoding run off the caller's
+     * (often the window's) thread; changes still land in the order they were asked.
+     */
     suspend fun update(transform: (Settings) -> Settings): Settings = mutex.withLock {
-        val before = loaded()
-        transform(before).also { after -> if (after != before) save(after) }
+        withContext(Dispatchers.Default) {
+            val before = loaded()
+            transform(before).also { after -> if (after != before) save(after) }
+        }
     }
 
     /** A backup's settings section applied as XTA applies it, then XTA's launch steps, as its next launch would run them. */
@@ -73,7 +81,7 @@ class SettingsStore(private val dir: StoreDir) {
     private suspend fun loaded(): Settings {
         current.value?.let { return it }
         val text = file.read()
-        val stored = text?.let(::decode)
+        val stored = withContext(Dispatchers.Default) { text?.let(::decode) }
         if (text != null && stored == null) dir.file("$FILE.unreadable").write(text)
         val migrated = SettingsMigrations.apply(stored ?: Settings(), firstLaunch = text == null)
         if (migrated != stored) file.write(encode(migrated))
