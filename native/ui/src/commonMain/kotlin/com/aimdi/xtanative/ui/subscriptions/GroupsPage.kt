@@ -1,5 +1,8 @@
 package com.aimdi.xtanative.ui.subscriptions
 
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.unit.Constraints
+import kotlin.math.roundToInt
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,10 +30,8 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -50,7 +51,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,6 +65,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_create
 import com.aimdi.xtanative.ui.generated.resources.groups_has_unread
 import com.aimdi.xtanative.ui.generated.resources.groups_member_count
 import com.aimdi.xtanative.ui.generated.resources.groups_none_description
+import com.aimdi.xtanative.ui.generated.resources.groups_none_description_desktop
 import com.aimdi.xtanative.ui.generated.resources.groups_none_yet
 import com.aimdi.xtanative.ui.generated.resources.groups_pin
 import com.aimdi.xtanative.ui.generated.resources.groups_unpin
@@ -74,6 +75,8 @@ import com.aimdi.xtanative.ui.home.rememberRowKeyMoves
 import com.aimdi.xtanative.ui.home.rowMovedByKeys
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.settings.isDesktop
+import com.aimdi.xtanative.ui.common.EmptyState
 
 /** Each level of nesting moves a list row this far in. */
 private val NEST_INDENT = 20.dp
@@ -100,16 +103,12 @@ fun GroupsPage(
 
 @Composable
 private fun EmptyGroups(onCreate: () -> Unit, contentPadding: PaddingValues) {
-    Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(contentPadding).padding(start = 24.dp, end = 24.dp, top = 48.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+    EmptyState(
+        GroupIcons.Workspaces,
+        stringResource(Res.string.groups_none_yet),
+        Modifier.padding(contentPadding),
+        body = stringResource(if (isDesktop) Res.string.groups_none_description_desktop else Res.string.groups_none_description),
     ) {
-        Icon(GroupIcons.Workspaces, contentDescription = null, tint = MaterialTheme.colorScheme.outline, modifier = Modifier.size(48.dp))
-        Spacer(Modifier.height(8.dp))
-        Text(stringResource(Res.string.groups_none_yet), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-        Text(stringResource(Res.string.groups_none_description), textAlign = TextAlign.Center)
-        Spacer(Modifier.height(16.dp))
         Button(onClick = onCreate) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.groups_create), modifier = Modifier.padding(start = 8.dp))
@@ -189,7 +188,7 @@ private fun GroupTileView(tile: GroupTile, compact: Boolean, fixedHeight: Float?
                 Modifier.fillMaxSize().padding(start = 10.dp, end = if (onDiscover == null) 10.dp else 48.dp, top = 6.dp, bottom = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                GroupCover(tile, base, GroupBoard.COMPACT_COVER.dp, cover.size(GroupBoard.COMPACT_COVER.dp))
+                MarkedCover(tile.unread) { GroupCover(tile, base, GroupBoard.COMPACT_COVER.dp, cover.size(GroupBoard.COMPACT_COVER.dp)) }
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
                     TileName(tile)
@@ -198,18 +197,48 @@ private fun GroupTileView(tile: GroupTile, compact: Boolean, fixedHeight: Float?
             }
         } else {
             Column(Modifier.fillMaxSize().padding(12.dp)) {
-                GroupCover(tile, base, 74.dp, cover.weight(1f, fill = true))
+                // The cover as big as it gets, up to its largest, the name right under it and any room left below.
+                MarkedCover(tile.unread, Modifier.weight(1f, fill = false)) { GroupCover(tile, base, 74.dp, cover) }
                 Spacer(Modifier.height(10.dp))
                 TileName(tile)
                 Spacer(Modifier.height(2.dp))
                 TileCount(count)
             }
         }
-        if (tile.unread) UnreadDot(Modifier.align(Alignment.TopEnd).padding(8.dp))
         if (onDiscover != null) {
             RankWithAiButton(Modifier.align(if (compact) Alignment.CenterEnd else Alignment.TopEnd).padding(2.dp), iconSize = 20.dp, onClick = onDiscover)
         }
     }
+}
+
+/**
+ * A tile's cover with the unread dot ([unread]) on its face's rim
+ * ([CoverDot]), as the sidebar's row marks a group's avatar, not off at the
+ * tile's far edge.
+ */
+@Composable
+private fun MarkedCover(unread: Boolean, modifier: Modifier = Modifier, cover: @Composable () -> Unit) {
+    Layout(content = { cover(); if (unread) UnreadDot() }, modifier = modifier) { measurables, constraints ->
+        val face = measurables[0].measure(constraints)
+        val dot = measurables.getOrNull(1)?.measure(Constraints())
+        layout(face.width, face.height) {
+            face.place(0, 0)
+            dot?.let {
+                val centre = CoverDot.centre(face.width.toFloat())
+                it.place((face.width - centre - it.width / 2f).roundToInt(), (centre - it.height / 2f).roundToInt())
+            }
+        }
+    }
+}
+
+/** Where a cover's unread dot sits: on its round face's rim (the face [FACE] of the cover), up and to the end at 45°. */
+internal object CoverDot {
+    /** How much of the cover a single face or a group's mark spans ([MemberMosaic]). */
+    const val FACE = 0.78f
+    private const val COS_45 = 0.70710677f
+
+    /** The dot's centre from the cover's top and its end edge, for a cover [extent] wide. */
+    fun centre(extent: Float): Float = extent * (1 - FACE) / 2 + extent * FACE / 2 * (1 - COS_45)
 }
 
 @Composable

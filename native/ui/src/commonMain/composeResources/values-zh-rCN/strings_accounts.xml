@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">你的头像</string>
     <string name="settings_avatar_change">点按以更改左上角图片</string>
+    <string name="settings_avatar_change_desktop">点击以更改左上角图片</string>
     <string name="settings_avatar_description">显示在左上角和侧栏的图片 — 仅保存在此设备</string>
     <string name="settings_avatar_choose">从设备选择</string>
     <string name="settings_avatar_from_account">使用 X 头像</string>

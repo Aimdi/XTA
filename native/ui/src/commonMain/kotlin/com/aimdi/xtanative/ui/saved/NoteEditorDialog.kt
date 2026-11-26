@@ -1,17 +1,19 @@
 package com.aimdi.xtanative.ui.saved
 
-import com.aimdi.xtanative.ui.common.TipText
-import com.aimdi.xtanative.ui.common.dialogDefault
-import com.aimdi.xtanative.ui.common.tabLeavesField
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -23,6 +25,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -39,8 +42,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -54,7 +55,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isAltPressed
@@ -64,11 +66,9 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -79,7 +79,11 @@ import com.aimdi.xtanative.store.saved.NoteEditor
 import com.aimdi.xtanative.store.saved.NoteMedia
 import com.aimdi.xtanative.store.saved.SavedContent
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.destructiveTextColors
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.common.shortcutKey
+import com.aimdi.xtanative.ui.common.tabLeavesField
 import com.aimdi.xtanative.ui.downloads.PickedFile
 import com.aimdi.xtanative.ui.downloads.rememberClipboardPicture
 import com.aimdi.xtanative.ui.downloads.rememberFilePicker
@@ -104,6 +108,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_note_replying_to
 import com.aimdi.xtanative.ui.generated.resources.saved_note_save_error
 import com.aimdi.xtanative.ui.generated.resources.saved_notice_notes
 import com.aimdi.xtanative.ui.generated.resources.saved_save
+import com.aimdi.xtanative.ui.theme.edgeColor
 import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -193,8 +198,15 @@ fun NoteEditorDialog(
         val dropped: (List<suspend () -> PickedFile?>) -> Unit = { reads ->
             scope.launch { editor.attachAll(reads.map { read -> suspend { attachPicked(keeper, editor.postId ?: newId, read) } }) }
         }
+        BoxWithConstraints(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        // A wide window shows the editor as a card of a writing column's width over the dimmed page, not a page across the screen.
+        val card = maxWidth >= CARD_FROM_WIDTH && maxHeight >= CARD_FROM_HEIGHT
+        val shape = if (card) MaterialTheme.shapes.extraLarge else RectangleShape
         Surface(
-            Modifier.fillMaxSize().takesDroppedFiles(enabled = note != null && !state.busy, onDropped = dropped).onPreviewKeyEvent { event ->
+            // A card keeps clear of the system bars and the keyboard around it; a page across the screen, inside it.
+            // A card is as tall as what it holds, from a few lines up to its most; it scrolls only past that.
+            (if (card) Modifier.systemBarsPadding().imePadding().widthIn(max = CARD_WIDTH).heightIn(min = CARD_MIN_HEIGHT, max = minOf(maxHeight - 96.dp, CARD_MAX_HEIGHT)).fillMaxWidth() else Modifier.fillMaxSize())
+                .takesDroppedFiles(enabled = note != null && !state.busy, onDropped = dropped).onPreviewKeyEvent { event ->
                 val down = event.type == KeyEventType.KeyDown
                 val saves = down && NoteKeys.saves(shortcutKey(event) == Key.S, event.key == Key.Enter || event.key == Key.NumPadEnter, event.isCtrlPressed, event.isAltPressed || event.isShiftPressed)
                 if (saves && canSave && !state.busy) save()
@@ -215,22 +227,32 @@ fun NoteEditorDialog(
                 }
                 saves
             },
+            shape = shape,
             color = MaterialTheme.colorScheme.background,
+            // A card has an edge, as the rail's menu has, or on Lights out's black it is lost in the dimmed page.
+            border = if (card) BorderStroke(1.dp, edgeColor()) else null,
         ) {
-            Box(Modifier.fillMaxSize().systemBarsPadding().imePadding(), contentAlignment = Alignment.TopCenter) {
-                Column(Modifier.widthIn(max = 720.dp).fillMaxSize()) {
+            Box(if (card) Modifier.fillMaxWidth() else Modifier.fillMaxSize().systemBarsPadding().imePadding(), contentAlignment = Alignment.TopCenter) {
+                Column(Modifier.widthIn(max = 720.dp).then(if (card) Modifier.fillMaxWidth() else Modifier.fillMaxSize())) {
                     EditorBar(title(target), state.busy, state.saving, NoteRules.canSave(target, state, editor.dirty), close, save)
                     HorizontalDivider()
                     if (state.recovered) Text(stringResource(Res.string.saved_draft_restored), modifier = Modifier.padding(8.dp))
                     if (state.restoring) LinearProgressIndicator(Modifier.fillMaxWidth().heightIn(max = 2.dp))
-                    Row(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(16.dp)) {
+                    Row(Modifier.weight(1f, fill = !card).fillMaxWidth().verticalScroll(rememberScrollState()).padding(16.dp)) {
                         NoteAvatar()
                         Spacer(Modifier.width(12.dp))
                         Column(Modifier.weight(1f)) {
                             NoteIdentity()
                             Spacer(Modifier.size(12.dp))
                             note?.replyTo?.let { ReplyParent(it) }
-                            TextField(
+                            // What a saved post's or a highlight's note is about, over it, as a reply shows the note it answers.
+                            (target as? NoteTarget.Text)?.let { about ->
+                                about.quote?.takeIf { it.isNotBlank() }?.let { HighlightAbove(it) }
+                                about.about?.let { QuotedPreview(it, above = true) }
+                            }
+                            // A bare field, so its words start under the name above them, at a post's own size.
+                            val bodyStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface)
+                            BasicTextField(
                                 value = text,
                                 onValueChange = { typed ->
                                     if (!editor.state.value.busy) {
@@ -239,21 +261,27 @@ fun NoteEditorDialog(
                                     }
                                 },
                                 readOnly = state.busy,
-                                placeholder = { Text(stringResource(if (note != null) Res.string.saved_note_hint else Res.string.saved_add_note)) },
-                                textStyle = TextStyle(fontSize = 20.sp, lineHeight = 28.sp, color = MaterialTheme.colorScheme.onSurface),
+                                textStyle = bodyStyle,
+                                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                                 minLines = 5,
-                                colors = TextFieldDefaults.colors(
-                                    focusedContainerColor = Color.Transparent,
-                                    unfocusedContainerColor = Color.Transparent,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                ),
                                 modifier = Modifier.fillMaxWidth().focusRequester(focus).tabLeavesField(),
+                                decorationBox = { field ->
+                                    Box {
+                                        if (text.isEmpty()) {
+                                            Text(
+                                                stringResource(if (note != null) Res.string.saved_note_hint else Res.string.saved_add_note),
+                                                style = bodyStyle,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            )
+                                        }
+                                        field()
+                                    }
+                                },
                             )
                             if (state.media.isNotEmpty()) {
                                 MediaStrip(editor.postId ?: newId, state.media, enabled = !state.busy) { editor.removeMedia(it) }
                             }
-                            note?.quoted?.let { QuotedPreview(SavedContent.of(it)) }
+                            note?.quoted?.let { QuotedPreview(SavedContent.of(it), above = false) }
                         }
                     }
                     if (state.saveFailed || state.draftFailed || state.attachFailed) {
@@ -268,6 +296,7 @@ fun NoteEditorDialog(
                 }
             }
         }
+        }
         if (confirming) {
             AlertDialog(
                 onDismissRequest = { confirming = false },
@@ -277,7 +306,7 @@ fun NoteEditorDialog(
                     TextButton(onClick = {
                         confirming = false
                         scope.launch { if (editor.discard()) onDismiss() }
-                    }) { Text(stringResource(Res.string.saved_discard)) }
+                    }, colors = destructiveTextColors()) { Text(stringResource(Res.string.saved_discard)) }
                 },
                 dismissButton = { TextButton(onClick = { confirming = false }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.cancel)) } },
             )
@@ -332,7 +361,7 @@ private fun EditorBar(title: String, busy: Boolean, saving: Boolean, canSave: Bo
     Row(Modifier.fillMaxWidth().padding(start = 8.dp, end = 16.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose, enabled = !busy) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } }
         Spacer(Modifier.width(8.dp))
-        TipText(title, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        TipText(title, style = MaterialTheme.typography.titleLarge, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
         Spacer(Modifier.width(8.dp))
         Button(onClick = onSave, enabled = !busy && canSave, modifier = Modifier.heightIn(min = 44.dp)) {
             if (saving) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
@@ -341,7 +370,7 @@ private fun EditorBar(title: String, busy: Boolean, saving: Boolean, canSave: Bo
     }
 }
 
-/** The lock and "Save on this device", the attach button for a note, and how full the note is. */
+/** The lock and "Save on this device", the attach button for a note, and, near its limit, how full the note is and how many characters are left. */
 @Composable
 private fun EditorFoot(body: String, attach: (() -> Unit)?, attaching: Boolean, busy: Boolean) {
     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -352,16 +381,27 @@ private fun EditorFoot(body: String, attach: (() -> Unit)?, attaching: Boolean, 
             } }
         }
         Spacer(Modifier.width(8.dp))
-        Icon(Icons.Filled.Lock, stringResource(Res.string.saved_notice_notes), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+        // A quiet line, not the accent a link is drawn in: it says where the note stays, it does not lead anywhere.
+        val quiet = MaterialTheme.colorScheme.onSurfaceVariant
+        Icon(Icons.Filled.Lock, stringResource(Res.string.saved_notice_notes), tint = quiet, modifier = Modifier.size(16.dp))
         Spacer(Modifier.width(6.dp))
-        Text(stringResource(Res.string.saved_note_on_device), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f))
-        Spacer(Modifier.width(12.dp))
-        CircularProgressIndicator(
-            progress = { NoteRules.fullness(body) },
-            modifier = Modifier.size(22.dp),
-            strokeWidth = 2.dp,
-            trackColor = MaterialTheme.colorScheme.outlineVariant,
-        )
+        Text(stringResource(Res.string.saved_note_on_device), style = MaterialTheme.typography.labelMedium, color = quiet, modifier = Modifier.weight(1f))
+        NoteRules.charactersLeft(body)?.let { left ->
+            Spacer(Modifier.width(12.dp))
+            Text(
+                left.toString(),
+                style = MaterialTheme.typography.labelMedium,
+                color = if (left == 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.width(8.dp))
+            CircularProgressIndicator(
+                progress = { NoteRules.fullness(body) },
+                modifier = Modifier.size(22.dp),
+                strokeWidth = 2.dp,
+                color = if (left == 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.outlineVariant,
+            )
+        }
     }
 }
 
@@ -369,7 +409,7 @@ private fun EditorFoot(body: String, attach: (() -> Unit)?, attaching: Boolean, 
 @Composable
 private fun ReplyParent(parent: LocalPost) {
     val shape = RoundedCornerShape(16.dp)
-    Column(Modifier.fillMaxWidth().padding(bottom = 12.dp).border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape).padding(12.dp)) {
+    Column(Modifier.fillMaxWidth().padding(bottom = 12.dp).border(1.dp, edgeColor(), shape).padding(12.dp)) {
         Text(stringResource(Res.string.saved_note_replying_to), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.size(4.dp))
         Text(parent.body.ifEmpty { stringResource(Res.string.saved_note_attach) }, maxLines = 4, overflow = TextOverflow.Ellipsis)
@@ -396,17 +436,36 @@ private fun MediaStrip(postId: String, media: List<NoteMedia>, enabled: Boolean,
     }
 }
 
-/** The post a new note quotes, as it will show under the note. */
+/** The post a new note quotes, as it will show under the note, or ([above]) the saved post a note is written under, over it. */
 @Composable
-private fun QuotedPreview(content: SavedContent) {
+private fun QuotedPreview(content: SavedContent, above: Boolean) {
     val post = content.xPost ?: return
     val shape = RoundedCornerShape(16.dp)
-    Column(Modifier.fillMaxWidth().padding(top = 12.dp).clip(shape).border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape).padding(12.dp)) {
+    Column(Modifier.fillMaxWidth().padding(top = if (above) 0.dp else 12.dp, bottom = if (above) 12.dp else 0.dp).clip(shape).border(1.dp, edgeColor(), shape).padding(12.dp)) {
         TipText(post.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Text("@" + post.author.screenName, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(post.text, maxLines = 6, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 4.dp))
     }
 }
+
+/** The highlighted words of an article a note is written under, as a quote over it. */
+@Composable
+private fun HighlightAbove(quote: String) {
+    Row(Modifier.fillMaxWidth().padding(bottom = 12.dp).height(IntrinsicSize.Min)) {
+        Box(Modifier.width(3.dp).fillMaxHeight().clip(RoundedCornerShape(2.dp)).background(MaterialTheme.colorScheme.primary))
+        Spacer(Modifier.width(12.dp))
+        Text(quote, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 6, overflow = TextOverflow.Ellipsis)
+    }
+}
+
+/** From this window size on, the editor is a card ([CARD_WIDTH] wide at most) rather than the whole window. */
+private val CARD_FROM_WIDTH = 840.dp
+private val CARD_FROM_HEIGHT = 560.dp
+private val CARD_WIDTH = 640.dp
+private val CARD_MAX_HEIGHT = 720.dp
+
+/** The least a card is tall, its bar, a few lines and its foot, so a short note does not leave a sliver. */
+private val CARD_MIN_HEIGHT = 240.dp
 
 /** The note editor's keys: Ctrl+S and Ctrl+Enter save ([s], [enter]), as a desktop editor's do; with Alt or Shift too ([other]) they are not the editor's. */
 internal object NoteKeys {

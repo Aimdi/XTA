@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.saved
 
+import com.aimdi.xtanative.ui.common.destructiveTextColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -48,6 +49,7 @@ import com.aimdi.xtanative.core.x.model.XConversation
 import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedPost
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.LocalXClient
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.dialogDefault
@@ -78,6 +80,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_tab_unfiled
 import com.aimdi.xtanative.ui.home.rememberSheetList
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -89,7 +92,7 @@ fun ConfirmDialog(title: String, text: String?, confirm: String, onDismiss: () -
         onDismissRequest = onDismiss,
         title = { Text(title) },
         text = text?.let { { Text(it) } },
-        confirmButton = { TextButton(onClick = onConfirm) { Text(confirm) } },
+        confirmButton = { TextButton(onClick = onConfirm, colors = destructiveTextColors()) { Text(confirm) } },
         dismissButton = { TextButton(onClick = onDismiss, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.cancel)) } },
     )
 }
@@ -161,7 +164,7 @@ private fun FolderSwitch(title: String, description: String, checked: Boolean, o
             Text(title, style = MaterialTheme.typography.bodyLarge)
             Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Switch(checked = checked, onCheckedChange = null)
+        Switch(checked = checked, onCheckedChange = null, colors = xSwitchColors())
     }
 }
 
@@ -195,7 +198,7 @@ private fun SheetRow(icon: androidx.compose.ui.graphics.vector.ImageVector, labe
     ListItem(
         headlineContent = { Text(label) },
         leadingContent = { Icon(icon, contentDescription = null) },
-        modifier = Modifier.clickable(onClick = onClick).padding(horizontal = 8.dp),
+        modifier = Modifier.clickable(onClick = LocalSheetCloser.current.closing(onClick)).padding(horizontal = 8.dp),
     )
 }
 

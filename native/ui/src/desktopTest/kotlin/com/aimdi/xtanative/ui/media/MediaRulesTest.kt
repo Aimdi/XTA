@@ -294,4 +294,21 @@ class MediaRulesTest {
         assertEquals(54_000L, VideoRules.jumpTarget(9, 60_000))
         assertEquals(0L, VideoRules.jumpTarget(5, 0))
     }
+
+    @Test
+    fun controlsHideUnlessAMenuOrTheKeyboardsFocusIsOnThem() {
+        assertTrue(VideoRules.controlsHide(visible = true, sheetOpen = false, keyFocused = false))
+        assertFalse(VideoRules.controlsHide(visible = false, sheetOpen = false, keyFocused = false))
+        assertFalse(VideoRules.controlsHide(visible = true, sheetOpen = true, keyFocused = false))
+        assertFalse(VideoRules.controlsHide(visible = true, sheetOpen = false, keyFocused = true))
+    }
+
+    @Test
+    fun fullscreenTabShowsHiddenControlsThenEntersThenMovesAmongThem() {
+        assertEquals(FullscreenTab.SHOW, VideoRules.fullscreenTab(controlsShown = false, onControl = false))
+        // A control still fading out counts as hidden: they come back first.
+        assertEquals(FullscreenTab.SHOW, VideoRules.fullscreenTab(controlsShown = false, onControl = true))
+        assertEquals(FullscreenTab.ENTER, VideoRules.fullscreenTab(controlsShown = true, onControl = false))
+        assertEquals(FullscreenTab.MOVE, VideoRules.fullscreenTab(controlsShown = true, onControl = true))
+    }
 }

@@ -15,7 +15,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,6 +29,7 @@ import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.Problem
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemRow
@@ -114,7 +114,7 @@ fun FollowsScreen(screenName: String, followers: Boolean, actions: PostActions, 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
+            ColumnTopAppBar(
                 title = { Text(stringResource(if (followers) Res.string.posts_followers else Res.string.posts_following)) },
                 navigationIcon = {
                     IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }

@@ -49,8 +49,10 @@ import com.aimdi.xtanative.services.article.ArticleBlock
 import com.aimdi.xtanative.services.article.ArticleEntity
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.foundIn
+import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.post.MediaGrid
 import com.aimdi.xtanative.ui.post.PostActions
+import com.aimdi.xtanative.ui.theme.edgeColor
 
 private val CardShape = RoundedCornerShape(12.dp)
 
@@ -62,7 +64,7 @@ fun ArticlePreviewCard(post: XPost, onClick: () -> Unit, modifier: Modifier = Mo
         modifier
             .fillMaxWidth()
             .clip(CardShape)
-            .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, CardShape)
+            .border(Dp.Hairline, edgeColor(), CardShape)
             .clickable(onClick = onClick),
     ) {
         article.coverUrl?.let { Cover(it) }
@@ -115,7 +117,7 @@ fun ArticleBody(article: Article, actions: PostActions, modifier: Modifier = Mod
             header()
             HorizontalDivider(thickness = Dp.Hairline, color = MaterialTheme.colorScheme.outlineVariant, modifier = Modifier.padding(bottom = 16.dp))
         }
-        SelectionContainer {
+        SelectionContainer(Modifier.pointerOnlyFocus()) {
             Column {
                 items.forEachIndexed { index, item -> ArticleRow(item, ArticleLayout.rowKey(index), article, actions) }
             }

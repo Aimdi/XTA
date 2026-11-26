@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,11 +14,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -26,6 +23,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -40,19 +39,21 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.common.FeedSkeleton
-import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.Motion
 import com.aimdi.xtanative.ui.common.PostSkeleton
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.ReadFailureNotice
 import com.aimdi.xtanative.ui.common.WithReadingColumn
-import com.aimdi.xtanative.ui.common.problemText
+import com.aimdi.xtanative.ui.common.readFailureText
 import com.aimdi.xtanative.ui.common.scrollToTop
+import com.aimdi.xtanative.ui.feed.CaughtUpRows
+import com.aimdi.xtanative.ui.feed.NewPostsPill
 import com.aimdi.xtanative.ui.feed.feedThreads
 import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import com.aimdi.xtanative.ui.feed.rememberNearEnd
 import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.dismiss
 import com.aimdi.xtanative.ui.generated.resources.home_for_you_empty
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
@@ -63,6 +64,7 @@ import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 /** The key For you's view model is kept under on Home. */
@@ -87,6 +89,7 @@ internal fun ForYouPage(toTop: Int, actions: PostActions, contentPadding: Paddin
     val state by vm.ui.collectAsStateWithLifecycle()
     val list = rememberLazyListState()
     val reduced = LocalReducedMotion.current
+    val scope = rememberCoroutineScope()
     ScrollsToTop(toTop) { list.scrollToTop(reduced) }
     var answeredRefresh by rememberSaveable { mutableIntStateOf(state.toTop) }
     LaunchedEffect(state.toTop) {
@@ -97,7 +100,8 @@ internal fun ForYouPage(toTop: Int, actions: PostActions, contentPadding: Paddin
     }
     LaunchedEffect(state.jump) {
         val index = state.jump ?: return@LaunchedEffect
-        list.scrollToItem(index + if (state.notice != null) 1 else 0)
+        val (row, offset) = CaughtUpRows.of(state.divider, state.threads.size, leading = if (state.notice != null) 1 else 0).rowOf(index, 0)
+        list.scrollToItem(row, offset)
         vm.jumped()
     }
     LaunchedEffect(list) {
@@ -107,25 +111,43 @@ internal fun ForYouPage(toTop: Int, actions: PostActions, contentPadding: Paddin
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { inline?.pause() }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { inline?.resume() }
 
-    PullToRefreshBox(isRefreshing = state.refreshing, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize()) {
-        val problem = state.problem
+    val problem = state.problem
+    val bones = !state.noAccount && state.threads.isEmpty() && problem == null && !(state.answered && !state.refreshing)
+    // The bones are the sign it loads: no spinner over them.
+    PullToRefreshBox(isRefreshing = state.refreshing && !bones, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize()) {
         when {
             // XTA's no-account screen, whose Add account signs in.
             state.noAccount -> PageMessage(null) { ProblemView(Problem.NoAccount, { vm.refresh() }) }
             state.threads.isEmpty() && problem != null -> PageMessage(null) { ProblemView(problem, { vm.refresh() }, context = stringResource(Res.string.problem_unable_to_load_the_tweets)) }
             state.threads.isEmpty() && state.answered && !state.refreshing -> PageMessage(stringResource(Res.string.home_for_you_empty)) {}
-            state.threads.isEmpty() -> Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(top = contentPadding.calculateTopPadding())) { FeedSkeleton() }
+            bones -> Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(top = contentPadding.calculateTopPadding())) { FeedSkeleton() }
             else -> CompositionLocalProvider(LocalInlinePlayer provides inline) {
                 ForYouList(state, vm, actions, list, contentPadding)
             }
         }
+        NewPostsOver(state.newPosts, Modifier.align(Alignment.TopCenter).padding(top = 12.dp)) {
+            scope.launch { list.scrollToTop(reduced) }
+            vm.showNew()
+        }
+    }
+}
+
+/** Following's new-posts pill over the list while [count] posts wait for the reader; the count it said stays while it goes. */
+@Composable
+private fun NewPostsOver(count: Int, modifier: Modifier, onClick: () -> Unit) {
+    val held = remember { intArrayOf(0) }
+    if (count > 0) held[0] = count
+    val reduced = LocalReducedMotion.current
+    AnimatedVisibility(count > 0, modifier = modifier, enter = Motion.popEnter(reduced), exit = Motion.popExit(reduced)) {
+        NewPostsPill(held[0], onClick)
     }
 }
 
 @Composable
 private fun ForYouList(state: ForYouUi, vm: ForYouViewModel, actions: PostActions, list: LazyListState, contentPadding: PaddingValues) {
     val nearEnd by rememberNearEnd(list)
-    LaunchedEffect(nearEnd, state.threads.size, state.hasMore) {
+    // Again once a refresh is over: one held for the reader leaves the list as it was, and a next page asked meanwhile waited.
+    LaunchedEffect(nearEnd, state.threads.size, state.hasMore, state.refreshing) {
         if (nearEnd) vm.loadMore()
     }
     val layout = rememberFeedLayout(state.threads)
@@ -133,7 +155,7 @@ private fun ForYouList(state: ForYouUi, vm: ForYouViewModel, actions: PostAction
     WithReadingColumn(contentPadding, list) { padding ->
         LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
             state.notice?.let { notice ->
-                item(key = "notice", contentType = "notice") { RefreshNotice(notice, vm::dismissNotice) }
+                item(key = "notice", contentType = "notice") { RefreshNotice(notice, { vm.refresh() }, vm::dismissNotice) }
             }
             feedThreads(state.threads, layout, actions, divider = divider) { thread -> ThreadRows(thread, actions) }
             item(key = "footer", contentType = "footer") {
@@ -149,17 +171,17 @@ private fun ForYouList(state: ForYouUi, vm: ForYouViewModel, actions: PostAction
     }
 }
 
-/** A refresh that failed over the posts shown. */
+/** A refresh that failed over the posts shown: why, and Retry, ⓘ and Close, as Following's failed refresh says it. */
 @Composable
-private fun RefreshNotice(problem: Problem, onDismiss: () -> Unit) {
+private fun RefreshNotice(problem: Problem, onRetry: () -> Unit, onDismiss: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(start = 16.dp, top = 4.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(
-            problemText(problem),
+            readFailureText(problem),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(1f),
         )
-        IconTip(stringResource(Res.string.dismiss)) { IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, stringResource(Res.string.dismiss)) } }
+        ReadFailureNotice(problem, onRetry, onDismiss = onDismiss)
     }
 }
 

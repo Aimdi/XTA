@@ -28,7 +28,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.ArchiveNotesStore
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.FindBlock
 import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.IconTip
@@ -95,7 +95,7 @@ fun ArchiveScreen(id: String, onBack: () -> Unit) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
+            ColumnTopAppBar(
                 title = { TipText(state.title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -160,7 +160,7 @@ fun ArchiveScreen(id: String, onBack: () -> Unit) {
     }
     highlighting?.let { quote ->
         NoteEditorDialog(
-            target = NoteTarget.Text(state.annotation.highlights[quote], ArchiveNotesStore.draftKey(id, quote), allowUnchanged = true),
+            target = NoteTarget.Text(state.annotation.highlights[quote], ArchiveNotesStore.draftKey(id, quote), allowUnchanged = true, quote = quote),
             onDismiss = { highlighting = null },
             saveText = { note -> vm.highlight(quote, note) },
         )

@@ -105,10 +105,28 @@ class FeedLayout private constructor(
         }
     }
 
+    /**
+     * The kind of row the thread at [index] makes, as a lazy list's content
+     * type: rows of one kind reuse each other's composition as the list
+     * scrolls, so a lone post is not rebuilt from a thread, a stack or a run.
+     */
+    fun rowType(index: Int, thread: XThread): String = when (ofThread(index, thread)) {
+        FeedPart.Plain -> if (thread.posts.size > 1) ROW_THREAD else ROW_POST
+        FeedPart.Hidden -> ROW_HIDDEN
+        is FeedPart.Stack -> ROW_STACK
+        is FeedPart.Run -> ROW_RUN
+    }
+
     /** What the list draws for a plugin's post among the threads. */
     fun ofPost(post: SourcedPost): FeedPart = stacks[post.key]?.let(FeedPart::Stack) ?: if (post.key in stacked) FeedPart.Hidden else FeedPart.Plain
 
     companion object {
+        const val ROW_POST = "post"
+        const val ROW_THREAD = "thread"
+        const val ROW_HIDDEN = "hidden"
+        const val ROW_STACK = "stack"
+        const val ROW_RUN = "run"
+
         val None = FeedLayout(emptyMap(), emptySet(), emptyMap(), emptySet())
 
         /** What a stack calls an X thread. */

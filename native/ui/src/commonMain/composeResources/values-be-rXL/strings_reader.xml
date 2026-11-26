@@ -64,6 +64,7 @@
     <string name="reader_voices_use">Vykarystoŭvać spampavany hołas</string>
     <string name="reader_voices_use_description">Čytaje spampavanym hołasam, kali jon havoryć na movie artykuła; inakš vykarystoŭvaje ruchavik nižej.</string>
     <string name="reader_voices_note">Hałasy spampoŭvajucca z GitHub (k2-fsa/sherpa-onnx), tolki kali vy naciskajecie «Sćahnuć». Jany pracujuć całkam na hetaj pryladzie.</string>
+    <string name="reader_voices_note_desktop">Hałasy spampoŭvajucca z GitHub (k2-fsa/sherpa-onnx), tolki kali vy pstrykajecie «Spampavać». Jany pracujuć całkam na hetaj pryladzie.</string>
     <string name="reader_voices_synthesis_missing">Hetaja viersija moža spampoŭvać hałasy, ale pakul nie moža imi čytać. Da taho času ŭsłych čytaje ruchavik maŭliennia nižej.</string>
     <string name="reader_voice_licence">Licenzija: %1$s</string>
     <string name="reader_voice_installing">Pravierka i raspakoŭvańnie…</string>

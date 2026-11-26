@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">1画面分スクロール</string>
     <string name="keys_scroll_ends">先頭または末尾へ移動</string>
     <string name="keys_move">ボタンや入力欄の間を移動</string>
+    <string name="keys_regions">ナビゲーションとページの間を移動</string>
     <string name="keys_text_size">文字を大きく、小さく、または標準に</string>
     <string name="keys_interface_size">インターフェースを拡大・縮小・標準に戻す</string>
     <string name="keys_full_screen">全画面表示</string>

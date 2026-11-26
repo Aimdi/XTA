@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Выкарыстоўваць карыстальніцкі базавы URL пры абагульванні</string>
     <string name="settings_cancel">Скасаваць</string>
     <string name="settings_save">Захаваць</string>
-    <string name="settings_tab_following">Чытае</string>
+    <string name="settings_tab_following">Чытаю</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Падпіскі</string>
     <string name="settings_page_discover">Агляд</string>
@@ -84,6 +84,7 @@
     <string name="settings_yes">Так</string>
     <string name="settings_zen_mode">Дзэн-рэжым</string>
     <string name="settings_zen_mode_description">Спакайнейшая стужка: хавае статыстыку пастоў, хавае адказы, пакуль вы не ўтрымаеце кнопку каментарыяў, і паказвае толькі некалькі нядаўніх пастоў ад кожнага.</string>
+    <string name="settings_zen_mode_description_desktop">Спакайнейшая стужка: хавае статыстыку пастоў, хавае адказы, пакуль вы не націснеце на кнопку каментарыяў правай кнопкай мышы, і паказвае толькі некалькі нядаўніх пастоў ад кожнага.</string>
     <string name="settings_threaded_replies">Ланцужковыя адказы</string>
     <string name="settings_threaded_replies_description">Паказваць адказы пад адкрытым допісам у выглядзе дрэва з водступамі, дзе кожны адказ укладзены пад тым, на які ён адказвае.</string>
     <string name="settings_collapse_boosts">Групаваць серыі рэпостаў</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Якасць выяў</string>
     <string name="settings_load_manually">Загружаць медыя ўручную</string>
     <string name="settings_load_manually_description">Выявы і відэа не будуць загружацца, пакуль вы іх не націснеце — каб эканоміць мабільны трафік.</string>
+    <string name="settings_load_manually_description_desktop">Выявы і відэа не будуць загружацца, пакуль вы на іх не пстрыкнеце — каб эканоміць трафік.</string>
     <string name="settings_save_bandwidth">Эканомце месца на экране, з выявамі меншага памеру</string>
     <string name="settings_quality_low">Нізкая</string>
     <string name="settings_quality_medium">Сярэдняя</string>
@@ -160,10 +162,6 @@
     <string name="settings_colour_purple">Фіялетавы</string>
     <string name="settings_colour_orange">Аранжавы</string>
     <string name="settings_colour_green">Зялёны</string>
-    <string name="settings_true_black">Сапраўдны чорны (AMOLED)?</string>
-    <string name="settings_true_black_description">Выкарыстоўваць сапраўдны чорны (AMOLED) для цёмнай тэмы</string>
-    <string name="settings_true_black_cards">Сапраўдны чорны для картак твітаў</string>
-    <string name="settings_true_black_cards_description">Выкарыстоўваць сапраўдны чорны колер для фону картак твітаў</string>
     <string name="settings_navigation_labels">Паказваць ярлыкі навігацыі</string>
     <string name="settings_hide_navigation">Хаваць верхнюю і ніжнюю панэлі пры прагортцы</string>
     <string name="settings_hide_status_bar">Хаваць радок стану</string>
@@ -179,11 +177,17 @@
     <string name="settings_ticker_chart">Графік акцыі</string>
     <string name="settings_ticker_chart_description">Паказваецца пры адкрыцці тыкера. XTA сам бярэ цэны з публічных сэрвісаў без уліковага запісу; пры выключэнні запыт не адпраўляецца, допісы застаюцца.</string>
     <string name="settings_double_tap_like">Двойны дотык — падабаецца</string>
+    <string name="settings_double_tap_like_desktop">Двайная пстрычка — падабаецца</string>
     <string name="settings_double_tap_like_description">Выключана па змаўчанні: кожны адзінарны дотык чакае магчымага другога, таму пост адкрываецца крыху пазней.</string>
+    <string name="settings_double_tap_like_description_desktop">Выключана па змаўчанні: кожная адзінарная пстрычка чакае магчымай другой, таму пост адкрываецца крыху пазней.</string>
     <string name="settings_swipe_back_anywhere">Вяртанне свайпам з любога месца</string>
+    <string name="settings_swipe_back_anywhere_desktop">Вяртанне перацягваннем з любога месца</string>
     <string name="settings_swipe_back_anywhere_description">Пацягніце адкрыты пост з любога яго месца, каб вярнуцца. Выключана: толькі ад краю экрана.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Пацягніце адкрыты пост з любога яго месца, каб вярнуцца. Выключана: толькі ад краю акна.</string>
     <string name="settings_swipe_back_tilt">Нахіл услед за пальцам</string>
+    <string name="settings_swipe_back_tilt_desktop">Нахіл услед за курсорам</string>
     <string name="settings_swipe_back_tilt_description">Пост, які вы цягнеце назад, паварочваецца вакол пальца і гойдаецца ад хуткасці руху.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">Пост, які вы цягнеце назад, паварочваецца вакол курсора і гойдаецца ад хуткасці руху.</string>
     <string name="settings_accounts_empty">Дадайце акаўнт, каб загрузіць «Для вас».</string>
     <string name="settings_accounts_description">Адключайце запасныя акаўнты, якія трымаеце толькі дзеля лімітаў. «Для вас» аб’ядноўвае стужкі ўключаных акаўнтаў; «Чытаю» далей выкарыстоўвае лакальныя падпіскі, але пры загрузцы прапускае адключаныя. Каментары і профілі пры патрэбе могуць выкарыстаць любы акаўнт.</string>
     <string name="settings_account_delete_confirm">Выйсці з @%1$s? XTA забудзе гэты сеанс на прыладзе, і адрабіць гэта будзе немагчыма.</string>
@@ -319,6 +323,7 @@
     <string name="settings_intro_again">Паказаць уводзіны зноў</string>
     <string name="settings_intro_again_description">Яшчэ раз прайсці карткі першага запуску.</string>
     <string name="settings_open_logs">Адкрыць папку журналаў</string>
+    <string name="settings_copy_diagnostics">Скапіяваць звесткі для дыягностыкі</string>
     <string name="settings_ok">Добра</string>
     <string name="settings_diagnostics_copy">Скапіяваць справаздачу</string>
     <string name="settings_diagnostics_copied">Дыягностыка скапіявана ў буфер абмену</string>

@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">Keri ekraani võrra</string>
     <string name="keys_scroll_ends">Algusesse või lõppu</string>
     <string name="keys_move">Liigu nuppude ja väljade vahel</string>
+    <string name="keys_regions">Liigu navigeerimise ja lehe vahel</string>
     <string name="keys_text_size">Suurem, väiksem või tavaline tekst</string>
     <string name="keys_interface_size">Suurem, väiksem või tavaline liides</string>
     <string name="keys_full_screen">Täisekraan</string>

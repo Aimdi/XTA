@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X vrátil chybu serveru. Můžete dál číst příspěvky z mezipaměti a zkusit to později.</string>
     <string name="problem_request_unavailable_title">Tento požadavek není k dispozici</string>
     <string name="problem_request_unavailable_text">X tento požadavek odmítl. Může být dočasně nedostupný, nebo se tato část služby změnila.</string>
-    <string name="problem_oops">Jejda! Něco se pokazilo 🥲</string>
+    <string name="problem_oops">Nepodařilo se načíst</string>
     <string name="problem_http_text">X vrátil HTTP %1$d.</string>
     <string name="problem_retry_in">Zkusit znovu za %1$s</string>
     <string name="close_app_confirm">Opravdu chcete zavřít XTA?</string>
@@ -45,4 +45,5 @@
     <string name="find_in_page">Najít na stránce</string>
     <string name="find_previous_match">Předchozí shoda</string>
     <string name="find_next_match">Další shoda</string>
+    <string name="loading">Načítání…</string>
 </resources>

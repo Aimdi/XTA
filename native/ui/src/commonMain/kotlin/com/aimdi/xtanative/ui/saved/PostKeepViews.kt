@@ -5,6 +5,12 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.ui.graphics.graphicsLayer
+import com.aimdi.xtanative.store.saved.SavedContent
+import com.aimdi.xtanative.ui.common.HeartBurstMotion
+import com.aimdi.xtanative.ui.common.HitArea
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -12,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -35,7 +42,9 @@ import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.ui.common.HEART_BURST_MILLIS
 import com.aimdi.xtanative.ui.common.HeartBurst
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.RingedFocus
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.saved_like
@@ -43,6 +52,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_save_here
 import com.aimdi.xtanative.ui.generated.resources.saved_unlike
 import com.aimdi.xtanative.ui.generated.resources.saved_unsave
 import com.aimdi.xtanative.ui.plugins.CountButton
+import com.aimdi.xtanative.ui.post.LikeCounts
 import com.aimdi.xtanative.ui.post.sharedPostPrefs
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -51,9 +61,13 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun PostKeep.SaveButton(post: XPost, modifier: Modifier = Modifier, tint: Color = Color.Unspecified) = DeviceSaveButton(post, modifier, tint)
 
-/** The heart, liked on this device only, drawn as a post's counts are, with X's like [count] beside it when above 0. */
+/**
+ * The heart, liked on this device only, drawn as a post's counts are, with
+ * X's like [count] beside it when above 0, one more while liked here
+ * ([LikeCounts]); null draws no number, as zen and calm mode want.
+ */
 @Composable
-fun PostKeep.LikeButton(post: XPost, modifier: Modifier = Modifier, tint: Color = Color.Unspecified, count: Long = 0) =
+fun PostKeep.LikeButton(post: XPost, modifier: Modifier = Modifier, tint: Color = Color.Unspecified, count: Long? = null) =
     DeviceLikeButton(post, modifier, tint, count)
 
 /** The save sheet for [post], as a long press on the bookmark opens it. */
@@ -104,7 +118,8 @@ internal fun SavedNoteEditor(item: Keepable, onDismiss: () -> Unit) {
     LaunchedEffect(keeper) { keeper.saved.index() }
     val loaded = library ?: return
     val note = remember(item.id) { loaded.post(item.id)?.note }
-    NoteEditorDialog(NoteTarget.Text(note, NoteRules.savedNoteKey(item.id)), onDismiss, saveText = { text -> Keeping.writeNote(keeper, item, text) })
+    val about = remember(item.id) { SavedContent.of(item.content) }
+    NoteEditorDialog(NoteTarget.Text(note, NoteRules.savedNoteKey(item.id), about = about), onDismiss, saveText = { text -> Keeping.writeNote(keeper, item, text) })
 }
 
 /**
@@ -154,29 +169,58 @@ internal fun KeepableSaveButton(item: Keepable, modifier: Modifier, tint: Color)
 @Composable
 internal fun KeepableSaveButton(id: String, modifier: Modifier, tint: Color, item: () -> Keepable) {
     val keeper = LocalKeeper.current
-    val saved = savedHere(id)
+    // Drawn as tapped at once, as the heart is, before the save is written.
+    val switch = rememberOptimistic(id, savedHere(id))
+    val saved = switch.shown
     var sheetFor by remember { mutableStateOf<Keepable?>(null) }
     val label = stringResource(if (saved) Res.string.saved_unsave else Res.string.saved_save_here)
-    Box(
-        modifier
-            .size(40.dp)
-            .clip(CircleShape)
-            // A right-click picks the folder, as a long press does.
-            .onSecondaryClick { sheetFor = item() }
-            .combinedClickable(
-                role = Role.Button,
-                onClickLabel = label,
-                onClick = { Keeping.toggleSave(keeper, item()) },
-                onLongClick = { sheetFor = item() },
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            if (saved) SavedIcons.Bookmark else SavedIcons.BookmarkBorder,
-            contentDescription = label,
-            tint = if (saved) MaterialTheme.colorScheme.primary else tint.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant },
-            modifier = Modifier.size(19.dp),
-        )
+    // A save lands with the heart's little pop, unless motion is reduced or calm or zen mode keeps actions quiet.
+    val pop = remember { Animatable(1f) }
+    val scope = rememberCoroutineScope()
+    val still = LocalReducedMotion.current || quietActions()
+    val hit = remember { HitArea() }
+    val presses = remember { MutableInteractionSource() }
+    // The keyboard's focus: the accent's ring round its round, as on an icon button, not an accent disc.
+    RingedFocus {
+        Box(
+            modifier
+                .keyboardFocusRing(0.dp)
+                .then(hit.outer)
+                // A right-click picks the folder, as a long press does.
+                .onSecondaryClick { sheetFor = item() }
+                .combinedClickable(
+                    role = Role.Button,
+                    onClickLabel = label,
+                    indication = null,
+                    interactionSource = presses,
+                    onClick = {
+                        if (!saved && !still) scope.launch {
+                            pop.snapTo(0f)
+                            pop.animateTo(1f, tween(BOOKMARK_POP_MILLIS, easing = LinearEasing))
+                        }
+                        switch.tap()
+                        Keeping.toggleSave(keeper, item())
+                    },
+                    onLongClick = { sheetFor = item() },
+                )
+                .then(hit.inner)
+                .size(40.dp)
+                .clip(CircleShape)
+                // Lit in the accent under the pointer, as a saved bookmark is drawn, rather than in a neutral grey.
+                .indication(presses, ripple(color = MaterialTheme.colorScheme.primary)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                if (saved) SavedIcons.Bookmark else SavedIcons.BookmarkBorder,
+                contentDescription = label,
+                tint = if (saved) MaterialTheme.colorScheme.primary else tint.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant },
+                modifier = Modifier.size(19.dp).graphicsLayer {
+                    val scale = if (pop.value >= 1f) 1f else HeartBurstMotion.popScale(pop.value)
+                    scaleX = scale
+                    scaleY = scale
+                },
+            )
+        }
     }
     sheetFor?.let { item -> SaveSheet(item) { sheetFor = null } }
 }
@@ -184,12 +228,14 @@ internal fun KeepableSaveButton(id: String, modifier: Modifier, tint: Color, ite
 /**
  * The device's like under an X post (XTA's LikeButton): liking plays X's
  * burst ([HeartBurst]) in the colour of a device like, unless motion is
- * reduced or calm or zen mode keeps actions quiet; X's count beside it rolls.
+ * reduced or calm or zen mode keeps actions quiet; X's count beside it, one
+ * more while liked here ([LikeCounts]), rolls.
  */
 @Composable
-internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, count: Long) {
+internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, count: Long?) {
     val keeper = LocalKeeper.current
-    val liked = likedHere(post.shown.id)
+    val switch = rememberOptimistic(post.shown.id, likedHere(post.shown.id))
+    val liked = switch.shown
     val label = stringResource(if (liked) Res.string.saved_unlike else Res.string.saved_like)
     val rest = tint.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant }
     val active = MaterialTheme.colorScheme.primary
@@ -208,19 +254,25 @@ internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, coun
                     filled = { Icon(Icons.Filled.Favorite, contentDescription = null, tint = active, modifier = Modifier.size(17.dp)) },
                 )
             },
-            n = count,
+            n = count?.let { LikeCounts.shown(it, liked, post.shown.likedOnX) } ?: 0,
             label = label,
             tint = if (liked) active else rest,
             onLongClick = null,
-        ) {
-            scope.launch {
-                burst.snapTo(0f)
-                if (!liked && !still) burst.animateTo(1f, tween(HEART_BURST_MILLIS, easing = LinearEasing))
-            }
-            Keeping.toggleLike(keeper, Keepable.of(post))
-        }
+            onClick = {
+                scope.launch {
+                    burst.snapTo(0f)
+                    if (!liked && !still) burst.animateTo(1f, tween(HEART_BURST_MILLIS, easing = LinearEasing))
+                }
+                switch.tap()
+                Keeping.toggleLike(keeper, Keepable.of(post))
+            },
+            hue = active,
+        )
     }
 }
+
+/** How long a save's pop takes: the second half of the heart's, where it lands. */
+private const val BOOKMARK_POP_MILLIS = HEART_BURST_MILLIS * 55 / 100
 
 /** Calm or zen mode is on, which keep actions quiet (XTA's quietActions). */
 @Composable

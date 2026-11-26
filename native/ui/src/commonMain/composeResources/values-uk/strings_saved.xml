@@ -58,7 +58,7 @@
     <string name="saved_empty_folder">Ця тека порожня</string>
     <string name="saved_empty_notes">Ще немає нотаток. Вони не залишають пристрій, доки ви не зробите резервну копію або синхронізацію.</string>
     <string name="saved_note_button">Нотатка</string>
-    <string name="saved_add_note">Додати нотатку до цього збереженого допису</string>
+    <string name="saved_add_note">Додати нотатку до цього допису</string>
     <string name="saved_edit_note">Редагувати нотатку</string>
     <string name="saved_new_note">Нова нотатка</string>
     <string name="saved_too_large">Ця збережена публікація не може бути відображена, оскільки вона надто велика для завантаження. Будь ласка, повідомте розробників.</string>
@@ -128,7 +128,7 @@
     <string name="saved_no_media_file">Не вдалося завантажити. Це медіа може бути доступне лише у вигляді потоку, який XTA ще не може завантажити.</string>
     <string name="saved_open_in_browser">Відкрити у браузері</string>
     <string name="saved_ok">Добре</string>
-    <string name="saved_something_wrong">Ой! Щось пішло не так 🥲</string>
+    <string name="saved_something_wrong">Щось пішло не так</string>
     <string name="archive_tags">Теги</string>
     <string name="archive_extract">Розпізнати текст зі знімка екрана</string>
     <string name="archive_extract_notice">Вибране зображення PNG або JPEG буде надіслано на %1$s з налаштованою моделлю ШІ. Розпізнаний текст може містити помилки.</string>
@@ -174,6 +174,7 @@
     <string name="saved_media_status">Не вдалося зберегти медіа. X повернув статус %1$d</string>
     <string name="downloads_cancelled">Скасовано</string>
     <string name="downloads_interrupted">Перервано · Повторіть спробу, щоб продовжити</string>
+    <string name="downloads_interrupted_desktop">Перервано · Клацніть «Повторити», щоб продовжити</string>
     <string name="downloads_batch">Збережені файли: %1$d / %2$d</string>
     <string name="downloads_saved_to">Збережено в %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Щоб завантажувати автоматично, задайте теку завантажень у Налаштування &gt; Медіа.</string>

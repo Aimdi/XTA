@@ -24,6 +24,7 @@
     <string name="groups_columns">Columnes</string>
     <string name="groups_combine_clear">Neteja</string>
     <string name="groups_combine_hint">Mantén premut un grup per llegir-lo amb aquest</string>
+    <string name="groups_combine_hint_desktop">Fes clic amb el botó dret en un grup per llegir-lo amb aquest</string>
     <string name="groups_combined_count">Llegint-ne %1$d més alhora</string>
     <string name="groups_compact">Compacte</string>
     <string name="groups_content_default">Per defecte</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Sense resultats</string>
     <string name="groups_no_subscriptions">No hi ha subscripcions. Prova de cercar-ne o importar-ne alguna!</string>
     <string name="groups_none_description">Els grups barregen les subscripcions en feeds personalitzats. Mantén premut un grup per editar-lo.</string>
+    <string name="groups_none_description_desktop">Els grups barregen les subscripcions en feeds personalitzats. Fes clic amb el botó dret en un grup per editar-lo.</string>
     <string name="groups_none_yet">Encara no hi ha grups</string>
     <string name="groups_not_all_posts">Nota: A causa d'una limitació de Twitter, no es poden incloure tots els tuits</string>
     <string name="groups_ok">D'acord</string>

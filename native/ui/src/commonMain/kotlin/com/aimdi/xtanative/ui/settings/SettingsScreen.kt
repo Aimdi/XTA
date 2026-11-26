@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.settings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,32 +12,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material.icons.outlined.Build
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material.icons.outlined.Face
-import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,6 +49,8 @@ import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.ThemePrefs
 import com.aimdi.xtanative.ui.common.ColumnScrollbar
+import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.SearchField
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -67,10 +58,13 @@ import com.aimdi.xtanative.ui.generated.resources.settings_proxy
 import com.aimdi.xtanative.ui.generated.resources.settings_proxy_description
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login_description
+import com.aimdi.xtanative.ui.home.LocalWideFrame
 import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.intro.IntroFlow
+import com.aimdi.xtanative.ui.media.ReaderIcons
 import com.aimdi.xtanative.ui.post.PostIcons
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -107,27 +101,46 @@ private const val REPOSITORY = "https://github.com/Aimdi/XTA"
  * sections in groups, Advanced folded away, and the app's own information.
  */
 @Composable
-fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: () -> Unit) {
+fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: () -> Unit, onStartOver: () -> Unit = {}) {
     val graph = LocalGraph.current
     val vm: SettingsViewModel = viewModel { SettingsViewModel(graph) }
     var query by rememberSaveable { mutableStateOf("") }
     val snackbar = remember { SnackbarHostState() }
+    BoxWithConstraints {
+        if (SettingsPanes.twoPanes(isDesktop, maxWidth.value)) {
+            SettingsTwoPanes(vm, query, { query = it }, onBack, onOpen, onIntroAgain, onStartOver)
+        } else {
+            SettingsOnePane(vm, query, { query = it }, snackbar, onBack, onOpen, onIntroAgain)
+        }
+    }
+}
+
+/** Settings as a phone and a narrow window show it: the search and the sections, each opening its own screen. */
+@Composable
+private fun SettingsOnePane(
+    vm: SettingsViewModel,
+    query: String,
+    onQuery: (String) -> Unit,
+    snackbar: SnackbarHostState,
+    onBack: () -> Unit,
+    onOpen: (String) -> Unit,
+    onIntroAgain: () -> Unit,
+) {
 
     SettingsPage(stringResource(Res.string.settings_title), onBack, snackbar) { padding ->
         val scroll = rememberScrollState()
         Box(Modifier.fillMaxSize().padding(padding)) {
         ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd))
         Column(Modifier.verticalScrollByKeys(scroll).padding(bottom = 24.dp)) {
-            OutlinedTextField(
+            SearchField(
                 value = query,
-                onValueChange = { query = it },
-                placeholder = { Text(stringResource(Res.string.settings_search)) },
-                leadingIcon = { Icon(Icons.Outlined.Search, null) },
-                trailingIcon = {
-                    if (query.isNotEmpty()) IconButton(onClick = { query = "" }) { Icon(Icons.Outlined.Close, null) }
+                onValueChange = onQuery,
+                placeholder = stringResource(Res.string.settings_search),
+                trailing = {
+                    if (query.isNotEmpty()) {
+                        IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = { onQuery("") }) { Icon(Icons.Outlined.Close, stringResource(Res.string.discover_clear)) } }
+                    }
                 },
-                singleLine = true,
-                shape = MaterialTheme.shapes.extraLarge,
                 modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp).foundWithKeys(),
             )
             if (query.isBlank()) {
@@ -143,16 +156,16 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: (
 @Composable
 private fun SettingsHome(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snackbar: SnackbarHostState, vm: SettingsViewModel) {
     var advanced by rememberSaveable { mutableStateOf(false) }
-    SettingsHeader(stringResource(Res.string.settings_general))
+    // No header over a group whose first row has the same name (General, Accounts, Data): a hairline parts them.
     SettingsSection.everyday.forEach { SectionRow(it, onOpen) }
-    SettingsHeader(stringResource(Res.string.settings_account))
+    SettingsDivider()
     SectionRow(SettingsSection.ACCOUNT, onOpen)
     NavigationRow(
         stringResource(Res.string.settings_plugin_store),
         stringResource(Res.string.settings_plugin_store_description),
-        Icons.Outlined.AddCircle,
+        SettingsIcons.ExtensionOutlined,
     ) { onOpen(SettingsRoutes.PLUGINS) }
-    SettingsHeader(stringResource(Res.string.settings_data))
+    SettingsDivider()
     SectionRow(SettingsSection.DATA, onOpen)
     Row(
         Modifier.fillMaxWidth().clickable { advanced = !advanced }.padding(horizontal = 16.dp, vertical = 16.dp),
@@ -175,38 +188,38 @@ private fun SectionRow(section: SettingsSection, onOpen: (String) -> Unit) {
     }
 }
 
-private fun sectionIcon(section: SettingsSection): ImageVector = when (section) {
+internal fun sectionIcon(section: SettingsSection): ImageVector = when (section) {
     SettingsSection.GENERAL -> Icons.Outlined.Settings
     SettingsSection.POSTS -> Icons.AutoMirrored.Outlined.List
-    SettingsSection.MEDIA -> Icons.Outlined.PlayArrow
+    SettingsSection.MEDIA -> GroupIcons.PhotoLibraryOutlined
     SettingsSection.HOME -> Icons.Outlined.Home
-    SettingsSection.THEME -> Icons.Outlined.Star
-    SettingsSection.ACCESSIBILITY -> Icons.Outlined.Face
-    SettingsSection.SPEECH -> Icons.Outlined.Notifications
+    SettingsSection.THEME -> SettingsIcons.PaletteOutlined
+    SettingsSection.ACCESSIBILITY -> SettingsIcons.Accessibility
+    SettingsSection.SPEECH -> ReaderIcons.RecordVoiceOverOutlined
     SettingsSection.TRANSLATION -> PostIcons.Translate
     SettingsSection.ACCOUNT -> Icons.Outlined.AccountCircle
-    SettingsSection.DATA -> Icons.AutoMirrored.Outlined.ExitToApp
-    SettingsSection.SYNC -> Icons.Outlined.Refresh
-    SettingsSection.AI -> Icons.Outlined.Create
-    SettingsSection.DIAGNOSTICS -> Icons.Outlined.CheckCircle
+    SettingsSection.DATA -> GroupIcons.SwapVert
+    SettingsSection.SYNC -> SettingsIcons.Sync
+    SettingsSection.AI -> GroupIcons.AutoAwesomeOutlined
+    SettingsSection.DIAGNOSTICS -> GroupIcons.CheckCircleOutline
 }
 
 /** Settings › App info (_about.dart): the version, where XTA lives, its licences, and the first-launch cards again. */
 @Composable
-private fun AboutRows(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snackbar: SnackbarHostState, vm: SettingsViewModel) {
+internal fun AboutRows(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snackbar: SnackbarHostState, vm: SettingsViewModel) {
     val copyText = rememberCopyText()
     val links = LocalUriHandler.current
     val scope = rememberCoroutineScope()
     val version = vm.graph.version.ifEmpty { "dev" }
     val copied = stringResource(Res.string.settings_version_copied)
-    NavigationRow(stringResource(Res.string.settings_version_label), version, Icons.Outlined.Info, chevron = false) {
+    NavigationRow(stringResource(Res.string.settings_version_label), version, GroupIcons.InfoOutline, chevron = false) {
         copyText(version)
         scope.launch { snackbar.showSnackbar(copied) }
     }
-    NavigationRow(stringResource(Res.string.settings_contribute), stringResource(Res.string.settings_contribute_description), Icons.Outlined.Favorite, chevron = false) {
+    NavigationRow(stringResource(Res.string.settings_contribute), stringResource(Res.string.settings_contribute_description), Icons.Outlined.FavoriteBorder, chevron = false) {
         runCatching { links.openUri(REPOSITORY) }
     }
-    NavigationRow(stringResource(Res.string.settings_report_bug), stringResource(Res.string.settings_report_bug_description), Icons.Outlined.Warning, chevron = false) {
+    NavigationRow(stringResource(Res.string.settings_report_bug), stringResource(Res.string.settings_report_bug_description), GroupIcons.WarningAmber, chevron = false) {
         runCatching { links.openUri("$REPOSITORY/issues") }
     }
     NavigationRow(stringResource(Res.string.settings_licenses), stringResource(Res.string.settings_licenses_description), Icons.AutoMirrored.Outlined.List) {
@@ -214,7 +227,17 @@ private fun AboutRows(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snackb
     }
     // The desktop's log, for a bug report: where it is, opened in the file manager.
     logsFolder?.let { folder ->
-        NavigationRow(stringResource(Res.string.settings_open_logs), folder, Icons.Outlined.Build, chevron = false) { openLogsFolder() }
+        NavigationRow(stringResource(Res.string.settings_open_logs), folder, SettingsIcons.FolderOutlined, chevron = false) { openLogsFolder() }
+    }
+    // The versions and the system's facts a bug report asks for, never an account or a token.
+    if (isDesktop) {
+        val diagnosticsCopied = stringResource(Res.string.settings_diagnostics_copied)
+        NavigationRow(stringResource(Res.string.settings_copy_diagnostics), icon = Icons.Outlined.Build, chevron = false) {
+            diagnosticsText()?.let { text ->
+                copyText(text)
+                scope.launch { snackbar.showSnackbar(diagnosticsCopied) }
+            }
+        }
     }
     NavigationRow(stringResource(Res.string.settings_intro_again), stringResource(Res.string.settings_intro_again_description), Icons.Outlined.Refresh, chevron = false) {
         vm.graph.keep {
@@ -225,7 +248,7 @@ private fun AboutRows(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snackb
 }
 
 @Composable
-private fun SearchResults(query: String, onOpen: (String) -> Unit) {
+internal fun SearchResults(query: String, onOpen: (String) -> Unit) {
     val controls = SettingsSearch.controls(searchableControls(), query)
     controls.forEach { control ->
         val section = stringResource(sectionTitle(control.section))
@@ -281,11 +304,11 @@ private val INDEX = listOf(
     Indexed(SettingsSection.POSTS, PostsPrefs.includeReposts.key, Res.string.settings_include_reposts, Res.string.settings_feed_default_description),
     Indexed(SettingsSection.POSTS, PostsPrefs.threadedReplies.key, Res.string.settings_threaded_replies, Res.string.settings_threaded_replies_description),
     Indexed(SettingsSection.POSTS, PostsPrefs.collapseReposts.key, Res.string.settings_collapse_boosts, Res.string.settings_collapse_boosts_description),
-    Indexed(SettingsSection.POSTS, PostsPrefs.zenMode.key, Res.string.settings_zen_mode, Res.string.settings_zen_mode_description),
+    Indexed(SettingsSection.POSTS, PostsPrefs.zenMode.key, Res.string.settings_zen_mode, GestureWording.zenModeDescription),
     Indexed(SettingsSection.POSTS, PostsPrefs.calmMode.key, Res.string.settings_calm_mode, Res.string.settings_calm_mode_description),
     Indexed(SettingsSection.POSTS, PostsPrefs.zenPageCap.key, Res.string.settings_zen_page_cap, Res.string.settings_zen_page_cap_description),
     Indexed(SettingsSection.POSTS, PostsPrefs.rememberReadingPosition.key, Res.string.settings_reading_position, Res.string.settings_reading_position_description),
-    Indexed(SettingsSection.MEDIA, MediaPrefs.loadManually.key, Res.string.settings_load_manually, Res.string.settings_load_manually_description),
+    Indexed(SettingsSection.MEDIA, MediaPrefs.loadManually.key, Res.string.settings_load_manually, GestureWording.loadManuallyDescription),
     Indexed(SettingsSection.MEDIA, MediaPrefs.imageQuality.key, Res.string.settings_image_quality, Res.string.settings_save_bandwidth),
     Indexed(SettingsSection.MEDIA, MediaPrefs.gridColumns.key, Res.string.settings_grid_columns, Res.string.settings_grid_columns_description),
     Indexed(SettingsSection.MEDIA, MediaPrefs.gridLayout.key, Res.string.settings_media_layout, null),
@@ -302,8 +325,6 @@ private val INDEX = listOf(
     Indexed(SettingsSection.MEDIA, MediaPrefs.downloadConcurrency.key, Res.string.settings_download_concurrency, Res.string.settings_download_concurrency_description),
     Indexed(SettingsSection.THEME, ThemePrefs.background.key, Res.string.settings_background, Res.string.settings_background_description),
     Indexed(SettingsSection.THEME, ThemePrefs.accent.key, Res.string.settings_accent, Res.string.settings_accent_description),
-    Indexed(SettingsSection.THEME, ThemePrefs.trueBlack.key, Res.string.settings_true_black, Res.string.settings_true_black_description),
-    Indexed(SettingsSection.THEME, ThemePrefs.trueBlackPostCards.key, Res.string.settings_true_black_cards, Res.string.settings_true_black_cards_description),
     Indexed(SettingsSection.THEME, ThemePrefs.showNavigationLabels.key, Res.string.settings_navigation_labels, null),
     Indexed(SettingsSection.THEME, ThemePrefs.hideNavigationOnScroll.key, Res.string.settings_hide_navigation, null),
     Indexed(SettingsSection.THEME, ThemePrefs.hideStatusBar.key, Res.string.settings_hide_status_bar, Res.string.settings_hide_status_bar_description),
@@ -312,19 +333,14 @@ private val INDEX = listOf(
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.disableAnimations.key, Res.string.settings_disable_animations, Res.string.settings_disable_animations_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.haptics.key, Res.string.settings_haptics, Res.string.settings_haptics_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.tickerChart.key, Res.string.settings_ticker_chart, Res.string.settings_ticker_chart_description),
-    Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.doubleTapLike.key, Res.string.settings_double_tap_like, Res.string.settings_double_tap_like_description),
-    Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.swipeBackAnywhere.key, Res.string.settings_swipe_back_anywhere, Res.string.settings_swipe_back_anywhere_description),
-    Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.swipeBackTilt.key, Res.string.settings_swipe_back_tilt, Res.string.settings_swipe_back_tilt_description),
+    Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.doubleTapLike.key, GestureWording.doubleTapLike, GestureWording.doubleTapLikeDescription),
+    Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.swipeBackAnywhere.key, GestureWording.swipeBackAnywhere, GestureWording.swipeBackAnywhereDescription),
+    Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.swipeBackTilt.key, GestureWording.swipeBackTilt, GestureWording.swipeBackTiltDescription),
 )
 
-/** The controls only Android has: the desktop's window takes no screenshot block, gives no haptics and has no status bar. */
-private val ANDROID_ONLY = setOf(GeneralPrefs.disableScreenshots.key, AccessibilityPrefs.haptics.key, ThemePrefs.hideStatusBar.key)
-
-/** The controls only the desktop has: its notifications, its tray, its windows' interface size and its proxy. */
-private val DESKTOP_ONLY = setOf(DesktopPrefs.notifications.key, DesktopPrefs.closeToTray.key, START_AT_LOGIN_KEY, DesktopPrefs.uiScale.key, DesktopPrefs.proxyMode.key)
-
-/** Every control the search can find, in this platform's settings: the desktop has none of [ANDROID_ONLY], Android none of [DESKTOP_ONLY]. */
+/** Every control the search can find, as this platform's pages show them ([PlatformSettings]). */
 @Composable
-private fun searchableControls(): List<SettingsControl> = INDEX
-    .filter { if (isDesktop) it.key !in ANDROID_ONLY else it.key !in DESKTOP_ONLY }
-    .map { SettingsControl(it.section, it.key, stringResource(it.title), it.description?.let { res -> stringResource(res) }.orEmpty()) }
+private fun searchableControls(): List<SettingsControl> {
+    val framed = LocalWideFrame.current != null
+    return INDEX.filter { PlatformSettings.shown(it.key, isDesktop, framed) }.map { SettingsControl(it.section, it.key, stringResource(it.title), it.description?.let { res -> stringResource(res) }.orEmpty()) }
+}

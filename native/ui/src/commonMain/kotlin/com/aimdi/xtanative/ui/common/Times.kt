@@ -10,6 +10,7 @@ import com.aimdi.xtanative.ui.generated.resources.ago_minutes
 import com.aimdi.xtanative.ui.generated.resources.ago_seconds
 import com.aimdi.xtanative.ui.generated.resources.problem_saved_at
 import com.aimdi.xtanative.ui.generated.resources.problem_saved_earlier
+import com.aimdi.xtanative.ui.theme.AppLocale
 import java.text.DecimalFormatSymbols
 import java.time.Instant
 import java.time.ZoneId
@@ -28,13 +29,15 @@ internal expect fun datePattern(locale: Locale, skeleton: String): String
 @Composable
 internal expect fun timeOfDayText(then: Instant, locale: Locale): String
 
-/** "5m", "3h", "Oct 12": when a feed row's post was written. */
+/** "5m", "3h", "Oct 12": when a feed row's post was written, moving on at each whole minute while it is shown. */
 @Composable
 fun agoText(then: Instant?): String {
     if (then == null) return ""
     val zone = ZoneId.systemDefault()
     val locale = currentLocale()
-    return when (val ago = Formats.ago(then, Instant.now()) { it.atZone(zone).year }) {
+    // Measured against the shared minute clock, so "5m" becomes "6m" while the feed stays open.
+    val now = Instant.ofEpochMilli(minuteNow())
+    return when (val ago = Formats.ago(then, now) { it.atZone(zone).year }) {
         is Ago.Seconds -> stringResource(Res.string.ago_seconds, ago.n)
         is Ago.Minutes -> stringResource(Res.string.ago_minutes, ago.n)
         is Ago.Hours -> stringResource(Res.string.ago_hours, ago.n)
@@ -64,12 +67,36 @@ fun monthText(then: Instant): String {
     return formatter.format(then.atZone(ZoneId.systemDefault()))
 }
 
-/** 1.2K, 3.4M, with the locale's decimal separator. */
+/** A count as the reader's language shortens it: 1.2K, 1,2 Mio., 1.2万, 12 тыс. ([countFormat]). */
 @Composable
 fun countText(n: Long): String {
     val locale = currentLocale()
-    val decimal = remember(locale) { DecimalFormatSymbols.getInstance(locale).decimalSeparator }
-    return Formats.count(n, decimal)
+    val format = remember(locale) { countFormat(locale) }
+    return format(n)
+}
+
+/**
+ * The platform's compact number format for [locale] ("1,2 Mio.", "1.2万"):
+ * a count written with at most the given decimals, rounding down; null where
+ * the platform has none.
+ */
+internal expect fun compactCounts(locale: Locale): ((Long, Int) -> String)?
+
+/**
+ * How [locale] shortens counts ([Formats.compactCount]), in Latin digits as
+ * every other number in the app; made once per language and thread (the
+ * platform's formats are not safe to share), not once per count on a card.
+ * Latin Belarusian keeps X's own 1.2K: the platform knows only the Cyrillic words.
+ */
+internal fun countFormat(locale: Locale): (Long) -> String = countFormats.get().getOrPut(locale) { madeCountFormat(locale) }
+
+private val countFormats: ThreadLocal<HashMap<Locale, (Long) -> String>> = ThreadLocal.withInitial { HashMap() }
+
+private fun madeCountFormat(locale: Locale): (Long) -> String {
+    val latin = runCatching { Locale.Builder().setLocale(locale).setUnicodeLocaleKeyword("nu", "latn").build() }.getOrDefault(locale)
+    val decimal = DecimalFormatSymbols.getInstance(latin).decimalSeparator
+    val compact = if (latin.country == AppLocale.LATIN_BELARUSIAN_REGION) null else runCatching { compactCounts(latin) }.getOrNull()
+    return { n -> Formats.compactCount(n, decimal, compact) }
 }
 
 /**

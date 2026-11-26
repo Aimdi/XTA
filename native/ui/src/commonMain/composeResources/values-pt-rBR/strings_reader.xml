@@ -64,6 +64,7 @@
     <string name="reader_voices_use">Usar uma voz baixada</string>
     <string name="reader_voices_use_description">Lê com uma voz baixada quando houver uma no idioma do artigo; caso contrário, usa o mecanismo abaixo.</string>
     <string name="reader_voices_note">As vozes só são baixadas do GitHub (k2-fsa/sherpa-onnx) quando você toca em Download. Elas funcionam inteiramente neste dispositivo.</string>
+    <string name="reader_voices_note_desktop">As vozes só são baixadas do GitHub (k2-fsa/sherpa-onnx) quando você clica em Download. Elas funcionam inteiramente neste dispositivo.</string>
     <string name="reader_voices_synthesis_missing">Esta versão pode baixar vozes, mas ainda não consegue ler com elas. Até lá, o mecanismo de voz abaixo lê em voz alta.</string>
     <string name="reader_voice_licence">Licença: %1$s</string>
     <string name="reader_voice_installing">Verificando e descompactando…</string>

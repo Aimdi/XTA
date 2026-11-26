@@ -71,8 +71,8 @@
     <string name="discover_community_created">Kreita %1$s</string>
     <string name="discover_community_members">Membroj</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d membro</item>
-        <item quantity="other">%1$d membroj</item>
+        <item quantity="one">%1$s membro</item>
+        <item quantity="other">%1$s membroj</item>
     </plurals>
     <string name="discover_list_import_title">Importi X-liston kiel grupon</string>
     <string name="discover_list_import_intro">Por importi X-liston kiel abongrupon, entajpu sube la ligilon de la listo aŭ ĝian identigilon</string>

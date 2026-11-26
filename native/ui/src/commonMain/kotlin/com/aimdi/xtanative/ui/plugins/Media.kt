@@ -100,6 +100,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_link_copied
 import com.aimdi.xtanative.ui.generated.resources.reader_link_share
 import com.aimdi.xtanative.ui.generated.resources.reader_media
 import com.aimdi.xtanative.ui.home.HoldsKeys
+import com.aimdi.xtanative.ui.home.skippedByTab
 import com.aimdi.xtanative.ui.media.GifCorner
 import com.aimdi.xtanative.ui.media.LocalViewerVideoKeys
 import com.aimdi.xtanative.ui.media.MOTION_FAST_MS
@@ -295,13 +296,15 @@ fun MediaPager(
                     ViewerKey.FIRST -> true.also { turn(-pager.currentPage) }
                     ViewerKey.LAST -> true.also { turn(items.size - 1 - pager.currentPage) }
                     ViewerKey.CLOSE -> true.also { onClose() }
-                    ViewerKey.COPY, ViewerKey.SAVE_AS -> fileMenu?.key(key) ?: false
+                    ViewerKey.COPY, ViewerKey.SAVE_AS, ViewerKey.MENU -> fileMenu?.key(key) ?: false
                     // The photo shown zooms and moves about, as the app's viewer's; a video's page leaves the keys alone.
                     ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET, ViewerKey.PAN_LEFT, ViewerKey.PAN_RIGHT, ViewerKey.PAN_UP, ViewerKey.PAN_DOWN ->
                         (shown == MediaItem.Kind.PHOTO).also { if (it) zoomKeys.tryEmit(key) }
                     ViewerKey.NONE -> false
                 }
             }
+            // It holds the keys, yet Tab goes round the viewer's buttons without stopping on it, where nothing would show.
+            .skippedByTab()
             .focusRequester(focus)
             .focusable(),
     ) {

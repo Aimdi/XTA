@@ -73,10 +73,10 @@
     <string name="discover_community_created">Створено %1$s</string>
     <string name="discover_community_members">Учасники</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d учасник</item>
-        <item quantity="few">%1$d учасники</item>
-        <item quantity="many">%1$d учасників</item>
-        <item quantity="other">%1$d учасника</item>
+        <item quantity="one">%1$s учасник</item>
+        <item quantity="few">%1$s учасники</item>
+        <item quantity="many">%1$s учасників</item>
+        <item quantity="other">%1$s учасника</item>
     </plurals>
     <string name="discover_list_import_title">Імпортувати список X як групу</string>
     <string name="discover_list_import_intro">Щоб імпортувати список X як групу підписок, введіть нижче посилання на список або його ідентифікатор</string>

@@ -73,17 +73,43 @@ class PostFooterRulesTest {
 
     @Test
     fun theFooterDropsTheViewsFirstThenTheNumbersThenWraps() {
-        val labels = listOf(20f, 20f, 20f)
-        val counts = labels.sumOf { FooterFit.countWidth(it).toDouble() }.toFloat()
-        val buttons = 2 * FooterFit.BUTTON + FooterFit.GROUP_GAP
-        val views = FooterFit.countWidth(30f)
-        assertEquals(FooterFit(showCounts = true, showViews = true, wraps = false), FooterFit.of(counts + views + buttons, labels, 30f))
-        assertEquals(FooterFit(showCounts = true, showViews = false, wraps = false), FooterFit.of(counts + buttons, labels, 30f))
-        assertEquals(FooterFit(showCounts = true, showViews = false, wraps = false), FooterFit.of(counts + buttons, labels, null), "a post without views")
-        val bare = 3 * FooterFit.countWidth(0f) + buttons
-        assertEquals(FooterFit(showCounts = false, showViews = false, wraps = false), FooterFit.of(bare, labels, 30f))
-        assertEquals(FooterFit(showCounts = false, showViews = false, wraps = true), FooterFit.of(bare - 1, labels, 30f))
-        assertEquals(FooterFit.PADDING * 2 + FooterFit.GLYPH, FooterFit.countWidth(0f), "a count without a number is its glyph")
+        val counts = listOf(50, 50, 50)
+        val end = 80
+        val gap = 8
+        assertEquals(238, FooterFit.rowWidth(counts, end, gap))
+        assertEquals(FooterFit(showCounts = true, showViews = true, wraps = false), FooterFit.withNumbers(298, counts, 60, end, gap))
+        assertEquals(FooterFit(showCounts = true, showViews = false, wraps = false), FooterFit.withNumbers(297, counts, 60, end, gap))
+        assertEquals(FooterFit(showCounts = true, showViews = false, wraps = false), FooterFit.withNumbers(238, counts, null, end, gap), "a post without views")
+        assertEquals(FooterFit(showCounts = false, showViews = false, wraps = false), FooterFit.withNumbers(237, counts, 60, end, gap), "the numbers go")
+        val bare = listOf(25, 25, 25)
+        assertEquals(FooterFit(showCounts = false, showViews = false, wraps = false), FooterFit.bare(163, bare, end, gap))
+        assertEquals(FooterFit(showCounts = false, showViews = false, wraps = true), FooterFit.bare(162, bare, end, gap), "not even the glyphs fit")
+    }
+
+    @Test
+    fun aFooterRowSpreadsTheCountsFromTheStartAndPutsTheButtonsAtTheEnd() {
+        // 400 wide, buttons 40 + 40 and a gap of 8: the counts share 312.
+        val starts = FooterPlacement.row(400, listOf(30, 30, 30, 42), listOf(40, 40), 8)
+        assertEquals(listOf(0, 90, 180, 270, 320, 360), starts)
+        assertEquals(listOf(0, 60), FooterPlacement.row(100, listOf(30), listOf(40), 8), "one count sits at the start")
+    }
+
+    @Test
+    fun anOpenedPostsCountsSpreadNoFurtherThanTheirCapWithTheButtonsStillAtTheEnd() {
+        val starts = FooterPlacement.row(700, listOf(30, 30, 30), listOf(40, 40), 8, countsMax = 360)
+        assertEquals(listOf(0, 165, 330, 620, 660), starts)
+        assertEquals(FooterPlacement.row(300, listOf(30, 30, 30), listOf(40, 40), 8), FooterPlacement.row(300, listOf(30, 30, 30), listOf(40, 40), 8, countsMax = 360), "a narrow footer is under the cap")
+        assertEquals(listOf(0, 30), FooterPlacement.row(200, listOf(30, 30), listOf(40), 8, countsMax = 10).take(2), "never below the counts' own width")
+    }
+
+    @Test
+    fun aWrappedFooterFillsEachLineAndSpacesItEvenly() {
+        val lines = FooterPlacement.flow(100, listOf(30, 30, 30, 40, 40))
+        assertEquals(listOf(listOf(0, 1, 2), listOf(3, 4)), lines.map { line -> line.map { it.first } })
+        // Ten left on the first line, in four even spaces; twenty on the second, in three.
+        assertEquals(listOf(3, 35, 68), lines[0].map { it.second })
+        assertEquals(listOf(7, 53), lines[1].map { it.second })
+        assertEquals(listOf(listOf(0 to 0)), FooterPlacement.flow(20, listOf(30)), "an item wider than the line has a line of its own")
     }
 
     @Test

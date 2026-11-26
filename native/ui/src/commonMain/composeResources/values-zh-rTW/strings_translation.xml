@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">翻譯</string>
     <string name="translation_privacy">點按「翻譯」之前不會傳送任何內容。之後文字只會傳送到你在這裡選擇的服務。</string>
+    <string name="translation_privacy_desktop">按一下「翻譯」之前不會傳送任何內容。之後文字只會傳送到你在這裡選擇的服務。</string>
     <string name="translation_provider">翻譯服務</string>
     <string name="translation_provider_off">關閉</string>
     <string name="translation_provider_ai">AI 服務</string>

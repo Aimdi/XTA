@@ -43,7 +43,6 @@ import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -65,11 +64,13 @@ import com.aimdi.xtanative.core.x.search.XAdvancedSearch
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Content
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Filter
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Inclusion
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
+import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.discover_accounts
 import com.aimdi.xtanative.ui.generated.resources.discover_advanced_search
@@ -110,6 +111,7 @@ import com.aimdi.xtanative.ui.generated.resources.discover_this_exact_phrase
 import com.aimdi.xtanative.ui.generated.resources.discover_to_these_accounts
 import com.aimdi.xtanative.ui.generated.resources.discover_until
 import com.aimdi.xtanative.ui.generated.resources.discover_videos
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import org.jetbrains.compose.resources.StringResource
@@ -165,7 +167,7 @@ internal fun AdvancedSearchDialog(
             modifier = Modifier.fillMaxSize(),
             containerColor = MaterialTheme.colorScheme.background,
             topBar = {
-                TopAppBar(
+                ColumnTopAppBar(
                     navigationIcon = {
                         IconTip(stringResource(Res.string.discover_close)) { IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_close)) } }
                     },
@@ -340,7 +342,7 @@ private fun ToggleRow(label: String, checked: Boolean, onChange: (Boolean) -> Un
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(label, modifier = Modifier.weight(1f))
-        Switch(checked = checked, onCheckedChange = null)
+        Switch(checked = checked, onCheckedChange = null, colors = xSwitchColors())
     }
 }
 
@@ -416,7 +418,7 @@ private fun QueryPreview(query: String) {
             .padding(16.dp),
     ) {
         Text(stringResource(Res.string.discover_search_term), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        SelectionContainer(Modifier.padding(top = 8.dp)) {
+        SelectionContainer(Modifier.padding(top = 8.dp).pointerOnlyFocus()) {
             Text(
                 query.ifEmpty { stringResource(Res.string.discover_not_set) },
                 color = if (query.isEmpty()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,

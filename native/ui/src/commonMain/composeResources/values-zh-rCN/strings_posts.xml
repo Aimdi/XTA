@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">关闭</string>
     <string name="posts_quotes">引用</string>
     <string name="posts_replies_missing">无法加载回复</string>
+    <string name="posts_no_replies_yet">暂无回复</string>
     <string name="posts_replying_to">回复</string>
     <string name="posts_reposted">%1$s 于 %2$s 前转推了</string>
     <string name="posts_reposted_by">转发者</string>
@@ -96,6 +97,7 @@
     <string name="posts_verified_organization">已认证机构</string>
     <string name="posts_view_quoted">查看引用的帖子</string>
     <string name="posts_zen_replies">长按评论按钮以显示回复</string>
+    <string name="posts_zen_replies_desktop">右键点击评论按钮以显示回复</string>
     <plurals name="posts_views_count">
         <item quantity="other">%1$s 次查看</item>
     </plurals>

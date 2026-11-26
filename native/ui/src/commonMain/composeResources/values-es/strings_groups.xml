@@ -24,6 +24,7 @@
     <string name="groups_columns">Columnas</string>
     <string name="groups_combine_clear">Quitar</string>
     <string name="groups_combine_hint">Mantén pulsado un grupo para leerlo junto a este</string>
+    <string name="groups_combine_hint_desktop">Haz clic derecho en un grupo para leerlo junto a este</string>
     <string name="groups_combined_count">Leyendo %1$d más a la vez</string>
     <string name="groups_compact">Compacto</string>
     <string name="groups_content_default">Predeterminado</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">No hay resultados</string>
     <string name="groups_no_subscriptions">Sin suscripciones. ¡Intenta buscar o importar algunas!</string>
     <string name="groups_none_description">Los grupos combinan suscripciones en feeds personalizados. Mantén pulsado un grupo para editarlo.</string>
+    <string name="groups_none_description_desktop">Los grupos combinan suscripciones en feeds personalizados. Haz clic derecho en un grupo para editarlo.</string>
     <string name="groups_none_yet">Aún no hay grupos</string>
     <string name="groups_not_all_posts">Nota: Debido a una limitación de Twitter, es posible que no se incluyan todos los tweets</string>
     <string name="groups_ok">OK</string>

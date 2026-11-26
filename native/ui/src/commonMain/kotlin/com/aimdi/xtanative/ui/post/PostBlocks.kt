@@ -60,6 +60,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_spaces
 import com.aimdi.xtanative.ui.generated.resources.posts_subscribers_only
 import com.aimdi.xtanative.ui.generated.resources.posts_subscribers_only_of_author
 import com.aimdi.xtanative.ui.links.LocalLinks
+import com.aimdi.xtanative.ui.theme.edgeColor
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -72,7 +73,7 @@ internal fun Embed(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null,
         modifier
             .fillMaxWidth()
             .clip(EmbedShape)
-            .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, EmbedShape)
+            .border(Dp.Hairline, edgeColor(), EmbedShape)
             .let { if (onClick != null) it.clickable(onClick = onClick) else it },
     ) { content() }
 }

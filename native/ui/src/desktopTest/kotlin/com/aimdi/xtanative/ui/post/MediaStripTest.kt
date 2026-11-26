@@ -48,4 +48,13 @@ class MediaStripTest {
         assertEquals(0, MediaStrip.startOf(-1, 4))
         assertEquals(0, MediaStrip.startOf(3, 0))
     }
+
+    @Test
+    fun aTallPictureAloneInAFeedIsCutToFourByFive() {
+        assertEquals(MediaStrip.MIN_ASPECT, MediaStrip.feedSingleAspect(1f / 3f))
+        assertEquals(MediaStrip.MIN_ASPECT, MediaStrip.feedSingleAspect(9f / 16f))
+        assertEquals(4f / 3f, MediaStrip.feedSingleAspect(4f / 3f), "a wide one keeps its shape")
+        assertEquals(3f, MediaStrip.feedSingleAspect(3f), "however wide")
+        assertEquals(1f, MediaStrip.feedSingleAspect(0f), "a shape X did not give is still square")
+    }
 }

@@ -80,6 +80,8 @@ import com.aimdi.xtanative.ui.generated.resources.saved_sheet_not_saved
 import com.aimdi.xtanative.ui.generated.resources.saved_sheet_title
 import com.aimdi.xtanative.ui.generated.resources.saved_sheet_unfiled
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
+import com.aimdi.xtanative.ui.theme.edgeColor
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -242,7 +244,7 @@ private fun FolderChip(folder: SavedFolder, selected: Boolean, onClick: () -> Un
             containerColor = Color.Transparent,
             selectedContainerColor = Color.Transparent,
         ),
-        border = BorderStroke(1.dp, if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant),
+        border = BorderStroke(1.dp, if (selected) MaterialTheme.colorScheme.primary else edgeColor()),
     )
 }
 
@@ -262,7 +264,7 @@ private fun RememberRow(on: Boolean, onChange: (Boolean) -> Unit) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        Switch(checked = on, onCheckedChange = null)
+        Switch(checked = on, onCheckedChange = null, colors = xSwitchColors())
     }
 }
 

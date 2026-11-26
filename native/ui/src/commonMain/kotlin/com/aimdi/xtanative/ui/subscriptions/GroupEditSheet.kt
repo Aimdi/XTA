@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.subscriptions
 
+import com.aimdi.xtanative.ui.common.destructiveTextColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -110,6 +111,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_unmark_nsfw
 import com.aimdi.xtanative.ui.generated.resources.groups_unpin
 import com.aimdi.xtanative.ui.generated.resources.groups_yes
 import com.aimdi.xtanative.ui.home.rememberSheetList
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -270,7 +272,7 @@ fun GroupEditSheet(
                         picker = EditPicker.NONE
                         actions.delete(group.id)
                         onDismiss()
-                    }) { Text(stringResource(Res.string.groups_yes)) }
+                    }, colors = destructiveTextColors()) { Text(stringResource(Res.string.groups_yes)) }
                 },
                 dismissButton = { TextButton(onClick = { picker = EditPicker.NONE }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.groups_no)) } },
             )
@@ -338,7 +340,7 @@ private fun InFollowingRow(shown: Boolean, onChange: (Boolean) -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(stringResource(Res.string.groups_in_following), modifier = Modifier.weight(1f))
-        Switch(checked = shown, onCheckedChange = null)
+        Switch(checked = shown, onCheckedChange = null, colors = xSwitchColors())
     }
 }
 

@@ -64,6 +64,7 @@
     <string name="reader_voices_use">İndirilen bir sesi kullan</string>
     <string name="reader_voices_use_description">Makalenin dilini konuşan indirilmiş bir ses varsa onunla okur; yoksa aşağıdaki motoru kullanır.</string>
     <string name="reader_voices_note">Sesler yalnızca İndir'e dokunduğunuzda GitHub'dan (k2-fsa/sherpa-onnx) indirilir. Tamamen bu cihazda çalışırlar.</string>
+    <string name="reader_voices_note_desktop">Sesler yalnızca İndir'e tıkladığınızda GitHub'dan (k2-fsa/sherpa-onnx) indirilir. Tamamen bu cihazda çalışırlar.</string>
     <string name="reader_voices_synthesis_missing">Bu sürüm sesleri indirebilir ancak henüz onlarla okuyamaz. O zamana kadar aşağıdaki konuşma motoru sesli okur.</string>
     <string name="reader_voice_licence">Lisans: %1$s</string>
     <string name="reader_voice_installing">Denetleniyor ve açılıyor…</string>

@@ -64,6 +64,7 @@
     <string name="reader_voices_use">Выкарыстоўваць спампаваны голас</string>
     <string name="reader_voices_use_description">Чытае спампаваным голасам, калі ён гаворыць на мове артыкула; інакш выкарыстоўвае рухавік ніжэй.</string>
     <string name="reader_voices_note">Галасы спампоўваюцца з GitHub (k2-fsa/sherpa-onnx), толькі калі вы націскаеце «Спампаваць». Яны працуюць цалкам на гэтай прыладзе.</string>
+    <string name="reader_voices_note_desktop">Галасы спампоўваюцца з GitHub (k2-fsa/sherpa-onnx), толькі калі вы пстрыкаеце «Спампаваць». Яны працуюць цалкам на гэтай прыладзе.</string>
     <string name="reader_voices_synthesis_missing">Гэтая версія можа спампоўваць галасы, але пакуль не можа імі чытаць. Да таго часу ўслых чытае рухавік маўлення ніжэй.</string>
     <string name="reader_voice_licence">Ліцэнзія: %1$s</string>
     <string name="reader_voice_installing">Праверка і распакоўванне…</string>

@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">Avataren din</string>
     <string name="settings_avatar_change">Trykk for å endre bildet øverst til venstre</string>
+    <string name="settings_avatar_change_desktop">Klikk for å endre bildet øverst til venstre</string>
     <string name="settings_avatar_description">Bilde øverst til venstre og i menyen — blir på denne enheten</string>
     <string name="settings_avatar_choose">Velg fra enheten</string>
     <string name="settings_avatar_from_account">Bruk X-profilbilde</string>

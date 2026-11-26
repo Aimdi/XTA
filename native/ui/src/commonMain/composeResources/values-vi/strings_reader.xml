@@ -64,6 +64,7 @@
     <string name="reader_voices_use">Dùng giọng đã tải xuống</string>
     <string name="reader_voices_use_description">Đọc bằng giọng đã tải xuống khi có giọng nói đúng ngôn ngữ của bài viết; nếu không, dùng công cụ bên dưới.</string>
     <string name="reader_voices_note">Giọng chỉ được tải từ GitHub (k2-fsa/sherpa-onnx) khi bạn nhấn Tải xuống. Giọng chạy hoàn toàn trên thiết bị này.</string>
+    <string name="reader_voices_note_desktop">Giọng chỉ được tải từ GitHub (k2-fsa/sherpa-onnx) khi bạn nhấp Tải xuống. Giọng chạy hoàn toàn trên thiết bị này.</string>
     <string name="reader_voices_synthesis_missing">Phiên bản này có thể tải giọng xuống nhưng chưa thể đọc bằng chúng. Cho đến lúc đó, bộ đọc bên dưới sẽ đọc to.</string>
     <string name="reader_voice_licence">Giấy phép: %1$s</string>
     <string name="reader_voice_installing">Đang kiểm tra và giải nén…</string>

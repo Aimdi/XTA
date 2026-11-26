@@ -22,10 +22,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -34,7 +31,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -46,7 +42,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -59,15 +54,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -79,9 +72,13 @@ import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedSort
 import com.aimdi.xtanative.store.saved.SavedSource
 import com.aimdi.xtanative.store.saved.SavedTabs
+import com.aimdi.xtanative.ui.common.ActionsInTopBar
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.SearchField
 import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.TopBarBack
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -127,6 +124,7 @@ import com.aimdi.xtanative.ui.home.FindsWithKeys
 import com.aimdi.xtanative.ui.home.SelectsWithKeys
 import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.post.PostActions
+import com.aimdi.xtanative.ui.theme.edgeColor
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -203,7 +201,7 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
                     onRemove = { dialog = SavedDialog.RemoveSelected },
                 )
             } else {
-                TitleBar(SavedNotice.of(view.tab), onBack, searchable = links.searchLibrary != null) { action ->
+                TitleBar(SavedNotice.of(view.tab), onBack, searchable = links.searchLibrary != null, onWrite = { dialog = SavedDialog.Compose(NoteTarget.Note()) }) { action ->
                     when (action) {
                         SavedMenuAction.SEARCH_LIBRARY -> links.searchLibrary?.invoke()
                         SavedMenuAction.CREATE_FOLDER -> dialog = SavedDialog.EditFolder(null)
@@ -217,7 +215,7 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
             }
         },
         floatingActionButton = {
-            if (!view.selecting) {
+            if (!view.selecting && !ActionsInTopBar) {
                 FloatingActionButton(onClick = { dialog = SavedDialog.Compose(NoteTarget.Note()) }) {
                     Icon(SavedIcons.EditNote, stringResource(Res.string.saved_write_note))
                 }
@@ -312,22 +310,26 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
     }
 }
 
-/** The title at 28 sp, the lock that says what stays on this device, and the archive's menu. */
+/**
+ * The title, the lock that says what stays on this device, and the archive's
+ * menu. The title is XTA's 28 sp on a phone; on the desktop it is the size of
+ * every other page's title beside it in the window.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TitleBar(notice: SavedNotice, onBack: (() -> Unit)?, searchable: Boolean, onMenu: (SavedMenuAction) -> Unit) {
+private fun TitleBar(notice: SavedNotice, onBack: (() -> Unit)?, searchable: Boolean, onWrite: () -> Unit, onMenu: (SavedMenuAction) -> Unit) {
     val noticeText = onDeviceText(notice)
-    TopAppBar(
+    ColumnTopAppBar(
         navigationIcon = {
-            if (onBack != null) IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
+            if (onBack != null) TopBarBack(onBack)
         },
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 TipText(
                     stringResource(Res.string.saved_title),
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = (-0.56).sp,
+                    fontSize = if (ActionsInTopBar) TextUnit.Unspecified else 28.sp,
+                    fontWeight = if (ActionsInTopBar) null else FontWeight.Bold,
+                    letterSpacing = if (ActionsInTopBar) TextUnit.Unspecified else (-0.56).sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f, fill = false),
@@ -337,7 +339,14 @@ private fun TitleBar(notice: SavedNotice, onBack: (() -> Unit)?, searchable: Boo
                 } }
             }
         },
-        actions = { SavedMenu(searchable, onMenu) },
+        actions = {
+            // On the desktop "Write a note" sits here, by the menu, rather than in a round button in the corner.
+            if (ActionsInTopBar) {
+                val write = stringResource(Res.string.saved_write_note)
+                IconTip(write) { IconButton(onClick = onWrite) { Icon(SavedIcons.EditNote, write) } }
+            }
+            SavedMenu(searchable, onMenu)
+        },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
     )
 }
@@ -366,7 +375,7 @@ private fun SavedMenu(searchable: Boolean, onMenu: (SavedMenuAction) -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SelectionBar(count: Int, allSelected: Boolean, onClose: () -> Unit, onSelectAll: () -> Unit, onMove: () -> Unit, onRemove: () -> Unit) {
-    TopAppBar(
+    ColumnTopAppBar(
         navigationIcon = { IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } } },
         title = { Text(if (count == 0) stringResource(Res.string.saved_none_selected) else pluralStringResource(Res.plurals.saved_selected, count, count)) },
         actions = {
@@ -387,37 +396,19 @@ private fun SelectionBar(count: Int, allSelected: Boolean, onClose: () -> Unit, 
 @Composable
 private fun SearchRow(query: String, onQuery: (String) -> Unit, menu: SavedFilterMenu, sort: SavedSort, mediaOnly: Boolean, onFilter: (SavedFilterAction) -> Unit) {
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
-            .heightIn(min = 44.dp)
-            .clip(RoundedCornerShape(50))
-            .background(MaterialTheme.colorScheme.surfaceContainer)
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(50)),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Spacer(Modifier.width(14.dp))
-        Icon(Icons.Filled.Search, contentDescription = null, tint = muted, modifier = Modifier.size(18.dp))
-        Spacer(Modifier.width(10.dp))
-        Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
-            if (query.isEmpty()) Text(stringResource(Res.string.saved_search_hint), color = muted, fontSize = 15.sp, maxLines = 1)
-            BasicTextField(
-                value = query,
-                onValueChange = onQuery,
-                singleLine = true,
-                textStyle = TextStyle(fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface),
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                modifier = Modifier.fillMaxWidth().foundWithKeys(),
-            )
-        }
-        if (query.isNotEmpty()) {
-            IconTip(stringResource(Res.string.saved_clear_search)) { IconButton(onClick = { onQuery("") }) { Icon(Icons.Filled.Close, stringResource(Res.string.saved_clear_search), tint = muted, modifier = Modifier.size(18.dp)) } }
-        }
-        VerticalDivider(Modifier.height(20.dp), color = MaterialTheme.colorScheme.outlineVariant)
-        FilterButton(menu, sort, mediaOnly, onFilter)
-    }
+    SearchField(
+        value = query,
+        onValueChange = onQuery,
+        placeholder = stringResource(Res.string.saved_search_hint),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp).foundWithKeys(),
+        trailing = {
+            if (query.isNotEmpty()) {
+                IconTip(stringResource(Res.string.saved_clear_search)) { IconButton(onClick = { onQuery("") }) { Icon(Icons.Filled.Close, stringResource(Res.string.saved_clear_search), tint = muted, modifier = Modifier.size(18.dp)) } }
+            }
+            VerticalDivider(Modifier.height(20.dp), color = edgeColor())
+            FilterButton(menu, sort, mediaOnly, onFilter)
+        },
+    )
 }
 
 /** Newest or oldest saved first, Media only, and Select; off where the tab has none of them. */
@@ -516,7 +507,7 @@ private fun TabChip(label: String, selected: Boolean, trailing: ImageVector?, on
         Modifier
             .heightIn(min = 32.dp)
             .clip(shape)
-            .border(1.dp, if (selected) accent else MaterialTheme.colorScheme.outlineVariant, shape)
+            .border(1.dp, if (selected) accent else edgeColor(), shape)
             // A right-click opens what a long press does, as a desktop opens a thing's menu.
             .then(onLongClick?.let { Modifier.onSecondaryClick(it) } ?: Modifier)
             .combinedClickable(role = Role.Tab, onClick = onClick, onLongClick = onLongClick)
@@ -549,7 +540,7 @@ private fun SourcePicker(selected: SavedSource, onPick: (SavedSource) -> Unit) {
         Row(
             Modifier
                 .clip(shape)
-                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape)
+                .border(1.dp, edgeColor(), shape)
                 .clickable(role = Role.DropdownList, onClickLabel = stringResource(Res.string.saved_networks)) { open = true }
                 .padding(horizontal = 10.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,

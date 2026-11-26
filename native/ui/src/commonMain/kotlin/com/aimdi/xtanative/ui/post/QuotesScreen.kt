@@ -17,10 +17,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
+import com.aimdi.xtanative.ui.common.XtaTab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,8 +40,11 @@ import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.Problem
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.IconTip
-import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.FeedSkeleton
+import com.aimdi.xtanative.ui.common.PostSkeleton
+import com.aimdi.xtanative.ui.common.RowSkeleton
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
@@ -197,11 +199,11 @@ fun QuotesScreen(id: String, reposters: Boolean, actions: PostActions, onBack: (
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
+            ColumnTopAppBar(
                 title = {
                     TabRow(selectedTabIndex = pager.currentPage, containerColor = MaterialTheme.colorScheme.background, divider = {}) {
                         listOf(Res.string.posts_quotes, Res.string.posts_retweets).forEachIndexed { index, label ->
-                            Tab(
+                            XtaTab(
                                 selected = pager.currentPage == index,
                                 onClick = { scope.launch { pager.animateScrollToPage(index) } },
                                 text = { Text(stringResource(label)) },
@@ -238,7 +240,7 @@ private fun QuotesList(state: QuotesUi, vm: QuotesViewModel, actions: PostAction
             item(key = "sort") {
                 SortChip(state.quoteSort, Sorts.X_QUOTES, { quoteSortLabel(it) }, ::quoteSortIcon, vm::selectQuotes, Modifier.padding(start = 4.dp))
             }
-            listState(quotes, { vm.loadQuotes() }, { quotes.cursor?.let(vm::loadQuotes) }, Res.string.posts_no_quotes, moreFailed = Res.string.posts_unable_to_load_the_next_page_of_replies) {
+            listState(quotes, { vm.loadQuotes() }, { quotes.cursor?.let(vm::loadQuotes) }, Res.string.posts_no_quotes, moreFailed = Res.string.posts_unable_to_load_the_next_page_of_replies, posts = true) {
                 feedThreads(quotes.items, layout, actions, keyOf = { "quote-" + it.id })
             }
         }
@@ -272,7 +274,11 @@ private fun RepostersList(state: QuotesUi, vm: QuotesViewModel, actions: PostAct
     } }
 }
 
-/** A list's first load, its failure, its emptiness, its rows and the page under way below them. */
+/**
+ * A list's first load, its failure, its emptiness, its rows and the page
+ * under way below them; loading shows placeholders shaped as its rows,
+ * posts for a list of [posts], accounts otherwise.
+ */
 private fun <T> androidx.compose.foundation.lazy.LazyListScope.listState(
     paged: Paged<T>,
     retry: () -> Unit,
@@ -280,11 +286,12 @@ private fun <T> androidx.compose.foundation.lazy.LazyListScope.listState(
     empty: org.jetbrains.compose.resources.StringResource,
     failed: org.jetbrains.compose.resources.StringResource? = null,
     moreFailed: org.jetbrains.compose.resources.StringResource? = null,
+    posts: Boolean = false,
     rows: androidx.compose.foundation.lazy.LazyListScope.() -> Unit,
 ) {
     val problem = paged.problem
     when {
-        paged.loading -> item(key = "loading") { LoadingRow() }
+        paged.loading -> item(key = "loading") { if (posts) FeedSkeleton(count = 4) else RowSkeleton() }
         problem != null -> item(key = "problem") { ProblemRow(problem, retry, context = failed?.let { stringResource(it) }) }
         paged.items.isEmpty() -> item(key = "empty") {
             Text(
@@ -299,7 +306,7 @@ private fun <T> androidx.compose.foundation.lazy.LazyListScope.listState(
     item(key = "more") {
         val more = paged.moreProblem
         when {
-            paged.loadingMore -> LoadingRow()
+            paged.loadingMore -> if (posts) PostSkeleton() else RowSkeleton(count = 1)
             more != null -> ProblemRow(more, retryMore, context = moreFailed?.let { stringResource(it) })
         }
     }

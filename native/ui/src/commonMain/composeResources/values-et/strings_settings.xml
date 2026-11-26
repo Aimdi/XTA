@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Kasuta lingi jagamiseks kohandatud URL'i</string>
     <string name="settings_cancel">Katkesta</string>
     <string name="settings_save">salvesta</string>
-    <string name="settings_tab_following">Jälgitavaid</string>
+    <string name="settings_tab_following">Jälgin</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Tellimused</string>
     <string name="settings_page_discover">Avasta</string>
@@ -84,6 +84,7 @@
     <string name="settings_yes">Jah</string>
     <string name="settings_zen_mode">Zen-režiim</string>
     <string name="settings_zen_mode_description">Rahulikum voog: peidab postituste statistika, peidab vastused, kuni hoiad kommentaarinuppu all, ja näitab igalt inimeselt vaid mõnda hiljutist postitust.</string>
+    <string name="settings_zen_mode_description_desktop">Rahulikum voog: peidab postituste statistika, peidab vastused, kuni teed kommentaarinupul paremklõpsu, ja näitab igalt inimeselt vaid mõnda hiljutist postitust.</string>
     <string name="settings_threaded_replies">Hargnevad vastused</string>
     <string name="settings_threaded_replies_description">Kuva avatud postituse vastused taandega puuna, kus iga vastus on pesastatud selle alla, millele see vastab.</string>
     <string name="settings_collapse_boosts">Rühmita järjestikused jagamised</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Piltide kvaliteet</string>
     <string name="settings_load_manually">Laadi meedia käsitsi</string>
     <string name="settings_load_manually_description">Pildid ja videod laaditakse alles pärast puudutamist, et säästa mobiilset andmesidet.</string>
+    <string name="settings_load_manually_description_desktop">Pildid ja videod laaditakse alles pärast klõpsamist, et säästa andmesidet.</string>
     <string name="settings_save_bandwidth">Kasutades väiksemaid pildifaile säästad ribalaiust</string>
     <string name="settings_quality_low">Madal</string>
     <string name="settings_quality_medium">Keskmine</string>
@@ -160,10 +162,6 @@
     <string name="settings_colour_purple">Lilla</string>
     <string name="settings_colour_orange">Oranž</string>
     <string name="settings_colour_green">Roheline</string>
-    <string name="settings_true_black">Missugune must teema?</string>
-    <string name="settings_true_black_description">Tumeda teemana kasuta korrektset musta teemat</string>
-    <string name="settings_true_black_cards">Tõeline must postituskaartide jaoks</string>
-    <string name="settings_true_black_cards_description">Kasuta tõelist musta postituskaartide taustaks</string>
     <string name="settings_navigation_labels">Kuva navigeerimissildid</string>
     <string name="settings_hide_navigation">Peida ülemine ja alumine riba kerimisel</string>
     <string name="settings_hide_status_bar">Peida olekuriba</string>
@@ -179,11 +177,17 @@
     <string name="settings_ticker_chart">Aktsia graafik</string>
     <string name="settings_ticker_chart_description">Kuvatakse tickeri avamisel. XTA toob hinnad ise avalikest teenustest, mis kontot ei nõua; välja lülitatuna päringut ei tehta ja postitused jäävad alles.</string>
     <string name="settings_double_tap_like">Topeltpuudutus meeldimiseks</string>
+    <string name="settings_double_tap_like_desktop">Topeltklõps meeldimiseks</string>
     <string name="settings_double_tap_like_description">Vaikimisi väljas: iga üksik puudutus ootab, kas järgneb teine, nii et postituse avamine on veidi aeglasem.</string>
+    <string name="settings_double_tap_like_description_desktop">Vaikimisi väljas: iga üksik klõps ootab, kas järgneb teine, nii et postituse avamine on veidi aeglasem.</string>
     <string name="settings_swipe_back_anywhere">Tagasi pühkimine kõikjalt</string>
+    <string name="settings_swipe_back_anywhere_desktop">Tagasi lohistamine kõikjalt</string>
     <string name="settings_swipe_back_anywhere_description">Lohista avatud postitust selle mis tahes kohast, et tagasi minna. Väljas: ainult ekraani servast.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Lohista avatud postitust selle mis tahes kohast, et tagasi minna. Väljas: ainult akna servast.</string>
     <string name="settings_swipe_back_tilt">Kallutamine sõrmega kaasa</string>
+    <string name="settings_swipe_back_tilt_desktop">Kallutamine kursoriga kaasa</string>
     <string name="settings_swipe_back_tilt_description">Tagasi lohistatav postitus pöörleb ümber su sõrme ja kõigub vastavalt kiirusele.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">Tagasi lohistatav postitus pöörleb ümber kursori ja kõigub vastavalt kiirusele.</string>
     <string name="settings_accounts_empty">Lisa konto, et laadida Sulle.</string>
     <string name="settings_accounts_description">Lülita välja varukontod, mida hoiad vaid limiitide pärast. Sulle ühendab sisselülitatud kontode avalehe ajajooned; Jälgin kasutab endiselt kohalikke tellimusi, kuid jätab väljalülitatud kontod laadimisel vahele. Kommentaarid ja profiilid võivad vajadusel kasutada ükskõik millist kontot.</string>
     <string name="settings_account_delete_confirm">Kas logida @%1$s välja? XTA unustab selle seansi siin seadmes ja seda ei saa tagasi võtta.</string>
@@ -319,6 +323,7 @@
     <string name="settings_intro_again">Näita sissejuhatust uuesti</string>
     <string name="settings_intro_again_description">Vaata esimese käivituse kaardid uuesti läbi.</string>
     <string name="settings_open_logs">Ava logide kaust</string>
+    <string name="settings_copy_diagnostics">Kopeeri diagnostikaandmed</string>
     <string name="settings_ok">Sobib</string>
     <string name="settings_diagnostics_copy">Kopeeri aruanne</string>
     <string name="settings_diagnostics_copied">Diagnostika kopeeriti lõikelauale</string>

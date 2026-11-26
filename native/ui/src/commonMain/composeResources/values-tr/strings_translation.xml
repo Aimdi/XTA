@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Çeviri</string>
     <string name="translation_privacy">Çevir'e dokunana kadar hiçbir şey gönderilmez. Metin yalnızca burada seçilen hizmete gider.</string>
+    <string name="translation_privacy_desktop">Çevir'e tıklayana kadar hiçbir şey gönderilmez. Metin yalnızca burada seçilen hizmete gider.</string>
     <string name="translation_provider">Çeviri hizmeti</string>
     <string name="translation_provider_off">Kapalı</string>
     <string name="translation_provider_ai">Yapay zekâ sağlayıcısı</string>

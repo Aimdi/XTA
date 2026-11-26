@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X trả về lỗi máy chủ. Bạn vẫn có thể đọc các bài đã lưu trong bộ nhớ đệm và thử lại sau.</string>
     <string name="problem_request_unavailable_title">Yêu cầu này không khả dụng</string>
     <string name="problem_request_unavailable_text">X đã từ chối yêu cầu này. Có thể nó tạm thời không khả dụng hoặc phần này của dịch vụ đã thay đổi.</string>
-    <string name="problem_oops">Ôi! Đã xảy ra lỗi 🥲</string>
+    <string name="problem_oops">Không thể tải</string>
     <string name="problem_http_text">X trả về HTTP %1$d.</string>
     <string name="problem_retry_in">Thử lại sau %1$s</string>
     <string name="close_app_confirm">Bạn có muốn đóng XTA không?</string>
@@ -45,4 +45,5 @@
     <string name="find_in_page">Tìm trong trang</string>
     <string name="find_previous_match">Kết quả trước</string>
     <string name="find_next_match">Kết quả tiếp theo</string>
+    <string name="loading">Đang tải…</string>
 </resources>

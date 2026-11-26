@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Denne mappen er tom</string>
     <string name="saved_empty_notes">Ingen notater ennå. De forlater ikke enheten med mindre du tar sikkerhetskopi eller synkroniserer.</string>
     <string name="saved_note_button">Notat</string>
-    <string name="saved_add_note">Legg til et notat på dette lagrede innlegget</string>
+    <string name="saved_add_note">Legg til et notat på dette innlegget</string>
     <string name="saved_edit_note">Rediger notat</string>
     <string name="saved_new_note">Nytt notat</string>
     <string name="saved_too_large">Lagret innlegg er for stort</string>
@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">Ingen URL tilgjengelig for nedlasting av media</string>
     <string name="saved_open_in_browser">Åpne i nettleser</string>
     <string name="saved_ok">OK</string>
-    <string name="saved_something_wrong">Oops! Noe gikk galt 🥲</string>
+    <string name="saved_something_wrong">Noe gikk galt</string>
     <string name="archive_tags">Tagger</string>
     <string name="archive_extract">Hent tekst fra skjermbilde</string>
     <string name="archive_extract_notice">Det valgte PNG- eller JPEG-bildet sendes til %1$s med den konfigurerte KI-modellen. Teksten kan inneholde feil.</string>
@@ -168,6 +168,7 @@
     <string name="saved_media_status">Kunne ikke lagre mediafilen. Twitter svarte med %1$d</string>
     <string name="downloads_cancelled">Avbrutt</string>
     <string name="downloads_interrupted">Avbrutt · Prøv på nytt for å fortsette</string>
+    <string name="downloads_interrupted_desktop">Avbrutt · Klikk på Prøv på nytt for å fortsette</string>
     <string name="downloads_batch">Lagrede filer: %1$d / %2$d</string>
     <string name="downloads_saved_to">Lagret i %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Angi en nedlastingsmappe i Innstillinger &gt; Medier for automatisk nedlasting.</string>

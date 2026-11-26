@@ -25,6 +25,14 @@ class ViewerFilesTest {
     }
 
     @Test
+    fun theMenuKeyOpensTheFileMenuARightClickOpens() {
+        fun key(menu: Boolean, modified: Boolean = false) = ViewerKeys.of(escape = false, left = false, right = false, back = false, modified = modified, menu = menu)
+        assertEquals(ViewerKey.MENU, key(menu = true))
+        assertEquals(ViewerKey.NONE, key(menu = true, modified = true), "with Ctrl or Alt held it is no menu key")
+        assertEquals(ViewerKey.NONE, key(menu = false))
+    }
+
+    @Test
     fun aPictureIsReadWhateverItsFormat() {
         assertEquals(3, ClipboardImages.decode(png(3, 2))?.width)
         // WebP goes through Skia, whose native library the window loads (the tests have none): no picture is no picture either way.

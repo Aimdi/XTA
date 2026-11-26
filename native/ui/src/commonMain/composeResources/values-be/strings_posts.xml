@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Цытаты</string>
     <string name="posts_replies_missing">Не ўдалося загрузіць адказы</string>
+    <string name="posts_no_replies_yet">Пакуль няма адказаў</string>
     <string name="posts_replying_to">Адказаць</string>
     <string name="posts_reposted">%1$s ретвітнуў(ла) %2$s</string>
     <string name="posts_reposted_by">Пашырылі</string>
@@ -96,6 +97,7 @@
     <string name="posts_verified_organization">Пацверджаная арганізацыя</string>
     <string name="posts_view_quoted">Праглядзець цытаваны пост</string>
     <string name="posts_zen_replies">Утрымлівайце кнопку каментарыяў, каб паказаць адказы</string>
+    <string name="posts_zen_replies_desktop">Націсніце на кнопку каментарыяў правай кнопкай мышы, каб паказаць адказы</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s прагляд</item>
         <item quantity="few">%1$s прагляды</item>

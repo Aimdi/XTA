@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,11 +41,15 @@ import com.aimdi.xtanative.services.links.XLinks
 import com.aimdi.xtanative.ui.article.ArticlePreviewCard
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.RingedFocus
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.UnringedFocus
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
+import com.aimdi.xtanative.ui.common.rememberBehindIndication
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_community
 import com.aimdi.xtanative.ui.generated.resources.posts_more
@@ -58,6 +63,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_subscribers_only_of_auth
 import com.aimdi.xtanative.ui.generated.resources.posts_thread
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_view_quoted
+import com.aimdi.xtanative.ui.common.pressKeepsPlace
 import com.aimdi.xtanative.ui.home.keyedPost
 import com.aimdi.xtanative.ui.media.LiveRooms
 import com.aimdi.xtanative.ui.media.LocalLivePlayer
@@ -123,6 +129,10 @@ fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = e
 }
 
 private val AvatarSize = PostGeometry.AVATAR_SIZE.dp
+
+/** How far inside the avatar's 48 dp target its keyboard ring is drawn: just off the picture's rim. */
+private val AvatarRingGap = 1.dp
+
 private val RailStart = PostGeometry.AVATAR_START.dp
 
 /** How far a post's media row runs past its column: the post's own margin, to the screen's edge. */
@@ -175,6 +185,7 @@ fun PostCard(
             }
             .recordedIn(picture)
             .opensInWindow(inWindow, presses)
+            .pressKeepsPlace()
             .opening(rememberDoubleTapLike(shown, scope.prefs, actions)) {
                 if (presses.take() == PostPress.TAP_IN_WINDOW && inWindow != null) inWindow() else actions.openPost(shown.id)
             }
@@ -191,18 +202,22 @@ fun PostCard(
         Row {
             // The avatar in its 48 dp target, which opens the author as the avatar does.
             val inset = PostGeometry.AVATAR_TARGET_INSET.dp
-            Box(
-                Modifier
-                    .offset(-inset, -inset)
-                    .size(PostGeometry.TOUCH_TARGET.dp)
-                    // An unbounded ripple, not a clip: a clip would cut the follow badge on the avatar's rim.
-                    .clickable(
-                        interactionSource = null,
-                        indication = ripple(bounded = false, radius = (PostGeometry.TOUCH_TARGET / 2).dp),
-                        enabled = PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName),
-                    ) { actions.openUser(shown.author.screenName, shown.author.id) },
-                contentAlignment = Alignment.Center,
-            ) { PostAvatar(shown, scope, actions, AvatarSize) }
+            // The keyboard's focus as the accent's ring just off the picture's rim, not as a grey halo round it.
+            RingedFocus {
+                Box(
+                    Modifier
+                        .offset(-inset, -inset)
+                        .size(PostGeometry.TOUCH_TARGET.dp)
+                        .keyboardFocusRing(outset = -AvatarRingGap)
+                        // An unbounded ripple, not a clip: a clip would cut the follow badge on the avatar's rim.
+                        .clickable(
+                            interactionSource = null,
+                            indication = ripple(bounded = false, radius = (PostGeometry.TOUCH_TARGET / 2).dp),
+                            enabled = PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName),
+                        ) { actions.openUser(shown.author.screenName, shown.author.id) },
+                    contentAlignment = Alignment.Center,
+                ) { UnringedFocus { PostAvatar(shown, scope, actions, AvatarSize, inTarget = true) } }
+            }
             Spacer(Modifier.width((PostGeometry.COLUMN_START - PostGeometry.AVATAR_START - PostGeometry.TOUCH_TARGET).dp))
             val buttons = if (translation != null) 2 else 1
             Box(Modifier.weight(1f)) {
@@ -239,8 +254,16 @@ fun PostCard(
  * not wait to see whether a second follows.
  */
 @OptIn(ExperimentalFoundationApi::class)
-internal fun Modifier.opening(like: (() -> Unit)?, open: () -> Unit): Modifier =
-    if (like == null) clickable(onClick = open) else combinedClickable(onDoubleClick = like, onClick = open)
+@Composable
+internal fun Modifier.opening(like: (() -> Unit)?, open: () -> Unit): Modifier {
+    // Lit behind the post, so its pictures and videos keep their colours under the pointer.
+    val wash = rememberBehindIndication()
+    return if (like == null) {
+        clickable(interactionSource = null, indication = wash, onClick = open)
+    } else {
+        combinedClickable(interactionSource = null, indication = wash, onDoubleClick = like, onClick = open)
+    }
+}
 
 /** What a double-tap on [post] does with "Double-tap to like" on: likes it on this device, unless it is liked already; null while off. */
 @Composable
@@ -250,9 +273,12 @@ internal fun rememberDoubleTapLike(post: XPost, prefs: PostPrefs, actions: PostA
     return like.takeIf { prefs.doubleTapLike }
 }
 
+/** The community whose own page the cards are on, if they are: they leave out its line ([PostView.inCommunityPage]). */
+internal val LocalCommunityPage = staticCompositionLocalOf<String?> { null }
+
 @Composable
 private fun ContextLines(post: XPost, actions: PostActions, pinned: Boolean, firstOfThread: Boolean) {
-    PostView.contextLines(post, pinned, firstOfThread, quoted = false).forEach { line ->
+    PostView.inCommunityPage(PostView.contextLines(post, pinned, firstOfThread, quoted = false), LocalCommunityPage.current).forEach { line ->
         when (line) {
             is ContextLine.Reposted -> ContextRow(XIcons.Repost, stringResource(Res.string.posts_reposted, line.by.name, agoText(post.createdAt))) {
                 actions.openUser(line.by.screenName, line.by.id)
@@ -264,19 +290,23 @@ private fun ContextLines(post: XPost, actions: PostActions, pinned: Boolean, fir
     }
 }
 
-/** The author's picture, opening the profile, with the author's card where the pointer rests on it; a plain face in non-confirmation-bias mode; XTA's follow badge on it. */
+/**
+ * The author's picture, opening the profile, with the author's card where the pointer rests on it; a plain face in non-confirmation-bias mode; XTA's follow badge on it.
+ * [inTarget] where a 48 dp target round it opens the author too: that target is Tab's stop, not the picture again.
+ */
 @Composable
-internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, size: Dp) {
+internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, size: Dp, inTarget: Boolean = false) {
     if (!PostView.showsAuthor(post, scope.prefs, scope.profileScreenName)) {
         Icon(Icons.Filled.AccountCircle, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(size))
         return
     }
     val open = { actions.openUser(post.author.screenName, post.author.id) }
+    val picture = if (inTarget) Modifier.focusProperties { canFocus = false } else Modifier
     AuthorHoverCard(post.author, post.author.largeAvatarUrl, open) {
         if (scope.prefs.followBadge) {
-            FollowBadge(post.author, size) { Avatar(post.author.largeAvatarUrl, size, onClick = open) }
+            FollowBadge(post.author, size) { Avatar(post.author.largeAvatarUrl, size, picture, onClick = open) }
         } else {
-            Avatar(post.author.largeAvatarUrl, size, onClick = open)
+            Avatar(post.author.largeAvatarUrl, size, picture, onClick = open)
         }
     }
 }
@@ -334,8 +364,12 @@ internal fun PostAttachments(shown: XPost, scope: PostScope, actions: PostAction
                 { index -> actions.openMedia(shown.id, index) },
                 Modifier.padding(top = gap),
                 post = shown,
+                username = shown.author.screenName,
+                postId = shown.id,
                 start = startMedia,
                 bleed = if (quoted) 0.dp else MediaBleed,
+                // The post opened shows its picture whole; in a feed a tall one is cut to 4:5.
+                tallCapped = scope.focalId != shown.id,
             )
         }
         if (shown.sensitive) SensitiveGate(scope.sensitive, modifier = Modifier.padding(top = gap)) { media() } else media()

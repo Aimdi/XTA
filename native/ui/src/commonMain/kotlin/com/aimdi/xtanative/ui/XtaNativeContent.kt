@@ -116,5 +116,14 @@ fun appImageLoader(context: PlatformContext): ImageLoader = ImageLoader.Builder(
     .build()
     .also(::trimImageCache)
 
-/** The pictures' client: [AppProxy]'s, built when the first picture loads. */
-private val pictureClient by lazy { AppProxy.client.newBuilder().dispatcher(Dispatcher()).build() }
+/**
+ * The pictures' client: [AppProxy]'s, built when the first picture loads. Nearly every picture of a feed comes
+ * from one host, where OkHttp's default of 5 calls at once left a screen of thumbnails and avatars queued behind
+ * each other; a few more at once (still a handful of streams on one HTTP/2 connection) fill a screen sooner.
+ */
+private val pictureClient by lazy {
+    AppProxy.client.newBuilder().dispatcher(Dispatcher().apply { maxRequestsPerHost = PICTURES_PER_HOST }).build()
+}
+
+/** How many pictures load from one host at once. */
+internal const val PICTURES_PER_HOST = 12

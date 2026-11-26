@@ -29,7 +29,7 @@
     <string name="home_downloads">Downloads</string>
     <string name="home_antennas">Antenas</string>
     <string name="home_deck">Deck</string>
-    <string name="home_deck_empty">Fixe grupos para vê-los lado a lado em uma tela larga</string>
+    <string name="home_deck_empty">Adicione colunas para ver feeds e grupos lado a lado em uma tela larga</string>
     <string name="home_deck_add">Adicionar coluna</string>
     <string name="home_deck_move_left">Mover para a esquerda</string>
     <string name="home_deck_move_right">Mover para a direita</string>
@@ -51,6 +51,7 @@
     <string name="home_filter_accounts_explained">Desative contas extras que você só mantém por limites de taxa. Para você mescla as timelines das contas ligadas; Seguindo ainda usa suas assinaturas locais, mas pula contas desligadas ao buscar. Comentários e perfis ainda podem usar qualquer conta se precisar.</string>
     <string name="home_filter_groups_explained">Desative um grupo para ocultar os membros em Seguindo. A aba do grupo permanece. As publicações deles também saem de Para você.</string>
     <string name="home_filter_only_hint">Toque e segure um item para deixar só ele ativado.</string>
+    <string name="home_filter_only_hint_desktop">Clique com o botão direito em um item para deixar só ele ativado.</string>
     <string name="home_filter_keep_one">Pelo menos uma conta precisa continuar ligada</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Tudo</string>

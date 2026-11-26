@@ -73,10 +73,10 @@
     <string name="discover_community_created">Stvorana %1$s</string>
     <string name="discover_community_members">Udzielniki</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d udzielnik</item>
-        <item quantity="few">%1$d udzielniki</item>
-        <item quantity="many">%1$d udzielnikaŭ</item>
-        <item quantity="other">%1$d udzielnika</item>
+        <item quantity="one">%1$s udzielnik</item>
+        <item quantity="few">%1$s udzielniki</item>
+        <item quantity="many">%1$s udzielnikaŭ</item>
+        <item quantity="other">%1$s udzielnika</item>
     </plurals>
     <string name="discover_list_import_title">Impartavać spis X jak hrupu</string>
     <string name="discover_list_import_intro">Kab impartavać spis X jak hrupu padpisak, uviadzicie nižej spasyłku na spis abo jaho identyfikatar</string>

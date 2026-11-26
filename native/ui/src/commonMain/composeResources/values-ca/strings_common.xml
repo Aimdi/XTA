@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X ha retornat un error del servidor. Pots continuar llegint les publicacions de la memòria cau i tornar-ho a provar més tard.</string>
     <string name="problem_request_unavailable_title">Aquesta petició no està disponible</string>
     <string name="problem_request_unavailable_text">X ha rebutjat aquesta petició. Potser no està disponible temporalment o aquesta part del servei ha canviat.</string>
-    <string name="problem_oops">Ui! Alguna cosa ha anat malament 🥲</string>
+    <string name="problem_oops">No s'ha pogut carregar</string>
     <string name="problem_http_text">X ha retornat HTTP %1$d.</string>
     <string name="problem_retry_in">Torna-ho a provar d’aquí a %1$s</string>
     <string name="close_app_confirm">Segur que vols tancar XTA?</string>
@@ -45,4 +45,5 @@
     <string name="find_in_page">Cerca a la pàgina</string>
     <string name="find_previous_match">Coincidència anterior</string>
     <string name="find_next_match">Coincidència següent</string>
+    <string name="loading">S’està carregant…</string>
 </resources>

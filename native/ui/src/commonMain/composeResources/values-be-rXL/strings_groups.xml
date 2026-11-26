@@ -24,6 +24,7 @@
     <string name="groups_columns">Slupki</string>
     <string name="groups_combine_clear">Skinuć</string>
     <string name="groups_combine_hint">Utrymlivajcie hrupu, kab čytać jaje razam z hetaj</string>
+    <string name="groups_combine_hint_desktop">Nacisnicie na hrupu pravaj knopkaj myšy, kab čytać jaje razam z hetaj</string>
     <string name="groups_combined_count">Razam čytajecca jašče: %1$d</string>
     <string name="groups_compact">Kampaktna</string>
     <string name="groups_content_default">Standartna</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Niama vyniku</string>
     <string name="groups_no_subscriptions">Niama padpisak. Pasprabujcie pašukać abo impartavać nešta!</string>
     <string name="groups_none_description">Hrupy zbirajuć padpiski ŭ svaje stužki. Doŭhaje naciskannie — redahavannie.</string>
+    <string name="groups_none_description_desktop">Hrupy zbirajuć padpiski ŭ svaje stužki. Pravaja knopka myšy na hrupie — redahavannie.</string>
     <string name="groups_none_yet">Pakul niama hrup</string>
     <string name="groups_not_all_posts">Zaŭvaha: U suviazi z abmiežavańniem Twitter, nie ŭsie tvity mohuć być uklučany</string>
     <string name="groups_ok">Dobra</string>

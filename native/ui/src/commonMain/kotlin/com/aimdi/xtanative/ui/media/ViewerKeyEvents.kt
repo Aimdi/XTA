@@ -8,6 +8,7 @@ import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
+import com.aimdi.xtanative.ui.common.ContextMenuKey
 import com.aimdi.xtanative.ui.common.shortcutKey
 
 /** [event] as the media viewer reads it ([ViewerKeys]), the photo shown [zoomed] in or not. */
@@ -29,6 +30,7 @@ internal fun viewerKeyOf(event: KeyEvent, zoomed: Boolean = false): ViewerKey {
         home = event.key == Key.MoveHome,
         end = event.key == Key.MoveEnd,
         zoomed = zoomed,
+        menu = (event.key == ContextMenuKey && !event.isShiftPressed) || (event.key == Key.F10 && event.isShiftPressed),
     )
 }
 

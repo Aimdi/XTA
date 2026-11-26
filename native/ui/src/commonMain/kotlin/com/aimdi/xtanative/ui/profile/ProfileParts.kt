@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.profile
 
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.tabLeavesField
 import androidx.compose.foundation.background
@@ -71,6 +72,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_quiet_account_off
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostIcons
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -120,7 +122,7 @@ private fun SwitchRow(title: String, description: String, checked: Boolean, onCh
             Text(title, style = MaterialTheme.typography.bodyLarge)
             Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Switch(checked = checked, onCheckedChange = null)
+        Switch(checked = checked, onCheckedChange = null, colors = xSwitchColors())
     }
 }
 
@@ -228,13 +230,13 @@ private fun followedByText(followedBy: FollowedBy): String? = when (val label = 
 @Composable
 internal fun FollowedBySheet(followedBy: FollowedBy, actions: PostActions, onDismiss: () -> Unit) {
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        val closer = LocalSheetCloser.current
         Column(Modifier.verticalScrollByKeys(rememberScrollState()).padding(bottom = 24.dp)) {
             Text(stringResource(Res.string.posts_followed_by_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             followedBy.followers.forEach { member ->
                 Row(
                     Modifier.fillMaxWidth().clickable {
-                        onDismiss()
-                        actions.openUser(member.screenName, member.id)
+                        closer.close { actions.openUser(member.screenName, member.id) }
                     }.padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {

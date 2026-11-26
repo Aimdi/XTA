@@ -87,6 +87,13 @@ enum class ProfileFailure {
     PAGE_NOT_FOUND,
     ;
 
+    /**
+     * Whether the header stays above the failure: a private or suspended
+     * account is still that account; a name and picture known from a post
+     * would contradict "not found".
+     */
+    val keepsHeader: Boolean get() = this == PRIVATE || this == SUSPENDED
+
     companion object {
         /** What X said, or null when the failure is one to retry. */
         fun of(error: Throwable): ProfileFailure? = when (error) {

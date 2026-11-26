@@ -70,7 +70,7 @@
     <string name="discover_community_created">%1$s에 생성됨</string>
     <string name="discover_community_members">멤버</string>
     <plurals name="discover_member_count">
-        <item quantity="other">멤버 %1$d명</item>
+        <item quantity="other">멤버 %1$s명</item>
     </plurals>
     <string name="discover_list_import_title">X 리스트를 그룹으로 가져오기</string>
     <string name="discover_list_import_intro">X 리스트를 구독 그룹으로 가져오려면 아래에 리스트 링크 또는 ID를 입력하세요</string>

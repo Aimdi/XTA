@@ -3,6 +3,7 @@
     <string name="media_alt_badge">ALT</string>
     <string name="media_alt_title">이미지 설명</string>
     <string name="media_tap_to_show">%1$s을(를) 표시하려면 탭하세요</string>
+    <string name="media_tap_to_show_desktop">%1$s을(를) 표시하려면 클릭하세요</string>
     <string name="media_copy_image">이미지 복사</string>
     <string name="media_save_as">다른 이름으로 저장…</string>
     <string name="media_drag_out">이미지를 다른 앱으로 드래그</string>

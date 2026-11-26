@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.ui.plugins
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +45,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -56,14 +58,18 @@ import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.data.plugins.keepable
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.HitArea
+import com.aimdi.xtanative.ui.common.RingedFocus
 import com.aimdi.xtanative.ui.common.RollingCount
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.onSecondaryClickIf
+import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.pinned
 import com.aimdi.xtanative.ui.generated.resources.plugin_post_hide
@@ -77,7 +83,9 @@ import com.aimdi.xtanative.ui.generated.resources.stat_reposts
 import com.aimdi.xtanative.ui.links.LinkFrom
 import com.aimdi.xtanative.ui.post.AuthorLine
 import com.aimdi.xtanative.ui.post.CardView
+import com.aimdi.xtanative.ui.post.linkStyles
 import com.aimdi.xtanative.ui.saved.KeepableSaveButton
+import com.aimdi.xtanative.ui.theme.edgeColor
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -110,7 +118,7 @@ fun LinkedText(
 
 private fun annotated(runs: List<TextRun>, linkColor: Color, onMention: (String) -> Unit, onTag: (String) -> Unit): AnnotatedString =
     buildAnnotatedString {
-        val styles = TextLinkStyles(SpanStyle(color = linkColor))
+        val styles = linkStyles(linkColor)
         for (run in runs) {
             when (run) {
                 is TextRun.Plain -> append(run.text)
@@ -328,7 +336,7 @@ fun NetworkFocalPost(post: NetworkPost, actions: NetworkPostActions, modifier: M
         CoverLine(post, revealed) { revealed = !revealed }
         if (!post.textCovered(revealed)) {
             // Selectable, as the app's opened X post is.
-            SelectionContainer(Modifier.padding(top = 12.dp)) {
+            SelectionContainer(Modifier.padding(top = 12.dp).pointerOnlyFocus()) {
                 LinkedText(post.text, actions.openMention, actions.openTag, style = TextStyle(fontSize = 17.sp, lineHeight = 24.sp))
             }
         }
@@ -367,7 +375,7 @@ private fun QuotedNetworkPost(post: NetworkPost, actions: NetworkPostActions, mo
         modifier
             .fillMaxWidth()
             .clip(shape)
-            .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, shape)
+            .border(Dp.Hairline, edgeColor(), shape)
             .clickable { actions.open(post) }
             .padding(12.dp),
     ) {
@@ -554,7 +562,14 @@ fun NetworkCount(
     onClick: (() -> Unit)? = null,
 ) = CountButton({ Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(17.dp)) }, n, label, tint, onLongClick, onClick)
 
-/** [NetworkCount] with a [glyph] of its own, as the device's like draws its heart burst; its number rolls as it changes ([RollingCount]). */
+/**
+ * [NetworkCount] with a [glyph] of its own, as the device's like draws its
+ * heart burst; its number rolls as it changes ([RollingCount]). [hue], where
+ * given, colours its ripple, so the pointer resting on it lights it faintly
+ * in what it does (X's footer: the like's colour, the repost's green), not
+ * in a neutral grey. The keyboard's focus is the accent's ring round it
+ * alone ([keyboardFocusRing]), as on an icon button, not a disc in [hue].
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun CountButton(
@@ -564,19 +579,34 @@ internal fun CountButton(
     tint: Color,
     onLongClick: (() -> Unit)?,
     onClick: (() -> Unit)?,
+    hue: Color = Color.Unspecified,
 ) {
     val clickable = if (onClick != null) {
-        Modifier.clip(CircleShape).onSecondaryClickIf(onLongClick).combinedClickable(role = Role.Button, onClick = onClick, onLongClick = onLongClick).padding(4.dp)
+        // The press reaches a little past the glyph and its number (HitArea), while its ripple stays on them,
+        // and the ring is drawn round them too: it stands before the hit area, at their own size.
+        val hit = remember { HitArea() }
+        val presses = remember { MutableInteractionSource() }
+        Modifier
+            .keyboardFocusRing(0.dp)
+            .then(hit.outer)
+            .onSecondaryClickIf(onLongClick)
+            .combinedClickable(presses, indication = null, role = Role.Button, onClick = onClick, onLongClick = onLongClick)
+            .then(hit.inner)
+            .clip(CircleShape)
+            .indication(presses, ripple(color = hue))
+            .padding(4.dp)
     } else {
         Modifier
     }
-    Row(
-        clickable.let { if (label != null) it.semantics { contentDescription = label } else it },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        glyph()
-        if (n > 0) {
-            RollingCount(countText(n), n, MaterialTheme.typography.labelMedium, tint, Modifier.padding(start = 4.dp))
+    RingedFocus {
+        Row(
+            clickable.let { if (label != null) it.semantics { contentDescription = label } else it },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            glyph()
+            if (n > 0) {
+                RollingCount(countText(n), n, MaterialTheme.typography.labelMedium, tint, Modifier.padding(start = 4.dp))
+            }
         }
     }
 }

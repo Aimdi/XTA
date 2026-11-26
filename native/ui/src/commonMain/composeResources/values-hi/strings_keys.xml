@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">एक स्क्रीन स्क्रॉल करें</string>
     <string name="keys_scroll_ends">ऊपर या अंत तक जाएँ</string>
     <string name="keys_move">बटनों और फ़ील्ड के बीच जाएँ</string>
+    <string name="keys_regions">नेविगेशन और पेज के बीच जाएँ</string>
     <string name="keys_text_size">बड़ा, छोटा या सामान्य टेक्स्ट</string>
     <string name="keys_interface_size">बड़ा, छोटा या सामान्य इंटरफ़ेस</string>
     <string name="keys_full_screen">फ़ुल स्क्रीन</string>

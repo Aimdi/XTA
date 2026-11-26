@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">Een scherm scrollen</string>
     <string name="keys_scroll_ends">Naar het begin of het einde</string>
     <string name="keys_move">Tussen knoppen en velden bewegen</string>
+    <string name="keys_regions">Tussen de navigatie en de pagina wisselen</string>
     <string name="keys_text_size">Grotere, kleinere of normale tekst</string>
     <string name="keys_interface_size">Grotere, kleinere of normale interface</string>
     <string name="keys_full_screen">Volledig scherm</string>

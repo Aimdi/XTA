@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
@@ -39,8 +40,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +53,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -80,8 +86,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.RingedFocus
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.close
 import com.aimdi.xtanative.ui.generated.resources.reader_download
 import com.aimdi.xtanative.ui.generated.resources.reader_more_options
 import com.aimdi.xtanative.ui.generated.resources.reader_video
@@ -100,6 +110,7 @@ import com.aimdi.xtanative.ui.generated.resources.video_fullscreen_exit
 import com.aimdi.xtanative.ui.generated.resources.video_picture_in_picture
 import com.aimdi.xtanative.ui.generated.resources.video_rotate
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
+import com.aimdi.xtanative.ui.theme.keyboardFocusShown
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
@@ -112,7 +123,9 @@ private enum class VideoSheet { MORE, SPEED, QUALITY }
  * ([MuteCorner]) and the seek bar stops short of it. [onFullscreen] goes full
  * screen in place and leaves it full screen; [onPictureInPicture] shrinks
  * the app into a floating window where the platform has one; [onTurn]
- * turns full screen sideways and back, on a phone.
+ * turns full screen sideways and back, on a phone; [onClose] leaves full
+ * screen from a close button in the top-start corner, where a desktop's
+ * viewers keep theirs.
  */
 internal class VideoChrome(
     val fullscreen: Boolean = false,
@@ -122,7 +135,31 @@ internal class VideoChrome(
     val onToggleFill: (() -> Unit)? = null,
     val onDownload: (() -> Unit)? = null,
     val onTurn: (() -> Unit)? = null,
+    val onClose: (() -> Unit)? = null,
+    val keys: ControlsKeys? = null,
 )
+
+/**
+ * Full screen's keys and its controls between them: [show] brings the
+ * controls up for Tab, which can only reach them shown; [shown] says
+ * whether they are; and [holder], the full screen's own focus, gets the
+ * keys back when the controls hide with the focus on one of them, so Esc
+ * and the video's keys never go dead.
+ */
+@Stable
+internal class ControlsKeys(val holder: FocusRequester) {
+    /** Goes up each time the controls are asked to show. */
+    var asked by mutableIntStateOf(0)
+        private set
+
+    /** Whether the controls are shown now, set by them. */
+    var shown = false
+        internal set
+
+    fun show() {
+        asked++
+    }
+}
 
 /**
  * XTA's video controls (_video_controls.dart): a tap shows or hides them, and
@@ -141,11 +178,25 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
     var skipped by remember { mutableIntStateOf(0) }
     var sheet by remember { mutableStateOf<VideoSheet?>(null) }
     val touch: () -> Unit = { touches++ }
-    LaunchedEffect(visible, touches, sheet) {
-        if (visible && sheet == null) {
+    // A control the keyboard moved to keeps them up: hidden, it would take the focus with it.
+    var keyFocusInside by remember { mutableStateOf(false) }
+    val keyboard = keyboardFocusShown()
+    LaunchedEffect(visible, touches, sheet, keyFocusInside && keyboard) {
+        if (VideoRules.controlsHide(visible, sheet != null, keyFocusInside && keyboard)) {
             delay(VideoRules.CONTROLS_SHOWN_MS)
             visible = false
         }
+    }
+    chrome.keys?.let { keys ->
+        SideEffect { keys.shown = visible }
+        LaunchedEffect(keys.asked) {
+            if (keys.asked > 0) {
+                visible = true
+                touch()
+            }
+        }
+        // Hiding with the focus on one of them: the keys to full screen's own focus, while the control is still there to leave.
+        LaunchedEffect(visible) { if (!visible && keyFocusInside) runCatching { keys.holder.requestFocus() } }
     }
     LaunchedEffect(skipped) {
         if (skipped != 0) {
@@ -192,12 +243,15 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
             },
     ) {
         AnimatedVisibility(visible, enter = fadeIn(tween(MOTION_STANDARD_MS)), exit = fadeOut(tween(MOTION_STANDARD_MS))) {
-            Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.45f))) {
+            Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.45f)).onFocusChanged { keyFocusInside = it.hasFocus }) {
                 PlayPauseButton(state, Modifier.align(Alignment.Center)) {
                     touch()
                     playback.playOrPause()
                 }
                 BottomBar(state, playback, chrome, touch, onMenu = { sheet = VideoSheet.MORE }, modifier = Modifier.align(Alignment.BottomCenter))
+                chrome.onClose?.let { close ->
+                    Box(Modifier.align(Alignment.TopStart).padding(4.dp)) { ControlButton(Icons.Filled.Close, stringResource(Res.string.close), close) }
+                }
             }
         }
         if (skipped != 0) SkipBadge(skipped, Modifier.align(if (skipped < 0) Alignment.CenterStart else Alignment.CenterEnd))
@@ -258,13 +312,15 @@ private fun ControlButton(icon: ImageVector, label: String, onClick: () -> Unit)
     IconTip(label) { IconButton(onClick = onClick) { Icon(icon, contentDescription = label, tint = Color.White) } }
 }
 
-/** Full screen's sound button, said as on or off. */
+/** Full screen's sound button, said as on or off, with its name under the pointer and a ring for the keyboard as the bar's other buttons have. */
 @Composable
 private fun MuteButton(muted: Boolean, onToggle: () -> Unit) {
     val label = stringResource(Res.string.reader_video_mute)
-    IconToggleButton(checked = muted, onCheckedChange = { onToggle() }, modifier = Modifier.semantics { contentDescription = label }) {
-        Crossfade(targetState = muted, animationSpec = tween(MOTION_FAST_MS)) { quiet ->
-            Icon(if (quiet) ReaderIcons.VolumeOff else ReaderIcons.VolumeUp, contentDescription = null, tint = Color.White)
+    IconTip(label) {
+        IconToggleButton(checked = muted, onCheckedChange = { onToggle() }, modifier = Modifier.semantics { contentDescription = label }) {
+            Crossfade(targetState = muted, animationSpec = tween(MOTION_FAST_MS)) { quiet ->
+                Icon(if (quiet) ReaderIcons.VolumeOff else ReaderIcons.VolumeUp, contentDescription = null, tint = Color.White)
+            }
         }
     }
 }
@@ -284,26 +340,31 @@ private val MuteCornerReserve = MuteInset + MuteDisc + MuteInset + 2.dp
 @Composable
 internal fun MuteCorner(muted: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier, disc: Dp = MuteDisc, inset: Dp = MuteInset) {
     val label = stringResource(Res.string.reader_video_mute)
-    Box(
-        modifier
-            .padding(inset - (TouchTarget - disc) / 2)
-            .size(TouchTarget)
-            .clip(CircleShape)
-            .toggleable(value = muted, role = Role.Switch, onValueChange = { onToggle() })
-            .semantics { contentDescription = label },
-        contentAlignment = Alignment.Center,
-    ) {
+    // The round ring alone marks the keyboard's focus, no white disc under it.
+    RingedFocus {
         Box(
-            Modifier
-                .size(disc)
+            modifier
+                .padding(inset - (TouchTarget - disc) / 2)
+                .size(TouchTarget)
+                .keyboardFocusRing()
                 .clip(CircleShape)
-                .background(Color.Black.copy(alpha = 0.4f))
-                .background(Brush.verticalGradient(0f to Color.White.copy(alpha = 0.16f), 0.5f to Color.Transparent))
-                .border(0.75.dp, Color.White.copy(alpha = 0.24f), CircleShape),
+                // The round ring above is the keyboard's one; the row's lighting would ring it a second time.
+                .toggleable(value = muted, interactionSource = null, indication = ripple(color = Color.White), role = Role.Switch, onValueChange = { onToggle() })
+                .semantics { contentDescription = label },
             contentAlignment = Alignment.Center,
         ) {
-            Crossfade(targetState = muted, animationSpec = tween(MOTION_FAST_MS)) { quiet ->
-                Icon(if (quiet) ReaderIcons.VolumeOff else ReaderIcons.VolumeUp, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+            Box(
+                Modifier
+                    .size(disc)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.4f))
+                    .background(Brush.verticalGradient(0f to Color.White.copy(alpha = 0.16f), 0.5f to Color.Transparent))
+                    .border(0.75.dp, Color.White.copy(alpha = 0.24f), CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Crossfade(targetState = muted, animationSpec = tween(MOTION_FAST_MS)) { quiet ->
+                    Icon(if (quiet) ReaderIcons.VolumeOff else ReaderIcons.VolumeUp, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                }
             }
         }
     }
@@ -313,29 +374,34 @@ internal fun MuteCorner(muted: Boolean, onToggle: () -> Unit, modifier: Modifier
 @Composable
 private fun PlayPauseButton(state: VideoState, modifier: Modifier, onClick: () -> Unit) {
     val label = stringResource(if (state.completed) Res.string.reader_video_restart else Res.string.reader_video)
-    Box(
-        modifier
-            .size(64.dp)
-            .clip(CircleShape)
-            .background(Color.Black.copy(alpha = 0.54f))
-            .clickable(onClick = onClick)
-            .clearAndSetSemantics {
-                contentDescription = label
-                role = Role.Button
-                onClick {
-                    onClick()
-                    true
-                }
-            },
-        contentAlignment = Alignment.Center,
-    ) {
-        val shown = when {
-            state.completed -> ReaderIcons.Replay
-            state.playing -> ReaderIcons.Pause
-            else -> Icons.Filled.PlayArrow
-        }
-        Crossfade(targetState = shown, animationSpec = tween(MOTION_STANDARD_MS)) { icon ->
-            Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(32.dp))
+    // The round ring alone marks the keyboard's focus, no white disc under it.
+    RingedFocus {
+        Box(
+            modifier
+                .size(64.dp)
+                // Its own ring: on black, an icon button's focus shade is not seen.
+                .keyboardFocusRing()
+                .clip(CircleShape)
+                .background(Color.Black.copy(alpha = 0.54f))
+                .clickable(interactionSource = null, indication = ripple(color = Color.White), onClick = onClick)
+                .clearAndSetSemantics {
+                    contentDescription = label
+                    role = Role.Button
+                    onClick {
+                        onClick()
+                        true
+                    }
+                },
+            contentAlignment = Alignment.Center,
+        ) {
+            val shown = when {
+                state.completed -> ReaderIcons.Replay
+                state.playing -> ReaderIcons.Pause
+                else -> Icons.Filled.PlayArrow
+            }
+            Crossfade(targetState = shown, animationSpec = tween(MOTION_STANDARD_MS)) { icon ->
+                Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(32.dp))
+            }
         }
     }
 }
@@ -475,19 +541,20 @@ private fun FailedOverlay(playback: VideoPlayback) {
 private fun VideoSheets(sheet: VideoSheet?, state: VideoState, playback: VideoPlayback, chrome: VideoChrome, show: (VideoSheet?) -> Unit) {
     sheet ?: return
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = { show(null) }) {
+        val closer = LocalSheetCloser.current
         Column(Modifier.verticalScrollByKeys(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) {
             when (sheet) {
                 VideoSheet.MORE -> MoreRows(state, playback, chrome, show)
                 VideoSheet.SPEED -> VideoRules.SPEEDS.reversed().forEach { speed ->
                     CheckRow(stringResource(Res.string.reader_video_speed_value, VideoRules.speedText(speed)), kotlin.math.abs(speed - state.speed) < 0.01) {
-                        show(null)
                         playback.setSpeed(speed)
+                        closer.close()
                     }
                 }
                 VideoSheet.QUALITY -> state.qualities.forEach { quality ->
                     CheckRow(quality.label, quality.url == state.url) {
-                        show(null)
                         playback.setQuality(quality.url)
+                        closer.close()
                     }
                 }
             }
@@ -498,24 +565,24 @@ private fun VideoSheets(sheet: VideoSheet?, state: VideoState, playback: VideoPl
 /** The ⋮ menu's rows, in XTA's order: speed, quality, subtitles, fit or fill, download. */
 @Composable
 private fun MoreRows(state: VideoState, playback: VideoPlayback, chrome: VideoChrome, show: (VideoSheet?) -> Unit) {
+    val closer = LocalSheetCloser.current
     SheetRow(ReaderIcons.Speed, stringResource(Res.string.reader_video_speed)) { show(VideoSheet.SPEED) }
     if (state.qualities.size > 1) SheetRow(ReaderIcons.HighQuality, stringResource(Res.string.reader_video_quality)) { show(VideoSheet.QUALITY) }
     if (state.hasSubtitles) {
         SheetRow(if (state.subtitles) ReaderIcons.ClosedCaption else ReaderIcons.ClosedCaptionOff, stringResource(Res.string.reader_video_subtitles), checked = state.subtitles) {
-            show(null)
             playback.setSubtitles(!state.subtitles)
+            closer.close()
         }
     }
     chrome.onToggleFill?.let { toggle ->
         SheetRow(if (chrome.fill) ReaderIcons.FullscreenExit else ReaderIcons.AspectRatio, stringResource(if (chrome.fill) Res.string.reader_video_fit else Res.string.reader_video_fill)) {
-            show(null)
             toggle()
+            closer.close()
         }
     }
     chrome.onDownload?.let { download ->
         SheetRow(ReaderIcons.Download, stringResource(Res.string.reader_download)) {
-            show(null)
-            download()
+            closer.close(download)
         }
     }
 }

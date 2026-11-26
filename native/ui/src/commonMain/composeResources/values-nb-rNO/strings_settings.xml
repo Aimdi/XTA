@@ -84,6 +84,7 @@
     <string name="settings_yes">Ja</string>
     <string name="settings_zen_mode">Zen-modus</string>
     <string name="settings_zen_mode_description">En roligere feed: skjuler innleggsstatistikk, skjuler svar til du holder inne kommentarknappen, og viser bare noen få nylige innlegg per person.</string>
+    <string name="settings_zen_mode_description_desktop">En roligere feed: skjuler innleggsstatistikk, skjuler svar til du høyreklikker på kommentarknappen, og viser bare noen få nylige innlegg per person.</string>
     <string name="settings_threaded_replies">Trådede svar</string>
     <string name="settings_threaded_replies_description">Vis svar under et åpnet innlegg som et innrykket tre, der hvert svar ligger nøstet under det det svarer på.</string>
     <string name="settings_collapse_boosts">Slå sammen rekker med reposter</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Bildekvalitet</string>
     <string name="settings_load_manually">Last inn medier manuelt</string>
     <string name="settings_load_manually_description">Bilder og videoer lastes ikke inn før du trykker på dem, for å spare mobildata.</string>
+    <string name="settings_load_manually_description_desktop">Bilder og videoer lastes ikke inn før du klikker på dem, for å spare data.</string>
     <string name="settings_save_bandwidth">Spar båndbredde ved å bruke mindre bilder</string>
     <string name="settings_quality_low">Lav</string>
     <string name="settings_quality_medium">Middels</string>
@@ -160,10 +162,6 @@
     <string name="settings_colour_purple">Lilla</string>
     <string name="settings_colour_orange">Oransje</string>
     <string name="settings_colour_green">Grønn</string>
-    <string name="settings_true_black">Helt svart?</string>
-    <string name="settings_true_black_description">Bruk svart drakt for mørkt valg</string>
-    <string name="settings_true_black_cards">Ekte svart for tweet-kort</string>
-    <string name="settings_true_black_cards_description">Bruk ekte svart for bakgrunn på tweet-kort</string>
     <string name="settings_navigation_labels">Vis navigasjonsetiketter</string>
     <string name="settings_hide_navigation">Skjul topp- og bunnlinjen mens du blar</string>
     <string name="settings_hide_status_bar">Skjul statuslinjen</string>
@@ -179,11 +177,17 @@
     <string name="settings_ticker_chart">Aksjediagram</string>
     <string name="settings_ticker_chart_description">Vises når du åpner en ticker. XTA henter kursene selv fra offentlige tjenester uten konto; slått av sendes ingen forespørsel og innleggene blir igjen.</string>
     <string name="settings_double_tap_like">Dobbelttrykk for å like</string>
+    <string name="settings_double_tap_like_desktop">Dobbeltklikk for å like</string>
     <string name="settings_double_tap_like_description">Av som standard: hvert enkelttrykk venter på et mulig andre trykk, så det tar litt lengre tid å åpne et innlegg.</string>
+    <string name="settings_double_tap_like_description_desktop">Av som standard: hvert enkeltklikk venter på et mulig andre klikk, så det tar litt lengre tid å åpne et innlegg.</string>
     <string name="settings_swipe_back_anywhere">Sveip tilbake fra hvor som helst</string>
+    <string name="settings_swipe_back_anywhere_desktop">Dra tilbake fra hvor som helst</string>
     <string name="settings_swipe_back_anywhere_description">Dra et åpent innlegg fra hvor som helst på det for å gå tilbake. Av: bare fra kanten av skjermen.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Dra et åpent innlegg fra hvor som helst på det for å gå tilbake. Av: bare fra kanten av vinduet.</string>
     <string name="settings_swipe_back_tilt">Vipp med fingeren</string>
+    <string name="settings_swipe_back_tilt_desktop">Vipp med pekeren</string>
     <string name="settings_swipe_back_tilt_description">Et innlegg du drar tilbake, dreier rundt fingeren din og svinger med farten din.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">Et innlegg du drar tilbake, dreier rundt pekeren og svinger med farten din.</string>
     <string name="settings_accounts_empty">Legg til en konto for å laste For deg.</string>
     <string name="settings_accounts_description">Slå av reservekontoer du bare beholder for høyere grenser. For deg slår sammen tidslinjene fra kontoer som er på; Følger bruker fortsatt lokale abonnementer, men hopper over avslåtte kontoer ved henting. Kommentarer og profiler kan fortsatt bruke hvilken som helst konto om nødvendig.</string>
     <string name="settings_account_delete_confirm">Vil du logge av @%1$s? XTA glemmer økten på denne enheten, og det kan ikke angres.</string>
@@ -319,6 +323,7 @@
     <string name="settings_intro_again">Vis introduksjonen igjen</string>
     <string name="settings_intro_again_description">Se kortene fra første oppstart på nytt.</string>
     <string name="settings_open_logs">Åpne loggmappen</string>
+    <string name="settings_copy_diagnostics">Kopier diagnoseinformasjon</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Kopier rapporten</string>
     <string name="settings_diagnostics_copied">Diagnostikk kopiert til utklippstavlen</string>

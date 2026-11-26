@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.chrome
 
+import com.aimdi.xtanative.ui.common.ChildProcess
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -179,7 +180,7 @@ object LogsFolder {
         listOfNotNull(folder.parentFile?.takeIf { it.name == "xta-native" }, folder).forEach {
             Files.setPosixFilePermissions(it.toPath(), PosixFilePermissions.fromString("rwx------"))
         }
-        ProcessBuilder(opener, folder.path).redirectErrorStream(true).redirectOutput(ProcessBuilder.Redirect.DISCARD).start()
+        ChildProcess.builder(opener, folder.path).redirectErrorStream(true).redirectOutput(ProcessBuilder.Redirect.DISCARD).start()
         true
     }.getOrDefault(false)
 }

@@ -29,7 +29,7 @@
     <string name="home_downloads">Elŝutoj</string>
     <string name="home_antennas">Antenoj</string>
     <string name="home_deck">Kolumnaro</string>
-    <string name="home_deck_empty">Alpinglu grupojn por vidi ilin unu apud la alia sur larĝa ekrano</string>
+    <string name="home_deck_empty">Aldonu kolumnojn por vidi viajn fluojn kaj grupojn unu apud la alia sur larĝa ekrano</string>
     <string name="home_deck_add">Aldoni kolumnon</string>
     <string name="home_deck_move_left">Movi maldekstren</string>
     <string name="home_deck_move_right">Movi dekstren</string>
@@ -51,6 +51,7 @@
     <string name="home_filter_accounts_explained">Malŝaltu rezervajn kontojn, kiujn vi tenas nur pro limoj. Por vi kunfandas hejmajn templiniojn de ŝaltitaj kontoj; Abonoj ankoraŭ uzas viajn lokajn abonojn, sed preterpasas malŝaltitajn kontojn dum lego. Komentoj kaj profiloj ankoraŭ povas uzi iun ajn konton se necese.</string>
     <string name="home_filter_groups_explained">Malŝaltu grupon por kaŝi ĝiajn membrojn el Abonoj. La langeto de la grupo restas. Iliaj afiŝoj ankaŭ foriĝas el Por vi.</string>
     <string name="home_filter_only_hint">Longe premu eron por lasi nur ĝin ŝaltita.</string>
+    <string name="home_filter_only_hint_desktop">Dekstre alklaku eron por lasi nur ĝin ŝaltita.</string>
     <string name="home_filter_keep_one">Almenaŭ unu konto devas resti ŝaltita</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Ĉio</string>

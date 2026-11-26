@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.antenna
 
+import com.aimdi.xtanative.ui.common.destructiveButtonColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,15 +24,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,7 +45,6 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,12 +57,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -73,16 +66,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.antenna.Antenna
 import com.aimdi.xtanative.store.antenna.AntennaScope
+import com.aimdi.xtanative.ui.common.ActionsInTopBar
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
+import com.aimdi.xtanative.ui.common.EmptyState
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.TopBarBack
 import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_antenna_empty
 import com.aimdi.xtanative.ui.generated.resources.discover_antenna_exclude
 import com.aimdi.xtanative.ui.generated.resources.discover_antenna_include
@@ -104,8 +101,8 @@ import com.aimdi.xtanative.ui.search.DiscoverIcons
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
-/** XTA's antennas list and editor are no wider than this on a wide screen. */
-private val ContentWidth = 720.dp
+/** XTA's antennas list and editor are no wider than this on a wide screen: the reading column. */
+private val ContentWidth = ReadingColumn.MAX_WIDTH.dp
 
 /**
  * XTA's antennas: saved keyword listeners, newest first, each opening its
@@ -124,16 +121,23 @@ fun AntennasScreen(openAntenna: (String) -> Unit, onBack: () -> Unit) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
+            ColumnTopAppBar(
                 navigationIcon = {
-                    IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
+                    TopBarBack(onBack)
                 },
                 title = { Text(stringResource(Res.string.discover_antennas)) },
+                actions = {
+                    // Not while the empty page offers its own button for the first antenna.
+                    if (ActionsInTopBar && !antennas.isNullOrEmpty()) {
+                        val add = stringResource(Res.string.discover_antenna_new)
+                        IconTip(add) { IconButton(onClick = { vm.edit() }) { Icon(Icons.Filled.Add, contentDescription = add) } }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { vm.edit() }) { Icon(Icons.Filled.Add, contentDescription = stringResource(Res.string.discover_antenna_new)) }
+            if (!ActionsInTopBar) FloatingActionButton(onClick = { vm.edit() }) { Icon(Icons.Filled.Add, contentDescription = stringResource(Res.string.discover_antenna_new)) }
         },
     ) { padding ->
         val list = antennas
@@ -209,17 +213,7 @@ private fun AntennaRow(antenna: Antenna, onOpen: () -> Unit, onSettings: () -> U
 
 @Composable
 private fun EmptyAntennas(onNew: () -> Unit) {
-    Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Icon(DiscoverIcons.Radar, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(48.dp))
-        Text(
-            stringResource(Res.string.discover_antenna_empty),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(vertical = 16.dp).semantics { liveRegion = LiveRegionMode.Polite },
-        )
+    EmptyState(DiscoverIcons.Radar, stringResource(Res.string.discover_antenna_empty)) {
         Button(onClick = onNew, modifier = Modifier.heightIn(min = 48.dp)) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.discover_antenna_new), modifier = Modifier.padding(start = 8.dp))
@@ -236,7 +230,7 @@ private fun DeleteDialog(antenna: Antenna, onDelete: () -> Unit, onDismiss: () -
         confirmButton = {
             Button(
                 onClick = onDelete,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error, contentColor = MaterialTheme.colorScheme.onError),
+                colors = destructiveButtonColors(),
             ) { Text(stringResource(Res.string.discover_delete)) }
         },
         dismissButton = { TextButton(onClick = onDismiss, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.discover_cancel)) } },

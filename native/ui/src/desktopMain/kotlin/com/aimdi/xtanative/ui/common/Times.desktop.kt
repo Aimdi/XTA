@@ -2,6 +2,8 @@ package com.aimdi.xtanative.ui.common
 
 import androidx.compose.runtime.Composable
 import com.aimdi.xtanative.ui.theme.LocalLanguage
+import java.math.RoundingMode
+import java.text.NumberFormat
 import java.time.Instant
 import java.time.ZoneId
 import java.time.chrono.IsoChronology
@@ -42,3 +44,15 @@ private fun withoutYear(pattern: String): String =
 @Composable
 internal actual fun timeOfDayText(then: Instant, locale: Locale): String =
     DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale).format(then.atZone(ZoneId.systemDefault()))
+
+/** Java's compact number format (CLDR's short style), one per number of decimals; NumberFormat is used on one thread at a time, the UI's. */
+internal actual fun compactCounts(locale: Locale): ((Long, Int) -> String)? {
+    val formats = (0..1).map { decimals ->
+        NumberFormat.getCompactNumberInstance(locale, NumberFormat.Style.SHORT).apply {
+            roundingMode = RoundingMode.DOWN
+            maximumFractionDigits = decimals
+            isGroupingUsed = true
+        }
+    }
+    return { n, decimals -> formats[decimals.coerceIn(0, 1)].format(n) }
+}

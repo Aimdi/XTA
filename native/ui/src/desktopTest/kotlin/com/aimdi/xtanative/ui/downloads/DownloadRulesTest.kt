@@ -86,6 +86,13 @@ class DownloadRulesTest {
     }
 
     @Test
+    fun clearHistoryWaitsForADownloadThatEnded() {
+        assertFalse(hasClearableHistory(emptyList()), "an empty list has nothing to clear")
+        assertFalse(hasClearableHistory(listOf(entry(DownloadStatus.DOWNLOADING), entry(DownloadStatus.FAILED), entry(DownloadStatus.CANCELLED))), "running ones and ones to retry stay")
+        assertTrue(hasClearableHistory(listOf(entry(DownloadStatus.DOWNLOADING), entry(DownloadStatus.COMPLETED))))
+    }
+
+    @Test
     fun aFinishedDownloadSaysWhereItWent() {
         val shared = entry(DownloadStatus.COMPLETED, saved = "content://media/external/images/media/1", background = true)
         assertEquals(KeepNotice.SavedTo("Pictures/XTA", "content://media/external/images/media/1", "a.jpg"), downloadNotice(shared, "Pictures/XTA"))

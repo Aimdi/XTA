@@ -84,6 +84,7 @@
     <string name="settings_yes">Sim</string>
     <string name="settings_zen_mode">Modo zen</string>
     <string name="settings_zen_mode_description">Um feed mais calmo: oculta as estatísticas, oculta as respostas até você segurar o botão de comentários e mostra apenas algumas publicações recentes por pessoa.</string>
+    <string name="settings_zen_mode_description_desktop">Um feed mais calmo: oculta as estatísticas, oculta as respostas até você clicar com o botão direito no botão de comentários e mostra apenas algumas publicações recentes por pessoa.</string>
     <string name="settings_threaded_replies">Respostas aninhadas</string>
     <string name="settings_threaded_replies_description">Mostra as respostas de uma publicação aberta como uma árvore indentada, com cada resposta aninhada sob a que ela responde.</string>
     <string name="settings_collapse_boosts">Agrupar sequências de reposts</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Qualidade das imagens</string>
     <string name="settings_load_manually">Carregar mídia manualmente</string>
     <string name="settings_load_manually_description">As imagens e os vídeos só são carregados ao tocá-los, para economizar dados móveis.</string>
+    <string name="settings_load_manually_description_desktop">As imagens e os vídeos só são carregados ao clicar neles, para economizar dados.</string>
     <string name="settings_save_bandwidth">Economize largura de banda com imagens menores</string>
     <string name="settings_quality_low">Baixa</string>
     <string name="settings_quality_medium">Média</string>
@@ -160,10 +162,6 @@
     <string name="settings_colour_purple">Roxo</string>
     <string name="settings_colour_orange">Laranja</string>
     <string name="settings_colour_green">Verde</string>
-    <string name="settings_true_black">Preto Verdadeiro?</string>
-    <string name="settings_true_black_description">Use preto verdadeiro para o tema do modo escuro</string>
-    <string name="settings_true_black_cards">Preto verdadeiro para cartões de tweets</string>
-    <string name="settings_true_black_cards_description">Usar preto verdadeiro para fundo de cartões de tweets</string>
     <string name="settings_navigation_labels">Mostrar rótulos de navegação</string>
     <string name="settings_hide_navigation">Ocultar as barras superior e inferior ao rolar</string>
     <string name="settings_hide_status_bar">Ocultar a barra de status</string>
@@ -179,11 +177,17 @@
     <string name="settings_ticker_chart">Gráfico da ação</string>
     <string name="settings_ticker_chart_description">Mostrado ao abrir um ticker. O XTA busca as cotações em serviços públicos sem conta; desligado não faz nenhuma requisição e ficam os posts.</string>
     <string name="settings_double_tap_like">Toque duas vezes para curtir</string>
+    <string name="settings_double_tap_like_desktop">Clique duas vezes para curtir</string>
     <string name="settings_double_tap_like_description">Desativado por padrão: cada toque simples espera por um possível segundo, então abrir um post fica um pouco mais lento.</string>
+    <string name="settings_double_tap_like_description_desktop">Desativado por padrão: cada clique simples espera por um possível segundo, então abrir um post fica um pouco mais lento.</string>
     <string name="settings_swipe_back_anywhere">Deslizar para voltar de qualquer lugar</string>
+    <string name="settings_swipe_back_anywhere_desktop">Arrastar para voltar de qualquer lugar</string>
     <string name="settings_swipe_back_anywhere_description">Arraste um post aberto de qualquer ponto para voltar. Desativado: só a partir da borda da tela.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Arraste um post aberto de qualquer ponto para voltar. Desativado: só a partir da borda da janela.</string>
     <string name="settings_swipe_back_tilt">Inclinar com o dedo</string>
+    <string name="settings_swipe_back_tilt_desktop">Inclinar com o ponteiro</string>
     <string name="settings_swipe_back_tilt_description">O post que você arrasta de volta gira em torno do seu dedo e balança conforme a sua velocidade.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">O post que você arrasta de volta gira em torno do ponteiro e balança conforme a sua velocidade.</string>
     <string name="settings_accounts_empty">Adicione uma conta para carregar Para você.</string>
     <string name="settings_accounts_description">Desative contas extras que você só mantém por limites de taxa. Para você mescla as timelines das contas ligadas; Seguindo ainda usa suas assinaturas locais, mas pula contas desligadas ao buscar. Comentários e perfis ainda podem usar qualquer conta se precisar.</string>
     <string name="settings_account_delete_confirm">Sair da conta @%1$s? O XTA vai esquecer a sessão neste dispositivo, e não dá para desfazer.</string>
@@ -319,6 +323,7 @@
     <string name="settings_intro_again">Mostrar a introdução de novo</string>
     <string name="settings_intro_again_description">Rever os cartões da primeira abertura.</string>
     <string name="settings_open_logs">Abrir pasta de logs</string>
+    <string name="settings_copy_diagnostics">Copiar diagnóstico</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Copiar o relatório</string>
     <string name="settings_diagnostics_copied">Diagnóstico copiado para a área de transferência</string>

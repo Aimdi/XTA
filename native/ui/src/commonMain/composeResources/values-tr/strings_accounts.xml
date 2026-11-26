@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">Avatarın</string>
     <string name="settings_avatar_change">Sol üstteki resmi değiştirmek için dokunun</string>
+    <string name="settings_avatar_change_desktop">Sol üstteki resmi değiştirmek için tıklayın</string>
     <string name="settings_avatar_description">Sol üstte ve menüde görünen resim — bu cihazda kalır</string>
     <string name="settings_avatar_choose">Cihazdan seç</string>
     <string name="settings_avatar_from_account">X profil fotoğrafını kullan</string>

@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Aipamenak</string>
     <string name="posts_replies_missing">Ezin izan dira erantzunak kargatu</string>
+    <string name="posts_no_replies_yet">Oraindik ez dago erantzunik</string>
     <string name="posts_replying_to">Erantzun</string>
     <string name="posts_reposted">Orain dela %2$s %1$s birtxiotua</string>
     <string name="posts_reposted_by">Berrargitaratzaileak</string>
@@ -96,6 +97,7 @@
     <string name="posts_verified_organization">Egiaztatutako erakundea</string>
     <string name="posts_view_quoted">Ikusi aipatutako txioa</string>
     <string name="posts_zen_replies">Eduki sakatuta iruzkinen botoia erantzunak erakusteko</string>
+    <string name="posts_zen_replies_desktop">Egin eskuineko klik iruzkinen botoian erantzunak erakusteko</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s ikustaldi</item>
         <item quantity="other">%1$s ikustaldi</item>

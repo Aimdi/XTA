@@ -64,6 +64,7 @@
     <string name="reader_voices_use">Bruk en nedlastet stemme</string>
     <string name="reader_voices_use_description">Leser med en nedlastet stemme når en av dem snakker artikkelens språk; ellers brukes motoren nedenfor.</string>
     <string name="reader_voices_note">Stemmer lastes ned fra GitHub (k2-fsa/sherpa-onnx) bare når du trykker på Last ned. De kjører helt på denne enheten.</string>
+    <string name="reader_voices_note_desktop">Stemmer lastes ned fra GitHub (k2-fsa/sherpa-onnx) bare når du klikker på Last ned. De kjører helt på denne enheten.</string>
     <string name="reader_voices_synthesis_missing">Denne versjonen kan laste ned stemmer, men kan ikke lese med dem ennå. Inntil da leser talemotoren nedenfor høyt.</string>
     <string name="reader_voice_licence">Lisens: %1$s</string>
     <string name="reader_voice_installing">Kontrollerer og pakker ut …</string>

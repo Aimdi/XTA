@@ -70,6 +70,7 @@
     <string name="reader_voices_use">Use a downloaded voice</string>
     <string name="reader_voices_use_description">Read with a downloaded voice when one speaks the article's language; otherwise use the engine below.</string>
     <string name="reader_voices_note">Voices are downloaded from GitHub (k2-fsa/sherpa-onnx) only when you tap Download. They run entirely on this device.</string>
+    <string name="reader_voices_note_desktop">Voices are downloaded from GitHub (k2-fsa/sherpa-onnx) only when you click Download. They run entirely on this device.</string>
     <string name="reader_voices_synthesis_missing">This version can download voices but can't read with them yet. Until it can, the speech engine below reads aloud.</string>
     <string name="reader_voice_licence">License: %1$s</string>
     <string name="reader_voice_installing">Checking and unpacking…</string>

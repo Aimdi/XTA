@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">번역</string>
     <string name="translation_privacy">번역을 누르기 전에는 아무것도 전송되지 않습니다. 누르면 여기서 선택한 서비스로만 텍스트가 전송됩니다.</string>
+    <string name="translation_privacy_desktop">번역을 클릭하기 전에는 아무것도 전송되지 않습니다. 클릭하면 여기서 선택한 서비스로만 텍스트가 전송됩니다.</string>
     <string name="translation_provider">번역 서비스</string>
     <string name="translation_provider_off">사용 안 함</string>
     <string name="translation_provider_ai">AI 제공자</string>

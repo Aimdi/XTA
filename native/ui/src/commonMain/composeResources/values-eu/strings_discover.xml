@@ -71,8 +71,8 @@
     <string name="discover_community_created">Sortze-data: %1$s</string>
     <string name="discover_community_members">Kideak</string>
     <plurals name="discover_member_count">
-        <item quantity="one">Kide %1$d</item>
-        <item quantity="other">%1$d kide</item>
+        <item quantity="one">Kide %1$s</item>
+        <item quantity="other">%1$s kide</item>
     </plurals>
     <string name="discover_list_import_title">Inportatu X zerrenda bat talde gisa</string>
     <string name="discover_list_import_intro">X zerrenda bat harpidetza talde gisa inportatzeko, sartu behean zerrendaren esteka edo IDa</string>

@@ -7,21 +7,31 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.focusProperties
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -31,6 +41,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.savedstate.read
+import com.aimdi.xtanative.core.session.DeckGroups
 import com.aimdi.xtanative.core.x.model.XLive
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.antenna.AntennaFeedScreen
@@ -43,9 +54,11 @@ import com.aimdi.xtanative.ui.chrome.ConfirmClose
 import com.aimdi.xtanative.ui.chrome.OfflineFrame
 import com.aimdi.xtanative.ui.chrome.SwipeBackCard
 import com.aimdi.xtanative.ui.chrome.UpdateCheck
+import com.aimdi.xtanative.ui.chrome.push
 import com.aimdi.xtanative.ui.common.CenteredPage
 import com.aimdi.xtanative.ui.common.LocalProblemActions
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.Motion
 import com.aimdi.xtanative.ui.common.ProblemActions
 import com.aimdi.xtanative.ui.community.CommunityMembersScreen
 import com.aimdi.xtanative.ui.community.CommunityScreen
@@ -54,10 +67,29 @@ import com.aimdi.xtanative.ui.group.GroupDiscoveryScreen
 import com.aimdi.xtanative.ui.group.GroupFeedScreen
 import com.aimdi.xtanative.ui.home.DeckScreen
 import com.aimdi.xtanative.ui.home.DesktopNavigation
+import com.aimdi.xtanative.ui.home.FindsBackWithKeys
+import com.aimdi.xtanative.ui.home.FrameCalls
+import com.aimdi.xtanative.ui.home.FrameFocus
+import com.aimdi.xtanative.ui.home.FrameKind
+import com.aimdi.xtanative.ui.home.FrameRoute
+import com.aimdi.xtanative.ui.home.FramedRail
+import com.aimdi.xtanative.ui.home.FramedSidebar
+import com.aimdi.xtanative.ui.home.FullWindow
 import com.aimdi.xtanative.ui.home.HomeBarScreens
 import com.aimdi.xtanative.ui.home.HomeRequests
 import com.aimdi.xtanative.ui.home.HomeRoutes
 import com.aimdi.xtanative.ui.home.HomeScreen
+import com.aimdi.xtanative.ui.home.HomeWide
+import com.aimdi.xtanative.ui.home.FrameRoots
+import com.aimdi.xtanative.ui.home.LocalFrameRoots
+import com.aimdi.xtanative.ui.home.LocalWideFrame
+import com.aimdi.xtanative.ui.home.PageEnd
+import com.aimdi.xtanative.ui.home.PageStart
+import com.aimdi.xtanative.ui.home.RailMenu
+import com.aimdi.xtanative.ui.home.ReachedByF6
+import com.aimdi.xtanative.ui.home.WideFrame
+import com.aimdi.xtanative.ui.home.frameNavigation
+import com.aimdi.xtanative.ui.home.rememberLeaveField
 import com.aimdi.xtanative.ui.importer.ImportScreen
 import com.aimdi.xtanative.ui.intro.IntroFlow
 import com.aimdi.xtanative.ui.intro.IntroScreen
@@ -80,6 +112,7 @@ import com.aimdi.xtanative.ui.offline.OfflineMediaScreen
 import com.aimdi.xtanative.ui.pluginstore.AttachPluginNavigation
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.pluginstore.PluginCards
+import com.aimdi.xtanative.ui.pluginstore.PluginRoutes
 import com.aimdi.xtanative.ui.pluginstore.PluginSheetHost
 import com.aimdi.xtanative.ui.pluginstore.pluginScreens
 import com.aimdi.xtanative.ui.post.LocalPostWindows
@@ -107,6 +140,7 @@ import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import com.aimdi.xtanative.ui.settings.SettingsScreen
 import com.aimdi.xtanative.ui.settings.SettingsSection
 import com.aimdi.xtanative.ui.settings.SettingsSectionScreen
+import com.aimdi.xtanative.ui.settings.isDesktop
 import com.aimdi.xtanative.ui.signin.NotLoggedInDialog
 import com.aimdi.xtanative.ui.signin.SignInReminder
 import com.aimdi.xtanative.ui.signin.SignInScreen
@@ -121,6 +155,7 @@ import com.aimdi.xtanative.ui.subscriptions.UngroupedSorterScreen
 import com.aimdi.xtanative.ui.trends.TrendsActions
 import com.aimdi.xtanative.ui.trends.TrendsScreen
 import java.net.URLEncoder
+import kotlinx.coroutines.flow.first
 
 internal object Routes {
     const val ROOT = "root"
@@ -185,6 +220,10 @@ internal object Routes {
     /** The viewer over the gallery kept as [key], from [index]; [page] is where it falls back to once the gallery is gone. */
     fun gallery(key: String, index: Int, page: ViewerPage?) =
         "gallery/" + encoded(key) + "/$index" + (page?.let { "?post=" + encoded(it.postId) + "&at=" + it.index } ?: "")
+
+    /** What names the viewer [gallery] opens at [index] and [page] whatever its key: the same tile tapped twice. */
+    fun galleryOpening(index: Int, page: ViewerPage?) =
+        "gallery/$index" + (page?.let { "/" + encoded(it.postId) + "/" + it.index } ?: "")
     fun search(query: String?) = search(query, null)
 
     /** The search of [query] on [tab] (a [SearchTab.routeName]); either may be left out. With [focus], the field takes the keyboard, the query ready to add to. */
@@ -246,23 +285,56 @@ private const val FADE_MS = 180
 private typealias Enter = AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition
 private typealias Exit = AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition
 
+/** How one screen gives way to the next. */
+internal enum class ScreenChange {
+    /** At once: motion is reduced. */
+    NONE,
+
+    /** Sliding across, as a phone pushes its screens. */
+    SLIDE,
+
+    /** A short crossfade, as a desktop app changes its view in place. */
+    CROSSFADE,
+
+    ;
+
+    companion object {
+        /** The change on the desktop ([desktop]) or a phone, still while motion is [reduced]. */
+        fun of(desktop: Boolean, reduced: Boolean): ScreenChange = when {
+            reduced -> NONE
+            desktop -> CROSSFADE
+            else -> SLIDE
+        }
+    }
+}
+
 /**
- * How screens come and go: a slide as one is opened and closed, a fade for
- * the media viewer, and nothing while Settings › Accessibility › Disable
- * animations is on ([reduced]), as XTA then pushes its screens without a
- * transition. [reduced] is read as each change starts, so the switch applies at once.
+ * How screens come and go: a slide as one is opened and closed on a phone, a
+ * short crossfade on the desktop ([desktop]), whose screens change in place
+ * beside the navigation, a fade for the media viewer, and nothing while
+ * Settings › Accessibility › Disable animations is on ([reduced]), as XTA then
+ * pushes its screens without a transition ([ScreenChange]). [reduced] is read
+ * as each change starts, so the switch applies at once.
  * An opened post moves itself as a card over a picture of the screen it
  * came from (SwipeBackCard), so that screen stays still under it.
  */
-private class ScreenMotion(private val reduced: State<Boolean>) {
-    val enter: Enter = entering { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(SLIDE_MS)) }
-    val exit: Exit = leaving {
-        if (targetState.isCard()) ExitTransition.None else slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(SLIDE_MS)) { it / 4 }
-    }
-    val popEnter: Enter = entering {
-        if (initialState.isCard()) EnterTransition.None else slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) { it / 4 }
-    }
-    val popExit: Exit = leaving { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) }
+private class ScreenMotion(private val reduced: State<Boolean>, private val desktop: Boolean = isDesktop) {
+    val enter: Enter = moving(
+        slide = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(SLIDE_MS)) },
+        fade = { fadeIn(tween(Motion.CROSSFADE_MS)) },
+    )
+    val exit: Exit = going(
+        slide = { if (targetState.isCard()) ExitTransition.None else slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(SLIDE_MS)) { it / 4 } },
+        fade = { if (targetState.isCard()) ExitTransition.None else fadeOut(tween(Motion.CROSSFADE_MS)) },
+    )
+    val popEnter: Enter = moving(
+        slide = { if (initialState.isCard()) EnterTransition.None else slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) { it / 4 } },
+        fade = { if (initialState.isCard()) EnterTransition.None else fadeIn(tween(Motion.CROSSFADE_MS)) },
+    )
+    val popExit: Exit = going(
+        slide = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) },
+        fade = { fadeOut(tween(Motion.CROSSFADE_MS)) },
+    )
     val fadeEnter: Enter = entering { fadeIn(tween(FADE_MS)) }
     val fadeExit: Exit = leaving { fadeOut(tween(FADE_MS)) }
 
@@ -273,6 +345,22 @@ private class ScreenMotion(private val reduced: State<Boolean>) {
     private fun entering(moving: Enter): Enter = { if (reduced.value) EnterTransition.None else moving(this) }
 
     private fun leaving(moving: Exit): Exit = { if (reduced.value) ExitTransition.None else moving(this) }
+
+    private fun moving(slide: Enter, fade: Enter): Enter = {
+        when (ScreenChange.of(desktop, reduced.value)) {
+            ScreenChange.NONE -> EnterTransition.None
+            ScreenChange.SLIDE -> slide(this)
+            ScreenChange.CROSSFADE -> fade(this)
+        }
+    }
+
+    private fun going(slide: Exit, fade: Exit): Exit = {
+        when (ScreenChange.of(desktop, reduced.value)) {
+            ScreenChange.NONE -> ExitTransition.None
+            ScreenChange.SLIDE -> slide(this)
+            ScreenChange.CROSSFADE -> fade(this)
+        }
+    }
 
     private fun NavBackStackEntry.isCard(): Boolean = destination.route == Routes.POST || destination.route == PluginCards.ROUTE
 }
@@ -312,55 +400,61 @@ fun XtaNativeRoot() {
     val actions = remember(nav, links) {
         PostActions(
             // A post opens as a card over a picture of the screen it is opened from.
-            openPost = { id -> backs.open(opening) { nav.navigate(Routes.post(id)) } },
-            openProfile = { name -> nav.navigate(Routes.profile(name)) },
-            openMedia = { postId, index -> nav.navigate(Routes.media(postId, index)) },
+            openPost = { id -> backs.open(opening) { nav.push(Routes.post(id)) } },
+            openProfile = { name -> nav.push(Routes.profile(name)) },
+            openMedia = { postId, index -> nav.push(Routes.media(postId, index)) },
             // A search with no words yet (the desktop entry's "New search") opens with its field ready to type in.
-            search = { query -> nav.navigate(Routes.search(query, null, focus = query.isBlank())) },
-            openQuotes = { id -> nav.navigate(Routes.quotes(id)) },
-            openReposters = { id -> nav.navigate(Routes.reposters(id)) },
-            openArticle = { postId -> nav.navigate(Routes.article(postId)) },
-            openFollows = { name, followers -> nav.navigate(Routes.follows(name, followers)) },
+            search = { query -> nav.push(Routes.search(query, null, focus = query.isBlank())) },
+            openQuotes = { id -> nav.push(Routes.quotes(id)) },
+            openReposters = { id -> nav.push(Routes.reposters(id)) },
+            openArticle = { postId -> nav.push(Routes.article(postId)) },
+            openFollows = { name, followers -> nav.push(Routes.follows(name, followers)) },
             openLink = { url -> links?.open(url) },
             openInBrowser = { url -> links?.openOutside(url) },
-            openImage = { url, name -> nav.navigate(Routes.image(url, name)) },
-            openUser = { name, id -> nav.navigate(Routes.profile(name, id)) },
+            openImage = { url, name -> nav.push(Routes.image(url, name)) },
+            openUser = { name, id -> nav.push(Routes.profile(name, id)) },
         )
     }
     val searchActions = remember(nav) {
         SearchActions(
-            openCommunity = { id -> nav.navigate(Routes.community(id)) },
-            openAntennas = { nav.navigate(Routes.ANTENNAS) },
-            openLibrary = { query -> nav.navigate(Routes.library(query)) },
+            openCommunity = { id -> nav.push(Routes.community(id)) },
+            openAntennas = { nav.push(Routes.ANTENNAS) },
+            openLibrary = { query -> nav.push(Routes.library(query)) },
         )
     }
     val trendsActions = remember(nav) {
         TrendsActions(
-            openSearch = { query -> nav.navigate(Routes.search(query)) },
-            openPeople = { nav.navigate(Routes.search(null, SearchTab.PEOPLE.routeName)) },
-            openAntennas = { nav.navigate(Routes.ANTENNAS) },
-            openLibrary = { query -> nav.navigate(Routes.library(query)) },
+            openSearch = { query -> nav.push(Routes.search(query)) },
+            openPeople = { nav.push(Routes.search(null, SearchTab.PEOPLE.routeName)) },
+            openAntennas = { nav.push(Routes.ANTENNAS) },
+            openLibrary = { query -> nav.push(Routes.library(query)) },
         )
     }
-    val livePlayer = remember(nav) { { live: XLive -> nav.navigate(Routes.live(live)) } }
-    val homeRoutes = remember(nav) { HomeRoutes(exists = nav::hasRoute, open = { route -> nav.navigate(route) }) }
+    val livePlayer = remember(nav) { { live: XLive -> nav.push(Routes.live(live)); Unit } }
+    val homeRoutes = remember(nav) { HomeRoutes(exists = nav::hasRoute, open = { route -> nav.push(route) }) }
     val plugins = LocalPlugins.current
     val linkScreens = remember(nav, actions, plugins) {
         LinkScreens(
             post = actions.openPost,
-            profile = { name, tab -> nav.navigate(Routes.profile(name, tab = ProfileTab.of(tab))) },
+            profile = { name, tab -> nav.push(Routes.profile(name, tab = ProfileTab.of(tab))) },
             search = actions.search,
-            searchOn = { query, tab -> nav.navigate(Routes.search(query, tab.routeName, focus = query.isBlank())) },
-            browser = { url, from -> nav.navigate(Routes.browser(url, from)) },
-            community = { id, about -> true.also { nav.navigate(if (about) Routes.communityAbout(id) else Routes.community(id)) } },
-            list = { id -> true.also { nav.navigate(Routes.list(id)) } },
+            searchOn = { query, tab -> nav.push(Routes.search(query, tab.routeName, focus = query.isBlank())) },
+            browser = { url, from -> nav.push(Routes.browser(url, from)) },
+            community = { id, about -> true.also { nav.push(if (about) Routes.communityAbout(id) else Routes.community(id)) } },
+            list = { id -> true.also { nav.push(Routes.list(id)) } },
             live = { link -> true.also { LiveRooms.open(LiveRooms.of(link), livePlayer, browser = { url -> links?.openOutside(url) }) } },
             plugin = plugins::openOnScreen,
             mightAskPlugin = plugins::mightOpenLater,
             pluginLater = plugins::openLater,
         )
     }
-    BindLinkScreens(linkScreens)
+    // What is handed in from outside (`xta-native <url>` at a fresh start, a shared link) waits for the navigation's
+    // graph and first screen: the screens' host is composed after this, and nothing can be opened before it is.
+    val screensUp by produceState(false, nav) {
+        nav.currentBackStackEntryFlow.first()
+        value = true
+    }
+    if (screensUp) BindLinkScreens(linkScreens)
     if (secondary == null) {
         // Where a plugin asks to go lands here too (PLUGINS.md).
         val showMain = LocalShowMainWindow.current
@@ -373,10 +467,17 @@ fun XtaNativeRoot() {
     val postWindows = remember { windowOpener()?.let { open -> { id: String -> open(Routes.post(id)) } } }
 
     // A grid's tiles open the viewer over everything it has loaded (media_grid_lightbox.dart).
-    val galleries = remember(nav) { { gallery: MediaGallery, at: Int -> nav.navigate(Routes.gallery(Galleries.put(gallery), at, gallery.pages().getOrNull(at))) } }
+    // Its route names the gallery by a new key each time; a double-tap is known by the page it opens on.
+    val galleries = remember(nav) {
+        { gallery: MediaGallery, at: Int ->
+            val page = gallery.pages().getOrNull(at)
+            nav.push(Routes.galleryOpening(at, page)) { Routes.gallery(Galleries.put(gallery), at, page) }
+            Unit
+        }
+    }
     // A read failure's Add account opens the sign-in, and its Diagnostics the settings page.
     val problems = remember(nav) {
-        ProblemActions(addAccount = { nav.navigate(Routes.SIGN_IN) }, diagnostics = { nav.navigate(SettingsRoutes.of(SettingsSection.DIAGNOSTICS)) })
+        ProblemActions(addAccount = { nav.push(Routes.SIGN_IN) }, diagnostics = { nav.push(SettingsRoutes.of(SettingsSection.DIAGNOSTICS)) })
     }
     CompositionLocalProvider(
         LocalGalleryOpener provides galleries,
@@ -387,11 +488,11 @@ fun XtaNativeRoot() {
         // Ctrl+F and / on a screen with no search of its own open the search, its field ready: not over the
         // intro, the sign-in or an import, not over a plugin's pages (they keep their own keys), and not a
         // second search over one still opening.
-        val openSearch = remember(nav) { { if (SearchKeys.opensSearchOver(nav.currentDestination?.route)) nav.navigate(Routes.search(null)) } }
+        val openSearch = remember(nav) { { if (SearchKeys.opensSearchOver(nav.currentDestination?.route)) nav.push(Routes.search(null)) } }
         // Ctrl+, goes back to the settings where they are open below (Read aloud, the licences, the plugin store),
         // else opens them, unless a screen that must be finished first is shown.
         val openSettings = remember(nav) {
-            { if (!nav.popBackStack(Routes.SETTINGS, inclusive = false) && SearchKeys.opensSettingsOver(nav.currentDestination?.route)) nav.navigate(Routes.SETTINGS) }
+            { if (!nav.popBackStack(Routes.SETTINGS, inclusive = false) && SearchKeys.opensSettingsOver(nav.currentDestination?.route)) nav.push(Routes.SETTINGS) }
         }
         // Alt+Home goes back to Home, as a browser's goes to its home page, and to Home's start page there (not
         // Saved or another page last picked on its bar); nothing where Home is not below.
@@ -413,7 +514,7 @@ fun XtaNativeRoot() {
         val goForward = remember(nav, forward, backs, opening) {
             {
                 forward.next()?.let { step ->
-                    val open = { runCatching { nav.navigate(step.route) }.onFailure { forward.clear() }; Unit }
+                    val open = { runCatching { nav.push(step.route) }.onFailure { forward.clear() }.getOrDefault(false) }
                     // A post opens as a card over a picture of the screen, as it does when clicked; one that
                     // does not open (another still opening) leaves the step to go forward to.
                     if (step.pattern == Routes.POST) backs.open(opening, abandoned = { forward.putBack(step) }, navigate = open) else open()
@@ -424,7 +525,7 @@ fun XtaNativeRoot() {
         DesktopNavigation(nav, openSearch, openSettings, openHome, goForward) { OfflineFrame { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) } }
     }
     if (askSignIn) {
-        NotLoggedInDialog(onImportBackup = { nav.navigate(Routes.IMPORT) }, onLogin = { nav.navigate(Routes.SIGN_IN) }, onDismiss = { askSignIn = false })
+        NotLoggedInDialog(onImportBackup = { nav.push(Routes.IMPORT) }, onLogin = { nav.push(Routes.SIGN_IN) }, onDismiss = { askSignIn = false })
     }
     if (secondary == null) {
         ConfirmClose()
@@ -453,7 +554,7 @@ private fun OpenVoiceSettingsWhenAsked(nav: NavHostController, shown: () -> Unit
     val speech = LocalSpeech.current ?: return
     LaunchedEffect(speech, nav) {
         speech.voiceSettingsAsked.collect {
-            nav.navigate(Routes.SPEECH_SETTINGS)
+            nav.push(Routes.SPEECH_SETTINGS)
             shown()
         }
     }
@@ -474,9 +575,13 @@ private class ScreenActions(val posts: PostActions, val search: SearchActions, v
 private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
     val reduced = rememberUpdatedState(LocalReducedMotion.current)
     val motion = remember(reduced) { ScreenMotion(reduced) }
-    all.backs.Recorded { ScreenHost(nav, start, all, motion) }
-    // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved).
-    KeepHost()
+    // In a wide desktop window the navigation column stands beside every screen; only the screens are pictured under a card.
+    WideFramed(nav, all.home) {
+        all.backs.Recorded { ScreenHost(nav, start, all, motion) }
+        // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved):
+        // beside the screens, so a notice centres under the reading column, not under the navigation too.
+        KeepHost()
+    }
     // The sheets plugins open over the screens: a post's folders, its note, its menu, an account's groups. The main window's alone, so each shows once.
     if (LocalSecondaryWindow.current == null) PluginSheetHost()
 }
@@ -506,7 +611,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
                     graph.keep { graph.settings.update(IntroFlow::finished) }
                     nav.startOver(Routes.HOME)
                 },
-                onSignIn = { nav.navigate(Routes.SIGN_IN) },
+                onSignIn = { nav.push(Routes.SIGN_IN) },
             )
         }
         composable(Routes.SIGN_IN) {
@@ -518,8 +623,8 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
         composable(Routes.INTRO) {
             IntroScreen(
                 onFinished = { nav.startOver(Routes.HOME) },
-                onImport = { nav.navigate(Routes.IMPORT) },
-                onOpen = { route -> nav.navigate(route) },
+                onImport = { nav.push(Routes.IMPORT) },
+                onOpen = { route -> nav.push(route) },
             )
         }
         composable(Routes.HOME) {
@@ -565,7 +670,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
                 userId = entry.text("id"),
                 openingTab = ProfileTab.ofRoute(entry.text("tab")),
             ) { query ->
-                nav.navigate(Routes.search(query, SearchTab.LATEST.routeName, focus = true))
+                nav.push(Routes.search(query, SearchTab.LATEST.routeName, focus = true))
             }
         }
         composable(
@@ -576,7 +681,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             popEnterTransition = motion.fadeEnter,
             popExitTransition = motion.fadeExit,
         ) { entry ->
-            MediaViewer(entry.text("postId").orEmpty(), entry.arguments?.read { getIntOrNull("index") } ?: 0, onClose = { nav.popBackStack() })
+            FullWindow { MediaViewer(entry.text("postId").orEmpty(), entry.arguments?.read { getIntOrNull("index") } ?: 0, onClose = { nav.popBackStack() }) }
         }
         composable(
             Routes.GALLERY,
@@ -591,14 +696,16 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             popEnterTransition = motion.fadeEnter,
             popExitTransition = motion.fadeExit,
         ) { entry ->
-            GalleryViewer(
-                entry.text("key").orEmpty(),
-                entry.arguments?.read { getIntOrNull("index") } ?: 0,
-                fallbackPostId = entry.text("post"),
-                fallbackIndex = entry.arguments?.read { getIntOrNull("at") } ?: 0,
-                openPost = { id, media -> nav.navigate(Routes.post(id, media)) },
-                onClose = { nav.popBackStack() },
-            )
+            FullWindow {
+                GalleryViewer(
+                    entry.text("key").orEmpty(),
+                    entry.arguments?.read { getIntOrNull("index") } ?: 0,
+                    fallbackPostId = entry.text("post"),
+                    fallbackIndex = entry.arguments?.read { getIntOrNull("at") } ?: 0,
+                    openPost = { id, media -> nav.push(Routes.post(id, media)) },
+                    onClose = { nav.popBackStack() },
+                )
+            }
         }
         composable(
             Routes.SEARCH,
@@ -615,10 +722,10 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             TrendsScreen(trendsActions, onBack = { nav.popBackStack() })
         }
         composable(Routes.COMMUNITY, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
-            CommunityScreen(entry.text("id").orEmpty(), about = false, actions, openMembers = { id -> nav.navigate(Routes.communityMembers(id)) }, onBack = { nav.popBackStack() })
+            CommunityScreen(entry.text("id").orEmpty(), about = false, actions, openMembers = { id -> nav.push(Routes.communityMembers(id)) }, onBack = { nav.popBackStack() })
         }
         composable(Routes.COMMUNITY_ABOUT, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
-            CommunityScreen(entry.text("id").orEmpty(), about = true, actions, openMembers = { id -> nav.navigate(Routes.communityMembers(id)) }, onBack = { nav.popBackStack() })
+            CommunityScreen(entry.text("id").orEmpty(), about = true, actions, openMembers = { id -> nav.push(Routes.communityMembers(id)) }, onBack = { nav.popBackStack() })
         }
         composable(Routes.COMMUNITY_MEMBERS, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             CommunityMembersScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() })
@@ -627,7 +734,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             ListImportScreen(entry.text("id"), onBack = { nav.popBackStack() })
         }
         composable(Routes.ANTENNAS) {
-            AntennasScreen(openAntenna = { id -> nav.navigate(Routes.antenna(id)) }, onBack = { nav.popBackStack() })
+            AntennasScreen(openAntenna = { id -> nav.push(Routes.antenna(id)) }, onBack = { nav.popBackStack() })
         }
         composable(Routes.ANTENNA, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             AntennaFeedScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() })
@@ -652,16 +759,18 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             popEnterTransition = motion.fadeEnter,
             popExitTransition = motion.fadeExit,
         ) { entry ->
-            ImageViewer(entry.text("url").orEmpty(), entry.text("name").orEmpty(), onClose = { nav.popBackStack() })
+            FullWindow { ImageViewer(entry.text("url").orEmpty(), entry.text("name").orEmpty(), onClose = { nav.popBackStack() }) }
         }
         composable(Routes.SPEECH_SETTINGS) {
+            FindsInSettings(nav)
             VoiceSettingsScreen(onBack = { nav.popBackStack() })
         }
         composable(Routes.SETTINGS) {
             SettingsScreen(
                 onBack = { nav.popBackStack() },
-                onOpen = { route -> nav.navigate(route) },
+                onOpen = { route -> nav.push(route) },
                 onIntroAgain = { nav.startOver(Routes.INTRO) },
+                onStartOver = { nav.startOver(Routes.IMPORT) },
             )
         }
         composable(Routes.SAVED) {
@@ -671,7 +780,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             CenteredPage {
                 LibrarySearchScreen(
                     entry.text("q"),
-                    open = { target -> if (target is LibraryTarget.XPost) actions.openPost(target.id) else nav.navigate(Routes.of(target)) },
+                    open = { target -> if (target is LibraryTarget.XPost) actions.openPost(target.id) else nav.push(Routes.of(target)) },
                     onBack = { nav.popBackStack() },
                 )
             }
@@ -691,9 +800,9 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             val plugins = LocalPlugins.current
             OfflineLibraryScreen(
                 onBack = { nav.popBackStack() },
-                openMedia = { id -> nav.navigate(Routes.offlineMedia(id)) },
+                openMedia = { id -> nav.push(Routes.offlineMedia(id)) },
                 // In the reader of the plugin it came from (RSS's, Substack's), else the archive's page of the copy.
-                openArticle = { article -> if (!plugins.openOffline(article)) nav.navigate(Routes.archive(article.id)) },
+                openArticle = { article -> if (!plugins.openOffline(article)) nav.push(Routes.archive(article.id)) },
             )
         }
         composable(
@@ -715,25 +824,28 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
                 navArgument("focus") { type = NavType.StringType; nullable = true; defaultValue = null },
             ),
         ) { entry ->
+            FindsInSettings(nav)
             SettingsSectionScreen(
                 entry.text("section").orEmpty(),
                 entry.text("focus"),
                 onBack = { nav.popBackStack() },
-                onOpen = { route -> nav.navigate(route) },
+                onOpen = { route -> nav.push(route) },
                 onStartOver = { nav.startOver(Routes.IMPORT) },
             )
         }
         composable(Routes.BACKUP) {
+            FindsInSettings(nav)
             BackupScreen(onBack = { nav.popBackStack() })
         }
         composable(SettingsRoutes.LICENCES) {
-            LicencesScreen(onOpen = { module -> nav.navigate(SettingsRoutes.licence(module)) }, onBack = { nav.popBackStack() })
+            FindsInSettings(nav)
+            LicencesScreen(onOpen = { module -> nav.push(SettingsRoutes.licence(module)) }, onBack = { nav.popBackStack() })
         }
         composable(Routes.LICENCE, arguments = listOf(navArgument("module") { type = NavType.StringType; nullable = true; defaultValue = null })) { entry ->
             LicenceScreen(entry.text("module").orEmpty(), onBack = { nav.popBackStack() })
         }
         composable(Routes.SUBSCRIPTIONS_IMPORT) {
-            ImportFollowingScreen(onBack = { nav.popBackStack() }, onSortUngrouped = { nav.navigate(Routes.SUBSCRIPTIONS_SORT) })
+            ImportFollowingScreen(onBack = { nav.popBackStack() }, onSortUngrouped = { nav.push(Routes.SUBSCRIPTIONS_SORT) })
         }
         composable(
             Routes.SUBSCRIPTIONS_IMPORT_LIST,
@@ -744,7 +856,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
         composable(Routes.SUBSCRIPTIONS_SORT) {
             SortUngroupedScreen(
                 onBack = { nav.popBackStack() },
-                onSortOneByOne = { ids -> nav.navigate(Routes.sortOne(ids)) },
+                onSortOneByOne = { ids -> nav.push(Routes.sortOne(ids)) },
                 onApplied = { leftovers ->
                     if (leftovers.isEmpty()) {
                         nav.popBackStack()
@@ -810,7 +922,156 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
     }
 }
 
+/** The screens over the whole window, the wide frame's column included: the media viewers ([FullWindow]). */
+private val FULL_WINDOW = setOf(Routes.MEDIA, Routes.GALLERY, Routes.IMAGE, PluginRoutes.MEDIA)
+
+/**
+ * The screens ([content]) beside the navigation of a desktop window
+ * ([WideFrame]), once Home is in the navigation: the column in a wide
+ * window, a rail of icons in a narrower one ([HomeWide.frame]), whose menu
+ * opens the whole column over the window. It stays put while the screens
+ * change, and the screens slide within their own place. A media viewer
+ * grows over it; while one shows, or comes or goes, the screens' place lets
+ * it, and Tab passes the navigation by. F6 moves the keys between it and the
+ * page. Off the desktop, in a post's own window and in a window narrower
+ * still, the screens alone, as before.
+ */
+@Composable
+private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Composable () -> Unit) {
+    if (!isDesktop || LocalSecondaryWindow.current != null) return content()
+    val frame = remember { WideFrame() }
+    val focus = remember(frame) { FrameFocus(frame.pageBar) }
+    var menu by remember { mutableStateOf(false) }
+    val stack by nav.currentBackStack.collectAsStateWithLifecycle()
+    val visible by nav.visibleEntries.collectAsStateWithLifecycle()
+    // Home's place as it goes (popped, its model cleared) is no longer one the frame reads Home's model from.
+    val home = stack.lastOrNull { it.destination.route == Routes.HOME }?.takeIf { it.lifecycle.currentState != Lifecycle.State.DESTROYED }
+    // A row clicked keeps no focus: the keys go back to the screen beside the column, its reading keys at work at once.
+    val leaveRow = rememberLeaveField()
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val kind = if (home == null) FrameKind.NONE else HomeWide.frame(maxWidth.value, rail = true)
+        val viewer = visible.any { it.destination.route in FULL_WINDOW }
+        val deckFits = DeckGroups.fits(maxWidth.value, minOf(maxWidth, maxHeight).value)
+        val screens = stack.map { entry -> FrameRoute(entry.destination.route, entry.text("id")?.takeIf { entry.destination.route == Routes.GROUP }) }
+        val opened = remember { FrameRoots() }
+        val calls = remember(nav, frame, routes, leaveRow) { frameCalls(nav, frame, routes, leaveRow, opened) }
+        val railMenu = menu && kind == FrameKind.RAIL
+        SideEffect {
+            frame.inset = HomeWide.inset(kind)
+            frame.openMenu = if (kind == FrameKind.RAIL) ({ menu = true }) else null
+            // Read now, not as collected: a place the column has just opened is in the navigation already.
+            opened.keep((nav.currentBackStack.value + nav.visibleEntries.value).map { it.id })
+        }
+        // A menu open over a rail is closed once the window has the column, or nothing beside its screens.
+        LaunchedEffect(kind) { if (kind != FrameKind.RAIL) menu = false }
+        if (kind != FrameKind.NONE) ReachedByF6(focus.region)
+        // Under the rail's open menu nothing takes the keys: they stay in the menu, as in a dialog.
+        Row(Modifier.fillMaxSize().focusProperties { onEnter = { if (menu) cancelFocusChange() } }.focusGroup()) {
+            if (home != null && kind == FrameKind.SIDEBAR) {
+                FramedSidebar(home, frame, screens, Routes.HOME, deckFits, routes, calls, Modifier.frameNavigation(focus, covered = viewer), focus = focus)
+                VerticalDivider()
+            }
+            if (home != null && kind == FrameKind.RAIL) {
+                FramedRail(home, frame, screens, Routes.HOME, routes, calls, onMenu = { menu = true }, Modifier.frameNavigation(focus, covered = viewer), focus)
+                VerticalDivider()
+            }
+            Box(Modifier.weight(1f).fillMaxHeight().then(if (kind != FrameKind.NONE && !viewer) Modifier.clipToBounds() else Modifier)) {
+                PageStart(focus)
+                // The screen going out among them, so its bar stays as it was while it slides away.
+                val roots = if (kind == FrameKind.NONE) {
+                    emptySet()
+                } else {
+                    val shown = (stack + visible).distinctBy { it.id }
+                    val ids = opened.among(shown.map { it.id })
+                    shown.filterTo(HashSet<Any>()) { it.id in ids }
+                }
+                CompositionLocalProvider(LocalWideFrame provides frame.takeIf { kind != FrameKind.NONE }, LocalFrameRoots provides roots, content = content)
+                PageEnd(focus)
+            }
+        }
+        if (home != null) {
+            // Closed by Esc, its X or the scrim, the keys go back to the rail's menu button; a row picked leads on to its screen.
+            val hide = remember { { menu = false } }
+            val close = {
+                hide()
+                runCatching { focus.menu.requestFocus() }
+                Unit
+            }
+            RailMenu(railMenu, onClose = close) {
+                FramedSidebar(home, frame, screens, Routes.HOME, deckFits, routes, remember(calls) { calls.after(hide) }, onClose = close)
+            }
+        }
+    }
+}
+
+/**
+ * What the column's rows do: a page of Home's bar turns Home to it (Home's
+ * own tap on Home, else back to Home on that page); a screen of the menu or
+ * a group opens over Home, what was open over Home closed, as a desktop
+ * app's sidebar leads from one place to the next; the one shown stays.
+ */
+private fun frameCalls(nav: NavHostController, frame: WideFrame, routes: HomeRoutes, leaveRow: () -> Unit, opened: FrameRoots) = FrameCalls(
+    page = { index, page ->
+        leaveRow()
+        val tap = frame.homeTap
+        if (nav.currentDestination?.route == Routes.HOME && tap != null) {
+            tap(index)
+        } else {
+            HomeRequests.showPage(page.id)
+            nav.popBackStack(Routes.HOME, inclusive = false)
+        }
+    },
+    screen = { route ->
+        leaveRow()
+        if (nav.currentDestination?.route?.substringBefore('?') != route) {
+            nav.popBackStack(Routes.HOME, inclusive = false)
+            val under = nav.currentBackStackEntry?.id
+            // The screen the column opens has no Back beside it ([FrameRoots]); one opened any other way keeps it.
+            if (routes.openIfExists(route)) nav.currentBackStackEntry?.id?.takeIf { it != under }?.let(opened::open)
+        } else if (nav.previousBackStackEntry?.destination?.route == Routes.HOME) {
+            // Shown already, right over Home (Settings by Ctrl+comma): the column's own from now on.
+            nav.currentBackStackEntry?.id?.let(opened::open)
+        }
+    },
+    group = { group ->
+        leaveRow()
+        val shown = nav.currentDestination?.route == Routes.GROUP && nav.currentBackStackEntry?.text("id") == group.id
+        if (!shown) {
+            nav.popBackStack(Routes.HOME, inclusive = false)
+            routes.openGroup(group.id)
+        }
+    },
+)
+
+/** These calls, each after [first] (the rail's menu closing as a row of it is picked). */
+private fun FrameCalls.after(first: () -> Unit) = FrameCalls(
+    page = { index, page ->
+        first()
+        page(index, page)
+    },
+    screen = { route ->
+        first()
+        screen(route)
+    },
+    group = { group ->
+        first()
+        group(group)
+    },
+)
+
 /** Whether the app has a screen at [route] yet: Home leads only to those. */
+/**
+ * Ctrl+F on a page Settings opened (a section, Backup, the licences) goes
+ * back to Settings with the keyboard in its search ([FindsBackWithKeys]);
+ * a page opened from anywhere else leaves the keys to the app's search.
+ * Before the page itself, so a search the page has (a plugin's) stays on top.
+ */
+@Composable
+private fun FindsInSettings(nav: NavHostController) {
+    val overSettings = remember { runCatching { nav.getBackStackEntry(Routes.SETTINGS) }.isSuccess }
+    if (overSettings) FindsBackWithKeys { nav.popBackStack(Routes.SETTINGS, inclusive = false) }
+}
+
 private fun NavHostController.hasRoute(route: String): Boolean = runCatching { graph.findNode(route) != null }.getOrDefault(false)
 
 /** A route's text argument; null where the route has none. */
@@ -835,24 +1096,24 @@ private fun NavHostController.backToHome() {
 private fun subscriptionsNavigation(nav: NavHostController, actions: PostActions) = SubscriptionsNavigation(
     openProfile = actions.openUser,
     search = actions.search,
-    openGroup = { id -> nav.navigate(Routes.group(id)) },
-    importFollowing = { nav.navigate(Routes.SUBSCRIPTIONS_IMPORT) },
-    importList = { nav.navigate(Routes.importList(null)) },
-    sortUngrouped = { nav.navigate(Routes.SUBSCRIPTIONS_SORT) },
-    settings = { nav.navigate(Routes.SETTINGS) },
-    antennas = { nav.navigate(Routes.ANTENNAS) },
-    deck = { nav.navigate(Routes.DECK) },
-    discoverGroup = { id -> nav.navigate(Routes.groupDiscover(id)) },
+    openGroup = { id -> nav.push(Routes.group(id)) },
+    importFollowing = { nav.push(Routes.SUBSCRIPTIONS_IMPORT) },
+    importList = { nav.push(Routes.importList(null)) },
+    sortUngrouped = { nav.push(Routes.SUBSCRIPTIONS_SORT) },
+    settings = { nav.push(Routes.SETTINGS) },
+    antennas = { nav.push(Routes.ANTENNAS) },
+    deck = { nav.push(Routes.DECK) },
+    discoverGroup = { id -> nav.push(Routes.groupDiscover(id)) },
 )
 
 /** Where Saved leads, whether it is a page of Home's bar or a screen of its own. */
 private fun savedLinks(nav: NavHostController) = SavedLinks(
-    openFolders = { nav.navigate(Routes.SAVED_FOLDERS) },
-    openThread = { rootId -> nav.navigate(Routes.noteThread(rootId)) },
-    openDownloads = { nav.navigate(Routes.DOWNLOADS) },
-    openOffline = { nav.navigate(Routes.OFFLINE) },
-    openSettings = { nav.navigate(Routes.SETTINGS) },
-    searchLibrary = { nav.navigate(Routes.library(null)) },
+    openFolders = { nav.push(Routes.SAVED_FOLDERS) },
+    openThread = { rootId -> nav.push(Routes.noteThread(rootId)) },
+    openDownloads = { nav.push(Routes.DOWNLOADS) },
+    openOffline = { nav.push(Routes.OFFLINE) },
+    openSettings = { nav.push(Routes.SETTINGS) },
+    searchLibrary = { nav.push(Routes.library(null)) },
 )
 
 /** Where Ctrl+F and / open the app's search, on a screen with no search field of its own. */

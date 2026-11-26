@@ -75,7 +75,7 @@ object VideoKeys {
 }
 
 /** What a key does to the media viewer on the desktop ([ViewerKeys]). */
-enum class ViewerKey { PREVIOUS, NEXT, FIRST, LAST, CLOSE, COPY, SAVE_AS, ZOOM_IN, ZOOM_OUT, ZOOM_RESET, PAN_LEFT, PAN_RIGHT, PAN_UP, PAN_DOWN, NONE }
+enum class ViewerKey { PREVIOUS, NEXT, FIRST, LAST, CLOSE, COPY, SAVE_AS, MENU, ZOOM_IN, ZOOM_OUT, ZOOM_RESET, PAN_LEFT, PAN_RIGHT, PAN_UP, PAN_DOWN, NONE }
 
 /**
  * The media viewer's keys: ← and → turn its pages, Esc closes it, and going
@@ -87,7 +87,8 @@ enum class ViewerKey { PREVIOUS, NEXT, FIRST, LAST, CLOSE, COPY, SAVE_AS, ZOOM_I
  * zoom the photo shown in and out, and 0 shows it whole again, as a
  * desktop's photo viewers do, with Ctrl held too ([zoom]). While the photo
  * is zoomed in ([zoomed]) the arrows move about it instead of turning the
- * page; Home and End go to the first page and the last.
+ * page; Home and End go to the first page and the last. The Menu key and
+ * Shift+F10 ([menu]) open the file menu a right-click opens.
  */
 object ViewerKeys {
     fun of(
@@ -105,10 +106,12 @@ object ViewerKeys {
         home: Boolean = false,
         end: Boolean = false,
         zoomed: Boolean = false,
+        menu: Boolean = false,
     ): ViewerKey = when {
         escape || back || closeKey -> ViewerKey.CLOSE
         copy -> ViewerKey.COPY
         saveAs -> ViewerKey.SAVE_AS
+        menu && !modified -> ViewerKey.MENU
         zoom in ZOOM_KEYS -> zoom
         modified -> ViewerKey.NONE
         zoomed && (left || right || up || down) -> when {
@@ -126,6 +129,9 @@ object ViewerKeys {
 
     private val ZOOM_KEYS = setOf(ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET)
 }
+
+/** What Tab does in a video full screen ([VideoRules.fullscreenTab]). */
+enum class FullscreenTab { SHOW, ENTER, MOVE }
 
 /** The rules of the media viewer's videos (_video.dart, _video_controls.dart, video_quality.dart). */
 object VideoRules {
@@ -146,6 +152,28 @@ object VideoRules {
 
     /** How long the controls stay after the last touch. */
     const val CONTROLS_SHOWN_MS = 3_000L
+
+    /**
+     * Whether shown controls ([visible]) hide by themselves after
+     * [CONTROLS_SHOWN_MS]: not while a menu of theirs is open ([sheetOpen]),
+     * nor while the keyboard has moved the focus onto one of them
+     * ([keyFocused]), which would leave with them and take the keys along.
+     */
+    fun controlsHide(visible: Boolean, sheetOpen: Boolean, keyFocused: Boolean): Boolean = visible && !sheetOpen && !keyFocused
+
+    /**
+     * What Tab does in a video full screen: with its controls hidden it
+     * shows them first ([FullscreenTab.SHOW]); on full screen's own focus,
+     * which shows nothing, it goes to the first control, or with Shift the
+     * last ([FullscreenTab.ENTER]); on a control, to the next one, wrapping
+     * round at the ends inside full screen, never to the page under it
+     * ([FullscreenTab.MOVE]).
+     */
+    fun fullscreenTab(controlsShown: Boolean, onControl: Boolean): FullscreenTab = when {
+        !controlsShown -> FullscreenTab.SHOW
+        !onControl -> FullscreenTab.ENTER
+        else -> FullscreenTab.MOVE
+    }
 
     /** The progressive MP4s, highest bitrate first: X's HLS playlist plays poorly, and cannot be saved as a file. */
     fun qualities(media: XMedia): List<VideoQuality> =

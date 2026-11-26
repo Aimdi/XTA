@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">Rull en skjerm</string>
     <string name="keys_scroll_ends">Til toppen eller slutten</string>
     <string name="keys_move">Flytt mellom knapper og felt</string>
+    <string name="keys_regions">Flytt mellom navigasjonen og siden</string>
     <string name="keys_text_size">Større, mindre eller normal tekst</string>
     <string name="keys_interface_size">Større, mindre eller normalt grensesnitt</string>
     <string name="keys_full_screen">Fullskjerm</string>

@@ -107,6 +107,10 @@ class ConversationRulesTest {
         assertFalse((rows[4] as ThreadRow.Reply).connectBottom)
         assertEquals(0, ThreadTree.indentLevels(1))
         assertEquals(1, ThreadTree.indentLevels(2))
+        assertEquals(0f, ThreadTree.indent(1), "answers to the opened post sit flush")
+        assertEquals(ThreadTree.INDENT_STEP, ThreadTree.indent(2))
+        assertEquals(ThreadTree.MAX_INDENT_LEVELS * ThreadTree.INDENT_STEP, ThreadTree.indent(9), "a deep reply steps in no further than the cap")
+        assertEquals(24f, ThreadTree.INDENT_STEP, "narrower than the 40 dp a level took")
     }
 
     @Test

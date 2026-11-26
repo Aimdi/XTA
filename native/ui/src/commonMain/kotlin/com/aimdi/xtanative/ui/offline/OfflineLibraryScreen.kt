@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.offline
 
+import com.aimdi.xtanative.ui.common.destructiveButtonColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +31,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,6 +50,7 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.offline.OfflineArticle
 import com.aimdi.xtanative.store.offline.OfflineEntry
 import com.aimdi.xtanative.store.offline.OfflineStore
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.TipText
@@ -121,7 +122,7 @@ fun OfflineLibraryScreen(onBack: () -> Unit, openMedia: (id: String) -> Unit, op
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
+            ColumnTopAppBar(
                 title = { Text(stringResource(Res.string.offline_title)) },
                 navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 actions = {
@@ -161,7 +162,7 @@ fun OfflineLibraryScreen(onBack: () -> Unit, openMedia: (id: String) -> Unit, op
             onDismissRequest = { clearing = false },
             title = { Text(stringResource(Res.string.offline_clear_question)) },
             text = { Text(stringResource(Res.string.offline_clear_description)) },
-            confirmButton = { Button(onClick = { clearing = false; scope.launch { store.clear() } }) { Text(stringResource(Res.string.offline_clear)) } },
+            confirmButton = { Button(onClick = { clearing = false; scope.launch { store.clear() } }, colors = destructiveButtonColors()) { Text(stringResource(Res.string.offline_clear)) } },
             dismissButton = { TextButton(onClick = { clearing = false }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.cancel)) } },
         )
     }

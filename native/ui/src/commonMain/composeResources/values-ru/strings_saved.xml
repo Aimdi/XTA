@@ -58,7 +58,7 @@
     <string name="saved_empty_folder">Эта папка пуста</string>
     <string name="saved_empty_notes">Пока нет заметок. Они не покидают устройство, пока вы не сделаете резервную копию или синхронизацию.</string>
     <string name="saved_note_button">Заметка</string>
-    <string name="saved_add_note">Добавить заметку к этому сохранённому посту</string>
+    <string name="saved_add_note">Добавить заметку к этому посту</string>
     <string name="saved_edit_note">Изменить заметку</string>
     <string name="saved_new_note">Новая заметка</string>
     <string name="saved_too_large">Сохранённый твит слишком большой</string>
@@ -128,7 +128,7 @@
     <string name="saved_no_media_file">Невозможно загрузить. Это медиа может быть доступно только в виде потока, который XTA пока не может загрузить.</string>
     <string name="saved_open_in_browser">Открыть в браузере</string>
     <string name="saved_ok">Ок</string>
-    <string name="saved_something_wrong">Ой! Что-то пошло не так 🥲</string>
+    <string name="saved_something_wrong">Что-то пошло не так</string>
     <string name="archive_tags">Теги</string>
     <string name="archive_extract">Извлечь текст со скриншота</string>
     <string name="archive_extract_notice">Выбранное изображение PNG или JPEG будет отправлено на %1$s с вашей настроенной моделью ИИ. Распознанный текст может содержать ошибки.</string>
@@ -174,6 +174,7 @@
     <string name="saved_media_status">Невозможно сохранить медиафайл. Twitter вернул статус %1$d</string>
     <string name="downloads_cancelled">Отменено</string>
     <string name="downloads_interrupted">Прервано · Повторите попытку, чтобы продолжить</string>
+    <string name="downloads_interrupted_desktop">Прервано · Щёлкните «Повторить», чтобы продолжить</string>
     <string name="downloads_batch">Сохранённые файлы: %1$d / %2$d</string>
     <string name="downloads_saved_to">Сохранено в %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Чтобы загружать автоматически, укажите папку загрузок в Настройки &gt; Медиа.</string>

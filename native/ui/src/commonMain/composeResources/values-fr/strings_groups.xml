@@ -24,6 +24,7 @@
     <string name="groups_columns">Colonnes</string>
     <string name="groups_combine_clear">Effacer</string>
     <string name="groups_combine_hint">Maintenez un groupe pour le lire avec celui-ci</string>
+    <string name="groups_combine_hint_desktop">Clic droit sur un groupe pour le lire avec celui-ci</string>
     <string name="groups_combined_count">%1$d autres lus en même temps</string>
     <string name="groups_compact">Compact</string>
     <string name="groups_content_default">Par défaut</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Aucun résultat</string>
     <string name="groups_no_subscriptions">Aucun abonnement. Essayez d'en rechercher ou d'en importer !</string>
     <string name="groups_none_description">Les groupes mélangent des abonnements en fils personnalisés. Appui long pour modifier un groupe.</string>
+    <string name="groups_none_description_desktop">Les groupes mélangent des abonnements en fils personnalisés. Clic droit sur un groupe pour le modifier.</string>
     <string name="groups_none_yet">Aucun groupe pour l’instant</string>
     <string name="groups_not_all_posts">Remarque : en raison d'une limitation de Twitter, tous les tweets peuvent ne pas être inclus</string>
     <string name="groups_ok">OK</string>

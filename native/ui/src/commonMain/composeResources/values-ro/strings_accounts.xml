@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">Avatarul tău</string>
     <string name="settings_avatar_change">Atinge pentru a schimba imaginea din stânga sus</string>
+    <string name="settings_avatar_change_desktop">Fă clic pentru a schimba imaginea din stânga sus</string>
     <string name="settings_avatar_description">Imaginea din stânga sus și din meniu — rămâne pe acest dispozitiv</string>
     <string name="settings_avatar_choose">Alege de pe dispozitiv</string>
     <string name="settings_avatar_from_account">Folosește fotografia de profil X</string>

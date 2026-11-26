@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -22,6 +23,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.InputMode
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
@@ -45,12 +47,15 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.InterceptPlatformTextInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.store.settings.DesktopPrefs
+import com.aimdi.xtanative.ui.common.ContextMenuKey
 import com.aimdi.xtanative.ui.LocalSecondaryWindow
 import com.aimdi.xtanative.ui.chrome.AppClosing
 import com.aimdi.xtanative.ui.common.LayoutKeys
@@ -80,6 +85,7 @@ import kotlinx.coroutines.launch
 actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, openHome: () -> Unit, goForward: () -> Boolean, content: @Composable () -> Unit) {
     val focus = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    val inputModes = LocalInputModeManager.current
     val settingsStore = LocalSettingsStore.current
     val keeper = LocalKeeper.current
     val scope = rememberCoroutineScope()
@@ -96,6 +102,11 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     var showKeys by remember { mutableStateOf(false) }
     // The Tab step being taken, until the next key: should it wrap to the frame, the frame hands it on ([DesktopKeys.tabStep]).
     val tabbing = remember { arrayOfNulls<TabStep>(1) }
+    // Whether the frame is handing such a step on: it may go on after Tab is let go.
+    val tabbingOn = remember { booleanArrayOf(false) }
+    // Tab held as the window loses the focus: its release goes to the other window, so the step ends here.
+    val window = LocalWindowInfo.current
+    LaunchedEffect(window) { snapshotFlow { window.isWindowFocused }.collect { tabbing[0] = DesktopKeys.tabStepKept(tabbing[0], it) } }
     // A frame later: what gives the keys back is still leaving when it asks. The frame takes them only if
     // nothing in the page has since (a screen that focuses its field as it opens keeps it).
     // A sheet swapped for another in the same frame closes before the next opens: by the time the frame
@@ -115,7 +126,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                 val held = created[0]?.let { it.sheetOpen() || it.overlayHoldsKeys() } == true
                 if (!held) runCatching { focus.requestFocus() }
             }
-        }, screen = { nav.currentBackStackEntry }).also { created[0] = it }
+        }, screen = { nav.currentBackStackEntry }, tabbing = { tabbing[0] != null || tabbingOn[0] }).also { created[0] = it }
     }
     // What is drawn above this frame (a video full screen) reaches the actions through the root's host.
     val host = LocalDesktopActionsHost.current
@@ -142,8 +153,10 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         DeskAction.REFRESH -> actions.refresh()
         DeskAction.PREVIOUS_PAGE -> actions.turn(-1)
         DeskAction.NEXT_PAGE -> actions.turn(1)
-        // The frame holds the focus as a whole; Tab's own traversal does not go into it.
-        DeskAction.ENTER_PAGE -> focusManager.moveFocus(FocusDirection.Enter)
+        // The frame holds the focus as a whole; Tab's own traversal does not go into it. Tab goes to the page beside
+        // the window's navigation, which stands first in the window; Shift+Tab, the way back, to the page's last control.
+        DeskAction.ENTER_PAGE ->
+            (if (tabbing[0] == TabStep.BACKWARD) actions.enterPageEnd() else actions.enterPage()) == true || focusManager.moveFocus(FocusDirection.Enter)
         DeskAction.LEAVE_APP -> {
             AppClosing.ask()
             true
@@ -236,6 +249,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             showKeys = true
             true
         }
+        // From the navigation beside the screens back to the page: the frame takes the keys, its reading keys at work at once.
+        DeskAction.OTHER_REGION -> actions.otherRegion { focus.requestFocus() }
         DeskAction.CREATE -> actions.create()
         DeskAction.UNDO -> KeepNotices.undo(KeepNotices.shown.value, keeper::keep)
         DeskAction.SELECT_ALL -> actions.selectAll()
@@ -253,8 +268,14 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         if (event.type == KeyEventType.Unknown && LayoutKeys.ctrlTypesNothing(event.utf16CodePoint, event.isCtrlPressed, event.isAltPressed)) return true
         if (event.type != KeyEventType.KeyDown) return event.type != KeyEventType.KeyUp && keyTaken
         afterControl[0] = null
-        // Tab moves the focus with the keyboard: where it lands keeps the keys, as before any click.
-        if (event.key == Key.Tab) clicked = false
+        // Tab and F6 move the focus with the keyboard: where it lands keeps the keys, as before any click. The window
+        // moves it itself (into the page, to the other region), so it tells Compose the keyboard is in use, as Compose's
+        // own Tab does: after a click Compose holds the pointer's mode, and drops the focus it is told of from the
+        // lighting of the first control reached (Home's picker after Retry), which then showed no ring.
+        if (event.key == Key.Tab || event.key == Key.F6) {
+            clicked = false
+            inputModes.requestInputMode(InputMode.Keyboard)
+        }
         // Letters and digits by where they sit when the layout names them otherwise ([shortcutKey]): Ctrl+1 on a French keyboard, j on a Russian one.
         val pressed = shortcutKey(event)
         tabbing[0] = DesktopKeys.tabStep(deskKey(pressed), event.isShiftPressed, event.isCtrlPressed, event.isAltPressed)
@@ -297,7 +318,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             return false
         }
         // The media viewer's Esc closes it at once, rather than first taking the focus from it as from a field; Ctrl+Q still quits.
-        keyTaken = !(actions.overlayHoldsKeys() && action != DeskAction.LEAVE_APP) && act(action)
+        keyTaken = DesktopKeys.windowActs(action, actions.overlayHoldsKeys()) && act(action)
         return keyTaken
     }
 
@@ -381,8 +402,9 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                 .onKeyEvent(::onTyped)
                 .onFocusChanged { state ->
                     // What had the keys inside the page went away with them (a button that closed what it was on):
-                    // the frame takes them back, so they never wait for a click.
-                    if (hasFocus && !state.hasFocus) actions.keysToFrame()
+                    // the frame takes them back, so they never wait for a click. Not as Tab wraps round, which lets go
+                    // of the focus for a moment: the keys would go back to an overlay's own focus, a stop showing nothing.
+                    if (hasFocus && !state.hasFocus && !actions.tabStepping()) actions.keysToFrame()
                     hasFocus = state.hasFocus
                     focusInside = state.hasFocus && !state.isFocused
                     // Tab ran off the end of the page's order and wrapped to the frame, which shows nothing:
@@ -390,7 +412,16 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                     val step = tabbing[0]
                     if (state.isFocused && step != null) {
                         tabbing[0] = null
-                        scope.launch { focusManager.moveFocus(if (step == TabStep.FORWARD) FocusDirection.Next else FocusDirection.Previous) }
+                        tabbingOn[0] = true
+                        scope.launch {
+                            try {
+                                // Back round beside the navigation: to the page's last control, as Previous from the frame finds nothing.
+                                val back = step != TabStep.FORWARD && actions.enterPageEnd() == true
+                                if (!back) focusManager.moveFocus(if (step == TabStep.FORWARD) FocusDirection.Next else FocusDirection.Previous)
+                            } finally {
+                                tabbingOn[0] = false
+                            }
+                        }
                     }
                 }
                 .focusRequester(focus)
@@ -474,9 +505,6 @@ private val TAB_DIGITS: Map<Key, Int> = mapOf(
     Key.NumPad1 to 1, Key.NumPad2 to 2, Key.NumPad3 to 3, Key.NumPad4 to 4, Key.NumPad5 to 5, Key.NumPad6 to 6, Key.NumPad7 to 7, Key.NumPad8 to 8, Key.NumPad9 to 9,
 )
 
-/** The keyboard's Menu key, which opens a context menu. */
-private val MENU_KEY = Key(java.awt.event.KeyEvent.VK_CONTEXT_MENU)
-
 internal fun deskKey(key: Key): DeskKey = when (key) {
     Key.Escape -> DeskKey.ESCAPE
     Key.DirectionLeft -> DeskKey.LEFT
@@ -496,6 +524,7 @@ internal fun deskKey(key: Key): DeskKey = when (key) {
     Key.F -> DeskKey.F
     Key.F1 -> DeskKey.F1
     Key.F3 -> DeskKey.F3
+    Key.F6 -> DeskKey.F6
     Key.Comma -> DeskKey.COMMA
     Key.W -> DeskKey.W
     Key.J -> DeskKey.J
@@ -511,8 +540,7 @@ internal fun deskKey(key: Key): DeskKey = when (key) {
     Key.F10 -> DeskKey.F10
     Key.N -> DeskKey.N
     Key.Z -> DeskKey.Z
-    // Compose names no key for it: the Menu key is AWT's context-menu key.
-    MENU_KEY -> DeskKey.MENU
+    ContextMenuKey -> DeskKey.MENU
     Key.Plus, Key.Equals, Key.NumPadAdd -> DeskKey.PLUS
     Key.Minus, Key.NumPadSubtract -> DeskKey.MINUS
     Key.Zero, Key.NumPad0 -> DeskKey.ZERO

@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">인용</string>
     <string name="posts_replies_missing">답글을 불러올 수 없습니다</string>
+    <string name="posts_no_replies_yet">아직 답글이 없습니다</string>
     <string name="posts_replying_to">에게 답글</string>
     <string name="posts_reposted">%1$s이(가) %2$s에 리포스트</string>
     <string name="posts_reposted_by">재게시한 사용자</string>
@@ -96,6 +97,7 @@
     <string name="posts_verified_organization">인증된 조직</string>
     <string name="posts_view_quoted">인용된 게시물 보기</string>
     <string name="posts_zen_replies">답글을 보려면 댓글 버튼을 길게 누르세요</string>
+    <string name="posts_zen_replies_desktop">답글을 보려면 댓글 버튼을 마우스 오른쪽 버튼으로 클릭하세요</string>
     <plurals name="posts_views_count">
         <item quantity="other">조회수 %1$s회</item>
     </plurals>

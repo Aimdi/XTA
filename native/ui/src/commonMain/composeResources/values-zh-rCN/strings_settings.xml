@@ -84,6 +84,7 @@
     <string name="settings_yes">好</string>
     <string name="settings_zen_mode">禅模式</string>
     <string name="settings_zen_mode_description">更安静的信息流：隐藏帖子统计数据，长按评论按钮前隐藏回复，每人只显示几条最新帖子。</string>
+    <string name="settings_zen_mode_description_desktop">更安静的信息流：隐藏帖子统计数据，右键点击评论按钮前隐藏回复，每人只显示几条最新帖子。</string>
     <string name="settings_threaded_replies">嵌套回复</string>
     <string name="settings_threaded_replies_description">在打开的帖子下以缩进树状显示回复，每条回复嵌套在其所回复的内容下方。</string>
     <string name="settings_collapse_boosts">合并连续的转帖</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">图片质量</string>
     <string name="settings_load_manually">手动加载媒体</string>
     <string name="settings_load_manually_description">为节省移动数据，图片和视频在点按前不会加载。</string>
+    <string name="settings_load_manually_description_desktop">为节省流量，图片和视频在点击前不会加载。</string>
     <string name="settings_save_bandwidth">使用较小的图像以节省带宽</string>
     <string name="settings_quality_low">低</string>
     <string name="settings_quality_medium">中</string>
@@ -160,10 +162,6 @@
     <string name="settings_colour_purple">紫色</string>
     <string name="settings_colour_orange">橙色</string>
     <string name="settings_colour_green">绿色</string>
-    <string name="settings_true_black">纯黑模式？</string>
-    <string name="settings_true_black_description">在暗色主题中使用纯黑</string>
-    <string name="settings_true_black_cards">推文卡片使用纯黑色</string>
-    <string name="settings_true_black_cards_description">为推文卡片背景使用纯黑色</string>
     <string name="settings_navigation_labels">显示导航标签</string>
     <string name="settings_hide_navigation">滚动时隐藏顶栏和底栏</string>
     <string name="settings_hide_status_bar">隐藏状态栏</string>
@@ -179,11 +177,17 @@
     <string name="settings_ticker_chart">股票图表</string>
     <string name="settings_ticker_chart_description">打开股票代码时显示。价格由 XTA 自行从无需账号的公开服务获取；关闭后不会发出任何请求，帖子照常显示。</string>
     <string name="settings_double_tap_like">双击点赞</string>
+    <string name="settings_double_tap_like_desktop">双击点赞</string>
     <string name="settings_double_tap_like_description">默认关闭：开启后每次单击都要等待是否还有第二次，打开帖子会略慢一些。</string>
+    <string name="settings_double_tap_like_description_desktop">默认关闭：开启后每次单击都要等待是否还有第二次，打开帖子会略慢一些。</string>
     <string name="settings_swipe_back_anywhere">从任意位置滑动返回</string>
+    <string name="settings_swipe_back_anywhere_desktop">从任意位置拖动返回</string>
     <string name="settings_swipe_back_anywhere_description">从已打开帖子的任意位置拖动即可返回。关闭后：仅能从屏幕边缘拖动。</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">从已打开帖子的任意位置拖动即可返回。关闭后：仅能从窗口边缘拖动。</string>
     <string name="settings_swipe_back_tilt">随手指倾斜</string>
+    <string name="settings_swipe_back_tilt_desktop">随指针倾斜</string>
     <string name="settings_swipe_back_tilt_description">拖回的帖子会绕着手指转动，并随你的速度摆动。</string>
+    <string name="settings_swipe_back_tilt_description_desktop">拖回的帖子会绕着指针转动，并随你的速度摆动。</string>
     <string name="settings_accounts_empty">添加账号以加载“推荐”。</string>
     <string name="settings_accounts_description">关掉只为提高速率限制而保留的备用账号。“推荐”合并仍开启账号的主页时间线；“正在关注”仍用本地订阅，但抓取时会跳过已关闭的账号。评论和资料页在需要时仍可用任意账号。</string>
     <string name="settings_account_delete_confirm">要退出 @%1$s 吗？XTA 将忘记该账号在本设备上的会话，且无法撤销。</string>
@@ -319,6 +323,7 @@
     <string name="settings_intro_again">再次显示引导</string>
     <string name="settings_intro_again_description">重新查看首次启动时的卡片。</string>
     <string name="settings_open_logs">打开日志文件夹</string>
+    <string name="settings_copy_diagnostics">复制诊断信息</string>
     <string name="settings_ok">确定</string>
     <string name="settings_diagnostics_copy">复制报告</string>
     <string name="settings_diagnostics_copied">诊断已复制到剪贴板</string>

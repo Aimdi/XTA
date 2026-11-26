@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">صورتك الشخصية</string>
     <string name="settings_avatar_change">اضغط لتغيير الصورة في أعلى اليسار</string>
+    <string name="settings_avatar_change_desktop">انقر لتغيير الصورة في أعلى اليسار</string>
     <string name="settings_avatar_description">الصورة الظاهرة أعلى اليسار وفي الدرج — تبقى على هذا الجهاز</string>
     <string name="settings_avatar_choose">اختر من الجهاز</string>
     <string name="settings_avatar_from_account">استخدم صورة ملف X</string>

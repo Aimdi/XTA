@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">Avatar Anda</string>
     <string name="settings_avatar_change">Ketuk untuk mengubah gambar di kiri atas</string>
+    <string name="settings_avatar_change_desktop">Klik untuk mengubah gambar di kiri atas</string>
     <string name="settings_avatar_description">Gambar di kiri atas dan di laci — tetap di perangkat ini</string>
     <string name="settings_avatar_choose">Pilih dari perangkat</string>
     <string name="settings_avatar_from_account">Gunakan foto profil X</string>

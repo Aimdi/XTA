@@ -9,13 +9,11 @@ import androidx.compose.foundation.gestures.awaitHorizontalTouchSlopOrCancellati
 import androidx.compose.foundation.gestures.horizontalDrag
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -25,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +42,7 @@ import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -65,6 +65,11 @@ import kotlinx.coroutines.launch
  * stylus drags, as in XTA; a drag the timeline's own sideways lists take,
  * one starting at the screen's edges, a second finger or a drag turning
  * back calls it off.
+ *
+ * A drag writes its distance every frame, so only the preview reads it: the
+ * preview's look (which timeline, whether full) is composed again only when
+ * that changes, its fading and sliding in the layer, and the timeline is held
+ * in a plain Box, not one that composes it again at every change of size.
  */
 @Composable
 internal fun SwipesTimelines(index: Int, labels: List<String>, onTurn: (Int) -> Unit, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
@@ -76,7 +81,7 @@ internal fun SwipesTimelines(index: Int, labels: List<String>, onTurn: (Int) -> 
     val latestTurn by rememberUpdatedState(onTurn)
     val latestReduced by rememberUpdatedState(reduced)
     val count = labels.size
-    BoxWithConstraints(
+    Box(
         modifier.pointerInput(index, count, rtl) {
             awaitEachGesture {
                 val down = awaitFirstDown(requireUnconsumed = false)
@@ -102,7 +107,7 @@ internal fun SwipesTimelines(index: Int, labels: List<String>, onTurn: (Int) -> 
         },
     ) {
         content()
-        Preview(index, labels, preview.distance, rtl, reduced, maxWidth.value * PREVIEW_SHARE)
+        Preview(index, labels, preview, rtl, reduced)
     }
 }
 
@@ -127,9 +132,6 @@ private class SwipePreview(private val scope: CoroutineScope) {
         settling = scope.launch { animate(distance, 0f, animationSpec = spring(dampingRatio = 1f, stiffness = 400f)) { value, _ -> distance = value } }
     }
 }
-
-/** How much of the timeline's width the preview may take. */
-private const val PREVIEW_SHARE = 0.65f
 
 /** A drag under way: how far it went across and down, its first clear direction, and its speed. */
 private class Drag(start: Offset, first: PointerInputChange) {
@@ -162,34 +164,43 @@ private fun PointerInputChange.byHand(): Boolean = type == PointerType.Touch || 
 
 /** The preview of the timeline the drag heads for: "→ name", at the side it heads for, filling in as it nears turning. */
 @Composable
-private fun BoxScope.Preview(index: Int, labels: List<String>, distance: Float, rtl: Boolean, reduced: Boolean, maxWidth: Float) {
-    val target = TimelineSwipe.target(index, labels.size, distance, rtl) ?: return
-    val progress = TimelineSwipe.progress(distance)
-    val full = progress >= 1f
+private fun BoxScope.Preview(index: Int, labels: List<String>, preview: SwipePreview, rtl: Boolean, reduced: Boolean) {
+    val count = labels.size
+    val look by remember(preview, index, count, rtl) { derivedStateOf { TimelineSwipe.look(index, count, preview.distance, rtl) } }
+    val shown = look ?: return
     val colors = MaterialTheme.colorScheme
-    val toward = if (distance < 0) 1f else -1f
     Box(
         Modifier.matchParentSize(),
-        contentAlignment = if (distance < 0) AbsoluteAlignment.CenterRight else AbsoluteAlignment.CenterLeft,
+        contentAlignment = if (shown.leftward) AbsoluteAlignment.CenterRight else AbsoluteAlignment.CenterLeft,
     ) {
         Row(
             Modifier
-                .padding(horizontal = 12.dp)
-                .widthIn(max = maxWidth.dp)
+                .layout { measurable, constraints ->
+                    val cap = if (constraints.hasBoundedWidth) TimelineSwipe.previewWidth(constraints.maxWidth, (PREVIEW_GUTTER * 2).roundToPx()) else constraints.maxWidth
+                    val placeable = measurable.measure(constraints.copy(minWidth = 0, maxWidth = cap))
+                    layout(placeable.width, placeable.height) { placeable.place(0, 0) }
+                }
+                .padding(horizontal = PREVIEW_GUTTER)
                 .graphicsLayer {
-                    alpha = if (reduced) 1f else progress
-                    translationX = if (reduced) 0f else toward * 16.dp.toPx() * (1f - progress)
+                    if (!reduced) {
+                        val progress = TimelineSwipe.progress(preview.distance)
+                        alpha = progress
+                        translationX = (if (shown.leftward) 1f else -1f) * 16.dp.toPx() * (1f - progress)
+                    }
                 }
                 .clip(RoundedCornerShape(12.dp))
-                .background(if (full) colors.primaryContainer else colors.surfaceContainerHighest)
+                .background(if (shown.full) colors.primaryContainer else colors.surfaceContainerHighest)
                 .padding(horizontal = 14.dp, vertical = 12.dp)
                 .clearAndSetSemantics {},
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            val tint = if (full) colors.onPrimaryContainer else colors.onSurface
-            Icon(if (target > index) Icons.AutoMirrored.Filled.ArrowForward else Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
+            val tint = if (shown.full) colors.onPrimaryContainer else colors.onSurface
+            Icon(if (shown.target > index) Icons.AutoMirrored.Filled.ArrowForward else Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(8.dp))
-            TipText(labels[target], color = tint, style = MaterialTheme.typography.labelLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            TipText(labels[shown.target], color = tint, style = MaterialTheme.typography.labelLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
     }
 }
+
+/** The room between the preview and the timeline's side. */
+private val PREVIEW_GUTTER = 12.dp

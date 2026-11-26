@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">Your avatar</string>
     <string name="settings_avatar_change">Tap to change the picture in the upper left</string>
+    <string name="settings_avatar_change_desktop">Click to change the picture in the upper left</string>
     <string name="settings_avatar_description">Picture shown upper left and in the drawer — stays on this device</string>
     <string name="settings_avatar_choose">Choose from device</string>
     <string name="settings_avatar_from_account">Use X profile photo</string>

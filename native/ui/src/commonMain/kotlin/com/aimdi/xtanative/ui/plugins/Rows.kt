@@ -13,12 +13,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Switch
-import androidx.compose.material3.Tab
+import com.aimdi.xtanative.ui.common.XtaTab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,6 +35,8 @@ import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.post.LocalMenuRowMetrics
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 
 /**
  * An account in a list, as the networks' screens list people: its picture,
@@ -109,7 +112,7 @@ private fun RowScope.SwitchWords(label: String, checked: Boolean, description: S
             Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
-    Switch(checked = checked, onCheckedChange = null)
+    Switch(checked = checked, onCheckedChange = null, colors = xSwitchColors())
 }
 
 /**
@@ -153,7 +156,7 @@ fun PluginTabs(labels: List<String>, selected: Int, onSelect: (Int) -> Unit, mod
         divider = { Hairline() },
     ) {
         labels.forEachIndexed { index, label ->
-            Tab(
+            XtaTab(
                 selected = index == selected,
                 onClick = { onSelect(index) },
                 text = { Text(label, maxLines = 1) },
@@ -188,11 +191,13 @@ fun PluginCounts(counts: List<Pair<Long, String>>, modifier: Modifier = Modifier
 /** One entry of a sheet of actions, as the app's post menu draws its own: [icon], [label], the whole row a button. */
 @Composable
 fun PluginMenuRow(icon: ImageVector, label: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    // Denser in the desktop's pointer menu than in a phone's sheet.
+    val metrics = LocalMenuRowMetrics.current
     Row(
-        modifier.fillMaxWidth().heightIn(min = 52.dp).clickable(onClick = onClick).padding(horizontal = 24.dp),
+        modifier.fillMaxWidth().heightIn(min = metrics.minHeight).clickable(onClick = onClick).padding(horizontal = metrics.padding, vertical = metrics.verticalPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(icon, contentDescription = null)
-        Text(label, modifier = Modifier.padding(start = 24.dp))
+        Icon(icon, contentDescription = null, modifier = Modifier.size(metrics.iconSize))
+        Text(label, modifier = Modifier.padding(start = metrics.gap))
     }
 }

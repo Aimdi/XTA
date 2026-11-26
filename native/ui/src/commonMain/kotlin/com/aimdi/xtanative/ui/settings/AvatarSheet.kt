@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.AccountPrefs
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.settings_avatar_choose
@@ -54,6 +55,7 @@ fun AvatarSheet(onDismiss: () -> Unit) {
         }
     }
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        val closer = LocalSheetCloser.current
         Column(Modifier.padding(bottom = 16.dp)) {
             Text(stringResource(Res.string.settings_avatar_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             Text(
@@ -73,7 +75,7 @@ fun AvatarSheet(onDismiss: () -> Unit) {
                     val name = first.screenName?.takeIf { it.isNotEmpty() } ?: return@NavigationRow
                     failed = false
                     scope.launch {
-                        if (runCatching { graph.avatar.fromProfile(graph.client, name) }.isSuccess) onDismiss() else failed = true
+                        if (runCatching { graph.avatar.fromProfile(graph.client, name) }.isSuccess) closer.close() else failed = true
                     }
                 }
             }
@@ -81,7 +83,7 @@ fun AvatarSheet(onDismiss: () -> Unit) {
                 NavigationRow(stringResource(Res.string.settings_avatar_clear), icon = Icons.Outlined.AccountCircle, chevron = false) {
                     scope.launch {
                         graph.avatar.clear()
-                        onDismiss()
+                        closer.close()
                     }
                 }
             }

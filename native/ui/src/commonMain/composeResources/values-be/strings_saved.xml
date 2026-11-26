@@ -58,7 +58,7 @@
     <string name="saved_empty_folder">Гэтая тэчка пустая</string>
     <string name="saved_empty_notes">Пакуль няма нататак. Яны не пакідаюць прыладу, пакуль вы не зробіце рэзервовую копію або сінхранізацыю.</string>
     <string name="saved_note_button">Нататка</string>
-    <string name="saved_add_note">Дадаць нататку да гэтага захаванага допісу</string>
+    <string name="saved_add_note">Дадаць нататку да гэтага допісу</string>
     <string name="saved_edit_note">Рэдагаваць нататку</string>
     <string name="saved_new_note">Новая нататка</string>
     <string name="saved_too_large">Захаваны твіт занадта вялікі</string>
@@ -128,7 +128,7 @@
     <string name="saved_no_media_file">Немагчыма загрузіць. Гэта медыя можа быць даступна толькі ў выглядзе патоку, які XTA пакуль не можа загрузіць.</string>
     <string name="saved_open_in_browser">Адкрыць у браўзеры</string>
     <string name="saved_ok">Добра</string>
-    <string name="saved_something_wrong">Ой! Нешта пайшло не так 🥲</string>
+    <string name="saved_something_wrong">Нешта пайшло не так</string>
     <string name="archive_tags">Тэгі</string>
     <string name="archive_extract">Распазнаць тэкст са здымка экрана</string>
     <string name="archive_extract_notice">Выбраная выява PNG або JPEG будзе адпраўлена на %1$s з наладжанай мадэллю ШІ. Распазнаны тэкст можа змяшчаць памылкі.</string>
@@ -174,6 +174,7 @@
     <string name="saved_media_status">Немагчыма захаваць мэдыяфайл. Twitter вярнуў статус %1$d</string>
     <string name="downloads_cancelled">Скасавана</string>
     <string name="downloads_interrupted">Перапынена · Паўтарыце спробу, каб працягнуць</string>
+    <string name="downloads_interrupted_desktop">Перапынена · Пстрыкніце «Паўтарыць», каб працягнуць</string>
     <string name="downloads_batch">Захаваныя файлы: %1$d / %2$d</string>
     <string name="downloads_saved_to">Захавана ў %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Задайце тэчку спамповак у Налады &gt; Медыя для аўтаспампоўкі.</string>

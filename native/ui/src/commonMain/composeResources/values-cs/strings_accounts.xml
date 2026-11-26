@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">Váš avatar</string>
     <string name="settings_avatar_change">Klepnutím změníte obrázek vlevo nahoře</string>
+    <string name="settings_avatar_change_desktop">Kliknutím změníte obrázek vlevo nahoře</string>
     <string name="settings_avatar_description">Obrázek vlevo nahoře a v nabídce — zůstane v tomto zařízení</string>
     <string name="settings_avatar_choose">Vybrat ze zařízení</string>
     <string name="settings_avatar_from_account">Použít profilovou fotku z X</string>

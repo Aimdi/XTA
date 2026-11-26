@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Aquesta carpeta és buida</string>
     <string name="saved_empty_notes">Encara no hi ha notes. No surten d'aquest dispositiu si no en fes una còpia o les sincronitzes.</string>
     <string name="saved_note_button">Nota</string>
-    <string name="saved_add_note">Afegeix una nota a aquesta publicació desada</string>
+    <string name="saved_add_note">Afegeix una nota a aquesta publicació</string>
     <string name="saved_edit_note">Edita la nota</string>
     <string name="saved_new_note">Nota nova</string>
     <string name="saved_too_large">El tuit desat és massa gran</string>
@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">No s'ha pogut descarregar. Aquest mitjà només pot estar disponible com a flux, cosa que XTA encara no pot descarregar.</string>
     <string name="saved_open_in_browser">Obre al navegador</string>
     <string name="saved_ok">D'acord</string>
-    <string name="saved_something_wrong">Ui! Alguna cosa ha anat malament 🥲</string>
+    <string name="saved_something_wrong">Alguna cosa ha anat malament</string>
     <string name="archive_tags">Etiquetes</string>
     <string name="archive_extract">Extreu text d’una captura</string>
     <string name="archive_extract_notice">La imatge PNG o JPEG triada s’enviarà a %1$s amb el model d’IA configurat. El text extret pot contenir errors.</string>
@@ -168,6 +168,7 @@
     <string name="saved_media_status">No s\'ha pogut desar el suport. Twitter ha retornat un estat de %1$d</string>
     <string name="downloads_cancelled">Cancel·lat</string>
     <string name="downloads_interrupted">Interromput · Torna-ho a provar per continuar</string>
+    <string name="downloads_interrupted_desktop">Interromput · Fes clic a Torna-ho a provar per continuar</string>
     <string name="downloads_batch">Fitxers desats: %1$d / %2$d</string>
     <string name="downloads_saved_to">S'ha desat a %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Defineix una carpeta de baixades a Configuració &gt; Multimèdia per baixar automàticament.</string>

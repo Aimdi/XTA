@@ -74,6 +74,7 @@ object HomeRequests {
     private val asked = MutableStateFlow<String?>(null)
     private val scope = MutableStateFlow<String?>(null)
     private val startAsked = MutableStateFlow(false)
+    private val pageAsked = MutableStateFlow<String?>(null)
 
     /** Whether Home is asked to show its start page, until it takes the request. */
     val start: StateFlow<Boolean> = startAsked.asStateFlow()
@@ -96,6 +97,17 @@ object HomeRequests {
 
     fun taken(tabKey: String) {
         asked.compareAndSet(tabKey, null)
+    }
+
+    /** The page of Home's bar asked for, by id, until Home takes the request. */
+    val page: StateFlow<String?> = pageAsked.asStateFlow()
+
+    fun showPage(id: String) {
+        pageAsked.value = id
+    }
+
+    fun pageTaken(id: String) {
+        pageAsked.compareAndSet(id, null)
     }
 
     fun searchIn(networkId: String) {

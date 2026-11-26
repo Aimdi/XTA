@@ -21,6 +21,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInWindow
@@ -36,10 +37,12 @@ import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.rememberPictureIndication
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_video
 import com.aimdi.xtanative.ui.generated.resources.reader_video_length
 import com.aimdi.xtanative.ui.generated.resources.reader_video_open_sound
+import com.aimdi.xtanative.ui.post.PlayBadge
 import com.aimdi.xtanative.ui.post.settingsNow
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
@@ -51,8 +54,8 @@ import org.jetbrains.compose.resources.stringResource
  * unless the reader turned it on), once most of it has stayed in view a
  * moment (in a feed, while it is the tile seen most: [MostSeen]), pauses
  * when it leaves, and plays on from there when it is back. Its corners hold
- * the time left (with a small ▶ while nothing starts it by itself) and the
- * mute switch; a tap anywhere else opens it full screen with its sound,
+ * the time left and the mute switch, with a round ▶ in the middle while
+ * nothing starts it by itself; a tap anywhere else opens it full screen with its sound,
  * going on from where it was. [poster] is the tile's picture, kept over the
  * video until its first frame; [post] names a saved file. Where nothing
  * plays in place, only the corner shows and the tile's tap opens the viewer.
@@ -77,7 +80,10 @@ internal fun TileVideo(
     modifier: Modifier = Modifier,
     download: @Composable () -> ((VideoPlayer) -> Unit)?,
 ) {
-    val tiles = rememberTilePlayer() ?: return Box(modifier) { TileCorner(VideoRules.cornerTimeMs(null, durationMs), play = true, Modifier.align(Alignment.BottomStart)) }
+    val tiles = rememberTilePlayer() ?: return Box(modifier) {
+        PlayBadge(Modifier.align(Alignment.Center))
+        TileCorner(VideoRules.cornerTimeMs(null, durationMs), play = false, Modifier.align(Alignment.BottomStart))
+    }
     val settings = settingsNow(LocalSettingsStore.current)
     val key = remember { Any() }
     var seen by remember { mutableStateOf(false) }
@@ -223,14 +229,17 @@ private fun TileLabels(durationMs: Long?): TileLabels {
 }
 
 /**
- * A video waiting in its tile: its length in the corner, with a small ▶
- * while nothing starts it by itself; with Autoplay, the mute switch says
- * how it will start. A tap opens it full screen with sound.
+ * A video waiting in its tile: its length in the corner, and the round play
+ * sign in the middle while nothing starts it by itself, so it reads as a
+ * video, not a still; with Autoplay, the mute switch says how it will start.
+ * A tap opens it full screen with sound.
  */
 @Composable
 private fun IdleTile(autoplay: Boolean, muted: Boolean, durationMs: Long?, labels: TileLabels, onOpen: () -> Unit, modifier: Modifier) {
-    Box(modifier.clickable(onClickLabel = labels.onClick, role = Role.Button, onClick = onOpen).semantics { contentDescription = labels.description }) {
-        TileCorner(VideoRules.cornerTimeMs(null, durationMs), play = VideoRules.cornerPlay(autoplay, holding = false), Modifier.align(Alignment.BottomStart))
+    Box(modifier.tappedOnly().clickable(interactionSource = null, indication = rememberPictureIndication(), onClickLabel = labels.onClick, role = Role.Button, onClick = onOpen).semantics { contentDescription = labels.description }) {
+        val waits = VideoRules.cornerPlay(autoplay, holding = false)
+        if (waits) PlayBadge(Modifier.align(Alignment.Center))
+        TileCorner(VideoRules.cornerTimeMs(null, durationMs), play = false, Modifier.align(Alignment.BottomStart))
         if (autoplay) {
             val chosen by VideoMute.choice.collectAsState()
             MuteCorner(chosen ?: muted, onToggle = { VideoMute.set(!(chosen ?: muted)) }, Modifier.align(Alignment.BottomEnd), disc = TileMuteDisc, inset = TileInset)
@@ -252,7 +261,9 @@ private fun PlayingTile(player: VideoPlayer, alt: String?, poster: Any?, seen: B
     Box(
         modifier
             .background(Color.Black)
-            .clickable(onClickLabel = labels.onClick, role = Role.Button, onClick = onOpen)
+            // No grey wash over the video under the pointer; a press still shows.
+            .tappedOnly()
+            .clickable(interactionSource = null, indication = rememberPictureIndication(), onClickLabel = labels.onClick, role = Role.Button, onClick = onOpen)
             .semantics { contentDescription = labels.description },
     ) {
         player.Picture(fill = true, Modifier.matchParentSize())
@@ -261,6 +272,14 @@ private fun PlayingTile(player: VideoPlayer, alt: String?, poster: Any?, seen: B
         MuteCorner(state.muted, onToggle = { toggleMute(player, state.muted) }, Modifier.align(Alignment.BottomEnd), disc = TileMuteDisc, inset = TileInset)
     }
 }
+
+/**
+ * A tile's tap, never a stop of Tab's: the media tile around it (a post's,
+ * a plugin's) already is one, the same size, so Tab stopped twice on a
+ * video and the second stop changed nothing on the screen. Enter there
+ * opens the video in the viewer.
+ */
+private fun Modifier.tappedOnly(): Modifier = focusProperties { canFocus = false }
 
 /** Pauses [player] once less than half of its tile has been seen for a moment, and plays it again when it is back. */
 @Composable

@@ -1,8 +1,13 @@
 package com.aimdi.xtanative.ui.settings
 
+import androidx.compose.material3.ButtonDefaults
+import com.aimdi.xtanative.ui.common.destructiveTextColors
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,25 +30,20 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,6 +54,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
@@ -71,11 +72,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.ColumnScrollbar
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.ReadingColumn
+import com.aimdi.xtanative.ui.common.TopBarBack
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.settings_back
 import com.aimdi.xtanative.ui.generated.resources.settings_cancel
 import com.aimdi.xtanative.ui.generated.resources.settings_save
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 import org.jetbrains.compose.resources.stringResource
 
 /** A settings page: its title, Back, and what it holds, on the page's own background, no wider than [SETTINGS_MAX_WIDTH]. */
@@ -94,13 +97,14 @@ internal fun SettingsPage(
         snackbarHost = { if (snackbar != null) SnackbarHost(snackbar) },
         floatingActionButton = floating,
         topBar = {
-            TopAppBar(
+            ColumnTopAppBar(
                 title = { TipText(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = {
-                    IconTip(stringResource(Res.string.settings_back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.settings_back)) } }
+                    TopBarBack(onBack, stringResource(Res.string.settings_back))
                 },
                 actions = actions,
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+                column = SETTINGS_MAX_WIDTH,
             )
         },
     ) { padding ->
@@ -113,8 +117,8 @@ internal fun SettingsPage(
     }
 }
 
-/** The widest a settings page grows. */
-internal val SETTINGS_MAX_WIDTH = 840.dp
+/** The widest a settings page grows: the reading column, as XTA's settings (kSettingsContentWidth) and the plugin store. */
+internal val SETTINGS_MAX_WIDTH = ReadingColumn.MAX_WIDTH.dp
 
 /** The rows of a page, scrolling by [scroll], with the desktop's scrollbar; [view] is on what they scroll in. */
 @Composable
@@ -185,7 +189,7 @@ internal fun SwitchRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RowText(title, description, enabled, Modifier.weight(1f).padding(end = 12.dp))
-        Switch(checked = checked, onCheckedChange = null, enabled = enabled)
+        Switch(checked = checked, onCheckedChange = null, colors = xSwitchColors(), enabled = enabled)
     }
 }
 
@@ -274,7 +278,11 @@ internal fun <T> ChoiceRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RowText(title, description, enabled, Modifier.weight(1f).padding(end = 12.dp))
-        Text(label(selected), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
+        if (isDesktop) {
+            DropdownValue(label(selected), enabled)
+        } else {
+            Text(label(selected), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
+        }
     }
     if (open) {
         ChoiceDialog(title, options, selected, label, onDismiss = { open = false }) { choice ->
@@ -284,47 +292,22 @@ internal fun <T> ChoiceRow(
     }
 }
 
-/** The list a choice opens: each value with a radio button. */
+/**
+ * The value a [ChoiceRow] shows on the desktop, as a desktop's drop-down
+ * list does: in an outlined box, with its arrow, so it reads as a choice to
+ * open rather than a link.
+ */
 @Composable
-internal fun <T> ChoiceDialog(
-    title: String,
-    options: List<T>,
-    selected: T?,
-    label: @Composable (T) -> String,
-    description: (@Composable (T) -> String?)? = null,
-    header: String? = null,
-    onDismiss: () -> Unit,
-    onSelect: (T) -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                if (header != null) {
-                    Text(header, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 8.dp))
-                }
-                options.forEach { option ->
-                    Row(
-                        Modifier.fillMaxWidth().selectable(selected = option == selected, role = Role.RadioButton) { onSelect(option) }
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        RadioButton(selected = option == selected, onClick = null)
-                        Spacer(Modifier.width(12.dp))
-                        Column {
-                            Text(label(option), style = MaterialTheme.typography.bodyLarge)
-                            description?.invoke(option)?.let {
-                                Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        confirmButton = {},
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.settings_cancel)) } },
-    )
+private fun DropdownValue(value: String, enabled: Boolean) {
+    val colors = MaterialTheme.colorScheme
+    val text = if (enabled) colors.onSurface else colors.onSurfaceVariant
+    Row(
+        Modifier.border(1.dp, colors.outline, RoundedCornerShape(8.dp)).padding(start = 12.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(value, style = MaterialTheme.typography.bodyMedium, color = text, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 220.dp))
+        Icon(Icons.Filled.ArrowDropDown, null, tint = colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
+    }
 }
 
 /** A text the reader types in a dialog, saved only with Save, as XTA's PrefDialogButton. */
@@ -432,9 +415,11 @@ internal fun ConfirmDialog(
         title = { Text(title) },
         text = { Text(text) },
         confirmButton = {
-            TextButton(onClick = onConfirm, modifier = if (confirmIsDefault) Modifier.dialogDefault() else Modifier) {
-                Text(confirm, color = if (destructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
-            }
+            TextButton(
+                onClick = onConfirm,
+                modifier = if (confirmIsDefault) Modifier.dialogDefault() else Modifier,
+                colors = if (destructive) destructiveTextColors() else ButtonDefaults.textButtonColors(),
+            ) { Text(confirm) }
         },
         // A destructive question (or one undoing the reader's choices, [confirmIsDefault] false) defaults to Cancel, any other to its confirm button.
         dismissButton = { TextButton(onClick = onDismiss, modifier = if (confirmIsDefault) Modifier else Modifier.dialogDefault()) { Text(dismiss) } },

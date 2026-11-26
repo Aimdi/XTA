@@ -64,6 +64,7 @@
     <string name="reader_voices_use">ダウンロードした音声を使う</string>
     <string name="reader_voices_use_description">記事の言語に合う音声がダウンロード済みならそれで読み上げ、なければ下のエンジンを使います。</string>
     <string name="reader_voices_note">音声は「ダウンロード」をタップしたときにだけ GitHub（k2-fsa/sherpa-onnx）から取得され、すべてこの端末上で動作します。</string>
+    <string name="reader_voices_note_desktop">音声は「ダウンロード」をクリックしたときにだけ GitHub（k2-fsa/sherpa-onnx）から取得され、すべてこの端末上で動作します。</string>
     <string name="reader_voices_synthesis_missing">このバージョンは音声をダウンロードできますが、まだその音声で読み上げることはできません。それまでは下の音声エンジンが読み上げます。</string>
     <string name="reader_voice_licence">ライセンス: %1$s</string>
     <string name="reader_voice_installing">確認して展開しています…</string>

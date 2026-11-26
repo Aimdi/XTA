@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Переклад</string>
     <string name="translation_privacy">Нічого не надсилається, доки ви не натиснете «Перекласти». Тоді текст потрапляє лише до вибраного тут сервісу.</string>
+    <string name="translation_privacy_desktop">Нічого не надсилається, доки ви не клацнете «Перекласти». Тоді текст потрапляє лише до вибраного тут сервісу.</string>
     <string name="translation_provider">Сервіс перекладу</string>
     <string name="translation_provider_off">Вимкнено</string>
     <string name="translation_provider_ai">Постачальник ШІ</string>

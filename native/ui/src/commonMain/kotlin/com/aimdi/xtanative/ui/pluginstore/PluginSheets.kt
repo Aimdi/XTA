@@ -18,6 +18,7 @@ import com.aimdi.xtanative.data.plugins.PluginSheet
 import com.aimdi.xtanative.data.plugins.keepable
 import com.aimdi.xtanative.store.settings.SubscriptionPrefs
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PostMenuHandlers
@@ -122,16 +123,11 @@ private fun CashtagSheet(symbol: String, onDismiss: () -> Unit) {
     val language = currentLanguage()
     val entries = remember(symbol, running, language) { plugins.cashtagEntries(symbol, language, running) }
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        val closer = LocalSheetCloser.current
         Column(Modifier.padding(bottom = 16.dp)) {
-            MenuRow(ShowChart, CashtagLinks.title(symbol)) {
-                onDismiss()
-                plugins.openCashtag(symbol)
-            }
+            MenuRow(ShowChart, CashtagLinks.title(symbol)) { closer.close { plugins.openCashtag(symbol) } }
             entries.forEach { entry ->
-                MenuRow(entry.icon, entry.label) {
-                    onDismiss()
-                    entry.run()
-                }
+                MenuRow(entry.icon, entry.label) { closer.close(entry.run) }
             }
         }
     }

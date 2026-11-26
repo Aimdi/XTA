@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">내 아바타</string>
     <string name="settings_avatar_change">탭하여 왼쪽 위 사진 변경</string>
+    <string name="settings_avatar_change_desktop">클릭하여 왼쪽 위 사진 변경</string>
     <string name="settings_avatar_description">왼쪽 위와 서랍에 보이는 사진 — 이 기기에만 저장됩니다</string>
     <string name="settings_avatar_choose">기기에서 선택</string>
     <string name="settings_avatar_from_account">X 프로필 사진 사용</string>

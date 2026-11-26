@@ -38,6 +38,7 @@ import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.rememberSheetState
@@ -45,6 +46,7 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.following
 import com.aimdi.xtanative.ui.generated.resources.groups_combine_clear
 import com.aimdi.xtanative.ui.generated.resources.groups_combine_hint
+import com.aimdi.xtanative.ui.generated.resources.groups_combine_hint_desktop
 import com.aimdi.xtanative.ui.generated.resources.groups_combined_count
 import com.aimdi.xtanative.ui.generated.resources.groups_create
 import com.aimdi.xtanative.ui.generated.resources.groups_groups
@@ -64,6 +66,7 @@ import com.aimdi.xtanative.ui.subscriptions.GroupMark
 import com.aimdi.xtanative.ui.subscriptions.groupColor
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.settings.isDesktop
 
 /**
  * A group feed's title (group_feed_title.dart, group_switcher.dart): the
@@ -124,16 +127,17 @@ fun GroupSwitcherSheet(
             Text(stringResource(Res.string.groups_none_yet), modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 32.dp))
             return@KeyedSheet
         }
+        val closer = LocalSheetCloser.current
         LazyColumn(Modifier.padding(bottom = 16.dp), state = rememberSheetList()) {
             item(key = "hint") { CombineHint(state.alsoRead.size, onClear) }
             items(state.groups, key = { it.id }) { group ->
-                SwitcherRow(group, current = group.id == currentId, combined = group.id in state.alsoRead, onClick = { onSwitch(group.id) }, onLongClick = {
+                SwitcherRow(group, current = group.id == currentId, combined = group.id in state.alsoRead, onClick = { closer.close { onSwitch(group.id) } }, onLongClick = {
                     if (group.id != currentId) onToggle(group.id)
                 })
             }
             item(key = "create") {
                 HorizontalDivider()
-                Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(onClick = onCreate).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(onClick = closer.closing(onCreate)).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Filled.Add, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Text(stringResource(Res.string.groups_create), color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 16.dp))
                 }
@@ -147,7 +151,7 @@ fun GroupSwitcherSheet(
 private fun CombineHint(count: Int, onClear: () -> Unit) {
     if (count == 0) {
         Text(
-            stringResource(Res.string.groups_combine_hint),
+            stringResource(if (isDesktop) Res.string.groups_combine_hint_desktop else Res.string.groups_combine_hint),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 8.dp),
         )

@@ -24,6 +24,7 @@
     <string name="groups_columns">Columns</string>
     <string name="groups_combine_clear">Clear</string>
     <string name="groups_combine_hint">Hold a group to read it alongside this one</string>
+    <string name="groups_combine_hint_desktop">Right-click a group to read it alongside this one</string>
     <string name="groups_combined_count">Reading %1$d more alongside</string>
     <string name="groups_compact">Compact</string>
     <string name="groups_content_default">Default</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">No results</string>
     <string name="groups_no_subscriptions">No subscriptions. Try searching or importing some!</string>
     <string name="groups_none_description">Groups let you mix subscriptions into custom feeds. Long-press a group to edit it.</string>
+    <string name="groups_none_description_desktop">Groups let you mix subscriptions into custom feeds. Right-click a group to edit it.</string>
     <string name="groups_none_yet">No groups yet</string>
     <string name="groups_not_all_posts">Note: Due to a X limitation, not all posts may be included</string>
     <string name="groups_ok">OK</string>

@@ -186,6 +186,8 @@ data class XPost(
     val grokShare: XGrokShare? = null,
     /** The post this one quotes, when X would not give it. */
     val quotedWithheld: XWithheld? = null,
+    /** X says the reader's account liked the post on X (`favorited`): its like count holds that like already. */
+    val likedOnX: Boolean = false,
 ) {
     val shown: XPost get() = reposted ?: this
     val isRepost: Boolean get() = reposted != null

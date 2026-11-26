@@ -69,6 +69,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_show_more
 import com.aimdi.xtanative.ui.offline.OfflineVideo
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.QuotedPost
+import com.aimdi.xtanative.ui.theme.edgeColor
 import java.io.File
 import java.time.Instant
 import kotlinx.coroutines.launch
@@ -170,7 +171,7 @@ private fun CompactQuote(text: String, onOpen: (() -> Unit)?) {
             .fillMaxWidth()
             .padding(bottom = 8.dp)
             .clip(shape)
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape)
+            .border(1.dp, edgeColor(), shape)
             .let { if (onOpen != null) it.clickable(onClick = onOpen) else it }
             .padding(12.dp),
     )

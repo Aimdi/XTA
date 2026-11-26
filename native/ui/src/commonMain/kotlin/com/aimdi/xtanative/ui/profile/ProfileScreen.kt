@@ -1,5 +1,12 @@
 package com.aimdi.xtanative.ui.profile
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,10 +44,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
+import com.aimdi.xtanative.ui.common.XtaTab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -73,16 +79,23 @@ import com.aimdi.xtanative.core.x.parse.XText
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.ArchiveFilter
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.KeepsClearOfStickyHeader
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.clickableNoRipple
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.common.monthText
+import com.aimdi.xtanative.ui.common.pointerOnlyFocus
+import com.aimdi.xtanative.ui.common.rememberStickyHeaderRoom
+import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -172,6 +185,7 @@ fun ProfileScreen(
     var sheet by rememberSaveable { mutableStateOf(ProfileSheet.NONE) }
     val tab = state.of(state.tab)
     val list = rememberLazyListState()
+    val room = rememberStickyHeaderRoom(list, TABS_KEY)
     val scope = rememberCoroutineScope()
     val nearEnd by remember(list) {
         derivedStateOf {
@@ -181,14 +195,24 @@ fun ProfileScreen(
     }
     LaunchedEffect(nearEnd, tab.threads.size, tab.tiles.size, state.tab) { if (nearEnd) vm.loadMore() }
     val scrolled by remember(list) { derivedStateOf { list.firstVisibleItemIndex > 3 } }
+    val reduced = LocalReducedMotion.current
+    // Each tab keeps its own place in the list ([ProfileTabScroll]), moved to in the frame the tab turns.
+    val tabScroll = remember(list) { ProfileTabScroll() }
+    val select: (ProfileTab) -> Unit = { to ->
+        // The tab row's place: under the header, and under a problem's row while one shows.
+        val tabRow = ProfileTabScroll.itemsAbove(state.failure != null, state.loading && !state.complete, state.problem != null, header = state.failure?.keepsHeader != false).size
+        tabScroll.turned(state.tab, to, ScrollSpot(list.firstVisibleItemIndex, list.firstVisibleItemScrollOffset), tabRow)
+            ?.let { list.requestScrollToItem(it.index, it.offset) }
+        vm.select(to)
+    }
     val user = state.user
     val shownName = user?.screenName ?: screenName
     // F5 and Ctrl+R read the profile again; ← → and Ctrl+Tab turn its tabs, as on Home; going back closes its sheet first.
     // Not where the screen it is shown in keeps the keys ([ownKeys] false: the Deck's detail).
     if (ownKeys) DesktopShortcuts(
         refresh = vm::refresh,
-        turn = { by -> if (state.complete && user != null) DesktopKeys.turned(state.tab.ordinal, ProfileTab.entries.size, by)?.let { vm.select(ProfileTab.entries[it]) } },
-        jump = { digit -> if (state.complete && user != null) DesktopKeys.pageAt(digit, ProfileTab.entries.size)?.let { vm.select(ProfileTab.entries[it]) } },
+        turn = { by -> if (state.complete && user != null) DesktopKeys.turned(state.tab.ordinal, ProfileTab.entries.size, by)?.let { select(ProfileTab.entries[it]) } },
+        jump = { digit -> if (state.complete && user != null) DesktopKeys.pageAt(digit, ProfileTab.entries.size)?.let { select(ProfileTab.entries[it]) } },
         isOpen = { sheet != ProfileSheet.NONE },
         close = { sheet = ProfileSheet.NONE },
     )
@@ -196,7 +220,7 @@ fun ProfileScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
+            ColumnTopAppBar(
                 title = { TipText(user?.name ?: "@$screenName", maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 actions = {
@@ -209,8 +233,13 @@ fun ProfileScreen(
             )
         },
         floatingActionButton = {
-            if (scrolled) {
-                FloatingActionButton(onClick = { scope.launch { list.scrollToItem(0) } }) {
+            // It grows in and out of its corner, or simply shows and goes while motion is reduced.
+            AnimatedVisibility(
+                scrolled,
+                enter = if (reduced) EnterTransition.None else fadeIn() + scaleIn(initialScale = 0.6f),
+                exit = if (reduced) ExitTransition.None else fadeOut() + scaleOut(targetScale = 0.6f),
+            ) {
+                FloatingActionButton(onClick = { scope.launch { list.scrollToTop(reduced) } }) {
                     Icon(PostIcons.ArrowUpward, stringResource(Res.string.posts_scroll_to_top))
                 }
             }
@@ -229,22 +258,25 @@ fun ProfileScreen(
                 val tabbed = state.complete && user != null
                 // A wide window keeps the profile in the reading column, as the feeds are.
                 WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp), list) { column ->
+                KeepsClearOfStickyHeader(room) {
                 LazyColumn(
                     state = list,
                     contentPadding = column,
-                    modifier = Modifier.fillMaxSize().swipeTabs(if (tabbed) ProfileTab.entries else emptyList(), state.tab, vm::select),
+                    modifier = Modifier.fillMaxSize().swipeTabs(if (tabbed) ProfileTab.entries else emptyList(), state.tab, select),
                 ) {
-                    item(key = "header", contentType = "header") {
-                        Header(state, follow, screenName, actions, onSheet = { sheet = it })
-                    }
                     val problem = state.problem
-                    when {
-                        failure != null -> item(key = "failure") { FailurePage(failure) }
-                        state.loading && !state.complete -> item(key = "loading") { LoadingRow() }
-                        problem != null -> item(key = "problem") { ProblemRow(problem, { vm.load() }) }
+                    ProfileTabScroll.itemsAbove(failure != null, state.loading && !state.complete, problem != null, header = failure?.keepsHeader != false).forEach { top ->
+                        when (top) {
+                            ProfileTop.HEADER -> item(key = top.key, contentType = top.key) {
+                                Header(state, follow, screenName, actions, onSheet = { sheet = it })
+                            }
+                            ProfileTop.FAILURE -> failure?.let { item(key = top.key) { FailurePage(it) } }
+                            ProfileTop.LOADING -> item(key = top.key) { LoadingRow() }
+                            ProfileTop.PROBLEM -> problem?.let { item(key = top.key) { ProblemRow(it, { vm.load() }) } }
+                        }
                     }
                     if (state.complete && user != null) {
-                        stickyHeader(key = "tabs", contentType = "tabs") { Tabs(state.tab, vm::select) }
+                        stickyHeader(key = TABS_KEY, contentType = "tabs") { Tabs(state.tab, select, room.header) }
                         filterBar(state, vm)
                         val gated = state.tab != ProfileTab.SAVED && ProfileHeader.postsGated(user, session?.accounts.orEmpty().map { it.screenName })
                         when {
@@ -261,6 +293,7 @@ fun ProfileScreen(
                     }
                 }
                 }
+                }
             }
         }
     }
@@ -274,6 +307,9 @@ fun ProfileScreen(
         ProfileSheet.FOLLOWED_BY -> FollowedBySheet(follow.followedBy, actions, onDismiss = { sheet = ProfileSheet.NONE })
     }
 }
+
+/** The key of the profile's sticky tabs in its list. */
+private const val TABS_KEY = "tabs"
 
 /** The sheets a profile opens over itself. */
 enum class ProfileSheet { NONE, FILTERS, NOTE, FOLLOWED_BY }
@@ -391,10 +427,10 @@ private fun <T> FilterBar(selected: T, options: List<Filter<T>>, onSelect: (T) -
 }
 
 @Composable
-private fun Tabs(selected: ProfileTab, onSelect: (ProfileTab) -> Unit) {
-    TabRow(selectedTabIndex = selected.ordinal, containerColor = MaterialTheme.colorScheme.background, divider = { Hairline() }) {
+private fun Tabs(selected: ProfileTab, onSelect: (ProfileTab) -> Unit, modifier: Modifier = Modifier) {
+    TabRow(selectedTabIndex = selected.ordinal, modifier = modifier, containerColor = MaterialTheme.colorScheme.background, divider = { Hairline() }) {
         ProfileTab.entries.forEach { tab ->
-            Tab(
+            XtaTab(
                 selected = tab == selected,
                 onClick = { onSelect(tab) },
                 text = {
@@ -483,7 +519,7 @@ private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actio
             Identity(user, screenName, state.note, noteEdit)
             if (!user?.description.isNullOrBlank()) {
                 val bio = remember(user) { user?.let(XText::bio).orEmpty() }
-                SelectionContainer { RunsText(bio, actions) }
+                SelectionContainer(Modifier.pointerOnlyFocus()) { RunsText(bio, actions) }
             }
             if (state.complete && user != null) {
                 Meta(user, actions)
@@ -536,7 +572,7 @@ private fun Meta(user: XUser, actions: PostActions) {
 @Composable
 private fun MetaLine(icon: ImageVector, text: String, link: Boolean = false, onClick: (() -> Unit)? = null) {
     val grey = MaterialTheme.colorScheme.onSurfaceVariant
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = if (onClick != null) Modifier.clickableNoRipple(onClick) else Modifier) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = if (onClick != null) Modifier.keyboardFocusRing(outset = 2.dp).clickableNoRipple(onClick) else Modifier) {
         Icon(icon, null, tint = grey, modifier = Modifier.size(16.dp))
         TipText(
             text,
@@ -568,7 +604,7 @@ private fun Counts(user: XUser, actions: PostActions) {
                 },
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.clickableNoRipple { actions.openFollows(user.screenName, followers) },
+                modifier = Modifier.keyboardFocusRing(outset = 2.dp).clickableNoRipple { actions.openFollows(user.screenName, followers) },
             )
         }
     }

@@ -31,7 +31,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -67,20 +66,26 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.services.links.XLinks
 import com.aimdi.xtanative.ui.article.ArticleBody
 import com.aimdi.xtanative.ui.article.ArticleLayout
 import com.aimdi.xtanative.ui.article.ArticlePreviewCard
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.PostSkeleton
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
+import com.aimdi.xtanative.ui.common.itemMotion
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -89,6 +94,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_continue_thread
 import com.aimdi.xtanative.ui.generated.resources.posts_more
 import com.aimdi.xtanative.ui.generated.resources.posts_no_text
 import com.aimdi.xtanative.ui.generated.resources.posts_replies_missing
+import com.aimdi.xtanative.ui.generated.resources.posts_no_replies_yet
 import com.aimdi.xtanative.ui.generated.resources.posts_retry
 import com.aimdi.xtanative.ui.generated.resources.posts_show_additional_replies
 import com.aimdi.xtanative.ui.generated.resources.posts_sort_most_liked
@@ -101,11 +107,13 @@ import com.aimdi.xtanative.ui.generated.resources.posts_unable_to_load_the_tweet
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_views_count
 import com.aimdi.xtanative.ui.generated.resources.posts_zen_replies
+import com.aimdi.xtanative.ui.generated.resources.posts_zen_replies_desktop
 import com.aimdi.xtanative.ui.home.FindInPage
 import com.aimdi.xtanative.ui.home.LocalDesktopActions
 import com.aimdi.xtanative.ui.home.keyedPost
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.settings.isDesktop
 
 /**
  * An opened post (status.dart): what it answers, the post drawn as X draws
@@ -145,7 +153,7 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
+            ColumnTopAppBar(
                 title = { Text(stringResource(Res.string.post)) },
                 navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -159,6 +167,8 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
         PostScopeProvider(focalId = id, translateAll = true, revealReplies = reveal) {
             val prefs = postScope().prefs
             val zenHidden = prefs.zen && !state.repliesRevealed
+            // The tree is laid out once per page of replies, not on every change to the screen (a translation, a poll).
+            val tree = remember(state.replies, prefs.threadedReplies) { if (prefs.threadedReplies) ThreadTree.rows(ThreadTree.nodes(state.replies)) else null }
             WithReadingColumn(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 48.dp), list) { column ->
                 LazyColumn(
                     state = list,
@@ -174,13 +184,18 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
                     focalItems(state, id, actions, vm, prefs, startMedia)
                     val problem = state.problem
                     when {
-                        state.loading && state.replies.isEmpty() -> item(key = "loading") { LoadingRow() }
+                        state.loading && state.replies.isEmpty() -> item(key = "loading") {
+                            when (val count = PostLoading.placeholders(state.focal?.replyCount)) {
+                                0 -> LoadingRow()
+                                else -> FeedSkeleton(count = count)
+                            }
+                        }
                         problem != null -> item(key = "problem") { ProblemRow(problem, { vm.load() }, context = stringResource(Res.string.posts_unable_to_load_the_tweet)) }
                     }
                     if (zenHidden) {
                         item(key = "zen") { ZenReplies(vm::revealReplies) }
                     } else {
-                        replyItems(state, actions, prefs.threadedReplies)
+                        replyItems(state.replies, tree, actions)
                         item(key = "footer") { ThreadEnd(state, vm) }
                     }
                 }
@@ -189,6 +204,22 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
         }
     }
     }
+}
+
+/** How many placeholder posts an opened post shows while its thread loads. */
+internal object PostLoading {
+    private const val MOST = 3
+
+    /** For a post not at hand yet ([replyCount] null), it and two replies; otherwise one per reply X counted, up to [MOST], and none when it counted none (a small spinner then, [LoadingRow]). */
+    fun placeholders(replyCount: Long?): Int = when (replyCount) {
+        null -> MOST
+        else -> replyCount.coerceIn(0, MOST.toLong()).toInt()
+    }
+
+    /** X answered with the post and not one reply, nothing more to load, retry or show: "No replies yet" under it. */
+    fun noReplies(state: PostUi): Boolean =
+        state.answered && !state.loading && !state.loadingMore && state.focal != null && state.replies.isEmpty() &&
+            state.problem == null && state.moreProblem == null && state.showMore == null && !state.repliesMissing
 }
 
 private fun LazyListScope.focalItems(state: PostUi, id: String, actions: PostActions, vm: PostViewModel, prefs: PostPrefs, startMedia: Int) {
@@ -216,19 +247,20 @@ private fun Gap(reason: String?, screenName: String?, id: String, actions: PostA
     )
 }
 
-/** The replies: threads in X's order, or a tree with the deeper branches left to "Continue thread". */
-private fun LazyListScope.replyItems(state: PostUi, actions: PostActions, threaded: Boolean) {
-    if (!threaded) {
-        items(state.replies, key = { "reply-" + it.id }, contentType = { "thread" }) { thread -> ThreadRows(thread, actions) }
+/** The [replies]: threads in X's order, or, with the [tree] of them laid out, a tree with the deeper branches left to "Continue thread". */
+private fun LazyListScope.replyItems(replies: List<XThread>, tree: List<ThreadRow>?, actions: PostActions) {
+    if (tree == null) {
+        items(replies, key = { "reply-" + it.id }, contentType = { if (it.posts.size > 1) "thread" else "post" }) { thread ->
+            Box(itemMotion(LocalReducedMotion.current)) { ThreadRows(thread, actions) }
+        }
         return
     }
-    val rows = ThreadTree.rows(ThreadTree.nodes(state.replies))
-    items(rows, key = { row -> rowKey(row) }, contentType = { row -> if (row is ThreadRow.Reply) "thread" else "continue" }) { row ->
+    items(tree, key = { row -> rowKey(row) }, contentType = { row -> if (row is ThreadRow.Reply) "thread" else "continue" }) { row ->
         when (row) {
-            is ThreadRow.Reply -> Box(Modifier.padding(start = (ThreadTree.indentLevels(row.visualDepth) * 40).dp)) {
+            is ThreadRow.Reply -> Box(itemMotion(LocalReducedMotion.current).padding(start = ThreadTree.indent(row.visualDepth).dp)) {
                 ThreadRows(row.node.thread, actions)
             }
-            is ThreadRow.Continue -> ContinueThread(row, actions)
+            is ThreadRow.Continue -> Box(itemMotion(LocalReducedMotion.current)) { ContinueThread(row, actions) }
         }
     }
 }
@@ -247,7 +279,7 @@ private fun ContinueThread(row: ThreadRow.Continue, actions: PostActions) {
             .fillMaxWidth()
             .heightIn(min = 48.dp)
             .clickable { actions.openPost(first.id) }
-            .padding(start = (ThreadTree.indentLevels(row.indentDepth) * 40 + 16).dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+            .padding(start = (ThreadTree.indent(row.indentDepth) + 16).dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(PostIcons.SubdirectoryArrow, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
@@ -260,12 +292,12 @@ private fun ContinueThread(row: ThreadRow.Continue, actions: PostActions) {
     }
 }
 
-/** Where the replies end: more loading, a failed page, X's withheld replies, or a retry for replies X counted but never sent. */
+/** Where the replies end: more loading, a failed page, X's withheld replies, a retry for replies X counted but never sent, or that there are none yet. */
 @Composable
 private fun ThreadEnd(state: PostUi, vm: PostViewModel) {
     val more = state.moreProblem
     when {
-        state.loadingMore -> LoadingRow()
+        state.loadingMore -> PostSkeleton()
         more != null -> ProblemRow(more, vm::loadMore, context = stringResource(Res.string.posts_unable_to_load_the_next_page_of_replies))
         state.showMore != null -> Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
             TextButton(onClick = vm::showMoreReplies) {
@@ -280,6 +312,12 @@ private fun ThreadEnd(state: PostUi, vm: PostViewModel) {
                 Text(stringResource(Res.string.posts_retry), modifier = Modifier.padding(start = 8.dp))
             }
         }
+        PostLoading.noReplies(state) -> Text(
+            stringResource(Res.string.posts_no_replies_yet),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().padding(24.dp),
+        )
     }
 }
 
@@ -287,7 +325,7 @@ private fun ThreadEnd(state: PostUi, vm: PostViewModel) {
 @Composable
 private fun ZenReplies(onReveal: () -> Unit) {
     Text(
-        stringResource(Res.string.posts_zen_replies),
+        stringResource(if (isDesktop) Res.string.posts_zen_replies_desktop else Res.string.posts_zen_replies),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth().clickable(onClick = onReveal).padding(24.dp),
@@ -416,12 +454,12 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
         TranslationFailure(translation)
         PostAttachments(shown, scope, actions, gap = 12.dp, startMedia = startMedia)
         if (article != null) {
-            ArticleBody(article, actions, Modifier.padding(top = 12.dp), header = { PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture) })
+            ArticleBody(article, actions, Modifier.padding(top = 12.dp), header = { PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture, countsMax = FooterFit.FOCAL_COUNTS_MAX.dp) })
         } else if (shown.article != null) {
             ArticlePreviewCard(shown, { actions.openArticle(shown.id) }, Modifier.padding(top = 12.dp))
         }
         FocalMetaLine(shown, scope.prefs, order, picture)
-        if (article == null) PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture)
+        if (article == null) PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture, countsMax = FooterFit.FOCAL_COUNTS_MAX.dp)
     }
     Hairline()
     if (menu) {

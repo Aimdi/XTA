@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">引用</string>
     <string name="posts_replies_missing">無法載入回覆</string>
+    <string name="posts_no_replies_yet">尚無回覆</string>
     <string name="posts_replying_to">正在回覆</string>
     <string name="posts_reposted">%1$s 在 %2$s 轉貼</string>
     <string name="posts_reposted_by">轉發者</string>
@@ -97,6 +98,7 @@
     <string name="posts_verified_organization">已認證機構</string>
     <string name="posts_view_quoted">查看引用的貼文</string>
     <string name="posts_zen_replies">長按留言按鈕以顯示回覆</string>
+    <string name="posts_zen_replies_desktop">在留言按鈕上按右鍵以顯示回覆</string>
     <plurals name="posts_views_count">
         <item quantity="other">%1$s 次查看</item>
     </plurals>

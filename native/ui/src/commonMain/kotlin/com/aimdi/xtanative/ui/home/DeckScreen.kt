@@ -3,10 +3,14 @@ package com.aimdi.xtanative.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -25,11 +29,11 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,8 +43,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -62,9 +64,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.feed.FeedStrip
@@ -73,10 +76,14 @@ import com.aimdi.xtanative.core.session.DeckColumns
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.DeckWidth
 import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
+import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.TopBarBack
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -108,6 +115,7 @@ import com.aimdi.xtanative.ui.profile.ProfileScreen
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.common.EmptyState
 
 /** The narrowest the detail column gets: a post's conversation needs a page's width. */
 private const val DETAIL_MIN_WIDTH = 420
@@ -157,10 +165,12 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
+            // Over the empty state's column; over the columns, which run across the window, from edge to edge.
+            ColumnTopAppBar(
+                column = if (columns.isEmpty()) ReadingColumn.MAX_WIDTH.dp else Dp.Infinity,
                 title = { Text(stringResource(Res.string.home_deck)) },
                 navigationIcon = {
-                    IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
+                    TopBarBack(onBack)
                 },
                 actions = {
                     IconTip(stringResource(Res.string.home_deck_add)) { IconButton(onClick = { adding = true }) { Icon(Icons.Filled.Add, stringResource(Res.string.home_deck_add)) } }
@@ -275,13 +285,13 @@ internal fun DeckColumnView(
                 val vm = groupFeedViewModel((column as? DeckColumn.Group)?.groupId)
                 val state by vm.ui.collectAsStateWithLifecycle()
                 RefreshesOn(reads) { vm.refresh() }
-                ColumnHeader(label, place, calls, onRefresh = { refreshed++ })
+                ColumnHeader(column, label, place, calls, onRefresh = { refreshed++ })
                 GroupFeedBody(state, vm, actions, rememberLazyListState(), PaddingValues(), mediaOnly = false, toTop = toTop)
             }
             DeckColumn.ForYou -> {
                 val vm = forYouViewModel()
                 RefreshesOn(reads) { vm.refresh() }
-                ColumnHeader(label, place, calls, onRefresh = { refreshed++ })
+                ColumnHeader(column, label, place, calls, onRefresh = { refreshed++ })
                 ForYouPage(toTop, actions, PaddingValues())
             }
             is DeckColumn.Network -> NetworkColumn(column.networkId, label, place, calls, toTop, reads) { refreshed++ }
@@ -299,7 +309,7 @@ private fun NetworkColumn(id: String, label: String, place: ColumnPlace, calls: 
     val networks = LocalHomeNetworks.current
     val client = remember(id) { PluginClientBar() }
     RefreshesOn(reads) { networks.refresh(id) }
-    ColumnHeader(label, place, calls, onRefresh) { PluginActions(client) }
+    ColumnHeader(DeckColumn.Network(id), label, place, calls, onRefresh) { PluginActions(client) }
     val rows = ShellRows.of(client.feeds?.feeds, client.content?.tabs?.value.orEmpty(), onBar = false)
     val accent = pluginAccent(client.content?.accent?.value)
     rows.sections?.let { ShellFeedRow(it, null, accent) }
@@ -309,23 +319,66 @@ private fun NetworkColumn(id: String, label: String, place: ColumnPlace, calls: 
     }
 }
 
-/** A column's first row: its name (back to the top), [extra] (a network's own search and menu), Refresh, and its menu. */
+/**
+ * A column's first row, as Home's bar leads with the timeline's mark: the
+ * column's mark ([ColumnMark]) and its name (back to the top), [extra] (a
+ * network's own search and menu), Refresh, and its menu. In a column wider
+ * than the posts' reading column it stands over the posts, as wide as they
+ * are, not across the whole window.
+ */
 @Composable
-private fun ColumnHeader(label: String, place: ColumnPlace, calls: ColumnCalls, onRefresh: () -> Unit, extra: @Composable RowScope.() -> Unit = {}) {
-    Row(Modifier.fillMaxWidth().then(calls.handle).heightIn(min = 48.dp).padding(start = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        TipText(
-            label,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f).clickable(onClick = calls.onTitle).padding(horizontal = 12.dp, vertical = 12.dp),
-        )
-        extra()
-        IconTip(stringResource(Res.string.home_refresh)) { IconButton(onClick = onRefresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) } }
-        if (calls.menu) ColumnMenu(place, calls)
+private fun ColumnHeader(column: DeckColumn, label: String, place: ColumnPlace, calls: ColumnCalls, onRefresh: () -> Unit, extra: @Composable RowScope.() -> Unit = {}) {
+    // A group's emoji stands in the mark's place, ahead of its bare name.
+    val (emoji, name) = ColumnTitle.of(column, label)
+    Column(Modifier.fillMaxWidth().wrapContentWidth().widthIn(max = ReadingColumn.MAX_WIDTH.dp)) {
+        Row(Modifier.fillMaxWidth().then(calls.handle).heightIn(min = 48.dp).padding(start = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.weight(1f)) {
+                Row(
+                    Modifier.heightIn(min = 48.dp).clip(RoundedCornerShape(8.dp)).clickable(onClick = calls.onTitle).padding(end = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+                        if (emoji != null) Text(emoji, fontSize = 20.sp, maxLines = 1) else ColumnMark(column)
+                    }
+                    TipText(
+                        name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+            extra()
+            IconTip(stringResource(Res.string.home_refresh)) { IconButton(onClick = onRefresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) } }
+            if (calls.menu) ColumnMenu(place, calls)
+        }
+        HorizontalDivider()
     }
-    HorizontalDivider()
+}
+
+/** A column's name as its head shows it. */
+internal object ColumnTitle {
+    /** [column]'s [label] as its head shows it: a group's emoji apart from its name ([split]); any other column's label whole. */
+    fun of(column: DeckColumn, label: String): Pair<String?, String> = if (column is DeckColumn.Group) split(label) else null to label
+
+    /** A group's label ([HomeStrip.groupLabel]) as its emoji, null without one, and its name. */
+    fun split(label: String): Pair<String?, String> {
+        val first = label.substringBefore(' ')
+        val rest = label.substringAfter(' ', "")
+        return if (rest.isNotBlank() && first.none { it.isLetterOrDigit() }) first to rest else null to label
+    }
+}
+
+/** A column's mark, as Home's bar draws its timeline's: Following's stacked posts, X's own mark, a network's, a group's people. */
+@Composable
+private fun ColumnMark(column: DeckColumn) {
+    when (column) {
+        DeckColumn.Following -> TimelineMark(HomeTab.Following, LocalHomeNetworks.current, 24.dp)
+        DeckColumn.ForYou -> TimelineMark(HomeTab.ForYou, LocalHomeNetworks.current, 24.dp)
+        is DeckColumn.Network -> LocalHomeNetworks.current.Mark(column.networkId, 24.dp)
+        is DeckColumn.Group -> Icon(HomeIcons.PeopleOutlined, contentDescription = null, modifier = Modifier.size(24.dp))
+    }
 }
 
 @Composable
@@ -382,18 +435,8 @@ private fun widthLabel(width: DeckWidth): StringResource = when (width) {
 /** No columns yet: what the deck is for, and Add column. */
 @Composable
 private fun EmptyDeck(onAdd: () -> Unit) {
-    Column(
-        Modifier.fillMaxSize().padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
-    ) {
-        Text(
-            stringResource(Res.string.home_deck_empty),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        TextButton(onClick = onAdd) {
+    EmptyState(HomeIcons.ViewColumnOutlined, stringResource(Res.string.home_deck_empty)) {
+        Button(onClick = onAdd) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.home_deck_add), modifier = Modifier.padding(start = 8.dp))
         }
@@ -429,17 +472,20 @@ private fun AddColumnSheet(choices: List<DeckColumn>, networks: HomeNetworks, on
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
         )
+        val closer = LocalSheetCloser.current
         LazyColumn(Modifier.fillMaxWidth().navigationBarsPadding(), state = rememberSheetList()) {
             items(choices, key = { it.id }) { column ->
                 Row(
-                    Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable { onPick(column) }.padding(horizontal = 24.dp),
+                    Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable { closer.close { onPick(column) } }.padding(horizontal = 24.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
+                    // Each choice led by the mark its column's head will show: a group's emoji, else its people.
+                    val (emoji, name) = ColumnTitle.of(column, labelOf(column, groups, available))
                     Box(Modifier.size(24.dp), contentAlignment = Alignment.Center) {
-                        (column as? DeckColumn.Network)?.let { networks.Mark(it.networkId, 24.dp) }
+                        if (emoji != null) Text(emoji, fontSize = 18.sp, maxLines = 1) else ColumnMark(column)
                     }
-                    TipText(labelOf(column, groups, available), style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    TipText(name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }
         }

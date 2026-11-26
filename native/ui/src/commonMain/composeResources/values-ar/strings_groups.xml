@@ -24,6 +24,7 @@
     <string name="groups_columns">الأعمدة</string>
     <string name="groups_combine_clear">مسح</string>
     <string name="groups_combine_hint">اضغط مطولًا على مجموعة لقراءتها مع هذه المجموعة</string>
+    <string name="groups_combine_hint_desktop">انقر بزر الفأرة الأيمن على مجموعة لقراءتها مع هذه المجموعة</string>
     <string name="groups_combined_count">تُقرأ %1$d أخرى معها</string>
     <string name="groups_compact">مضغوط</string>
     <string name="groups_content_default">افتراضي</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">لا نتائج</string>
     <string name="groups_no_subscriptions">لا اشتراكات. حاول أن تبحث أو أن تستورد البعض!</string>
     <string name="groups_none_description">تجمع المجموعات الاشتراكات في خلاصات مخصصة. اضغط مطولًا لتعديل مجموعة.</string>
+    <string name="groups_none_description_desktop">تجمع المجموعات الاشتراكات في خلاصات مخصصة. انقر بزر الفأرة الأيمن على مجموعة لتعديلها.</string>
     <string name="groups_none_yet">لا توجد مجموعات بعد</string>
     <string name="groups_not_all_posts">ملاحظة: نظراً لقَيد معين من تويتر، قد لا يتم تضمين جميع التغريدات</string>
     <string name="groups_ok">تمام</string>

@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">オフ</string>
     <string name="posts_quotes">引用</string>
     <string name="posts_replies_missing">返信を読み込めませんでした</string>
+    <string name="posts_no_replies_yet">まだ返信はありません</string>
     <string name="posts_replying_to">返信：</string>
     <string name="posts_reposted">%1$sがリツイート %2$s</string>
     <string name="posts_reposted_by">リポストした人</string>
@@ -97,6 +98,7 @@ Click to show more..</string>
     <string name="posts_verified_organization">認証済みの組織</string>
     <string name="posts_view_quoted">引用ポストを表示</string>
     <string name="posts_zen_replies">返信を表示するにはコメントボタンを長押ししてください</string>
+    <string name="posts_zen_replies_desktop">返信を表示するにはコメントボタンを右クリックしてください</string>
     <plurals name="posts_views_count">
         <item quantity="other">%1$s件の表示</item>
     </plurals>

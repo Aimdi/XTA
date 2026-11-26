@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">Dein Avatar</string>
     <string name="settings_avatar_change">Tippen, um das Bild oben links zu ändern</string>
+    <string name="settings_avatar_change_desktop">Klicken, um das Bild oben links zu ändern</string>
     <string name="settings_avatar_description">Bild oben links und in der Seitenleiste — bleibt auf diesem Gerät</string>
     <string name="settings_avatar_choose">Vom Gerät wählen</string>
     <string name="settings_avatar_from_account">X-Profilbild verwenden</string>

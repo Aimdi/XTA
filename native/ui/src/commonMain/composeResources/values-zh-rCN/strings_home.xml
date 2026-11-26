@@ -29,7 +29,7 @@
     <string name="home_downloads">下载</string>
     <string name="home_antennas">天线</string>
     <string name="home_deck">多栏</string>
-    <string name="home_deck_empty">在宽屏上将分组固定以便并排查看</string>
+    <string name="home_deck_empty">添加栏，在宽屏上并排查看信息流和分组</string>
     <string name="home_deck_add">添加栏</string>
     <string name="home_deck_move_left">左移</string>
     <string name="home_deck_move_right">右移</string>
@@ -50,6 +50,7 @@
     <string name="home_filter_accounts_explained">关掉只为提高速率限制而保留的备用账号。“为你推荐”合并仍开启账号的主页时间线；“正在关注”仍用本地订阅，但抓取时会跳过已关闭的账号。评论和资料页在需要时仍可用任意账号。</string>
     <string name="home_filter_groups_explained">关闭某个分组后，其成员会从“正在关注”中隐藏。分组自己的标签页仍在。他们的帖子也会从“为你推荐”中去掉。</string>
     <string name="home_filter_only_hint">长按某一项即可只保留它开启。</string>
+    <string name="home_filter_only_hint_desktop">右键点击某一项即可只保留它开启。</string>
     <string name="home_filter_keep_one">至少需要保留一个账号开启</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">全部</string>

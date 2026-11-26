@@ -79,6 +79,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_sort_filter_on
 import com.aimdi.xtanative.ui.generated.resources.home_sort_reset
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.post.PostIcons
+import com.aimdi.xtanative.ui.theme.edgeColor
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -351,7 +352,7 @@ fun ShellSortPills(labels: List<String>, selected: Int?, onSelect: (Int) -> Unit
                 Modifier
                     .heightIn(min = 36.dp)
                     .clip(shape)
-                    .border(1.dp, if (on) accent else MaterialTheme.colorScheme.outlineVariant, shape)
+                    .border(1.dp, if (on) accent else edgeColor(), shape)
                     .clickable { onSelect(index) }
                     .semantics {
                         role = Role.RadioButton

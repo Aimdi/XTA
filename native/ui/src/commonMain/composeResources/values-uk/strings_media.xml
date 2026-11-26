@@ -3,6 +3,7 @@
     <string name="media_alt_badge">ALT</string>
     <string name="media_alt_title">Опис зображення</string>
     <string name="media_tap_to_show">Торкніться, щоб показати %1$s</string>
+    <string name="media_tap_to_show_desktop">Клацніть, щоб показати %1$s</string>
     <string name="media_copy_image">Копіювати зображення</string>
     <string name="media_save_as">Зберегти як…</string>
     <string name="media_drag_out">Перетягніть зображення в іншу програму</string>

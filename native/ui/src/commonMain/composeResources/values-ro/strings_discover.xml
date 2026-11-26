@@ -72,9 +72,9 @@
     <string name="discover_community_created">Creată pe %1$s</string>
     <string name="discover_community_members">Membri</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d membru</item>
-        <item quantity="few">%1$d membri</item>
-        <item quantity="other">%1$d de membri</item>
+        <item quantity="one">%1$s membru</item>
+        <item quantity="few">%1$s membri</item>
+        <item quantity="other">%1$s de membri</item>
     </plurals>
     <string name="discover_list_import_title">Importă o listă X ca grup</string>
     <string name="discover_list_import_intro">Pentru a importa o listă X ca grup de abonamente, introdu mai jos linkul listei sau ID-ul ei</string>

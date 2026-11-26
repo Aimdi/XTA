@@ -29,7 +29,7 @@
     <string name="home_downloads">Downloads</string>
     <string name="home_antennas">Antennen</string>
     <string name="home_deck">Deck</string>
-    <string name="home_deck_empty">Gruppen anheften, um sie auf großen Bildschirmen nebeneinander zu sehen</string>
+    <string name="home_deck_empty">Spalten hinzufügen, um Feeds und Gruppen auf großen Bildschirmen nebeneinander zu sehen</string>
     <string name="home_deck_add">Spalte hinzufügen</string>
     <string name="home_deck_move_left">Nach links</string>
     <string name="home_deck_move_right">Nach rechts</string>
@@ -51,6 +51,7 @@
     <string name="home_filter_accounts_explained">Schalte Reservekonten aus, die du nur für höhere Ratenlimits behältst. „Für dich“ führt die Timelines eingeschalteter Konten zusammen; „Folge ich“ verwendet weiter deine lokalen Abos, überspringt beim Abrufen aber ausgeschaltete Konten. Kommentare und Profile können bei Bedarf weiterhin jedes Konto nutzen.</string>
     <string name="home_filter_groups_explained">Schalte eine Gruppe aus, um ihre Mitglieder im Folge-ich-Feed auszublenden. Der Tab der Gruppe bleibt. Ihre Beiträge fallen auch aus „Für dich“ heraus.</string>
     <string name="home_filter_only_hint">Lange drücken, um nur diesen Eintrag aktiv zu lassen.</string>
+    <string name="home_filter_only_hint_desktop">Rechtsklick, um nur diesen Eintrag aktiv zu lassen.</string>
     <string name="home_filter_keep_one">Mindestens ein Konto muss an bleiben</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Alle</string>
@@ -58,7 +59,7 @@
     <string name="home_filter_reset">Filter zurücksetzen</string>
     <string name="home_filter_apply">Übernehmen</string>
 
-    <string name="home_for_you_empty">Die Posts für den Feed lassen sich nicht laden</string>
+    <string name="home_for_you_empty">Die Beiträge für den Feed lassen sich nicht laden</string>
     <string name="home_for_you_no_account">Importiere XTAs Sicherung mit ihren Konten, um „Für dich“ zu laden.</string>
     <string name="home_import">XTA-Sicherung importieren</string>
 
@@ -69,7 +70,7 @@
     <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
     <string name="home_alt_microblogging_group">Microblogging-Dienste gruppieren</string>
     <string name="home_alt_microblogging_group_detail">Mastodon, Bluesky und Threads in einem Bereich auf der Startseite anzeigen. Ausschalten, um sie wieder einzeln anzuzeigen. Daten und Einstellungen bleiben erhalten.</string>
-    <string name="home_posts">Tweets</string>
+    <string name="home_posts">Beiträge</string>
     <string name="home_media">Medien</string>
     <string name="home_missing_page">Fehlende Seite</string>
     <string name="home_two_pages_required">Du musst mindestens 2 Tabs auf der Startseite haben.</string>

@@ -84,6 +84,7 @@
     <string name="settings_yes">Ja</string>
     <string name="settings_zen_mode">Zen-modus</string>
     <string name="settings_zen_mode_description">Een rustigere feed: verbergt statistieken, verbergt reacties totdat je de reactieknop ingedrukt houdt en toont slechts enkele recente berichten per persoon.</string>
+    <string name="settings_zen_mode_description_desktop">Een rustigere feed: verbergt statistieken, verbergt reacties totdat je met de rechtermuisknop op de reactieknop klikt en toont slechts enkele recente berichten per persoon.</string>
     <string name="settings_threaded_replies">Geneste reacties</string>
     <string name="settings_threaded_replies_description">Toon reacties onder een geopend bericht als een ingesprongen boom, met elke reactie genest onder de reactie waarop deze antwoordt.</string>
     <string name="settings_collapse_boosts">Reeksen reposts samenvoegen</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Beeldkwaliteit</string>
     <string name="settings_load_manually">Media handmatig laden</string>
     <string name="settings_load_manually_description">Afbeeldingen en video's worden pas geladen als je erop tikt, om mobiele data te besparen.</string>
+    <string name="settings_load_manually_description_desktop">Afbeeldingen en video's worden pas geladen als je erop klikt, om data te besparen.</string>
     <string name="settings_save_bandwidth">Bandbreedte besparen met kleinere afbeeldingen</string>
     <string name="settings_quality_low">Laag</string>
     <string name="settings_quality_medium">Gemiddeld</string>
@@ -160,10 +162,6 @@
     <string name="settings_colour_purple">Paars</string>
     <string name="settings_colour_orange">Oranje</string>
     <string name="settings_colour_green">Groen</string>
-    <string name="settings_true_black">Echt zwart?</string>
-    <string name="settings_true_black_description">Echt zwart gebruiken voor het donkere thema</string>
-    <string name="settings_true_black_cards">Echt zwart voor tweet-kaarten?</string>
-    <string name="settings_true_black_cards_description">Echt zwart gebruiken voor tweet-kaarten</string>
     <string name="settings_navigation_labels">Navigatielabels tonen</string>
     <string name="settings_hide_navigation">Bovenste en onderste balk verbergen tijdens scrollen</string>
     <string name="settings_hide_status_bar">Statusbalk verbergen</string>
@@ -179,11 +177,17 @@
     <string name="settings_ticker_chart">Aandelengrafiek</string>
     <string name="settings_ticker_chart_description">Verschijnt wanneer je een ticker opent. XTA haalt de koersen zelf op bij openbare diensten zonder account; uitgeschakeld gaat er niets uit en blijven de berichten over.</string>
     <string name="settings_double_tap_like">Dubbeltik om te liken</string>
+    <string name="settings_double_tap_like_desktop">Dubbelklik om te liken</string>
     <string name="settings_double_tap_like_description">Standaard uit: elke enkele tik wacht af of er een tweede volgt, waardoor een bericht openen iets trager aanvoelt.</string>
+    <string name="settings_double_tap_like_description_desktop">Standaard uit: elke enkele klik wacht af of er een tweede volgt, waardoor een bericht openen iets trager aanvoelt.</string>
     <string name="settings_swipe_back_anywhere">Overal terugvegen</string>
+    <string name="settings_swipe_back_anywhere_desktop">Overal terugslepen</string>
     <string name="settings_swipe_back_anywhere_description">Sleep een geopend bericht vanaf elke plek om terug te gaan. Uit: alleen vanaf de rand van het scherm.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Sleep een geopend bericht vanaf elke plek om terug te gaan. Uit: alleen vanaf de rand van het venster.</string>
     <string name="settings_swipe_back_tilt">Kantelen met je vinger</string>
+    <string name="settings_swipe_back_tilt_desktop">Kantelen met de aanwijzer</string>
     <string name="settings_swipe_back_tilt_description">Een bericht dat je terugsleept, draait om je vinger en zwaait mee met je snelheid.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">Een bericht dat je terugsleept, draait om de aanwijzer en zwaait mee met je snelheid.</string>
     <string name="settings_accounts_empty">Voeg een account toe om Voor jou te laden.</string>
     <string name="settings_accounts_description">Zet reserve-accounts uit die je alleen voor hogere limieten aanhoudt. Voor jou voegt timelines van ingeschakelde accounts samen; Volgend gebruikt nog je lokale abonnementen, maar slaat uitgeschakelde accounts over bij ophalen. Reacties en profielen kunnen desnoods nog elk account gebruiken.</string>
     <string name="settings_account_delete_confirm">@%1$s afmelden? XTA vergeet de sessie op dit apparaat en dit kan niet ongedaan worden gemaakt.</string>
@@ -319,6 +323,7 @@
     <string name="settings_intro_again">Introductie opnieuw tonen</string>
     <string name="settings_intro_again_description">Bekijk de kaarten van de eerste start opnieuw.</string>
     <string name="settings_open_logs">Logmap openen</string>
+    <string name="settings_copy_diagnostics">Diagnose-informatie kopiëren</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Rapport kopiëren</string>
     <string name="settings_diagnostics_copied">Diagnose gekopieerd naar het klembord</string>

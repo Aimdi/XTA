@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X a renvoyé une erreur serveur. Vous pouvez continuer à lire les publications en cache et réessayer plus tard.</string>
     <string name="problem_request_unavailable_title">Cette requête est indisponible</string>
     <string name="problem_request_unavailable_text">X a rejeté cette requête. Elle est peut-être temporairement indisponible, ou cette partie du service a changé.</string>
-    <string name="problem_oops">Oups ! Quelque chose s'est mal passé 🥲</string>
+    <string name="problem_oops">Impossible de charger ce contenu</string>
     <string name="problem_http_text">X a renvoyé HTTP %1$d.</string>
     <string name="problem_retry_in">Réessayer dans %1$s</string>
     <string name="close_app_confirm">Êtes-vous sûr de vouloir fermer XTA ?</string>
@@ -45,4 +45,5 @@
     <string name="find_in_page">Rechercher dans la page</string>
     <string name="find_previous_match">Résultat précédent</string>
     <string name="find_next_match">Résultat suivant</string>
+    <string name="loading">Chargement…</string>
 </resources>

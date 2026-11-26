@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -46,6 +47,8 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -62,7 +65,9 @@ import com.aimdi.xtanative.ui.generated.resources.following
 import com.aimdi.xtanative.ui.generated.resources.groups_filters
 import com.aimdi.xtanative.ui.generated.resources.home_media
 import com.aimdi.xtanative.ui.generated.resources.home_posts
+import com.aimdi.xtanative.ui.generated.resources.home_networks
 import com.aimdi.xtanative.ui.generated.resources.home_refresh
+import com.aimdi.xtanative.ui.generated.resources.home_unread
 import com.aimdi.xtanative.ui.group.GroupFeedUi
 import com.aimdi.xtanative.ui.group.sortLabel
 import com.aimdi.xtanative.ui.search.LoadedSearchButton
@@ -97,20 +102,25 @@ internal class FollowingLook(val feed: GroupFeedUi, val mediaOnly: Boolean, val 
 @Composable
 internal fun FollowingTopBar(look: FollowingLook, calls: FollowingCalls, behavior: TopAppBarScrollBehavior) {
     Collapsing(behavior) {
+        val framed = LocalWideFrame.current != null
         BoxWithConstraints(Modifier.fillMaxWidth()) {
-            val fit = FollowingBar.fit(maxWidth.value, labelsWidth(), FollowingBar.actions(desktop = calls.onRefresh != null))
+            val labels = labelsWidth()
+            val actions = FollowingBar.actions(desktop = calls.onRefresh != null)
+            // In the desktop's frame the picker also names the timeline, as the columns beside it are headed, where that fits in one row.
+            val titled = framed && FollowingBar.fit(maxWidth.value, labels + titleWidth(), actions) != BarFit.TWO_ROWS
+            val fit = FollowingBar.fit(maxWidth.value, if (titled) labels + titleWidth() else labels, actions)
             val padding = if (fit == BarFit.ONE_ROW) FollowingBar.TAB_PADDING.dp else FollowingBar.COMPACT_PADDING.dp
             if (fit == BarFit.TWO_ROWS) {
                 Column {
                     Row(Modifier.fillMaxWidth().height(FollowingBar.HEIGHT.dp), horizontalArrangement = Arrangement.End) { Controls(look, calls) }
                     Row(Modifier.height(FollowingBar.HEIGHT.dp).padding(start = FollowingBar.INSET.dp), verticalAlignment = Alignment.CenterVertically) {
-                        PickerButton(look.unread, calls.onPicker)
+                        PickerButton(look.unread, titled, calls.onPicker)
                         ModeTabs(look.mediaOnly, padding, calls.onMedia)
                     }
                 }
             } else {
                 Row(Modifier.fillMaxWidth().height(FollowingBar.HEIGHT.dp).padding(start = FollowingBar.INSET.dp), verticalAlignment = Alignment.CenterVertically) {
-                    PickerButton(look.unread, calls.onPicker)
+                    PickerButton(look.unread, titled, calls.onPicker)
                     Box(Modifier.weight(1f)) { ModeTabs(look.mediaOnly, padding, calls.onMedia) }
                     Controls(look, calls)
                 }
@@ -118,6 +128,19 @@ internal fun FollowingTopBar(look: FollowingLook, calls: FollowingCalls, behavio
         }
     }
 }
+
+/** The titled picker's name and chevron beyond its 48 dp mark, in dp ([TitledPicker]). */
+@Composable
+private fun titleWidth(): Float {
+    val measurer = rememberTextMeasurer()
+    val style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+    val name = stringResource(Res.string.following)
+    val density = LocalDensity.current
+    return remember(name, style, density) { with(density) { measurer.measure(name, style).size.width.toDp().value } } + TITLE_EXTRA
+}
+
+/** The chevron and the room around the titled picker's name, in dp. */
+private const val TITLE_EXTRA = 4f + 18f + 12f
 
 /** Posts and Media together, measured in their bold, widest state, in dp. */
 @Composable
@@ -175,9 +198,11 @@ private fun ModeTab(label: String, selected: Boolean, padding: Dp, onClick: () -
  * button's own), with a dot while another timeline has unread posts.
  */
 @Composable
-private fun PickerButton(unread: Boolean, onPicker: () -> Unit) {
+private fun PickerButton(unread: Boolean, titled: Boolean, onPicker: () -> Unit) {
     val source = stringResource(Res.string.following)
-    IconTip(source) { IconButton(onClick = onPicker, modifier = Modifier.semantics { contentDescription = source }) {
+    if (titled) return TitledPicker(source, unread, onPicker)
+    val opener = switcherButton("following", onPicker)
+    IconTip(source) { IconButton(onClick = opener.onClick, modifier = opener.modifier.semantics { contentDescription = source }) {
         UnreadDot(unread) { Icon(HomeIcons.DynamicFeed, contentDescription = null) }
     } }
 }
@@ -268,5 +293,35 @@ private fun Collapsing(behavior: TopAppBarScrollBehavior, content: @Composable (
             },
     ) {
         Box(Modifier.onSizeChanged { state.heightOffsetLimit = -it.height.toFloat() }) { content() }
+    }
+}
+
+/**
+ * The desktop's picker: Following's mark, its name and a chevron as one
+ * button, a drop-down's ([SwitcherPopover]), so the first column is headed
+ * as the timelines beside it are.
+ */
+@Composable
+private fun TitledPicker(name: String, unread: Boolean, onPicker: () -> Unit) {
+    val said = listOfNotNull(name, stringResource(Res.string.home_unread).takeIf { unread }, stringResource(Res.string.home_networks)).joinToString(", ")
+    val opener = switcherButton("following", onPicker)
+    Row(
+        Modifier
+            .height(FollowingBar.TOUCH_TARGET.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .then(opener.modifier)
+            .clickable(onClick = opener.onClick)
+            .clearAndSetSemantics {
+                role = Role.DropdownList
+                contentDescription = said
+            }
+            .padding(end = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(Modifier.size(FollowingBar.TOUCH_TARGET.dp), contentAlignment = Alignment.Center) {
+            UnreadDot(unread) { Icon(HomeIcons.DynamicFeed, contentDescription = null) }
+        }
+        Text(name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 1)
+        Icon(GroupIcons.ExpandMore, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 4.dp).size(18.dp))
     }
 }

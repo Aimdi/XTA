@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -35,6 +34,14 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
+import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.loading
+import com.aimdi.xtanative.ui.theme.LocalXLook
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Placeholder posts while a feed's first page loads (XTA's TweetFeedSkeleton):
@@ -45,7 +52,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun FeedSkeleton(modifier: Modifier = Modifier, count: Int = 6) {
     val pulse = rememberSkeletonPulse()
-    Column(modifier.fillMaxWidth().padding(top = 4.dp)) {
+    Column(modifier.asLoading(stringResource(Res.string.loading)).fillMaxWidth().padding(top = 4.dp)) {
         repeat(count) { PostSkeletonBones(pulse) }
     }
 }
@@ -57,7 +64,34 @@ fun FeedSkeleton(modifier: Modifier = Modifier, count: Int = 6) {
  */
 @Composable
 fun PostSkeleton(modifier: Modifier = Modifier) {
-    Box(modifier) { PostSkeletonBones(rememberSkeletonPulse()) }
+    Box(modifier.asLoading(stringResource(Res.string.loading))) { PostSkeletonBones(rememberSkeletonPulse()) }
+}
+
+/**
+ * Placeholder rows while a list of accounts, communities or plugins loads:
+ * [count] rows of a picture ([picture]'s shape and [pictureSize]: round for
+ * people, a rounded square for communities and plugins) and two lines, sharing one pulse, so
+ * the list fills in place. Not scrollable itself.
+ */
+@Composable
+fun RowSkeleton(modifier: Modifier = Modifier, count: Int = 6, picture: Shape = CircleShape, pictureSize: Dp = 40.dp) {
+    val pulse = rememberSkeletonPulse()
+    val base = Color(LocalXLook.current.bone)
+    val highlight = Color(LocalXLook.current.boneHighlight)
+    val color = lerp(base, highlight, pulse.value)
+    Column(modifier.asLoading(stringResource(Res.string.loading)).fillMaxWidth().padding(top = 4.dp)) {
+        repeat(count) {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp)) {
+                Bone(Modifier.size(pictureSize), color, picture)
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f).padding(top = 4.dp)) {
+                    Bone(Modifier.width(160.dp).height(12.dp), color)
+                    Spacer(Modifier.height(8.dp))
+                    Bone(Modifier.width(110.dp).height(12.dp), color)
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -68,10 +102,10 @@ fun PostSkeleton(modifier: Modifier = Modifier) {
 @Composable
 fun GridSkeleton(modifier: Modifier = Modifier, count: Int = 9, columns: Int = 3) {
     val pulse = rememberSkeletonPulse()
-    val base = MaterialTheme.colorScheme.surfaceContainerHighest
-    val highlight = MaterialTheme.colorScheme.surfaceContainerHigh
+    val base = Color(LocalXLook.current.bone)
+    val highlight = Color(LocalXLook.current.boneHighlight)
     val across = columns.coerceAtLeast(1)
-    Column(modifier.fillMaxWidth().padding(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(modifier.asLoading(stringResource(Res.string.loading)).fillMaxWidth().padding(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         repeat(SkeletonGrid.rows(count, across)) { row ->
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 repeat(across) { column ->
@@ -111,8 +145,8 @@ private fun rememberSkeletonPulse(): State<Float> {
 
 @Composable
 private fun PostSkeletonBones(pulse: State<Float>) {
-    val base = MaterialTheme.colorScheme.surfaceContainerHighest
-    val highlight = MaterialTheme.colorScheme.surfaceContainerHigh
+    val base = Color(LocalXLook.current.bone)
+    val highlight = Color(LocalXLook.current.boneHighlight)
     val value by pulse
     val color = lerp(base, highlight, value)
     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
@@ -128,6 +162,16 @@ private fun PostSkeletonBones(pulse: State<Float>) {
             Bone(Modifier.fillMaxWidth().height(120.dp), color, RoundedCornerShape(16.dp))
         }
     }
+}
+
+/**
+ * A skeleton as a screen reader finds it: one busy progress indicator named
+ * [label] ("Loading…"), rather than nothing while the bones stand in for
+ * what loads.
+ */
+private fun Modifier.asLoading(label: String): Modifier = semantics(mergeDescendants = true) {
+    contentDescription = label
+    progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
 }
 
 /** One grey block of a skeleton. */

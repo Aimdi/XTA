@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.downloads
 import com.aimdi.xtanative.store.downloads.DownloadCancellation
 import com.aimdi.xtanative.store.downloads.DownloadEntry
 import com.aimdi.xtanative.store.downloads.SharedDownloadFolder
+import com.aimdi.xtanative.ui.common.ChildProcess
 import com.aimdi.xtanative.ui.common.FileChoosers
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.downloads_choose_location
@@ -57,7 +58,7 @@ class DesktopFiles(
             val desktop = Desktop.getDesktop()
             desktop.isSupported(Desktop.Action.OPEN).also { supported -> if (supported) desktop.open(file) }
         }.getOrDefault(false)
-        opened || runCatching { ProcessBuilder("xdg-open", file.path).start(); true }.getOrDefault(false)
+        opened || runCatching { ChildProcess.start("xdg-open", file.path); true }.getOrDefault(false)
     }
 
     /** The desktop's save dialog, opening in the downloads folder with [name] filled in; null when the reader backs out. */

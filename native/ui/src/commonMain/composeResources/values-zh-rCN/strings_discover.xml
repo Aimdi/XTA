@@ -70,7 +70,7 @@
     <string name="discover_community_created">创建于 %1$s</string>
     <string name="discover_community_members">成员</string>
     <plurals name="discover_member_count">
-        <item quantity="other">%1$d 位成员</item>
+        <item quantity="other">%1$s 位成员</item>
     </plurals>
     <string name="discover_list_import_title">将 X 列表导入为分组</string>
     <string name="discover_list_import_intro">要将 X 列表导入为订阅分组，请在下方输入列表链接或其 ID</string>

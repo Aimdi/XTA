@@ -64,6 +64,7 @@
     <string name="reader_voices_use">استخدام صوت محمّل</string>
     <string name="reader_voices_use_description">يقرأ بصوت محمّل عندما يتحدث أحدها لغة المقال، وإلا فيستخدم المحرك أدناه.</string>
     <string name="reader_voices_note">لا تُحمَّل الأصوات من GitHub (k2-fsa/sherpa-onnx) إلا عند النقر على «تحميل». وتعمل بالكامل على هذا الجهاز.</string>
+    <string name="reader_voices_note_desktop">لا تُحمَّل الأصوات من GitHub (k2-fsa/sherpa-onnx) إلا عند النقر على «تحميل». وتعمل بالكامل على هذا الجهاز.</string>
     <string name="reader_voices_synthesis_missing">يمكن لهذا الإصدار تنزيل الأصوات لكنه لا يستطيع القراءة بها بعد. وإلى أن يتمكن من ذلك، يقرأ محرك القراءة أدناه بصوت عالٍ.</string>
     <string name="reader_voice_licence">الترخيص: %1$s</string>
     <string name="reader_voice_installing">جارٍ التحقق وفك الضغط…</string>

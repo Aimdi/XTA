@@ -26,6 +26,9 @@ class TranslationMemory(private val max: Int = 500, private val clock: () -> Lon
         synchronized(kept) { kept[key] = value to clock() + ttlMillis }
     }
 
+    /** Forgets every translation kept. */
+    fun clear() = synchronized(kept) { kept.clear() }
+
     companion object {
         /** The one the screens share. */
         val shared = TranslationMemory()

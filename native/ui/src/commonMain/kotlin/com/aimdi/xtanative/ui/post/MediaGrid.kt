@@ -47,6 +47,7 @@ import com.aimdi.xtanative.ui.common.AltBadge
 import com.aimdi.xtanative.ui.common.AltTextDialog
 import com.aimdi.xtanative.ui.common.ShowMediaTile
 import com.aimdi.xtanative.ui.common.mediaShown
+import com.aimdi.xtanative.ui.common.rememberPictureIndication
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_media
 import com.aimdi.xtanative.ui.media.GifCorner
@@ -85,13 +86,33 @@ fun MediaGrid(
     postId: String = post?.id.orEmpty(),
     start: Int = 0,
     bleed: Dp = 0.dp,
+) = MediaGrid(media, onOpen, modifier, post, username, postId, start, bleed, tallCapped = false)
+
+/**
+ * [MediaGrid], with a picture alone no taller than 4:5 where [tallCapped]
+ * ([MediaStrip.feedSingleAspect]): a post in a feed, not the one opened.
+ */
+@Composable
+internal fun MediaGrid(
+    media: List<XMedia>,
+    onOpen: (Int) -> Unit,
+    modifier: Modifier,
+    post: XPost?,
+    username: String,
+    postId: String,
+    start: Int,
+    bleed: Dp,
+    tallCapped: Boolean,
 ) {
     if (media.isEmpty()) return
     val owner = MediaOwner(username, postId, post)
     if (media.size == 1) {
-        val frame = modifier.fillMaxWidth().aspectRatio(MediaStrip.singleAspect(MediaStrip.aspectOf(media[0]))).clip(MediaShape)
+        val own = MediaStrip.singleAspect(MediaStrip.aspectOf(media[0]))
+        val shown = if (tallCapped) MediaStrip.feedSingleAspect(own) else own
+        val frame = modifier.fillMaxWidth().aspectRatio(shown).clip(MediaShape)
+        val scale = if (shown == own) ContentScale.Fit else ContentScale.Crop
         Box(frame.border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, MediaShape).background(Color.Black)) {
-            ShownMedia(media[0], 0, 1, ContentScale.Fit, Color.Black, owner) { onOpen(0) }
+            ShownMedia(media[0], 0, 1, scale, Color.Black, owner) { onOpen(0) }
         }
     } else {
         MediaRow(media, owner, start, bleed, modifier, onOpen)
@@ -206,14 +227,16 @@ private fun ShownMedia(media: XMedia, index: Int, count: Int, scale: ContentScal
     // Shown at once unless media waits for a tap: only then is there anything to look up.
     val shown = !loadsManually() || mediaShown(url, revealed) { revealed = true }
     val saver = LocalMediaSaver.current
-    Box(Modifier.fillMaxSize().semantics { contentDescription = if (count > 1) "$word ${index + 1}/$count" else word }) {
+    val label = if (count > 1) "$word ${index + 1}/$count" else word
+    // One stop for a screen reader: the tile, read as its place and its description; ALT stays a button of its own.
+    Box(Modifier.fillMaxSize()) {
         if (!shown) {
-            ShowMediaTile(word, MediaIcons.ImageOutlined, onShow = { revealed = true }, modifier = Modifier.fillMaxSize())
+            ShowMediaTile(label, MediaIcons.ImageOutlined, onShow = { revealed = true }, modifier = Modifier.fillMaxSize())
             return@Box
         }
         // A long press on a photo shows what it is of, or saves it when it says nothing.
         val onLongPress: (() -> Unit)? = if (media.kind != XMedia.Kind.PHOTO) null else ({ describeOrSave(media, owner, saver) { describing = true } })
-        MediaTile(media, url, scale, owner.post, Modifier.fillMaxSize().background(backdrop), onLongPress, onOpen)
+        MediaTile(media, url, scale, owner.post, Modifier.fillMaxSize().background(backdrop).semantics { contentDescription = listOfNotNull(label, media.alt).joinToString(". ") }, onLongPress, onOpen)
         // A video's and a GIF's own label holds the bottom-start corner, and its mute switch the other.
         media.alt?.let { AltBadge(it, Modifier.align(if (media.kind == XMedia.Kind.PHOTO) Alignment.BottomStart else Alignment.TopStart)) }
     }
@@ -232,10 +255,11 @@ private fun describeOrSave(media: XMedia, owner: MediaOwner, saver: MediaSaver?,
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun MediaTile(media: XMedia, url: String, scale: ContentScale, post: XPost?, modifier: Modifier, onLongClick: (() -> Unit)?, onClick: () -> Unit) {
-    Box(modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)) {
+    // No grey wash over the picture under the pointer; a press and the keyboard's focus still show.
+    Box(modifier.combinedClickable(interactionSource = null, indication = rememberPictureIndication(), onClick = onClick, onLongClick = onLongClick)) {
         AsyncImage(
             model = url,
-            contentDescription = media.alt,
+            contentDescription = null,
             contentScale = scale,
             modifier = Modifier.fillMaxSize(),
         )

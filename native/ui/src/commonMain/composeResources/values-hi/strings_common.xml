@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X ने सर्वर त्रुटि लौटाई। आप कैश की गई पोस्ट पढ़ते रह सकते हैं और बाद में फिर कोशिश कर सकते हैं।</string>
     <string name="problem_request_unavailable_title">यह अनुरोध उपलब्ध नहीं है</string>
     <string name="problem_request_unavailable_text">X ने यह अनुरोध अस्वीकार कर दिया। यह अस्थायी रूप से उपलब्ध नहीं हो सकता या सेवा का यह हिस्सा बदल गया हो सकता है।</string>
-    <string name="problem_oops">ओह! कुछ गलत हो गया 🥲</string>
+    <string name="problem_oops">इसे लोड नहीं किया जा सका</string>
     <string name="problem_http_text">X ने HTTP %1$d लौटाया।</string>
     <string name="problem_retry_in">%1$s बाद फिर प्रयास करें</string>
     <string name="close_app_confirm">क्या आप XTA बंद करना चाहते हैं?</string>
@@ -45,4 +45,5 @@
     <string name="find_in_page">पेज में खोजें</string>
     <string name="find_previous_match">पिछला मिलान</string>
     <string name="find_next_match">अगला मिलान</string>
+    <string name="loading">लोड हो रहा है…</string>
 </resources>

@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">翻译</string>
     <string name="translation_privacy">点按“翻译”之前不会发送任何内容。之后文本只会发送到你在这里选择的服务。</string>
+    <string name="translation_privacy_desktop">点击“翻译”之前不会发送任何内容。之后文本只会发送到你在这里选择的服务。</string>
     <string name="translation_provider">翻译服务</string>
     <string name="translation_provider_off">关闭</string>
     <string name="translation_provider_ai">AI 服务</string>

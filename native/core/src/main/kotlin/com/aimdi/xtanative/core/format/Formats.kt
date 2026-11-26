@@ -24,6 +24,24 @@ object Formats {
         else -> tenths(n / 100_000_000, decimal) + "B"
     }
 
+    /**
+     * A count as the reader's language shortens it ("1,2 Mio.", "1.2万",
+     * "12K"), cut down rather than rounded as X does: one decimal while the
+     * shortened number has a single digit before it, none from two on (12K,
+     * 1234万 not 1234.5万). [compact] is the platform's compact number format
+     * for the language, writing a count with at most the given decimals and
+     * rounding down; [decimal] is the language's separator. Where the platform
+     * has none ([compact] null or failing), X's own [count].
+     */
+    fun compactCount(n: Long, decimal: Char, compact: ((Long, Int) -> String)?): String {
+        val count = n.coerceAtLeast(0)
+        val format = compact ?: return count(count, decimal)
+        val tenths = runCatching { format(count, 1) }.getOrNull() ?: return count(count, decimal)
+        val before = tenths.substringBefore(decimal, missingDelimiterValue = "")
+        val digits = before.takeLastWhile { it.isDigit() }.length
+        return if (digits >= 2) runCatching { format(count, 0) }.getOrDefault(tenths) else tenths
+    }
+
     private val handle = Regex("^@?([A-Za-z0-9_]{1,15})$")
 
     /** The X handle [query] names as typed into search, "@nasa" or "nasa"; null when it cannot be one. */

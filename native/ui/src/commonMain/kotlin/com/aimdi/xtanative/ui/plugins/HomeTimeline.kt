@@ -25,6 +25,7 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.settings_in_home_timeline
 import com.aimdi.xtanative.ui.generated.resources.settings_in_home_timeline_description
 import com.aimdi.xtanative.ui.home.HomeIcons
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -90,6 +91,6 @@ private fun TimelineSwitch(settings: PluginSettings, title: String, description:
             Text(title, style = MaterialTheme.typography.bodyLarge)
             Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Switch(checked = on, onCheckedChange = null)
+        Switch(checked = on, onCheckedChange = null, colors = xSwitchColors())
     }
 }

@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Citacions</string>
     <string name="posts_replies_missing">No s'han pogut carregar les respostes</string>
+    <string name="posts_no_replies_yet">Encara no hi ha respostes</string>
     <string name="posts_replying_to">Responent a</string>
     <string name="posts_reposted">%1$s retuitejat %2$s</string>
     <string name="posts_reposted_by">Compartit per</string>
@@ -96,6 +97,7 @@
     <string name="posts_verified_organization">Organització verificada</string>
     <string name="posts_view_quoted">Veure el tuit citat</string>
     <string name="posts_zen_replies">Mantén premut el botó de comentaris per mostrar les respostes</string>
+    <string name="posts_zen_replies_desktop">Fes clic amb el botó dret al botó de comentaris per mostrar les respostes</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s visualització</item>
         <item quantity="other">%1$s visualitzacions</item>

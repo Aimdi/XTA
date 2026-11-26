@@ -29,7 +29,7 @@
     <string name="home_downloads">Unduhan</string>
     <string name="home_antennas">Antena</string>
     <string name="home_deck">Kolom</string>
-    <string name="home_deck_empty">Sematkan grup untuk melihatnya berdampingan di layar lebar</string>
+    <string name="home_deck_empty">Tambahkan kolom untuk melihat feed dan grup berdampingan di layar lebar</string>
     <string name="home_deck_add">Tambah kolom</string>
     <string name="home_deck_move_left">Geser ke kiri</string>
     <string name="home_deck_move_right">Geser ke kanan</string>
@@ -50,6 +50,7 @@
     <string name="home_filter_accounts_explained">Matikan akun cadangan yang hanya Anda simpan untuk batas laju. Untuk Anda menggabungkan linimasa beranda dari akun yang tetap aktif; Mengikuti tetap memakai langganan lokal tetapi melewati akun yang dimatikan saat mengambil. Komentar dan profil masih bisa memakai akun mana pun jika perlu.</string>
     <string name="home_filter_groups_explained">Matikan grup untuk menyembunyikan anggotanya dari Mengikuti. Tab grup tetap ada. Kiriman mereka juga dihapus dari Untuk Anda.</string>
     <string name="home_filter_only_hint">Tekan lama salah satu untuk hanya menyalakan yang itu.</string>
+    <string name="home_filter_only_hint_desktop">Klik kanan salah satu untuk hanya menyalakan yang itu.</string>
     <string name="home_filter_keep_one">Setidaknya satu akun harus tetap aktif</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Semua</string>

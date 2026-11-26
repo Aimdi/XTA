@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X вярнуў памылку сервера. Можна чытаць допісы з кэша і паспрабаваць пазней.</string>
     <string name="problem_request_unavailable_title">Гэты запыт недаступны</string>
     <string name="problem_request_unavailable_text">X адхіліў гэты запыт. Магчыма, ён часова недаступны, або гэтая частка сэрвісу змянілася.</string>
-    <string name="problem_oops">Ой! Нешта пайшло не так 🥲</string>
+    <string name="problem_oops">Не ўдалося загрузіць</string>
     <string name="problem_http_text">X вярнуў HTTP %1$d.</string>
     <string name="problem_retry_in">Паўтарыць праз %1$s</string>
     <string name="close_app_confirm">Вы сапраўды хочаце закрыць XTA?</string>
@@ -45,4 +45,5 @@
     <string name="find_in_page">Пошук на старонцы</string>
     <string name="find_previous_match">Папярэдні вынік</string>
     <string name="find_next_match">Наступны вынік</string>
+    <string name="loading">Загрузка…</string>
 </resources>

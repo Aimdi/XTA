@@ -38,7 +38,6 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -64,6 +63,7 @@ import com.aimdi.xtanative.core.feed.KeywordAction
 import com.aimdi.xtanative.core.feed.LanguageAction
 import com.aimdi.xtanative.core.feed.MutedKeyword
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.TipText
@@ -102,6 +102,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_threshold_off
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.subscriptions.PostCapDialog
 import com.aimdi.xtanative.ui.subscriptions.SubscriptionList
+import com.aimdi.xtanative.ui.theme.edgeColor
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -117,7 +118,7 @@ fun CustomSettingsScreen(state: GroupFeedUi, actions: GroupSettingsActions, onBa
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
+            ColumnTopAppBar(
                 title = { Text(stringResource(Res.string.groups_custom)) },
                 navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -220,7 +221,7 @@ private fun ChoicePill(label: String, selected: Boolean, onClick: () -> Unit) {
         Modifier
             .heightIn(min = 48.dp)
             .clip(shape)
-            .border(1.dp, if (selected) accent else MaterialTheme.colorScheme.outlineVariant, shape)
+            .border(1.dp, if (selected) accent else edgeColor(), shape)
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,

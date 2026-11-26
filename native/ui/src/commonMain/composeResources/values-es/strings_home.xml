@@ -29,7 +29,7 @@
     <string name="home_downloads">Descargas</string>
     <string name="home_antennas">Antenas</string>
     <string name="home_deck">Deck</string>
-    <string name="home_deck_empty">Fija grupos para verlos uno al lado del otro en pantallas grandes</string>
+    <string name="home_deck_empty">Añade columnas para ver tus feeds y grupos uno al lado del otro en pantallas grandes</string>
     <string name="home_deck_add">Añadir columna</string>
     <string name="home_deck_move_left">Mover a la izquierda</string>
     <string name="home_deck_move_right">Mover a la derecha</string>
@@ -51,6 +51,7 @@
     <string name="home_filter_accounts_explained">Desactiva las cuentas de reserva que solo guardas por los límites de tasa. Para ti fusiona las cronologías de las cuentas activas; Siguiendo sigue usando tus suscripciones locales, pero omite las cuentas desactivadas al cargar. Comentarios y perfiles aún pueden usar cualquier cuenta si hace falta.</string>
     <string name="home_filter_groups_explained">Desactiva un grupo para ocultar a sus miembros en Siguiendo. La pestaña del grupo se queda. Sus publicaciones también se quitan de Para ti.</string>
     <string name="home_filter_only_hint">Mantén pulsado uno para dejar solo ese activado.</string>
+    <string name="home_filter_only_hint_desktop">Haz clic derecho en uno para dejar solo ese activado.</string>
     <string name="home_filter_keep_one">Tiene que quedar al menos una cuenta activada</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Todo</string>

@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Ĉi tiu dosierujo estas malplena</string>
     <string name="saved_empty_notes">Ankoraŭ neniuj notoj. Ili ne forlasas la aparaton krom se vi savkopias aŭ sinkronigas.</string>
     <string name="saved_note_button">Noto</string>
-    <string name="saved_add_note">Aldoni noton al ĉi tiu konservita afiŝo</string>
+    <string name="saved_add_note">Aldoni noton al ĉi tiu afiŝo</string>
     <string name="saved_edit_note">Redakti noton</string>
     <string name="saved_new_note">Nova noto</string>
     <string name="saved_too_large">Tiu ĉi pepo konservita ne eblas vidiĝi, pro ĝi estas tro granda por ŝarĝi. Bonvolu raporti al la programistoj.</string>
@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">Ne eblas elŝuti. Tiu ĉi plurmedio eble nur estas disponebla kiel fluo, kiun XTA ne ankoraŭ eblas elŝuti.</string>
     <string name="saved_open_in_browser">Malfermi en retumilo</string>
     <string name="saved_ok">Bone</string>
-    <string name="saved_something_wrong">Ups! Io misokazis 🥲</string>
+    <string name="saved_something_wrong">Io misokazis</string>
     <string name="archive_tags">Etikedoj</string>
     <string name="archive_extract">Eltiri tekston el ekrankopio</string>
     <string name="archive_extract_notice">La elektita PNG aŭ JPEG estos sendita al %1$s per via agordita AI-modelo. La eltirita teksto povas enhavi erarojn.</string>
@@ -168,6 +168,7 @@
     <string name="saved_media_status">Ne eblas konservi la plurmedion. Twitter revenigis staton de %1$d</string>
     <string name="downloads_cancelled">Nuligita</string>
     <string name="downloads_interrupted">Interrompita · Reprovu por daŭrigi</string>
+    <string name="downloads_interrupted_desktop">Interrompita · Alklaku Reprovi por daŭrigi</string>
     <string name="downloads_batch">Konservitaj dosieroj: %1$d / %2$d</string>
     <string name="downloads_saved_to">Konservita en %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Agordu elŝut-dosierujon en Agordoj &gt; Aŭdvidaĵoj por aŭtomata elŝuto.</string>

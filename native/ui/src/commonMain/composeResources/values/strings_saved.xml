@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">This folder is empty</string>
     <string name="saved_empty_notes">No notes yet. They never leave this device unless you back up or sync.</string>
     <string name="saved_note_button">Note</string>
-    <string name="saved_add_note">Add a note to this saved post</string>
+    <string name="saved_add_note">Add a note to this post</string>
     <string name="saved_edit_note">Edit note</string>
     <string name="saved_new_note">New note</string>
     <string name="saved_too_large">This saved post could not be displayed, as it's too big to load. Please report it to the developers.</string>
@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">Unable to download. This media may only be available as a stream, which XTA cannot yet download.</string>
     <string name="saved_open_in_browser">Open in browser</string>
     <string name="saved_ok">OK</string>
-    <string name="saved_something_wrong">Oops! Something went wrong 🥲</string>
+    <string name="saved_something_wrong">Something went wrong</string>
     <string name="archive_tags">Tags</string>
     <string name="archive_extract">Extract screenshot text</string>
     <string name="archive_extract_notice">The selected PNG or JPEG will be sent to %1$s using your configured AI model. Extracted text may contain mistakes.</string>
@@ -168,6 +168,7 @@
     <string name="saved_media_status">Unable to save the media. X returned a status of %1$d</string>
     <string name="downloads_cancelled">Cancelled</string>
     <string name="downloads_interrupted">Interrupted · tap retry to continue</string>
+    <string name="downloads_interrupted_desktop">Interrupted · click retry to continue</string>
     <string name="downloads_batch">Files saved: %1$d / %2$d</string>
     <string name="downloads_saved_to">Saved to %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Set a download folder in Settings &gt; Media to auto-download.</string>

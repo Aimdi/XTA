@@ -1,0 +1,77 @@
+#!/bin/sh
+# Starts XTA Native (bin/xta-native beside this script) with a class-data
+# sharing archive of this user's: the classes a start loads, read ready-made
+# from one mapped file instead of each being read, checked and laid out from
+# the jars again. On a desktop under load that halved the time to Home's first
+# posts and the processor time a start takes, and kept about 40 MB less in
+# memory (measured against tool/mock-x, Java 17).
+#
+# Java 17 only takes such an archive at the folder it was made for, so it
+# cannot ship in the tarball (unpacked anywhere): the first start without one
+# makes it in the background, at the lowest priority, from the list of classes
+# the build recorded (lib/app/xta-native.classlist, tool/cds_classlist.sh),
+# into $XDG_CACHE_HOME/xta-native/cds, and the starts after it use it. A
+# missing list, a failed dump or an archive Java finds out of date only means
+# a start as without this script. The archive is named after this folder,
+# the app's jars and its runtime, so another version or place makes its own.
+# A dump that failed is remembered ($key.failed), so a start does not try
+# again with the same app; a folder whose path has a blank gets no archive
+# (JAVA_TOOL_OPTIONS splits at blanks).
+#
+# The reader's own JAVA_TOOL_OPTIONS is kept in XTA_NATIVE_ORIG_JTO (and
+# whether there was one in XTA_NATIVE_ORIG_JTO_SET): the programs the app
+# starts (xdg-open, a browser, a file manager) get it back instead of this
+# archive's options (ChildProcess in the app).
+set -u
+
+here=$(cd "$(dirname "$(readlink -f "$0")")" && pwd)
+app=$here/xta-native
+config=$here/../lib/app/xta-native.cfg
+list=$here/../lib/app/xta-native.classlist
+release=$here/../lib/runtime/release
+cache=${XDG_CACHE_HOME:-${HOME:-}/.cache}
+case "$cache" in /*) ;; *) cache=${HOME:-}/.cache ;; esac
+folder=$cache/xta-native/cds
+
+blank='[[:space:]]'
+case "$folder$list" in *$blank*) list= ;; esac
+
+if [ -n "$list" ] && [ -f "$list" ] && [ -f "$config" ]; then
+  key=$( {
+    printf '%s\n' "$here"
+    cat "$config"
+    cat "$release" 2>/dev/null
+    stat -c '%n %s %Y' "$here"/../lib/app/*.jar 2>/dev/null
+  } | cksum | cut -d' ' -f1)
+  archive=$folder/$key.jsa
+  if [ -s "$archive" ]; then
+    if [ "${JAVA_TOOL_OPTIONS+set}" = set ]; then
+      XTA_NATIVE_ORIG_JTO=$JAVA_TOOL_OPTIONS XTA_NATIVE_ORIG_JTO_SET=1
+    else
+      XTA_NATIVE_ORIG_JTO= XTA_NATIVE_ORIG_JTO_SET=0
+    fi
+    export XTA_NATIVE_ORIG_JTO XTA_NATIVE_ORIG_JTO_SET
+    JAVA_TOOL_OPTIONS="-XX:SharedArchiveFile=$archive -Xshare:auto${JAVA_TOOL_OPTIONS:+ $JAVA_TOOL_OPTIONS}"
+    export JAVA_TOOL_OPTIONS
+  elif [ -e "$folder/$key.failed" ]; then
+    :
+  elif mkdir -p "$folder" 2>/dev/null && mkdir "$folder/making" 2>/dev/null; then
+    # One dump at a time; -Xshare:dump ends the JVM before the app's main, and
+    # --version would only print the version if it ever did not.
+    (
+      trap 'rm -f "$archive.part"; rmdir "$folder/making"' EXIT
+      find "$folder" -maxdepth 1 \( -name '*.jsa' -o -name '*.failed' \) \
+        ! -name "$key.jsa" -exec rm -f {} + 2>/dev/null
+      if JAVA_TOOL_OPTIONS="-Xshare:dump -XX:SharedClassListFile=$list -XX:SharedArchiveFile=$archive.part -Xlog:disable" \
+        nice -n 19 "$app" --version >/dev/null 2>&1 && [ -s "$archive.part" ]; then
+        mv -f "$archive.part" "$archive"
+      else
+        : >"$folder/$key.failed"
+      fi
+    ) </dev/null >/dev/null 2>&1 &
+  elif [ -d "$folder/making" ] && [ -n "$(find "$folder/making" -maxdepth 0 -mmin +10 2>/dev/null)" ]; then
+    # A dump that was cut off (the machine went down) leaves its mark: the next start tries again.
+    rmdir "$folder/making" 2>/dev/null
+  fi
+fi
+exec "$app" "$@"

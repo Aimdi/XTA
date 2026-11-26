@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">Прокрутить на экран</string>
     <string name="keys_scroll_ends">В начало или в конец</string>
     <string name="keys_move">Переходить между кнопками и полями</string>
+    <string name="keys_regions">Переходить между навигацией и страницей</string>
     <string name="keys_text_size">Крупнее, мельче или обычный текст</string>
     <string name="keys_interface_size">Крупнее, мельче или обычный интерфейс</string>
     <string name="keys_full_screen">Полноэкранный режим</string>

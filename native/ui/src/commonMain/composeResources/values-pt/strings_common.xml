@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">O X devolveu um erro do servidor. Pode continuar a ler as publicações em cache e tentar novamente mais tarde.</string>
     <string name="problem_request_unavailable_title">Este pedido não está disponível</string>
     <string name="problem_request_unavailable_text">O X rejeitou este pedido. Pode estar temporariamente indisponível ou esta parte do serviço pode ter mudado.</string>
-    <string name="problem_oops">Ops! Algo deu errado 🥲</string>
+    <string name="problem_oops">Não foi possível carregar</string>
     <string name="problem_http_text">O X devolveu HTTP %1$d.</string>
     <string name="problem_retry_in">Tentar novamente em %1$s</string>
     <string name="close_app_confirm">Tem certeza de que deseja fechar o XTA?</string>
@@ -45,4 +45,5 @@
     <string name="find_in_page">Procurar na página</string>
     <string name="find_previous_match">Correspondência anterior</string>
     <string name="find_next_match">Correspondência seguinte</string>
+    <string name="loading">A carregar…</string>
 </resources>

@@ -64,6 +64,7 @@
     <string name="reader_voices_use">Używaj pobranego głosu</string>
     <string name="reader_voices_use_description">Czyta pobranym głosem, gdy któryś mówi w języku artykułu; w przeciwnym razie używa mechanizmu poniżej.</string>
     <string name="reader_voices_note">Głosy są pobierane z GitHuba (k2-fsa/sherpa-onnx) tylko po dotknięciu Pobierz. Działają w całości na tym urządzeniu.</string>
+    <string name="reader_voices_note_desktop">Głosy są pobierane z GitHuba (k2-fsa/sherpa-onnx) tylko po kliknięciu Pobierz. Działają w całości na tym urządzeniu.</string>
     <string name="reader_voices_synthesis_missing">Ta wersja może pobierać głosy, ale jeszcze nie potrafi nimi czytać. Do tego czasu czyta na głos silnik mowy poniżej.</string>
     <string name="reader_voice_licence">Licencja: %1$s</string>
     <string name="reader_voice_installing">Sprawdzanie i rozpakowywanie…</string>

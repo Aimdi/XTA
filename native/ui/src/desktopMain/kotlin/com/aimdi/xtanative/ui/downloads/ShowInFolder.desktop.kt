@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.downloads
 
 import androidx.compose.runtime.Composable
+import com.aimdi.xtanative.ui.common.ChildProcess
 import com.aimdi.xtanative.ui.media.mpris.DBusConnection
 import com.aimdi.xtanative.ui.media.mpris.DBusType
 import java.io.File
@@ -37,6 +38,6 @@ internal object FileManagerShow {
         val shown = runCatching {
             connect()?.use { bus -> answered(bus.call(NAME, PATH, NAME, "ShowItems", "ass", showItems(file))?.type) }
         }.getOrNull() == true
-        shown || runCatching { ProcessBuilder("xdg-open", file.parentFile.path).start(); true }.getOrDefault(false)
+        shown || runCatching { ChildProcess.start("xdg-open", file.parentFile.path); true }.getOrDefault(false)
     }
 }

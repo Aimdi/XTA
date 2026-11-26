@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.ui.feed
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.resizing
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_collapse
 import com.aimdi.xtanative.ui.generated.resources.posts_link_more
@@ -33,7 +33,7 @@ import org.jetbrains.compose.resources.stringResource
 fun LinkStackRow(keys: List<String>, draw: @Composable (String) -> Unit) {
     var open by rememberSaveable(keys.first()) { mutableStateOf(false) }
     val reduced = LocalReducedMotion.current
-    Column(Modifier.fillMaxWidth().then(if (reduced) Modifier else Modifier.animateContentSize())) {
+    Column(Modifier.fillMaxWidth().resizing(reduced)) {
         key(keys.first()) { draw(keys.first()) }
         TextButton(onClick = { open = !open }, modifier = Modifier.padding(horizontal = 16.dp)) {
             Icon(if (open) PostIcons.UnfoldLess else XIcons.Link, contentDescription = null, modifier = Modifier.size(18.dp))

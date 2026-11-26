@@ -58,6 +58,14 @@ class PostRulesTest {
     }
 
     @Test
+    fun aCommunitysOwnPageLeavesOutItsLineButNotAnotherCommunitys() {
+        val lines = listOf(ContextLine.Pinned, ContextLine.Community("77"))
+        assertEquals(listOf(ContextLine.Pinned), PostView.inCommunityPage(lines, "77"))
+        assertEquals(lines, PostView.inCommunityPage(lines, "88"))
+        assertEquals(lines, PostView.inCommunityPage(lines, null))
+    }
+
+    @Test
     fun replyingToShowsUnderTheHeaderButNotInAQuoteNorMidThread() {
         val reply = post("2", replyTo = "maya")
         assertEquals("maya", PostView.replyingTo(reply, quoted = false, midThread = false))
@@ -209,6 +217,8 @@ class PostRulesTest {
         val memory = TranslationMemory { 0 }
         memory.write("k", "v", ttlMillis = 1)
         assertEquals("v", memory.read("k"))
+        memory.clear()
+        assertNull(memory.read("k"), "cleared")
     }
 
     @Test

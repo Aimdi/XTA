@@ -84,6 +84,7 @@
     <string name="settings_yes">Có</string>
     <string name="settings_zen_mode">Chế độ zen</string>
     <string name="settings_zen_mode_description">Bảng tin yên tĩnh hơn: ẩn số liệu bài đăng, ẩn trả lời cho đến khi bạn giữ nút bình luận, và chỉ hiển thị vài bài đăng gần đây của mỗi người.</string>
+    <string name="settings_zen_mode_description_desktop">Bảng tin yên tĩnh hơn: ẩn số liệu bài đăng, ẩn trả lời cho đến khi bạn nhấp chuột phải vào nút bình luận, và chỉ hiển thị vài bài đăng gần đây của mỗi người.</string>
     <string name="settings_threaded_replies">Trả lời phân luồng</string>
     <string name="settings_threaded_replies_description">Hiển thị các trả lời dưới bài đăng đang mở dưới dạng cây thụt lề, mỗi trả lời lồng dưới bài mà nó trả lời.</string>
     <string name="settings_collapse_boosts">Gộp các chuỗi đăng lại</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Chất lượng hình ảnh</string>
     <string name="settings_load_manually">Tải phương tiện thủ công</string>
     <string name="settings_load_manually_description">Hình ảnh và video sẽ không tải cho đến khi bạn chạm vào, để tiết kiệm dữ liệu di động.</string>
+    <string name="settings_load_manually_description_desktop">Hình ảnh và video sẽ không tải cho đến khi bạn nhấp vào, để tiết kiệm dữ liệu.</string>
     <string name="settings_save_bandwidth">Tiết kiệm dung lượng với dung lượng ảnh nhỏ hơn</string>
     <string name="settings_quality_low">Thấp</string>
     <string name="settings_quality_medium">Trung bình</string>
@@ -160,10 +162,6 @@
     <string name="settings_colour_purple">Tím</string>
     <string name="settings_colour_orange">Cam</string>
     <string name="settings_colour_green">Xanh lá</string>
-    <string name="settings_true_black">Tối đen </string>
-    <string name="settings_true_black_description">Sử dụng màu đen tuyền cho chế độ tối</string>
-    <string name="settings_true_black_cards">Màu tối đen cho thẻ bài viết </string>
-    <string name="settings_true_black_cards_description">Sử dụng màu tối đen cho bài viết</string>
     <string name="settings_navigation_labels">Hiện thị thanh điều hướng </string>
     <string name="settings_hide_navigation">Ẩn thanh trên và thanh dưới khi cuộn</string>
     <string name="settings_hide_status_bar">Ẩn thanh trạng thái</string>
@@ -179,11 +177,17 @@
     <string name="settings_ticker_chart">Biểu đồ cổ phiếu</string>
     <string name="settings_ticker_chart_description">Hiển thị khi bạn mở một mã cổ phiếu. XTA tự lấy giá từ các dịch vụ công khai không cần tài khoản; tắt đi thì không gửi yêu cầu nào và vẫn còn các bài viết.</string>
     <string name="settings_double_tap_like">Chạm hai lần để thích</string>
+    <string name="settings_double_tap_like_desktop">Nhấp đúp để thích</string>
     <string name="settings_double_tap_like_description">Mặc định tắt: khi bật, mỗi lần chạm đơn sẽ chờ xem có lần chạm thứ hai không, nên mở bài viết chậm hơn một chút.</string>
+    <string name="settings_double_tap_like_description_desktop">Mặc định tắt: khi bật, mỗi lần nhấp đơn sẽ chờ xem có lần nhấp thứ hai không, nên mở bài viết chậm hơn một chút.</string>
     <string name="settings_swipe_back_anywhere">Vuốt để quay lại từ bất kỳ đâu</string>
+    <string name="settings_swipe_back_anywhere_desktop">Kéo để quay lại từ bất kỳ đâu</string>
     <string name="settings_swipe_back_anywhere_description">Kéo bài viết đang mở từ bất kỳ chỗ nào trên đó để quay lại. Tắt: chỉ từ cạnh màn hình.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Kéo bài viết đang mở từ bất kỳ chỗ nào trên đó để quay lại. Tắt: chỉ từ cạnh cửa sổ.</string>
     <string name="settings_swipe_back_tilt">Nghiêng theo ngón tay</string>
+    <string name="settings_swipe_back_tilt_desktop">Nghiêng theo con trỏ</string>
     <string name="settings_swipe_back_tilt_description">Bài viết bạn kéo lại sẽ xoay quanh ngón tay và đung đưa theo tốc độ của bạn.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">Bài viết bạn kéo lại sẽ xoay quanh con trỏ và đung đưa theo tốc độ của bạn.</string>
     <string name="settings_accounts_empty">Thêm tài khoản để tải Dành cho bạn.</string>
     <string name="settings_accounts_description">Tắt các tài khoản dự phòng bạn chỉ giữ vì giới hạn tốc độ. Dành cho bạn gộp dòng thời gian trang chủ từ các tài khoản còn bật; Đang theo dõi vẫn dùng đăng ký cục bộ nhưng bỏ qua tài khoản đã tắt khi tải. Bình luận và hồ sơ vẫn có thể dùng bất kỳ tài khoản nào nếu cần.</string>
     <string name="settings_account_delete_confirm">Đăng xuất @%1$s? XTA sẽ quên phiên đăng nhập trên thiết bị này và bạn không thể hoàn tác.</string>
@@ -319,6 +323,7 @@
     <string name="settings_intro_again">Hiện lại phần giới thiệu</string>
     <string name="settings_intro_again_description">Xem lại các thẻ khi mở lần đầu.</string>
     <string name="settings_open_logs">Mở thư mục nhật ký</string>
+    <string name="settings_copy_diagnostics">Sao chép thông tin chẩn đoán</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Sao chép báo cáo</string>
     <string name="settings_diagnostics_copied">Đã sao chép chẩn đoán vào bảng nhớ tạm</string>

@@ -75,12 +75,12 @@
     <string name="discover_community_created">أُنشئ في %1$s</string>
     <string name="discover_community_members">الأعضاء</string>
     <plurals name="discover_member_count">
-        <item quantity="zero">%1$d عضو</item>
+        <item quantity="zero">%1$s عضو</item>
         <item quantity="one">عضو واحد</item>
         <item quantity="two">عضوان</item>
-        <item quantity="few">%1$d أعضاء</item>
-        <item quantity="many">%1$d عضوًا</item>
-        <item quantity="other">%1$d عضو</item>
+        <item quantity="few">%1$s أعضاء</item>
+        <item quantity="many">%1$s عضوًا</item>
+        <item quantity="other">%1$s عضو</item>
     </plurals>
     <string name="discover_list_import_title">استيراد قائمة X كمجموعة</string>
     <string name="discover_list_import_intro">لاستيراد قائمة X كمجموعة اشتراكات، أدخل رابط القائمة أو معرّفها أدناه</string>

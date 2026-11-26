@@ -48,6 +48,7 @@ import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalProblemActions
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.rememberSheetState
@@ -64,6 +65,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_filter_groups_explained
 import com.aimdi.xtanative.ui.generated.resources.home_filter_keep_one
 import com.aimdi.xtanative.ui.generated.resources.home_filter_none
 import com.aimdi.xtanative.ui.generated.resources.home_filter_only_hint
+import com.aimdi.xtanative.ui.generated.resources.home_filter_only_hint_desktop
 import com.aimdi.xtanative.ui.generated.resources.home_filter_reset
 import com.aimdi.xtanative.ui.generated.resources.home_group_members
 import com.aimdi.xtanative.ui.generated.resources.home_groups
@@ -72,6 +74,7 @@ import com.aimdi.xtanative.ui.generated.resources.search
 import com.aimdi.xtanative.ui.generated.resources.signin_add_account
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.settings.isDesktop
 
 /**
  * Home feed accounts (XTA's home filter sheet): which X accounts For you
@@ -93,10 +96,11 @@ internal fun HomeFilterSheet(ui: HomeUi, onApply: (HomeFilterDraft) -> Unit, onD
     val ids = if (groupsShown) groups.map { it.id } else accountIds
 
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        val closer = LocalSheetCloser.current
         Column(Modifier.fillMaxWidth().fillMaxHeight(0.9f)) {
             Row(Modifier.padding(start = 20.dp, end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.home_feed_accounts), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
-                IconTip(stringResource(Res.string.close)) { IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } }
+                IconTip(stringResource(Res.string.close)) { IconButton(onClick = { closer.close() }) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } }
             }
             TabRow(selectedTabIndex = if (groupsShown) 1 else 0, containerColor = Color.Transparent) {
                 Tab(selected = !groupsShown, onClick = { groupsShown = false }, text = { Text(stringResource(Res.string.home_filter_accounts)) })
@@ -112,7 +116,7 @@ internal fun HomeFilterSheet(ui: HomeUi, onApply: (HomeFilterDraft) -> Unit, onD
             )
             Text(
                 stringResource(if (groupsShown) Res.string.home_filter_groups_explained else Res.string.home_filter_accounts_explained) +
-                    " " + stringResource(Res.string.home_filter_only_hint),
+                    " " + stringResource(if (isDesktop) Res.string.home_filter_only_hint_desktop else Res.string.home_filter_only_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 20.dp),
@@ -168,7 +172,7 @@ internal fun HomeFilterSheet(ui: HomeUi, onApply: (HomeFilterDraft) -> Unit, onD
                 TextButton(onClick = { draft = HomeFilterDraft.NONE_OFF }, modifier = Modifier.weight(1f)) {
                     Text(stringResource(Res.string.home_filter_reset))
                 }
-                Button(onClick = { onApply(draft) }, enabled = draft.keepsAnAccount(accountIds), modifier = Modifier.weight(1f)) {
+                Button(onClick = { closer.close { onApply(draft) } }, enabled = draft.keepsAnAccount(accountIds), modifier = Modifier.weight(1f)) {
                     Text(stringResource(Res.string.home_filter_apply))
                 }
             }

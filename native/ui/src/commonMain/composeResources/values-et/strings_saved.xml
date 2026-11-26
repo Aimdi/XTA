@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">See kaust on tühi</string>
     <string name="saved_empty_notes">Märkmeid pole veel. Need ei lahku seadmest enne varundust või sünki.</string>
     <string name="saved_note_button">Märge</string>
-    <string name="saved_add_note">Lisa sellele salvestatud postitusele märge</string>
+    <string name="saved_add_note">Lisa sellele postitusele märge</string>
     <string name="saved_edit_note">Muuda märget</string>
     <string name="saved_new_note">Uus märge</string>
     <string name="saved_too_large">Seda salvestatud säutsu ei saa kuvada, kuna see on laadimiseks liiga suur. Palun teata sellest veast arendajatele.</string>
@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">Allalaadimine ei õnnestu. See meedia võib olla saadaval vaid voogedastusena ning XTA veel ei oska teda alla laadida.</string>
     <string name="saved_open_in_browser">Ava brauseris</string>
     <string name="saved_ok">Sobib</string>
-    <string name="saved_something_wrong">Hopsti! Midagi läks nüüd viltu 🥲</string>
+    <string name="saved_something_wrong">Midagi läks valesti</string>
     <string name="archive_tags">Sildid</string>
     <string name="archive_extract">Tuvasta kuvatõmmise tekst</string>
     <string name="archive_extract_notice">Valitud PNG- või JPEG-pilt saadetakse teenusele %1$s sinu seadistatud tehisintellektimudeliga. Tuvastatud tekst võib sisaldada vigu.</string>
@@ -168,6 +168,7 @@
     <string name="saved_media_status">Meedia salvestamine ei õnnestu. Twitter\'i vastus päringule: %1$d</string>
     <string name="downloads_cancelled">Tühistatud</string>
     <string name="downloads_interrupted">Katkes · Jätkamiseks proovi uuesti</string>
+    <string name="downloads_interrupted_desktop">Katkes · Jätkamiseks klõpsa „Proovi uuesti“</string>
     <string name="downloads_batch">Salvestatud failid: %1$d / %2$d</string>
     <string name="downloads_saved_to">Salvestatud kausta %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Automaatseks allalaadimiseks määra allalaadimiskaust menüüs Seaded &gt; Meedia.</string>

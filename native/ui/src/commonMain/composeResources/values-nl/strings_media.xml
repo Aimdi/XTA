@@ -3,6 +3,7 @@
     <string name="media_alt_badge">ALT</string>
     <string name="media_alt_title">Beschrijving van de afbeelding</string>
     <string name="media_tap_to_show">Tik om %1$s te tonen</string>
+    <string name="media_tap_to_show_desktop">Klik om %1$s te tonen</string>
     <string name="media_copy_image">Afbeelding kopiëren</string>
     <string name="media_save_as">Opslaan als…</string>
     <string name="media_drag_out">Sleep de afbeelding naar een andere app</string>

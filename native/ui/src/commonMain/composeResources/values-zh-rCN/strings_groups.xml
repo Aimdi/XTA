@@ -24,6 +24,7 @@
     <string name="groups_columns">列数</string>
     <string name="groups_combine_clear">清除</string>
     <string name="groups_combine_hint">长按分组即可与当前分组一起阅读</string>
+    <string name="groups_combine_hint_desktop">右键点击分组即可与当前分组一起阅读</string>
     <string name="groups_combined_count">正在一起阅读另外 %1$d 个</string>
     <string name="groups_compact">紧凑</string>
     <string name="groups_content_default">默认</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">没有结果</string>
     <string name="groups_no_subscriptions">没有订阅。尝试搜索或导入一些！</string>
     <string name="groups_none_description">分组可以把订阅组成自定义时间线。长按分组可编辑。</string>
+    <string name="groups_none_description_desktop">分组可以把订阅组成自定义时间线。右键点击分组可编辑。</string>
     <string name="groups_none_yet">还没有分组</string>
     <string name="groups_not_all_posts">注：由于 Twitter 的限制，可能不会包含所有推文</string>
     <string name="groups_ok">确定</string>

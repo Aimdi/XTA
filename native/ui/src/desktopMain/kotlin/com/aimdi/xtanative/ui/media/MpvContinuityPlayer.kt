@@ -52,6 +52,7 @@ internal class MpvContinuityPlayer private constructor(private val player: MpvPl
     }
 
     companion object {
-        fun create(): ContinuityPlayer = MpvContinuityPlayer(MpvPlayer.create(MpvOptions.AUDIO, video = false, name = "mpv-audio"))
+        /** A player of sound alone, through [output] when it names one of mpv's audio outputs ([MpvOptions.audio]). */
+        fun create(output: String? = null): ContinuityPlayer = MpvContinuityPlayer(MpvPlayer.create(MpvOptions.audio(output), video = false, name = "mpv-audio"))
     }
 }

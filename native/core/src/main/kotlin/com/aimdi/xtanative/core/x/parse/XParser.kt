@@ -190,6 +190,7 @@ object XParser {
             live = XLiveParser.liveOf(legacy, note["entity_set"], card, listOf(legacy["full_text"].string, noteText)),
             grokShare = XCards.grokShare(card),
             quotedWithheld = if (quoted == null) quotedWithheld(legacy, quotedResult) else null,
+            likedOnX = legacy["favorited"].boolean ?: false,
         )
     }
 

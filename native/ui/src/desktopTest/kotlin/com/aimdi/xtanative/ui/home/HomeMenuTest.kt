@@ -73,3 +73,46 @@ class HomeMenuTest {
         assertEquals(listOf("reddit", "pixiv"), StripPins.moved(listOf("reddit", "pixiv"), available, 5, 0))
     }
 }
+
+class MenuIconsTest {
+    @Test
+    fun anEntryIsOutlinedUntilItsScreenIsShown() {
+        val filledWhenShown = listOf(HomeDestination.SEARCH, HomeDestination.SETTINGS, HomeDestination.SUBSCRIPTIONS, HomeDestination.SAVED, HomeDestination.DOWNLOADS, HomeDestination.PLUGINS, HomeDestination.DECK)
+        HomeDestination.entries.forEach { destination ->
+            val differs = menuIcon(destination, selected = true) != menuIcon(destination, selected = false)
+            assertEquals(destination in filledWhenShown, differs, destination.name)
+        }
+    }
+}
+
+class RailMarksTest {
+    private val pinned = HomeMenu.buttons
+
+    @Test
+    fun aScreenPinnedAtTheRailsFootDoesNotMarkTheMenu() {
+        assertFalse(RailMarks.inMenu(FrameMark(screen = HomeDestination.SEARCH.route), pinned))
+        assertFalse(RailMarks.inMenu(FrameMark(screen = HomeDestination.SETTINGS.route), pinned))
+    }
+
+    @Test
+    fun anotherScreenOfTheMenuOrAGroupMarksIt() {
+        assertTrue(RailMarks.inMenu(FrameMark(screen = HomeDestination.DOWNLOADS.route), pinned))
+        assertTrue(RailMarks.inMenu(FrameMark(group = "g"), pinned))
+        assertFalse(RailMarks.inMenu(FrameMark(page = "feed"), pinned))
+    }
+
+    @Test
+    fun theRailsPlaceShownOutshinesThePointersWash() {
+        assertTrue(RailLook.selectedAlpha(hovered = false) > NavRowLook.fillAlpha(selected = false, hovered = true, dark = true))
+        assertTrue(RailLook.selectedAlpha(hovered = true) > RailLook.selectedAlpha(hovered = false))
+    }
+
+    @Test
+    fun theDesktopsColumnIsAPointersAndTheTabletsAFingers() {
+        assertEquals(260, HomeWide.DESKTOP_SIDEBAR_WIDTH)
+        assertEquals(HomeWide.DESKTOP_SIDEBAR_WIDTH + 1, HomeWide.inset(FrameKind.SIDEBAR))
+        assertEquals(320, HomeWide.SIDEBAR_WIDTH)
+        assertEquals(40f, NavRowSizes.row(compact = true).value)
+        assertEquals(56f, NavRowSizes.row(compact = false).value)
+    }
+}

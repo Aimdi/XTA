@@ -12,7 +12,15 @@
 # to the system's player, and stay up. Otherwise it needs libmpv: the video's
 # frames have to be drawn and reach the screen, the video has to play to its
 # end, and the podcast player has to play. A runner without a sound card hears
-# nothing: mpv's null output keeps the time.
+# nothing: mpv's null output keeps the time. VIDEO_CHECK_PORT moves the file's
+# server off 8790.
+#
+# The runner has PipeWire's library but no PipeWire, and mpv (0.41; mpv's
+# 1a78f9fa8 changes it) starts PipeWire's thread loop before it knows there
+# is none, and stops it at once: that stop can race the loop's start and hang
+# mpv for good (PipeWire #5581), a podcast "at 0 ms of 0 ms" for the minute
+# the check waits. With no SPA plugins PipeWire fails before its loop starts,
+# and mpv goes on to ALSA and its null output as it should.
 set -euo pipefail
 app=${1:?the launcher, bin/xta-native}
 out=${2:?a folder for the log and the screenshot}
@@ -38,15 +46,17 @@ fail() {
 
 ffmpeg -v error -f lavfi -i testsrc2=size=640x360:rate=30 -f lavfi -i sine=frequency=440:sample_rate=48000 \
   -t 4 -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest -movflags +faststart "$work/check.mp4"
-python3 -m http.server 8790 --bind 127.0.0.1 --directory "$work" > "$work/server.log" 2>&1 &
+port=${VIDEO_CHECK_PORT:-8790}
+python3 -m http.server "$port" --bind 127.0.0.1 --directory "$work" > "$work/server.log" 2>&1 &
 server=$!
 for _ in $(seq 1 40); do
-  curl -fs -o /dev/null http://127.0.0.1:8790/check.mp4 && break
+  curl -fs -o /dev/null "http://127.0.0.1:$port/check.mp4" && break
   sleep 0.25
 done
 
 xvfb-run -a -s '-screen 0 1280x960x24' bash -c '
-  env XTA_NATIVE_VIDEO_CHECK=http://127.0.0.1:8790/check.mp4 "XDG_DATA_HOME=$2/data" "XDG_CACHE_HOME=$2/cache" "$1" > "$3" 2>&1 &
+  mkdir -p "$2/no-spa"
+  env "XTA_NATIVE_VIDEO_CHECK=http://127.0.0.1:$5/check.mp4" "XDG_DATA_HOME=$2/data" "XDG_CACHE_HOME=$2/cache" "SPA_PLUGIN_DIR=$2/no-spa" "$1" > "$3" 2>&1 &
   pid=$!
   for _ in $(seq 1 180); do
     grep -q "video check: done" "$3" && break
@@ -57,7 +67,7 @@ xvfb-run -a -s '-screen 0 1280x960x24' bash -c '
   import -window root "$4"
   if kill -0 "$pid" 2> /dev/null; then echo up > "$3.state"; else echo down > "$3.state"; fi
   kill "$pid" 2> /dev/null || true
-' _ "$app" "$work/home" "$log" "$out/video-$mode.png"
+' _ "$app" "$work/home" "$log" "$out/video-$mode.png" "$port"
 grep "XTA Native: video" "$log" || true
 
 [ "$(cat "$log.state")" = up ] || fail "XTA Native did not stay up through the video check"

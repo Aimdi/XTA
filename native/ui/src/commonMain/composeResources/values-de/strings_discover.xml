@@ -39,19 +39,19 @@
     <string name="discover_all">Alle</string>
     <string name="discover_photos">Fotos</string>
     <string name="discover_videos">Videos</string>
-    <string name="discover_only_media">Nur Tweets mit Medien anzeigen</string>
+    <string name="discover_only_media">Nur Beiträge mit Medien anzeigen</string>
     <string name="discover_include_replies">Antworten anzeigen</string>
     <string name="discover_only_replies">Nur Antworten</string>
     <string name="discover_hide_replies">Antworten ausblenden</string>
     <string name="discover_include_links">Links anzeigen</string>
     <string name="discover_only_links">Nur mit Links</string>
     <string name="discover_hide_links">Links ausblenden</string>
-    <string name="discover_include_reposts">Retweets anzeigen</string>
-    <string name="discover_hide_retweets">Retweets ausblenden</string>
+    <string name="discover_include_reposts">Reposts anzeigen</string>
+    <string name="discover_hide_retweets">Reposts ausblenden</string>
     <string name="discover_filters">Filter</string>
     <string name="discover_minimum_replies">Mindestanzahl Antworten</string>
     <string name="discover_minimum_likes">Mindestanzahl Likes</string>
-    <string name="discover_minimum_reposts">Mindestanzahl Retweets</string>
+    <string name="discover_minimum_reposts">Mindestanzahl Reposts</string>
     <string name="discover_since">Seit</string>
     <string name="discover_until">Bis</string>
     <string name="discover_not_set">Nicht festgelegt</string>
@@ -63,16 +63,16 @@
     <string name="discover_trends_empty">Hier gibt es noch keine Trends. Suche oben, oder füge einen anderen Ort hinzu.</string>
     <string name="discover_plugin_empty">Suche in %1$s nach Beiträgen, Personen und Communitys.</string>
     <plurals name="discover_trend_posts">
-        <item quantity="one">%1$s Tweet</item>
-        <item quantity="other">%1$s Tweets</item>
+        <item quantity="one">%1$s Beitrag</item>
+        <item quantity="other">%1$s Beiträge</item>
     </plurals>
     <string name="discover_community_about">Info</string>
     <string name="discover_community_rules">Regeln</string>
     <string name="discover_community_created">Erstellt am %1$s</string>
     <string name="discover_community_members">Mitglieder</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d Mitglied</item>
-        <item quantity="other">%1$d Mitglieder</item>
+        <item quantity="one">%1$s Mitglied</item>
+        <item quantity="other">%1$s Mitglieder</item>
     </plurals>
     <string name="discover_list_import_title">X-Liste als Gruppe importieren</string>
     <string name="discover_list_import_intro">Um eine X-Liste als Abo-Gruppe zu importieren, gib unten den Link zur Liste oder ihre ID ein</string>

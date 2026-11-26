@@ -66,6 +66,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Quotes</string>
     <string name="posts_replies_missing">Couldn't load replies</string>
+    <string name="posts_no_replies_yet">No replies yet</string>
     <string name="posts_replying_to">Replying to</string>
     <string name="posts_reposted">%1$s reposted %2$s</string>
     <string name="posts_reposted_by">Reposted by</string>
@@ -100,6 +101,7 @@
     <string name="posts_verified_organization">Verified organization</string>
     <string name="posts_view_quoted">View quoted tweet</string>
     <string name="posts_zen_replies">Hold the comment button to show the replies</string>
+    <string name="posts_zen_replies_desktop">Right-click the comment button to show the replies</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s View</item>
         <item quantity="other">%1$s Views</item>

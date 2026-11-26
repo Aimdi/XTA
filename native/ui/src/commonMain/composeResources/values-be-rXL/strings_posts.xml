@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Vykl</string>
     <string name="posts_quotes">Cytaty</string>
     <string name="posts_replies_missing">Nie ŭdałosia zahruzić adkazy</string>
+    <string name="posts_no_replies_yet">Pakul niama adkazaŭ</string>
     <string name="posts_replying_to">Adkazać</string>
     <string name="posts_reposted">%1$s retvitnuŭ(ła) %2$s</string>
     <string name="posts_reposted_by">Pašyryli</string>
@@ -96,6 +97,7 @@
     <string name="posts_verified_organization">Paćvierdžanaja arhanizacyja</string>
     <string name="posts_view_quoted">Prahladzieć cytavany post</string>
     <string name="posts_zen_replies">Utrymlivajcie knopku kamentaryjaŭ, kab pakazać adkazy</string>
+    <string name="posts_zen_replies_desktop">Nacisnicie na knopku kamentaryjaŭ pravaj knopkaj myšy, kab pakazać adkazy</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s prahliad</item>
         <item quantity="few">%1$s prahliady</item>

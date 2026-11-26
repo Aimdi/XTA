@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.speech
 
+import com.aimdi.xtanative.ui.common.destructiveTextColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +17,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Refresh
@@ -29,11 +29,11 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import com.aimdi.xtanative.ui.common.TopBarBack
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -54,6 +54,7 @@ import com.aimdi.xtanative.services.speech.VoiceFailure
 import com.aimdi.xtanative.services.speech.VoiceInstall
 import com.aimdi.xtanative.services.util.formatByteSize
 import com.aimdi.xtanative.ui.common.CenteredPage
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
@@ -94,13 +95,17 @@ import com.aimdi.xtanative.ui.generated.resources.reader_voice_progress
 import com.aimdi.xtanative.ui.generated.resources.reader_voice_ready
 import com.aimdi.xtanative.ui.generated.resources.reader_voices
 import com.aimdi.xtanative.ui.generated.resources.reader_voices_note
+import com.aimdi.xtanative.ui.generated.resources.reader_voices_note_desktop
 import com.aimdi.xtanative.ui.generated.resources.reader_voices_synthesis_missing
 import com.aimdi.xtanative.ui.generated.resources.reader_voices_use
 import com.aimdi.xtanative.ui.generated.resources.reader_voices_use_description
 import com.aimdi.xtanative.ui.home.rememberSheetList
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.media.ReaderIcons
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.settings.SETTINGS_MAX_WIDTH
+import com.aimdi.xtanative.ui.settings.isDesktop
 
 /** Settings › Accessibility › Read aloud as its own screen (TtsSettingsScreen). */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -110,22 +115,20 @@ fun VoiceSettingsScreen(onBack: () -> Unit) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
+            ColumnTopAppBar(
                 title = { Text(stringResource(Res.string.reader_speech_title)) },
-                navigationIcon = { IconTip(stringResource(Res.string.reader_back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.reader_back)) } } },
+                navigationIcon = { TopBarBack(onBack, stringResource(Res.string.reader_back)) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+                column = SETTINGS_MAX_WIDTH,
             )
         },
     ) { padding ->
         // As the other settings pages: a readable column, centred in a wide window.
-        CenteredPage(extra = SETTINGS_EXTRA) {
+        CenteredPage {
             VoiceSettingsList(vm, PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 24.dp), Modifier.fillMaxSize())
         }
     }
 }
-
-/** What a settings page is wider than the reading column (SettingsPage's 840 dp). */
-private val SETTINGS_EXTRA = 120.dp
 
 /**
  * The same settings as a sheet over a reader ("Voice settings" in its menu,
@@ -202,7 +205,7 @@ private fun LazyListScope.offlineVoices(ui: VoiceSettingsUi, vm: VoiceSettingsVi
         }
     }
     items(parts.voices.catalog, key = { "voice-" + it.id }) { voice -> VoiceRow(voice, ui, vm, parts) }
-    item(key = "voices-note") { Note(stringResource(Res.string.reader_voices_note)) }
+    item(key = "voices-note") { Note(stringResource(if (isDesktop) Res.string.reader_voices_note_desktop else Res.string.reader_voices_note)) }
     if (!engine.bundled) item(key = "engine-note") { Note(stringResource(Res.string.reader_voice_engine_note)) }
 }
 
@@ -350,7 +353,7 @@ private fun DownloadRow(
                 TextButton(onClick = {
                     confirm = false
                     onDelete()
-                }) { Text(stringResource(Res.string.reader_delete)) }
+                }, colors = destructiveTextColors()) { Text(stringResource(Res.string.reader_delete)) }
             },
             dismissButton = { TextButton(onClick = { confirm = false }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.reader_cancel)) } },
         )
@@ -395,7 +398,7 @@ private fun SwitchRow(title: String, description: String, checked: Boolean, onCh
             Text(title, style = MaterialTheme.typography.bodyLarge)
             Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Switch(checked = checked, onCheckedChange = null)
+        Switch(checked = checked, onCheckedChange = null, colors = xSwitchColors())
     }
 }
 

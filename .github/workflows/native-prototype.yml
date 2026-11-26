@@ -487,6 +487,26 @@ jobs:
           python3 -I native/tool/plugin_abi.py --app "${app:?no lib/app in the tarball of $last}" native/plugins/build/out/desktop/*.jar \
             || { echo "These plugins need what $last's app lacks, at the same plugin API $api: move PLUGIN_API_VERSION up"; exit 1; }
 
+      # native/tool/mock-x: a JDK server answering from recorded responses.
+      - name: Serve the stand-in for X
+        run: |
+          (cd native && ./gradlew :mock-x:installDist --console=plain)
+          nohup native/tool/mock-x/build/install/mock-x/bin/mock-x > "$RUNNER_TEMP/mock-x.log" 2>&1 &
+          for _ in $(seq 1 90); do
+            if curl -s -o /dev/null http://127.0.0.1:8787/; then break; fi
+            sleep 1
+          done
+          curl -s -o /dev/null -w 'stand-in answers %{http_code}\n' http://127.0.0.1:8787/
+
+      # The classes a start loads, from which each user's first start makes the
+      # class-data sharing archive later starts read (packaging/linux/xta-native-launch).
+      - name: List the classes a start loads
+        env:
+          SKIKO_RENDER_API: SOFTWARE
+        run: |
+          command -v xvfb-run > /dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq xvfb > /dev/null; }
+          bash native/tool/cds_classlist.sh native/desktop/build/compose/binaries/main/app/xta-native http://127.0.0.1:8787
+
       - name: Pack the tarball and the PKGBUILD
         run: |
           bash native/tool/package_desktop.sh native/desktop/build/compose/binaries/main/app/xta-native "$VERSION_NAME" "$RUNNER_TEMP/desktop"
@@ -529,17 +549,6 @@ jobs:
             ${{ runner.temp }}/desktop/xta-native-*.pkg.tar.zst
             ${{ runner.temp }}/desktop/PKGBUILD
 
-      # native/tool/mock-x: a JDK server answering from recorded responses.
-      - name: Serve the stand-in for X
-        run: |
-          (cd native && ./gradlew :mock-x:installDist --console=plain)
-          nohup native/tool/mock-x/build/install/mock-x/bin/mock-x > "$RUNNER_TEMP/mock-x.log" 2>&1 &
-          for _ in $(seq 1 90); do
-            if curl -s -o /dev/null http://127.0.0.1:8787/; then break; fi
-            sleep 1
-          done
-          curl -s -o /dev/null -w 'stand-in answers %{http_code}\n' http://127.0.0.1:8787/
-
       # Skia draws in software: the virtual display has no GPU.
       - name: Open it against the stand-in
         env:
@@ -564,6 +573,45 @@ jobs:
             kill "$pid"
           ' _ "$app"
           echo "XTA Native was still running after 20 s."
+
+      # bin/xta-native-launch as a reader's first two starts run it, with a
+      # cache of their own: the first makes the class-data archive in the
+      # background, the second starts with it (Java names the options it
+      # picked up) and stays up.
+      - name: Start twice through the launcher
+        env:
+          XTA_NATIVE_MOCK_X: http://127.0.0.1:8787
+          SKIKO_RENDER_API: SOFTWARE
+        run: |
+          set -euo pipefail
+          mkdir -p native-desktop
+          launcher="$RUNNER_TEMP/xta-native-desktop-$VERSION_NAME-linux-x64/bin/xta-native-launch"
+          xvfb-run -a -s '-screen 0 1280x960x24' bash -c '
+            export XDG_DATA_HOME="$2/data" XDG_CONFIG_HOME="$2/config" XDG_CACHE_HOME="$2/cache" XDG_STATE_HOME="$2/state"
+            cds="$2/cache/xta-native/cds"
+            "$1" > native-desktop/launch-first.log 2>&1 &
+            pid=$!
+            for _ in $(seq 1 180); do
+              compgen -G "$cds/*.jsa" > /dev/null && break
+              sleep 1
+            done
+            kill "$pid" 2> /dev/null || true
+            wait "$pid" 2> /dev/null || true
+            ls -l "$cds" || true
+            if ! compgen -G "$cds/*.jsa" > /dev/null; then
+              echo "The first start made no class-data archive:"; cat native-desktop/launch-first.log; exit 1
+            fi
+            "$1" > native-desktop/launch-second.log 2>&1 &
+            pid=$!
+            sleep 15
+            if ! kill -0 "$pid" 2> /dev/null; then
+              echo "The start with the archive is no longer running:"; cat native-desktop/launch-second.log; exit 1
+            fi
+            kill "$pid"
+          ' _ "$launcher" "$RUNNER_TEMP/launch-home"
+          grep -q "JAVA_TOOL_OPTIONS: -XX:SharedArchiveFile=" native-desktop/launch-second.log \
+            || { echo "The second start did not take the archive:"; cat native-desktop/launch-second.log; exit 1; }
+          echo "The launcher made the class-data archive, and the start with it was still running after 15 s."
 
       # The plugin store's whole chain on the desktop, from a catalogue the
       # runner serves: the first plugin downloaded, checked against its size,

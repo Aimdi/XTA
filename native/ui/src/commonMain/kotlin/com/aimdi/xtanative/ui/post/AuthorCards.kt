@@ -37,6 +37,7 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_followers
 import com.aimdi.xtanative.ui.generated.resources.posts_following
 import com.aimdi.xtanative.ui.generated.resources.posts_private_profile
+import com.aimdi.xtanative.ui.theme.edgeColor
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -108,7 +109,7 @@ internal fun AuthorCardBody(user: XUser, avatarUrl: String?, onOpen: () -> Unit)
     Surface(
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant),
+        border = BorderStroke(Dp.Hairline, edgeColor()),
         shadowElevation = 8.dp,
         modifier = Modifier.width(300.dp),
     ) {

@@ -20,11 +20,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -37,10 +33,9 @@ import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Tab
+import com.aimdi.xtanative.ui.common.XtaTab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -53,13 +48,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -72,7 +66,9 @@ import com.aimdi.xtanative.core.x.search.XAdvancedSearch
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.SearchField
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.TopBarBack
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.community.CommunityRow
 import com.aimdi.xtanative.ui.feed.feedThreads
@@ -152,7 +148,7 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
         close = vm::closeAdvanced,
     )
     val searchField = @Composable { modifier: Modifier ->
-        SearchField(
+        XSearchField(
             value = field,
             onValueChange = {
                 field = it
@@ -239,7 +235,7 @@ private fun SearchHeader(
         Column {
             TopAppBar(
                 navigationIcon = {
-                    IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
+                    TopBarBack(onBack)
                 },
                 title = {
                     if (separate) {
@@ -262,7 +258,7 @@ private fun SearchHeader(
 }
 
 @Composable
-private fun SearchField(
+private fun XSearchField(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
     filters: Int,
@@ -271,29 +267,17 @@ private fun SearchField(
     onAdvanced: () -> Unit,
     modifier: Modifier,
 ) {
-    TextField(
+    SearchField(
         value = value,
         onValueChange = onValueChange,
-        singleLine = true,
-        placeholder = { Text(stringResource(Res.string.discover_search)) },
-        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-        trailingIcon = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (value.text.isNotEmpty()) {
-                    IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = onClear) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } }
-                }
-                AdvancedButton(filters, onAdvanced)
+        placeholder = stringResource(Res.string.discover_search),
+        onSearch = onSearch,
+        trailing = {
+            if (value.text.isNotEmpty()) {
+                IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = onClear) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } }
             }
+            AdvancedButton(filters, onAdvanced)
         },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = { onSearch() }),
-        shape = RoundedCornerShape(24.dp),
-        colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        ),
         modifier = modifier,
     )
 }
@@ -313,16 +297,12 @@ private fun AdvancedButton(filters: Int, onClick: () -> Unit) {
     } }
 }
 
+/** The tabs across the whole column where they fit side by side, as a community's are; narrower, a strip that scrolls over the column's full-width divider. */
 @Composable
 private fun SearchTabs(selected: SearchTab, onSelect: (SearchTab) -> Unit) {
-    ScrollableTabRow(
-        selectedTabIndex = selected.ordinal,
-        edgePadding = 8.dp,
-        containerColor = MaterialTheme.colorScheme.background,
-        divider = { Hairline() },
-    ) {
+    val tabs: @Composable () -> Unit = {
         SearchTab.entries.forEach { tab ->
-            Tab(
+            XtaTab(
                 selected = tab == selected,
                 onClick = { onSelect(tab) },
                 text = { Text(stringResource(tabName(tab)), maxLines = 1) },
@@ -331,7 +311,20 @@ private fun SearchTabs(selected: SearchTab, onSelect: (SearchTab) -> Unit) {
             )
         }
     }
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        if (maxWidth >= TABS_FILL_FROM) {
+            TabRow(selectedTabIndex = selected.ordinal, containerColor = MaterialTheme.colorScheme.background, divider = { Hairline() }, tabs = tabs)
+        } else {
+            // The strip's own divider stops at its last tab; the column's runs on to its edge, as the wide row's does.
+            // Under the strip (clear over it), so the picked tab's line is drawn over it as the wide row's is.
+            Hairline(Modifier.align(Alignment.BottomStart).fillMaxWidth())
+            ScrollableTabRow(selectedTabIndex = selected.ordinal, edgePadding = 8.dp, containerColor = Color.Transparent, divider = {}, tabs = tabs)
+        }
+    }
 }
+
+/** From this width on the search's five tabs share the column evenly, room enough for their longest names. */
+private val TABS_FILL_FROM = 560.dp
 
 private fun tabName(tab: SearchTab) = when (tab) {
     SearchTab.TOP -> Res.string.discover_popular
@@ -400,7 +393,7 @@ private fun PostResults(read: PagedRead<XThread, String>, list: LazyListState, a
     WithReadingColumn(padding, list) { column ->
         LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             feedThreads(paged.items, layout, actions)
-            pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets)
+            pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets, rows = PageRows.POSTS)
         }
     }
 }
@@ -414,7 +407,7 @@ private fun MediaResults(vm: SearchViewModel, list: LazyListState, actions: Post
     LaunchedEffect(paged.loading) { if (paged.loading) list.scrollToItem(0) }
     WithReadingColumn(padding, list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
         mediaGrid(grid)
-        pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets)
+        pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets, rows = PageRows.MEDIA)
     } }
 }
 
@@ -440,7 +433,7 @@ private fun CommunityResults(vm: SearchViewModel, list: LazyListState, searchAct
         items(paged.items, key = { it.id }, contentType = { "community" }) { community ->
             CommunityRow(community) { searchActions.openCommunity(community.id) }
         }
-        pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, icon = DiscoverIcons.Groups)
+        pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, icon = DiscoverIcons.Groups, rows = PageRows.COMMUNITIES)
     } }
 }
 

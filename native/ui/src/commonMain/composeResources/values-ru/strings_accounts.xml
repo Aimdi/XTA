@@ -3,6 +3,7 @@
 <resources>
     <string name="settings_avatar_title">Ваш аватар</string>
     <string name="settings_avatar_change">Нажмите, чтобы изменить изображение слева сверху</string>
+    <string name="settings_avatar_change_desktop">Щёлкните, чтобы изменить изображение слева сверху</string>
     <string name="settings_avatar_description">Изображение слева сверху и в меню — остаётся на этом устройстве</string>
     <string name="settings_avatar_choose">Выбрать с устройства</string>
     <string name="settings_avatar_from_account">Взять фото профиля X</string>

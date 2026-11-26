@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X redonis servilan eraron. Vi povas plu legi kaŝmemorigitajn afiŝojn kaj reprovi poste.</string>
     <string name="problem_request_unavailable_title">Ĉi tiu peto ne disponeblas</string>
     <string name="problem_request_unavailable_text">X rifuzis ĉi tiun peton. Eble ĝi provizore ne disponeblas, aŭ ĉi tiu parto de la servo ŝanĝiĝis.</string>
-    <string name="problem_oops">Ups! Io misokazis 🥲</string>
+    <string name="problem_oops">Ne eblis ŝargi tion</string>
     <string name="problem_http_text">X redonis HTTP %1$d.</string>
     <string name="problem_retry_in">Reprovi post %1$s</string>
     <string name="close_app_confirm">Ĉu vi certas, vi volas fermi XTA-on?</string>
@@ -45,4 +45,5 @@
     <string name="find_in_page">Serĉi en la paĝo</string>
     <string name="find_previous_match">Antaŭa trafo</string>
     <string name="find_next_match">Sekva trafo</string>
+    <string name="loading">Ŝargado…</string>
 </resources>

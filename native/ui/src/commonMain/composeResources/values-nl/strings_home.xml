@@ -29,7 +29,7 @@
     <string name="home_downloads">Downloads</string>
     <string name="home_antennas">Antennes</string>
     <string name="home_deck">Deck</string>
-    <string name="home_deck_empty">Zet groepen vast om ze op een breed scherm naast elkaar te zien</string>
+    <string name="home_deck_empty">Voeg kolommen toe om feeds en groepen op een breed scherm naast elkaar te zien</string>
     <string name="home_deck_add">Kolom toevoegen</string>
     <string name="home_deck_move_left">Naar links</string>
     <string name="home_deck_move_right">Naar rechts</string>
@@ -51,6 +51,7 @@
     <string name="home_filter_accounts_explained">Zet reserve-accounts uit die je alleen voor hogere limieten aanhoudt. Voor jou voegt timelines van ingeschakelde accounts samen; Volgend gebruikt nog je lokale abonnementen, maar slaat uitgeschakelde accounts over bij ophalen. Reacties en profielen kunnen desnoods nog elk account gebruiken.</string>
     <string name="home_filter_groups_explained">Zet een groep uit om de leden in Volgend te verbergen. Het tabblad van de groep blijft. Hun berichten verdwijnen ook uit Voor jou.</string>
     <string name="home_filter_only_hint">Houd er een ingedrukt om alleen die aan te laten.</string>
+    <string name="home_filter_only_hint_desktop">Klik er met de rechtermuisknop op om alleen die aan te laten.</string>
     <string name="home_filter_keep_one">Er moet minstens één account aan blijven</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Alles</string>

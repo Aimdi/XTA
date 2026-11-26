@@ -61,6 +61,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_sort_ungrouped
 import com.aimdi.xtanative.ui.generated.resources.groups_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.groups_username
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
+import com.aimdi.xtanative.ui.theme.xSwitchColors
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -226,7 +227,7 @@ private fun SwitchRow(icon: ImageVector, label: StringResource, value: Boolean, 
     ) {
         Icon(icon, contentDescription = null)
         Text(stringResource(label), modifier = Modifier.padding(start = 16.dp).weight(1f))
-        Switch(checked = value, onCheckedChange = null)
+        Switch(checked = value, onCheckedChange = null, colors = xSwitchColors())
     }
 }
 

@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">Gulir satu layar</string>
     <string name="keys_scroll_ends">Ke atas atau ke akhir</string>
     <string name="keys_move">Berpindah antar tombol dan kolom</string>
+    <string name="keys_regions">Berpindah antara navigasi dan halaman</string>
     <string name="keys_text_size">Teks lebih besar, lebih kecil, atau normal</string>
     <string name="keys_interface_size">Antarmuka lebih besar, lebih kecil, atau normal</string>
     <string name="keys_full_screen">Layar penuh</string>

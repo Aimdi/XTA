@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Esta pasta está vazia</string>
     <string name="saved_empty_notes">Ainda não há notas. Elas não saem deste dispositivo a menos que você faça backup ou sincronize.</string>
     <string name="saved_note_button">Nota</string>
-    <string name="saved_add_note">Adicionar uma nota a esta publicação salva</string>
+    <string name="saved_add_note">Adicionar uma nota a esta publicação</string>
     <string name="saved_edit_note">Editar nota</string>
     <string name="saved_new_note">Nova nota</string>
     <string name="saved_too_large">Este tweet salvo não pôde ser exibido porque é muito grande para carregar. Por favor, denuncie aos desenvolvedores.</string>
@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">Incapaz de baixar. Esta mídia pode estar disponível apenas como uma transmissão, que XTA ainda não pode baixar.</string>
     <string name="saved_open_in_browser">Abrir no navegador</string>
     <string name="saved_ok">OK</string>
-    <string name="saved_something_wrong">Ops! Algo deu errado 🥲</string>
+    <string name="saved_something_wrong">Algo deu errado</string>
     <string name="archive_tags">Tags</string>
     <string name="archive_extract">Extrair texto de captura</string>
     <string name="archive_extract_notice">A imagem PNG ou JPEG escolhida será enviada para %1$s com seu modelo de IA configurado. O texto extraído pode conter erros.</string>
@@ -168,6 +168,7 @@
     <string name="saved_media_status">Não foi possível salvar a mídia. O Twitter retornou um status de %1$d</string>
     <string name="downloads_cancelled">Cancelado</string>
     <string name="downloads_interrupted">Interrompido · Tente novamente para continuar</string>
+    <string name="downloads_interrupted_desktop">Interrompido · Clique em Tentar novamente para continuar</string>
     <string name="downloads_batch">Arquivos salvos: %1$d / %2$d</string>
     <string name="downloads_saved_to">Salvo em %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Defina uma pasta de downloads em Configurações &gt; Mídia para baixar automaticamente.</string>

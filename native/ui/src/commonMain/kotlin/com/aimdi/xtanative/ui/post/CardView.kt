@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,6 +45,7 @@ import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.currentLocale
+import com.aimdi.xtanative.ui.common.rememberPictureIndication
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.card_from
 import com.aimdi.xtanative.ui.generated.resources.poll_ended_days
@@ -59,6 +59,7 @@ import com.aimdi.xtanative.ui.generated.resources.poll_ends_minutes
 import com.aimdi.xtanative.ui.generated.resources.poll_no_votes
 import com.aimdi.xtanative.ui.generated.resources.poll_votes
 import com.aimdi.xtanative.ui.generated.resources.reader_media
+import com.aimdi.xtanative.ui.links.LinkCardPicture
 import com.aimdi.xtanative.ui.links.LinkFrom
 import com.aimdi.xtanative.ui.links.LinkPreviewCard
 import com.aimdi.xtanative.ui.links.LocalLinks
@@ -67,6 +68,7 @@ import com.aimdi.xtanative.ui.media.MediaGallery
 import com.aimdi.xtanative.ui.media.MediaIcons
 import com.aimdi.xtanative.ui.media.ViewerMedia
 import com.aimdi.xtanative.ui.media.rememberPhotoSize
+import com.aimdi.xtanative.ui.theme.edgeColor
 import java.time.Instant
 import java.util.Locale
 import org.jetbrains.compose.resources.PluralStringResource
@@ -144,15 +146,10 @@ private fun LargeLinkCard(card: XCard.Link, onOpen: () -> Unit, modifier: Modifi
             Modifier
                 .fillMaxWidth()
                 .clip(CardShape)
-                .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, CardShape)
-                .clickable(onClick = onOpen),
+                .border(Dp.Hairline, edgeColor(), CardShape)
+                .clickable(interactionSource = null, indication = rememberPictureIndication(), onClick = onOpen),
         ) {
-            AsyncImage(
-                model = picture?.url,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth().aspectRatio(ratio.coerceIn(1f, 2.2f)).background(MaterialTheme.colorScheme.surfaceVariant),
-            )
+            LinkCardPicture(picture?.url, ratio.coerceIn(1f, 2.2f))
             TitleOverPicture(card.title, Modifier.align(Alignment.BottomStart))
         }
         CardSite(card.domain)

@@ -4,6 +4,7 @@
     <string name="media_alt_badge">ALT</string>
     <string name="media_alt_title">Image description</string>
     <string name="media_tap_to_show">Tap to show %1$s</string>
+    <string name="media_tap_to_show_desktop">Click to show %1$s</string>
     <string name="media_copy_image">Copy image</string>
     <string name="media_save_as">Save as…</string>
     <string name="media_drag_out">Drag the picture into another app</string>

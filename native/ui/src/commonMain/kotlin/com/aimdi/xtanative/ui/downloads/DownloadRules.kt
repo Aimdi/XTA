@@ -75,6 +75,9 @@ data class DownloadRow(
     }
 }
 
+/** Whether Clear completed history has anything to clear: an ended download it removes (not one running, nor one to try again). */
+fun hasClearableHistory(entries: List<DownloadEntry>): Boolean = entries.any { !it.active && !it.canRetry }
+
 /**
  * What a download started from a post says once it ends (downloads.dart):
  * where it went when the reader did not pick the place, that it was saved

@@ -38,6 +38,17 @@ class MpvOptionsTest {
     }
 
     @Test
+    fun aPodcastGoesThroughTheOutputItIsGivenOrMpvsChoice() {
+        assertEquals("null", MpvOptions.audio("null").of("ao"))
+        assertEquals("pipewire", MpvOptions.audio("pipewire").of("ao"))
+        assertEquals(MpvOptions.AUDIO, MpvOptions.audio(null))
+        assertEquals(MpvOptions.AUDIO, MpvOptions.audio(""))
+        val given = MpvOptions.audio("null")
+        assertEquals(given.size, given.map { it.first }.toSet().size, "each option once")
+        assertEquals("no", given.of("vid"))
+    }
+
+    @Test
     fun everyPlayerStartsPausedKeepsItsLastFrameAndNeedsNoSoundCard() {
         for (options in listOf(MpvOptions.AUDIO, MpvOptions.video(0, loop = false, muted = false))) {
             assertEquals("yes", options.of("pause"))

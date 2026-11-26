@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerEventPass
@@ -37,12 +38,14 @@ import androidx.navigation.NavHostController
  * to the frame unless something in the page holds them; [takeKeys] takes
  * them from whatever in the page holds them. [screen] is the screen shown
  * now (the back stack's top entry), so a sheet knows whether it closes over
- * the screen it opened on.
+ * the screen it opened on. [tabbing] is whether Tab or Shift+Tab is moving
+ * the focus now ([skippedByTab]).
  */
 class DesktopActions(
     private val refocus: (FocusRequester?) -> Unit = {},
     private val takeKeys: () -> Unit = {},
     private val screen: () -> Any? = { null },
+    private val tabbing: () -> Boolean = { false },
 ) {
     private var owner: Any? = null
     private var refreshing: (() -> Unit)? = null
@@ -109,6 +112,47 @@ class DesktopActions(
         if (back == null || open?.invoke() == true) closing?.invoke() else back()
     }
 
+    /** The navigation beside the screens ([FrameRegion]), F6's other place; null where the window has none. */
+    private var region: FrameRegion? = null
+
+    internal fun setRegion(owner: FrameRegion?) {
+        region = owner
+    }
+
+    internal fun dropRegion(owner: FrameRegion) {
+        if (region === owner) region = null
+    }
+
+    /**
+     * F6 and Shift+F6, as a browser moves between its bars and its page: from
+     * the page to the navigation beside it ([FrameRegion.enter]), and from
+     * there back to the page ([toPage]). False where the window has no
+     * navigation beside its screens, or it took no focus.
+     */
+    fun otherRegion(toPage: () -> Unit): Boolean {
+        val side = region ?: return false
+        if (!side.holds()) return side.enter()
+        toPage()
+        return true
+    }
+
+    /**
+     * Tab from the window's frame: the keys into the page beside the
+     * navigation ([FrameRegion.page]), not into the navigation, which stands
+     * first in the window; null where the window has no navigation beside its
+     * screens, false where nothing in the page took them.
+     */
+    fun enterPage(): Boolean? = region?.page?.invoke()
+
+    /**
+     * Shift+Tab onto the window's frame (from the navigation's first control,
+     * Tab's order wrapping round): the keys onto the page's last control
+     * ([FrameRegion.pageEnd]), as Shift+Tab goes round, rather than onto the
+     * frame, which shows nothing; null where the window has no navigation
+     * beside its screens, false where nothing in the page took them.
+     */
+    fun enterPageEnd(): Boolean? = region?.pageEnd?.invoke()
+
     /** The states the screen shown closes on Back ([com.aimdi.xtanative.ui.common.BackHandling]), the last enabled on top. */
     private val backs = mutableListOf<Pair<Any, () -> Unit>>()
 
@@ -127,9 +171,25 @@ class DesktopActions(
     /** The search fields that Ctrl+F and / go to, the last shown on top ([FindsWithKeys]). */
     private val finders = mutableListOf<Pair<Any, () -> Unit>>()
 
+    /** Whether the next search field shown takes the keyboard as it comes ([findOnReturn]). */
+    private var findingOnReturn = false
+
     internal fun addFinder(owner: Any, find: () -> Unit) {
         finders.removeAll { it.first === owner }
         finders += owner to find
+        if (findingOnReturn) {
+            findingOnReturn = false
+            find()
+        }
+    }
+
+    /**
+     * Ctrl+F on a page that has no search of its own but sits over one that
+     * does (a settings section over Settings): the caller goes back, and the
+     * search field shown next takes the keyboard as soon as it is there.
+     */
+    fun findOnReturn() {
+        findingOnReturn = true
     }
 
     internal fun removeFinder(owner: Any) {
@@ -461,6 +521,9 @@ class DesktopActions(
     /** Whether an overlay holds the keys: its own Esc and arrows then come before the window's. */
     fun overlayHoldsKeys(): Boolean = holders.isNotEmpty()
 
+    /** Whether Tab or Shift+Tab is moving the focus now, from its press to its release. */
+    internal fun tabStepping(): Boolean = tabbing()
+
     /** [holder] going: the keys to the one under it, else back to the window's frame, so they always have a taker. */
     internal fun releaseKeys(holder: FocusRequester) {
         holders -= holder
@@ -650,6 +713,21 @@ fun FindsWithKeys(find: () -> Unit) {
     DisposableEffect(actions) { onDispose { actions.removeFinder(owner) } }
 }
 
+/**
+ * Lets Ctrl+F and / ([DesktopKeys]) on a page with no search of its own go
+ * [back] to the page under it whose search it belongs to, with the keyboard
+ * in that page's field, as a settings app's search reaches every section.
+ * Nothing off the desktop.
+ */
+@Composable
+fun FindsBackWithKeys(back: () -> Unit) {
+    val actions = LocalDesktopActions.current ?: return
+    FindsWithKeys {
+        actions.findOnReturn()
+        back()
+    }
+}
+
 /** A page's find bar as the desktop's keys reach it: [open] it (Ctrl+F), or [step] it on (F3; false while it is closed). */
 class PageFinder(val open: () -> Unit, val step: (Int) -> Boolean)
 
@@ -762,6 +840,27 @@ internal fun DesktopShortcuts(
 }
 
 /**
+ * The navigation beside a desktop window's screens (the wide frame's column
+ * or rail) as F6 reaches it: [enter] gives the focus to its row of where the
+ * reader is, true if something in it took it; [holds] while something in it
+ * has the focus; [page] gives it to the page's first control beside it (Tab
+ * from the window's frame), true if something there took it; [pageEnd] to
+ * the page's last control (Shift+Tab from the navigation's first, wrapping
+ * round to the window's frame), true if something there took it.
+ */
+class FrameRegion(val enter: () -> Boolean, val holds: () -> Boolean, val page: () -> Boolean = { false }, val pageEnd: () -> Boolean = { false })
+
+/** [region] is the window's navigation for F6 while this is composed ([DesktopActions.otherRegion]). Nothing off the desktop. */
+@Composable
+internal fun ReachedByF6(region: FrameRegion) {
+    val actions = LocalDesktopActions.current ?: return
+    DisposableEffect(actions, region) {
+        actions.setRegion(region)
+        onDispose { actions.dropRegion(region) }
+    }
+}
+
+/**
  * For something drawn over the screens that keeps no keys of its own (a
  * sheet): when it goes, the keys go back to what it covered, the overlay
  * under it (a video full screen) or the window's frame, so they never
@@ -790,6 +889,19 @@ fun HoldsKeys(focus: FocusRequester) {
         actions.holdKeys(focus)
         onDispose { actions.releaseKeys(focus) }
     }
+}
+
+/**
+ * The focus of an overlay that holds the keys ([HoldsKeys]) as one Tab steps
+ * over: it takes the focus when asked, so the overlay's keys work, yet is no
+ * stop of Tab's, where it would show nothing; Tab and Shift+Tab go round the
+ * controls inside it instead. Nothing off the desktop.
+ */
+@Composable
+fun Modifier.skippedByTab(): Modifier {
+    val actions = LocalDesktopActions.current
+    val host = LocalDesktopActionsHost.current
+    return focusProperties { canFocus = (actions ?: host.actions)?.tabStepping() != true }
 }
 
 /**

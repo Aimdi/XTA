@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Citaĵoj</string>
     <string name="posts_replies_missing">Ne eblis ŝargi la respondojn</string>
+    <string name="posts_no_replies_yet">Ankoraŭ neniuj respondoj</string>
     <string name="posts_replying_to">Respondas al</string>
     <string name="posts_reposted">%1$s repepis %2$s</string>
     <string name="posts_reposted_by">Resendita de</string>
@@ -96,6 +97,7 @@
     <string name="posts_verified_organization">Kontrolita organizo</string>
     <string name="posts_view_quoted">Vidi la cititan pecon</string>
     <string name="posts_zen_replies">Longpremu la komentan butonon por montri la respondojn</string>
+    <string name="posts_zen_replies_desktop">Dekstre alklaku la komentan butonon por montri la respondojn</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s vido</item>
         <item quantity="other">%1$s vidoj</item>

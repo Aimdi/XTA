@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -82,6 +83,7 @@ internal fun StripSheet(
         (RowSteps.step(keys, key, up) != null).also { if (it) onStep(key as String, up) }
     }
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        val closer = LocalSheetCloser.current
         LazyColumn(state = list, modifier = Modifier.fillMaxWidth().movedByKeys(list).hoveredRowMovedByKeys(moves).padding(bottom = 16.dp)) {
             item(key = "title") {
                 Column {
@@ -97,8 +99,7 @@ internal fun StripSheet(
             if (pinned.isEmpty() && candidates.isEmpty()) {
                 item(key = "empty") {
                     NoPlugins(routes.exists(HomeDestination.PLUGINS.route)) {
-                        onDismiss()
-                        routes.openIfExists(HomeDestination.PLUGINS.route)
+                        closer.close { routes.openIfExists(HomeDestination.PLUGINS.route) }
                     }
                 }
             }
@@ -107,7 +108,7 @@ internal fun StripSheet(
                 val network = byId[key] ?: return@items
                 val dragged = drag.key == key
                 Box(Modifier.rowMovedByKeys(moves, key).graphicsLayer { translationY = if (dragged) drag.offset else 0f }.let { if (dragged) it.background(MaterialTheme.colorScheme.surfaceContainerHigh) else it }) {
-                    NetworkRow(network, networks, onClick = { onOpen(network.id) }) {
+                    NetworkRow(network, networks, onClick = { closer.close { onOpen(network.id) } }) {
                         IconTip(stringResource(Res.string.home_strip_remove)) { IconButton(onClick = { onUnpin(network.id) }) { Icon(HomeIcons.RemoveCircle, stringResource(Res.string.home_strip_remove)) } }
                         DragHandle(
                             Modifier.pointerInput(key, keys) {

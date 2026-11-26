@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -14,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isAltPressed
@@ -28,6 +30,7 @@ import androidx.compose.ui.window.LocalWindowExceptionHandlerFactory
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
+import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import coil3.SingletonImageLoader
@@ -44,6 +47,7 @@ import com.aimdi.xtanative.ui.appName
 import com.aimdi.xtanative.ui.chrome.AppLog
 import com.aimdi.xtanative.ui.chrome.AppQuit
 import com.aimdi.xtanative.ui.chrome.CommandLine
+import com.aimdi.xtanative.ui.chrome.Diagnostics
 import com.aimdi.xtanative.ui.chrome.InstanceMessage
 import com.aimdi.xtanative.ui.chrome.SavedWindow
 import com.aimdi.xtanative.ui.chrome.SavedWindowFile
@@ -69,6 +73,7 @@ import java.awt.Toolkit
 import java.io.File
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.FutureTask
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.roundToInt
 import kotlin.system.exitProcess
 import kotlinx.coroutines.FlowPreview
@@ -107,11 +112,16 @@ fun main(args: Array<String>) {
     val instance = SingleInstance.claim(files, link?.let(InstanceMessage::Open) ?: InstanceMessage.Raise) ?: exitProcess(0)
     // What the app prints is kept in its log too, once this start is the one that runs: from the menu, nothing reads the terminal.
     AppLog.install()
+    // `--verbose`: the system's facts and each request's line in the log as well.
+    val verbose = "--verbose" in args
+    if (verbose) Diagnostics.verbose()
     link?.let(DesktopIncomingLinks::hand)
     val raises = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val trayClicks = MutableSharedFlow<TrayAction>(extraBufferCapacity = 4)
     val tray = TrayService.desktop
     tray.onAction = { action -> if (action == TrayAction.SHOW) raises.tryEmit(Unit) else trayClicks.tryEmit(action) }
+    // The main window and its state once it is made, for the icon's click to ask whether it is minimized or in use.
+    val mainWindow = AtomicReference<Pair<WindowState, ComposeWindow>?>(null)
     val startHidden = "--minimized" in args
     // The desktop's dark or light is asked while the window starts, so "System" opens in it.
     DesktopColorScheme.desktop.start()
@@ -173,6 +183,12 @@ fun main(args: Array<String>) {
                         raises.tryEmit(Unit)
                     }
                     action == TrayAction.PLAY_PAUSE -> MprisSessions.service.playPause()
+                    // The icon clicked: hidden when it is the window in use, else brought up.
+                    action == TrayAction.ACTIVATE -> {
+                        val (shownState, shownWindow) = mainWindow.get() ?: (null to null)
+                        val hides = StatusNotifier.hidesOnActivate(visible, shownState?.isMinimized == true, shownWindow?.isActive == true)
+                        if (hides) visible = false else raises.tryEmit(Unit)
+                    }
                     visible -> visible = false
                     else -> raises.tryEmit(Unit)
                 }
@@ -230,6 +246,12 @@ fun main(args: Array<String>) {
                         .distinctUntilChanged()
                         .debounce(500)
                         .collect(windowFile::write)
+                }
+                DisposableEffect(window) {
+                    Diagnostics.renderer = { window.renderApi.name }
+                    if (verbose) println("XTA Native: Renderer: ${window.renderApi.name}")
+                    mainWindow.set(state to window)
+                    onDispose { mainWindow.set(null) }
                 }
                 LaunchedEffect(fronts) {
                     if (fronts == 0) return@LaunchedEffect

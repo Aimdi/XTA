@@ -19,6 +19,7 @@
     <string name="keys_scroll_screen">Desplaça’t una pantalla</string>
     <string name="keys_scroll_ends">Ves al principi o al final</string>
     <string name="keys_move">Mou-te entre botons i camps</string>
+    <string name="keys_regions">Mou-te entre la navegació i la pàgina</string>
     <string name="keys_text_size">Text més gran, més petit o normal</string>
     <string name="keys_interface_size">Interfície més gran, més petita o normal</string>
     <string name="keys_full_screen">Pantalla completa</string>

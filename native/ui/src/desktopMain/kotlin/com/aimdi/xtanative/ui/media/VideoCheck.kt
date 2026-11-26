@@ -63,14 +63,24 @@ object VideoCheck {
         val end = withTimeoutOrNull(PLAY_MS) { playback.state.first { it.completed || it.failed } }
         val now = playback.state.value
         say("frames ${playback.frames?.handedCount} drawn, ${playback.frames?.shownCount} shown; at ${now.positionMs} ms of ${now.durationMs} ms; " + if (end?.completed == true) "completed" else "not completed")
-        say("sound through ${playback.property("current-ao") ?: "no output"}")
-        podcast(url)
+        val output = playback.property("current-ao")
+        say("sound through ${output ?: "no output"}")
+        podcast(url, output)
         say("done")
     }
 
-    /** The same file as a podcast plays it: sound alone, through the continuity port. */
-    private suspend fun podcast(url: String) {
-        val player = MpvContinuityPlayer.create()
+    /**
+     * The same file as a podcast plays it: sound alone, through the
+     * continuity port and the [output] the video's player found, not mpv's
+     * search through its outputs again: where PipeWire's library is but no
+     * PipeWire (CI's runner), mpv 0.41 starts PipeWire's thread loop and stops
+     * it at once, a stop that can race the start and hang mpv for good
+     * (PipeWire #5581). The podcast then never loaded (0 ms of 0 ms, the
+     * minute the check waits); tool/video_check.sh also keeps PipeWire from
+     * starting a loop at all.
+     */
+    private suspend fun podcast(url: String, output: String?) {
+        val player = MpvContinuityPlayer.create(output)
         try {
             player.open(url)
             player.play()

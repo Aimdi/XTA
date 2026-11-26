@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Citaten</string>
     <string name="posts_replies_missing">Kon antwoorden niet laden</string>
+    <string name="posts_no_replies_yet">Nog geen antwoorden</string>
     <string name="posts_replying_to">Reagerend op</string>
     <string name="posts_reposted">%1$s heeft opnieuw geplaatst %2$s</string>
     <string name="posts_reposted_by">Opnieuw gedeeld door</string>
@@ -96,6 +97,7 @@
     <string name="posts_verified_organization">Geverifieerde organisatie</string>
     <string name="posts_view_quoted">Bekijk geciteerde post</string>
     <string name="posts_zen_replies">Houd de reactieknop ingedrukt om de reacties te tonen</string>
+    <string name="posts_zen_replies_desktop">Klik met de rechtermuisknop op de reactieknop om de reacties te tonen</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s weergave</item>
         <item quantity="other">%1$s weergaven</item>

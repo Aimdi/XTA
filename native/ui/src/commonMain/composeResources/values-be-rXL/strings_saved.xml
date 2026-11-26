@@ -58,7 +58,7 @@
     <string name="saved_empty_folder">Hetaja tečka pustaja</string>
     <string name="saved_empty_notes">Pakul niama natatak. Jany nie pakidajuć pryladu, pakul vy nie zrobicie rezervovuju kopiju abo sinchranizacyju.</string>
     <string name="saved_note_button">Natatka</string>
-    <string name="saved_add_note">Dadać natatku da hetaha zachavanaha dopisu</string>
+    <string name="saved_add_note">Dadać natatku da hetaha dopisu</string>
     <string name="saved_edit_note">Redahavać natatku</string>
     <string name="saved_new_note">Novaja natatka</string>
     <string name="saved_too_large">Zachavany tvit zanadta vialiki</string>
@@ -128,7 +128,7 @@
     <string name="saved_no_media_file">Niemahčyma zahruzić. Heta medyja moža być dastupna tolki ŭ vyhladzie patoku, jaki XTA pakul nie moža zahruzić.</string>
     <string name="saved_open_in_browser">Adčynić u braŭzery</string>
     <string name="saved_ok">Dobra</string>
-    <string name="saved_something_wrong">Oj! Nešta pajšło nie tak 🥲</string>
+    <string name="saved_something_wrong">Nešta pajšło nie tak</string>
     <string name="archive_tags">Tehi</string>
     <string name="archive_extract">Raspaznać tekst sa zdymka ekrana</string>
     <string name="archive_extract_notice">Vybranaja vyjava PNG abo JPEG budzie adpraŭlena na %1$s z naładžanaj madellu ŠI. Raspaznany tekst moža źmiaščać pamyłki.</string>
@@ -174,6 +174,7 @@
     <string name="saved_media_status">Niemahčyma zachavać medyjafajł. Twitter viarnuŭ status %1$d</string>
     <string name="downloads_cancelled">Skasavana</string>
     <string name="downloads_interrupted">Pierapyniena · Paŭtarycie sprobu, kab praciahnuć</string>
+    <string name="downloads_interrupted_desktop">Pierapyniena · Pstryknicie «Paŭtaryć», kab praciahnuć</string>
     <string name="downloads_batch">Zachavanyja fajły: %1$d / %2$d</string>
     <string name="downloads_saved_to">Zachavana ŭ %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Zadajcie tečku spampovak u Nalady &gt; Medyja dlia aŭtaspampoŭki.</string>

@@ -41,6 +41,11 @@ stage=$(mktemp -d)
 trap 'rm -rf "$stage"' EXIT
 mkdir -p "$stage/$name" "$out"
 cp -a "$app/bin" "$app/lib" "$stage/$name/"
+# What the menu entry and the Arch package start: the app with each user's class-data
+# sharing archive, made from the classes tool/cds_classlist.sh listed (xta-native-launch).
+install -m755 "$here/packaging/linux/xta-native-launch" "$stage/$name/bin/xta-native-launch"
+[[ -f "$app/lib/app/xta-native.classlist" ]] \
+  || echo "warning: $app lists no classes (tool/cds_classlist.sh): starts will not get a class-data archive" >&2
 install -m644 "$root/LICENSE" "$stage/$name/"
 install -m755 "$here/packaging/linux/install.sh" "$stage/$name/"
 install -Dm644 "$here/packaging/linux/com.aimdi.xtanative.desktop" "$stage/$name/share/applications/com.aimdi.xtanative.desktop"

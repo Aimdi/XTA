@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X gaf een serverfout. Je kunt de berichten in de cache blijven lezen en het later opnieuw proberen.</string>
     <string name="problem_request_unavailable_title">Dit verzoek is niet beschikbaar</string>
     <string name="problem_request_unavailable_text">X heeft dit verzoek afgewezen. Het is mogelijk tijdelijk niet beschikbaar, of dit deel van de dienst is veranderd.</string>
-    <string name="problem_oops">Oeps! Er ging iets mis 🥲</string>
+    <string name="problem_oops">Kon dit niet laden</string>
     <string name="problem_http_text">X gaf HTTP %1$d terug.</string>
     <string name="problem_retry_in">Opnieuw proberen over %1$s</string>
     <string name="close_app_confirm">Weet je zeker dat je XTA wilt sluiten?</string>
@@ -45,4 +45,5 @@
     <string name="find_in_page">Zoeken op pagina</string>
     <string name="find_previous_match">Vorige overeenkomst</string>
     <string name="find_next_match">Volgende overeenkomst</string>
+    <string name="loading">Laden…</string>
 </resources>

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -43,7 +44,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -90,6 +93,7 @@ import org.jetbrains.compose.resources.stringResource
 /** A switch bound to [pref]; [focus] is the control the search opened the page for. */
 @Composable
 private fun PrefSwitch(settings: Settings, pref: Pref<Boolean>, title: String, description: String?, vm: SettingsViewModel, focus: String?, enabled: Boolean = true) {
+    if (!shownHere(pref.key)) return
     SwitchRow(title, description, settings[pref], enabled, focus == pref.key) { vm.set(pref, it) }
 }
 
@@ -101,7 +105,6 @@ internal fun GeneralSettings(title: String, vm: SettingsViewModel, focus: String
     val snackbar = remember { SnackbarHostState() }
     SettingsPage(title, onBack, snackbar) { padding ->
         SettingsList(padding) {
-            SettingsHeader(stringResource(Res.string.settings_general))
             val languages = listOf(SettingsChoices.SYSTEM_LANGUAGE) + SettingsChoices.languages.map { it.code }
             val language = settings[GeneralPrefs.locale].takeIf { it in languages } ?: SettingsChoices.SYSTEM_LANGUAGE
             ChoiceRow(
@@ -135,7 +138,7 @@ internal fun GeneralSettings(title: String, vm: SettingsViewModel, focus: String
                 PrefSwitch(settings, GeneralPrefs.disableScreenshots, stringResource(Res.string.settings_disable_screenshots), stringResource(Res.string.settings_disable_screenshots_hint), vm, focus)
             }
 
-            SettingsHeader(stringResource(Res.string.settings_default_tab))
+            SettingsDivider()
             ChoiceRow(
                 stringResource(Res.string.settings_default_tab),
                 stringResource(Res.string.settings_default_tab_description),
@@ -278,7 +281,7 @@ internal fun PostsSettings(title: String, vm: SettingsViewModel, focus: String?,
             SettingsHeader(stringResource(Res.string.settings_zen_mode))
             PrefSwitch(settings, PostsPrefs.threadedReplies, stringResource(Res.string.settings_threaded_replies), stringResource(Res.string.settings_threaded_replies_description), vm, focus)
             PrefSwitch(settings, PostsPrefs.collapseReposts, stringResource(Res.string.settings_collapse_boosts), stringResource(Res.string.settings_collapse_boosts_description), vm, focus)
-            PrefSwitch(settings, PostsPrefs.zenMode, stringResource(Res.string.settings_zen_mode), stringResource(Res.string.settings_zen_mode_description), vm, focus)
+            PrefSwitch(settings, PostsPrefs.zenMode, stringResource(Res.string.settings_zen_mode), stringResource(GestureWording.zenModeDescription), vm, focus)
             PrefSwitch(settings, PostsPrefs.calmMode, stringResource(Res.string.settings_calm_mode), stringResource(Res.string.settings_calm_mode_description), vm, focus)
             ChoiceRow(
                 stringResource(Res.string.settings_zen_page_cap),
@@ -352,7 +355,7 @@ internal fun MediaSettings(title: String, vm: SettingsViewModel, focus: String?,
     SettingsPage(title, onBack) { padding ->
         SettingsList(padding) {
             SettingsHeader(stringResource(Res.string.settings_image_quality))
-            PrefSwitch(settings, MediaPrefs.loadManually, stringResource(Res.string.settings_load_manually), stringResource(Res.string.settings_load_manually_description), vm, focus)
+            PrefSwitch(settings, MediaPrefs.loadManually, stringResource(Res.string.settings_load_manually), stringResource(GestureWording.loadManuallyDescription), vm, focus)
             ChoiceRow(
                 stringResource(Res.string.settings_image_quality),
                 stringResource(Res.string.settings_save_bandwidth),
@@ -465,21 +468,9 @@ internal fun ThemeSettings(title: String, vm: SettingsViewModel, focus: String?,
             SettingsHeader(stringResource(Res.string.settings_accent), stringResource(Res.string.settings_accent_description))
             AccentPicker(settings[ThemePrefs.accent], Modifier.focusedSetting(focus == ThemePrefs.accent.key)) { vm.set(ThemePrefs.accent, it) }
             SettingsDivider()
-            SwitchRow(
-                stringResource(Res.string.settings_true_black),
-                stringResource(Res.string.settings_true_black_description),
-                settings[ThemePrefs.trueBlack],
-                focused = focus == ThemePrefs.trueBlack.key,
-            ) { on -> vm.update { it.with(ThemePrefs.trueBlack, on).with(ThemePrefs.trueBlackPostCards, on) } }
-            PrefSwitch(
-                settings, ThemePrefs.trueBlackPostCards, stringResource(Res.string.settings_true_black_cards),
-                stringResource(Res.string.settings_true_black_cards_description), vm, focus, enabled = settings[ThemePrefs.trueBlack],
-            )
             PrefSwitch(settings, ThemePrefs.showNavigationLabels, stringResource(Res.string.settings_navigation_labels), null, vm, focus)
             PrefSwitch(settings, ThemePrefs.hideNavigationOnScroll, stringResource(Res.string.settings_hide_navigation), null, vm, focus)
-            if (!isDesktop) {
-                PrefSwitch(settings, ThemePrefs.hideStatusBar, stringResource(Res.string.settings_hide_status_bar), stringResource(Res.string.settings_hide_status_bar_description), vm, focus)
-            }
+            PrefSwitch(settings, ThemePrefs.hideStatusBar, stringResource(Res.string.settings_hide_status_bar), stringResource(Res.string.settings_hide_status_bar_description), vm, focus)
         }
     }
 }
@@ -487,11 +478,15 @@ internal fun ThemeSettings(title: String, vm: SettingsViewModel, focus: String?,
 /** System, Light, Dim and Lights out, each as the page it paints; System is half Light, half Lights out. */
 @Composable
 internal fun BackgroundPicker(selected: ThemeBackground, modifier: Modifier = Modifier, onSelect: (ThemeBackground) -> Unit) {
-    Row(modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    // As the accents below: from the start edge at the same spacing, not spread across a wide column.
+    Row(
+        modifier.fillMaxWidth().padding(horizontal = PICKER_EDGE, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(PICKER_GAP),
+    ) {
         ThemeBackground.entries.forEach { background ->
             val chosen = background == selected
             Column(
-                Modifier.weight(1f).clip(RoundedCornerShape(12.dp)).clickable { onSelect(background) }.padding(4.dp),
+                Modifier.weight(1f, fill = false).widthIn(max = BACKGROUND_TILE).fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable { onSelect(background) }.padding(4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(
@@ -528,16 +523,18 @@ internal fun BackgroundPicker(selected: ThemeBackground, modifier: Modifier = Mo
 @Composable
 internal fun AccentPicker(selected: ThemeAccent, modifier: Modifier = Modifier, onSelect: (ThemeAccent) -> Unit) {
     val desktopAccent = systemAccent()
-    FlowRow(modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+    FlowRow(modifier.fillMaxWidth().padding(horizontal = PICKER_EDGE, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(PICKER_GAP)) {
         XLook.offeredAccents(isDesktop, selected).forEach { accent ->
             val chosen = accent == selected
             val argb = XLook.accentArgb(accent, desktopAccent)
+            val swatch = XLook.accentSwatch(accent, desktopAccent).map(::Color)
             Column(
-                Modifier.width(64.dp).clip(RoundedCornerShape(12.dp)).clickable { onSelect(accent) }.padding(vertical = 6.dp),
+                Modifier.width(ACCENT_TILE).clip(RoundedCornerShape(12.dp)).clickable { onSelect(accent) }.padding(vertical = 6.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(
-                    Modifier.size(32.dp).clip(CircleShape).background(Color(argb))
+                    Modifier.size(32.dp).clip(CircleShape)
+                        .background(if (swatch.size > 1) Brush.sweepGradient(swatch + swatch.first()) else SolidColor(swatch.single()))
                         .border(if (chosen) 2.dp else 0.dp, if (chosen) MaterialTheme.colorScheme.onBackground else Color.Transparent, CircleShape),
                     contentAlignment = Alignment.Center,
                 ) {
@@ -548,6 +545,18 @@ internal fun AccentPicker(selected: ThemeAccent, modifier: Modifier = Modifier, 
         }
     }
 }
+
+/** How far the Design page's pickers stand in from the page's edge. */
+private val PICKER_EDGE = 12.dp
+
+/** The space between two of a picker's choices. */
+private val PICKER_GAP = 4.dp
+
+/** The widest a background's choice grows, its page and its name: four of them fill a phone's width. */
+private val BACKGROUND_TILE = 88.dp
+
+/** How wide an accent's choice is, its disc and its name. */
+private val ACCENT_TILE = 64.dp
 
 // ---- Accessibility (_accessibility.dart) ----
 
@@ -584,9 +593,9 @@ internal fun AccessibilitySettings(title: String, vm: SettingsViewModel, focus: 
                 PrefSwitch(settings, AccessibilityPrefs.haptics, stringResource(Res.string.settings_haptics), stringResource(Res.string.settings_haptics_description), vm, focus)
             }
             PrefSwitch(settings, AccessibilityPrefs.tickerChart, stringResource(Res.string.settings_ticker_chart), stringResource(Res.string.settings_ticker_chart_description), vm, focus)
-            PrefSwitch(settings, AccessibilityPrefs.doubleTapLike, stringResource(Res.string.settings_double_tap_like), stringResource(Res.string.settings_double_tap_like_description), vm, focus)
-            PrefSwitch(settings, AccessibilityPrefs.swipeBackAnywhere, stringResource(Res.string.settings_swipe_back_anywhere), stringResource(Res.string.settings_swipe_back_anywhere_description), vm, focus)
-            PrefSwitch(settings, AccessibilityPrefs.swipeBackTilt, stringResource(Res.string.settings_swipe_back_tilt), stringResource(Res.string.settings_swipe_back_tilt_description), vm, focus)
+            PrefSwitch(settings, AccessibilityPrefs.doubleTapLike, stringResource(GestureWording.doubleTapLike), stringResource(GestureWording.doubleTapLikeDescription), vm, focus)
+            PrefSwitch(settings, AccessibilityPrefs.swipeBackAnywhere, stringResource(GestureWording.swipeBackAnywhere), stringResource(GestureWording.swipeBackAnywhereDescription), vm, focus)
+            PrefSwitch(settings, AccessibilityPrefs.swipeBackTilt, stringResource(GestureWording.swipeBackTilt), stringResource(GestureWording.swipeBackTiltDescription), vm, focus)
             // XTA opens Read aloud's settings over this page (openTtsSettings).
             NavigationRow(
                 stringResource(Res.string.settings_speech),

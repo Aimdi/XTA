@@ -39,7 +39,7 @@
     <string name="open_in_browser">Im Browser öffnen</string>
     <string name="plugin_description">Watchlist, Märkte und Cashtag-Beiträge — ohne Konto</string>
     <string name="plugin_name">Aktien</string>
-    <string name="posts">Tweets</string>
+    <string name="posts">Beiträge</string>
     <string name="posts_empty">Keine Beiträge entsprechen deiner Suche</string>
     <string name="posts_followed">Konten, denen du folgst</string>
     <string name="posts_others">Alle anderen</string>

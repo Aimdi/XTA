@@ -84,6 +84,7 @@
     <string name="settings_yes">Sí</string>
     <string name="settings_zen_mode">Mode zen</string>
     <string name="settings_zen_mode_description">Un canal més tranquil: amaga les estadístiques, amaga les respostes fins que mantinguis premut el botó de comentaris i mostra només unes quantes publicacions recents per persona.</string>
+    <string name="settings_zen_mode_description_desktop">Un canal més tranquil: amaga les estadístiques, amaga les respostes fins que facis clic amb el botó dret al botó de comentaris i mostra només unes quantes publicacions recents per persona.</string>
     <string name="settings_threaded_replies">Respostes en fil</string>
     <string name="settings_threaded_replies_description">Mostra les respostes d'una publicació oberta com un arbre amb sagnat, amb cada resposta imbricada sota la que respon.</string>
     <string name="settings_collapse_boosts">Agrupa les ratxes de republicacions</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Qualitat de les imatges</string>
     <string name="settings_load_manually">Carregar els mèdia manualment</string>
     <string name="settings_load_manually_description">Les imatges i els vídeos només es carreguen en tocar-los, per estalviar dades mòbils.</string>
+    <string name="settings_load_manually_description_desktop">Les imatges i els vídeos només es carreguen en fer-hi clic, per estalviar dades.</string>
     <string name="settings_save_bandwidth">Estalviar amplada de banda amb imatges més petites</string>
     <string name="settings_quality_low">Baixa</string>
     <string name="settings_quality_medium">Mitjana</string>
@@ -160,10 +162,6 @@
     <string name="settings_colour_purple">Lila</string>
     <string name="settings_colour_orange">Taronja</string>
     <string name="settings_colour_green">Verd</string>
-    <string name="settings_true_black">Veritablement Fosc?</string>
-    <string name="settings_true_black_description">Utilitza negre veritable per al tema del mode fosc</string>
-    <string name="settings_true_black_cards">Negre real per a les targetes de tuits</string>
-    <string name="settings_true_black_cards_description">Utilitza el negre real per al fons de les targetes de tuits</string>
     <string name="settings_navigation_labels">Mostra les etiquetes de navegació</string>
     <string name="settings_hide_navigation">Amaga les barres superior i inferior en desplaçar</string>
     <string name="settings_hide_status_bar">Amaga la barra d'estat</string>
@@ -179,11 +177,17 @@
     <string name="settings_ticker_chart">Gràfic borsari</string>
     <string name="settings_ticker_chart_description">Es mostra en obrir un tíquer. XTA obté els preus de serveis públics sense compte; desactivat no fa cap petició i les publicacions es mantenen.</string>
     <string name="settings_double_tap_like">Doble toc per fer m'agrada</string>
+    <string name="settings_double_tap_like_desktop">Doble clic per fer m'agrada</string>
     <string name="settings_double_tap_like_description">Desactivat per defecte: cada toc simple espera per si en ve un segon, així que obrir una publicació triga una mica més.</string>
+    <string name="settings_double_tap_like_description_desktop">Desactivat per defecte: cada clic simple espera per si en ve un segon, així que obrir una publicació triga una mica més.</string>
     <string name="settings_swipe_back_anywhere">Tornar enrere lliscant des de qualsevol lloc</string>
+    <string name="settings_swipe_back_anywhere_desktop">Tornar enrere arrossegant des de qualsevol lloc</string>
     <string name="settings_swipe_back_anywhere_description">Arrossega una publicació oberta des de qualsevol punt per tornar enrere. Desactivat: només des de la vora de la pantalla.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Arrossega una publicació oberta des de qualsevol punt per tornar enrere. Desactivat: només des de la vora de la finestra.</string>
     <string name="settings_swipe_back_tilt">Inclinar amb el dit</string>
+    <string name="settings_swipe_back_tilt_desktop">Inclinar amb el punter</string>
     <string name="settings_swipe_back_tilt_description">La publicació que arrossegues gira al voltant del dit i es gronxa segons la velocitat.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">La publicació que arrossegues gira al voltant del punter i es gronxa segons la velocitat.</string>
     <string name="settings_accounts_empty">Afegeix un compte per carregar Per a tu.</string>
     <string name="settings_accounts_description">Desactiva els comptes de reserva que només guardes pels límits. Per a tu fusiona les cronologies dels comptes actius; Seguint continua usant les teves subscripcions locals, però omet els desactivats en carregar. Comentaris i perfils encara poden usar qualsevol compte si cal.</string>
     <string name="settings_account_delete_confirm">Vols tancar la sessió de @%1$s? El XTA n'oblidarà la sessió en aquest dispositiu i no ho podràs desfer.</string>
@@ -319,6 +323,7 @@
     <string name="settings_intro_again">Torna a mostrar la introducció</string>
     <string name="settings_intro_again_description">Torna a veure les targetes del primer inici.</string>
     <string name="settings_open_logs">Obre la carpeta de registres</string>
+    <string name="settings_copy_diagnostics">Copia la informació de diagnòstic</string>
     <string name="settings_ok">D'acord</string>
     <string name="settings_diagnostics_copy">Copia l'informe</string>
     <string name="settings_diagnostics_copied">Diagnòstic copiat al porta-retalls</string>

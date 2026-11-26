@@ -178,6 +178,13 @@ internal object MpvOptions {
     /** A podcast's or a voice's player: sound alone, no picture of it and no cover art. */
     val AUDIO: List<Pair<String, String>> = BASE + listOf("vid" to "no", "audio-display" to "no")
 
+    /**
+     * [AUDIO] through [output], one of mpv's audio outputs ("pipewire",
+     * "null"), rather than the first of its list that opens; mpv's own choice
+     * when it is null or blank.
+     */
+    fun audio(output: String?): List<Pair<String, String>> = if (output.isNullOrBlank()) AUDIO else AUDIO + ("ao" to output)
+
     fun loopValue(loop: Boolean): String = if (loop) "inf" else "no"
 
     /**

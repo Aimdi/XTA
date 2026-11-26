@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.post
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -13,6 +14,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -28,15 +30,21 @@ import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.parse.XRun
 import com.aimdi.xtanative.core.x.parse.XText
 import com.aimdi.xtanative.networks.AddressPiece
 import com.aimdi.xtanative.networks.CryptoAddresses
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.Motion
 import com.aimdi.xtanative.ui.common.clickableNoRipple
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
+import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.common.foundIn
 import com.aimdi.xtanative.ui.common.rememberCopyContract
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -132,16 +140,27 @@ fun ExpandablePostText(
     val contracts = rememberContractSpans()
     val text = remember(runs, linkColor, actions, cashtags, contracts) { annotated(runs, linkColor, actions, cashtags, contracts) }
     if (text.isEmpty()) return
-    var expanded by remember(post.id, post.text) { mutableStateOf(false) }
-    var folds by remember(post.id, post.text, maxLines) { mutableStateOf(false) }
+    // Kept by post, so a text unfolded stays so when the list scrolls it away and back, or the screen comes back.
+    var expanded by rememberSaveable(post.id, post.text) { mutableStateOf(false) }
+    // Kept as well: a screen coming back draws its Show more in the first frame, rather than a frame later 36 dp taller,
+    // which moved a list read to its end down once the place it came back to had been held to the shorter text.
+    // Each folded layout then says whether it still folds (ShowMore.folds), so a wider window or smaller text drops it.
+    var folds by rememberSaveable(post.id, post.text, maxLines) { mutableStateOf(false) }
+    var unfolding by remember(post.id) { mutableStateOf(false) }
     val clipped = maxLines != null && !expanded
     val found = foundIn(findKey, text)
+    val unfold = {
+        unfolding = true
+        expanded = true
+    }
     // The find bar's match shown is in the folded part: the text unfolds, as Show more does.
-    LaunchedEffect(found.holdsCurrent) { if (found.holdsCurrent) expanded = true }
+    LaunchedEffect(found.holdsCurrent) { if (found.holdsCurrent) unfold() }
     val laidOut = remember { TextLayoutHolder() }
     var topic by remember { mutableStateOf<String?>(null) }
     topic?.let { TopicSheet(it) { topic = null } }
-    Column(modifier.animateContentSize()) {
+    val resizes = ShowMore.resizes(LocalReducedMotion.current, folds, clipped, unfolding)
+    val settled = remember { { _: IntSize, _: IntSize -> unfolding = false } }
+    Column(modifier.then(if (resizes) Modifier.animateContentSize(tween(Motion.STANDARD_MS), finishedListener = settled) else Modifier)) {
         val drawn: @Composable () -> Unit = {
             Text(
                 found.text,
@@ -152,22 +171,41 @@ fun ExpandablePostText(
                 onTextLayout = { layout ->
                     laidOut.take(layout)
                     found.laidOut(layout)
-                    if (clipped && layout.hasVisualOverflow) folds = true
+                    folds = ShowMore.folds(folds, clipped, layout.hasVisualOverflow)
                 },
                 modifier = (if (clipped && folds) Modifier.fadingBottom() else Modifier).tagPresses(text, laidOut) { topic = it }.linkMiddleClicks(text, laidOut, actions.openInBrowser).linkDrags(text, laidOut).then(found.modifier),
             )
         }
-        if (selectable) SelectionContainer { drawn() } else drawn()
+        if (selectable) SelectionContainer(Modifier.pointerOnlyFocus()) { drawn() } else drawn()
         if (clipped && folds) {
             Text(
                 stringResource(Res.string.posts_show_more),
                 color = linkColor,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.heightIn(min = 36.dp).padding(top = 8.dp, end = 12.dp).clickableNoRipple { expanded = true },
+                modifier = Modifier.heightIn(min = 36.dp).padding(top = 8.dp, end = 12.dp).keyboardFocusRing(outset = 2.dp).clickableNoRipple(onClick = unfold),
             )
         }
     }
+}
+
+/**
+ * When a folding text's size animates: only one that has a Show more, while
+ * it is folded or unfolding, and not while motion is [reduced]. A list's
+ * every text carrying the animation would animate as rows are reused in a
+ * fling; a text that never folds, or has finished unfolding, has no need of it.
+ */
+internal object ShowMore {
+    /**
+     * Whether the text folds after a layout that [overflows] or not: only a
+     * [clipped] layout tells (an unfolded one never overflows), so what was
+     * kept stands until such a layout says otherwise, and is right in a
+     * returning screen's first frame.
+     */
+    fun folds(was: Boolean, clipped: Boolean, overflows: Boolean): Boolean = if (clipped) overflows else was
+
+    fun resizes(reduced: Boolean, folds: Boolean, clipped: Boolean, unfolding: Boolean): Boolean =
+        !reduced && folds && (clipped || unfolding)
 }
 
 /** The find bar's key of the text of quoted post [id] ([QuotedPost], [ThreadFind]), apart from the post's own where it is shown too. */
@@ -195,7 +233,7 @@ internal fun annotated(
     cashtags: ((String) -> Boolean)? = null,
     contracts: ContractSpans? = null,
 ): AnnotatedString = buildAnnotatedString {
-    val styles = TextLinkStyles(SpanStyle(color = linkColor))
+    val styles = linkStyles(linkColor)
     for (run in runs) {
         when (run) {
             is XRun.Text -> if (contracts == null) append(run.text) else appendWithContracts(run.text, contracts)
@@ -213,7 +251,7 @@ internal fun annotated(
 
 /** [text] with each contract address in it cut in the middle, led by its watched token's network, a tap copying it whole. */
 private fun AnnotatedString.Builder.appendWithContracts(text: String, contracts: ContractSpans) {
-    val styles = TextLinkStyles(SpanStyle(color = contracts.color))
+    val styles = linkStyles(contracts.color)
     for (piece in CryptoAddresses.pieces(text)) {
         when (piece) {
             is AddressPiece.Text -> append(piece.text)
@@ -223,6 +261,24 @@ private fun AnnotatedString.Builder.appendWithContracts(text: String, contracts:
         }
     }
 }
+
+/**
+ * How a link, mention or tag in a post's text is drawn: in [color],
+ * underlined while the pointer is over it or the keys are on it, and
+ * washed in its colour while pressed, so a click shows where it lands.
+ */
+internal fun linkStyles(color: Color): TextLinkStyles {
+    val marked = SpanStyle(color = color, textDecoration = TextDecoration.Underline)
+    return TextLinkStyles(
+        style = SpanStyle(color = color),
+        focusedStyle = marked,
+        hoveredStyle = marked,
+        pressedStyle = marked.copy(background = color.copy(alpha = LINK_PRESSED_ALPHA)),
+    )
+}
+
+/** How strongly a pressed link is washed: enough to see, not enough to hide its letters. */
+internal const val LINK_PRESSED_ALPHA = 0.16f
 
 /** What a contract address's link is tagged with, before the address: never a cashtag's `$`. */
 private const val CONTRACT_TAG = "contract:"

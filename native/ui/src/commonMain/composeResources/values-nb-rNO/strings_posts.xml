@@ -62,8 +62,9 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Sitater</string>
     <string name="posts_replies_missing">Kunne ikke laste svar</string>
+    <string name="posts_no_replies_yet">Ingen svar ennå</string>
     <string name="posts_replying_to">Svarer til</string>
-    <string name="posts_reposted">%1$s re-tvitret</string>
+    <string name="posts_reposted">%1$s re-tvitret %2$s</string>
     <string name="posts_reposted_by">Delt videre av</string>
     <string name="posts_retry">Prøv på nytt</string>
     <string name="posts_retweets">Retweets</string>
@@ -96,6 +97,7 @@
     <string name="posts_verified_organization">Verifisert organisasjon</string>
     <string name="posts_view_quoted">Vis sitert innlegg</string>
     <string name="posts_zen_replies">Hold inne kommentarknappen for å vise svarene</string>
+    <string name="posts_zen_replies_desktop">Høyreklikk på kommentarknappen for å vise svarene</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s visning</item>
         <item quantity="other">%1$s visninger</item>

@@ -29,7 +29,7 @@
     <string name="home_downloads">İndirilenler</string>
     <string name="home_antennas">Antenler</string>
     <string name="home_deck">Sütunlar</string>
-    <string name="home_deck_empty">Geniş ekranda yan yana görmek için grupları sabitle</string>
+    <string name="home_deck_empty">Akışları ve grupları geniş ekranda yan yana görmek için sütun ekle</string>
     <string name="home_deck_add">Sütun ekle</string>
     <string name="home_deck_move_left">Sola taşı</string>
     <string name="home_deck_move_right">Sağa taşı</string>
@@ -51,6 +51,7 @@
     <string name="home_filter_accounts_explained">Yalnızca hız limitleri için tuttuğunuz yedek hesapları kapatın. Senin için, açık hesapların ana sayfa akışlarını birleştirir; Takip edilenler yerel aboneliklerinizi kullanmaya devam eder ancak kapalı hesapları çekerken atlar. Yorumlar ve profiller gerekirse hâlâ herhangi bir hesabı kullanabilir.</string>
     <string name="home_filter_groups_explained">Bir grubu kapatınca üyeleri Takip edilenler'den gizlenir. Grubun sekmesi kalır. Gönderileri Senin için'den de düşer.</string>
     <string name="home_filter_only_hint">Yalnızca birini açık bırakmak için ona uzun basın.</string>
+    <string name="home_filter_only_hint_desktop">Yalnızca birini açık bırakmak için ona sağ tıklayın.</string>
     <string name="home_filter_keep_one">En az bir hesabın açık kalması gerekir</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Hepsi</string>

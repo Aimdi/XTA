@@ -55,7 +55,10 @@ data class TrayNow(
 
 /** What a click in the tray asks of the app. */
 enum class TrayAction {
-    /** The icon clicked: the window on screen and in front. */
+    /** The icon clicked: the window hidden when it is the one in use, else on screen and in front ([StatusNotifier.hidesOnActivate]). */
+    ACTIVATE,
+
+    /** The icon's middle click: the window on screen and in front. */
     SHOW,
 
     /** The menu's Show/Hide. */
@@ -120,6 +123,14 @@ object StatusNotifier {
 
     /** Whether [language] (an ISO 639 code) is written right to left. */
     fun rightToLeft(language: String): Boolean = language.lowercase() in RIGHT_TO_LEFT
+
+    /**
+     * Whether a click on the icon ([TrayAction.ACTIVATE]) hides the window:
+     * only when it is on screen ([shown], not [minimized]) and the one in use
+     * ([focused]); hidden, minimized or behind another program's, the click
+     * brings it up instead, as other tray apps' icons do.
+     */
+    fun hidesOnActivate(shown: Boolean, minimized: Boolean, focused: Boolean): Boolean = shown && !minimized && focused
 
     /** What the media item offers for the app's media [session]: Pause while it plays, Play while paused; nothing it could not do. */
     fun media(session: MprisNow?): TrayMedia? = when {
@@ -236,8 +247,9 @@ object StatusNotifier {
     }
 
     private fun itemCall(call: DBusMessage): TrayAnswer = when (call.member) {
-        // A click on the icon, and a middle click: the window comes on screen, in front.
-        "Activate", "SecondaryActivate" -> TrayAnswer(action = TrayAction.SHOW)
+        // A click on the icon toggles the window, as other tray apps' do; a middle click only brings it up, in front.
+        "Activate" -> TrayAnswer(action = TrayAction.ACTIVATE)
+        "SecondaryActivate" -> TrayAnswer(action = TrayAction.SHOW)
         // The menu is ours ([MENU_PATH]); a host that asks for one anyway, and a scroll, change nothing.
         "ContextMenu", "Scroll" -> TrayAnswer()
         else -> TrayAnswer(error = DBusConnection.UNKNOWN_METHOD)

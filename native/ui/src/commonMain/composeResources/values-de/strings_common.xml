@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X hat einen Serverfehler gemeldet. Du kannst die zwischengespeicherten Beiträge weiterlesen und es später erneut versuchen.</string>
     <string name="problem_request_unavailable_title">Diese Anfrage ist nicht verfügbar</string>
     <string name="problem_request_unavailable_text">X hat diese Anfrage abgelehnt. Sie ist vielleicht vorübergehend nicht verfügbar, oder dieser Teil des Dienstes hat sich geändert.</string>
-    <string name="problem_oops">Oh nein! Ein Fehler ist aufgetreten 🥲</string>
+    <string name="problem_oops">Konnte nicht geladen werden</string>
     <string name="problem_http_text">X hat HTTP %1$d zurückgegeben.</string>
     <string name="problem_retry_in">Erneut versuchen in %1$s</string>
     <string name="close_app_confirm">Willst du XTA wirklich schließen?</string>
@@ -28,8 +28,8 @@
     <string name="problem_unable_to_load_the_members">Die Mitglieder konnten nicht geladen werden</string>
     <string name="problem_unable_to_load_the_list_of_follows">Die Liste der Follower kann nicht geladen werden</string>
     <string name="problem_unable_to_load_the_next_page_of_follows">Die weiteren Follower können nicht geladen werden</string>
-    <string name="problem_unable_to_load_the_next_page_of_tweets">Die nächsten Tweets können nicht geladen werden</string>
-    <string name="problem_unable_to_load_the_tweets">Die Tweets können nicht geladen werden</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Die nächsten Beiträge können nicht geladen werden</string>
+    <string name="problem_unable_to_load_the_tweets">Die Beiträge können nicht geladen werden</string>
     <string name="problem_connection_failed">Verbindung fehlgeschlagen</string>
     <string name="problem_sign_in_needed">Zum Fortfahren erneut anmelden</string>
     <string name="problem_rate_limit_hint">Diese Quelle begrenzt Anfragen. Versuche es später erneut.</string>
@@ -45,4 +45,5 @@
     <string name="find_in_page">Auf der Seite suchen</string>
     <string name="find_previous_match">Vorheriger Treffer</string>
     <string name="find_next_match">Nächster Treffer</string>
+    <string name="loading">Wird geladen…</string>
 </resources>

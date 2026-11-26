@@ -70,7 +70,7 @@
     <string name="discover_community_created">Đã tạo %1$s</string>
     <string name="discover_community_members">Thành viên</string>
     <plurals name="discover_member_count">
-        <item quantity="other">%1$d thành viên</item>
+        <item quantity="other">%1$s thành viên</item>
     </plurals>
     <string name="discover_list_import_title">Nhập danh sách X làm nhóm</string>
     <string name="discover_list_import_intro">Để nhập danh sách X làm nhóm theo dõi, hãy nhập liên kết danh sách hoặc ID của nó bên dưới</string>

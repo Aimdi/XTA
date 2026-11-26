@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Karpeta hau hutsik dago</string>
     <string name="saved_empty_notes">Oraindik ez dago oharrik. Gailutik ez dira irteten babeskopia edo sinkronizazioa egin ezean.</string>
     <string name="saved_note_button">Oharra</string>
-    <string name="saved_add_note">Gehitu ohar bat gordetako argitalpen honi</string>
+    <string name="saved_add_note">Gehitu ohar bat argitalpen honi</string>
     <string name="saved_edit_note">Editatu oharra</string>
     <string name="saved_new_note">Ohar berria</string>
     <string name="saved_too_large">Gordetako txioa handiegia da</string>
@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">Ezin da deskargatu. Baliteke multimedia hau korronte gisa soilik egotea, XTA-ek oraindik deskargatu ezin duena.</string>
     <string name="saved_open_in_browser">Ireki nabigatzailean</string>
     <string name="saved_ok">Ados</string>
-    <string name="saved_something_wrong">Hara! Zerbait gaizki atera da 🥲</string>
+    <string name="saved_something_wrong">Zerbait gaizki atera da</string>
     <string name="archive_tags">Etiketak</string>
     <string name="archive_extract">Atera testua pantaila-argazkitik</string>
     <string name="archive_extract_notice">Hautatutako PNG edo JPEG irudia %1$s zerbitzura bidaliko da konfiguratutako AA ereduarekin. Ateratako testuak akatsak izan ditzake.</string>
@@ -168,6 +168,7 @@
     <string name="saved_media_status">Ezin da multimedia gorde. Twitter-ek %1$d egoerara itzuli du</string>
     <string name="downloads_cancelled">Bertan behera utzita</string>
     <string name="downloads_interrupted">Etenda · Saiatu berriro jarraitzeko</string>
+    <string name="downloads_interrupted_desktop">Etenda · Egin klik Saiatu berriro aukeran jarraitzeko</string>
     <string name="downloads_batch">Gordetako fitxategiak: %1$d / %2$d</string>
     <string name="downloads_saved_to">%1$s karpetan gorde da</string>
     <string name="set_a_download_folder_to_auto_download">Automatikoki deskargatzeko, ezarri deskarga-karpeta bat Ezarpenak &gt; Multimedia atalean.</string>

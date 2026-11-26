@@ -29,8 +29,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -63,6 +63,7 @@ import com.aimdi.xtanative.core.feed.FeedStrip
 import com.aimdi.xtanative.core.session.DeckColumn
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.ui.common.BarFirstScaffold
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalParentTurnsPages
 import com.aimdi.xtanative.ui.common.TipText
@@ -109,7 +110,8 @@ import org.jetbrains.compose.resources.stringResource
 
 /** Where the feed page's controls lead, in the shell that holds the drawer, the sheets and what opens over Home. */
 internal class FeedPageCalls(
-    val openMenu: () -> Unit,
+    /** The account menu opened; null while it stands beside Home ([PluginSwitcher.offersMenu]). */
+    val openMenu: (() -> Unit)?,
     val openSheet: (HomeSheet) -> Unit,
     val openLayer: (HomeLayer) -> Unit,
     /** The timeline at an index of [HomeUi.tabs] shown; the one shown, back to its top. */
@@ -156,7 +158,11 @@ internal fun HomeFeedPage(
             // Ctrl+← and Ctrl+→ choose the column the reading keys move, as on the Deck.
             ReadColumns(listOfNotNull(shown) + beside.map { it.key })
             val chosen = chosenReadColumn()
-            Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center) {
+            // Beside the desktop frame's navigation, as the deck's columns: from the start edge, a line closing them
+            // off where the window is wider still. Elsewhere (a tablet) centred, as before.
+            val framed = LocalWideFrame.current != null
+            val spare = framed && maxWidth.value - each.value * (beside.size + 1) - beside.size >= 1f
+            Row(Modifier.fillMaxSize(), horizontalArrangement = if (framed) Arrangement.Start else Arrangement.Center) {
                 ReadColumn(shown ?: Unit) {
                     ShownTimeline(
                         ui, vm, timelines, following, networks, actions, routes, refresh, calls,
@@ -180,6 +186,7 @@ internal fun HomeFeedPage(
                         }
                     }
                 }
+                if (spare) VerticalDivider()
             }
         }
     }
@@ -245,9 +252,10 @@ private fun ShownTimeline(
         }
     }
     CompositionLocalProvider(LocalHomeReading provides reading.takeIf { source != null }) {
-    Scaffold(
+    // On the desktop Tab walks the bar before the timeline under it, as the eye reads them.
+    BarFirstScaffold(
+        barFirst = desktop,
         modifier = modifier.nestedScroll(reading.connection).nestedScroll(bar.nestedScrollConnection),
-        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             if (current == HomeTab.Following) {
                 FollowingTopBar(following, followingCalls(calls, desktop, refresh), bar)
@@ -352,11 +360,15 @@ private fun TimelineTopBar(
     onPins: (String, List<String>) -> Unit,
 ) {
     val ui = look.ui
+    // In the desktop's frame as low as Following's bar and the columns' heads beside it, the name as theirs.
+    val framed = LocalWideFrame.current != null
     TopAppBar(
+        expandedHeight = if (framed) FollowingBar.HEIGHT.dp else TopAppBarDefaults.TopAppBarExpandedHeight,
         navigationIcon = { if (current != null) PickerMark(current, ui, networks, look.anyUnread) { calls.openSheet(HomeSheet.PICKER) } },
         title = {
             TipText(
                 current?.let { tabLabel(it, ui) }.orEmpty(),
+                style = if (framed) MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold) else LocalTextStyle.current,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.clickable(onClick = calls.toTitleTop),
@@ -375,7 +387,8 @@ private fun TimelineTopBar(
 @Composable
 private fun PickerMark(tab: HomeTab, ui: HomeUi, networks: HomeNetworks, unread: Boolean, onClick: () -> Unit) {
     val label = listOfNotNull(tabLabel(tab, ui), stringResource(Res.string.home_unread).takeIf { unread }, stringResource(Res.string.home_networks)).joinToString(", ")
-    IconTip(label) { IconButton(onClick = onClick, modifier = Modifier.semantics { contentDescription = label }) {
+    val opener = switcherButton("timeline", onClick)
+    IconTip(label) { IconButton(onClick = opener.onClick, modifier = opener.modifier.semantics { contentDescription = label }) {
         // The label says the dot already.
         Box(Modifier.clearAndSetSemantics {}) { UnreadDot(unread) { TimelineMark(tab, networks, 24.dp) } }
     } }
@@ -476,9 +489,11 @@ private fun PluginSheet(
                 onDismiss()
                 calls.openSheet(HomeSheet.STRIP)
             },
-            onMenu = {
-                onDismiss()
-                calls.openMenu()
+            onMenu = calls.openMenu?.let { open ->
+                {
+                    onDismiss()
+                    open()
+                }
             },
             onManage = {
                 onDismiss()

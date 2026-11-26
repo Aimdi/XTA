@@ -24,6 +24,7 @@
     <string name="groups_columns">Sütunlar</string>
     <string name="groups_combine_clear">Temizle</string>
     <string name="groups_combine_hint">Bir grubu bununla birlikte okumak için basılı tutun</string>
+    <string name="groups_combine_hint_desktop">Bir grubu bununla birlikte okumak için ona sağ tıklayın</string>
     <string name="groups_combined_count">%1$d grup daha birlikte okunuyor</string>
     <string name="groups_compact">Kompakt</string>
     <string name="groups_content_default">Varsayılan</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">Sonuç yok</string>
     <string name="groups_no_subscriptions">Abonelik yok. Bazılarını aramayı veya içe aktarmayı deneyin!</string>
     <string name="groups_none_description">Gruplar abonelikleri özel akışlarda birleştirir. Düzenlemek için gruba uzun basın.</string>
+    <string name="groups_none_description_desktop">Gruplar abonelikleri özel akışlarda birleştirir. Düzenlemek için gruba sağ tıklayın.</string>
     <string name="groups_none_yet">Henüz grup yok</string>
     <string name="groups_not_all_posts">Not: Twitter sınırlaması nedeniyle, tüm tweet'ler dahil edilmeyebilir</string>
     <string name="groups_ok">TAMAM</string>

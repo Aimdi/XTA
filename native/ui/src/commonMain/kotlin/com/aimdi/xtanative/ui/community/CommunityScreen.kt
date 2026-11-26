@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -28,12 +29,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
+import com.aimdi.xtanative.ui.common.XtaTab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,14 +48,20 @@ import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.model.XCommunity
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
-import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.rememberStickyHeaderRoom
+import com.aimdi.xtanative.ui.common.KeepsClearOfStickyHeader
+import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.WithReadingColumn
+import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.datePattern
+import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.feed.feedThreads
 import com.aimdi.xtanative.ui.feed.rememberFeedLayout
@@ -73,10 +80,12 @@ import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_nex
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
 import com.aimdi.xtanative.ui.home.DesktopKeys
 import com.aimdi.xtanative.ui.home.DesktopShortcuts
+import com.aimdi.xtanative.ui.post.LocalCommunityPage
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.search.DiscoverIcons
 import com.aimdi.xtanative.ui.search.LoadMoreNearEnd
+import com.aimdi.xtanative.ui.search.PageRows
 import com.aimdi.xtanative.ui.search.PersonDivider
 import com.aimdi.xtanative.ui.search.PersonRow
 import com.aimdi.xtanative.ui.search.pageStatus
@@ -95,6 +104,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
     val state by vm.ui.collectAsStateWithLifecycle()
     val posts by vm.posts.state.collectAsStateWithLifecycle()
     val list = rememberLazyListState()
+    val room = rememberStickyHeaderRoom(list, TABS_KEY)
     if (state.tab == CommunityTab.TOP) LoadMoreNearEnd(list, posts, vm::morePosts)
     val layout = rememberFeedLayout(posts.items)
     // F5 and Ctrl+R read the community's posts again (the community, once it failed); ← → and Ctrl+Tab turn its tabs, as on Home.
@@ -109,7 +119,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
+            ColumnTopAppBar(
                 navigationIcon = {
                     IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
                 },
@@ -123,22 +133,30 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
         val below = Modifier.padding(top = padding.calculateTopPadding())
         when {
             community == null && problem != null -> ProblemView(problem, vm::load, below, context = stringResource(Res.string.problem_unable_to_load_the_community))
-            community == null -> LoadingRow(below)
+            // Posts taking shape in the reading column the community will fill.
+            community == null -> Box(below.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+                FeedSkeleton(Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp), count = 4)
+            }
             // Padding, not content padding: the tabs stick below the bar, not under it.
-            else -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding()), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize().then(below).swipeTabs(CommunityTab.entries, state.tab, vm::select)) {
+            else -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding()), list) { column -> KeepsClearOfStickyHeader(room) { LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize().then(below).swipeTabs(CommunityTab.entries, state.tab, vm::select)) {
                 item(key = "header", contentType = "header") { CommunityHeader(community) { openMembers(community.id) } }
-                stickyHeader(key = "tabs", contentType = "tabs") { CommunityTabs(state.tab, vm::select) }
+                stickyHeader(key = TABS_KEY, contentType = "tabs") { CommunityTabs(state.tab, vm::select, room.header) }
                 when (state.tab) {
                     CommunityTab.TOP -> {
-                        feedThreads(posts.items, layout, actions, keyOf = { "post-" + it.id }) { thread -> ThreadRows(thread, actions, pinnedIds = state.pinnedIds) }
-                        pageStatus(posts, Res.string.discover_no_results, vm::retryPosts, vm::morePosts, firstFailed = Res.string.problem_unable_to_load_the_tweets, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets)
+                        feedThreads(posts.items, layout, actions, keyOf = { "post-" + it.id }) { thread ->
+                            CompositionLocalProvider(LocalCommunityPage provides community.id) { ThreadRows(thread, actions, pinnedIds = state.pinnedIds) }
+                        }
+                        pageStatus(posts, Res.string.discover_no_results, vm::retryPosts, vm::morePosts, firstFailed = Res.string.problem_unable_to_load_the_tweets, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets, rows = PageRows.POSTS)
                     }
                     CommunityTab.ABOUT -> item(key = "about", contentType = "about") { CommunityAbout(community) }
                 }
-            } }
+            } } }
         }
     }
 }
+
+/** The key of the community's sticky tabs in its list. */
+private const val TABS_KEY = "tabs"
 
 /** A community's members, each opening their profile. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -152,7 +170,7 @@ fun CommunityMembersScreen(id: String, actions: PostActions, onBack: () -> Unit)
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
+            ColumnTopAppBar(
                 navigationIcon = {
                     IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
                 },
@@ -186,8 +204,9 @@ fun CommunityRow(community: XCommunity, onOpen: () -> Unit) {
         Modifier.fillMaxWidth().clickable(onClick = onOpen).padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // A banner is about three times as wide as it is tall: shown in that shape, not cut to a square.
         Box(
-            Modifier.size(48.dp).clip(RoundedCornerShape(8.dp)).background(MaterialTheme.colorScheme.surfaceContainerHighest),
+            Modifier.size(width = BANNER_THUMB_WIDTH, height = BANNER_THUMB_HEIGHT).clip(RoundedCornerShape(8.dp)).background(MaterialTheme.colorScheme.surfaceContainerHighest),
             contentAlignment = Alignment.Center,
         ) {
             val banner = community.bannerUrl
@@ -204,11 +223,16 @@ fun CommunityRow(community: XCommunity, onOpen: () -> Unit) {
     }
 }
 
+/** "20.7K members", the number as the app writes counts in the reader's language ([countText]). */
 @Composable
 private fun memberCount(community: XCommunity): String {
     val count = community.memberCount.coerceIn(0, Int.MAX_VALUE.toLong()).toInt()
-    return pluralStringResource(Res.plurals.discover_member_count, count, count)
+    return pluralStringResource(Res.plurals.discover_member_count, count, countText(community.memberCount.coerceAtLeast(0)))
 }
+
+/** A community's banner in a list: its own shape, about 3:1, at the height of a row's two lines. */
+private val BANNER_THUMB_WIDTH = 96.dp
+private val BANNER_THUMB_HEIGHT = 32.dp
 
 /** Banner, name, topic and the start of the description; the member count opens the members. */
 @Composable
@@ -232,8 +256,9 @@ private fun CommunityHeader(community: XCommunity, onMembers: () -> Unit) {
             community.topic?.let { topic ->
                 Text(topic, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
+            // In full, and only here: X keeps a community's description short, so About does not say it again.
             CommunityPage.description(community)?.let { description ->
-                TipText(description, maxLines = 3, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 8.dp))
+                SelectionContainer(Modifier.pointerOnlyFocus()) { Text(description, modifier = Modifier.padding(top = 8.dp)) }
             }
         }
         Row(
@@ -254,14 +279,15 @@ private fun CommunityHeader(community: XCommunity, onMembers: () -> Unit) {
 }
 
 @Composable
-private fun CommunityTabs(selected: CommunityTab, onSelect: (CommunityTab) -> Unit) {
+private fun CommunityTabs(selected: CommunityTab, onSelect: (CommunityTab) -> Unit, modifier: Modifier = Modifier) {
     TabRow(
         selectedTabIndex = selected.ordinal,
+        modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background,
         divider = { Hairline() },
     ) {
         CommunityTab.entries.forEach { tab ->
-            Tab(
+            XtaTab(
                 selected = tab == selected,
                 onClick = { onSelect(tab) },
                 text = {
@@ -274,17 +300,16 @@ private fun CommunityTabs(selected: CommunityTab, onSelect: (CommunityTab) -> Un
     }
 }
 
-/** The description in full, the rules, and when the community was made. */
+/** The rules and when the community was made; the description is the header's, just above. */
 @Composable
 private fun CommunityAbout(community: XCommunity) {
     Column(Modifier.fillMaxWidth().padding(16.dp)) {
-        CommunityPage.description(community)?.let { description -> SelectionContainer { Text(description) } }
         val rules = CommunityPage.numberedRules(community)
         if (rules.isNotEmpty()) {
             Text(
                 stringResource(Res.string.discover_community_rules),
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = 24.dp, bottom = 4.dp),
+                modifier = Modifier.padding(bottom = 4.dp),
             )
             rules.forEach { (number, rule) ->
                 Row(Modifier.padding(vertical = 8.dp)) {

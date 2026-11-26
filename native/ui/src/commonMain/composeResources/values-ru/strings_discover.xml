@@ -73,10 +73,10 @@
     <string name="discover_community_created">Создано %1$s</string>
     <string name="discover_community_members">Участники</string>
     <plurals name="discover_member_count">
-        <item quantity="one">%1$d участник</item>
-        <item quantity="few">%1$d участника</item>
-        <item quantity="many">%1$d участников</item>
-        <item quantity="other">%1$d участника</item>
+        <item quantity="one">%1$s участник</item>
+        <item quantity="few">%1$s участника</item>
+        <item quantity="many">%1$s участников</item>
+        <item quantity="other">%1$s участника</item>
     </plurals>
     <string name="discover_list_import_title">Импортировать список X как группу</string>
     <string name="discover_list_import_intro">Чтобы импортировать список X как группу подписок, введите ниже ссылку на список или его идентификатор</string>

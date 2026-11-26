@@ -29,7 +29,7 @@
     <string name="home_downloads">Transferências</string>
     <string name="home_antennas">Antenas</string>
     <string name="home_deck">Deck</string>
-    <string name="home_deck_empty">Fixe grupos para os ver lado a lado num ecrã largo</string>
+    <string name="home_deck_empty">Adicione colunas para ver feeds e grupos lado a lado num ecrã largo</string>
     <string name="home_deck_add">Adicionar coluna</string>
     <string name="home_deck_move_left">Mover para a esquerda</string>
     <string name="home_deck_move_right">Mover para a direita</string>
@@ -51,6 +51,7 @@
     <string name="home_filter_accounts_explained">Desative contas extra que só mantém por limites de taxa. Para si funde as timelines das contas ligadas; A seguir ainda usa as suas subscrições locais, mas salta contas desligadas ao obter. Comentários e perfis ainda podem usar qualquer conta se for preciso.</string>
     <string name="home_filter_groups_explained">Desative um grupo para ocultar os membros em A seguir. O separador do grupo permanece. As publicações deles também saem de Para si.</string>
     <string name="home_filter_only_hint">Mantenha premido um item para deixar só esse ativo.</string>
+    <string name="home_filter_only_hint_desktop">Clique com o botão direito num item para deixar só esse ativo.</string>
     <string name="home_filter_keep_one">É preciso deixar pelo menos uma conta ligada</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Tudo</string>

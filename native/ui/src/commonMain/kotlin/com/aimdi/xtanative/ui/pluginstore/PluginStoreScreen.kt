@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.pluginstore
 
+import com.aimdi.xtanative.ui.common.destructiveTextColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,8 +25,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
@@ -42,7 +41,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -71,7 +69,6 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -89,12 +86,12 @@ import com.aimdi.xtanative.pluginhost.PluginStatus
 import com.aimdi.xtanative.pluginhost.PluginStoreState
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.IconTip
-import com.aimdi.xtanative.ui.common.SearchPillShape
+import com.aimdi.xtanative.ui.common.RowSkeleton
+import com.aimdi.xtanative.ui.common.SearchField
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.dialogDefault
-import com.aimdi.xtanative.ui.common.searchPillColors
 import com.aimdi.xtanative.ui.feed.ProvenanceColors
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
@@ -149,11 +146,14 @@ import com.aimdi.xtanative.ui.generated.resources.retry
 import com.aimdi.xtanative.ui.generated.resources.settings
 import com.aimdi.xtanative.ui.generated.resources.settings_show_as_tab
 import com.aimdi.xtanative.ui.home.FindsWithKeys
+import com.aimdi.xtanative.ui.post.KeyedMenuRows
 import com.aimdi.xtanative.ui.home.MicroblogGroupingRow
+import com.aimdi.xtanative.ui.home.isFrameRoot
 import com.aimdi.xtanative.ui.home.rememberLeaveField
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.settings.SETTINGS_MAX_WIDTH
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import java.text.NumberFormat
 import java.util.Locale
@@ -201,7 +201,9 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
 
     PluginScaffold(
         title = stringResource(Res.string.plugin_store),
-        onBack = onBack,
+        // Beside the desktop frame's navigation, which led here, no Back of its own (Esc still goes back).
+        onBack = if (isFrameRoot()) null else onBack,
+        column = STORE_COLUMN,
         actions = {
             ShowPrivateMenu(store.showPrivate) { show -> scope.launch { plugins.showPrivate(show) } }
             IconTip(stringResource(Res.string.retry)) { IconButton(onClick = { scope.launch { plugins.manager.refresh() } }, enabled = !store.catalogue.refreshing) {
@@ -232,7 +234,10 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
         ) {
             WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 24.dp), list) { column -> LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                 item(key = "search") { StoreSearchField(query, Modifier.focusRequester(searchFocus)) { query = it } }
-                if (store.catalogue.refreshing) item(key = "refreshing") { LinearProgressIndicator(Modifier.fillMaxWidth()) }
+                // The first read of the catalogue, nothing at hand yet: rows taking shape rather than a bar over an empty page.
+                if (store.catalogue.refreshing) item(key = "refreshing") {
+                    if (store.installed.isEmpty() && store.onOffer.isEmpty()) RowSkeleton(picture = RoundedCornerShape(8.dp), pictureSize = 28.dp) else LinearProgressIndicator(Modifier.fillMaxWidth())
+                }
                 if (store.catalogue.unreachable && !store.catalogue.refreshing) {
                     item(key = "unreachable") { Unreachable(store.catalogue.fetchedAt != null) { scope.launch { plugins.manager.refresh() } } }
                 }
@@ -285,8 +290,8 @@ private fun StoreColumn(refreshing: Boolean, onRefresh: () -> Unit, modifier: Mo
     }
 }
 
-/** XTA's kSettingsContentWidth. */
-private val STORE_COLUMN = 720.dp
+/** XTA's kSettingsContentWidth, as the app's own settings pages. */
+private val STORE_COLUMN = SETTINGS_MAX_WIDTH
 
 /** Scrolls [list] to a plugin whose install has just ended, as [StoreRows] says, among the installed plugins [shown]. */
 @Composable
@@ -322,16 +327,11 @@ private fun storeMatching(query: String, running: List<RunningPlugin>, locale: L
 @Composable
 private fun StoreSearchField(query: String, modifier: Modifier, onQuery: (String) -> Unit) {
     val leaveField = rememberLeaveField()
-    TextField(
+    SearchField(
         value = query,
         onValueChange = onQuery,
-        singleLine = true,
-        placeholder = { Text(stringResource(Res.string.plugin_store_search)) },
-        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = { leaveField() }),
-        shape = SearchPillShape,
-        colors = searchPillColors(),
+        placeholder = stringResource(Res.string.plugin_store_search),
+        onSearch = leaveField,
         modifier = modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
     )
 }
@@ -669,7 +669,7 @@ private fun InstalledMenu(
         IconTip(stringResource(Res.string.plugin_more_options)) { IconButton(onClick = { open = true }) {
             Icon(Icons.Filled.MoreVert, stringResource(Res.string.plugin_more_options), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
         } }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) { KeyedMenuRows {
             // A box has no room for these: its version, what it keeps and its settings are said and reached here.
             if (info.isNotEmpty()) {
                 Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
@@ -713,7 +713,7 @@ private fun InstalledMenu(
                     onUninstall()
                 },
             )
-        }
+        } }
     }
 }
 
@@ -722,7 +722,7 @@ private fun ShowPrivateMenu(showPrivate: Boolean, onChange: (Boolean) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
         IconTip(stringResource(Res.string.plugin_more_options)) { IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.plugin_more_options)) } }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) { KeyedMenuRows {
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.plugin_store_show_private)) },
                 onClick = {
@@ -731,7 +731,7 @@ private fun ShowPrivateMenu(showPrivate: Boolean, onChange: (Boolean) -> Unit) {
                 },
                 trailingIcon = { Checkbox(checked = showPrivate, onCheckedChange = null) },
             )
-        }
+        } }
     }
 }
 
@@ -743,7 +743,7 @@ private fun UninstallDialog(name: String, onConfirm: () -> Unit, onDismiss: () -
         title = { Text(stringResource(Res.string.plugin_uninstall_confirm, name)) },
         text = { Text(stringResource(Res.string.plugin_uninstall_confirm_detail)) },
         confirmButton = {
-            TextButton(onClick = onConfirm) { Text(stringResource(Res.string.plugin_uninstall), color = MaterialTheme.colorScheme.error) }
+            TextButton(onClick = onConfirm, colors = destructiveTextColors()) { Text(stringResource(Res.string.plugin_uninstall)) }
         },
         dismissButton = { TextButton(onClick = onDismiss, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.cancel)) } },
     )

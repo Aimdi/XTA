@@ -64,6 +64,7 @@
     <string name="reader_voices_use">Использовать загруженный голос</string>
     <string name="reader_voices_use_description">Читает загруженным голосом, если он говорит на языке статьи; иначе использует движок ниже.</string>
     <string name="reader_voices_note">Голоса загружаются с GitHub (k2-fsa/sherpa-onnx), только когда вы нажимаете «Скачать». Они работают полностью на этом устройстве.</string>
+    <string name="reader_voices_note_desktop">Голоса загружаются с GitHub (k2-fsa/sherpa-onnx), только когда вы щёлкаете «Скачать». Они работают полностью на этом устройстве.</string>
     <string name="reader_voices_synthesis_missing">Эта версия может загружать голоса, но пока не умеет ими читать. До тех пор вслух читает синтезатор речи ниже.</string>
     <string name="reader_voice_licence">Лицензия: %1$s</string>
     <string name="reader_voice_installing">Проверка и распаковка…</string>

@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.theme
 import androidx.compose.foundation.DefaultContextMenuRepresentation
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalContextMenuRepresentation
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.LocalTextContextMenu
 import androidx.compose.material.ripple.RippleAlpha
@@ -14,7 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
+import com.aimdi.xtanative.ui.common.RowIndication
 import com.aimdi.xtanative.ui.common.SelectingTextMenu
 
 /** How strongly an entry under the pointer is lit, as Material's hovered state lights it. */
@@ -41,6 +44,25 @@ internal val MouseRipples = RippleConfiguration(
     rippleAlpha = RippleAlpha(pressedAlpha = 0.1f, focusedAlpha = 0.1f, draggedAlpha = 0.16f, hoveredAlpha = HOVER_ALPHA),
 )
 
+/**
+ * [DesktopRipples] for a control that draws the keyboard's ring itself (an
+ * icon button with a tip, a post's author picture): its focus shows as that
+ * accent ring alone, not also as a grey disc under it, as the app's rows show
+ * it ([com.aimdi.xtanative.ui.common.RowIndication]). A click's focus shows
+ * nothing either; the pointer and a press light it as before.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+internal val RingedRipples = RippleConfiguration(
+    rippleAlpha = RippleAlpha(pressedAlpha = 0.1f, focusedAlpha = 0f, draggedAlpha = 0.16f, hoveredAlpha = HOVER_ALPHA),
+)
+
+/**
+ * The app's ripples, read when the button's focus arrives, not when this is
+ * provided: the click or Tab that moved it has already set the mode by then.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+internal val AppRipples = LocalRippleConfiguration providesComputed { if (KeyboardFocusLook.keyboard) DesktopRipples else MouseRipples }
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 internal actual fun ProvidePlatformLook(content: @Composable () -> Unit) {
@@ -53,14 +75,17 @@ internal actual fun ProvidePlatformLook(content: @Composable () -> Unit) {
             itemHoverColor = colors.onSurface.copy(alpha = HOVER_ALPHA),
         )
     }
+    // Read when a row draws, not here: a key or a click turning the mode recomposes nothing above the rows.
+    val keyboard = remember { derivedStateOf { KeyboardFocusLook.keyboard } }
+    val rows = remember(colors.onSurface, colors.primary) { RowIndication(colors.onSurface, colors.primary, keyboard) }
     val textMenu = LocalTextContextMenu.current
     val selecting = remember(textMenu) { if (textMenu is SelectingTextMenu) textMenu else SelectingTextMenu(textMenu) }
     CompositionLocalProvider(
         LocalContextMenuRepresentation provides menus,
         LocalTextContextMenu provides selecting,
-        // Read when the button's focus arrives, not when this composes: the
-        // click or Tab that moved it has already set the mode by then.
-        LocalRippleConfiguration providesComputed { if (KeyboardFocusLook.keyboard) DesktopRipples else MouseRipples },
+        // Plain clickable rows (settings, dialog options, tabs) lit as rounded inset blocks with the keyboard's ring.
+        LocalIndication provides rows,
+        AppRipples,
         content = content,
     )
 }
@@ -89,3 +114,15 @@ internal actual fun systemAccent(): Long? {
     LaunchedEffect(scheme) { scheme.start() }
     return scheme.accent.collectAsState().value
 }
+
+/** Whether the desktop asks for higher contrast, as its settings portal says, followed as it changes. */
+@Composable
+internal actual fun systemHighContrast(): Boolean {
+    val scheme = DesktopColorScheme.desktop
+    LaunchedEffect(scheme) { scheme.start() }
+    return scheme.highContrast.collectAsState().value
+}
+
+/** Whether the keyboard moved the focus last, followed as it changes. */
+@Composable
+internal actual fun keyboardFocusShown(): Boolean = KeyboardFocusLook.keyboard

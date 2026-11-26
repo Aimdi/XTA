@@ -3,7 +3,6 @@ package com.aimdi.xtanative.ui.saved
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,8 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
@@ -68,6 +65,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkPostCard
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostCard
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.common.EmptyState
 
 /** The open tab: its saved posts, likes or notes in the reading column, the media grid across the page, or why it is empty. */
 @Composable
@@ -160,7 +158,7 @@ private fun SavedRow(post: SavedPost, actions: PostActions, selecting: Boolean, 
     }
     if (editing) {
         NoteEditorDialog(
-            target = NoteTarget.Text(post.note, NoteRules.savedNoteKey(post.id)),
+            target = NoteTarget.Text(post.note, NoteRules.savedNoteKey(post.id), about = content),
             onDismiss = { editing = false },
             saveText = { note -> vm.setNote(post.id, note) },
         )
@@ -248,21 +246,14 @@ private fun EmptyPane(kind: SavedEmptyKind, onWriteNote: () -> Unit) {
         SavedEmptyKind.FOLDER -> SavedIcons.FolderOpen to stringResource(Res.string.saved_empty_folder)
         SavedEmptyKind.NOTES -> SavedIcons.EditNote to stringResource(Res.string.saved_empty_notes)
     }
-    Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 32.dp, vertical = 64.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(40.dp))
-        Text(message, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
-        if (kind == SavedEmptyKind.NOTES) {
-            Button(onClick = onWriteNote) {
-                Icon(SavedIcons.EditNote, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
-                Text(stringResource(Res.string.saved_note_button))
-            }
+    val write: (@Composable () -> Unit)? = if (kind != SavedEmptyKind.NOTES) null else ({
+        Button(onClick = onWriteNote) {
+            Icon(SavedIcons.EditNote, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(Res.string.saved_note_button))
         }
-    }
+    })
+    EmptyState(icon, message, action = write)
 }
 
 @Composable

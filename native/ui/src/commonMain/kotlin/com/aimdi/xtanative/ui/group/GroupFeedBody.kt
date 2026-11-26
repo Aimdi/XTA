@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.group
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -61,16 +61,18 @@ import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.Motion
 import com.aimdi.xtanative.ui.common.PostSkeleton
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.ReadFailureNotice
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.dialogDefault
+import com.aimdi.xtanative.ui.common.itemMotion
 import com.aimdi.xtanative.ui.common.readFailureText
 import com.aimdi.xtanative.ui.common.savedAtText
 import com.aimdi.xtanative.ui.common.scrollToTop
-import com.aimdi.xtanative.ui.feed.CaughtUpDivider
+import com.aimdi.xtanative.ui.feed.CaughtUpRows
 import com.aimdi.xtanative.ui.feed.FeedLayout
 import com.aimdi.xtanative.ui.feed.FeedMediaGrid
 import com.aimdi.xtanative.ui.feed.FeedMix
@@ -78,6 +80,7 @@ import com.aimdi.xtanative.ui.feed.FeedThread
 import com.aimdi.xtanative.ui.feed.FeedThreadRow
 import com.aimdi.xtanative.ui.feed.MediaFoot
 import com.aimdi.xtanative.ui.feed.NewPostsPill
+import com.aimdi.xtanative.ui.feed.threadsAround
 import com.aimdi.xtanative.ui.feed.Placed
 import com.aimdi.xtanative.ui.feed.PluginPostRow
 import com.aimdi.xtanative.ui.feed.PluginPostsOnly
@@ -161,16 +164,22 @@ fun GroupFeedBody(
     val reduced = LocalReducedMotion.current
     val run = state.run
     val leading = if (run.stale != null && run.shown.threads.isNotEmpty()) 1 else 0
+    // The list's rows, the stale notice and the caught-up divider among the threads, as they are now: also for the place kept as the feed goes.
+    val rows by rememberUpdatedState(CaughtUpRows.of(run.divider, run.shown.threads.size, leading))
     ScrollsToTop(toTop) { (if (mediaOnly) media else list).scrollToTop(reduced) }
     LaunchedEffect(run.jump) {
         val jump = run.jump ?: return@LaunchedEffect
-        list.scrollToItem(if (jump.threadIndex == 0 && jump.offset == 0) 0 else jump.threadIndex + leading, jump.offset)
+        val (row, offset) = if (jump.threadIndex == 0 && jump.offset == 0) 0 to 0 else rows.rowOf(jump.threadIndex, jump.offset)
+        list.scrollToItem(row, offset)
         vm.jumped()
     }
     LaunchedEffect(list) {
         snapshotFlow { list.firstVisibleItemIndex == 0 && list.firstVisibleItemScrollOffset <= 8 }.distinctUntilChanged().collect { vm.atTop(it) }
     }
-    val keepPlace = { vm.keepPlace((list.firstVisibleItemIndex - leading).coerceAtLeast(0), list.firstVisibleItemScrollOffset) }
+    val keepPlace = {
+        val (thread, offset) = rows.threadOf(list.firstVisibleItemIndex, list.firstVisibleItemScrollOffset, list.layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: 0)
+        vm.keepPlace(thread, offset)
+    }
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { keepPlace() }
     DisposableEffect(Unit) { onDispose { keepPlace() } }
     val inline = rememberInlinePlayer()
@@ -178,20 +187,32 @@ fun GroupFeedBody(
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { inline?.resume() }
 
     val buckets = remember(run.shown.threads, plugin.shown) { FeedMix.place(run.shown.threads, plugin.shown) }
-    PullToRefreshBox(isRefreshing = run.refreshing, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize().readVisibility(vm::visible)) {
-        val problem = run.problem
-        val threads = run.shown.threads
-        when {
-            state.missing -> Whole { ProblemView(Problem.Other, { vm.refresh() }, context = stringResource(Res.string.unable_to_load_the_group)) }
-            // A group is empty when it has nothing from any network: the Following feed may have the plugins' alone.
-            state.loaded && state.memberCount == 0 && plugin.shown.isEmpty() && !plugin.loading -> Whole { Message(stringResource(Res.string.groups_no_members)) }
-            threads.isEmpty() && plugin.shown.isNotEmpty() -> PluginPostsOnly(plugin.shown, plugins, list, contentPadding, problem) { vm.refresh() }
-            threads.isEmpty() && problem != null -> Whole { ProblemView(problem, { vm.refresh() }) }
-            threads.isEmpty() && plugin.loading -> SkeletonPage(contentPadding)
-            threads.isEmpty() && run.answered && run.shown.pause == FeedPause.CAUGHT_UP -> Whole { CaughtUpCard(run.shown.catchUpMessage, run, vm) }
-            threads.isEmpty() && run.answered && !run.refreshing -> Whole { Message(stringResource(Res.string.groups_feed_empty)) }
-            threads.isEmpty() -> SkeletonPage(contentPadding)
-            mediaOnly -> FeedMediaGrid(
+    val problem = run.problem
+    val threads = run.shown.threads
+    val shows = when {
+        state.missing -> FeedShows.MISSING
+        // A group is empty when it has nothing from any network: the Following feed may have the plugins' alone.
+        state.loaded && state.memberCount == 0 && plugin.shown.isEmpty() && !plugin.loading -> FeedShows.NO_MEMBERS
+        threads.isEmpty() && plugin.shown.isNotEmpty() -> FeedShows.PLUGIN_POSTS
+        threads.isEmpty() && problem != null -> FeedShows.PROBLEM
+        threads.isEmpty() && plugin.loading -> FeedShows.BONES
+        threads.isEmpty() && run.answered && run.shown.pause == FeedPause.CAUGHT_UP -> FeedShows.CAUGHT_UP
+        threads.isEmpty() && run.answered && !run.refreshing -> FeedShows.EMPTY
+        threads.isEmpty() -> FeedShows.BONES
+        mediaOnly -> FeedShows.MEDIA
+        else -> FeedShows.POSTS
+    }
+    // The bones are the sign it loads: no spinner over them.
+    PullToRefreshBox(isRefreshing = run.refreshing && shows != FeedShows.BONES, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize().readVisibility(vm::visible)) {
+        when (shows) {
+            FeedShows.MISSING -> Whole { ProblemView(Problem.Other, { vm.refresh() }, context = stringResource(Res.string.unable_to_load_the_group)) }
+            FeedShows.NO_MEMBERS -> Whole { Message(stringResource(Res.string.groups_no_members)) }
+            FeedShows.PLUGIN_POSTS -> PluginPostsOnly(plugin.shown, plugins, list, contentPadding, problem) { vm.refresh() }
+            FeedShows.PROBLEM -> Whole { ProblemView(problem ?: Problem.Other, { vm.refresh() }) }
+            FeedShows.BONES -> SkeletonPage(contentPadding)
+            FeedShows.CAUGHT_UP -> Whole { CaughtUpCard(run.shown.catchUpMessage, run, vm) }
+            FeedShows.EMPTY -> Whole { Message(stringResource(Res.string.groups_feed_empty)) }
+            FeedShows.MEDIA -> FeedMediaGrid(
                 threads,
                 canLoadMore = run.shown.canLoadMore && run.moreProblem == null && !run.fromCache,
                 foot = MediaFoot(run.loadingMore, run.moreProblem) { vm.loadMore() },
@@ -201,7 +222,7 @@ fun GroupFeedBody(
                 onMore = vm::loadMore,
                 updates = remember(vm) { vm.ui.map { it.run.shown.threads }.distinctUntilChanged() },
             )
-            else -> CompositionLocalProvider(LocalInlinePlayer provides inline) {
+            FeedShows.POSTS -> CompositionLocalProvider(LocalInlinePlayer provides inline) {
                 FeedList(state, vm, actions, list, contentPadding, FeedPlugins(buckets, plugin.shown, plugins))
             }
         }
@@ -211,10 +232,15 @@ fun GroupFeedBody(
         }
         SourceLoadingHairline(plugin.loading, Modifier.align(Alignment.TopCenter))
         Column(Modifier.align(Alignment.TopCenter).padding(top = 12.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (state.unrelatedNotice) UnrelatedPill(vm)
-            if (progress.canRetry) RetryPill(progress.answered, progress.total, vm::retryFailed)
-            if (plugin.newHeld > 0) {
-                NewPostsPill(plugin.newHeld) {
+            AnimatedVisibility(state.unrelatedNotice, enter = Motion.popEnter(reduced), exit = Motion.popExit(reduced)) { UnrelatedPill(vm) }
+            AnimatedVisibility(progress.canRetry, enter = Motion.popEnter(reduced), exit = Motion.popExit(reduced)) {
+                RetryPill(progress.answered, progress.total, vm::retryFailed)
+            }
+            // The count the pill said, while it goes once the posts are shown.
+            val held = remember { intArrayOf(0) }
+            if (plugin.newHeld > 0) held[0] = plugin.newHeld
+            AnimatedVisibility(plugin.newHeld > 0, enter = Motion.popEnter(reduced), exit = Motion.popExit(reduced)) {
+                NewPostsPill(held[0]) {
                     scope.launch { list.scrollToTop(reduced) }
                     vm.revealPlugins()
                 }
@@ -243,13 +269,15 @@ private fun FeedList(state: GroupFeedUi, vm: GroupFeedViewModel, actions: PostAc
         if (post != null) PluginPostRow(post, mixed.plugins[post.source]) else byKey[key]?.let { draw(it) }
     }
     val divider = run.divider
+    val reduced = LocalReducedMotion.current
     WithReadingColumn(contentPadding, list) { padding ->
         LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
             run.stale?.let { stale -> item(key = "stale", contentType = "notice") { StaleNotice(stale, run.savedAt, vm) } }
-            itemsIndexed(threads, key = { _, thread -> thread.id }, contentType = { _, _ -> "thread" }) { index, thread ->
-                if (index == divider) CaughtUpDivider()
-                Placed(mixed.buckets, index, mixed.plugins, layout, posts, drawKey) {
-                    FeedThreadRow(layout.ofThread(index, thread), thread, actions, drawKey) { draw(thread) }
+            threadsAround(threads, divider, keyOf = { it.id }, typeOf = layout::rowType) { index, thread ->
+                Column(itemMotion(reduced)) {
+                    Placed(mixed.buckets, index, mixed.plugins, layout, posts, drawKey) {
+                        FeedThreadRow(layout.ofThread(index, thread), thread, actions, drawKey) { draw(thread) }
+                    }
                 }
             }
             item(key = "footer", contentType = "footer") {
@@ -321,6 +349,9 @@ private fun StaleNotice(problem: Problem, savedAt: Long?, vm: GroupFeedViewModel
         ReadFailureNotice(problem, { vm.refresh() }, contextMessage = age, onDismiss = vm::dismissStale)
     }
 }
+
+/** What a group's feed shows in its place, decided before the pull to refresh around it. */
+private enum class FeedShows { MISSING, NO_MEMBERS, PLUGIN_POSTS, PROBLEM, BONES, CAUGHT_UP, EMPTY, MEDIA, POSTS }
 
 /** The first page on its way: post-shaped bones, still pulled to refresh (XTA's TweetFeedSkeleton). */
 @Composable

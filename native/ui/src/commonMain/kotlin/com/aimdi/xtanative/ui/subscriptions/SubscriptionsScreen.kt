@@ -33,7 +33,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,9 +58,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.common.BackHandling
+import com.aimdi.xtanative.ui.common.CenteredPage
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.TopBarBack
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.groups_create
@@ -180,7 +182,8 @@ fun SubscriptionsScreen(navigation: SubscriptionsNavigation, onBack: (() -> Unit
                 ProblemView(Problem.Other, vm::retryRead, Modifier.padding(content), context = stringResource(context))
                 return@HorizontalPager
             }
-            when (tab) {
+            // Its rows and tiles in the bar's column in a wide window, not from the window's corner.
+            CenteredPage { when (tab) {
                 SubscriptionsTab.GROUPS -> GroupsPage(
                     state,
                     onOpen = navigation.openGroup,
@@ -213,7 +216,7 @@ fun SubscriptionsScreen(navigation: SubscriptionsNavigation, onBack: (() -> Unit
                     onSearch = { navigation.search("") },
                     contentPadding = content,
                 )
-            }
+            } }
         }
     }
 
@@ -264,9 +267,9 @@ private fun Header(
     onMenu: () -> Unit,
     onTab: (SubscriptionsTab) -> Unit,
 ) {
-    TopAppBar(
+    ColumnTopAppBar(
         navigationIcon = {
-            if (onBack != null) IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
+            if (onBack != null) TopBarBack(onBack)
         },
         title = {
             Row(Modifier.height(56.dp)) {
@@ -318,7 +321,7 @@ private fun HeaderTab(icon: ImageVector, label: String, selected: Boolean, onCli
 private fun SearchBar(state: SubscriptionsUi, vm: SubscriptionsViewModel) {
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
-    TopAppBar(
+    ColumnTopAppBar(
         navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = vm::closeSearch) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
         title = {
             TextField(

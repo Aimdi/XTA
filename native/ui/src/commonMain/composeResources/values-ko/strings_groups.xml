@@ -24,6 +24,7 @@
     <string name="groups_columns">열</string>
     <string name="groups_combine_clear">지우기</string>
     <string name="groups_combine_hint">그룹을 길게 눌러 이 그룹과 함께 보기</string>
+    <string name="groups_combine_hint_desktop">그룹을 마우스 오른쪽 버튼으로 클릭해 이 그룹과 함께 보기</string>
     <string name="groups_combined_count">%1$d개를 함께 보는 중</string>
     <string name="groups_compact">컴팩트</string>
     <string name="groups_content_default">기본</string>
@@ -114,6 +115,7 @@
     <string name="groups_no_results">결과 없음</string>
     <string name="groups_no_subscriptions">구독이 없습니다. 검색하거나 가져와 보세요!</string>
     <string name="groups_none_description">그룹으로 구독을 묶어 맞춤 피드를 만들 수 있습니다. 길게 눌러 편집하세요.</string>
+    <string name="groups_none_description_desktop">그룹으로 구독을 묶어 맞춤 피드를 만들 수 있습니다. 마우스 오른쪽 버튼으로 클릭해 편집하세요.</string>
     <string name="groups_none_yet">아직 그룹이 없습니다</string>
     <string name="groups_not_all_posts">공지: 트위터의 한계로 인하여 모든 트윗이 포함되지 않을 수 있습니다</string>
     <string name="groups_ok">확인</string>

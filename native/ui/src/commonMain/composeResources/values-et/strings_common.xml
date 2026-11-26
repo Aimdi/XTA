@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X tagastas serveri vea. Saad edasi lugeda vahemällu salvestatud postitusi ja hiljem uuesti proovida.</string>
     <string name="problem_request_unavailable_title">See päring pole saadaval</string>
     <string name="problem_request_unavailable_text">X lükkas selle päringu tagasi. See võib olla ajutiselt kättesaamatu või on see teenuse osa muutunud.</string>
-    <string name="problem_oops">Hopsti! Midagi läks nüüd viltu 🥲</string>
+    <string name="problem_oops">Seda ei õnnestunud laadida</string>
     <string name="problem_http_text">X tagastas HTTP %1$d.</string>
     <string name="problem_retry_in">Proovi uuesti %1$s pärast</string>
     <string name="close_app_confirm">Kas sa oled kindel, et soovid panna XTA'i kinni?</string>
@@ -45,4 +45,5 @@
     <string name="find_in_page">Otsi lehelt</string>
     <string name="find_previous_match">Eelmine vaste</string>
     <string name="find_next_match">Järgmine vaste</string>
+    <string name="loading">Laadimine…</string>
 </resources>

@@ -3,6 +3,7 @@
     <string name="media_alt_badge">ALT</string>
     <string name="media_alt_title">Apisańnie vyjavy</string>
     <string name="media_tap_to_show">Nacisnicie, kab pakazać %1$s</string>
+    <string name="media_tap_to_show_desktop">Pstryknicie, kab pakazać %1$s</string>
     <string name="media_copy_image">Kapijavać vyjavu</string>
     <string name="media_save_as">Zachavać jak…</string>
     <string name="media_drag_out">Pieraciahnicie vyjavu ŭ inšuju prahramu</string>

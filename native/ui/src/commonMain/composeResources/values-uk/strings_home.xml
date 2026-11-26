@@ -29,7 +29,7 @@
     <string name="home_downloads">Завантаження</string>
     <string name="home_antennas">Антени</string>
     <string name="home_deck">Колонки</string>
-    <string name="home_deck_empty">Закріпіть групи, щоб бачити їх поруч на широкому екрані</string>
+    <string name="home_deck_empty">Додайте колонки, щоб бачити стрічки й групи поруч на широкому екрані</string>
     <string name="home_deck_add">Додати колонку</string>
     <string name="home_deck_move_left">Посунути ліворуч</string>
     <string name="home_deck_move_right">Посунути праворуч</string>
@@ -53,6 +53,7 @@
     <string name="home_filter_accounts_explained">Вимикайте запасні акаунти, які тримаєте лише заради лімітів. «Для вас» об’єднує стрічки увімкнених акаунтів; «Стежу» й далі використовує локальні підписки, але під час завантаження пропускає вимкнені. Коментарі й профілі за потреби можуть використати будь-який акаунт.</string>
     <string name="home_filter_groups_explained">Вимкніть групу, щоб сховати її учасників зі «Стежу». Вкладка групи лишається. Їхні дописи також зникають з «Для вас».</string>
     <string name="home_filter_only_hint">Довге натискання залишить увімкненим лише цей пункт.</string>
+    <string name="home_filter_only_hint_desktop">Клацання правою кнопкою миші залишить увімкненим лише цей пункт.</string>
     <string name="home_filter_keep_one">Принаймні один обліковий запис має лишитися увімкненим</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Все</string>

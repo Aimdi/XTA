@@ -61,10 +61,18 @@ class TrayTest {
         assertEquals(TrayAction.TOGGLE, group.action)
         assertEquals(listOf(listOf(9)), group.body)
         val item = { member: String -> StatusNotifier.answer(call(StatusNotifier.ITEM_PATH, StatusNotifier.ITEM, member, "ii", 0, 0), shown, "", pixmaps) }
-        assertEquals(TrayAction.SHOW, item("Activate").action)
+        assertEquals(TrayAction.ACTIVATE, item("Activate").action)
         assertEquals(TrayAction.SHOW, item("SecondaryActivate").action)
         assertNull(item("ContextMenu").action)
         assertNotNull(item("Nothing").error)
+    }
+
+    @Test
+    fun aClickOnTheIconHidesTheWindowOnlyWhenItIsTheOneInUse() {
+        assertTrue(StatusNotifier.hidesOnActivate(shown = true, minimized = false, focused = true))
+        assertFalse(StatusNotifier.hidesOnActivate(shown = true, minimized = false, focused = false), "behind another program's: brought up")
+        assertFalse(StatusNotifier.hidesOnActivate(shown = true, minimized = true, focused = false), "minimized: brought up")
+        assertFalse(StatusNotifier.hidesOnActivate(shown = false, minimized = false, focused = false), "hidden in the tray: shown")
     }
 
     @Test
@@ -173,7 +181,7 @@ class TrayTest {
             assertEquals(DBusType.METHOD_RETURN, layout?.type)
             assertEquals(DBusType.METHOD_RETURN, host.call(name, StatusNotifier.MENU_PATH, StatusNotifier.MENU, "Event", "isvu", listOf(3, "clicked", Variant("i", 0), 0L))?.type)
             waitFor { actions.size == 2 }
-            assertEquals(listOf(TrayAction.SHOW, TrayAction.QUIT), actions.toList())
+            assertEquals(listOf(TrayAction.ACTIVATE, TrayAction.QUIT), actions.toList())
 
             // The window hidden: the menu's revision goes up and it says Show.
             tray.windowShown(false)

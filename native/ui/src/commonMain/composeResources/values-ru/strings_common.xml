@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X вернул ошибку сервера. Можно читать посты из кэша и повторить попытку позже.</string>
     <string name="problem_request_unavailable_title">Этот запрос недоступен</string>
     <string name="problem_request_unavailable_text">X отклонил этот запрос. Возможно, он временно недоступен или эта часть сервиса изменилась.</string>
-    <string name="problem_oops">Ой! Что-то пошло не так 🥲</string>
+    <string name="problem_oops">Не удалось загрузить</string>
     <string name="problem_http_text">X вернул HTTP %1$d.</string>
     <string name="problem_retry_in">Повторить через %1$s</string>
     <string name="close_app_confirm">Вы действительно хотите закрыть XTA?</string>
@@ -45,4 +45,5 @@
     <string name="find_in_page">Найти на странице</string>
     <string name="find_previous_match">Предыдущее совпадение</string>
     <string name="find_next_match">Следующее совпадение</string>
+    <string name="loading">Загрузка…</string>
 </resources>

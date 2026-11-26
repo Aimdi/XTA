@@ -76,12 +76,13 @@ internal class ViewerFileMenu(
         open = shown()
     }
 
-    /** The viewer's Ctrl+C and Ctrl+S; whether the key was taken. */
+    /** The viewer's Ctrl+C and Ctrl+S, and the Menu key that opens the menu; whether the key was taken. */
     fun key(key: ViewerKey): Boolean {
         val save = shown() ?: return false
         return when (key) {
             ViewerKey.COPY -> (save.kind == XMedia.Kind.PHOTO).also { if (it) copy(save) }
             ViewerKey.SAVE_AS -> true.also { actions.saveAs(save) }
+            ViewerKey.MENU -> true.also { open = save }
             else -> false
         }
     }

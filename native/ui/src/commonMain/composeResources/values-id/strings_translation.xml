@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Terjemahan</string>
     <string name="translation_privacy">Tidak ada yang dikirim sebelum Anda mengetuk Terjemahkan. Setelah itu teks hanya dikirim ke layanan yang dipilih di sini.</string>
+    <string name="translation_privacy_desktop">Tidak ada yang dikirim sebelum Anda mengeklik Terjemahkan. Setelah itu teks hanya dikirim ke layanan yang dipilih di sini.</string>
     <string name="translation_provider">Layanan terjemahan</string>
     <string name="translation_provider_off">Nonaktif</string>
     <string name="translation_provider_ai">Penyedia AI</string>

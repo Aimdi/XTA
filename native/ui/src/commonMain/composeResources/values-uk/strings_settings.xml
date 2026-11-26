@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Використовувати спеціальну базову URL-адресу при поширенні</string>
     <string name="settings_cancel">Скасувати</string>
     <string name="settings_save">Зберегти</string>
-    <string name="settings_tab_following">Слідкує</string>
+    <string name="settings_tab_following">Стежу</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Підписки</string>
     <string name="settings_page_discover">Огляд</string>
@@ -84,6 +84,7 @@
     <string name="settings_yes">Так</string>
     <string name="settings_zen_mode">Дзен-режим</string>
     <string name="settings_zen_mode_description">Спокійніша стрічка: приховує статистику дописів, приховує відповіді, доки ви не утримаєте кнопку коментарів, і показує лише кілька нещодавніх дописів від кожного.</string>
+    <string name="settings_zen_mode_description_desktop">Спокійніша стрічка: приховує статистику дописів, приховує відповіді, доки ви не клацнете кнопку коментарів правою кнопкою миші, і показує лише кілька нещодавніх дописів від кожного.</string>
     <string name="settings_threaded_replies">Деревовидні відповіді</string>
     <string name="settings_threaded_replies_description">Показувати відповіді під відкритим дописом у вигляді дерева з відступами, де кожна відповідь вкладена під ту, на яку відповідає.</string>
     <string name="settings_collapse_boosts">Групувати серії репостів</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Якість зображень</string>
     <string name="settings_load_manually">Завантажувати медіа вручну</string>
     <string name="settings_load_manually_description">Зображення та відео завантажуватимуться лише після дотику, щоб заощаджувати мобільний трафік.</string>
+    <string name="settings_load_manually_description_desktop">Зображення та відео завантажуватимуться лише після клацання, щоб заощаджувати трафік.</string>
     <string name="settings_save_bandwidth">Економте трафік за допомогою менших зображень</string>
     <string name="settings_quality_low">Низька</string>
     <string name="settings_quality_medium">Середня</string>
@@ -160,10 +162,6 @@
     <string name="settings_colour_purple">Фіолетовий</string>
     <string name="settings_colour_orange">Помаранчевий</string>
     <string name="settings_colour_green">Зелений</string>
-    <string name="settings_true_black">Справжній чорний?</string>
-    <string name="settings_true_black_description">Використовуйте справжній чорний колір для темної теми</string>
-    <string name="settings_true_black_cards">Справжній чорний для карток твітів</string>
-    <string name="settings_true_black_cards_description">Використовувати справжній чорний колір для фону карток твітів</string>
     <string name="settings_navigation_labels">Показувати мітки навігації</string>
     <string name="settings_hide_navigation">Ховати верхню і нижню панелі під час прокручування</string>
     <string name="settings_hide_status_bar">Приховувати рядок стану</string>
@@ -179,11 +177,17 @@
     <string name="settings_ticker_chart">Графік акції</string>
     <string name="settings_ticker_chart_description">Показується, коли ви відкриваєте тикер. XTA сам бере котирування з публічних сервісів без облікового запису; вимкнувши, ви не надсилаєте запиту й лишаєтесь із дописами.</string>
     <string name="settings_double_tap_like">Подвійний дотик — подобається</string>
+    <string name="settings_double_tap_like_desktop">Подвійне клацання — подобається</string>
     <string name="settings_double_tap_like_description">Типово вимкнено: кожен одиночний дотик очікує можливого другого, тож допис відкривається трохи повільніше.</string>
+    <string name="settings_double_tap_like_description_desktop">Типово вимкнено: кожне одиночне клацання очікує можливого другого, тож допис відкривається трохи повільніше.</string>
     <string name="settings_swipe_back_anywhere">Свайп назад із будь-якого місця</string>
+    <string name="settings_swipe_back_anywhere_desktop">Перетягування назад із будь-якого місця</string>
     <string name="settings_swipe_back_anywhere_description">Потягніть відкритий допис із будь-якого його місця, щоб повернутися. Вимкнено: лише від краю екрана.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Потягніть відкритий допис із будь-якого його місця, щоб повернутися. Вимкнено: лише від краю вікна.</string>
     <string name="settings_swipe_back_tilt">Нахил за пальцем</string>
+    <string name="settings_swipe_back_tilt_desktop">Нахил за вказівником</string>
     <string name="settings_swipe_back_tilt_description">Допис, який ви тягнете назад, обертається навколо пальця й гойдається відповідно до швидкості.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">Допис, який ви тягнете назад, обертається навколо вказівника й гойдається відповідно до швидкості.</string>
     <string name="settings_accounts_empty">Додайте обліковий запис, щоб завантажити «Для вас».</string>
     <string name="settings_accounts_description">Вимикайте запасні акаунти, які тримаєте лише заради лімітів. «Для вас» об’єднує стрічки увімкнених акаунтів; «Читаю» й далі використовує локальні підписки, але під час завантаження пропускає вимкнені. Коментарі й профілі за потреби можуть використати будь-який акаунт.</string>
     <string name="settings_account_delete_confirm">Вийти з @%1$s? XTA забуде цей сеанс на пристрої, і скасувати це буде неможливо.</string>
@@ -319,6 +323,7 @@
     <string name="settings_intro_again">Показати вступ знову</string>
     <string name="settings_intro_again_description">Ще раз переглянути картки першого запуску.</string>
     <string name="settings_open_logs">Відкрити теку журналів</string>
+    <string name="settings_copy_diagnostics">Копіювати діагностичні дані</string>
     <string name="settings_ok">Добре</string>
     <string name="settings_diagnostics_copy">Скопіювати звіт</string>
     <string name="settings_diagnostics_copied">Діагностику скопійовано до буфера обміну</string>

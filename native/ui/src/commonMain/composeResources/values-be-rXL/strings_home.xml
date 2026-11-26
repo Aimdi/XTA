@@ -29,7 +29,7 @@
     <string name="home_downloads">Spampoŭki</string>
     <string name="home_antennas">Anteny</string>
     <string name="home_deck">Kałonki</string>
-    <string name="home_deck_empty">Zamacujcie hrupy, kab bačyć ich pobač na šyrokim ekranie</string>
+    <string name="home_deck_empty">Dadajcie slupki, kab bačyć stužki i hrupy pobač na šyrokim ekranie</string>
     <string name="home_deck_add">Dadać słupok</string>
     <string name="home_deck_move_left">Pieramiascić uleva</string>
     <string name="home_deck_move_right">Pieramiascić uprava</string>
@@ -53,6 +53,7 @@
     <string name="home_filter_accounts_explained">Adkliučajcie zapasnyja akaŭnty, jakija trymajecie tolki dziela limitaŭ. «Dla vas» abjadnoŭvaje stužki ŭklučanych akaŭntaŭ; «Čytaju» dalej vykarystoŭvaje lakalnyja padpiski, ale pry zahruzcy prapuskaje adklučanyja. Kamentary i profili pry patrebie mohuć vykarystać luby akaŭnt.</string>
     <string name="home_filter_groups_explained">Vyklučycie hrupu, kab schavać jaje ŭdzielnikaŭ z «Čytaju». Układka hrupy zastajecca. Ich dopisy taksama znikajuć z «Dla vas».</string>
     <string name="home_filter_only_hint">Doŭha nacisnicie na punkt, kab pakinuć uklučanym tolki jaho.</string>
+    <string name="home_filter_only_hint_desktop">Nacisnicie na punkt pravaj knopkaj myšy, kab pakinuć uklučanym tolki jaho.</string>
     <string name="home_filter_keep_one">Choć adzin ulikovy zapis musić zastacca ŭklučanym</string>
     <string name="home_filter_count">%1$d / %2$d</string>
     <string name="home_filter_all">Usio</string>

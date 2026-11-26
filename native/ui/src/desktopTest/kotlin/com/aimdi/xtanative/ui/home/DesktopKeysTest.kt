@@ -37,6 +37,13 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun aTabStepEndsWhenTheWindowLosesTheFocusAsItsReleaseGoesElsewhere() {
+        assertEquals(TabStep.FORWARD, DesktopKeys.tabStepKept(TabStep.FORWARD, windowFocused = true))
+        assertNull(DesktopKeys.tabStepKept(TabStep.BACKWARD, windowFocused = false), "Tab held as the window lost the focus")
+        assertNull(DesktopKeys.tabStepKept(null, windowFocused = true))
+    }
+
+    @Test
     fun aButtonClickedKeepsNoKeysButAFieldOrWhatTabReachedDoes() {
         assertFalse(DesktopKeys.keysInside(focusInside = false, typing = false, clicked = false), "the frame itself has them")
         assertFalse(DesktopKeys.keysInside(focusInside = true, typing = false, clicked = true), "a tab, chip or refresh button clicked")
@@ -456,6 +463,21 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun aPageOverSettingsHandsCtrlFToTheSearchItGoesBackTo() {
+        val actions = DesktopActions()
+        val found = mutableListOf<String>()
+        actions.addFinder("settings") { found += "settings" }
+        actions.removeFinder("settings")
+        actions.findOnReturn()
+        assertTrue(found.isEmpty(), "nothing is focused before the page under it is back")
+        actions.addFinder("settings") { found += "settings" }
+        assertEquals(listOf("settings"), found, "the field shown next takes the keys as it comes")
+        actions.removeFinder("settings")
+        actions.addFinder("settings") { found += "again" }
+        assertEquals(listOf("settings"), found, "only once: coming back later leaves the keys where they are")
+    }
+
+    @Test
     fun ctrlPlusMinusAndZeroSizeTheTextAsABrowsersZoom() {
         assertEquals(DeskAction.TEXT_BIGGER, action(DeskKey.PLUS, ctrl = true))
         assertEquals(DeskAction.TEXT_BIGGER, action(DeskKey.PLUS, ctrl = true, shift = true), "Ctrl+Shift+= on a US keyboard")
@@ -528,6 +550,22 @@ class DesktopKeysTest {
         assertTrue(DesktopShortcuts.all.isNotEmpty())
         DesktopShortcuts.all.forEach { shortcut -> assertTrue(shortcut.keys.isNotEmpty() && shortcut.keys.all { it.isNotEmpty() }, "${shortcut.does}") }
         assertEquals(DesktopShortcuts.all.size, DesktopShortcuts.all.map { it.does }.distinct().size)
+        assertTrue(DesktopShortcuts.sections.none { it.shortcuts.isEmpty() }, "no group without keys")
+    }
+
+    @Test
+    fun theShortcutGroupsSplitIntoTwoColumnsOfAlikeHeightInTheirOrder() {
+        val (first, second) = DesktopShortcuts.twoColumns(DesktopShortcuts.sections)
+        assertEquals(DesktopShortcuts.sections, first + second)
+        assertTrue(first.isNotEmpty() && second.isNotEmpty())
+        val rows = { column: List<ShortcutSection> -> column.sumOf { it.shortcuts.size + 2 } }
+        val gap = kotlin.math.abs(rows(first) - rows(second))
+        // No other split point is closer.
+        (0..DesktopShortcuts.sections.size).forEach { at ->
+            val a = DesktopShortcuts.sections.take(at)
+            val b = DesktopShortcuts.sections.drop(at)
+            assertTrue(gap <= kotlin.math.abs(rows(a) - rows(b)))
+        }
     }
 
     @Test

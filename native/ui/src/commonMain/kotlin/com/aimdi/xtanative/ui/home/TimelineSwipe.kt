@@ -22,6 +22,22 @@ object TimelineSwipe {
         return (current + if (rtl) -physical else physical).takeIf { it in 0 until count }
     }
 
+    /** How much of the timeline's width the preview may take. */
+    const val PREVIEW_SHARE = 0.65f
+
+    /** What the preview shows for a drag: the timeline it names, the side the drag heads for, and whether a release now turns. */
+    data class Look(val target: Int, val leftward: Boolean, val full: Boolean)
+
+    /**
+     * The preview's [Look] for a drag of [distance] dp from [current] of [count], or null when it shows nothing.
+     * It changes only at a few points of a drag, so the preview is composed again only there.
+     */
+    fun look(current: Int, count: Int, distance: Float, rtl: Boolean = false): Look? =
+        target(current, count, distance, rtl)?.let { Look(it, leftward = distance < 0, full = progress(distance) >= 1f) }
+
+    /** The widest the preview may be, gutters included, in a timeline [width] px wide with [gutters] px of room at its sides. */
+    fun previewWidth(width: Int, gutters: Int): Int = minOf(width, (width * PREVIEW_SHARE).toInt() + gutters)
+
     /** How far the drag is toward turning, from 0 to 1: at 1 a release turns. */
     fun progress(distance: Float): Float = (abs(distance) / HomeBar.SWIPE_DISTANCE).coerceIn(0f, 1f)
 

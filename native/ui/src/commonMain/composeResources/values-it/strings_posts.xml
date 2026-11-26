@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Citazioni</string>
     <string name="posts_replies_missing">Impossibile caricare le risposte</string>
+    <string name="posts_no_replies_yet">Ancora nessuna risposta</string>
     <string name="posts_replying_to">In risposta a</string>
     <string name="posts_reposted">%1$s ha ritwittato %2$s</string>
     <string name="posts_reposted_by">Ricondiviso da</string>
@@ -96,6 +97,7 @@
     <string name="posts_verified_organization">Organizzazione verificata</string>
     <string name="posts_view_quoted">Visualizza il post citato</string>
     <string name="posts_zen_replies">Tieni premuto il pulsante dei commenti per mostrare le risposte</string>
+    <string name="posts_zen_replies_desktop">Fai clic destro sul pulsante dei commenti per mostrare le risposte</string>
     <plurals name="posts_views_count">
         <item quantity="one">%1$s visualizzazione</item>
         <item quantity="other">%1$s visualizzazioni</item>

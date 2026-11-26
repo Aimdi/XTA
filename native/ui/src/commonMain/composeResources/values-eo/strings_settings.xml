@@ -84,6 +84,7 @@
     <string name="settings_yes">Jes</string>
     <string name="settings_zen_mode">Zena reĝimo</string>
     <string name="settings_zen_mode_description">Pli trankvila fluo: kaŝas statistikojn de afiŝoj, kaŝas respondojn ĝis vi longpremas la komentan butonon, kaj montras nur kelkajn lastatempajn afiŝojn po persono.</string>
+    <string name="settings_zen_mode_description_desktop">Pli trankvila fluo: kaŝas statistikojn de afiŝoj, kaŝas respondojn ĝis vi dekstre alklakas la komentan butonon, kaj montras nur kelkajn lastatempajn afiŝojn po persono.</string>
     <string name="settings_threaded_replies">Fadenaj respondoj</string>
     <string name="settings_threaded_replies_description">Montri respondojn sub malfermita afiŝo kiel deŝovitan arbon, kie ĉiu respondo estas ingita sub tiu, al kiu ĝi respondas.</string>
     <string name="settings_collapse_boosts">Grupigi seriojn de reafiŝoj</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Kvalito de bildoj</string>
     <string name="settings_load_manually">Ŝargi aŭdvidaĵojn permane</string>
     <string name="settings_load_manually_description">Bildoj kaj videoj ne ŝargiĝos ĝis vi tuŝos ilin, por ŝpari moldatumojn.</string>
+    <string name="settings_load_manually_description_desktop">Bildoj kaj videoj ne ŝargiĝos ĝis vi alklakos ilin, por ŝpari datumojn.</string>
     <string name="settings_save_bandwidth">Konservi bendlarĝon per pli malgrandaj bildoj</string>
     <string name="settings_quality_low">Malalta</string>
     <string name="settings_quality_medium">Meza</string>
@@ -160,10 +162,6 @@
     <string name="settings_colour_purple">Purpura</string>
     <string name="settings_colour_orange">Oranĝa</string>
     <string name="settings_colour_green">Verda</string>
-    <string name="settings_true_black">Nigro vera?</string>
-    <string name="settings_true_black_description">Uzi nigron veran kun la reĝimo malhela de temo</string>
-    <string name="settings_true_black_cards">Vera nigro por tweet-kartoj</string>
-    <string name="settings_true_black_cards_description">Uzi veran nigron por fono de tweet-kartoj</string>
     <string name="settings_navigation_labels">Montri navigaciajn etikedojn</string>
     <string name="settings_hide_navigation">Kaŝi la suprajn kaj subajn bretojn dum rulumado</string>
     <string name="settings_hide_status_bar">Kaŝi la statan breton</string>
@@ -179,11 +177,17 @@
     <string name="settings_ticker_chart">Akcia diagramo</string>
     <string name="settings_ticker_chart_description">Montrata kiam vi malfermas tikeron. XTA mem prenas la prezojn de publikaj servoj sen konto; malŝaltite neniu peto okazas kaj la afiŝoj restas.</string>
     <string name="settings_double_tap_like">Duobla frapeto por ŝati</string>
+    <string name="settings_double_tap_like_desktop">Duobla alklako por ŝati</string>
     <string name="settings_double_tap_like_description">Defaŭlte malŝaltita: ĉiu unuopa frapeto atendas ĉu dua sekvos, do malfermi afiŝon iĝas iom pli malrapida.</string>
+    <string name="settings_double_tap_like_description_desktop">Defaŭlte malŝaltita: ĉiu unuopa alklako atendas ĉu dua sekvos, do malfermi afiŝon iĝas iom pli malrapida.</string>
     <string name="settings_swipe_back_anywhere">Reiri per ŝovo de ie ajn</string>
+    <string name="settings_swipe_back_anywhere_desktop">Reiri per trenado de ie ajn</string>
     <string name="settings_swipe_back_anywhere_description">Trenu malfermitan afiŝon de ie ajn sur ĝi por reiri. Malŝaltite: nur de la rando de la ekrano.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Trenu malfermitan afiŝon de ie ajn sur ĝi por reiri. Malŝaltite: nur de la rando de la fenestro.</string>
     <string name="settings_swipe_back_tilt">Klini laŭ via fingro</string>
+    <string name="settings_swipe_back_tilt_desktop">Klini laŭ la musmontrilo</string>
     <string name="settings_swipe_back_tilt_description">Afiŝo, kiun vi trenas reen, turniĝas ĉirkaŭ via fingro kaj balanciĝas laŭ via rapido.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">Afiŝo, kiun vi trenas reen, turniĝas ĉirkaŭ la musmontrilo kaj balanciĝas laŭ via rapido.</string>
     <string name="settings_accounts_empty">Aldonu konton por ŝargi Por vi.</string>
     <string name="settings_accounts_description">Malŝaltu rezervajn kontojn, kiujn vi tenas nur pro limoj. Por vi kunfandas hejmajn templiniojn de ŝaltitaj kontoj; Sekvataj ankoraŭ uzas viajn lokajn abonojn, sed preterpasas malŝaltitajn kontojn dum lego. Komentoj kaj profiloj ankoraŭ povas uzi iun ajn konton se necese.</string>
     <string name="settings_account_delete_confirm">Ĉu elsaluti el @%1$s? XTA forgesos ĝian seancon en ĉi tiu aparato, kaj tion oni ne povas malfari.</string>
@@ -319,6 +323,7 @@
     <string name="settings_intro_again">Remontri la enkondukon</string>
     <string name="settings_intro_again_description">Retrarigardi la kartojn de la unua lanĉo.</string>
     <string name="settings_open_logs">Malfermi dosierujon de protokoloj</string>
+    <string name="settings_copy_diagnostics">Kopii diagnozajn informojn</string>
     <string name="settings_ok">Bone</string>
     <string name="settings_diagnostics_copy">Kopii la raporton</string>
     <string name="settings_diagnostics_copied">Diagnozo kopiita al la tondujo</string>

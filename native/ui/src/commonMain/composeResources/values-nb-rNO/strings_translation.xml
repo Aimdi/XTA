@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Oversettelse</string>
     <string name="translation_privacy">Ingenting sendes før du trykker på Oversett. Da går teksten bare til tjenesten du velger her.</string>
+    <string name="translation_privacy_desktop">Ingenting sendes før du klikker på Oversett. Da går teksten bare til tjenesten du velger her.</string>
     <string name="translation_provider">Oversettelsestjeneste</string>
     <string name="translation_provider_off">Av</string>
     <string name="translation_provider_ai">KI-leverandør</string>

@@ -79,6 +79,7 @@ object XCodec {
         post.live?.let { put("live", live(it)) }
         post.grokShare?.let { put("grok", grokShare(it)) }
         post.quotedWithheld?.let { put("quotedWithheld", withheld(it)) }
+        if (post.likedOnX) put("likedOnX", true)
     }
 
     private fun post(json: J): XPost? {
@@ -114,6 +115,7 @@ object XCodec {
             live = json["live"].takeIf { it.exists }?.let(::live),
             grokShare = json["grok"].takeIf { it.exists }?.let(::grokShare),
             quotedWithheld = json["quotedWithheld"].takeIf { it.exists }?.let(::withheld),
+            likedOnX = json["likedOnX"].boolean ?: false,
         )
     }
 

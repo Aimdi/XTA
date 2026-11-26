@@ -42,6 +42,9 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -53,7 +56,7 @@ import com.aimdi.xtanative.ui.theme.MouseRipples
 
 /** A menu's width on the desktop, as Material's menus keep theirs. */
 private val MenuMinWidth = 200.dp
-private val MenuMaxWidth = 320.dp
+private val MenuMaxWidth = 360.dp
 
 /**
  * A menu the keyboard opened: at the top of the post's end, where its ⋯ is,
@@ -122,7 +125,7 @@ internal actual fun PostMenuSurface(onDismiss: () -> Unit, content: @Composable 
             Surface(
                 shape = MaterialTheme.shapes.extraSmall,
                 color = MaterialTheme.colorScheme.surfaceContainer,
-                tonalElevation = 3.dp,
+                tonalElevation = MENU_ELEVATION,
                 shadowElevation = 8.dp,
                 // A hairline keeps its edge on the black theme, where the shadow does not show.
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
@@ -134,7 +137,11 @@ internal actual fun PostMenuSurface(onDismiss: () -> Unit, content: @Composable 
                         .verticalScroll(rememberScrollState())
                         .padding(vertical = 8.dp),
                 ) {
-                    CompositionLocalProvider(LocalRippleConfiguration provides if (byKeys) DesktopRipples else MouseRipples) { content() }
+                    CompositionLocalProvider(
+                        LocalRippleConfiguration provides if (byKeys) DesktopRipples else MouseRipples,
+                        // A pointer's menu: denser rows than a phone's sheet.
+                        LocalMenuRowMetrics provides MenuRowMetrics.Pointer,
+                    ) { content() }
                     Box(
                         Modifier
                             .size(0.dp)
@@ -147,4 +154,27 @@ internal actual fun PostMenuSurface(onDismiss: () -> Unit, content: @Composable 
             }
         }
     }
+}
+
+@Composable
+internal actual fun ColumnScope.KeyedMenuRows(content: @Composable ColumnScope.() -> Unit) {
+    val focus = LocalFocusManager.current
+    val modes = LocalInputModeManager.current
+    // Read as the menu opens, not followed: a click on a row must not move the focus first.
+    val byKeys = remember { KeyboardFocusLook.keyboard }
+    LaunchedEffect(Unit) {
+        withFrameNanos {}
+        if (byKeys) {
+            modes.requestInputMode(InputMode.Keyboard)
+            focus.moveFocus(FocusDirection.Next)
+        }
+    }
+    Column(
+        Modifier.width(IntrinsicSize.Max).onPreviewKeyEvent { event ->
+            // ↑ and ↓ stay Material's; Home and End (Page Up and Page Down) are added, once a row has the focus.
+            val ends = event.key == Key.MoveHome || event.key == Key.MoveEnd || event.key == Key.PageUp || event.key == Key.PageDown
+            ends && MenuKeys.handle(event, focus).also { if (it) modes.requestInputMode(InputMode.Keyboard) }
+        },
+        content = content,
+    )
 }

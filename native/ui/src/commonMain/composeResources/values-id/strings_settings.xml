@@ -84,6 +84,7 @@
     <string name="settings_yes">Ya</string>
     <string name="settings_zen_mode">Mode zen</string>
     <string name="settings_zen_mode_description">Feed yang lebih tenang: menyembunyikan statistik postingan, menyembunyikan balasan sampai Anda menahan tombol komentar, dan hanya menampilkan beberapa postingan terbaru per orang.</string>
+    <string name="settings_zen_mode_description_desktop">Feed yang lebih tenang: menyembunyikan statistik postingan, menyembunyikan balasan sampai Anda mengeklik kanan tombol komentar, dan hanya menampilkan beberapa postingan terbaru per orang.</string>
     <string name="settings_threaded_replies">Balasan berutas</string>
     <string name="settings_threaded_replies_description">Tampilkan balasan di bawah postingan yang dibuka sebagai pohon berindentasi, tiap balasan bersarang di bawah yang dijawabnya.</string>
     <string name="settings_collapse_boosts">Kelompokkan rentetan repost</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Kualitas gambar</string>
     <string name="settings_load_manually">Muat media secara manual</string>
     <string name="settings_load_manually_description">Gambar dan video tidak akan dimuat sampai Anda mengetuknya, untuk menghemat data seluler.</string>
+    <string name="settings_load_manually_description_desktop">Gambar dan video tidak akan dimuat sampai Anda mengekliknya, untuk menghemat data.</string>
     <string name="settings_save_bandwidth">Hemat bandwidth menggunakan gambar yang lebih kecil</string>
     <string name="settings_quality_low">Rendah</string>
     <string name="settings_quality_medium">Sedang</string>
@@ -160,10 +162,6 @@
     <string name="settings_colour_purple">Ungu</string>
     <string name="settings_colour_orange">Oranye</string>
     <string name="settings_colour_green">Hijau</string>
-    <string name="settings_true_black">Hitam Pekat?</string>
-    <string name="settings_true_black_description">Gunakan hitam pekat untuk tema mode gelap</string>
-    <string name="settings_true_black_cards">Hitam murni untuk kartu tweet</string>
-    <string name="settings_true_black_cards_description">Gunakan hitam murni untuk latar belakang kartu tweet</string>
     <string name="settings_navigation_labels">Tampilkan label navigasi</string>
     <string name="settings_hide_navigation">Sembunyikan bilah atas dan bawah saat menggulir</string>
     <string name="settings_hide_status_bar">Sembunyikan bilah status</string>
@@ -179,11 +177,17 @@
     <string name="settings_ticker_chart">Grafik saham</string>
     <string name="settings_ticker_chart_description">Ditampilkan saat Anda membuka ticker. XTA mengambil sendiri harganya dari beberapa layanan publik tanpa akun; jika dimatikan tidak ada permintaan dan posnya tetap ada.</string>
     <string name="settings_double_tap_like">Ketuk dua kali untuk menyukai</string>
+    <string name="settings_double_tap_like_desktop">Klik dua kali untuk menyukai</string>
     <string name="settings_double_tap_like_description">Nonaktif secara bawaan: setiap ketukan tunggal menunggu kemungkinan ketukan kedua, sehingga membuka pos terasa sedikit lebih lambat.</string>
+    <string name="settings_double_tap_like_description_desktop">Nonaktif secara bawaan: setiap klik tunggal menunggu kemungkinan klik kedua, sehingga membuka pos terasa sedikit lebih lambat.</string>
     <string name="settings_swipe_back_anywhere">Geser kembali dari mana saja</string>
+    <string name="settings_swipe_back_anywhere_desktop">Seret kembali dari mana saja</string>
     <string name="settings_swipe_back_anywhere_description">Seret pos yang terbuka dari bagian mana pun untuk kembali. Nonaktif: hanya dari tepi layar.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Seret pos yang terbuka dari bagian mana pun untuk kembali. Nonaktif: hanya dari tepi jendela.</string>
     <string name="settings_swipe_back_tilt">Miring mengikuti jari</string>
+    <string name="settings_swipe_back_tilt_desktop">Miring mengikuti penunjuk</string>
     <string name="settings_swipe_back_tilt_description">Pos yang Anda seret kembali berputar di sekitar jari Anda dan berayun sesuai kecepatan Anda.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">Pos yang Anda seret kembali berputar di sekitar penunjuk dan berayun sesuai kecepatan Anda.</string>
     <string name="settings_accounts_empty">Tambahkan akun untuk memuat Untuk Anda.</string>
     <string name="settings_accounts_description">Matikan akun cadangan yang hanya Anda simpan untuk batas laju. Untuk Anda menggabungkan linimasa beranda dari akun yang tetap aktif; Mengikuti tetap memakai langganan lokal tetapi melewati akun yang dimatikan saat mengambil. Komentar dan profil masih bisa memakai akun mana pun jika perlu.</string>
     <string name="settings_account_delete_confirm">Keluar dari @%1$s? XTA akan melupakan sesinya di perangkat ini, dan tindakan ini tidak dapat dibatalkan.</string>
@@ -319,6 +323,7 @@
     <string name="settings_intro_again">Tampilkan perkenalan lagi</string>
     <string name="settings_intro_again_description">Putar ulang kartu saat pertama kali dibuka.</string>
     <string name="settings_open_logs">Buka folder log</string>
+    <string name="settings_copy_diagnostics">Salin info diagnostik</string>
     <string name="settings_ok">Oke</string>
     <string name="settings_diagnostics_copy">Salin laporan</string>
     <string name="settings_diagnostics_copied">Diagnostik disalin ke papan klip</string>

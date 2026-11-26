@@ -84,6 +84,7 @@
     <string name="settings_yes">Yes</string>
     <string name="settings_zen_mode">Zen mode</string>
     <string name="settings_zen_mode_description">A calmer feed: hides post statistics, hides replies until you hold the comment button, and shows only a few recent posts per person.</string>
+    <string name="settings_zen_mode_description_desktop">A calmer feed: hides post statistics, hides replies until you right-click the comment button, and shows only a few recent posts per person.</string>
     <string name="settings_threaded_replies">Threaded replies</string>
     <string name="settings_threaded_replies_description">Show replies under an opened post as an indented tree, with each reply nested under the one it answers.</string>
     <string name="settings_collapse_boosts">Group runs of reposts</string>
@@ -104,6 +105,7 @@
     <string name="settings_image_quality">Image quality</string>
     <string name="settings_load_manually">Load media manually</string>
     <string name="settings_load_manually_description">Photos and videos won't load until you tap them, to save mobile data.</string>
+    <string name="settings_load_manually_description_desktop">Photos and videos won't load until you click them, to save data.</string>
     <string name="settings_save_bandwidth">Save bandwidth with smaller images</string>
     <string name="settings_quality_low">Low</string>
     <string name="settings_quality_medium">Medium</string>
@@ -160,10 +162,6 @@
     <string name="settings_colour_purple">Purple</string>
     <string name="settings_colour_orange">Orange</string>
     <string name="settings_colour_green">Green</string>
-    <string name="settings_true_black">True Black?</string>
-    <string name="settings_true_black_description">Use true black for the dark mode theme</string>
-    <string name="settings_true_black_cards">True black tweet cards?</string>
-    <string name="settings_true_black_cards_description">Use true black for tweet cards</string>
     <string name="settings_navigation_labels">Show navigation labels?</string>
     <string name="settings_hide_navigation">Hide top and bottom bars while scrolling</string>
     <string name="settings_hide_status_bar">Hide the status bar</string>
@@ -179,11 +177,17 @@
     <string name="settings_ticker_chart">Stock chart</string>
     <string name="settings_ticker_chart_description">Shown when you open a ticker. XTA fetches the prices itself from public services that need no account; with it off no request is made and the posts remain.</string>
     <string name="settings_double_tap_like">Double-tap to like</string>
+    <string name="settings_double_tap_like_desktop">Double-click to like</string>
     <string name="settings_double_tap_like_description">Off by default: with it on, every single tap waits to see whether a second one follows, so opening a post feels a little slower.</string>
+    <string name="settings_double_tap_like_description_desktop">Off by default: with it on, every single click waits to see whether a second one follows, so opening a post feels a little slower.</string>
     <string name="settings_swipe_back_anywhere">Swipe back from anywhere</string>
+    <string name="settings_swipe_back_anywhere_desktop">Drag back from anywhere</string>
     <string name="settings_swipe_back_anywhere_description">Drag an opened post from anywhere on it to go back. Off: only from the edge of the screen.</string>
+    <string name="settings_swipe_back_anywhere_description_desktop">Drag an opened post from anywhere on it to go back. Off: only from the edge of the window.</string>
     <string name="settings_swipe_back_tilt">Tilt with your finger</string>
+    <string name="settings_swipe_back_tilt_desktop">Tilt with the pointer</string>
     <string name="settings_swipe_back_tilt_description">A post you drag back turns around your finger and swings with your speed.</string>
+    <string name="settings_swipe_back_tilt_description_desktop">A post you drag back turns around the pointer and swings with your speed.</string>
     <string name="settings_accounts_empty">Add an account to load For you.</string>
     <string name="settings_accounts_description">Turn off spare accounts you only keep for higher rate limits. For you merges Home timelines from accounts left on; Following still uses your local subscriptions but skips turned-off accounts when fetching. Comments and profiles can still use any account if needed.</string>
     <string name="settings_account_delete_confirm">Sign out of @%1$s? XTA will forget its session on this device, and this can't be undone.</string>
@@ -319,6 +323,7 @@
     <string name="settings_intro_again">Show intro again</string>
     <string name="settings_intro_again_description">Replay the first-launch cards.</string>
     <string name="settings_open_logs">Open logs folder</string>
+    <string name="settings_copy_diagnostics">Copy diagnostics</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Copy report</string>
     <string name="settings_diagnostics_copied">Diagnostics copied to the clipboard</string>

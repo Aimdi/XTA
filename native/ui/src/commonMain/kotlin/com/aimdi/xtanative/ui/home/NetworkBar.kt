@@ -203,13 +203,15 @@ private fun Avatar(id: String, name: String, networks: HomeNetworks, mark: Avata
     val count = mark.count?.takeIf { it > 0 }?.let { stringResource(Res.string.home_unread_count, it) }
     val label = listOfNotNull(name, count ?: stringResource(Res.string.home_unread).takeIf { mark.dot }, stringResource(Res.string.home_switcher_title)).joinToString(", ")
     val switchLabel = stringResource(Res.string.home_switch_account)
+    val opener = switcherButton("network:$id", onClick)
     Box(
         modifier
             .size(44.dp)
             .clip(CircleShape)
+            .then(opener.modifier)
             // A right-click switches the account, as a long press does.
             .then(onAccounts?.let { Modifier.onSecondaryClick(it) } ?: Modifier)
-            .combinedClickable(onClick = onClick, onLongClick = onAccounts, onLongClickLabel = switchLabel.takeIf { onAccounts != null })
+            .combinedClickable(onClick = opener.onClick, onLongClick = onAccounts, onLongClickLabel = switchLabel.takeIf { onAccounts != null })
             .clearAndSetSemantics {
                 role = Role.Button
                 contentDescription = label

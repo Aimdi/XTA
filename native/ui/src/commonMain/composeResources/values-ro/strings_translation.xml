@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Traducere</string>
     <string name="translation_privacy">Nu se trimite nimic până nu atingi Tradu. Textul ajunge apoi doar la serviciul ales aici.</string>
+    <string name="translation_privacy_desktop">Nu se trimite nimic până nu faci clic pe Tradu. Textul ajunge apoi doar la serviciul ales aici.</string>
     <string name="translation_provider">Serviciu de traducere</string>
     <string name="translation_provider_off">Dezactivat</string>
     <string name="translation_provider_ai">Furnizor IA</string>

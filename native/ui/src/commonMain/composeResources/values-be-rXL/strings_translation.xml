@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Pierakład</string>
     <string name="translation_privacy">Ničoha nie adpraŭlajecca, pakul vy nie naciśniecie «Pierakłaści». Tady tekst trapliaje tolki ŭ vybrany tut servis.</string>
+    <string name="translation_privacy_desktop">Ničoha nie adpraŭlajecca, pakul vy nie pstrykniecie «Pierakłaści». Tady tekst traplaje tolki ŭ vybrany tut servis.</string>
     <string name="translation_provider">Servis pierakładu</string>
     <string name="translation_provider_off">Vykłučana</string>
     <string name="translation_provider_ai">Pastaŭščyk ŠI</string>

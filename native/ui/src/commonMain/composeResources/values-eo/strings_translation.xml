@@ -3,6 +3,7 @@
 <resources>
     <string name="translation_title">Tradukado</string>
     <string name="translation_privacy">Nenio estas sendata ĝis vi tuŝetas Traduki. Tiam la teksto iras nur al la servo elektita ĉi tie.</string>
+    <string name="translation_privacy_desktop">Nenio estas sendata ĝis vi alklakas Traduki. Tiam la teksto iras nur al la servo elektita ĉi tie.</string>
     <string name="translation_provider">Tradukservo</string>
     <string name="translation_provider_off">Malŝaltita</string>
     <string name="translation_provider_ai">AI-provizanto</string>
