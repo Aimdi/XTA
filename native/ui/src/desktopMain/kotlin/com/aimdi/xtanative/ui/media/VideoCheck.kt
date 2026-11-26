@@ -72,10 +72,15 @@ object VideoCheck {
     private suspend fun podcast(url: String) {
         val player = MpvContinuityPlayer.create()
         try {
+            val asked = System.nanoTime()
             player.open(url)
             player.play()
             withTimeoutOrNull(PLAY_MS) { player.changes.first { player.frame.failed || player.frame.positionMs >= HEARD_MS } }
             val frame = player.frame
+            // Not heard: what mpv says of itself, and how long it was waited for, to tell a player that never started from one that was slow.
+            if (!frame.failed && frame.positionMs < HEARD_MS) {
+                say("podcast not heard after ${(System.nanoTime() - asked) / 1_000_000} ms: ${(player as? MpvContinuityPlayer)?.standing()}")
+            }
             say(if (frame.failed) "podcast failed" else "podcast at ${frame.positionMs} ms of ${frame.durationMs} ms, " + if (frame.playing) "playing" else "not playing")
             player.stop()
         } finally {

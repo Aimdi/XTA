@@ -51,6 +51,11 @@ internal class MpvContinuityPlayer private constructor(private val player: MpvPl
         player?.close()
     }
 
+    /** What mpv itself says of where it stands, for the log of a check that found it not playing. */
+    suspend fun standing(): String =
+        listOf("pause", "idle-active", "core-idle", "eof-reached", "paused-for-cache", "time-pos", "current-ao", "audio-codec-name")
+            .map { name -> "$name=${player?.property(name)}" }.joinToString(", ")
+
     companion object {
         fun create(): ContinuityPlayer = MpvContinuityPlayer(MpvPlayer.create(MpvOptions.AUDIO, video = false, name = "mpv-audio"))
     }

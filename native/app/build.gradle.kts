@@ -103,7 +103,8 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            // -PkeepRules=<file> builds with other rules than the app's: CI's measure of what a rule costs (native/PERF.md), never a release.
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), providers.gradleProperty("keepRules").orNull ?: "proguard-rules.pro")
             signingConfig =
                 if (System.getenv("KEY_PATH").isNullOrEmpty()) signingConfigs.getByName("debug")
                 else signingConfigs.getByName("release")

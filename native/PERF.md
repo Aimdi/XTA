@@ -39,6 +39,7 @@ until a second run agrees. APK bytes are exact.
 | 241 | `a88b50e1` | Measurement only | 9,955,126 | 611 ms (2.14 × Settings' 285) | 529 ms | not comparable (read after a full compile) |
 | 249 | `5484bb87` | Measurement only | 9,955,126 | 931 ms (2.00 × Settings' 465) | 854 ms | 116,944 kB |
 | 250 | `0dc8e15c` | The account menu made when its drawer first opens | 9,955,126 | 917 ms (2.12 × Settings' 433) | 875 ms | 113,779 kB |
+| 251 | `2ce906fa` | Measurement only | 9,955,126 | 568 ms (1.64 × Settings' 346) | 580 ms | 114,985 kB |
 
 At the baseline the two dex files are 9,383,959 bytes packed (78% of the
 APK) and the resource table 659,364.
@@ -150,6 +151,28 @@ round's.
   frame's layout, or its drawing (the emulator draws in software). The
   next run marks the skeleton's end, the end of layout and the start of
   drawing.
+- **The start is the emulator drawing its first frame** (run 251; Settings
+  346 ms, the app 568, 1.64 times it). Of a cold start the app's own part
+  is small and now known step by step: the application at 11 ms, the
+  activity at 26, the first frame beginning at 31, Home composing from 56,
+  its skeleton composed at 99, everything measured and laid out at 122,
+  drawing begun at 124. The frame then ends at about 500 ms: some 375 ms
+  in which the emulator, which draws in software, sets up and draws that
+  first frame, as it does for Android's own Settings. With every method
+  compiled the layout ends at 105 ms instead of 122 and the frame ends
+  where it did. So about 100 ms of a start is the app's, and nothing in it
+  is worth a round; on a phone, which draws on its GPU, the second part is
+  short. The start is left here.
+- Run 251's desktop job failed again where the podcast player is checked
+  (also run 237; five runs between passed): the file was open, 4,000 ms
+  long, and stood at 0 ms not playing. Twice in seven runs is not the
+  runner's sound alone any more. The check now writes down how long it
+  waited and what mpv says of itself (pause, idle, end of file, the sound
+  output), to tell a player that never started from one that was slow.
+- **What the kept libraries weigh**: the next run builds a second APK, for
+  measuring only, with the libraries the plugin contract keeps whole kept
+  only as far as the app uses them, and prints the difference: what that
+  part of the contract costs, for the owner to weigh.
 - Before that was known: **the starts could not be read.** Installed and compiled, run by run:
   749/708, 759/702, 798/779, 798/752, 974/858 ms. Nothing in rounds 2 to 4
   adds work before the first frame, and run 238's five launches agree with
