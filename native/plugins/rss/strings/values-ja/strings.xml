@@ -24,6 +24,7 @@
     <string name="opml_export_description">ほかのフィードリーダーで読み込めるファイルです。</string>
     <string name="opml_import">OPMLからフォローを読み込む</string>
     <string name="opml_import_description">ファイルにある各フィードをフォローします。フォロー中のものはそのままです。</string>
+    <string name="opml_import_description_desktop">ファイルにある各フィードをフォローします。フォロー中のものはそのままです。OPML ファイルをこの画面にドロップすることもできます。</string>
     <string name="opml_importing">読み込み中: %1$d/%2$d</string>
     <string name="opml_result">追加: %1$d · フォロー済み: %2$d · 失敗: %3$d</string>
     <string name="partial_error">%1$d件のソースを読み込めませんでした</string>

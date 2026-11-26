@@ -24,6 +24,7 @@
     <string name="opml_export_description">A file other feed readers can import.</string>
     <string name="opml_import">Import follows from OPML</string>
     <string name="opml_import_description">Follows each feed the file lists; ones you already follow stay as they are.</string>
+    <string name="opml_import_description_desktop">Follows each feed the file lists; ones you already follow stay as they are. You can also drop an OPML file on this screen.</string>
     <string name="opml_importing">Importing %1$d of %2$d</string>
     <string name="opml_result">Added: %1$d · Already followed: %2$d · Failed: %3$d</string>
     <string name="partial_error">Could not load %1$d sources</string>

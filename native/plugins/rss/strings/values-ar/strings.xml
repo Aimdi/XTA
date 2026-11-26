@@ -24,6 +24,7 @@
     <string name="opml_export_description">ملف يمكن لقارئات الخلاصات الأخرى استيراده.</string>
     <string name="opml_import">استيراد المتابَعات من OPML</string>
     <string name="opml_import_description">يتابع كل خلاصة يذكرها الملف؛ وتبقى التي تتابعها كما هي.</string>
+    <string name="opml_import_description_desktop">يتابع كل خلاصة يذكرها الملف؛ وتبقى التي تتابعها كما هي. يمكنك أيضًا إفلات ملف OPML على هذه الشاشة.</string>
     <string name="opml_importing">جارٍ الاستيراد: %1$d من %2$d</string>
     <string name="opml_result">أُضيف: %1$d · مُتابَع مسبقًا: %2$d · فشل: %3$d</string>
     <string name="partial_error">تعذّر تحميل %1$d من المصادر</string>

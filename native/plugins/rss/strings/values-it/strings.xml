@@ -24,6 +24,7 @@
     <string name="opml_export_description">Un file che altri lettori di feed possono importare.</string>
     <string name="opml_import">Importa i seguiti da OPML</string>
     <string name="opml_import_description">Segue ogni feed del file; quelli che segui già restano come sono.</string>
+    <string name="opml_import_description_desktop">Segue ogni feed del file; quelli che segui già restano come sono. Puoi anche trascinare un file OPML su questa schermata.</string>
     <string name="opml_importing">Importazione: %1$d di %2$d</string>
     <string name="opml_result">Aggiunte: %1$d · Già seguite: %2$d · Non riuscite: %3$d</string>
     <string name="partial_error">Impossibile caricare %1$d fonti</string>

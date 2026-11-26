@@ -24,6 +24,7 @@
     <string name="opml_export_description">Fajł, jaki mohuć impartavać inšyja čytałki stužak.</string>
     <string name="opml_import">Impartavać padpiski z OPML</string>
     <string name="opml_import_description">Padpisvajecca na kožnuju stužku z fajła; isnyja padpiski zastajucca jak jość.</string>
+    <string name="opml_import_description_desktop">Padpisvajecca na kožnuju stužku z fajła; isnyja padpiski zastajucca jak jość. Fajł OPML možna taksama pieraciahnuć na hety ekran.</string>
     <string name="opml_importing">Impart: %1$d z %2$d</string>
     <string name="opml_result">Dadadziena: %1$d · Užo ŭ padpiskach: %2$d · Nie ŭdałosia: %3$d</string>
     <string name="partial_error">Nie ŭdałosia zahruzić krynicy: %1$d</string>

@@ -88,6 +88,7 @@
     <string name="opml_export_description">Beste jario-irakurgailuek inporta dezaketen fitxategia.</string>
     <string name="opml_import">Inportatu jarraipenak OPMLtik</string>
     <string name="opml_import_description">Fitxategiko argitalpen bakoitza jarraitzen du; lehendik jarraitzen dituzunak bere horretan geratzen dira.</string>
+    <string name="opml_import_description_desktop">Fitxategiko argitalpen bakoitza jarraitzen du; lehendik jarraitzen dituzunak bere horretan geratzen dira. OPML fitxategi bat pantaila honetan ere jaregin dezakezu.</string>
     <string name="opml_importing">Inportatzen: %1$d/%2$d</string>
     <string name="opml_result">Gehituak: %1$d · Lehendik jarraituak: %2$d · Hutsegiteak: %3$d</string>
     <string name="order_newest">Berrienak lehenik</string>

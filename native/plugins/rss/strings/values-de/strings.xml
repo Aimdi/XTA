@@ -24,6 +24,7 @@
     <string name="opml_export_description">Eine Datei, die andere Feedreader importieren können.</string>
     <string name="opml_import">Abos aus OPML importieren</string>
     <string name="opml_import_description">Abonniert jeden Feed aus der Datei; bestehende Abos bleiben unverändert.</string>
+    <string name="opml_import_description_desktop">Abonniert jeden Feed aus der Datei; bestehende Abos bleiben unverändert. Du kannst eine OPML-Datei auch auf diese Seite ziehen.</string>
     <string name="opml_importing">Import: %1$d von %2$d</string>
     <string name="opml_result">Hinzugefügt: %1$d · Schon abonniert: %2$d · Fehlgeschlagen: %3$d</string>
     <string name="partial_error">%1$d Quellen konnten nicht geladen werden</string>

@@ -87,6 +87,7 @@
     <string name="opml_export_description">다른 피드 리더에서 가져올 수 있는 파일입니다.</string>
     <string name="opml_import">OPML에서 팔로우 가져오기</string>
     <string name="opml_import_description">파일에 있는 각 간행물을 팔로우합니다. 이미 팔로우 중인 항목은 그대로 둡니다.</string>
+    <string name="opml_import_description_desktop">파일에 있는 각 간행물을 팔로우합니다. 이미 팔로우 중인 항목은 그대로 둡니다. OPML 파일을 이 화면에 끌어다 놓을 수도 있습니다.</string>
     <string name="opml_importing">가져오는 중: %1$d/%2$d</string>
     <string name="opml_result">추가: %1$d · 이미 팔로우: %2$d · 실패: %3$d</string>
     <string name="order_newest">최신순</string>

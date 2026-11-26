@@ -89,6 +89,7 @@
     <string name="opml_export_description">Un fișier pe care alte cititoare de fluxuri îl pot importa.</string>
     <string name="opml_import">Importă abonări din OPML</string>
     <string name="opml_import_description">Urmărește fiecare publicație din fișier; cele pe care le urmărești deja rămân la fel.</string>
+    <string name="opml_import_description_desktop">Urmărește fiecare publicație din fișier; cele pe care le urmărești deja rămân la fel. Poți și să plasezi un fișier OPML pe acest ecran.</string>
     <string name="opml_importing">Se importă: %1$d din %2$d</string>
     <string name="opml_result">Adăugate: %1$d · Deja urmărite: %2$d · Eșuate: %3$d</string>
     <string name="order_newest">Cele mai noi întâi</string>

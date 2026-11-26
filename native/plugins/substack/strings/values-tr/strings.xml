@@ -88,6 +88,7 @@
     <string name="opml_export_description">Diğer akış okuyucularının içe aktarabileceği bir dosya.</string>
     <string name="opml_import">OPML\'den takip edilenleri içe aktar</string>
     <string name="opml_import_description">Dosyadaki her yayını takip eder; zaten takip ettikleriniz olduğu gibi kalır.</string>
+    <string name="opml_import_description_desktop">Dosyadaki her yayını takip eder; zaten takip ettikleriniz olduğu gibi kalır. Bir OPML dosyasını bu ekrana da bırakabilirsiniz.</string>
     <string name="opml_importing">İçe aktarılıyor: %1$d/%2$d</string>
     <string name="opml_result">Eklendi: %1$d · Zaten takipte: %2$d · Başarısız: %3$d</string>
     <string name="order_newest">Önce en yeniler</string>
