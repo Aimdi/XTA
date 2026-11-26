@@ -61,6 +61,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.DeckGroups
 import com.aimdi.xtanative.data.LocalGraph
+import com.aimdi.xtanative.ui.common.BarFirstScaffold
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.CenteredPage
 import com.aimdi.xtanative.ui.common.IconTip
@@ -452,8 +453,9 @@ private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: I
         takeover.show(owner, id, client)
         onDispose { takeover.show(owner, null, null) }
     }
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+    // On the desktop Tab walks the bar before the timeline under it, as the eye reads them.
+    BarFirstScaffold(
+        barFirst = LocalDesktopActions.current != null,
         topBar = {
             val extras = takeover.on(BarPage.Network(id))?.split?.more.orEmpty()
             Column {

@@ -31,7 +31,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -64,6 +63,7 @@ import com.aimdi.xtanative.core.feed.FeedStrip
 import com.aimdi.xtanative.core.session.DeckColumn
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.ui.common.BarFirstScaffold
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalParentTurnsPages
 import com.aimdi.xtanative.ui.common.TipText
@@ -250,9 +250,10 @@ private fun ShownTimeline(
         }
     }
     CompositionLocalProvider(LocalHomeReading provides reading.takeIf { source != null }) {
-    Scaffold(
+    // On the desktop Tab walks the bar before the timeline under it, as the eye reads them.
+    BarFirstScaffold(
+        barFirst = desktop,
         modifier = modifier.nestedScroll(reading.connection).nestedScroll(bar.nestedScrollConnection),
-        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             if (current == HomeTab.Following) {
                 FollowingTopBar(following, followingCalls(calls, desktop, refresh), bar)
