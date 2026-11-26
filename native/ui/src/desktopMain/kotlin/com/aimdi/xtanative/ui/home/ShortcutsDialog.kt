@@ -1,5 +1,14 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.background
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.text.style.TextAlign
+import com.aimdi.xtanative.ui.common.SearchField
+import com.aimdi.xtanative.ui.generated.resources.settings_no_results
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -215,13 +224,46 @@ object DesktopShortcuts {
     }
 
     private const val TITLE_ROWS = 2
+
+    /** Every text the list shows (its titles, what each row does, the keys named in words), for the filter to read in the reader's language. */
+    val texts: List<StringResource> = (
+        sections.map { it.title } +
+            all.map { it.does } +
+            all.flatMap { shortcut -> shortcut.keys.flatten().filterIsInstance<KeyCap.Named>().map { it.name } }
+        ).distinct()
+
+    /**
+     * The rows of [sections] the filter's [query] finds, in their groups (a
+     * group left with none is gone): every word of it, ignoring case, in the
+     * group's title, what the row does or its keys, each read by [text]. A
+     * blank query keeps them all.
+     */
+    fun matching(sections: List<ShortcutSection>, query: String, text: (StringResource) -> String): List<ShortcutSection> {
+        val words = query.lowercase().split(' ', '\t').filter { it.isNotEmpty() }
+        if (words.isEmpty()) return sections
+        return sections.mapNotNull { section ->
+            val title = text(section.title)
+            val kept = section.shortcuts.filter { shortcut ->
+                val said = listOf(title, text(shortcut.does)) + shortcut.keys.flatten().map { key ->
+                    when (key) {
+                        is KeyCap.Named -> text(key.name)
+                        is KeyCap.Sign -> key.sign
+                    }
+                }
+                val haystack = said.joinToString(" ").lowercase()
+                words.all { it in haystack }
+            }
+            if (kept.isEmpty()) null else section.copy(shortcuts = kept)
+        }
+    }
 }
 
 /**
  * The list of the desktop's keys ([DesktopShortcuts]) in its titled groups,
  * in two columns where the window is wide enough, no taller than
- * [DIALOG_MAX_HEIGHT], with the desktop's scrollbar beside it, over the page
- * until closed (Esc, or its button).
+ * [DIALOG_MAX_HEIGHT], with the desktop's scrollbar beside it and a filter
+ * over it ([DesktopShortcuts.matching]), over the page until closed (Esc, or
+ * its button).
  */
 @Composable
 internal fun ShortcutsDialog(onDismiss: () -> Unit) {
@@ -229,22 +271,44 @@ internal fun ShortcutsDialog(onDismiss: () -> Unit) {
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(modifier = Modifier.padding(24.dp).widthIn(max = DIALOG_MAX_WIDTH), shape = AlertDialogDefaults.shape, color = AlertDialogDefaults.containerColor, tonalElevation = AlertDialogDefaults.TonalElevation) {
             Column(Modifier.padding(24.dp)) {
-                Text(stringResource(Res.string.keys_title), style = MaterialTheme.typography.headlineSmall, color = AlertDialogDefaults.titleContentColor)
+                var query by remember { mutableStateOf("") }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(Res.string.keys_title), Modifier.weight(1f).padding(end = 16.dp), style = MaterialTheme.typography.headlineSmall, color = AlertDialogDefaults.titleContentColor)
+                    SearchField(query, { query = it }, stringResource(Res.string.search), Modifier.width(FILTER_WIDTH))
+                }
                 Spacer(Modifier.height(16.dp))
+                val names = DesktopShortcuts.texts.associateWith { stringResource(it) }
+                val shown = remember(query, names) { DesktopShortcuts.matching(DesktopShortcuts.sections, query) { names.getValue(it) } }
                 val scroll = rememberScrollState()
                 BoxWithConstraints(Modifier.weight(1f, fill = false).heightIn(max = DIALOG_MAX_HEIGHT)) {
                     val wide = maxWidth >= TWO_COLUMNS_FROM
                     // The bar's own lane at the end, so it never covers the keys.
-                    Box(Modifier.padding(end = 12.dp).verticalScrollByKeys(scroll)) {
-                        if (wide) {
-                            val (first, second) = DesktopShortcuts.twoColumns(DesktopShortcuts.sections)
-                            Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
-                                Sections(first, Modifier.weight(1f))
-                                Sections(second, Modifier.weight(1f))
+                    Box(Modifier.padding(end = 12.dp).verticalScrollByKeys(scroll).padding(bottom = 8.dp)) {
+                        when {
+                            shown.isEmpty() -> Text(
+                                stringResource(Res.string.settings_no_results),
+                                Modifier.fillMaxWidth().padding(vertical = 24.dp),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
+                            )
+                            wide && shown.size > 1 -> {
+                                val (first, second) = DesktopShortcuts.twoColumns(shown)
+                                Row(horizontalArrangement = Arrangement.spacedBy(40.dp)) {
+                                    Sections(first, Modifier.weight(1f))
+                                    Sections(second, Modifier.weight(1f))
+                                }
                             }
-                        } else {
-                            Sections(DesktopShortcuts.sections, Modifier.fillMaxWidth())
+                            else -> Sections(shown, Modifier.fillMaxWidth())
                         }
+                    }
+                    // More below: the last rows fade into the dialog instead of being cut off at its edge.
+                    if (scroll.canScrollForward) {
+                        val surface = AlertDialogDefaults.containerColor
+                        Box(
+                            Modifier.align(Alignment.BottomStart).padding(end = 12.dp).fillMaxWidth().height(FADE_HEIGHT)
+                                .background(Brush.verticalGradient(listOf(surface.copy(alpha = 0f), surface))),
+                        )
                     }
                     ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd))
                 }
@@ -278,8 +342,9 @@ private fun Sections(sections: List<ShortcutSection>, modifier: Modifier) {
 private fun ShortcutRow(shortcut: Shortcut) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(stringResource(shortcut.does), Modifier.weight(1f).padding(end = 12.dp), style = MaterialTheme.typography.bodyMedium)
+        // As wide as its keys need, up to its share, so a row's words have the rest.
         FlowRow(
-            Modifier.width(KEYS_WIDTH),
+            Modifier.widthIn(max = KEYS_WIDTH),
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
@@ -307,11 +372,17 @@ private fun Cap(key: KeyCap) {
     }
 }
 
-/** How wide the keys' side of a row is: enough for four short combinations on two lines. */
+/** How wide the keys' side of a row grows: enough for four short combinations on two lines. */
 private val KEYS_WIDTH = 200.dp
 
 /** The dialog at its widest, two columns of rows side by side. */
-private val DIALOG_MAX_WIDTH = 960.dp
+private val DIALOG_MAX_WIDTH = 1040.dp
+
+/** How wide the filter stands beside the title. */
+private val FILTER_WIDTH = 240.dp
+
+/** How tall the fade over the last rows is while more of the list is below. */
+private val FADE_HEIGHT = 24.dp
 
 /** How tall the list grows before it scrolls. */
 private val DIALOG_MAX_HEIGHT = 600.dp
