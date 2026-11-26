@@ -57,6 +57,7 @@ import com.aimdi.xtanative.ui.generated.resources.settings_proxy
 import com.aimdi.xtanative.ui.generated.resources.settings_proxy_description
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login_description
+import com.aimdi.xtanative.ui.home.LocalWideFrame
 import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.intro.IntroFlow
@@ -306,14 +307,9 @@ private val INDEX = listOf(
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.swipeBackTilt.key, GestureWording.swipeBackTilt, GestureWording.swipeBackTiltDescription),
 )
 
-/** The controls only Android has: the desktop's window takes no screenshot block, gives no haptics and has no status bar. */
-private val ANDROID_ONLY = setOf(GeneralPrefs.disableScreenshots.key, AccessibilityPrefs.haptics.key, ThemePrefs.hideStatusBar.key)
-
-/** The controls only the desktop has: its notifications, its tray, its windows' interface size and its proxy. */
-private val DESKTOP_ONLY = setOf(DesktopPrefs.notifications.key, DesktopPrefs.closeToTray.key, START_AT_LOGIN_KEY, DesktopPrefs.uiScale.key, DesktopPrefs.proxyMode.key)
-
-/** Every control the search can find, in this platform's settings: the desktop has none of [ANDROID_ONLY], Android none of [DESKTOP_ONLY]. */
+/** Every control the search can find, as this platform's pages show them ([PlatformSettings]). */
 @Composable
-private fun searchableControls(): List<SettingsControl> = INDEX
-    .filter { if (isDesktop) it.key !in ANDROID_ONLY else it.key !in DESKTOP_ONLY }
-    .map { SettingsControl(it.section, it.key, stringResource(it.title), it.description?.let { res -> stringResource(res) }.orEmpty()) }
+private fun searchableControls(): List<SettingsControl> {
+    val framed = LocalWideFrame.current != null
+    return INDEX.filter { PlatformSettings.shown(it.key, isDesktop, framed) }.map { SettingsControl(it.section, it.key, stringResource(it.title), it.description?.let { res -> stringResource(res) }.orEmpty()) }
+}

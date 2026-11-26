@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.settings
 
 import androidx.compose.runtime.Composable
+import com.aimdi.xtanative.ui.home.LocalWideFrame
 
 /**
  * The Linux desktop, which has no screenshot blocking and no vibration, as
@@ -43,3 +44,7 @@ internal expect val logsFolder: String?
 
 /** Opens [logsFolder] in the desktop's file manager; false where it could not. */
 internal expect fun openLogsFolder(): Boolean
+
+/** Whether the setting [key] is shown here ([PlatformSettings]): on this platform, in this window. */
+@Composable
+internal fun shownHere(key: String): Boolean = PlatformSettings.shown(key, isDesktop, framed = LocalWideFrame.current != null)

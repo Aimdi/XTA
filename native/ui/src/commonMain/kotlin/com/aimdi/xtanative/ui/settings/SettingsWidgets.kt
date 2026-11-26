@@ -5,6 +5,9 @@ import com.aimdi.xtanative.ui.common.destructiveTextColors
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -275,13 +278,35 @@ internal fun <T> ChoiceRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RowText(title, description, enabled, Modifier.weight(1f).padding(end = 12.dp))
-        Text(label(selected), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
+        if (isDesktop) {
+            DropdownValue(label(selected), enabled)
+        } else {
+            Text(label(selected), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
+        }
     }
     if (open) {
         ChoiceDialog(title, options, selected, label, onDismiss = { open = false }) { choice ->
             open = false
             onSelect(choice)
         }
+    }
+}
+
+/**
+ * The value a [ChoiceRow] shows on the desktop, as a desktop's drop-down
+ * list does: in an outlined box, with its arrow, so it reads as a choice to
+ * open rather than a link.
+ */
+@Composable
+private fun DropdownValue(value: String, enabled: Boolean) {
+    val colors = MaterialTheme.colorScheme
+    val text = if (enabled) colors.onSurface else colors.onSurfaceVariant
+    Row(
+        Modifier.border(1.dp, colors.outline, RoundedCornerShape(8.dp)).padding(start = 12.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(value, style = MaterialTheme.typography.bodyMedium, color = text, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 220.dp))
+        Icon(Icons.Filled.ArrowDropDown, null, tint = colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
     }
 }
 

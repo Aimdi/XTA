@@ -10,6 +10,7 @@ import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.RedditPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.KarakeepPrefs
+import com.aimdi.xtanative.store.settings.ThemePrefs
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -179,5 +180,28 @@ class SettingsRulesTest {
         assertEquals(NetworkSettingsPlace.PLUGIN, NetworkSections.place("weather", installed))
         assertEquals(NetworkSettingsPlace.NONE, NetworkSections.place("bluesky", installed.copy(withoutSettings = setOf("bluesky"))))
         assertEquals(NetworkSettingsPlace.NONE, NetworkSections.place("general", none))
+    }
+}
+
+class PlatformSettingsTest {
+    @Test
+    fun eachPlatformShowsOnlyWhatDoesSomethingThere() {
+        PlatformSettings.ANDROID_ONLY.forEach { key ->
+            assertFalse(PlatformSettings.shown(key, desktop = true, framed = false), key)
+            assertTrue(PlatformSettings.shown(key, desktop = false, framed = false), key)
+        }
+        PlatformSettings.DESKTOP_ONLY.forEach { key ->
+            assertTrue(PlatformSettings.shown(key, desktop = true, framed = false), key)
+            assertFalse(PlatformSettings.shown(key, desktop = false, framed = false), key)
+        }
+    }
+
+    @Test
+    fun theBottomBarsLabelsGoOnlyBesideTheFramesNavigation() {
+        val labels = ThemePrefs.showNavigationLabels.key
+        assertTrue(PlatformSettings.shown(labels, desktop = true, framed = false))
+        assertFalse(PlatformSettings.shown(labels, desktop = true, framed = true))
+        assertTrue(PlatformSettings.shown(labels, desktop = false, framed = false))
+        assertTrue(PlatformSettings.shown(ThemePrefs.hideNavigationOnScroll.key, desktop = true, framed = true))
     }
 }

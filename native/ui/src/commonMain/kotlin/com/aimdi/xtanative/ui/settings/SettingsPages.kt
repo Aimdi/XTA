@@ -90,6 +90,7 @@ import org.jetbrains.compose.resources.stringResource
 /** A switch bound to [pref]; [focus] is the control the search opened the page for. */
 @Composable
 private fun PrefSwitch(settings: Settings, pref: Pref<Boolean>, title: String, description: String?, vm: SettingsViewModel, focus: String?, enabled: Boolean = true) {
+    if (!shownHere(pref.key)) return
     SwitchRow(title, description, settings[pref], enabled, focus == pref.key) { vm.set(pref, it) }
 }
 
@@ -466,9 +467,7 @@ internal fun ThemeSettings(title: String, vm: SettingsViewModel, focus: String?,
             SettingsDivider()
             PrefSwitch(settings, ThemePrefs.showNavigationLabels, stringResource(Res.string.settings_navigation_labels), null, vm, focus)
             PrefSwitch(settings, ThemePrefs.hideNavigationOnScroll, stringResource(Res.string.settings_hide_navigation), null, vm, focus)
-            if (!isDesktop) {
-                PrefSwitch(settings, ThemePrefs.hideStatusBar, stringResource(Res.string.settings_hide_status_bar), stringResource(Res.string.settings_hide_status_bar_description), vm, focus)
-            }
+            PrefSwitch(settings, ThemePrefs.hideStatusBar, stringResource(Res.string.settings_hide_status_bar), stringResource(Res.string.settings_hide_status_bar_description), vm, focus)
         }
     }
 }
