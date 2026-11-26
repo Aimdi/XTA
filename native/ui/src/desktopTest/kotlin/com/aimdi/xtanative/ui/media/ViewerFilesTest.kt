@@ -5,6 +5,8 @@ import com.aimdi.xtanative.store.downloads.MediaResponse
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.nio.ByteBuffer
+import java.util.zip.CRC32
 import javax.imageio.ImageIO
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -37,6 +39,28 @@ class ViewerFilesTest {
         assertEquals(3, ClipboardImages.decode(png(3, 2))?.width)
         // WebP goes through Skia, whose native library the window loads (the tests have none): no picture is no picture either way.
         assertNull(ClipboardImages.decode("<html>no picture</html>".toByteArray()))
+    }
+
+    /** A PNG whose header alone claims [width]×[height]: no pixel data follows. */
+    private fun pngHeader(width: Int, height: Int): ByteArray {
+        fun chunk(type: String, data: ByteArray): ByteArray {
+            val typed = type.toByteArray() + data
+            val crc = CRC32().apply { update(typed) }.value
+            return ByteBuffer.allocate(4).putInt(data.size).array() + typed + ByteBuffer.allocate(4).putInt(crc.toInt()).array()
+        }
+        val header = ByteBuffer.allocate(13).putInt(width).putInt(height).put(8).put(2).put(0).put(0).put(0).array()
+        return byteArrayOf(-119, 80, 78, 71, 13, 10, 26, 10) + chunk("IHDR", header) + chunk("IEND", ByteArray(0))
+    }
+
+    @Test
+    fun aPictureClaimingTooManyPixelsIsRefusedBeforeDecoding() {
+        val bomb = pngHeader(30000, 30000)
+        assertEquals(900_000_000L, ClipboardImages.javaPixels(bomb))
+        assertNull(ClipboardImages.decode(bomb))
+        assertEquals(6L, ClipboardImages.javaPixels(png(3, 2)))
+        assertNull(ClipboardImages.javaPixels("<html/>".toByteArray()))
+        val served = MediaHttp { _, _ -> MediaResponse(200, emptyMap(), null, ByteArrayInputStream(bomb)) }
+        assertFalse(runBlocking { ClipboardImages.copy("https://pbs.twimg.com/media/x.png", served) })
     }
 
     @Test
