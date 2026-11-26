@@ -44,6 +44,7 @@ import com.aimdi.xtanative.ui.common.ReadFailureNotice
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.readFailureText
 import com.aimdi.xtanative.ui.common.scrollToTop
+import com.aimdi.xtanative.ui.feed.CaughtUpRows
 import com.aimdi.xtanative.ui.feed.feedThreads
 import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import com.aimdi.xtanative.ui.feed.rememberNearEnd
@@ -92,7 +93,8 @@ internal fun ForYouPage(toTop: Int, actions: PostActions, contentPadding: Paddin
     }
     LaunchedEffect(state.jump) {
         val index = state.jump ?: return@LaunchedEffect
-        list.scrollToItem(index + if (state.notice != null) 1 else 0)
+        val (row, offset) = CaughtUpRows.of(state.divider, state.threads.size, leading = if (state.notice != null) 1 else 0).rowOf(index, 0)
+        list.scrollToItem(row, offset)
         vm.jumped()
     }
     LaunchedEffect(list) {

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -73,7 +72,7 @@ import com.aimdi.xtanative.ui.common.itemMotion
 import com.aimdi.xtanative.ui.common.readFailureText
 import com.aimdi.xtanative.ui.common.savedAtText
 import com.aimdi.xtanative.ui.common.scrollToTop
-import com.aimdi.xtanative.ui.feed.CaughtUpDivider
+import com.aimdi.xtanative.ui.feed.CaughtUpRows
 import com.aimdi.xtanative.ui.feed.FeedLayout
 import com.aimdi.xtanative.ui.feed.FeedMediaGrid
 import com.aimdi.xtanative.ui.feed.FeedMix
@@ -81,6 +80,7 @@ import com.aimdi.xtanative.ui.feed.FeedThread
 import com.aimdi.xtanative.ui.feed.FeedThreadRow
 import com.aimdi.xtanative.ui.feed.MediaFoot
 import com.aimdi.xtanative.ui.feed.NewPostsPill
+import com.aimdi.xtanative.ui.feed.threadsAround
 import com.aimdi.xtanative.ui.feed.Placed
 import com.aimdi.xtanative.ui.feed.PluginPostRow
 import com.aimdi.xtanative.ui.feed.PluginPostsOnly
@@ -164,16 +164,22 @@ fun GroupFeedBody(
     val reduced = LocalReducedMotion.current
     val run = state.run
     val leading = if (run.stale != null && run.shown.threads.isNotEmpty()) 1 else 0
+    // The list's rows, the stale notice and the caught-up divider among the threads, as they are now: also for the place kept as the feed goes.
+    val rows by rememberUpdatedState(CaughtUpRows.of(run.divider, run.shown.threads.size, leading))
     ScrollsToTop(toTop) { (if (mediaOnly) media else list).scrollToTop(reduced) }
     LaunchedEffect(run.jump) {
         val jump = run.jump ?: return@LaunchedEffect
-        list.scrollToItem(if (jump.threadIndex == 0 && jump.offset == 0) 0 else jump.threadIndex + leading, jump.offset)
+        val (row, offset) = if (jump.threadIndex == 0 && jump.offset == 0) 0 to 0 else rows.rowOf(jump.threadIndex, jump.offset)
+        list.scrollToItem(row, offset)
         vm.jumped()
     }
     LaunchedEffect(list) {
         snapshotFlow { list.firstVisibleItemIndex == 0 && list.firstVisibleItemScrollOffset <= 8 }.distinctUntilChanged().collect { vm.atTop(it) }
     }
-    val keepPlace = { vm.keepPlace((list.firstVisibleItemIndex - leading).coerceAtLeast(0), list.firstVisibleItemScrollOffset) }
+    val keepPlace = {
+        val (thread, offset) = rows.threadOf(list.firstVisibleItemIndex, list.firstVisibleItemScrollOffset, list.layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: 0)
+        vm.keepPlace(thread, offset)
+    }
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { keepPlace() }
     DisposableEffect(Unit) { onDispose { keepPlace() } }
     val inline = rememberInlinePlayer()
@@ -267,9 +273,8 @@ private fun FeedList(state: GroupFeedUi, vm: GroupFeedViewModel, actions: PostAc
     WithReadingColumn(contentPadding, list) { padding ->
         LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
             run.stale?.let { stale -> item(key = "stale", contentType = "notice") { StaleNotice(stale, run.savedAt, vm) } }
-            itemsIndexed(threads, key = { _, thread -> thread.id }, contentType = { index, thread -> layout.rowType(index, thread) }) { index, thread ->
+            threadsAround(threads, divider, keyOf = { it.id }, typeOf = layout::rowType) { index, thread ->
                 Column(itemMotion(reduced)) {
-                    if (index == divider) CaughtUpDivider()
                     Placed(mixed.buckets, index, mixed.plugins, layout, posts, drawKey) {
                         FeedThreadRow(layout.ofThread(index, thread), thread, actions, drawKey) { draw(thread) }
                     }
