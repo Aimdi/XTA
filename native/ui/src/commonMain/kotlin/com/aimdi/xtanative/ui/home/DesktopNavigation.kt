@@ -171,9 +171,25 @@ class DesktopActions(
     /** The search fields that Ctrl+F and / go to, the last shown on top ([FindsWithKeys]). */
     private val finders = mutableListOf<Pair<Any, () -> Unit>>()
 
+    /** Whether the next search field shown takes the keyboard as it comes ([findOnReturn]). */
+    private var findingOnReturn = false
+
     internal fun addFinder(owner: Any, find: () -> Unit) {
         finders.removeAll { it.first === owner }
         finders += owner to find
+        if (findingOnReturn) {
+            findingOnReturn = false
+            find()
+        }
+    }
+
+    /**
+     * Ctrl+F on a page that has no search of its own but sits over one that
+     * does (a settings section over Settings): the caller goes back, and the
+     * search field shown next takes the keyboard as soon as it is there.
+     */
+    fun findOnReturn() {
+        findingOnReturn = true
     }
 
     internal fun removeFinder(owner: Any) {
@@ -695,6 +711,21 @@ fun FindsWithKeys(find: () -> Unit) {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.addFinder(owner) { latest() } }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.removeFinder(owner) }
     DisposableEffect(actions) { onDispose { actions.removeFinder(owner) } }
+}
+
+/**
+ * Lets Ctrl+F and / ([DesktopKeys]) on a page with no search of its own go
+ * [back] to the page under it whose search it belongs to, with the keyboard
+ * in that page's field, as a settings app's search reaches every section.
+ * Nothing off the desktop.
+ */
+@Composable
+fun FindsBackWithKeys(back: () -> Unit) {
+    val actions = LocalDesktopActions.current ?: return
+    FindsWithKeys {
+        actions.findOnReturn()
+        back()
+    }
 }
 
 /** A page's find bar as the desktop's keys reach it: [open] it (Ctrl+F), or [step] it on (F3; false while it is closed). */

@@ -463,6 +463,21 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun aPageOverSettingsHandsCtrlFToTheSearchItGoesBackTo() {
+        val actions = DesktopActions()
+        val found = mutableListOf<String>()
+        actions.addFinder("settings") { found += "settings" }
+        actions.removeFinder("settings")
+        actions.findOnReturn()
+        assertTrue(found.isEmpty(), "nothing is focused before the page under it is back")
+        actions.addFinder("settings") { found += "settings" }
+        assertEquals(listOf("settings"), found, "the field shown next takes the keys as it comes")
+        actions.removeFinder("settings")
+        actions.addFinder("settings") { found += "again" }
+        assertEquals(listOf("settings"), found, "only once: coming back later leaves the keys where they are")
+    }
+
+    @Test
     fun ctrlPlusMinusAndZeroSizeTheTextAsABrowsersZoom() {
         assertEquals(DeskAction.TEXT_BIGGER, action(DeskKey.PLUS, ctrl = true))
         assertEquals(DeskAction.TEXT_BIGGER, action(DeskKey.PLUS, ctrl = true, shift = true), "Ctrl+Shift+= on a US keyboard")

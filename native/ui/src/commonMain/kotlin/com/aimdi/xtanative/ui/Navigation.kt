@@ -66,6 +66,7 @@ import com.aimdi.xtanative.ui.group.GroupDiscoveryScreen
 import com.aimdi.xtanative.ui.group.GroupFeedScreen
 import com.aimdi.xtanative.ui.home.DeckScreen
 import com.aimdi.xtanative.ui.home.DesktopNavigation
+import com.aimdi.xtanative.ui.home.FindsBackWithKeys
 import com.aimdi.xtanative.ui.home.FrameCalls
 import com.aimdi.xtanative.ui.home.FrameFocus
 import com.aimdi.xtanative.ui.home.FrameKind
@@ -753,6 +754,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             FullWindow { ImageViewer(entry.text("url").orEmpty(), entry.text("name").orEmpty(), onClose = { nav.popBackStack() }) }
         }
         composable(Routes.SPEECH_SETTINGS) {
+            FindsInSettings(nav)
             VoiceSettingsScreen(onBack = { nav.popBackStack() })
         }
         composable(Routes.SETTINGS) {
@@ -814,6 +816,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
                 navArgument("focus") { type = NavType.StringType; nullable = true; defaultValue = null },
             ),
         ) { entry ->
+            FindsInSettings(nav)
             SettingsSectionScreen(
                 entry.text("section").orEmpty(),
                 entry.text("focus"),
@@ -823,9 +826,11 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             )
         }
         composable(Routes.BACKUP) {
+            FindsInSettings(nav)
             BackupScreen(onBack = { nav.popBackStack() })
         }
         composable(SettingsRoutes.LICENCES) {
+            FindsInSettings(nav)
             LicencesScreen(onOpen = { module -> nav.push(SettingsRoutes.licence(module)) }, onBack = { nav.popBackStack() })
         }
         composable(Routes.LICENCE, arguments = listOf(navArgument("module") { type = NavType.StringType; nullable = true; defaultValue = null })) { entry ->
@@ -1047,6 +1052,18 @@ private fun FrameCalls.after(first: () -> Unit) = FrameCalls(
 )
 
 /** Whether the app has a screen at [route] yet: Home leads only to those. */
+/**
+ * Ctrl+F on a page Settings opened (a section, Backup, the licences) goes
+ * back to Settings with the keyboard in its search ([FindsBackWithKeys]);
+ * a page opened from anywhere else leaves the keys to the app's search.
+ * Before the page itself, so a search the page has (a plugin's) stays on top.
+ */
+@Composable
+private fun FindsInSettings(nav: NavHostController) {
+    val overSettings = remember { runCatching { nav.getBackStackEntry(Routes.SETTINGS) }.isSuccess }
+    if (overSettings) FindsBackWithKeys { nav.popBackStack(Routes.SETTINGS, inclusive = false) }
+}
+
 private fun NavHostController.hasRoute(route: String): Boolean = runCatching { graph.findNode(route) != null }.getOrDefault(false)
 
 /** A route's text argument; null where the route has none. */
