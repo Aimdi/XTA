@@ -19,7 +19,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -39,6 +38,7 @@ import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.plugins.PluginPostMenuRows
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
@@ -63,7 +63,7 @@ internal fun SheetRow(icon: ImageVector, label: String, onClick: () -> Unit, sub
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PixivSheetFrame(sheets: PixivSheets, content: @Composable () -> Unit) {
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = sheets::close) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = sheets::close) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) { content() }
     }
 }

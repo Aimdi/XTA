@@ -20,7 +20,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
@@ -46,6 +45,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivNovel
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
@@ -67,7 +67,7 @@ internal fun BookmarkTagPicker(source: PixivFavoritesSource, tag: String?, onPic
         onPick(sources[shown], picked)
         onClose()
     }
-    ModalBottomSheet(onDismissRequest = onClose, sheetState = sheet) {
+    PluginSheet(onDismissRequest = onClose, sheetState = sheet) {
         Column(Modifier.fillMaxWidth().fillMaxHeight(0.8f)) {
             Text(pluginString(Strings.bookmark_tag_filter), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
             OutlinedTextField(

@@ -26,7 +26,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -45,6 +44,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivSauceMatch
 import com.aimdi.xtanative.networks.pixiv.PixivSauceNao
 import com.aimdi.xtanative.store.settings.PixivPrefs
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberImageChooser
@@ -75,7 +75,7 @@ private fun sauceNaoPicture(picture: ByteArray): ByteArray? =
 internal fun SauceNaoSheet(model: PixivSauceModel, onClose: () -> Unit) {
     val state by model.state.collectAsState()
     val choose = rememberImageChooser(pluginString(Strings.saucenao_pick)) { read -> model.chosen(read) }
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onClose) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onClose) {
         BoxWithConstraints {
             Column(Modifier.fillMaxWidth().heightIn(max = maxHeight * 0.85f).navigationBarsPadding().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
                 Text(pluginString(Strings.saucenao_title), style = MaterialTheme.typography.titleLarge)

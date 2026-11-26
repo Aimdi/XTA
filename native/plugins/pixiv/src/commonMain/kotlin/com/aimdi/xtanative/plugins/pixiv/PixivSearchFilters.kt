@@ -31,7 +31,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -57,6 +56,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivSearchSort
 import com.aimdi.xtanative.networks.pixiv.PixivSearchTarget
 import com.aimdi.xtanative.networks.pixiv.PixivUgoiraFilter
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -257,7 +257,7 @@ private fun BookmarksMenu(filter: PixivSearchFilter, onChange: (PixivSearchFilte
 internal fun SearchFilterSheet(view: PixivSearchView, kind: PixivSearchKind, onClose: () -> Unit, onApply: (PixivSearchFilter, Boolean) -> Unit) {
     var filter by remember { mutableStateOf(view.filter) }
     var remember by remember { mutableStateOf(view.remembered) }
-    ModalBottomSheet(onDismissRequest = onClose, sheetState = rememberPluginSheetState(alwaysFull = true)) {
+    PluginSheet(onDismissRequest = onClose, sheetState = rememberPluginSheetState(alwaysFull = true)) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding().padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
             Text(pluginString(Strings.search_filters_title), style = MaterialTheme.typography.titleLarge)
             Heading(pluginString(Strings.search_target))

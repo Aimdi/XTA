@@ -30,7 +30,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -50,10 +49,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivImages
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
+import com.aimdi.xtanative.ui.plugins.rememberSheetClose
 import com.aimdi.xtanative.ui.saved.SavedIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 
@@ -147,7 +148,8 @@ private fun PageOverview(illust: PixivIllust, current: Int, selectingFirst: Bool
     var picking by remember { mutableStateOf(selectingFirst) }
     var picked by remember { mutableStateOf(emptySet<Int>()) }
     val pages = illust.viewerUrls.size
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = surface::closeOverview) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = surface::closeOverview) {
+        val closeSheet = rememberSheetClose()
         Column(Modifier.fillMaxWidth().navigationBarsPadding()) {
             Text(illust.title.ifEmpty { pluginString(Strings.title) }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(horizontal = 16.dp))
             Text(
@@ -167,8 +169,7 @@ private fun PageOverview(illust: PixivIllust, current: Int, selectingFirst: Bool
                         if (picking) {
                             picked = if (index in picked) picked - index else picked + index
                         } else {
-                            surface.closeOverview()
-                            surface.showPage(index)
+                            closeSheet { surface.showPage(index) }
                         }
                     })
                 }
@@ -176,8 +177,7 @@ private fun PageOverview(illust: PixivIllust, current: Int, selectingFirst: Bool
             HorizontalDivider(Modifier.padding(top = 8.dp))
             if (picking) {
                 PickingBar(picked, pages, onCancel = { picking = false; picked = emptySet() }, onAll = { picked = if (picked.size == pages) emptySet() else (0 until pages).toSet() }) {
-                    surface.closeOverview()
-                    sheets.savePages(illust, picked.sorted())
+                    closeSheet { sheets.savePages(illust, picked.sorted()) }
                 }
             } else {
                 OverviewActions(illust, surface, onPick = { picking = true })
