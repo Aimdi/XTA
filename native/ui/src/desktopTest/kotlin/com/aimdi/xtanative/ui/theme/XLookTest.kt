@@ -16,6 +16,21 @@ class XLookTest {
         Settings().with(ThemePrefs.background, background).with(ThemePrefs.accent, accent)
 
     @Test
+    fun higherContrastStrengthensSecondaryTextAndEveryEdgeButKeepsThePage() {
+        listOf(XLookTokens.LIGHT, XLookTokens.DIM, XLookTokens.LIGHTS_OUT).forEach { tokens ->
+            val high = XLook.highContrast(tokens)
+            assertTrue(Contrast.ratio(high.secondary, high.background) >= XLook.ENHANCED, "secondary text at 7:1")
+            assertTrue(Contrast.ratio(high.divider, high.background) >= XLook.NON_TEXT, "dividers seen")
+            assertEquals(tokens.border, high.border, "a fill too: kept")
+            assertTrue(Contrast.ratio(high.outline, high.background) >= 4.5)
+            assertEquals(tokens.background, high.background)
+            assertEquals(tokens.onBackground, high.onBackground)
+            assertEquals(tokens.accent, high.accent)
+        }
+        assertEquals(XLook.isLightsOut(XLookTokens.LIGHTS_OUT), XLook.isLightsOut(XLook.highContrast(XLookTokens.LIGHTS_OUT)))
+    }
+
+    @Test
     fun systemFollowsTheDeviceAndDarkensToLightsOut() {
         val system = settings(ThemeBackground.SYSTEM)
         assertEquals(XLookTokens.LIGHT.background, XLook.tokens(system, systemDark = false).background)

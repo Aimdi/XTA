@@ -174,6 +174,23 @@ object XLook {
         return if (dark) darkTokensFor(background, accent, systemAccent) else tokensFor(ThemeBackground.LIGHT, accent, systemAccent)
     }
 
+    /**
+     * [tokens] for a desktop that asks for higher contrast (its settings
+     * portal's contrast): secondary text (handles, times, subtitles) at 7:1 on
+     * the page, WCAG's enhanced contrast; dividers at 3:1, so every row's
+     * edge is seen; a control's edge at 4.5:1. The page, the text, the accent
+     * and [XLookTokens.border] stay the reader's: the border is also the fill
+     * of chips and icons' discs, which would turn grey.
+     */
+    fun highContrast(tokens: XLookTokens): XLookTokens = tokens.copy(
+        secondary = Contrast.ensure(tokens.secondary, tokens.background, ENHANCED),
+        divider = Contrast.ensure(tokens.divider, tokens.background, NON_TEXT),
+        outline = Contrast.ensure(tokens.outline, tokens.background, 4.5),
+    )
+
+    /** WCAG's enhanced contrast for text (AAA): 7:1. */
+    const val ENHANCED = 7.0
+
     fun isLightsOut(tokens: XLookTokens): Boolean = tokens.background == BLACK && tokens.card == BLACK
 
     /** The quiet fill of an inset control: six percent above the page where cards are the page. */

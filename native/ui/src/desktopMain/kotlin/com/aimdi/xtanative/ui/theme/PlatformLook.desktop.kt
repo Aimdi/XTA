@@ -115,6 +115,14 @@ internal actual fun systemAccent(): Long? {
     return scheme.accent.collectAsState().value
 }
 
+/** Whether the desktop asks for higher contrast, as its settings portal says, followed as it changes. */
+@Composable
+internal actual fun systemHighContrast(): Boolean {
+    val scheme = DesktopColorScheme.desktop
+    LaunchedEffect(scheme) { scheme.start() }
+    return scheme.highContrast.collectAsState().value
+}
+
 /** Whether the keyboard moved the focus last, followed as it changes. */
 @Composable
 internal actual fun keyboardFocusShown(): Boolean = KeyboardFocusLook.keyboard

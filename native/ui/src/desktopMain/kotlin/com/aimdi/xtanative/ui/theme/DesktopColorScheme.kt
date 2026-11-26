@@ -18,7 +18,9 @@ import kotlinx.coroutines.flow.asStateFlow
  * Java itself cannot tell on Linux. Read once at the start, then followed.
  * On the same connection, whether the desktop has its animations off
  * ([animationsOff], GNOME's enable-animations, which the portals pass on),
- * and its accent colour ([accent], org.freedesktop.appearance accent-color).
+ * its accent colour ([accent], org.freedesktop.appearance accent-color) and
+ * whether it asks for higher contrast ([highContrast], org.freedesktop.appearance
+ * contrast).
  */
 class DesktopColorScheme(
     private val connect: () -> DBusConnection?,
@@ -34,6 +36,10 @@ class DesktopColorScheme(
 
     /** The desktop's accent colour as opaque ARGB; null where it gives none or one out of range. */
     val accent: StateFlow<Long?> = tint.asStateFlow()
+    private val contrast = MutableStateFlow(false)
+
+    /** Whether the desktop asks for higher contrast; false where nothing says. */
+    val highContrast: StateFlow<Boolean> = contrast.asStateFlow()
     private val started = AtomicBoolean(false)
 
     @Volatile
@@ -58,11 +64,13 @@ class DesktopColorScheme(
             PortalColors.changed(signal)?.let { mutable.value = it }
             PortalMotion.changed(signal)?.let { stillness.value = it }
             if (PortalAccent.isChange(signal)) tint.value = PortalAccent.argb(signal.body[2])
+            PortalContrast.changed(signal)?.let { contrast.value = it }
         }
         bus.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "AddMatch", "s", listOf(PortalColors.MATCH))
         read(bus, PortalColors.NAMESPACE, PortalColors.KEY)?.let { PortalColors.dark(it) }?.let { mutable.value = it }
         read(bus, PortalMotion.NAMESPACE, PortalMotion.KEY)?.let { PortalMotion.off(it) }?.let { stillness.value = it }
         read(bus, PortalAccent.NAMESPACE, PortalAccent.KEY)?.let { PortalAccent.argb(it) }?.let { tint.value = it }
+        read(bus, PortalContrast.NAMESPACE, PortalContrast.KEY)?.let { PortalContrast.high(it) }?.let { contrast.value = it }
     }
 
     /**
@@ -129,6 +137,31 @@ object PortalAccent {
             signal.body[0] == NAMESPACE && signal.body[1] == KEY
 
     private fun byte(level: Double): Int = (level * 255).roundToInt()
+
+    private tailrec fun unwrapped(value: Any?): Any? = if (value is Variant) unwrapped(value.value) else value
+}
+
+/**
+ * The desktop's contrast preference through the settings portal
+ * (org.freedesktop.appearance contrast: 1 asks for higher contrast, 0 says
+ * nothing), as plain decisions. GNOME's High Contrast switch sets it.
+ */
+object PortalContrast {
+    const val NAMESPACE = PortalColors.NAMESPACE
+    const val KEY = "contrast"
+
+    /** Whether the portal's value asks for higher contrast; null for a value of another kind. */
+    fun high(value: Any?): Boolean? = when (val plain = unwrapped(value)) {
+        is Number -> plain.toLong() == 1L
+        else -> null
+    }
+
+    /** What a SettingChanged signal says of the contrast; null for any other signal or setting. */
+    fun changed(signal: DBusMessage): Boolean? {
+        if (signal.iface != PortalColors.SETTINGS || signal.member != "SettingChanged" || signal.body.size < 3) return null
+        if (signal.body[0] != NAMESPACE || signal.body[1] != KEY) return null
+        return high(signal.body[2])
+    }
 
     private tailrec fun unwrapped(value: Any?): Any? = if (value is Variant) unwrapped(value.value) else value
 }

@@ -57,6 +57,22 @@ class DesktopColorSchemeTest {
     }
 
     @Test
+    fun thePortalsContrastOneAsksForHigherContrast() {
+        assertEquals(true, PortalContrast.high(Variant("u", 1L)))
+        assertEquals(false, PortalContrast.high(Variant("u", 0L)))
+        assertEquals(true, PortalContrast.high(Variant("v", Variant("u", 1L))), "a Read before portal version 2 wraps it once more")
+        assertNull(PortalContrast.high(Variant("b", true)))
+        fun signal(namespace: String, key: String, value: Long) = DBusMessage(
+            DBusType.SIGNAL, iface = PortalColors.SETTINGS, member = "SettingChanged", signature = "ssv",
+            body = listOf(namespace, key, Variant("u", value)),
+        )
+        assertEquals(true, PortalContrast.changed(signal(PortalContrast.NAMESPACE, PortalContrast.KEY, 1)))
+        assertEquals(false, PortalContrast.changed(signal(PortalContrast.NAMESPACE, PortalContrast.KEY, 0)))
+        assertNull(PortalContrast.changed(signal(PortalContrast.NAMESPACE, PortalColors.KEY, 1)), "the colour scheme's 1 is dark, not contrast")
+        assertNull(PortalColors.changed(signal(PortalContrast.NAMESPACE, PortalContrast.KEY, 1)))
+    }
+
+    @Test
     fun thePortalsAccentColourIsReadAsArgb() {
         fun rgb(r: Double, g: Double, b: Double) = Variant("(ddd)", listOf(r, g, b))
         assertEquals(0xFF3584E4, PortalAccent.argb(rgb(0x35 / 255.0, 0x84 / 255.0, 0xE4 / 255.0)))
@@ -112,6 +128,7 @@ class DesktopColorSchemeTest {
                 when {
                     call.member == "ReadOne" && call.body == listOf(PortalColors.NAMESPACE, PortalColors.KEY) -> portal.reply(call, "v", listOf(Variant("u", 1L)))
                     call.member == "ReadOne" && call.body == listOf(PortalAccent.NAMESPACE, PortalAccent.KEY) -> portal.reply(call, "v", listOf(Variant("(ddd)", listOf(0.0, 0.0, 1.0))))
+                    call.member == "ReadOne" && call.body == listOf(PortalContrast.NAMESPACE, PortalContrast.KEY) -> portal.reply(call, "v", listOf(Variant("u", 1L)))
                     else -> portal.fail(call, DBusConnection.UNKNOWN_METHOD, "no")
                 }
             }
@@ -128,6 +145,9 @@ class DesktopColorSchemeTest {
             // The desktop dropping its accent: back to none, so the app's default.
             portal.signal(PortalColors.PATH, PortalColors.SETTINGS, "SettingChanged", "ssv", listOf(PortalAccent.NAMESPACE, PortalAccent.KEY, Variant("(ddd)", listOf(-1.0, -1.0, -1.0))))
             runBlocking { withTimeout(5_000) { scheme.accent.first { it == null } } }
+            assertEquals(true, scheme.highContrast.value)
+            portal.signal(PortalColors.PATH, PortalColors.SETTINGS, "SettingChanged", "ssv", listOf(PortalContrast.NAMESPACE, PortalContrast.KEY, Variant("u", 0L)))
+            runBlocking { withTimeout(5_000) { scheme.highContrast.first { !it } } }
             scheme.close()
             portal.close()
         } finally {

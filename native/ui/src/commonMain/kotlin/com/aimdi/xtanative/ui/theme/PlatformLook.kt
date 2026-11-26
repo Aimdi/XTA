@@ -32,6 +32,14 @@ internal expect fun systemReducesMotion(): Boolean
 internal expect fun systemAccent(): Long?
 
 /**
+ * Whether the system asks for higher contrast ([XLook.highContrast]): the
+ * desktop's, as its settings portal says and followed as it changes; false
+ * on Android, whose high-contrast text the system draws itself.
+ */
+@Composable
+internal expect fun systemHighContrast(): Boolean
+
+/**
  * Whether a focus shown now came from the keyboard, so a ring may mark it:
  * on the desktop only after a key moved it ([KeyboardFocusLook]), as a click
  * focuses too; always on Android, where a touch never focuses a row.
