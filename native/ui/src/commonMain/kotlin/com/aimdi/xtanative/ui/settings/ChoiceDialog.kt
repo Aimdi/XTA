@@ -35,6 +35,7 @@ import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.search
 import com.aimdi.xtanative.ui.generated.resources.settings_cancel
+import com.aimdi.xtanative.ui.generated.resources.settings_no_results
 import org.jetbrains.compose.resources.stringResource
 
 /** How a choice's list is laid out: its height, and when it has a filter. Pure, so the rules are tested. */
@@ -55,6 +56,9 @@ internal object ChoiceList {
         val wanted = query.trim()
         return labels.indices.filter { wanted.isEmpty() || labels[it].contains(wanted, ignoreCase = true) }
     }
+
+    /** The option Enter in the filter picks: the one match left of [shown] (indices), none while several or none are. */
+    fun picked(shown: List<Int>): Int? = shown.singleOrNull()
 }
 
 /** How far the rows reach past the dialog's margin on either side, so their lit shape sits round the radio button. */
@@ -89,11 +93,14 @@ internal fun <T> ChoiceDialog(
                 if (ChoiceList.filtered(options.size)) {
                     // On the desktop the keys go to the filter at once, so typing a name finds it; a phone keeps its keyboard down.
                     val keys = if (isDesktop) Modifier.dialogDefault() else Modifier
-                    SearchField(query, { query = it }, stringResource(Res.string.search), Modifier.fillMaxWidth().padding(bottom = 8.dp).then(keys))
+                    // Enter picks the one option the filter has left.
+                    val pick = { ChoiceList.picked(shown)?.let { onSelect(options[it]) } }
+                    SearchField(query, { query = it }, stringResource(Res.string.search), Modifier.fillMaxWidth().padding(bottom = 8.dp).then(keys), onSearch = { pick() })
                 }
                 val scroll = rememberScrollState()
-                Box {
-                    Column(Modifier.bleed(ROW_BLEED).verticalScroll(scroll)) {
+                // The scrollbar in the margin the rows reach into, clear of their lit shapes and their text.
+                Box(Modifier.bleed(ROW_BLEED)) {
+                    Column(Modifier.verticalScroll(scroll)) {
                         if (header != null) {
                             Text(
                                 header,
@@ -103,8 +110,17 @@ internal fun <T> ChoiceDialog(
                             )
                         }
                         shown.forEach { index -> ChoiceOption(options[index], labels[index], selected, description, onSelect) }
+                        if (shown.isEmpty()) {
+                            Text(
+                                stringResource(Res.string.settings_no_results),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = ROW_BLEED, vertical = 12.dp),
+                            )
+                        }
                     }
-                    ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd))
+                    // As tall as the rows, not the room: the dialog shrinks round a filter's few matches (at most 70% still).
+                    Box(Modifier.matchParentSize()) { ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd)) }
                 }
             }
         },

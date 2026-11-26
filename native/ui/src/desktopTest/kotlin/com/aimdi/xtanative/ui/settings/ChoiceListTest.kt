@@ -28,4 +28,11 @@ class ChoiceListTest {
         assertEquals(labels.indices.toList(), ChoiceList.matching(labels, "  "))
         assertEquals(emptyList(), ChoiceList.matching(labels, "xyz"))
     }
+
+    @Test
+    fun enterPicksTheOnlyMatchLeft() {
+        assertEquals(3, ChoiceList.picked(listOf(3)))
+        assertEquals(null, ChoiceList.picked(listOf(0, 4)), "several: nothing")
+        assertEquals(null, ChoiceList.picked(emptyList()), "none: nothing")
+    }
 }
