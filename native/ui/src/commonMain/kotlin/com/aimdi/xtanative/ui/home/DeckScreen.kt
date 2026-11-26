@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -320,35 +322,39 @@ private fun NetworkColumn(id: String, label: String, place: ColumnPlace, calls: 
 /**
  * A column's first row, as Home's bar leads with the timeline's mark: the
  * column's mark ([ColumnMark]) and its name (back to the top), [extra] (a
- * network's own search and menu), Refresh, and its menu.
+ * network's own search and menu), Refresh, and its menu. In a column wider
+ * than the posts' reading column it stands over the posts, as wide as they
+ * are, not across the whole window.
  */
 @Composable
 private fun ColumnHeader(column: DeckColumn, label: String, place: ColumnPlace, calls: ColumnCalls, onRefresh: () -> Unit, extra: @Composable RowScope.() -> Unit = {}) {
     // A group's emoji stands in the mark's place, ahead of its bare name.
     val (emoji, name) = if (column is DeckColumn.Group) ColumnTitle.split(label) else null to label
-    Row(Modifier.fillMaxWidth().then(calls.handle).heightIn(min = 48.dp).padding(start = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.weight(1f)) {
-            Row(
-                Modifier.heightIn(min = 48.dp).clip(RoundedCornerShape(8.dp)).clickable(onClick = calls.onTitle).padding(end = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
-                    if (emoji != null) Text(emoji, fontSize = 20.sp, maxLines = 1) else ColumnMark(column)
+    Column(Modifier.fillMaxWidth().wrapContentWidth().widthIn(max = ReadingColumn.MAX_WIDTH.dp)) {
+        Row(Modifier.fillMaxWidth().then(calls.handle).heightIn(min = 48.dp).padding(start = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.weight(1f)) {
+                Row(
+                    Modifier.heightIn(min = 48.dp).clip(RoundedCornerShape(8.dp)).clickable(onClick = calls.onTitle).padding(end = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+                        if (emoji != null) Text(emoji, fontSize = 20.sp, maxLines = 1) else ColumnMark(column)
+                    }
+                    TipText(
+                        name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
-                TipText(
-                    name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
             }
+            extra()
+            IconTip(stringResource(Res.string.home_refresh)) { IconButton(onClick = onRefresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) } }
+            if (calls.menu) ColumnMenu(place, calls)
         }
-        extra()
-        IconTip(stringResource(Res.string.home_refresh)) { IconButton(onClick = onRefresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) } }
-        if (calls.menu) ColumnMenu(place, calls)
+        HorizontalDivider()
     }
-    HorizontalDivider()
 }
 
 /** A column's name as its head shows it. */
