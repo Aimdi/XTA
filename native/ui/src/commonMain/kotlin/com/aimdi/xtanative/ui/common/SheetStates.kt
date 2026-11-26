@@ -97,6 +97,7 @@ internal fun rememberSheetState(alwaysFull: Boolean = false): SheetState {
  * surface takes the system bars' insets (Material's own sheet, transparent
  * there, takes none, or the navigation bar's strip would show through it) and
  * draws the drag handle with its screen-reader actions ([HandleWithActions]).
+ * Without [dragHandle] the sheet has none (one whose own header starts it).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,6 +109,7 @@ internal fun KeyedSheet(
     containerColor: Color = BottomSheetDefaults.ContainerColor,
     tonalElevation: Dp = 0.dp,
     border: BorderStroke? = null,
+    dragHandle: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val keys = rememberSheetKeys()
@@ -131,6 +133,7 @@ internal fun KeyedSheet(
             shape = shape,
             containerColor = containerColor,
             tonalElevation = tonalElevation,
+            dragHandle = if (dragHandle) ({ BottomSheetDefaults.DragHandle() }) else null,
             content = inside,
         )
         return
@@ -147,7 +150,7 @@ internal fun KeyedSheet(
     ) {
         Surface(Modifier.fillMaxWidth(), shape = shape, color = containerColor, tonalElevation = tonalElevation, border = border) {
             Column(Modifier.windowInsetsPadding(BottomSheetDefaults.windowInsets)) {
-                HandleWithActions(sheetState, scope, closer, Modifier.align(Alignment.CenterHorizontally))
+                if (dragHandle) HandleWithActions(sheetState, scope, closer, Modifier.align(Alignment.CenterHorizontally))
                 inside()
             }
         }
