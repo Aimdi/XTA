@@ -454,12 +454,12 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
         TranslationFailure(translation)
         PostAttachments(shown, scope, actions, gap = 12.dp, startMedia = startMedia)
         if (article != null) {
-            ArticleBody(article, actions, Modifier.padding(top = 12.dp), header = { PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture) })
+            ArticleBody(article, actions, Modifier.padding(top = 12.dp), header = { PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture, countsMax = FooterFit.FOCAL_COUNTS_MAX.dp) })
         } else if (shown.article != null) {
             ArticlePreviewCard(shown, { actions.openArticle(shown.id) }, Modifier.padding(top = 12.dp))
         }
         FocalMetaLine(shown, scope.prefs, order, picture)
-        if (article == null) PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture)
+        if (article == null) PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture, countsMax = FooterFit.FOCAL_COUNTS_MAX.dp)
     }
     Hairline()
     if (menu) {

@@ -103,10 +103,11 @@ import org.jetbrains.compose.resources.stringResource
  * share sheet. Nothing here is sent to X. In zen and calm mode the glyphs
  * stay, without numbers; where the width runs short the views go first, then
  * the numbers, and at last the buttons wrap ([FooterFit]). [picture] is the
- * post as drawn, for "Share … as image".
+ * post as drawn, for "Share … as image"; the counts spread across at most
+ * [countsMax], the bookmark and Share staying at the end.
  */
 @Composable
-fun PostFooter(post: XPost, actions: PostActions, counts: FooterCounts, modifier: Modifier = Modifier, picture: PostPicture? = null) {
+fun PostFooter(post: XPost, actions: PostActions, counts: FooterCounts, modifier: Modifier = Modifier, picture: PostPicture? = null, countsMax: Dp = Dp.Infinity) {
     var sharing by rememberSaveable(post.id) { mutableStateOf(false) }
     var noting by rememberSaveable(post.id) { mutableStateOf(false) }
     val sharePicture = rememberPictureShare(post, picture)
@@ -117,6 +118,7 @@ fun PostFooter(post: XPost, actions: PostActions, counts: FooterCounts, modifier
     FooterLayout(
         numbers,
         hasViews = views != null,
+        countsMax = countsMax,
         modifier = modifier.fillMaxWidth().padding(top = 6.dp),
         counts = { FooterCountItems(post, actions, shown, views, onNote = { noting = true }) },
         end = { FooterEndButtons(post, actions, onShare = { sharing = true }) },
@@ -149,7 +151,7 @@ private class FooterNumbers {
 /**
  * The footer's line, laid out without composing anything twice: [counts]
  * (replies, reposts, the heart, then the views when [hasViews]) spread from
- * the start, the bookmark and Share ([end]) at the end. The views stay
+ * the start across at most [countsMax], the bookmark and Share ([end]) at the end. The views stay
  * unplaced where they do not fit; where the numbers do not either, the
  * layout asks [numbers] to drop them, and the bare counts wrap if they must.
  */
@@ -157,6 +159,7 @@ private class FooterNumbers {
 private fun FooterLayout(
     numbers: FooterNumbers,
     hasViews: Boolean,
+    countsMax: Dp,
     modifier: Modifier,
     counts: @Composable () -> Unit,
     end: @Composable () -> Unit,
@@ -187,16 +190,17 @@ private fun FooterLayout(
         val oneLine = if (drawnWithNumbers) fit.showCounts else !fit.wraps
         if (oneLine) {
             val line = (if (fit.showViews) countPlaced else plain) + endPlaced
-            placeRow(available, line, line.size - endPlaced.size, gap, FooterFit.BUTTON.dp.roundToPx())
+            val most = if (countsMax == Dp.Infinity) Int.MAX_VALUE else countsMax.roundToPx()
+            placeRow(available, line, line.size - endPlaced.size, gap, FooterFit.BUTTON.dp.roundToPx(), most)
         } else {
             placeFlow(available, plain + endPlaced)
         }
     }
 }
 
-/** [items] on one line [available] wide and [height] high, centred on it: the first [counts] spread, the rest at the end. */
-private fun MeasureScope.placeRow(available: Int, items: List<Placeable>, counts: Int, gap: Int, height: Int): MeasureResult {
-    val starts = FooterPlacement.row(available, items.take(counts).map { it.width }, items.drop(counts).map { it.width }, gap)
+/** [items] on one line [available] wide and [height] high, centred on it: the first [counts] spread across at most [countsMax], the rest at the end. */
+private fun MeasureScope.placeRow(available: Int, items: List<Placeable>, counts: Int, gap: Int, height: Int, countsMax: Int): MeasureResult {
+    val starts = FooterPlacement.row(available, items.take(counts).map { it.width }, items.drop(counts).map { it.width }, gap, countsMax)
     return layout(available, height) {
         items.forEachIndexed { index, item -> item.placeRelative(starts[index], (height - item.height) / 2) }
     }

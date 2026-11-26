@@ -177,6 +177,13 @@ data class FooterFit(val showCounts: Boolean, val showViews: Boolean, val wraps:
         /** Between the counts and the bookmark and share at the end. */
         const val GROUP_GAP = 8f
 
+        /**
+         * How far an opened post's counts spread at most: about as far apart
+         * as a card's in the same column, not across the whole width, with
+         * the bookmark and share still at its end.
+         */
+        const val FOCAL_COUNTS_MAX = 360f
+
         /** A footer on one line: the [counts], the [gap], then the bookmark and share, [end] wide together. */
         fun rowWidth(counts: List<Int>, end: Int, gap: Int): Int = counts.sum() + gap + end
 
@@ -203,11 +210,11 @@ object FooterPlacement {
     /**
      * The start of each of [counts] then each of [end] on one line
      * [available] wide: the counts spread from the start across what the end
-     * buttons and the [gap] leave, the first at the start and the last at
-     * that area's end; the end buttons at the end.
+     * buttons and the [gap] leave, at most [countsMax] of it, the first at the
+     * start and the last at that area's end; the end buttons at the end.
      */
-    fun row(available: Int, counts: List<Int>, end: List<Int>, gap: Int): List<Int> {
-        val area = (available - gap - end.sum()).coerceAtLeast(counts.sum())
+    fun row(available: Int, counts: List<Int>, end: List<Int>, gap: Int, countsMax: Int = Int.MAX_VALUE): List<Int> {
+        val area = (available - gap - end.sum()).coerceAtMost(countsMax).coerceAtLeast(counts.sum())
         val between = if (counts.size > 1) (area - counts.sum()).toFloat() / (counts.size - 1) else 0f
         val countStarts = counts.indices.map { index -> (counts.take(index).sum() + between * index).roundToInt() }
         val endStarts = end.indices.map { index -> available - end.drop(index).sum() }

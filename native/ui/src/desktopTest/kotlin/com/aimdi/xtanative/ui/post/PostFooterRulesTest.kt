@@ -95,6 +95,14 @@ class PostFooterRulesTest {
     }
 
     @Test
+    fun anOpenedPostsCountsSpreadNoFurtherThanTheirCapWithTheButtonsStillAtTheEnd() {
+        val starts = FooterPlacement.row(700, listOf(30, 30, 30), listOf(40, 40), 8, countsMax = 360)
+        assertEquals(listOf(0, 165, 330, 620, 660), starts)
+        assertEquals(FooterPlacement.row(300, listOf(30, 30, 30), listOf(40, 40), 8), FooterPlacement.row(300, listOf(30, 30, 30), listOf(40, 40), 8, countsMax = 360), "a narrow footer is under the cap")
+        assertEquals(listOf(0, 30), FooterPlacement.row(200, listOf(30, 30), listOf(40), 8, countsMax = 10).take(2), "never below the counts' own width")
+    }
+
+    @Test
     fun aWrappedFooterFillsEachLineAndSpacesItEvenly() {
         val lines = FooterPlacement.flow(100, listOf(30, 30, 30, 40, 40))
         assertEquals(listOf(listOf(0, 1, 2), listOf(3, 4)), lines.map { line -> line.map { it.first } })
