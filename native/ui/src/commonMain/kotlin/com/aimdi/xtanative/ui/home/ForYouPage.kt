@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -37,6 +40,7 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.Motion
 import com.aimdi.xtanative.ui.common.PostSkeleton
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
@@ -45,6 +49,7 @@ import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.readFailureText
 import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.feed.CaughtUpRows
+import com.aimdi.xtanative.ui.feed.NewPostsPill
 import com.aimdi.xtanative.ui.feed.feedThreads
 import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import com.aimdi.xtanative.ui.feed.rememberNearEnd
@@ -59,6 +64,7 @@ import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 /** The key For you's view model is kept under on Home. */
@@ -83,6 +89,7 @@ internal fun ForYouPage(toTop: Int, actions: PostActions, contentPadding: Paddin
     val state by vm.ui.collectAsStateWithLifecycle()
     val list = rememberLazyListState()
     val reduced = LocalReducedMotion.current
+    val scope = rememberCoroutineScope()
     ScrollsToTop(toTop) { list.scrollToTop(reduced) }
     var answeredRefresh by rememberSaveable { mutableIntStateOf(state.toTop) }
     LaunchedEffect(state.toTop) {
@@ -118,6 +125,21 @@ internal fun ForYouPage(toTop: Int, actions: PostActions, contentPadding: Paddin
                 ForYouList(state, vm, actions, list, contentPadding)
             }
         }
+        NewPostsOver(state.newPosts, Modifier.align(Alignment.TopCenter).padding(top = 12.dp)) {
+            scope.launch { list.scrollToTop(reduced) }
+            vm.showNew()
+        }
+    }
+}
+
+/** Following's new-posts pill over the list while [count] posts wait for the reader; the count it said stays while it goes. */
+@Composable
+private fun NewPostsOver(count: Int, modifier: Modifier, onClick: () -> Unit) {
+    val held = remember { intArrayOf(0) }
+    if (count > 0) held[0] = count
+    val reduced = LocalReducedMotion.current
+    AnimatedVisibility(count > 0, modifier = modifier, enter = Motion.popEnter(reduced), exit = Motion.popExit(reduced)) {
+        NewPostsPill(held[0], onClick)
     }
 }
 

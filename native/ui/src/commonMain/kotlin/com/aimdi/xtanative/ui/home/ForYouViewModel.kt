@@ -52,6 +52,8 @@ data class ForYouUi(
     val lastSeen: ReadPosition? = null,
     /** Back to the last read post, once, when the first page has posts above it: the divider's row. */
     val jump: Int? = null,
+    /** The posts a refresh brought while the reader was down the list, which wait for them: what the new-posts pill counts. */
+    val newPosts: Int = 0,
 ) {
     /** Where "You're caught up" goes: above the first read post, when something new sits above it. */
     val divider: Int? get() = GroupFeedPaging.dividerIndex(threads, lastSeen, tracks, catchUp = false)
@@ -67,13 +69,15 @@ data class ForYouUi(
  * divider over the posts read before, the timeline opened at it, and the
  * newest post read from the top recorded, whose mark the unread dot compares.
  */
-class ForYouViewModel(private val graph: AppGraph) : ViewModel() {
+class ForYouViewModel(
+    private val graph: AppGraph,
+    private val reads: HomeReads = HomeReads { account, cursor, count -> graph.client.homeTimeline(account, cursor, count) },
+) : ViewModel() {
     private val state = MutableStateFlow(ForYouUi())
     val ui: StateFlow<ForYouUi> = state.asStateFlow()
 
     private data class Shape(val accounts: List<XAccount>, val off: Set<String>, val excluded: Set<String>, val pageCap: Int?, val tracks: Boolean)
 
-    private val reads = HomeReads { account, cursor, count -> graph.client.homeTimeline(account, cursor, count) }
     private val marks = ReadMarks(graph.feedCache(ReadMarks.key(FeedKeys.FOR_YOU)))
     private var shape: Shape? = null
     private var cursor: String? = null
@@ -84,6 +88,9 @@ class ForYouViewModel(private val graph: AppGraph) : ViewModel() {
     /** The divider is placed once per visit, on the first page that has posts above the last read one. */
     private var placed = false
     private var atTop = true
+
+    /** A first page read while the reader was down the list with posts on screen: shown once they are back at the top or ask for it. */
+    private var held: ForYouPage? = null
 
     init {
         viewModelScope.launch { retryWhenBackOnline() }
@@ -115,11 +122,18 @@ class ForYouViewModel(private val graph: AppGraph) : ViewModel() {
         }
     }
 
-    /** The newest page, in place of what is shown; [byReader] is a pull, which also goes back to the top. */
+    /**
+     * The newest page, in place of what is shown; [byReader] is a pull, which
+     * also goes back to the top. One the reader did not ask for, while they
+     * are down the list, waits for them ([showNew]), so nothing moves under
+     * their eyes, as Following holds what its plugins bring.
+     */
     fun refresh(byReader: Boolean = true) {
         val shape = shape ?: return
         refreshJob?.cancel()
         resets++
+        held = null
+        state.update { it.copy(newPosts = 0) }
         if (shape.accounts.isEmpty()) {
             state.value = ForYouUi(noAccount = true, answered = true)
             return
@@ -135,25 +149,49 @@ class ForYouViewModel(private val graph: AppGraph) : ViewModel() {
                 state.update { it.copy(refreshing = false, problem = problem.takeIf { _ -> it.threads.isEmpty() }, notice = problem.takeIf { _ -> it.threads.isNotEmpty() }) }
                 return@launch
             }
-            val step = FeedStops(pageCap = shape.pageCap).page(page.threads, first = true, isSeen = null, hasMore = page.next != null)
-            stops = step.stops
-            cursor = page.next
-            graph.posts.remember(step.shown)
-            val action = firstPageAction(step.shown, shape.tracks)
-            state.update {
-                it.copy(
-                    threads = step.shown,
-                    refreshing = false,
-                    answered = true,
-                    hasMore = page.next != null && stops.pause == null,
-                    paused = stops.pause != null,
-                    toTop = if (byReader) it.toTop + 1 else it.toTop,
-                    jump = (action as? FirstPageAction.RestoreToBoundary)?.index ?: it.jump,
-                )
+            if (!byReader && !atTop && state.value.threads.isNotEmpty()) {
+                held = page
+                state.update { it.copy(refreshing = false, newPosts = ForYouRules.newCount(it.threads, page.threads)) }
+                return@launch
             }
-            if (shape.tracks) step.shown.firstOrNull()?.let { marks.noteNewest(it) }
-            if (action is FirstPageAction.RecordPosition) marks.record(action.thread, System.currentTimeMillis())
+            show(page, shape, byReader)
         }
+    }
+
+    /** [page] as the first page, in place of what is shown; [byReader] goes back to the top. */
+    private suspend fun show(page: ForYouPage, shape: Shape, byReader: Boolean) {
+        val step = FeedStops(pageCap = shape.pageCap).page(page.threads, first = true, isSeen = null, hasMore = page.next != null)
+        stops = step.stops
+        cursor = page.next
+        graph.posts.remember(step.shown)
+        val action = firstPageAction(step.shown, shape.tracks)
+        state.update {
+            it.copy(
+                threads = step.shown,
+                refreshing = false,
+                answered = true,
+                hasMore = page.next != null && stops.pause == null,
+                paused = stops.pause != null,
+                toTop = if (byReader) it.toTop + 1 else it.toTop,
+                jump = (action as? FirstPageAction.RestoreToBoundary)?.index ?: it.jump,
+            )
+        }
+        if (shape.tracks) step.shown.firstOrNull()?.let { marks.noteNewest(it) }
+        if (action is FirstPageAction.RecordPosition) marks.record(action.thread, System.currentTimeMillis())
+    }
+
+    /**
+     * What a refresh held while the reader was down the list, shown at the
+     * top of the list: the new-posts pill tapped, or the reader back at the
+     * top, where the posts kept in view would otherwise hide the new ones above.
+     */
+    fun showNew() {
+        val page = held ?: return
+        val shape = shape ?: return
+        held = null
+        resets++
+        state.update { it.copy(newPosts = 0, loadingMore = false) }
+        refreshJob = viewModelScope.launch { show(page, shape, byReader = true) }
     }
 
     /** What a first page does with the read position: back to the divider once per visit, else a record while the reader is at the top. */
@@ -210,6 +248,7 @@ class ForYouViewModel(private val graph: AppGraph) : ViewModel() {
     fun atTop(top: Boolean) {
         if (top == atTop) return
         atTop = top
+        if (top) showNew()
         val now = state.value
         if (!top || !now.tracks) return
         ReadPosition.newestRecordable(now.threads)?.let { viewModelScope.launch { marks.record(it, System.currentTimeMillis()) } }

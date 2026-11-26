@@ -27,6 +27,12 @@ object ForYouRules {
         return shown + more.filter { known.add(it.id) }
     }
 
+    /** The threads of [page] not among those [shown]: what the new-posts pill counts. */
+    fun newCount(shown: List<XThread>, page: List<XThread>): Int {
+        val known = shown.mapTo(HashSet()) { it.id }
+        return page.count { it.id !in known }
+    }
+
     /** Zen mode's pages per session (Settings › Posts), or no cap. */
     fun pageCap(zenMode: Boolean, pages: Int): Int? = if (zenMode) pages.coerceAtLeast(1) else null
 }
