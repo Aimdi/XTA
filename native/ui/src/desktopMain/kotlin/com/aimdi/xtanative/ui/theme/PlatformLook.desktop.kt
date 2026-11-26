@@ -44,6 +44,25 @@ internal val MouseRipples = RippleConfiguration(
     rippleAlpha = RippleAlpha(pressedAlpha = 0.1f, focusedAlpha = 0.1f, draggedAlpha = 0.16f, hoveredAlpha = HOVER_ALPHA),
 )
 
+/**
+ * [DesktopRipples] for a control that draws the keyboard's ring itself (an
+ * icon button with a tip, a post's author picture): its focus shows as that
+ * accent ring alone, not also as a grey disc under it, as the app's rows show
+ * it ([com.aimdi.xtanative.ui.common.RowIndication]). A click's focus shows
+ * nothing either; the pointer and a press light it as before.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+internal val RingedRipples = RippleConfiguration(
+    rippleAlpha = RippleAlpha(pressedAlpha = 0.1f, focusedAlpha = 0f, draggedAlpha = 0.16f, hoveredAlpha = HOVER_ALPHA),
+)
+
+/**
+ * The app's ripples, read when the button's focus arrives, not when this is
+ * provided: the click or Tab that moved it has already set the mode by then.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+internal val AppRipples = LocalRippleConfiguration providesComputed { if (KeyboardFocusLook.keyboard) DesktopRipples else MouseRipples }
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 internal actual fun ProvidePlatformLook(content: @Composable () -> Unit) {
@@ -66,9 +85,7 @@ internal actual fun ProvidePlatformLook(content: @Composable () -> Unit) {
         LocalTextContextMenu provides selecting,
         // Plain clickable rows (settings, dialog options, tabs) lit as rounded inset blocks with the keyboard's ring.
         LocalIndication provides rows,
-        // Read when the button's focus arrives, not when this composes: the
-        // click or Tab that moved it has already set the mode by then.
-        LocalRippleConfiguration providesComputed { if (KeyboardFocusLook.keyboard) DesktopRipples else MouseRipples },
+        AppRipples,
         content = content,
     )
 }

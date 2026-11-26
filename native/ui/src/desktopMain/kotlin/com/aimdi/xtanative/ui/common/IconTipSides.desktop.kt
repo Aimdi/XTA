@@ -18,7 +18,7 @@ internal actual fun IconTip(label: String, side: TipSide, content: @Composable (
         delayMillis = TIP_DELAY_MS,
         tooltipPlacement = EndPlacement,
         modifier = Modifier.keyboardFocusRing(),
-    ) { content() }
+    ) { RingedFocus(content) }
 }
 
 /** A tip beside the icon: its start a little past the icon's end edge, its middle on the icon's. */

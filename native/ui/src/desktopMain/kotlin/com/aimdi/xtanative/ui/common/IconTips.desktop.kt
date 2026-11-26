@@ -5,10 +5,13 @@ import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.TooltipPlacement
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -25,7 +28,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.theme.AppRipples
 import com.aimdi.xtanative.ui.theme.KeyboardFocusLook
+import com.aimdi.xtanative.ui.theme.RingedRipples
 
 /** How long the pointer rests before the label shows, as the desktop's own tooltips wait. */
 internal const val TIP_DELAY_MS = 600
@@ -39,7 +44,19 @@ actual fun IconTip(label: String, content: @Composable () -> Unit) {
         delayMillis = TIP_DELAY_MS,
         tooltipPlacement = TipPlacement,
         modifier = Modifier.keyboardFocusRing(),
-    ) { content() }
+    ) { RingedFocus(content) }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal actual fun RingedFocus(content: @Composable () -> Unit) {
+    CompositionLocalProvider(LocalRippleConfiguration provides RingedRipples, content = content)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal actual fun UnringedFocus(content: @Composable () -> Unit) {
+    CompositionLocalProvider(AppRipples, content = content)
 }
 
 /** Where a tip shows: just under the pointer. */

@@ -22,6 +22,19 @@ expect fun IconTip(label: String, content: @Composable () -> Unit)
 internal expect fun Modifier.keyboardFocusRing(): Modifier
 
 /**
+ * [content], a control that wears [keyboardFocusRing], with Material's
+ * ripple showing no focus of its own in it: on the desktop the ring alone
+ * marks the keyboard's focus, not the ring over a grey disc. Nothing more on
+ * Android, where the ripple is the focus's only mark.
+ */
+@Composable
+internal expect fun RingedFocus(content: @Composable () -> Unit)
+
+/** [content] inside a [RingedFocus] that draws no ring of its own (a badge on a ringed picture): Material's ripple shows its focus again. */
+@Composable
+internal expect fun UnringedFocus(content: @Composable () -> Unit)
+
+/**
  * The same ring, drawn [outset] beyond the bounds, for a word that is a
  * button ("Show more"): the icon ring's inset would cross its letters.
  */

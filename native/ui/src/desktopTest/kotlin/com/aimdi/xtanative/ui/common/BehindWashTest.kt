@@ -6,24 +6,34 @@ import kotlin.test.assertTrue
 
 class BehindWashTest {
     @Test
-    fun aPressOutweighsAFocusWhichOutweighsThePointer() {
-        val hover = BehindWash.alpha(hovered = true, focused = false, pressed = false)
-        val focus = BehindWash.alpha(hovered = true, focused = true, pressed = false)
-        val press = BehindWash.alpha(hovered = true, focused = true, pressed = true)
+    fun aPressOutweighsThePointer() {
+        val hover = BehindWash.alpha(hovered = true, pressed = false)
+        val press = BehindWash.alpha(hovered = true, pressed = true)
         assertTrue(hover > 0f)
-        assertTrue(focus > hover)
-        assertTrue(press > focus)
+        assertTrue(press > hover)
     }
 
     @Test
     fun aRowInNoStateIsNotWashed() {
-        assertEquals(0f, BehindWash.alpha(hovered = false, focused = false, pressed = false))
+        assertEquals(0f, BehindWash.alpha(hovered = false, pressed = false))
     }
 
     @Test
-    fun aPictureIsNotGreyedUnderThePointerButShowsAPressAndAFocus() {
-        assertEquals(0f, BehindWash.alpha(hovered = true, focused = false, pressed = false, picture = true))
-        assertTrue(BehindWash.alpha(hovered = true, focused = false, pressed = true, picture = true) > 0f)
-        assertTrue(BehindWash.alpha(hovered = false, focused = true, pressed = false, picture = true) > 0f)
+    fun aPictureIsNotGreyedUnderThePointerButShowsAPress() {
+        assertEquals(0f, BehindWash.alpha(hovered = true, pressed = false, picture = true))
+        assertTrue(BehindWash.alpha(hovered = true, pressed = true, picture = true) > 0f)
+    }
+
+    @Test
+    fun aPostsRingIsInsetAsARowsIs() {
+        assertEquals(RowHighlight.block(600f, 180f), BehindWash.ring(600f, 180f, picture = false))
+        val ring = BehindWash.ring(600f, 180f, picture = false)
+        assertTrue(ring.left > 0f && ring.top > 0f)
+    }
+
+    @Test
+    fun aPicturesRingFollowsItsOwnEdgeAndCorners() {
+        assertEquals(RowHighlight.Block(0f, 0f, 500f, 280f, BehindWash.PICTURE_RADIUS), BehindWash.ring(500f, 280f, picture = true))
+        assertEquals(10f, BehindWash.ring(20f, 20f, picture = true).radius)
     }
 }

@@ -100,7 +100,7 @@ object XLook {
     /** ... and on a row washed for the pointer or the keyboard, so a quoted post's frame stays under a hovered post. */
     const val EDGE_WASHED = 1.25
 
-    /** The strongest wash a row is lit with but a press ([com.aimdi.xtanative.ui.common.BehindWash.FOCUS]). */
+    /** The strongest wash a row is lit with but a press, with room to spare ([com.aimdi.xtanative.ui.common.BehindWash.HOVER], a row's [com.aimdi.xtanative.ui.common.RowHighlight.HOVER]). */
     private const val WASH = 0.10
 
     /** How much of the text colour a search field's fill takes over the page. */

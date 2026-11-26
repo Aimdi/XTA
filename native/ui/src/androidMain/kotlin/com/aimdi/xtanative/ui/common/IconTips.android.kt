@@ -8,6 +8,12 @@ import androidx.compose.ui.unit.Dp
 actual fun IconTip(label: String, content: @Composable () -> Unit) = content()
 
 @Composable
+internal actual fun RingedFocus(content: @Composable () -> Unit) = content()
+
+@Composable
+internal actual fun UnringedFocus(content: @Composable () -> Unit) = content()
+
+@Composable
 internal actual fun Modifier.keyboardFocusRing(): Modifier = this
 
 @Composable

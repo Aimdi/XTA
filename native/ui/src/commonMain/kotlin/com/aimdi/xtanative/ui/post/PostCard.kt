@@ -41,9 +41,12 @@ import com.aimdi.xtanative.services.links.XLinks
 import com.aimdi.xtanative.ui.article.ArticlePreviewCard
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.RingedFocus
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.UnringedFocus
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.rememberBehindIndication
@@ -126,6 +129,10 @@ fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = e
 }
 
 private val AvatarSize = PostGeometry.AVATAR_SIZE.dp
+
+/** How far inside the avatar's 48 dp target its keyboard ring is drawn: just off the picture's rim. */
+private val AvatarRingGap = 1.dp
+
 private val RailStart = PostGeometry.AVATAR_START.dp
 
 /** How far a post's media row runs past its column: the post's own margin, to the screen's edge. */
@@ -195,18 +202,22 @@ fun PostCard(
         Row {
             // The avatar in its 48 dp target, which opens the author as the avatar does.
             val inset = PostGeometry.AVATAR_TARGET_INSET.dp
-            Box(
-                Modifier
-                    .offset(-inset, -inset)
-                    .size(PostGeometry.TOUCH_TARGET.dp)
-                    // An unbounded ripple, not a clip: a clip would cut the follow badge on the avatar's rim.
-                    .clickable(
-                        interactionSource = null,
-                        indication = ripple(bounded = false, radius = (PostGeometry.TOUCH_TARGET / 2).dp),
-                        enabled = PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName),
-                    ) { actions.openUser(shown.author.screenName, shown.author.id) },
-                contentAlignment = Alignment.Center,
-            ) { PostAvatar(shown, scope, actions, AvatarSize, inTarget = true) }
+            // The keyboard's focus as the accent's ring just off the picture's rim, not as a grey halo round it.
+            RingedFocus {
+                Box(
+                    Modifier
+                        .offset(-inset, -inset)
+                        .size(PostGeometry.TOUCH_TARGET.dp)
+                        .keyboardFocusRing(outset = -AvatarRingGap)
+                        // An unbounded ripple, not a clip: a clip would cut the follow badge on the avatar's rim.
+                        .clickable(
+                            interactionSource = null,
+                            indication = ripple(bounded = false, radius = (PostGeometry.TOUCH_TARGET / 2).dp),
+                            enabled = PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName),
+                        ) { actions.openUser(shown.author.screenName, shown.author.id) },
+                    contentAlignment = Alignment.Center,
+                ) { UnringedFocus { PostAvatar(shown, scope, actions, AvatarSize, inTarget = true) } }
+            }
             Spacer(Modifier.width((PostGeometry.COLUMN_START - PostGeometry.AVATAR_START - PostGeometry.TOUCH_TARGET).dp))
             val buttons = if (translation != null) 2 else 1
             Box(Modifier.weight(1f)) {
