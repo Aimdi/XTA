@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
@@ -116,36 +117,39 @@ fun FramedSidebar(
     val networks = LocalHomeNetworks.current
     val loaded by vm.ui.collectAsStateWithLifecycle()
     var avatar by rememberSaveable { mutableStateOf(false) }
-    Surface(modifier.width(HomeWide.SIDEBAR_WIDTH.dp).fillMaxHeight(), color = MaterialTheme.colorScheme.background) {
+    Surface(modifier.width(HomeWide.DESKTOP_SIDEBAR_WIDTH.dp).fillMaxHeight(), color = MaterialTheme.colorScheme.background) {
         val ui = loaded ?: return@Surface
         val unread = unreadKeys(ui, vm, networks)
         val mark = FrameMarks.ofStack(stack, homeRoute, frame.homePage, ui.bar.mapTo(HashSet()) { it.id })
         val marked = focus?.let { Modifier.focusRequester(it.marked) } ?: Modifier
-        AccountMenu(
-            ui = ui,
-            routes = routes,
-            deckFits = deckFits,
-            unread = unread,
-            onGo = calls.screen,
-            onGroup = calls.group,
-            onClose = onClose,
-            onAvatar = { avatar = true },
-            pages = {
-                itemsIndexed(ui.bar, key = { _, barPage -> "page-" + barPage.id }) { index, barPage ->
-                    val selected = barPage.id == mark.page
-                    NavRow(
-                        label = barLabel(barPage, ui),
-                        selected = selected,
-                        onClick = { calls.page(index, barPage) },
-                        icon = { BarPageIcon(barPage, selected, ui, networks) },
-                        modifier = if (selected) marked else Modifier,
-                    )
-                }
-            },
-            current = mark.screen,
-            currentGroup = mark.group,
-            marked = marked,
-        )
+        // The desktop's column, for a pointer: denser rows and a one-line header.
+        CompositionLocalProvider(LocalNavCompact provides true) {
+            AccountMenu(
+                ui = ui,
+                routes = routes,
+                deckFits = deckFits,
+                unread = unread,
+                onGo = calls.screen,
+                onGroup = calls.group,
+                onClose = onClose,
+                onAvatar = { avatar = true },
+                pages = {
+                    itemsIndexed(ui.bar, key = { _, barPage -> "page-" + barPage.id }) { index, barPage ->
+                        val selected = barPage.id == mark.page
+                        NavRow(
+                            label = barLabel(barPage, ui),
+                            selected = selected,
+                            onClick = { calls.page(index, barPage) },
+                            icon = { BarPageIcon(barPage, selected, ui, networks) },
+                            modifier = if (selected) marked else Modifier,
+                        )
+                    }
+                },
+                current = mark.screen,
+                currentGroup = mark.group,
+                marked = marked,
+            )
+        }
     }
     if (avatar) AvatarSheet(onDismiss = { avatar = false })
 }

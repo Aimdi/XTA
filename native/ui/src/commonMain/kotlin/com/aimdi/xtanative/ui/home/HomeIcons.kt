@@ -47,6 +47,22 @@ internal object HomeIcons {
                 " 8,3.59 8,8 -3.59,8 -8,8z",
         )
     }
+    val DownloadOutlined: ImageVector by lazy {
+        icon("DownloadOutlined", "M18,15v3H6v-3H4v3c0,1.1 0.9,2 2,2h12c1.1,0 2,-0.9 2,-2v-3H18zM17,11l-1.41,-1.41L13,12.17V4h-2v8.17L8.41,9.59L7,11l5,5L17,11z")
+    }
+    val ExtensionOutlined: ImageVector by lazy {
+        icon(
+            "ExtensionOutlined",
+            "M10.5,4.5c0.28,0 0.5,0.22 0.5,0.5v2h6v6h2c0.28,0 0.5,0.22 0.5,0.5s-0.22,0.5 -0.5,0.5h-2v6h-2.12c-0.68,-1.75 -2.39,-3 -4.38,-3" +
+                "s-3.7,1.25 -4.38,3H4v-2.12c1.75,-0.68 3,-2.39 3,-4.38 0,-1.99 -1.24,-3.7 -2.99,-4.38L4,7h6V5c0,-0.28 0.22,-0.5 0.5,-0.5" +
+                "m0,-2C9.12,2.5 8,3.62 8,5H4c-1.1,0 -1.99,0.9 -1.99,2v3.8h0.29c1.49,0 2.7,1.21 2.7,2.7s-1.21,2.7 -2.7,2.7H2V20c0,1.1 0.9,2 2,2h3.8v-0.3" +
+                "c0,-1.49 1.21,-2.7 2.7,-2.7s2.7,1.21 2.7,2.7v0.3H17c1.1,0 2,-0.9 2,-2v-4c1.38,0 2.5,-1.12 2.5,-2.5S20.38,11 19,11V7c0,-1.1 -0.9,-2 -2,-2h-4" +
+                "c0,-1.38 -1.12,-2.5 -2.5,-2.5z",
+        )
+    }
+    val ViewColumnOutlined: ImageVector by lazy {
+        icon("ViewColumnOutlined", "M3,5v14h18V5H3zM8.33,17H5V7h3.33V17zM13.67,17h-3.34V7h3.34V17zM19,17h-3.33V7H19V17z")
+    }
     val BookmarkFilled: ImageVector by lazy { icon("BookmarkFilled", "M17,3H7c-1.1,0 -1.99,0.9 -1.99,2L5,21l7,-3 7,3V5c0,-1.1 -0.9,-2 -2,-2z") }
     val PeopleOutlined: ImageVector by lazy {
         icon(

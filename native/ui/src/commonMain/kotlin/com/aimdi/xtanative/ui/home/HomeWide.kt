@@ -10,11 +10,14 @@ object HomeWide {
     /** From this width (dp) the navigation is a column beside the pages. */
     const val SIDEBAR_FROM = 1000f
 
-    /** The navigation column's width, in dp. */
+    /** The navigation column's width beside Home on a tablet, in dp: rows tall for a finger. */
     const val SIDEBAR_WIDTH = 320
 
-    /** The column and its dividing line, in dp: how far the screens beside it stand from the window's start edge. */
-    const val FRAME_INSET = SIDEBAR_WIDTH + 1
+    /** The desktop window's navigation column ([WideFrame]), in dp: narrower, its rows a pointer's ([LocalNavCompact]). */
+    const val DESKTOP_SIDEBAR_WIDTH = 260
+
+    /** The desktop's column and its dividing line, in dp: how far the screens beside it stand from the window's start edge. */
+    const val FRAME_INSET = DESKTOP_SIDEBAR_WIDTH + 1
 
     /** From this width (dp), up to [SIDEBAR_FROM], a desktop window's navigation is a rail of icons beside the screens. */
     const val RAIL_FROM = 600f

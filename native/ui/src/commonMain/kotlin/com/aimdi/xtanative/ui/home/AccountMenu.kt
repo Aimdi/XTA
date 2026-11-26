@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,11 +13,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +33,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -97,10 +102,10 @@ internal fun AccountMenu(
         // Search and Settings, then the screens beside the bar: one kind of row, the one shown marked.
         items(HomeMenu.shown(HomeMenu.buttons, routes.exists, deckFits) + HomeMenu.shown(HomeMenu.list, routes.exists, deckFits, onBar = ui.bar.mapTo(HashSet()) { it.id }), key = { it.route }) { destination ->
             NavRow(
-                label = labelOf(destination),
+                label = menuLabel(destination),
                 selected = destination.route == current,
                 onClick = { onGo(destination.route) },
-                icon = { Icon(iconOf(destination), contentDescription = null) },
+                icon = { Icon(menuIcon(destination, destination.route == current), contentDescription = null) },
                 modifier = if (destination.route == current) marked else Modifier,
             )
         }
@@ -126,27 +131,33 @@ internal fun AccountMenu(
 /**
  * The account at the top: its mark, the app's name and the account's handle;
  * a tap opens Settings and a long press the sheet that sets the mark's
- * picture, as in XTA.
+ * picture, as in XTA. For a pointer ([LocalNavCompact]) it is one line, its
+ * mark small beside the names, lit on a pill inset from the menu's edges as
+ * the rows below are.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun AccountHeader(account: XAccount?, onClose: (() -> Unit)?, onAvatar: () -> Unit, onSettings: (() -> Unit)?) {
+    val compact = LocalNavCompact.current
+    val opens = Modifier
+        .onSecondaryClick(onAvatar)
+        .combinedClickable(
+            onClickLabel = stringResource(Res.string.settings),
+            onLongClickLabel = stringResource(Res.string.settings_avatar_title),
+            onLongClick = onAvatar,
+            onClick = { onSettings?.invoke() },
+        )
+    if (compact) return CompactAccountHeader(account, onClose, opens)
     Column(
         Modifier
             .fillMaxWidth()
-            .onSecondaryClick(onAvatar)
-            .combinedClickable(
-                onClickLabel = stringResource(Res.string.settings),
-                onLongClickLabel = stringResource(Res.string.settings_avatar_title),
-                onLongClick = onAvatar,
-                onClick = { onSettings?.invoke() },
-            )
+            .then(opens)
             .padding(start = 16.dp, top = 12.dp, end = 8.dp, bottom = 16.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AccountMark(account, 52.dp)
             Spacer(Modifier.weight(1f))
-            if (onClose != null) IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } }
+            if (onClose != null) CloseButton(onClose)
         }
         Text(stringResource(Res.string.app_name), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(top = 10.dp))
         account?.screenName?.takeIf { it.isNotEmpty() }?.let { name ->
@@ -154,6 +165,35 @@ private fun AccountHeader(account: XAccount?, onClose: (() -> Unit)?, onAvatar: 
         }
     }
 }
+
+/** The account at the top for a pointer: its 32 dp mark, the app's name over the handle, and the close button where there is one. */
+@Composable
+private fun CompactAccountHeader(account: XAccount?, onClose: (() -> Unit)?, opens: Modifier) {
+    Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 4.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            Modifier.weight(1f).clip(HEADER_SHAPE).then(opens).padding(horizontal = 12.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            AccountMark(account, 32.dp)
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(Res.string.app_name), style = MaterialTheme.typography.titleSmall, maxLines = 1)
+                account?.screenName?.takeIf { it.isNotEmpty() }?.let { name ->
+                    Text("@$name", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+            }
+        }
+        if (onClose != null) CloseButton(onClose)
+    }
+}
+
+@Composable
+private fun CloseButton(onClose: () -> Unit) {
+    IconTip(stringResource(Res.string.close)) { IconButton(onClick = onClose) { Icon(Icons.Filled.Close, stringResource(Res.string.close)) } }
+}
+
+/** The compact header's pill, rounded as the desktop's hovers are. */
+private val HEADER_SHAPE = RoundedCornerShape(8.dp)
 
 @Composable
 private fun GroupsHeader(count: Int, query: String, onQuery: (String) -> Unit) {
@@ -177,8 +217,9 @@ private fun GroupsHeader(count: Int, query: String, onQuery: (String) -> Unit) {
 /** A group: its mark (with the unread dot), name and size; pinned groups say so. */
 @Composable
 private fun GroupRow(group: FollowGroup, unread: Boolean, selected: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    NavRowFrame(selected = selected, onClick = onClick, shape = NavRowTallShape, minHeight = 64.dp, modifier = Modifier.padding(vertical = 2.dp).then(modifier)) {
-        UnreadDot(unread) { GroupMark(group, 40.dp) }
+    val compact = LocalNavCompact.current
+    NavRowFrame(selected = selected, onClick = onClick, shape = NavRowTallShape, minHeight = NavRowSizes.groupRow(compact), modifier = Modifier.padding(vertical = if (compact) 1.dp else 2.dp).then(modifier)) {
+        UnreadDot(unread) { GroupMark(group, NavRowSizes.groupMark(compact)) }
         Column(Modifier.weight(1f)) {
             TipText(group.name, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
             Text(
@@ -196,20 +237,22 @@ private fun GroupRow(group: FollowGroup, unread: Boolean, selected: Boolean, mod
     }
 }
 
-private fun iconOf(destination: HomeDestination): ImageVector = when (destination) {
-    HomeDestination.SEARCH -> Icons.Filled.Search
-    HomeDestination.SETTINGS -> Icons.Filled.Settings
-    HomeDestination.SUBSCRIPTIONS -> HomeIcons.People
+/** A menu entry's icon: outlined, as every icon of the menu is, and filled while its screen is shown ([selected]), as the bar's pages are. */
+internal fun menuIcon(destination: HomeDestination, selected: Boolean): ImageVector = when (destination) {
+    HomeDestination.SEARCH -> if (selected) Icons.Filled.Search else Icons.Outlined.Search
+    HomeDestination.SETTINGS -> if (selected) Icons.Filled.Settings else Icons.Outlined.Settings
+    HomeDestination.SUBSCRIPTIONS -> if (selected) HomeIcons.People else HomeIcons.PeopleOutlined
     HomeDestination.TRENDS -> HomeIcons.TrendingUp
-    HomeDestination.SAVED -> HomeIcons.Bookmark
-    HomeDestination.DOWNLOADS -> HomeIcons.Download
+    HomeDestination.SAVED -> if (selected) HomeIcons.BookmarkFilled else HomeIcons.Bookmark
+    HomeDestination.DOWNLOADS -> if (selected) HomeIcons.Download else HomeIcons.DownloadOutlined
     HomeDestination.ANTENNAS -> HomeIcons.Sensors
-    HomeDestination.PLUGINS -> HomeIcons.Extension
-    HomeDestination.DECK -> HomeIcons.ViewColumn
+    HomeDestination.PLUGINS -> if (selected) HomeIcons.Extension else HomeIcons.ExtensionOutlined
+    HomeDestination.DECK -> if (selected) HomeIcons.ViewColumn else HomeIcons.ViewColumnOutlined
 }
 
+/** A menu entry's name. */
 @Composable
-private fun labelOf(destination: HomeDestination): String = when (destination) {
+internal fun menuLabel(destination: HomeDestination): String = when (destination) {
     HomeDestination.SEARCH -> stringResource(Res.string.search)
     HomeDestination.SETTINGS -> stringResource(Res.string.settings)
     HomeDestination.SUBSCRIPTIONS -> stringResource(Res.string.home_subscriptions)
