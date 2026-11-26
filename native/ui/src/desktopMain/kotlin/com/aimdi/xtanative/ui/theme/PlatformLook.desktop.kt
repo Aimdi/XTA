@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.theme
 import androidx.compose.foundation.DefaultContextMenuRepresentation
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalContextMenuRepresentation
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.LocalTextContextMenu
 import androidx.compose.material.ripple.RippleAlpha
@@ -14,7 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
+import com.aimdi.xtanative.ui.common.RowIndication
 import com.aimdi.xtanative.ui.common.SelectingTextMenu
 
 /** How strongly an entry under the pointer is lit, as Material's hovered state lights it. */
@@ -53,11 +56,16 @@ internal actual fun ProvidePlatformLook(content: @Composable () -> Unit) {
             itemHoverColor = colors.onSurface.copy(alpha = HOVER_ALPHA),
         )
     }
+    // Read when a row draws, not here: a key or a click turning the mode recomposes nothing above the rows.
+    val keyboard = remember { derivedStateOf { KeyboardFocusLook.keyboard } }
+    val rows = remember(colors.onSurface, colors.primary) { RowIndication(colors.onSurface, colors.primary, keyboard) }
     val textMenu = LocalTextContextMenu.current
     val selecting = remember(textMenu) { if (textMenu is SelectingTextMenu) textMenu else SelectingTextMenu(textMenu) }
     CompositionLocalProvider(
         LocalContextMenuRepresentation provides menus,
         LocalTextContextMenu provides selecting,
+        // Plain clickable rows (settings, dialog options, tabs) lit as rounded inset blocks with the keyboard's ring.
+        LocalIndication provides rows,
         // Read when the button's focus arrives, not when this composes: the
         // click or Tab that moved it has already set the mode by then.
         LocalRippleConfiguration providesComputed { if (KeyboardFocusLook.keyboard) DesktopRipples else MouseRipples },

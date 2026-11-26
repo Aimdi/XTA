@@ -19,7 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Switch
-import androidx.compose.material3.Tab
+import com.aimdi.xtanative.ui.common.XtaTab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -156,7 +156,7 @@ fun PluginTabs(labels: List<String>, selected: Int, onSelect: (Int) -> Unit, mod
         divider = { Hairline() },
     ) {
         labels.forEachIndexed { index, label ->
-            Tab(
+            XtaTab(
                 selected = index == selected,
                 onClick = { onSelect(index) },
                 text = { Text(label, maxLines = 1) },

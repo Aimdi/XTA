@@ -37,7 +37,7 @@ import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Tab
+import com.aimdi.xtanative.ui.common.XtaTab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -331,7 +331,7 @@ private fun AdvancedButton(filters: Int, onClick: () -> Unit) {
 private fun SearchTabs(selected: SearchTab, onSelect: (SearchTab) -> Unit) {
     val tabs: @Composable () -> Unit = {
         SearchTab.entries.forEach { tab ->
-            Tab(
+            XtaTab(
                 selected = tab == selected,
                 onClick = { onSelect(tab) },
                 text = { Text(stringResource(tabName(tab)), maxLines = 1) },

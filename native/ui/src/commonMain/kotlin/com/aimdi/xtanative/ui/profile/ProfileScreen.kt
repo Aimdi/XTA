@@ -44,7 +44,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
+import com.aimdi.xtanative.ui.common.XtaTab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -430,7 +430,7 @@ private fun <T> FilterBar(selected: T, options: List<Filter<T>>, onSelect: (T) -
 private fun Tabs(selected: ProfileTab, onSelect: (ProfileTab) -> Unit, modifier: Modifier = Modifier) {
     TabRow(selectedTabIndex = selected.ordinal, modifier = modifier, containerColor = MaterialTheme.colorScheme.background, divider = { Hairline() }) {
         ProfileTab.entries.forEach { tab ->
-            Tab(
+            XtaTab(
                 selected = tab == selected,
                 onClick = { onSelect(tab) },
                 text = {
