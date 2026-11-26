@@ -179,8 +179,10 @@ class OfflineStoreTest {
         assertTrue(library.listFiles().orEmpty().isEmpty())
     }
 
-    /** A folder where the manifest's next version is written makes that write fail. */
-    private fun blockManifestWrites() = File(library, "manifest.json.part").mkdirs()
+    /** A library folder that takes no new file makes the manifest's next version fail to be staged. */
+    private fun blockManifestWrites() = blockWrites(library)
+
+    private fun blockWrites(folder: File) = folder.setWritable(false)
 
     @Test
     fun aFailedReplacementKeepsTheCopyBeforeIt() = timed {
@@ -213,7 +215,7 @@ class OfflineStoreTest {
         val otherDir = tempStore()
         val other = OfflineStore(otherDir, servesPng)
         other.keepArticle(kept)
-        File(otherDir.root, "offline/manifest.json.part").mkdirs()
+        blockWrites(File(otherDir.root, "offline"))
         other.clear()
         assertTrue(other.state.value.storageError)
         assertEquals(OfflineAvailability.UNAVAILABLE, other.state.value.entry(kept.id)?.availability)

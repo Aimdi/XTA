@@ -2,6 +2,10 @@ package com.aimdi.xtanative.store
 
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.file.AtomicMoveNotSupportedException
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -43,15 +47,34 @@ class StoreDir(val root: File) {
  * to the disk first, then given its name, so neither a crash nor a power
  * loss mid-save leaves it half written or empty.
  */
-fun File.replaceWith(text: String) {
-    parentFile?.mkdirs()
-    val partial = File(parentFile, "$name.part")
-    FileOutputStream(partial).use {
-        it.write(text.toByteArray())
-        it.fd.sync()
+fun File.replaceWith(text: String) = replaceWith(text.toByteArray())
+
+/**
+ * [replaceWith] for bytes. Each write stages in its own temp file, so two
+ * writers never share one half-written file; the result is readable by the
+ * owner only where the file system has POSIX permissions.
+ */
+fun File.replaceWith(bytes: ByteArray) = replaceThrough { it.write(bytes) }
+
+private fun File.replaceThrough(write: (FileOutputStream) -> Unit) {
+    val folder = absoluteFile.parentFile.apply { mkdirs() }
+    val partial = Files.createTempFile(folder.toPath(), ".$name.", ".part")
+    try {
+        FileOutputStream(partial.toFile()).use {
+            write(it)
+            it.fd.sync()
+        }
+        moveOver(partial, toPath())
+    } catch (failure: Throwable) {
+        Files.deleteIfExists(partial)
+        throw failure
     }
-    if (!partial.renameTo(this)) {
-        delete()
-        partial.renameTo(this)
+}
+
+private fun moveOver(from: Path, to: Path) {
+    try {
+        Files.move(from, to, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING)
+    } catch (_: AtomicMoveNotSupportedException) {
+        Files.move(from, to, StandardCopyOption.REPLACE_EXISTING)
     }
 }
