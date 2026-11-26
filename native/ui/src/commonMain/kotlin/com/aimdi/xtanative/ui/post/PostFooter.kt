@@ -5,20 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -32,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,11 +37,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -109,32 +105,22 @@ import org.jetbrains.compose.resources.stringResource
  * the numbers, and at last the buttons wrap ([FooterFit]). [picture] is the
  * post as drawn, for "Share … as image".
  */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PostFooter(post: XPost, actions: PostActions, counts: FooterCounts, modifier: Modifier = Modifier, picture: PostPicture? = null) {
     var sharing by rememberSaveable(post.id) { mutableStateOf(false) }
     var noting by rememberSaveable(post.id) { mutableStateOf(false) }
     val sharePicture = rememberPictureShare(post, picture)
     val labels = FooterLabels(counts.replies.label(), counts.reposts.label(), counts.likes.label(), counts.views.label())
-    BoxWithConstraints(modifier.fillMaxWidth().padding(top = 6.dp)) {
-        val fit = rememberFooterFit(maxWidth, labels)
-        val shown = if (fit.showCounts) counts else FooterCounts(null, null, null, null)
-        val views = counts.views?.takeIf { fit.showViews }
-        if (fit.wraps) {
-            FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                FooterCountItems(post, actions, shown, views, onNote = { noting = true })
-                FooterEndButtons(post, actions, onShare = { sharing = true })
-            }
-        } else {
-            Row(Modifier.fillMaxWidth().height(FooterFit.BUTTON.dp), verticalAlignment = Alignment.CenterVertically) {
-                Row(Modifier.weight(1f), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    FooterCountItems(post, actions, shown, views, onNote = { noting = true })
-                }
-                Spacer(Modifier.width(FooterFit.GROUP_GAP.dp))
-                FooterEndButtons(post, actions, onShare = { sharing = true })
-            }
-        }
-    }
+    val numbers = remember(labels) { FooterNumbers() }
+    val shown = if (numbers.shown) counts else FooterCounts(null, null, null, null)
+    val views = counts.views?.takeIf { numbers.shown }
+    FooterLayout(
+        numbers,
+        hasViews = views != null,
+        modifier = modifier.fillMaxWidth().padding(top = 6.dp),
+        counts = { FooterCountItems(post, actions, shown, views, onNote = { noting = true }) },
+        end = { FooterEndButtons(post, actions, onShare = { sharing = true }) },
+    )
     if (noting) actions.keep.NoteAbout(post) { noting = false }
     if (sharing) PostShareSheet(post, sharePicture, onDismiss = { sharing = false })
 }
@@ -148,15 +134,84 @@ private data class FooterLabels(val replies: String?, val reposts: String?, val 
 @Composable
 private fun Long?.label(): String? = this?.takeIf { it > 0 }?.let { countText(it) }
 
-/** What fits of [labels] in [available], measured as the counts draw their numbers. */
+/**
+ * Whether a footer's counts draw their numbers: its layout takes them away
+ * when they do not fit ([FooterFit.withNumbers]), noting the row they
+ * needed ([needed], pixels), and gives them back once the footer is that
+ * wide again. A footer whose numbers fit, as nearly all do, never changes it.
+ */
+@Stable
+private class FooterNumbers {
+    var shown by mutableStateOf(true)
+    var needed = Int.MAX_VALUE
+}
+
+/**
+ * The footer's line, laid out without composing anything twice: [counts]
+ * (replies, reposts, the heart, then the views when [hasViews]) spread from
+ * the start, the bookmark and Share ([end]) at the end. The views stay
+ * unplaced where they do not fit; where the numbers do not either, the
+ * layout asks [numbers] to drop them, and the bare counts wrap if they must.
+ */
 @Composable
-private fun rememberFooterFit(available: Dp, labels: FooterLabels): FooterFit {
-    val measurer = rememberTextMeasurer(cacheSize = 8)
-    val style = MaterialTheme.typography.labelMedium
-    val density = LocalDensity.current
-    return remember(available, labels, style, density) {
-        fun width(label: String?): Float = if (label == null) 0f else with(density) { measurer.measure(label, style).size.width.toDp().value }
-        FooterFit.of(available.value, listOf(width(labels.replies), width(labels.reposts), width(labels.likes)), labels.views?.let(::width))
+private fun FooterLayout(
+    numbers: FooterNumbers,
+    hasViews: Boolean,
+    modifier: Modifier,
+    counts: @Composable () -> Unit,
+    end: @Composable () -> Unit,
+) {
+    Layout(contents = listOf(counts, end), modifier) { (countItems, endItems), constraints ->
+        val loose = Constraints(maxWidth = constraints.maxWidth)
+        val countPlaced = countItems.map { it.measure(loose) }
+        val endPlaced = endItems.map { it.measure(loose) }
+        val gap = FooterFit.GROUP_GAP.dp.roundToPx()
+        val endWidth = endPlaced.sumOf { it.width }
+        val plain = if (hasViews) countPlaced.dropLast(1) else countPlaced
+        val widths = plain.map { it.width }
+        val available = if (constraints.hasBoundedWidth) constraints.maxWidth else FooterFit.rowWidth(countPlaced.map { it.width }, endWidth, gap)
+        val drawnWithNumbers = numbers.shown
+        val fit = if (drawnWithNumbers) {
+            FooterFit.withNumbers(available, widths, countPlaced.lastOrNull()?.width?.takeIf { hasViews }, endWidth, gap)
+        } else {
+            FooterFit.bare(available, widths, endWidth, gap)
+        }
+        when {
+            drawnWithNumbers && !fit.showCounts -> {
+                numbers.needed = FooterFit.rowWidth(widths, endWidth, gap)
+                numbers.shown = false
+            }
+            !drawnWithNumbers && numbers.needed <= available -> numbers.shown = true
+        }
+        // Until the counts are drawn without their numbers, the numbers that did not fit wrap.
+        val oneLine = if (drawnWithNumbers) fit.showCounts else !fit.wraps
+        if (oneLine) {
+            val line = (if (fit.showViews) countPlaced else plain) + endPlaced
+            placeRow(available, line, line.size - endPlaced.size, gap, FooterFit.BUTTON.dp.roundToPx())
+        } else {
+            placeFlow(available, plain + endPlaced)
+        }
+    }
+}
+
+/** [items] on one line [available] wide and [height] high, centred on it: the first [counts] spread, the rest at the end. */
+private fun MeasureScope.placeRow(available: Int, items: List<Placeable>, counts: Int, gap: Int, height: Int): MeasureResult {
+    val starts = FooterPlacement.row(available, items.take(counts).map { it.width }, items.drop(counts).map { it.width }, gap)
+    return layout(available, height) {
+        items.forEachIndexed { index, item -> item.placeRelative(starts[index], (height - item.height) / 2) }
+    }
+}
+
+/** [items] wrapped onto lines [available] wide, each spaced evenly and as high as its tallest. */
+private fun MeasureScope.placeFlow(available: Int, items: List<Placeable>): MeasureResult {
+    val lines = FooterPlacement.flow(available, items.map { it.width })
+    val heights = lines.map { line -> line.maxOf { (index, _) -> items[index].height } }
+    return layout(available, heights.sum()) {
+        var top = 0
+        lines.forEachIndexed { at, line ->
+            line.forEach { (index, x) -> items[index].placeRelative(x, top) }
+            top += heights[at]
+        }
     }
 }
 

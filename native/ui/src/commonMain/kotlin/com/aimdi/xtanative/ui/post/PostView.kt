@@ -9,6 +9,7 @@ import com.aimdi.xtanative.services.ai.XTranslator
 import com.aimdi.xtanative.services.links.LinkPreviewLayout
 import com.aimdi.xtanative.services.links.LinkPreviews
 import com.aimdi.xtanative.services.links.XLinks
+import kotlin.math.roundToInt
 
 /** A line above a card's author, as XTA's tweet.dart draws them, in its order. */
 sealed interface ContextLine {
@@ -161,16 +162,14 @@ data class FooterCounts(val replies: Long?, val reposts: Long?, val likes: Long?
  * What a post's footer affords at the width it has, as XTA's
  * resolveFooterFit decides it (tweet_footer.dart): the views go first, for
  * they open nothing, then the counts' numbers; when not even the bare glyphs
- * fit, the buttons wrap onto a second line rather than shrink.
+ * fit, the buttons wrap onto a second line rather than shrink. It is decided
+ * from the counts as the footer's layout measured them, so no card measures
+ * text or composes twice to know its width; all widths here are pixels.
  */
 data class FooterFit(val showCounts: Boolean, val showViews: Boolean, val wraps: Boolean) {
     companion object {
-        /** Around a count's glyph and number, as the app's counts draw them (NetworkCount). */
+        /** Around the views' glyph and number, as the counts that are buttons pad theirs. */
         const val PADDING = 4f
-        const val GLYPH = 17f
-
-        /** Between a count's glyph and its number. */
-        const val GAP = 4f
 
         /** The bookmark's and the share button's side. */
         const val BUTTON = 40f
@@ -178,20 +177,63 @@ data class FooterFit(val showCounts: Boolean, val showViews: Boolean, val wraps:
         /** Between the counts and the bookmark and share at the end. */
         const val GROUP_GAP = 8f
 
-        /** How wide a count is with a number [label] wide (0 for none). */
-        fun countWidth(label: Float): Float = PADDING * 2 + GLYPH + if (label > 0f) GAP + label else 0f
+        /** A footer on one line: the [counts], the [gap], then the bookmark and share, [end] wide together. */
+        fun rowWidth(counts: List<Int>, end: Int, gap: Int): Int = counts.sum() + gap + end
 
         /**
-         * The fit in [available] width of counts whose numbers are [labels]
-         * wide and a view count [views] wide (null for none), all in dp.
+         * The fit in [available] of counts drawn with their numbers, [counts]
+         * wide, and the views [views] wide (null for none). Not showing the
+         * counts means their numbers must go; whether the bare glyphs then
+         * wrap is [bare]'s to say, once they are drawn so.
          */
-        fun of(available: Float, labels: List<Float>, views: Float?): FooterFit {
-            if (views != null && width(labels + views) <= available) return FooterFit(showCounts = true, showViews = true, wraps = false)
-            if (width(labels) <= available) return FooterFit(showCounts = true, showViews = false, wraps = false)
-            return FooterFit(showCounts = false, showViews = false, wraps = width(labels.map { 0f }) > available)
+        fun withNumbers(available: Int, counts: List<Int>, views: Int?, end: Int, gap: Int): FooterFit = when {
+            views != null && rowWidth(counts + views, end, gap) <= available -> FooterFit(showCounts = true, showViews = true, wraps = false)
+            rowWidth(counts, end, gap) <= available -> FooterFit(showCounts = true, showViews = false, wraps = false)
+            else -> FooterFit(showCounts = false, showViews = false, wraps = false)
         }
 
-        private fun width(labels: List<Float>): Float = labels.sumOf { countWidth(it).toDouble() }.toFloat() + 2 * BUTTON + GROUP_GAP
+        /** The fit in [available] of counts drawn without numbers, [counts] wide: on one line, or wrapped. */
+        fun bare(available: Int, counts: List<Int>, end: Int, gap: Int): FooterFit =
+            FooterFit(showCounts = false, showViews = false, wraps = rowWidth(counts, end, gap) > available)
+    }
+}
+
+/** Where a footer's items go, in pixels from its start, as its Row and FlowRow placed them. */
+object FooterPlacement {
+    /**
+     * The start of each of [counts] then each of [end] on one line
+     * [available] wide: the counts spread from the start across what the end
+     * buttons and the [gap] leave, the first at the start and the last at
+     * that area's end; the end buttons at the end.
+     */
+    fun row(available: Int, counts: List<Int>, end: List<Int>, gap: Int): List<Int> {
+        val area = (available - gap - end.sum()).coerceAtLeast(counts.sum())
+        val between = if (counts.size > 1) (area - counts.sum()).toFloat() / (counts.size - 1) else 0f
+        val countStarts = counts.indices.map { index -> (counts.take(index).sum() + between * index).roundToInt() }
+        val endStarts = end.indices.map { index -> available - end.drop(index).sum() }
+        return countStarts + endStarts
+    }
+
+    /**
+     * [widths] wrapped onto lines [available] wide, each line as full as it
+     * goes and its items spaced evenly, as a FlowRow with SpaceEvenly lays
+     * them: per line, the indices it holds and their starts.
+     */
+    fun flow(available: Int, widths: List<Int>): List<List<Pair<Int, Int>>> {
+        val lines = ArrayList<List<Int>>()
+        var line = ArrayList<Int>()
+        widths.indices.forEach { index ->
+            if (line.isNotEmpty() && line.sumOf { widths[it] } + widths[index] > available) {
+                lines += line
+                line = ArrayList()
+            }
+            line += index
+        }
+        if (line.isNotEmpty()) lines += line
+        return lines.map { indices ->
+            val space = (available - indices.sumOf { widths[it] }).coerceAtLeast(0).toFloat() / (indices.size + 1)
+            indices.mapIndexed { at, index -> index to (space * (at + 1) + indices.take(at).sumOf { widths[it] }).roundToInt() }
+        }
     }
 }
 
