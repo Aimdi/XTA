@@ -22,8 +22,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -34,7 +32,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -58,14 +55,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -82,6 +76,7 @@ import com.aimdi.xtanative.store.saved.SavedTabs
 import com.aimdi.xtanative.ui.common.ActionsInTopBar
 import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.SearchField
 import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.onSecondaryClick
@@ -129,6 +124,7 @@ import com.aimdi.xtanative.ui.home.FindsWithKeys
 import com.aimdi.xtanative.ui.home.SelectsWithKeys
 import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.post.PostActions
+import com.aimdi.xtanative.ui.theme.edgeColor
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -400,37 +396,19 @@ private fun SelectionBar(count: Int, allSelected: Boolean, onClose: () -> Unit, 
 @Composable
 private fun SearchRow(query: String, onQuery: (String) -> Unit, menu: SavedFilterMenu, sort: SavedSort, mediaOnly: Boolean, onFilter: (SavedFilterAction) -> Unit) {
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
-            .heightIn(min = 44.dp)
-            .clip(RoundedCornerShape(50))
-            .background(MaterialTheme.colorScheme.surfaceContainer)
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(50)),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Spacer(Modifier.width(14.dp))
-        Icon(Icons.Filled.Search, contentDescription = null, tint = muted, modifier = Modifier.size(18.dp))
-        Spacer(Modifier.width(10.dp))
-        Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
-            if (query.isEmpty()) Text(stringResource(Res.string.saved_search_hint), color = muted, fontSize = 15.sp, maxLines = 1)
-            BasicTextField(
-                value = query,
-                onValueChange = onQuery,
-                singleLine = true,
-                textStyle = TextStyle(fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface),
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                modifier = Modifier.fillMaxWidth().foundWithKeys(),
-            )
-        }
-        if (query.isNotEmpty()) {
-            IconTip(stringResource(Res.string.saved_clear_search)) { IconButton(onClick = { onQuery("") }) { Icon(Icons.Filled.Close, stringResource(Res.string.saved_clear_search), tint = muted, modifier = Modifier.size(18.dp)) } }
-        }
-        VerticalDivider(Modifier.height(20.dp), color = MaterialTheme.colorScheme.outlineVariant)
-        FilterButton(menu, sort, mediaOnly, onFilter)
-    }
+    SearchField(
+        value = query,
+        onValueChange = onQuery,
+        placeholder = stringResource(Res.string.saved_search_hint),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp).foundWithKeys(),
+        trailing = {
+            if (query.isNotEmpty()) {
+                IconTip(stringResource(Res.string.saved_clear_search)) { IconButton(onClick = { onQuery("") }) { Icon(Icons.Filled.Close, stringResource(Res.string.saved_clear_search), tint = muted, modifier = Modifier.size(18.dp)) } }
+            }
+            VerticalDivider(Modifier.height(20.dp), color = edgeColor())
+            FilterButton(menu, sort, mediaOnly, onFilter)
+        },
+    )
 }
 
 /** Newest or oldest saved first, Media only, and Select; off where the tab has none of them. */
@@ -529,7 +507,7 @@ private fun TabChip(label: String, selected: Boolean, trailing: ImageVector?, on
         Modifier
             .heightIn(min = 32.dp)
             .clip(shape)
-            .border(1.dp, if (selected) accent else MaterialTheme.colorScheme.outlineVariant, shape)
+            .border(1.dp, if (selected) accent else edgeColor(), shape)
             // A right-click opens what a long press does, as a desktop opens a thing's menu.
             .then(onLongClick?.let { Modifier.onSecondaryClick(it) } ?: Modifier)
             .combinedClickable(role = Role.Tab, onClick = onClick, onLongClick = onLongClick)
@@ -562,7 +540,7 @@ private fun SourcePicker(selected: SavedSource, onPick: (SavedSource) -> Unit) {
         Row(
             Modifier
                 .clip(shape)
-                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape)
+                .border(1.dp, edgeColor(), shape)
                 .clickable(role = Role.DropdownList, onClickLabel = stringResource(Res.string.saved_networks)) { open = true }
                 .padding(horizontal = 10.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,

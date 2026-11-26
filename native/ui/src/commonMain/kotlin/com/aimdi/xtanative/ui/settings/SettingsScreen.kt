@@ -21,12 +21,10 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,6 +48,8 @@ import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.ThemePrefs
 import com.aimdi.xtanative.ui.common.ColumnScrollbar
+import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.SearchField
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -110,16 +110,15 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: (
         Box(Modifier.fillMaxSize().padding(padding)) {
         ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd))
         Column(Modifier.verticalScrollByKeys(scroll).padding(bottom = 24.dp)) {
-            OutlinedTextField(
+            SearchField(
                 value = query,
                 onValueChange = { query = it },
-                placeholder = { Text(stringResource(Res.string.settings_search)) },
-                leadingIcon = { Icon(Icons.Outlined.Search, null) },
-                trailingIcon = {
-                    if (query.isNotEmpty()) IconButton(onClick = { query = "" }) { Icon(Icons.Outlined.Close, null) }
+                placeholder = stringResource(Res.string.settings_search),
+                trailing = {
+                    if (query.isNotEmpty()) {
+                        IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = { query = "" }) { Icon(Icons.Outlined.Close, stringResource(Res.string.discover_clear)) } }
+                    }
                 },
-                singleLine = true,
-                shape = MaterialTheme.shapes.extraLarge,
                 modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp).foundWithKeys(),
             )
             if (query.isBlank()) {

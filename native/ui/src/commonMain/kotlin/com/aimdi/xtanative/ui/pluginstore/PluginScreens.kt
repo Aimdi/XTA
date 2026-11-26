@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
@@ -20,8 +18,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -39,7 +35,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.data.LocalGraph
@@ -47,8 +42,7 @@ import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.data.plugins.RunningPlugin
 import com.aimdi.xtanative.store.search.RecentSearches
 import com.aimdi.xtanative.ui.common.IconTip
-import com.aimdi.xtanative.ui.common.SearchPillShape
-import com.aimdi.xtanative.ui.common.searchPillColors
+import com.aimdi.xtanative.ui.common.SearchField
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.plugin_not_running
@@ -263,16 +257,11 @@ private fun SearchBar(
     TopAppBar(
         navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
         title = {
-            TextField(
+            SearchField(
                 value = text,
                 onValueChange = onText,
-                singleLine = true,
-                placeholder = { Text(search?.let { runCatching { it.hint(language) }.getOrNull() } ?: stringResource(Res.string.search)) },
-                leadingIcon = { Icon(Icons.Filled.Search, null) },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(onSearch = { onSend() }),
-                shape = SearchPillShape,
-                colors = searchPillColors(),
+                placeholder = search?.let { runCatching { it.hint(language) }.getOrNull() } ?: stringResource(Res.string.search),
+                onSearch = onSend,
                 modifier = Modifier.fillMaxWidth().padding(end = 12.dp).focusRequester(focus).foundWithKeys().then(field),
             )
         },

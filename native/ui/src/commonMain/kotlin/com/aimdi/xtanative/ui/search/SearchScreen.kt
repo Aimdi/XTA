@@ -20,9 +20,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -40,8 +37,6 @@ import androidx.compose.material3.ScrollableTabRow
 import com.aimdi.xtanative.ui.common.XtaTab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -57,10 +52,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -73,6 +66,7 @@ import com.aimdi.xtanative.core.x.search.XAdvancedSearch
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.SearchField
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.community.CommunityRow
@@ -153,7 +147,7 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
         close = vm::closeAdvanced,
     )
     val searchField = @Composable { modifier: Modifier ->
-        SearchField(
+        XSearchField(
             value = field,
             onValueChange = {
                 field = it
@@ -263,7 +257,7 @@ private fun SearchHeader(
 }
 
 @Composable
-private fun SearchField(
+private fun XSearchField(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
     filters: Int,
@@ -272,43 +266,19 @@ private fun SearchField(
     onAdvanced: () -> Unit,
     modifier: Modifier,
 ) {
-    TextField(
+    SearchField(
         value = value,
         onValueChange = onValueChange,
-        singleLine = true,
-        placeholder = { Text(stringResource(Res.string.discover_search)) },
-        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-        trailingIcon = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (value.text.isNotEmpty()) {
-                    IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = onClear) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } }
-                }
-                AdvancedButton(filters, onAdvanced)
+        placeholder = stringResource(Res.string.discover_search),
+        onSearch = onSearch,
+        trailing = {
+            if (value.text.isNotEmpty()) {
+                IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = onClear) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } }
             }
+            AdvancedButton(filters, onAdvanced)
         },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = { onSearch() }),
-        // The words as typed, not in the bar's bold title style it sits in when wide.
-        textStyle = MaterialTheme.typography.bodyLarge,
-        shape = RoundedCornerShape(24.dp),
-        colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedContainerColor = fieldFill(),
-            unfocusedContainerColor = fieldFill(),
-        ),
         modifier = modifier,
     )
-}
-
-/**
- * The field's fill: a raised surface, or, where that is the page's own colour
- * (Light, whose cards are white), the grey of X's own search field there.
- */
-@Composable
-private fun fieldFill(): Color {
-    val colors = MaterialTheme.colorScheme
-    return if (colors.surfaceContainerHigh == colors.background) colors.surfaceVariant else colors.surfaceContainerHigh
 }
 
 /** The advanced search, with how many filters are set on it. */
