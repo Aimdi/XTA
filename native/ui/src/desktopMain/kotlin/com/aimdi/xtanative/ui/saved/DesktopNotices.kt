@@ -48,7 +48,12 @@ class DesktopNotifications(
     private val bus: ExecutorService = Executors.newSingleThreadExecutor { task -> Thread(task, "xta-native-notify").apply { isDaemon = true } }
     private var connection: DBusConnection? = null
     private var tried = false
-    private val sent = Collections.synchronizedSet(mutableSetOf<Long>())
+
+    /** Whether the desktop reads bodies as markup ("body-markup"), so a body is escaped. */
+    private var markup = false
+
+    /** This app's notifications still on the desktop, oldest first; gone when closed or clicked. */
+    private val sent = Collections.synchronizedSet(LinkedHashSet<Long>())
 
     /**
      * Shows [body] under [summary], the app's name; with [folder] (a
@@ -61,14 +66,29 @@ class DesktopNotifications(
             bus.execute {
                 val id = connected()?.call(
                     NAME, PATH, NAME, "Notify", "susssasa{sv}i",
-                    listOf(summary, 0L, ICON, summary, body, actionsFor(folder, folderLabel), mapOf("desktop-entry" to Variant("s", ICON)), EXPIRE_DEFAULT),
+                    listOf(summary, 0L, ICON, summary, bodyFor(body, markup), actionsFor(folder, folderLabel), mapOf("desktop-entry" to Variant("s", ICON)), EXPIRE_DEFAULT),
                 )?.body?.firstOrNull() as? Long
-                id?.let(sent::add)
-                if (id != null && folder != null) folders[id] = folder
+                id?.let { kept(it, folder) }
                 shown(id)
             }
         }
     }
+
+    private fun kept(id: Long, folder: String?) {
+        synchronized(sent) {
+            sent.add(id)
+            if (sent.size > MAX_KEPT) sent.first().let { oldest -> sent.remove(oldest); folders.remove(oldest) }
+        }
+        if (folder != null) folders[id] = folder
+    }
+
+    private fun forget(id: Long) {
+        sent.remove(id)
+        folders.remove(id)
+    }
+
+    /** How many notifications are remembered (tests). */
+    internal val remembered: Int get() = sent.size + folders.size
 
     /** Waits (a few seconds at most) for the bus's work asked so far; for tests. */
     fun settle() {
@@ -82,18 +102,29 @@ class DesktopNotifications(
         return connect()?.also { bus ->
             bus.onSignal = ::signalled
             bus.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "AddMatch", "s", listOf(MATCH))
+            markup = (bus.call(NAME, PATH, NAME, "GetCapabilities")?.body?.firstOrNull() as? List<*>)?.contains(BODY_MARKUP) == true
             connection = bus
         }
     }
 
-    /** One of this app's notifications clicked: the window comes forward; its "Show in folder", the file manager on the download. */
+    /**
+     * One of this app's notifications clicked: the window comes forward; its
+     * "Show in folder", the file manager on the download. Clicked or closed,
+     * it is forgotten.
+     */
     private fun signalled(signal: DBusMessage) {
-        if (signal.member != "ActionInvoked") return
         val id = signal.body.firstOrNull() as? Long ?: return
         if (id !in sent) return
-        when (signal.body.getOrNull(1)) {
-            DEFAULT -> onActivate?.let(onMain)
-            SHOW_IN_FOLDER -> folders[id]?.let { saved -> onShowInFolder?.let { show -> onMain { show(saved) } } }
+        when (signal.member) {
+            "NotificationClosed" -> forget(id)
+            "ActionInvoked" -> {
+                val folder = folders[id]
+                forget(id)
+                when (signal.body.getOrNull(1)) {
+                    DEFAULT -> onActivate?.let(onMain)
+                    SHOW_IN_FOLDER -> folder?.let { saved -> onShowInFolder?.let { show -> onMain { show(saved) } } }
+                }
+            }
         }
     }
 
@@ -104,10 +135,16 @@ class DesktopNotifications(
         private const val DEFAULT = "default"
         private const val SHOW_IN_FOLDER = "show-in-folder"
         private const val EXPIRE_DEFAULT = -1
-        private const val MATCH = "type='signal',interface='$NAME',member='ActionInvoked',path='$PATH'"
+        private const val MATCH = "type='signal',interface='$NAME',path='$PATH'"
+        private const val BODY_MARKUP = "body-markup"
+        private const val MAX_KEPT = 64
 
         /** The desktop's own, on its session bus. */
         val desktop: DesktopNotifications by lazy { DesktopNotifications(DBusConnection::session) }
+
+        /** [body] as Notify sends it: with `&`, `<` and `>` escaped where the desktop reads [markup], so a file named `<a> & b` shows as named. */
+        fun bodyFor(body: String, markup: Boolean): String =
+            if (!markup) body else body.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
         /** The Notify actions: clicking the notification, and "Show in folder" where there is a [folder]. */
         fun actionsFor(folder: String?, folderLabel: String): List<String> =

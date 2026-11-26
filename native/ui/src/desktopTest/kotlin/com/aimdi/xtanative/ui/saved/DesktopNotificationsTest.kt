@@ -43,6 +43,38 @@ class DesktopNotificationsTest {
         return null
     }
 
+    /** A notification server's answer: [capabilities] to GetCapabilities, [id] to Notify (kept in [calls]). */
+    private fun answer(server: DBusConnection, call: DBusMessage, calls: MutableCollection<DBusMessage>, id: Long, capabilities: List<String> = listOf("body", "actions")) {
+        if (call.member == "GetCapabilities") return server.reply(call, "as", listOf(capabilities))
+        calls.add(call)
+        server.reply(call, "u", listOf(id))
+    }
+
+    @Test
+    fun aBodyIsEscapedOnlyForADesktopThatReadsMarkup() {
+        assertEquals("Saved to Fotos &amp; Bilder/&lt;draft&gt;.jpg", DesktopNotifications.bodyFor("Saved to Fotos & Bilder/<draft>.jpg", markup = true))
+        assertEquals("Fotos & Bilder", DesktopNotifications.bodyFor("Fotos & Bilder", markup = false))
+        val (daemon, socket) = privateBus() ?: return println("no dbus-daemon: skipped")
+        try {
+            val server = assertNotNull(DBusConnection.connect(socket))
+            val calls = LinkedBlockingQueue<DBusMessage>()
+            server.onCall = { call -> answer(server, call, calls, 5L, listOf("body", "body-markup")) }
+            server.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "RequestName", "su", listOf(DesktopNotifications.NAME, 4L))
+            val notifications = DesktopNotifications({ DBusConnection.connect(socket) }, onMain = { it() })
+            notifications.notify("XTA Native", "Saved to <a> & b", folder = "file:///a.jpg", folderLabel = "Show in folder")
+            notifications.settle()
+            assertEquals("Saved to &lt;a&gt; &amp; b", assertNotNull(calls.poll(5, TimeUnit.SECONDS)).body[4])
+            assertEquals(2, notifications.remembered)
+            server.signal(DesktopNotifications.PATH, DesktopNotifications.NAME, "NotificationClosed", "uu", listOf(5L, 2L))
+            repeat(50) { if (notifications.remembered > 0) Thread.sleep(100) }
+            assertEquals(0, notifications.remembered, "a closed notification is forgotten")
+            server.close()
+        } finally {
+            daemon.destroy()
+            daemon.waitFor(5, TimeUnit.SECONDS)
+        }
+    }
+
     @Test
     fun aNotificationReachesTheDesktopAndItsClickTheWindow() {
         val (daemon, socket) = privateBus() ?: return println("no dbus-daemon: skipped")
@@ -50,10 +82,7 @@ class DesktopNotificationsTest {
             // A notification server of the test's own.
             val server = assertNotNull(DBusConnection.connect(socket))
             val calls = LinkedBlockingQueue<DBusMessage>()
-            server.onCall = { call ->
-                calls.add(call)
-                server.reply(call, "u", listOf(7L))
-            }
+            server.onCall = { call -> answer(server, call, calls, 7L) }
             server.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "RequestName", "su", listOf(DesktopNotifications.NAME, 4L))
             val raised = CountDownLatch(1)
             val notifications = DesktopNotifications({ DBusConnection.connect(socket) }, onMain = { it() })
@@ -67,6 +96,7 @@ class DesktopNotificationsTest {
             server.signal(DesktopNotifications.PATH, DesktopNotifications.NAME, "ActionInvoked", "us", listOf(8L, "default"))
             server.signal(DesktopNotifications.PATH, DesktopNotifications.NAME, "ActionInvoked", "us", listOf(7L, "default"))
             assertTrue(raised.await(5, TimeUnit.SECONDS), "a click on its own notification raises the window")
+            assertEquals(0, notifications.remembered, "a clicked notification is forgotten")
             server.close()
         } finally {
             daemon.destroy()
@@ -82,10 +112,7 @@ class DesktopNotificationsTest {
         try {
             val server = assertNotNull(DBusConnection.connect(socket))
             val calls = LinkedBlockingQueue<DBusMessage>()
-            server.onCall = { call ->
-                calls.add(call)
-                server.reply(call, "u", listOf(9L))
-            }
+            server.onCall = { call -> answer(server, call, calls, 9L) }
             server.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "RequestName", "su", listOf(DesktopNotifications.NAME, 4L))
             val shown = LinkedBlockingQueue<String>()
             val notifications = DesktopNotifications({ DBusConnection.connect(socket) }, onMain = { it() })
