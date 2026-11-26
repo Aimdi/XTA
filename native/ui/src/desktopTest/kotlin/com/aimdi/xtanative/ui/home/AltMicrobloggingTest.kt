@@ -56,6 +56,24 @@ class AltMicrobloggingTest {
     }
 
     @Test
+    fun thePreviewsLookChangesOnlyAtAFewPointsOfADrag() {
+        assertNull(TimelineSwipe.look(1, 3, distance = 0.5f), "not moved yet")
+        assertNull(TimelineSwipe.look(2, 3, distance = -30f), "past the last")
+        val early = TimelineSwipe.look(1, 3, distance = -10f)
+        assertEquals(TimelineSwipe.Look(target = 2, leftward = true, full = false), early)
+        assertEquals(early, TimelineSwipe.look(1, 3, distance = -40f), "same look while it fills in: nothing to compose again")
+        assertEquals(TimelineSwipe.Look(target = 2, leftward = true, full = true), TimelineSwipe.look(1, 3, distance = -200f))
+        assertEquals(TimelineSwipe.Look(target = 0, leftward = false, full = false), TimelineSwipe.look(1, 3, distance = 10f))
+        assertEquals(TimelineSwipe.Look(target = 2, leftward = false, full = false), TimelineSwipe.look(1, 3, distance = 10f, rtl = true))
+    }
+
+    @Test
+    fun thePreviewTakesAtMostItsShareOfTheTimeline() {
+        assertEquals(650 + 24, TimelineSwipe.previewWidth(1000, gutters = 24))
+        assertEquals(30, TimelineSwipe.previewWidth(30, gutters = 24), "never wider than the timeline")
+    }
+
+    @Test
     fun aDragThatTurnsBackOnItselfIsCalledOff() {
         assertEquals(0f, TimelineSwipe.direction(10f), "not clear yet")
         assertEquals(-1f, TimelineSwipe.direction(-30f))
