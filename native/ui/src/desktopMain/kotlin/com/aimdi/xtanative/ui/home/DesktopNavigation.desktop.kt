@@ -150,9 +150,9 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         DeskAction.PREVIOUS_PAGE -> actions.turn(-1)
         DeskAction.NEXT_PAGE -> actions.turn(1)
         // The frame holds the focus as a whole; Tab's own traversal does not go into it. Tab goes to the page beside
-        // the window's navigation, which stands first in the window; Shift+Tab, the way back, into the navigation.
+        // the window's navigation, which stands first in the window; Shift+Tab, the way back, to the page's last control.
         DeskAction.ENTER_PAGE ->
-            (tabbing[0] != TabStep.BACKWARD && actions.enterPage() == true) || focusManager.moveFocus(FocusDirection.Enter)
+            (if (tabbing[0] == TabStep.BACKWARD) actions.enterPageEnd() else actions.enterPage()) == true || focusManager.moveFocus(FocusDirection.Enter)
         DeskAction.LEAVE_APP -> {
             AppClosing.ask()
             true
@@ -405,7 +405,9 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                         tabbingOn[0] = true
                         scope.launch {
                             try {
-                                focusManager.moveFocus(if (step == TabStep.FORWARD) FocusDirection.Next else FocusDirection.Previous)
+                                // Back round beside the navigation: to the page's last control, as Previous from the frame finds nothing.
+                                val back = step != TabStep.FORWARD && actions.enterPageEnd() == true
+                                if (!back) focusManager.moveFocus(if (step == TabStep.FORWARD) FocusDirection.Next else FocusDirection.Previous)
                             } finally {
                                 tabbingOn[0] = false
                             }

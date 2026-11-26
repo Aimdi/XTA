@@ -42,6 +42,18 @@ class FrameRegionTest {
     }
 
     @Test
+    fun shiftTabOntoTheFrameGoesRoundToThePagesLastControl() {
+        val actions = DesktopActions()
+        assertNull(actions.enterPageEnd(), "no navigation beside the screens: as before")
+        var ended = 0
+        actions.setRegion(FrameRegion(enter = { true }, holds = { false }, page = { false }, pageEnd = { ended++; true }))
+        assertEquals(true, actions.enterPageEnd())
+        assertEquals(1, ended)
+        actions.setRegion(FrameRegion(enter = { true }, holds = { false }))
+        assertEquals(false, actions.enterPageEnd())
+    }
+
+    @Test
     fun tabFromTheFrameGoesToThePageNotIntoTheNavigation() {
         assertEquals(DeskAction.ENTER_PAGE, DesktopKeys.action(DeskKey.TAB, alt = false, ctrl = false, focusInside = false, canGoBack = true, somethingOpen = false))
         val actions = DesktopActions()

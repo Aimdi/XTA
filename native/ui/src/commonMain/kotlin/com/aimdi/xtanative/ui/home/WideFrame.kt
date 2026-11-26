@@ -203,12 +203,18 @@ class FrameFocus {
     val whole = FocusRequester()
     val page = FocusRequester()
 
+    /** The end of the screens' place ([PageEnd]), from where Shift+Tab steps back to the page's last control. */
+    val pageEnd = FocusRequester()
+
     /** The rail's menu button ([FramedRail]), where the keys go back as the menu it opened closes. */
     val menu = FocusRequester()
     var holds = false
 
     /** Whether the page's start ([PageStart]) takes the focus now: only on the way to the page's first control, never for Tab's own walk. */
     internal var entering = false
+
+    /** On the way back to the page's last control ([toPageEnd]): the page's start is then no stop either. */
+    internal var endward = false
 
     /** A step of the keyboard's focus from where it is ([PageStart] sets it). */
     internal var move: (FocusDirection) -> Boolean = { false }
@@ -234,7 +240,24 @@ class FrameFocus {
         }
     }
 
-    val region = FrameRegion(enter = ::enter, holds = { holds }, page = ::toPage)
+    /**
+     * The keys onto the page's last control: onto the page's end ([PageEnd]),
+     * then one step back. Where nothing in the page takes them, into the
+     * navigation, never left on the end, which shows nothing.
+     */
+    fun toPageEnd(): Boolean {
+        entering = true
+        endward = true
+        val moved = try {
+            pageEnd.enters() && move(FocusDirection.Previous)
+        } finally {
+            entering = false
+            endward = false
+        }
+        return moved || enter()
+    }
+
+    val region = FrameRegion(enter = ::enter, holds = { holds }, page = ::toPage, pageEnd = ::toPageEnd)
 }
 
 /** Whether the focus went into what this is on, false too where it is on nothing (not composed). */
@@ -262,7 +285,18 @@ fun Modifier.frameNavigation(focus: FrameFocus, covered: Boolean): Modifier =
 fun PageStart(focus: FrameFocus) {
     val manager = LocalFocusManager.current
     SideEffect { focus.move = manager::moveFocus }
-    Box(Modifier.size(1.dp).focusRequester(focus.page).focusProperties { canFocus = focus.entering }.focusable())
+    Box(Modifier.size(1.dp).focusRequester(focus.page).focusProperties { canFocus = focus.entering && !focus.endward }.focusable())
+}
+
+/**
+ * The end of the screens' place, put last in it: Shift+Tab from the
+ * navigation's first control comes here ([FrameFocus.toPageEnd]) and steps
+ * back at once to the page's last control. It takes no focus otherwise and
+ * shows nothing.
+ */
+@Composable
+fun PageEnd(focus: FrameFocus) {
+    Box(Modifier.size(1.dp).focusRequester(focus.pageEnd).focusProperties { canFocus = focus.entering }.focusable())
 }
 
 /**

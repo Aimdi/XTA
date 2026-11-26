@@ -144,6 +144,15 @@ class DesktopActions(
      */
     fun enterPage(): Boolean? = region?.page?.invoke()
 
+    /**
+     * Shift+Tab onto the window's frame (from the navigation's first control,
+     * Tab's order wrapping round): the keys onto the page's last control
+     * ([FrameRegion.pageEnd]), as Shift+Tab goes round, rather than onto the
+     * frame, which shows nothing; null where the window has no navigation
+     * beside its screens, false where nothing in the page took them.
+     */
+    fun enterPageEnd(): Boolean? = region?.pageEnd?.invoke()
+
     /** The states the screen shown closes on Back ([com.aimdi.xtanative.ui.common.BackHandling]), the last enabled on top. */
     private val backs = mutableListOf<Pair<Any, () -> Unit>>()
 
@@ -804,9 +813,11 @@ internal fun DesktopShortcuts(
  * or rail) as F6 reaches it: [enter] gives the focus to its row of where the
  * reader is, true if something in it took it; [holds] while something in it
  * has the focus; [page] gives it to the page's first control beside it (Tab
- * from the window's frame), true if something there took it.
+ * from the window's frame), true if something there took it; [pageEnd] to
+ * the page's last control (Shift+Tab from the navigation's first, wrapping
+ * round to the window's frame), true if something there took it.
  */
-class FrameRegion(val enter: () -> Boolean, val holds: () -> Boolean, val page: () -> Boolean = { false })
+class FrameRegion(val enter: () -> Boolean, val holds: () -> Boolean, val page: () -> Boolean = { false }, val pageEnd: () -> Boolean = { false })
 
 /** [region] is the window's navigation for F6 while this is composed ([DesktopActions.otherRegion]). Nothing off the desktop. */
 @Composable

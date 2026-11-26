@@ -80,6 +80,7 @@ import com.aimdi.xtanative.ui.home.HomeWide
 import com.aimdi.xtanative.ui.home.FrameRoots
 import com.aimdi.xtanative.ui.home.LocalFrameRoots
 import com.aimdi.xtanative.ui.home.LocalWideFrame
+import com.aimdi.xtanative.ui.home.PageEnd
 import com.aimdi.xtanative.ui.home.PageStart
 import com.aimdi.xtanative.ui.home.RailMenu
 import com.aimdi.xtanative.ui.home.ReachedByF6
@@ -918,6 +919,7 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Com
                     shown.filterTo(HashSet<Any>()) { it.id in ids }
                 }
                 CompositionLocalProvider(LocalWideFrame provides frame.takeIf { kind != FrameKind.NONE }, LocalFrameRoots provides roots, content = content)
+                PageEnd(focus)
             }
         }
         if (home != null) {
