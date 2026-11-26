@@ -91,3 +91,11 @@ fun xSwitchColors(): SwitchColors {
         uncheckedBorderColor = Color(look.outline),
     )
 }
+
+/** The hairline round a card, a quoted post, a chip or a field ([XLookScheme.edge]): seen on the page and on a lit row. */
+@Composable
+fun edgeColor(): Color = Color(LocalXLook.current.edge)
+
+/** A search field's fill ([XLookScheme.field]): apart from the page in every theme. */
+@Composable
+fun fieldColor(): Color = Color(LocalXLook.current.field)

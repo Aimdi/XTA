@@ -43,6 +43,7 @@ import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.onSecondaryClickIf
 import com.aimdi.xtanative.ui.post.dragsLink
+import com.aimdi.xtanative.ui.theme.edgeColor
 
 private val CardShape = RoundedCornerShape(16.dp)
 private val TileSize = 56.dp
@@ -73,7 +74,7 @@ fun LinkPreviewCard(
         modifier
             .fillMaxWidth()
             .clip(CardShape)
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CardShape)
+            .border(1.dp, edgeColor(), CardShape)
             // Dragged with the mouse, the card drags its link out, as a browser's link does.
             .dragsLink(url)
             .onSecondaryClickIf(onLongPress)

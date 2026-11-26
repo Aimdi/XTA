@@ -64,6 +64,20 @@ data class XLookScheme(
     val onAccentFill: Long,
     /** [XLookTokens.outline], kept at 3:1 on the page and on what floats. */
     val outline: Long,
+    /**
+     * The fill of a search field or another inset control: apart from the
+     * page in every theme, where Light's cards are the page's own white and
+     * a field on them vanished.
+     */
+    val field: Long,
+    /**
+     * The hairline round a card, a quoted post, a chip or a field: X's
+     * [XLookTokens.border], darkened where it does not reach [XLook.EDGE] on
+     * the page or [XLook.EDGE_WASHED] on a row the pointer or the keyboard
+     * lights. Light's own border was 1.1:1 on white and vanished under a
+     * hovered post. Dividers keep [XLookTokens.divider].
+     */
+    val edge: Long,
     /** An on switch's knob on [primary]: white as X draws it, black where white would not stand out. */
     val onSwitch: Long,
     /** A loading placeholder's block at the darkest of its pulse ([boneHighlight] the other end): seen on the page in every theme. */
@@ -79,6 +93,18 @@ object XLook {
 
     /** WCAG's least contrast for a control's edge or a knob: 3:1. */
     const val NON_TEXT = 3.0
+
+    /** The least contrast of a card's or a field's hairline on the page: X's own light border (#CFD9DE) is about 1.44:1. */
+    const val EDGE = 1.4
+
+    /** ... and on a row washed for the pointer or the keyboard, so a quoted post's frame stays under a hovered post. */
+    const val EDGE_WASHED = 1.25
+
+    /** The strongest wash a row is lit with but a press ([com.aimdi.xtanative.ui.common.BehindWash.FOCUS]). */
+    private const val WASH = 0.10
+
+    /** How much of the text colour a search field's fill takes over the page. */
+    private const val FIELD = 0.08
 
     /**
      * How much of the text colour a loading placeholder's blocks take, at
@@ -155,6 +181,8 @@ object XLook {
         val readableAccent = Contrast.ensure(Contrast.ensure(tokens.accent, tokens.background), floating)
         val error = Contrast.ensure(Contrast.ensure(ERROR_RED, tokens.background), floating)
         val errorContainer = Contrast.alphaBlend(Contrast.withAlpha(error, 0.14), tokens.background)
+        val field = Contrast.alphaBlend(Contrast.withAlpha(tokens.onBackground, FIELD), tokens.background)
+        val washed = Contrast.alphaBlend(Contrast.withAlpha(tokens.onBackground, WASH), tokens.background)
         return XLookScheme(
             tokens = tokens,
             isLight = Contrast.luminance(tokens.background) > 0.5,
@@ -165,7 +193,8 @@ object XLook {
             errorContainer = errorContainer,
             onErrorContainer = Contrast.ensure(error, errorContainer),
             surfaceContainer = if (lightsOut) inset else tokens.card,
-            surfaceContainerHigh = if (lightsOut) inset else tokens.card,
+            // A raised control's fill: the field's where cards are the page (Light, Lights out), so it reads on it.
+            surfaceContainerHigh = if (tokens.card == tokens.background) field else tokens.card,
             surfaceContainerHighest = if (lightsOut) floating else tokens.border,
             primaryContainer = Contrast.alphaBlend(Contrast.withAlpha(tokens.accent, 0.14), tokens.card),
             secondaryContainer = Contrast.alphaBlend(Contrast.withAlpha(tokens.onBackground, 0.08), tokens.background),
@@ -174,6 +203,8 @@ object XLook {
             accentFill = tokens.accent,
             onAccentFill = Contrast.foreground(tokens.accent),
             outline = Contrast.ensure(Contrast.ensure(tokens.outline, tokens.background, NON_TEXT), floating, NON_TEXT),
+            field = field,
+            edge = Contrast.ensure(Contrast.ensure(tokens.border, tokens.background, EDGE), washed, EDGE_WASHED),
             onSwitch = if (Contrast.ratio(WHITE, readableAccent) >= NON_TEXT) WHITE else BLACK,
             bone = Contrast.alphaBlend(Contrast.withAlpha(tokens.onBackground, BONE), tokens.background),
             boneHighlight = Contrast.alphaBlend(Contrast.withAlpha(tokens.onBackground, BONE_HIGHLIGHT), tokens.background),

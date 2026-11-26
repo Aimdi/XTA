@@ -52,6 +52,7 @@ import com.aimdi.xtanative.ui.common.foundIn
 import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.post.MediaGrid
 import com.aimdi.xtanative.ui.post.PostActions
+import com.aimdi.xtanative.ui.theme.edgeColor
 
 private val CardShape = RoundedCornerShape(12.dp)
 
@@ -63,7 +64,7 @@ fun ArticlePreviewCard(post: XPost, onClick: () -> Unit, modifier: Modifier = Mo
         modifier
             .fillMaxWidth()
             .clip(CardShape)
-            .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, CardShape)
+            .border(Dp.Hairline, edgeColor(), CardShape)
             .clickable(onClick = onClick),
     ) {
         article.coverUrl?.let { Cover(it) }

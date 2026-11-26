@@ -102,6 +102,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_threshold_off
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.subscriptions.PostCapDialog
 import com.aimdi.xtanative.ui.subscriptions.SubscriptionList
+import com.aimdi.xtanative.ui.theme.edgeColor
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -220,7 +221,7 @@ private fun ChoicePill(label: String, selected: Boolean, onClick: () -> Unit) {
         Modifier
             .heightIn(min = 48.dp)
             .clip(shape)
-            .border(1.dp, if (selected) accent else MaterialTheme.colorScheme.outlineVariant, shape)
+            .border(1.dp, if (selected) accent else edgeColor(), shape)
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,

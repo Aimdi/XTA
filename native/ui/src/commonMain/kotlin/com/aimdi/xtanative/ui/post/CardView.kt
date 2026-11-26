@@ -68,6 +68,7 @@ import com.aimdi.xtanative.ui.media.MediaGallery
 import com.aimdi.xtanative.ui.media.MediaIcons
 import com.aimdi.xtanative.ui.media.ViewerMedia
 import com.aimdi.xtanative.ui.media.rememberPhotoSize
+import com.aimdi.xtanative.ui.theme.edgeColor
 import java.time.Instant
 import java.util.Locale
 import org.jetbrains.compose.resources.PluralStringResource
@@ -145,7 +146,7 @@ private fun LargeLinkCard(card: XCard.Link, onOpen: () -> Unit, modifier: Modifi
             Modifier
                 .fillMaxWidth()
                 .clip(CardShape)
-                .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, CardShape)
+                .border(Dp.Hairline, edgeColor(), CardShape)
                 .clickable(interactionSource = null, indication = rememberPictureIndication(), onClick = onOpen),
         ) {
             AsyncImage(

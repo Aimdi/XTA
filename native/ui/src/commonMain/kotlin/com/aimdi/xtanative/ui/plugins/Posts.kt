@@ -85,6 +85,7 @@ import com.aimdi.xtanative.ui.post.AuthorLine
 import com.aimdi.xtanative.ui.post.CardView
 import com.aimdi.xtanative.ui.post.linkStyles
 import com.aimdi.xtanative.ui.saved.KeepableSaveButton
+import com.aimdi.xtanative.ui.theme.edgeColor
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -374,7 +375,7 @@ private fun QuotedNetworkPost(post: NetworkPost, actions: NetworkPostActions, mo
         modifier
             .fillMaxWidth()
             .clip(shape)
-            .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, shape)
+            .border(Dp.Hairline, edgeColor(), shape)
             .clickable { actions.open(post) }
             .padding(12.dp),
     ) {

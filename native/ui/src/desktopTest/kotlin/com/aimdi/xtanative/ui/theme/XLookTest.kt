@@ -134,4 +134,35 @@ class XLookTest {
             assertTrue(Contrast.ratio(scheme.bone, tokens.background) > Contrast.ratio(scheme.boneHighlight, tokens.background), "the pulse moves")
         }
     }
+
+    @Test
+    fun aCardsAndAFieldsHairlineReadsOnThePageAndUnderALitRow() {
+        for (background in ThemeBackground.entries) for (accent in ThemeAccent.entries) for (dark in listOf(false, true)) {
+            val scheme = XLook.scheme(XLook.tokens(settings(background, accent), systemDark = dark))
+            val page = scheme.tokens.background
+            val lit = Contrast.alphaBlend(Contrast.withAlpha(scheme.tokens.onBackground, 0.10), page)
+            val where = "$background $accent dark=$dark"
+            assertTrue(Contrast.ratio(scheme.edge, page) >= XLook.EDGE, "edge on the page, $where")
+            assertTrue(Contrast.ratio(scheme.edge, lit) >= XLook.EDGE_WASHED, "edge under a hovered post, $where")
+        }
+        // Light's own border (#EFF3F4) was 1.1:1 on white.
+        assertNotEquals(XLookTokens.LIGHT.border, XLook.scheme(XLookTokens.LIGHT).edge)
+    }
+
+    @Test
+    fun aSearchFieldsFillAndARaisedControlStandApartFromThePageInEveryTheme() {
+        for (tokens in listOf(XLookTokens.LIGHT, XLookTokens.DIM, XLookTokens.LIGHTS_OUT)) {
+            val scheme = XLook.scheme(tokens)
+            assertTrue(Contrast.ratio(scheme.field, tokens.background) >= 1.1, "field on ${tokens.background}")
+            val colors = colorSchemeOf(scheme)
+            assertNotEquals(colors.background, colors.surfaceContainerHigh, "raised control on ${tokens.background}")
+        }
+    }
+
+    @Test
+    fun theEdgeIsNotTheDividerOnLight() {
+        // Dividers keep X's faint line; only what frames a card or a control is darker.
+        val colors = colorSchemeOf(XLook.scheme(XLookTokens.LIGHT))
+        assertEquals(Color(XLookTokens.LIGHT.divider), colors.outlineVariant)
+    }
 }

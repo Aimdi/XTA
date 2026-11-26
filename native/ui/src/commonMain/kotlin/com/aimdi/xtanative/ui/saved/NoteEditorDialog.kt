@@ -105,6 +105,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_note_replying_to
 import com.aimdi.xtanative.ui.generated.resources.saved_note_save_error
 import com.aimdi.xtanative.ui.generated.resources.saved_notice_notes
 import com.aimdi.xtanative.ui.generated.resources.saved_save
+import com.aimdi.xtanative.ui.theme.edgeColor
 import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -225,7 +226,7 @@ fun NoteEditorDialog(
             shape = shape,
             color = MaterialTheme.colorScheme.background,
             // A card has an edge, as the rail's menu has, or on Lights out's black it is lost in the dimmed page.
-            border = if (card) BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant) else null,
+            border = if (card) BorderStroke(1.dp, edgeColor()) else null,
         ) {
             Box(Modifier.fillMaxSize().then(if (card) Modifier else Modifier.systemBarsPadding().imePadding()), contentAlignment = Alignment.TopCenter) {
                 Column(Modifier.widthIn(max = 720.dp).fillMaxSize()) {
@@ -397,7 +398,7 @@ private fun EditorFoot(body: String, attach: (() -> Unit)?, attaching: Boolean, 
 @Composable
 private fun ReplyParent(parent: LocalPost) {
     val shape = RoundedCornerShape(16.dp)
-    Column(Modifier.fillMaxWidth().padding(bottom = 12.dp).border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape).padding(12.dp)) {
+    Column(Modifier.fillMaxWidth().padding(bottom = 12.dp).border(1.dp, edgeColor(), shape).padding(12.dp)) {
         Text(stringResource(Res.string.saved_note_replying_to), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.size(4.dp))
         Text(parent.body.ifEmpty { stringResource(Res.string.saved_note_attach) }, maxLines = 4, overflow = TextOverflow.Ellipsis)
@@ -429,7 +430,7 @@ private fun MediaStrip(postId: String, media: List<NoteMedia>, enabled: Boolean,
 private fun QuotedPreview(content: SavedContent) {
     val post = content.xPost ?: return
     val shape = RoundedCornerShape(16.dp)
-    Column(Modifier.fillMaxWidth().padding(top = 12.dp).clip(shape).border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape).padding(12.dp)) {
+    Column(Modifier.fillMaxWidth().padding(top = 12.dp).clip(shape).border(1.dp, edgeColor(), shape).padding(12.dp)) {
         TipText(post.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Text("@" + post.author.screenName, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(post.text, maxLines = 6, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 4.dp))

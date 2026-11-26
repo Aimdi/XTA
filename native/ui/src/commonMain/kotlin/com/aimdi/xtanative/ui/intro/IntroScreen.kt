@@ -66,6 +66,7 @@ import com.aimdi.xtanative.ui.settings.BackgroundPicker
 import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import com.aimdi.xtanative.ui.settings.networkName
 import com.aimdi.xtanative.ui.settings.pluginIds
+import com.aimdi.xtanative.ui.theme.edgeColor
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -281,7 +282,7 @@ private fun Tile(
     val colors = MaterialTheme.colorScheme
     Box(
         Modifier.size(width = 100.dp, height = 72.dp).clip(shape)
-            .border(1.dp, if (selected && !fixed) colors.primary else colors.outlineVariant, shape)
+            .border(1.dp, if (selected && !fixed) colors.primary else edgeColor(), shape)
             .clickable(enabled = !fixed && !busy, onClick = onClick)
             .padding(6.dp),
         contentAlignment = Alignment.Center,

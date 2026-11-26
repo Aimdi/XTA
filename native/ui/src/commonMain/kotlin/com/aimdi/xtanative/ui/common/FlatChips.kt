@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.theme.edgeColor
 
 /**
  * A filter chip's colours on the app's flat pages: no fill either way, its
@@ -28,12 +29,12 @@ internal fun flatChipColors(): SelectableChipColors {
     )
 }
 
-/** Its outline: a hairline of the divider's colour, of the accent while it is [selected]. */
+/** Its outline: a hairline that reads on the page ([edgeColor]), of the accent while it is [selected]. */
 @Composable
 internal fun flatChipBorder(selected: Boolean, enabled: Boolean = true): BorderStroke = FilterChipDefaults.filterChipBorder(
     enabled = enabled,
     selected = selected,
-    borderColor = MaterialTheme.colorScheme.outlineVariant,
+    borderColor = edgeColor(),
     selectedBorderColor = MaterialTheme.colorScheme.primary,
     borderWidth = 1.dp,
     selectedBorderWidth = 1.dp,
