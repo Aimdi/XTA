@@ -22,6 +22,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -154,6 +155,7 @@ import com.aimdi.xtanative.ui.subscriptions.UngroupedSorterScreen
 import com.aimdi.xtanative.ui.trends.TrendsActions
 import com.aimdi.xtanative.ui.trends.TrendsScreen
 import java.net.URLEncoder
+import kotlinx.coroutines.flow.first
 
 internal object Routes {
     const val ROOT = "root"
@@ -446,7 +448,13 @@ fun XtaNativeRoot() {
             pluginLater = plugins::openLater,
         )
     }
-    BindLinkScreens(linkScreens)
+    // What is handed in from outside (`xta-native <url>` at a fresh start, a shared link) waits for the navigation's
+    // graph and first screen: the screens' host is composed after this, and nothing can be opened before it is.
+    val screensUp by produceState(false, nav) {
+        nav.currentBackStackEntryFlow.first()
+        value = true
+    }
+    if (screensUp) BindLinkScreens(linkScreens)
     if (secondary == null) {
         // Where a plugin asks to go lands here too (PLUGINS.md).
         val showMain = LocalShowMainWindow.current
