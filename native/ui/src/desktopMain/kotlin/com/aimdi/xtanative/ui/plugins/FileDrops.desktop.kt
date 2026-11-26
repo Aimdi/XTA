@@ -79,6 +79,10 @@ internal object DroppedFiles {
         if (bytes.size > max) throw IOException("Cannot read ${file.name}")
         return bytes
     }
+
+    /** [file], picked in an open dialog, read as a drop is: null once it is gone, unreadable or past [max]. */
+    suspend fun chosen(file: File, max: Long = PluginDroppedFile.MAX_BYTES): ByteArray? =
+        withContext(Dispatchers.IO) { runCatching { readUpTo(file, max) }.getOrNull() }
 }
 
 /**

@@ -5,6 +5,7 @@ import com.aimdi.xtanative.ui.common.FileChoosers
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_pack_export
 import com.aimdi.xtanative.ui.generated.resources.groups_pack_import
+import com.aimdi.xtanative.ui.plugins.DroppedFiles
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
@@ -13,7 +14,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal actual fun rememberPackChooser(onChosen: (read: suspend () -> String?) -> Unit): () -> Unit {
     val title = stringResource(Res.string.groups_pack_import)
-    return { FileChoosers.launch { FileChoosers.open(title)?.let { file -> onChosen { file.readText() } } } }
+    return { FileChoosers.launch { FileChoosers.open(title)?.let { file -> onChosen { DroppedFiles.chosen(file)?.decodeToString() } } } }
 }
 
 /** The desktop's save dialog, opened on the downloads folder with the pack's name filled in. */

@@ -15,13 +15,13 @@ import org.jetbrains.compose.resources.stringResource
 /** The desktop's open dialog (its portal's, else GTK's), over any file. */
 @Composable
 actual fun rememberTextFileChooser(title: String, onChosen: (read: suspend () -> String?) -> Unit): () -> Unit =
-    rememberOpenDialog(title, filter = null) { file -> onChosen { file.takeIf { it.isFile }?.readText() } }
+    rememberOpenDialog(title, filter = null) { file -> onChosen { DroppedFiles.chosen(file)?.decodeToString() } }
 
 /** The desktop's open dialog, showing pictures. */
 @Composable
 actual fun rememberImageChooser(title: String, onChosen: (read: suspend () -> ByteArray?) -> Unit): () -> Unit {
     val pictures = stringResource(Res.string.files_filter_pictures)
-    return rememberOpenDialog(title, FileFilter(pictures, FileFilter.PICTURE_EXTENSIONS)) { file -> onChosen { file.takeIf { it.isFile }?.readBytes() } }
+    return rememberOpenDialog(title, FileFilter(pictures, FileFilter.PICTURE_EXTENSIONS)) { file -> onChosen { DroppedFiles.chosen(file) } }
 }
 
 /** The desktop's open dialog titled [title], over the files [filter] takes (any, without one); [onChosen] gets the one picked. */

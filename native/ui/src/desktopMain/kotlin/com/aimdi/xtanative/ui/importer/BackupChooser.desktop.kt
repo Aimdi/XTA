@@ -16,7 +16,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal actual fun rememberBackupChooser(onChosen: (read: suspend () -> String?) -> Unit): () -> Unit {
     val title = stringResource(Res.string.import_choose)
-    return { FileChoosers.launch { FileChoosers.open(title)?.let { file -> onChosen { file.readText() } } } }
+    return { FileChoosers.launch { FileChoosers.open(title)?.let { file -> onChosen { DroppedFiles.chosen(file, BackupDrops.MAX_BYTES)?.decodeToString() } } } }
 }
 
 /** A backup dropped from the file manager, read as one chosen in the dialog is. */

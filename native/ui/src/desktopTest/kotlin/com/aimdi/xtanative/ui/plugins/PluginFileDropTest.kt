@@ -118,4 +118,13 @@ class PluginFileDropTest {
     fun anAcceptThatThrowsTakesNothing() {
         assertEquals(emptyList(), DroppedFiles.forPlugin(listOf(file("a.opml")), accept = { _, _ -> error("plugin bug") }))
     }
+
+    @Test
+    fun aFilePickedInTheDialogIsReadAsADropIsCappedAndGoneMeansNothing() = runBlocking {
+        val small = file("feeds.opml", "<opml/>")
+        assertContentEquals("<opml/>".toByteArray(), DroppedFiles.chosen(small))
+        assertEquals(null, DroppedFiles.chosen(file("big.iso", "x".repeat(11)), max = 10))
+        assertEquals(null, DroppedFiles.chosen(File(dir, "gone.opml")))
+        assertEquals(null, DroppedFiles.chosen(dir))
+    }
 }
