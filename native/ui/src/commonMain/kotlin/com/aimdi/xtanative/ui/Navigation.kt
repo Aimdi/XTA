@@ -892,7 +892,7 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Com
             frame.inset = HomeWide.inset(kind)
             frame.openMenu = if (kind == FrameKind.RAIL) ({ menu = true }) else null
             // Read now, not as collected: a place the column has just opened is in the navigation already.
-            opened.keep(nav.currentBackStack.value.map { it.id })
+            opened.keep((nav.currentBackStack.value + nav.visibleEntries.value).map { it.id })
         }
         // A menu open over a rail is closed once the window has the column, or nothing beside its screens.
         LaunchedEffect(kind) { if (kind != FrameKind.RAIL) menu = false }
@@ -909,11 +909,13 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Com
             }
             Box(Modifier.weight(1f).fillMaxHeight().then(if (kind != FrameKind.NONE && !viewer) Modifier.clipToBounds() else Modifier)) {
                 PageStart(focus)
+                // The screen going out among them, so its bar stays as it was while it slides away.
                 val roots = if (kind == FrameKind.NONE) {
                     emptySet()
                 } else {
-                    val ids = opened.among(stack.map { it.id })
-                    stack.filterTo(HashSet<Any>()) { it.id in ids }
+                    val shown = (stack + visible).distinctBy { it.id }
+                    val ids = opened.among(shown.map { it.id })
+                    shown.filterTo(HashSet<Any>()) { it.id in ids }
                 }
                 CompositionLocalProvider(LocalWideFrame provides frame.takeIf { kind != FrameKind.NONE }, LocalFrameRoots provides roots, content = content)
             }
