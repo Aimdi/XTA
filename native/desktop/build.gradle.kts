@@ -131,6 +131,10 @@ compose.desktop {
         // The desktop's file chooser opens over the window it names by its X id,
         // which only AWT's peer knows (ParentWindow); without these it opens unparented.
         jvmArgs("--add-opens=java.desktop/java.awt=ALL-UNNAMED", "--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED")
+        // An idle window gives back the heap it no longer uses: G1 collects every 30 s while nothing else made it,
+        // and only then returns free regions to the system (measured: 23-37 MB less after a minute idle, 0.1 s of
+        // processor time in two minutes). A smaller MaxHeapFreeRatio gave little more and was left out.
+        jvmArgs("-XX:G1PeriodicGCInterval=30000")
         nativeDistributions {
             packageName = "xta-native"
             packageVersion = versionName
