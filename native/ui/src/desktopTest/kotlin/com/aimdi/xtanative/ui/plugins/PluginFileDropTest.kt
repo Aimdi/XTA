@@ -47,6 +47,28 @@ class PluginFileDropTest {
         assertEquals(emptyList(), DroppedFiles.files(text))
     }
 
+    /** What a drag from a browser or a file manager offers on Linux: Java's file list beside the `text/uri-list` it came from. */
+    private fun uriListOf(uris: String, vararg files: File): Transferable = object : Transferable {
+        private val uriList = DataFlavor("text/uri-list;class=java.lang.String")
+        override fun getTransferDataFlavors() = arrayOf(DataFlavor.javaFileListFlavor, uriList)
+        override fun isDataFlavorSupported(flavor: DataFlavor) = flavor == DataFlavor.javaFileListFlavor || flavor == uriList
+        override fun getTransferData(flavor: DataFlavor): Any = if (flavor == uriList) uris else files.toList()
+    }
+
+    @Test
+    fun aDraggedLinkIsNoFilesSoTheWindowsLinksGetIt() {
+        assertFalse(DroppedFiles.offered(uriListOf("https://example.com/feed\r\n")))
+        assertFalse(DroppedFiles.namesFile("# from a browser\r\nhttps://example.com/a\r\nhttps://example.com/b"))
+    }
+
+    @Test
+    fun filesFromTheFileManagerAreFiles() {
+        val opml = file("feeds.opml")
+        assertTrue(DroppedFiles.offered(uriListOf("${opml.toURI()}\r\n", opml)))
+        assertTrue(DroppedFiles.namesFile("https://example.com/a\r\nFILE:///home/x/feeds.opml"))
+        assertTrue(DroppedFiles.namesFile(null))
+    }
+
     @Test
     fun aPluginGetsTheFilesItAcceptsWithTheirTypes() {
         val opml = file("feeds.OPML")

@@ -12,6 +12,7 @@ import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.draganddrop.awtTransferable
 import com.aimdi.xtanative.store.saved.LocalPosts
+import com.aimdi.xtanative.ui.links.DraggedText
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.io.File
@@ -30,8 +31,18 @@ internal object DroppedFiles {
         "txt" to "text/plain", "csv" to "text/csv", "html" to "text/html", "htm" to "text/html",
     )
 
-    /** Whether [transfer] offers files at all. */
-    fun offered(transfer: Transferable): Boolean = runCatching { transfer.isDataFlavorSupported(DataFlavor.javaFileListFlavor) }.getOrDefault(false)
+    /**
+     * Whether [transfer] offers files from this machine. Java lists a
+     * browser's dragged link (a `text/uri-list` of web addresses) as files
+     * too, so a list naming no `file:` is none: the drop is left to the
+     * window's dropped links, which a file target taking the drag would hide.
+     */
+    fun offered(transfer: Transferable): Boolean =
+        runCatching { transfer.isDataFlavorSupported(DataFlavor.javaFileListFlavor) }.getOrDefault(false) && namesFile(DraggedText.uriList(transfer))
+
+    /** Whether a dragged [uriList] names a local file; a drag with no list to read (only Java's own file list) does. */
+    fun namesFile(uriList: String?): Boolean =
+        uriList == null || uriList.lineSequence().map { it.trim() }.any { it.startsWith("file:", ignoreCase = true) }
 
     /** The regular files [transfer] holds, in its order; none for a drop of anything else. */
     fun files(transfer: Transferable): List<File> = runCatching {
@@ -57,8 +68,9 @@ internal object DroppedFiles {
 
 /**
  * A drop target for files from the file manager: [onDrop] gets the regular
- * files of a drop and says whether it took them; one it does not is left to
- * what is under it (the window's dropped links). Off while not [enabled].
+ * files of a drop and says whether it took them; one it does not, and a
+ * dragged link (no local file, [DroppedFiles.offered]), is left to what is
+ * under it (the window's dropped links). Off while not [enabled].
  */
 // Compose's desktop drag data (awtTransferable) still carries @ExperimentalComposeUiApi; the drop target @ExperimentalFoundationApi.
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
