@@ -158,9 +158,11 @@ internal fun HomeFeedPage(
             // Ctrl+← and Ctrl+→ choose the column the reading keys move, as on the Deck.
             ReadColumns(listOfNotNull(shown) + beside.map { it.key })
             val chosen = chosenReadColumn()
-            // Beside the navigation, as the deck's columns: from the start edge, a line closing them off where the window is wider still.
-            val spare = maxWidth.value - each.value * (beside.size + 1) - beside.size >= 1f
-            Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Start) {
+            // Beside the desktop frame's navigation, as the deck's columns: from the start edge, a line closing them
+            // off where the window is wider still. Elsewhere (a tablet) centred, as before.
+            val framed = LocalWideFrame.current != null
+            val spare = framed && maxWidth.value - each.value * (beside.size + 1) - beside.size >= 1f
+            Row(Modifier.fillMaxSize(), horizontalArrangement = if (framed) Arrangement.Start else Arrangement.Center) {
                 ReadColumn(shown ?: Unit) {
                     ShownTimeline(
                         ui, vm, timelines, following, networks, actions, routes, refresh, calls,
