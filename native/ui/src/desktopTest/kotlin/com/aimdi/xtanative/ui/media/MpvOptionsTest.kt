@@ -31,6 +31,13 @@ class MpvOptionsTest {
     }
 
     @Test
+    fun whatASourceLeadsToIsWebOnly() {
+        listOf(MpvOptions.AUDIO, MpvOptions.video(0, loop = false, muted = false)).forEach {
+            assertEquals("protocol_whitelist=[http,https,tls,tcp,httpproxy,crypto,data]", it.of("demuxer-lavf-o"))
+        }
+    }
+
+    @Test
     fun aPodcastIsSoundAlone() {
         assertEquals("no", MpvOptions.AUDIO.of("vid"))
         assertEquals("no", MpvOptions.AUDIO.of("audio-display"))
