@@ -58,6 +58,14 @@ class XLookTest {
     }
 
     @Test
+    fun systemsDiscShowsEveryAccentWhereTheDesktopGivesNone() {
+        assertEquals((ThemeAccent.entries - ThemeAccent.SYSTEM).map { it.argb }, XLook.accentSwatch(ThemeAccent.SYSTEM, systemAccent = null))
+        assertEquals(listOf(0xFF3584E4), XLook.accentSwatch(ThemeAccent.SYSTEM, systemAccent = 0xFF3584E4), "the desktop's own accent")
+        assertEquals(listOf(ThemeAccent.BLUE.argb), XLook.accentSwatch(ThemeAccent.BLUE, systemAccent = null))
+        assertEquals(listOf(ThemeAccent.PINK.argb), XLook.accentSwatch(ThemeAccent.PINK, systemAccent = 0xFF3584E4))
+    }
+
+    @Test
     fun anAccentThatDoesNotReadOnThePageIsCorrected() {
         val scheme = XLook.scheme(XLook.tokens(settings(ThemeBackground.LIGHT, ThemeAccent.YELLOW), systemDark = false))
         assertNotEquals(ThemeAccent.YELLOW.argb, scheme.primary)

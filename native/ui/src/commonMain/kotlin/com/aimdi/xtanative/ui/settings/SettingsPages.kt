@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -43,7 +44,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -475,11 +478,15 @@ internal fun ThemeSettings(title: String, vm: SettingsViewModel, focus: String?,
 /** System, Light, Dim and Lights out, each as the page it paints; System is half Light, half Lights out. */
 @Composable
 internal fun BackgroundPicker(selected: ThemeBackground, modifier: Modifier = Modifier, onSelect: (ThemeBackground) -> Unit) {
-    Row(modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    // As the accents below: from the start edge at the same spacing, not spread across a wide column.
+    Row(
+        modifier.fillMaxWidth().padding(horizontal = PICKER_EDGE, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(PICKER_GAP),
+    ) {
         ThemeBackground.entries.forEach { background ->
             val chosen = background == selected
             Column(
-                Modifier.weight(1f).clip(RoundedCornerShape(12.dp)).clickable { onSelect(background) }.padding(4.dp),
+                Modifier.weight(1f, fill = false).widthIn(max = BACKGROUND_TILE).fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable { onSelect(background) }.padding(4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(
@@ -516,16 +523,18 @@ internal fun BackgroundPicker(selected: ThemeBackground, modifier: Modifier = Mo
 @Composable
 internal fun AccentPicker(selected: ThemeAccent, modifier: Modifier = Modifier, onSelect: (ThemeAccent) -> Unit) {
     val desktopAccent = systemAccent()
-    FlowRow(modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+    FlowRow(modifier.fillMaxWidth().padding(horizontal = PICKER_EDGE, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(PICKER_GAP)) {
         XLook.offeredAccents(isDesktop, selected).forEach { accent ->
             val chosen = accent == selected
             val argb = XLook.accentArgb(accent, desktopAccent)
+            val swatch = XLook.accentSwatch(accent, desktopAccent).map(::Color)
             Column(
-                Modifier.width(64.dp).clip(RoundedCornerShape(12.dp)).clickable { onSelect(accent) }.padding(vertical = 6.dp),
+                Modifier.width(ACCENT_TILE).clip(RoundedCornerShape(12.dp)).clickable { onSelect(accent) }.padding(vertical = 6.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(
-                    Modifier.size(32.dp).clip(CircleShape).background(Color(argb))
+                    Modifier.size(32.dp).clip(CircleShape)
+                        .background(if (swatch.size > 1) Brush.sweepGradient(swatch + swatch.first()) else SolidColor(swatch.single()))
                         .border(if (chosen) 2.dp else 0.dp, if (chosen) MaterialTheme.colorScheme.onBackground else Color.Transparent, CircleShape),
                     contentAlignment = Alignment.Center,
                 ) {
@@ -536,6 +545,18 @@ internal fun AccentPicker(selected: ThemeAccent, modifier: Modifier = Modifier, 
         }
     }
 }
+
+/** How far the Design page's pickers stand in from the page's edge. */
+private val PICKER_EDGE = 12.dp
+
+/** The space between two of a picker's choices. */
+private val PICKER_GAP = 4.dp
+
+/** The widest a background's choice grows, its page and its name: four of them fill a phone's width. */
+private val BACKGROUND_TILE = 88.dp
+
+/** How wide an accent's choice is, its disc and its name. */
+private val ACCENT_TILE = 64.dp
 
 // ---- Accessibility (_accessibility.dart) ----
 

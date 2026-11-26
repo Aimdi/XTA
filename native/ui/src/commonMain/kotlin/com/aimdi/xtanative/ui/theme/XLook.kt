@@ -124,6 +124,16 @@ object XLook {
         if (accent == ThemeAccent.SYSTEM) systemAccent ?: accent.argb else accent.argb
 
     /**
+     * The colours [accent]'s disc in the picker is painted with: its own one;
+     * for [ThemeAccent.SYSTEM] where the desktop gives no accent
+     * ([systemAccent] null), each of X's own accents round the disc, so it is
+     * not taken for Blue, the colour it then stands for.
+     */
+    fun accentSwatch(accent: ThemeAccent, systemAccent: Long? = null): List<Long> =
+        if (accent == ThemeAccent.SYSTEM && systemAccent == null) ThemeAccent.entries.filter { it != ThemeAccent.SYSTEM }.map { it.argb }
+        else listOf(accentArgb(accent, systemAccent))
+
+    /**
      * The accents a picker offers: all of them on the desktop, whose settings
      * portal gives an accent colour; elsewhere System only while it is the
      * [selected] one (a backup from the desktop), as it would be X's blue.
