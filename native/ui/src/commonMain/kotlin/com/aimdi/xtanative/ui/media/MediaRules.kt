@@ -75,7 +75,7 @@ object VideoKeys {
 }
 
 /** What a key does to the media viewer on the desktop ([ViewerKeys]). */
-enum class ViewerKey { PREVIOUS, NEXT, FIRST, LAST, CLOSE, COPY, SAVE_AS, ZOOM_IN, ZOOM_OUT, ZOOM_RESET, PAN_LEFT, PAN_RIGHT, PAN_UP, PAN_DOWN, NONE }
+enum class ViewerKey { PREVIOUS, NEXT, FIRST, LAST, CLOSE, COPY, SAVE_AS, MENU, ZOOM_IN, ZOOM_OUT, ZOOM_RESET, PAN_LEFT, PAN_RIGHT, PAN_UP, PAN_DOWN, NONE }
 
 /**
  * The media viewer's keys: ← and → turn its pages, Esc closes it, and going
@@ -87,7 +87,8 @@ enum class ViewerKey { PREVIOUS, NEXT, FIRST, LAST, CLOSE, COPY, SAVE_AS, ZOOM_I
  * zoom the photo shown in and out, and 0 shows it whole again, as a
  * desktop's photo viewers do, with Ctrl held too ([zoom]). While the photo
  * is zoomed in ([zoomed]) the arrows move about it instead of turning the
- * page; Home and End go to the first page and the last.
+ * page; Home and End go to the first page and the last. The Menu key and
+ * Shift+F10 ([menu]) open the file menu a right-click opens.
  */
 object ViewerKeys {
     fun of(
@@ -105,10 +106,12 @@ object ViewerKeys {
         home: Boolean = false,
         end: Boolean = false,
         zoomed: Boolean = false,
+        menu: Boolean = false,
     ): ViewerKey = when {
         escape || back || closeKey -> ViewerKey.CLOSE
         copy -> ViewerKey.COPY
         saveAs -> ViewerKey.SAVE_AS
+        menu && !modified -> ViewerKey.MENU
         zoom in ZOOM_KEYS -> zoom
         modified -> ViewerKey.NONE
         zoomed && (left || right || up || down) -> when {

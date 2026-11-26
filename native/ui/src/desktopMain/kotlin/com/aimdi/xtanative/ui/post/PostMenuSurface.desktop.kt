@@ -42,6 +42,9 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -151,4 +154,27 @@ internal actual fun PostMenuSurface(onDismiss: () -> Unit, content: @Composable 
             }
         }
     }
+}
+
+@Composable
+internal actual fun ColumnScope.KeyedMenuRows(content: @Composable ColumnScope.() -> Unit) {
+    val focus = LocalFocusManager.current
+    val modes = LocalInputModeManager.current
+    // Read as the menu opens, not followed: a click on a row must not move the focus first.
+    val byKeys = remember { KeyboardFocusLook.keyboard }
+    LaunchedEffect(Unit) {
+        withFrameNanos {}
+        if (byKeys) {
+            modes.requestInputMode(InputMode.Keyboard)
+            focus.moveFocus(FocusDirection.Next)
+        }
+    }
+    Column(
+        Modifier.width(IntrinsicSize.Max).onPreviewKeyEvent { event ->
+            // ↑ and ↓ stay Material's; Home and End (Page Up and Page Down) are added, once a row has the focus.
+            val ends = event.key == Key.MoveHome || event.key == Key.MoveEnd || event.key == Key.PageUp || event.key == Key.PageDown
+            ends && MenuKeys.handle(event, focus).also { if (it) modes.requestInputMode(InputMode.Keyboard) }
+        },
+        content = content,
+    )
 }

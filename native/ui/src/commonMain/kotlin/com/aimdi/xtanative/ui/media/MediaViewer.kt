@@ -207,7 +207,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
                     ViewerKey.FIRST -> true.also { turn(-pager.currentPage) }
                     ViewerKey.LAST -> true.also { turn(items.size - 1 - pager.currentPage) }
                     ViewerKey.CLOSE -> true.also { onClose() }
-                    ViewerKey.COPY, ViewerKey.SAVE_AS -> fileMenu?.key(key) ?: false
+                    ViewerKey.COPY, ViewerKey.SAVE_AS, ViewerKey.MENU -> fileMenu?.key(key) ?: false
                     // The photo shown zooms and moves about; a video's page leaves the keys alone.
                     ViewerKey.ZOOM_IN, ViewerKey.ZOOM_OUT, ViewerKey.ZOOM_RESET, ViewerKey.PAN_LEFT, ViewerKey.PAN_RIGHT, ViewerKey.PAN_UP, ViewerKey.PAN_DOWN ->
                         (items.getOrNull(pager.currentPage)?.kind == XMedia.Kind.PHOTO).also { if (it) zoomKeys.tryEmit(key) }

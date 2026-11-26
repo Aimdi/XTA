@@ -34,6 +34,16 @@ import org.jetbrains.compose.resources.stringResource
 internal expect fun PostMenuSurface(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit)
 
 /**
+ * A Material drop-down menu's rows ([content]) as the desktop's keys walk
+ * them, as [PostMenuSurface]'s: opened with the keyboard (Enter on its
+ * button), the first row has the focus at once; Home and End (Page Up and
+ * Page Down) go to the first row and the last, beside the ↑ and ↓ Material
+ * already takes. As they are on Android.
+ */
+@Composable
+internal expect fun ColumnScope.KeyedMenuRows(content: @Composable ColumnScope.() -> Unit)
+
+/**
  * How a menu's row is laid out: a phone sheet's rows are tall for a finger;
  * the desktop's pointer menu ([PostMenuSurface]) lays its own out denser, as
  * a desktop's menus are, with lines between its groups of entries

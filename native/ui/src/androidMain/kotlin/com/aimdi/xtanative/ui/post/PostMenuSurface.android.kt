@@ -17,3 +17,6 @@ internal actual fun PostMenuSurface(onDismiss: () -> Unit, content: @Composable 
         Column(Modifier.padding(bottom = 16.dp), content = content)
     }
 }
+
+@Composable
+internal actual fun ColumnScope.KeyedMenuRows(content: @Composable ColumnScope.() -> Unit) = content()

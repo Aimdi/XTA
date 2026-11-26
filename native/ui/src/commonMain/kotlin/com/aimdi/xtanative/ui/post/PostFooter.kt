@@ -29,6 +29,8 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import com.aimdi.xtanative.ui.theme.keyboardFocusShown
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -124,7 +126,14 @@ fun PostFooter(post: XPost, actions: PostActions, counts: FooterCounts, modifier
         end = { FooterEndButtons(post, actions, onShare = { sharing = true }) },
     )
     if (noting) actions.keep.NoteAbout(post) { noting = false }
-    if (sharing) PostShareSheet(post, sharePicture, onDismiss = { sharing = false })
+    if (sharing) {
+        // Opened with the keys (Enter on the button), the menu stands at the post's end beside the button, as the ⋯ menu
+        // the Menu key opens does, rather than at a pointer the reader is not using; fixed as it opens, so a later click
+        // on a row does not move it away from under the pointer.
+        val byKeys = keyboardFocusShown()
+        val atButton = remember { byKeys }
+        CompositionLocalProvider(LocalMenuAtPost provides atButton) { PostShareSheet(post, sharePicture, onDismiss = { sharing = false }) }
+    }
 }
 
 /** The plural form of a views label: once abbreviated, the count is "thousands", which takes the many form. */

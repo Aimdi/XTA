@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.store.settings.DesktopPrefs
+import com.aimdi.xtanative.ui.common.ContextMenuKey
 import com.aimdi.xtanative.ui.LocalSecondaryWindow
 import com.aimdi.xtanative.ui.chrome.AppClosing
 import com.aimdi.xtanative.ui.common.LayoutKeys
@@ -504,9 +505,6 @@ private val TAB_DIGITS: Map<Key, Int> = mapOf(
     Key.NumPad1 to 1, Key.NumPad2 to 2, Key.NumPad3 to 3, Key.NumPad4 to 4, Key.NumPad5 to 5, Key.NumPad6 to 6, Key.NumPad7 to 7, Key.NumPad8 to 8, Key.NumPad9 to 9,
 )
 
-/** The keyboard's Menu key, which opens a context menu. */
-private val MENU_KEY = Key(java.awt.event.KeyEvent.VK_CONTEXT_MENU)
-
 internal fun deskKey(key: Key): DeskKey = when (key) {
     Key.Escape -> DeskKey.ESCAPE
     Key.DirectionLeft -> DeskKey.LEFT
@@ -542,8 +540,7 @@ internal fun deskKey(key: Key): DeskKey = when (key) {
     Key.F10 -> DeskKey.F10
     Key.N -> DeskKey.N
     Key.Z -> DeskKey.Z
-    // Compose names no key for it: the Menu key is AWT's context-menu key.
-    MENU_KEY -> DeskKey.MENU
+    ContextMenuKey -> DeskKey.MENU
     Key.Plus, Key.Equals, Key.NumPadAdd -> DeskKey.PLUS
     Key.Minus, Key.NumPadSubtract -> DeskKey.MINUS
     Key.Zero, Key.NumPad0 -> DeskKey.ZERO

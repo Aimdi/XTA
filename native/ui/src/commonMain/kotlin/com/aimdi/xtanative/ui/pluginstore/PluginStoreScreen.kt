@@ -146,6 +146,7 @@ import com.aimdi.xtanative.ui.generated.resources.retry
 import com.aimdi.xtanative.ui.generated.resources.settings
 import com.aimdi.xtanative.ui.generated.resources.settings_show_as_tab
 import com.aimdi.xtanative.ui.home.FindsWithKeys
+import com.aimdi.xtanative.ui.post.KeyedMenuRows
 import com.aimdi.xtanative.ui.home.MicroblogGroupingRow
 import com.aimdi.xtanative.ui.home.isFrameRoot
 import com.aimdi.xtanative.ui.home.rememberLeaveField
@@ -668,7 +669,7 @@ private fun InstalledMenu(
         IconTip(stringResource(Res.string.plugin_more_options)) { IconButton(onClick = { open = true }) {
             Icon(Icons.Filled.MoreVert, stringResource(Res.string.plugin_more_options), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
         } }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) { KeyedMenuRows {
             // A box has no room for these: its version, what it keeps and its settings are said and reached here.
             if (info.isNotEmpty()) {
                 Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
@@ -712,7 +713,7 @@ private fun InstalledMenu(
                     onUninstall()
                 },
             )
-        }
+        } }
     }
 }
 
@@ -721,7 +722,7 @@ private fun ShowPrivateMenu(showPrivate: Boolean, onChange: (Boolean) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
         IconTip(stringResource(Res.string.plugin_more_options)) { IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.plugin_more_options)) } }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) { KeyedMenuRows {
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.plugin_store_show_private)) },
                 onClick = {
@@ -730,7 +731,7 @@ private fun ShowPrivateMenu(showPrivate: Boolean, onChange: (Boolean) -> Unit) {
                 },
                 trailingIcon = { Checkbox(checked = showPrivate, onCheckedChange = null) },
             )
-        }
+        } }
     }
 }
 
