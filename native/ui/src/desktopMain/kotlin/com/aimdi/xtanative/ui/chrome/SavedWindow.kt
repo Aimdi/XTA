@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.chrome
 
 import androidx.compose.ui.window.WindowPlacement
+import com.aimdi.xtanative.store.replaceWith
 import java.io.File
 import kotlin.math.roundToInt
 
@@ -142,16 +143,8 @@ data class ScreenArea(val x: Int, val y: Int, val width: Int, val height: Int) {
 class SavedWindowFile(private val file: File) {
     fun read(): SavedWindow = SavedWindow.parse(runCatching { file.takeIf { it.isFile }?.readText() }.getOrNull())
 
-    /** Writes [window] through a file beside, so a write cut short never leaves half a file. */
+    /** Writes [window] through a synced file beside, so neither a crash nor a power cut leaves half a file. */
     fun write(window: SavedWindow) {
-        runCatching {
-            file.parentFile?.mkdirs()
-            val next = File(file.path + ".new")
-            next.writeText(window.toIni())
-            if (!next.renameTo(file)) {
-                file.writeText(window.toIni())
-                next.delete()
-            }
-        }
+        runCatching { file.replaceWith(window.toIni()) }
     }
 }

@@ -124,6 +124,17 @@ class LocalPostsTest {
     }
 
     @Test
+    fun aNotesFileIsReplacedWholeAndLeavesNoStagingFileBeside() = runBlocking {
+        val notes = store()
+        notes.writeMedia("n1", "photo", ByteArray(64) { 1 })
+        notes.writeMedia("n1", "photo", byteArrayOf(2, 3))
+        notes.replace(listOf(LocalPost("n1", "photo", 1, 1, listOf(NoteMedia("clip", "c.mp4", "video/mp4", data = "BAU=")))))
+        assertContentEquals(byteArrayOf(2, 3), notes.mediaFile("n1", "photo").readBytes())
+        assertContentEquals(byteArrayOf(4, 5), notes.mediaFile("n1", "clip").readBytes())
+        assertEquals(setOf("photo", "clip"), notes.mediaFile("n1", "photo").parentFile.list()!!.toSet())
+    }
+
+    @Test
     fun anIdFromABackupCannotLeaveTheNotesFolder() = runBlocking {
         val notes = store()
         val file = notes.mediaFile("../../escape", "../x")

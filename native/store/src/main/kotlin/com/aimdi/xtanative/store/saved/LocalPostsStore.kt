@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.store.saved
 
 import com.aimdi.xtanative.store.StoreDir
+import com.aimdi.xtanative.store.replaceWith
 import java.io.File
 import java.util.Base64
 import java.util.UUID
@@ -118,9 +119,7 @@ class LocalPostsStore(
 
     /** Keeps [bytes] as file [mediaId] of note [postId], before the note that holds it is saved. */
     suspend fun writeMedia(postId: String, mediaId: String, bytes: ByteArray) = withContext(Dispatchers.IO) {
-        val file = mediaFile(postId, mediaId)
-        file.parentFile.mkdirs()
-        file.writeBytes(bytes)
+        mediaFile(postId, mediaId).replaceWith(bytes)
     }
 
     /** Every note with its files' bytes, for the backup. */
@@ -179,7 +178,7 @@ class LocalPostsStore(
     private fun materialize(post: LocalPost) = post.media.filter { !it.data.isNullOrEmpty() }.forEach { media ->
         runCatching {
             val bytes = Base64.getDecoder().decode(media.data)
-            mediaFile(post.id, media.id).apply { parentFile.mkdirs() }.writeBytes(bytes)
+            mediaFile(post.id, media.id).replaceWith(bytes)
         }
     }
 

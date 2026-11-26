@@ -100,7 +100,8 @@ class DesktopWindowTest {
         val windows = SavedWindowFile(file)
         assertEquals(SavedWindow.FIRST, windows.read())
         windows.write(SavedWindow(500, 900, true))
-        assertEquals(SavedWindow(500, 900, true), windows.read())
+        windows.write(SavedWindow(640, 480, false))
+        assertEquals(SavedWindow(640, 480, false), windows.read(), "a later write replaces the first whole")
         assertEquals(listOf("window.ini"), file.parentFile.list()!!.toList())
     }
 
