@@ -1,5 +1,8 @@
 package com.aimdi.xtanative.ui.subscriptions
 
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.unit.Constraints
+import kotlin.math.roundToInt
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -185,7 +188,7 @@ private fun GroupTileView(tile: GroupTile, compact: Boolean, fixedHeight: Float?
                 Modifier.fillMaxSize().padding(start = 10.dp, end = if (onDiscover == null) 10.dp else 48.dp, top = 6.dp, bottom = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                GroupCover(tile, base, GroupBoard.COMPACT_COVER.dp, cover.size(GroupBoard.COMPACT_COVER.dp))
+                MarkedCover(tile.unread) { GroupCover(tile, base, GroupBoard.COMPACT_COVER.dp, cover.size(GroupBoard.COMPACT_COVER.dp)) }
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
                     TileName(tile)
@@ -194,18 +197,48 @@ private fun GroupTileView(tile: GroupTile, compact: Boolean, fixedHeight: Float?
             }
         } else {
             Column(Modifier.fillMaxSize().padding(12.dp)) {
-                GroupCover(tile, base, 74.dp, cover.weight(1f, fill = true))
+                // The cover as big as it gets, up to its largest, the name right under it and any room left below.
+                MarkedCover(tile.unread, Modifier.weight(1f, fill = false)) { GroupCover(tile, base, 74.dp, cover) }
                 Spacer(Modifier.height(10.dp))
                 TileName(tile)
                 Spacer(Modifier.height(2.dp))
                 TileCount(count)
             }
         }
-        if (tile.unread) UnreadDot(Modifier.align(Alignment.TopEnd).padding(8.dp))
         if (onDiscover != null) {
             RankWithAiButton(Modifier.align(if (compact) Alignment.CenterEnd else Alignment.TopEnd).padding(2.dp), iconSize = 20.dp, onClick = onDiscover)
         }
     }
+}
+
+/**
+ * A tile's cover with the unread dot ([unread]) on its face's rim
+ * ([CoverDot]), as the sidebar's row marks a group's avatar, not off at the
+ * tile's far edge.
+ */
+@Composable
+private fun MarkedCover(unread: Boolean, modifier: Modifier = Modifier, cover: @Composable () -> Unit) {
+    Layout(content = { cover(); if (unread) UnreadDot() }, modifier = modifier) { measurables, constraints ->
+        val face = measurables[0].measure(constraints)
+        val dot = measurables.getOrNull(1)?.measure(Constraints())
+        layout(face.width, face.height) {
+            face.place(0, 0)
+            dot?.let {
+                val centre = CoverDot.centre(face.width.toFloat())
+                it.place((face.width - centre - it.width / 2f).roundToInt(), (centre - it.height / 2f).roundToInt())
+            }
+        }
+    }
+}
+
+/** Where a cover's unread dot sits: on its round face's rim (the face [FACE] of the cover), up and to the end at 45°. */
+internal object CoverDot {
+    /** How much of the cover a single face or a group's mark spans ([MemberMosaic]). */
+    const val FACE = 0.78f
+    private const val COS_45 = 0.70710677f
+
+    /** The dot's centre from the cover's top and its end edge, for a cover [extent] wide. */
+    fun centre(extent: Float): Float = extent * (1 - FACE) / 2 + extent * FACE / 2 * (1 - COS_45)
 }
 
 @Composable
