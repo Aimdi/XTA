@@ -38,7 +38,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -70,14 +69,17 @@ import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.ShellSortHeading
 import com.aimdi.xtanative.ui.plugins.ShellSortOption
 import com.aimdi.xtanative.ui.plugins.ShellSortPills
 import com.aimdi.xtanative.ui.plugins.ShellSortSheet
+import com.aimdi.xtanative.ui.plugins.keyScrolled
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
+import com.aimdi.xtanative.ui.plugins.rememberSheetClose
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.saved.SavedIcons
 
@@ -95,8 +97,10 @@ internal fun PostSheet(app: RedditApp, post: RedditPost, onDismiss: () -> Unit) 
     val outside = rememberOpenOutside()
     val share = rememberShareLink()
     val url = RedditThreadRules.postUrl(post)
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
-        Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 16.dp)) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+        val close = rememberSheetClose()
+        val scroll = rememberScrollState()
+        Column(Modifier.keyScrolled(scroll).verticalScroll(scroll).padding(bottom = 16.dp)) {
             Text(
                 post.title,
                 style = MaterialTheme.typography.titleMedium,
@@ -106,37 +110,30 @@ internal fun PostSheet(app: RedditApp, post: RedditPost, onDismiss: () -> Unit) 
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
             )
-            post.author?.let { author -> SheetAction(Icons.Outlined.Person, "u/$author") { onDismiss(); app.openUser(author) } }
-            SheetAction(RedditGlyphs.TravelExplore, "r/" + post.subreddit) { onDismiss(); app.openSubreddit(post.subreddit) }
+            post.author?.let { author -> SheetAction(Icons.Outlined.Person, "u/$author") { close { app.openUser(author) } } }
+            SheetAction(RedditGlyphs.TravelExplore, "r/" + post.subreddit) { close { app.openSubreddit(post.subreddit) } }
             val following = followed.follows(post.subreddit)
             SheetAction(if (following) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder, pluginString(if (following) Strings.unsubscribe else Strings.subscribe)) {
-                app.follow(post.subreddit, !following)
-                onDismiss()
+                close { app.follow(post.subreddit, !following) }
             }
             val isSaved = RedditArchive.id(post) in archived
             SheetAction(if (isSaved) RedditGlyphs.Bookmark else RedditGlyphs.BookmarkBorder, pluginString(if (isSaved) Strings.unsave_post else Strings.save_on_device)) {
-                app.toggleSaved(post)
-                onDismiss()
+                close { app.toggleSaved(post) }
             }
             SheetAction(SavedIcons.Folder, pluginString(Strings.save_to_folder)) {
-                onDismiss()
-                app.chooseFolder(post)
+                close { app.chooseFolder(post) }
             }
             SheetAction(SavedIcons.EditNote, pluginString(Strings.add_note)) {
-                onDismiss()
-                app.editNote(post)
+                close { app.editNote(post) }
             }
             SheetAction(PostIcons.GroupAdd, pluginString(Strings.add_to_group)) {
-                onDismiss()
-                app.addToGroup(post.subreddit)
+                close { app.addToGroup(post.subreddit) }
             }
             SheetAction(RedditGlyphs.OpenInNew, pluginString(Strings.open_in_browser)) {
-                outside(url)
-                onDismiss()
+                close { outside(url) }
             }
             SheetAction(RedditGlyphs.Link, pluginString(Strings.share_link)) {
-                onDismiss()
-                share(url)
+                close { share(url) }
             }
         }
     }
@@ -171,7 +168,7 @@ internal fun SortSheet(app: RedditApp, subtitle: String? = null, onDismiss: () -
         app.change { settings -> settings.with(RedditPrefs.sort, sort).let { if (window == null) it else it.with(RedditPrefs.timeFilter, window) } }
         onDismiss()
     }
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = { picked?.let { done(it, null) } ?: onDismiss() }) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = { picked?.let { done(it, null) } ?: onDismiss() }) {
         Text(
             pluginString(if (picked == null) Strings.sort else Strings.time_filter),
             style = MaterialTheme.typography.titleLarge,
@@ -275,7 +272,8 @@ internal fun sortTitle(choices: RedditChoices): String =
 internal fun CommunitiesSheet(app: RedditApp, onDismiss: () -> Unit) {
     val names by app.followed.collectAsState()
     var adding by remember { mutableStateOf(false) }
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+        val close = rememberSheetClose()
         Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Icon(RedditGlyphs.Forum, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             Spacer(Modifier.width(12.dp))
@@ -287,10 +285,7 @@ internal fun CommunitiesSheet(app: RedditApp, onDismiss: () -> Unit) {
         LazyColumn(Modifier.weight(1f, fill = false)) {
             if (names.isEmpty()) item(key = "none") { RedditEmpty(RedditGlyphs.Forum, pluginString(Strings.empty)) }
             items(names, key = { it.lowercase() }) { name ->
-                CommunityTile(app, name, onOpen = {
-                    onDismiss()
-                    app.openSubreddit(name)
-                })
+                CommunityTile(app, name, onOpen = { close { app.openSubreddit(name) } })
             }
         }
         HorizontalDivider()
@@ -383,7 +378,7 @@ internal fun AddSubredditDialog(app: RedditApp, onDismiss: () -> Unit) {
 internal fun AboutSheet(app: RedditApp, subreddit: String, onDismiss: () -> Unit) {
     var tries by remember { mutableIntStateOf(0) }
     val about by produceState<Result<RedditSubredditAbout>?>(null, subreddit, tries) { value = attempt { app.about(subreddit) } }
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         val read = about
         val failure = read?.exceptionOrNull()
         when {
