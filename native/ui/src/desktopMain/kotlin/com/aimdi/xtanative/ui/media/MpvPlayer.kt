@@ -13,7 +13,8 @@ import kotlinx.coroutines.withTimeoutOrNull
  * runs in order on the player's thread, where its state changes too, each
  * change reaching [onChange] there with the state before it. A source opens
  * with [open], which answers the number its state and frames know it by,
- * and goes through the app's proxy ([MpvProxy]).
+ * and goes through the app's proxy ([MpvProxy]); one [MpvSources] does not
+ * allow fails without reaching mpv.
  */
 internal class MpvPlayer private constructor(options: List<Pair<String, String>>, video: Boolean, name: String) {
     private val mutable = MutableStateFlow(MpvState())
@@ -39,7 +40,7 @@ internal class MpvPlayer private constructor(options: List<Pair<String, String>>
             player.set("pause", !play)
             player.set("start", MpvOptions.start(startMs))
             player.set("http-proxy", MpvProxy.option(url))
-            val entry = player.command("loadfile", url, "replace")
+            val entry = if (MpvSources.allowed(url)) player.command("loadfile", url, "replace") else REFUSED
             if (entry < 0) println("XTA Native: video: mpv did not open the source: ${MpvJni.errorText(entry.toInt())}")
             change { it.opened(load, entry) }
         }
@@ -124,6 +125,9 @@ internal class MpvPlayer private constructor(options: List<Pair<String, String>>
 
     companion object {
         private const val SETTLE_MS = 5_000L
+
+        /** mpv's MPV_ERROR_LOADING_FAILED, for a source the app does not hand to it. */
+        private const val REFUSED = -13L
 
         /**
          * What a new file is read again for: mpv tells only of a change, so a

@@ -133,11 +133,16 @@ internal object MpvOptions {
     const val DEMUXER_MAX_BYTES = 16 * 1024 * 1024
     const val DEMUXER_MAX_BACK_BYTES = 4 * 1024 * 1024
 
+    /** FFmpeg's protocols a source may lead to: the web (through an HTTP proxy too), decrypted HLS, inline data. */
+    const val PROTOCOLS = "http,https,tls,tcp,httpproxy,crypto,data"
+
     /**
      * Every player: none of mpv's own configuration, scripts, terminal or
      * keys; opened paused, the last frame kept at the end (a finished video
      * shows it); no youtube-dl; no sound card means silence, not a failure;
-     * subtitles hidden until asked for.
+     * subtitles hidden until asked for. What FFmpeg opens inside a source
+     * (an HLS playlist's segments, its keys) is web only ([PROTOCOLS]), as
+     * the source itself is ([MpvSources]).
      */
     val BASE: List<Pair<String, String>> = listOf(
         "config" to "no",
@@ -152,6 +157,7 @@ internal object MpvOptions {
         "keep-open" to "yes",
         "audio-fallback-to-null" to "yes",
         "sub-visibility" to "no",
+        "demuxer-lavf-o" to "protocol_whitelist=[$PROTOCOLS]",
     )
 
     /** Options without which a player cannot work at all, or not safely; the others it may do without, an older or newer mpv lacking one. */
