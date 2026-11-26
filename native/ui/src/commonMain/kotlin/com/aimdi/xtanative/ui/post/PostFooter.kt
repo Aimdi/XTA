@@ -59,6 +59,7 @@ import com.aimdi.xtanative.services.ai.TranslationStatus
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSessions
 import com.aimdi.xtanative.ui.common.LocalSheetCloser
+import com.aimdi.xtanative.ui.common.RingedFocus
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.keyboardFocusRing
@@ -262,23 +263,26 @@ internal fun HeaderButton(
     glyphTop: Boolean = true,
     onClick: () -> Unit,
 ) {
-    Box(
-        Modifier
-            .offset(y = if (glyphTop) -PostGeometry.GLYPH_LIFT.dp else 0.dp)
-            .size(PostGeometry.TOUCH_TARGET.dp)
-            .keyboardFocusRing()
-            .onSecondaryClickIf(onLongClick)
-            .combinedClickable(
-                interactionSource = null,
-                indication = ripple(bounded = false, radius = (PostGeometry.TOUCH_TARGET / 2 - HEADER_RING_INSET).dp),
-                role = Role.Button,
-                onClick = onClick,
-                onLongClick = onLongClick,
-            )
-            .semantics { contentDescription = label },
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(PostGeometry.GLYPH_SIZE.dp))
+    // The ring alone marks the keyboard's focus, as on an icon button, not the ring over a grey disc.
+    RingedFocus {
+        Box(
+            Modifier
+                .offset(y = if (glyphTop) -PostGeometry.GLYPH_LIFT.dp else 0.dp)
+                .size(PostGeometry.TOUCH_TARGET.dp)
+                .keyboardFocusRing()
+                .onSecondaryClickIf(onLongClick)
+                .combinedClickable(
+                    interactionSource = null,
+                    indication = ripple(bounded = false, radius = (PostGeometry.TOUCH_TARGET / 2 - HEADER_RING_INSET).dp),
+                    role = Role.Button,
+                    onClick = onClick,
+                    onLongClick = onLongClick,
+                )
+                .semantics { contentDescription = label },
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(PostGeometry.GLYPH_SIZE.dp))
+        }
     }
 }
 
