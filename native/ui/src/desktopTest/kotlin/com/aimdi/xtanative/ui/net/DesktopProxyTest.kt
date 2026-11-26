@@ -10,9 +10,12 @@ import com.aimdi.xtanative.store.settings.ProxyMode
 import com.aimdi.xtanative.store.settings.ProxyType
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.media.mpris.DBusConnection
+import com.aimdi.xtanative.ui.media.mpris.DBusMessage
+import com.aimdi.xtanative.ui.media.mpris.DBusType
 import java.io.File
 import java.nio.file.Files
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -123,6 +126,79 @@ class DesktopProxyTest {
             daemon.destroy()
             daemon.waitFor(5, TimeUnit.SECONDS)
         }
+    }
+
+    @Test
+    fun aPortalThatDoesNotAnswerIsAskedAgainAndNeverTakenForDirect() {
+        val (daemon, socket) = privateBus() ?: return println("no dbus-daemon: skipped")
+        try {
+            val answers = AtomicBoolean(false)
+            val asked = AtomicInteger()
+            val fake = assertNotNull(DBusConnection.connect(socket))
+            fake.onCall = { call ->
+                if (call.member == "Lookup") {
+                    asked.incrementAndGet()
+                    if (answers.get()) fake.reply(call, "as", listOf(listOf("http://portal.lan:3128")))
+                }
+            }
+            fake.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "RequestName", "su", listOf(PortalProxyPolicy.PORTAL, 4L))
+            var now = 0L
+            val policy = PortalProxyPolicy({ DBusConnection.connect(socket) }, timeoutMs = 200, clock = { now })
+            assertEquals(ProxyRoute.Unusable, policy.route("https", "x.com", 443), "still starting: fail, not straight")
+            now += PortalProxyPolicy.RETRY_MS
+            answers.set(true)
+            val via = ProxyRoute.Via(ProxyKind.HTTP, "portal.lan", 3128)
+            assertEquals(via, policy.route("https", "x.com", 443), "asked again soon")
+            answers.set(false)
+            now += PortalProxyPolicy.CACHE_MS
+            assertEquals(via, policy.route("https", "x.com", 443), "a miss keeps the last answer")
+            assertEquals(via, policy.route("https", "pbs.twimg.com", 443), "or the last for any address")
+            assertEquals(4, asked.get())
+            fake.close()
+        } finally {
+            daemon.destroy()
+            daemon.waitFor(5, TimeUnit.SECONDS)
+        }
+    }
+
+    @Test
+    fun aPortalThatNeverAnswersGoesStraightOnlyAfterTheGrace() {
+        val (daemon, socket) = privateBus() ?: return println("no dbus-daemon: skipped")
+        try {
+            val fake = assertNotNull(DBusConnection.connect(socket))
+            fake.onCall = { }
+            fake.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "RequestName", "su", listOf(PortalProxyPolicy.PORTAL, 4L))
+            var now = 0L
+            val policy = PortalProxyPolicy({ DBusConnection.connect(socket) }, timeoutMs = 100, clock = { now })
+            assertEquals(ProxyRoute.Unusable, policy.route("https", "x.com", 443))
+            now += PortalProxyPolicy.GRACE_MS
+            assertEquals(ProxyRoute.Direct, policy.route("https", "x.com", 443))
+            fake.close()
+        } finally {
+            daemon.destroy()
+            daemon.waitFor(5, TimeUnit.SECONDS)
+        }
+    }
+
+    @Test
+    fun aBusOutOfReachIsTriedAgainLaterNotGivenUpOn() {
+        var now = 0L
+        val connects = AtomicInteger()
+        val policy = PortalProxyPolicy({ connects.incrementAndGet(); null }, clock = { now })
+        assertEquals(ProxyRoute.Direct, policy.route("https", "x.com", 443))
+        assertEquals(ProxyRoute.Direct, policy.route("https", "a.com", 443))
+        assertEquals(1, connects.get(), "not again at once")
+        now += PortalProxyPolicy.CACHE_MS
+        policy.route("https", "x.com", 443)
+        assertEquals(2, connects.get())
+    }
+
+    @Test
+    fun onlyTheNoPortalErrorsCountAsAnAnswer() {
+        fun error(name: String) = DBusMessage(DBusType.ERROR, errorName = name)
+        assertEquals(ProxyRoute.Direct, PortalProxyPolicy.routeOf(error("org.freedesktop.DBus.Error.ServiceUnknown")))
+        assertEquals(null, PortalProxyPolicy.routeOf(error("org.freedesktop.DBus.Error.NoReply")))
+        assertEquals(null, PortalProxyPolicy.routeOf(error("org.freedesktop.portal.Error.Failed")))
     }
 
     /** A bus of the test's own, with no service folders: nothing on it starts by itself. */
