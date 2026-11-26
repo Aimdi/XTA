@@ -20,9 +20,16 @@ data class RotatingRead<T>(val rows: Map<String, List<T>>, val fresh: Set<String
  * AccountPostCache keeps an account's page for Discover's sources
  * (discovery_rotation.dart's readRotating): a read asks only the members not
  * answered lately, the never asked first, then the longest unasked, up to its
- * cap, two at a time; one that fails keeps what it said before.
+ * cap, two at a time; one that fails keeps what it said before. An answer
+ * older than [keepMillis] is dropped, and at most [maxKept] are held (the
+ * oldest go first), so an app left running for days does not pile them up.
  */
-class RotatingReads<T>(private val ttlMillis: Long = TTL_MILLIS, private val clock: () -> Long = System::currentTimeMillis) {
+class RotatingReads<T>(
+    private val ttlMillis: Long = TTL_MILLIS,
+    private val clock: () -> Long = System::currentTimeMillis,
+    private val keepMillis: Long = KEEP_MILLIS,
+    private val maxKept: Int = MAX_KEPT,
+) {
     private class Answer<T>(val at: Long, val rows: List<T>)
 
     private val answers = ConcurrentHashMap<String, Answer<T>>()
@@ -40,6 +47,7 @@ class RotatingReads<T>(private val ttlMillis: Long = TTL_MILLIS, private val clo
         fetch: suspend (String) -> List<T>,
         onPartial: (RotatingRead<T>) -> Unit = {},
     ): RotatingRead<T> {
+        evict()
         val ordered = FollowsOrder.prioritized(keys.distinct()) { asked[it] }
         val pending = ordered.filterNot(::fresh).take(maxFetches.coerceAtLeast(0))
         pending.forEach { asked[it] = clock() }
@@ -48,6 +56,17 @@ class RotatingReads<T>(private val ttlMillis: Long = TTL_MILLIS, private val clo
             onPartial(held(ordered, null))
         }
         return held(ordered, error)
+    }
+
+    /** How many answers are held (tests). */
+    val held: Int get() = answers.size
+
+    private fun evict() {
+        val now = clock()
+        answers.entries.removeIf { now - it.value.at > keepMillis }
+        asked.entries.removeIf { now - it.value > keepMillis }
+        val over = answers.size - maxKept
+        if (over > 0) answers.entries.sortedBy { it.value.at }.take(over).forEach { answers.remove(it.key, it.value) }
     }
 
     private fun fresh(key: String): Boolean = answers[key]?.let { clock() - it.at <= ttlMillis } == true
@@ -60,6 +79,12 @@ class RotatingReads<T>(private val ttlMillis: Long = TTL_MILLIS, private val clo
         const val TTL_MILLIS = 10L * 60 * 1000
 
         const val CONCURRENCY = 2
+
+        /** How long an answer is shown, stale, before it is dropped: six TTLs. */
+        const val KEEP_MILLIS = 6 * TTL_MILLIS
+
+        /** The most members' answers held at once, across groups. */
+        const val MAX_KEPT = 1500
     }
 }
 

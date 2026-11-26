@@ -106,6 +106,25 @@ class DiscoverySourcesTest {
     }
 
     @Test
+    fun aRotatingReadDropsOldAnswersAndHoldsOnlySoMany(): Unit = runBlocking {
+        var now = 0L
+        val reads = RotatingReads<String>(ttlMillis = 100, clock = { now }, keepMillis = 600, maxKept = 3)
+        val fetch: suspend (String) -> List<String> = { listOf(it) }
+        reads.read(listOf("a", "b"), maxFetches = 4, budgetMillis = 1_000, fetch = fetch)
+        now = 200
+        reads.read(listOf("c", "d"), maxFetches = 4, budgetMillis = 1_000, fetch = fetch)
+        assertEquals(4, reads.held)
+        now = 300
+        val capped = reads.read(listOf("a", "b", "c", "d"), maxFetches = 0, budgetMillis = 1_000, fetch = fetch)
+        assertEquals(3, reads.held, "over the cap the oldest go")
+        assertEquals(setOf("b", "c", "d").size, capped.rows.size)
+        now = 1_000
+        val later = reads.read(listOf("a", "b", "c", "d"), maxFetches = 0, budgetMillis = 1_000, fetch = fetch)
+        assertEquals(0, reads.held, "answers older than the keep time are dropped")
+        assertTrue(later.rows.isEmpty())
+    }
+
+    @Test
     fun aRotatingReadThatReadsNothingIsAFailure(): Unit = runBlocking {
         val read = RotatingReads<String>().read(listOf("a"), maxFetches = 4, budgetMillis = 1_000, fetch = { throw IOException("offline") })
         assertTrue(read.failed)
