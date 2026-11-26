@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">Ne eblas elŝuti. Tiu ĉi plurmedio eble nur estas disponebla kiel fluo, kiun XTA ne ankoraŭ eblas elŝuti.</string>
     <string name="saved_open_in_browser">Malfermi en retumilo</string>
     <string name="saved_ok">Bone</string>
-    <string name="saved_something_wrong">Ups! Io misokazis 🥲</string>
+    <string name="saved_something_wrong">Io misokazis</string>
     <string name="archive_tags">Etikedoj</string>
     <string name="archive_extract">Eltiri tekston el ekrankopio</string>
     <string name="archive_extract_notice">La elektita PNG aŭ JPEG estos sendita al %1$s per via agordita AI-modelo. La eltirita teksto povas enhavi erarojn.</string>

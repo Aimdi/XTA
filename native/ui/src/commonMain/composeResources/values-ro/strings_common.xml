@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X a returnat o eroare de server. Poți citi în continuare postările din cache și poți încerca din nou mai târziu.</string>
     <string name="problem_request_unavailable_title">Această cerere nu este disponibilă</string>
     <string name="problem_request_unavailable_text">X a respins această cerere. Poate fi temporar indisponibilă sau această parte a serviciului s-a schimbat.</string>
-    <string name="problem_oops">Ups! Ceva a mers prost 🥲</string>
+    <string name="problem_oops">Nu s-a putut încărca</string>
     <string name="problem_http_text">X a returnat HTTP %1$d.</string>
     <string name="problem_retry_in">Încearcă din nou peste %1$s</string>
     <string name="close_app_confirm">Ești sigur că vrei să închizi XTA?</string>

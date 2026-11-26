@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">डाउनलोड नहीं किया जा सकता। यह मीडिया केवल स्ट्रीम के रूप में उपलब्ध हो सकता है, जिसे XTA अभी तक डाउनलोड नहीं कर सकता।</string>
     <string name="saved_open_in_browser">ब्राउज़र में खोलें</string>
     <string name="saved_ok">ठीक है</string>
-    <string name="saved_something_wrong">ओह! कुछ गलत हो गया 🥲</string>
+    <string name="saved_something_wrong">कुछ गलत हो गया</string>
     <string name="archive_tags">टैग</string>
     <string name="archive_extract">स्क्रीनशॉट से टेक्स्ट निकालें</string>
     <string name="archive_extract_notice">चुनी गई PNG या JPEG छवि आपके कॉन्फ़िगर किए गए AI मॉडल से %1$s को भेजी जाएगी। निकाले गए टेक्स्ट में गलतियाँ हो सकती हैं।</string>

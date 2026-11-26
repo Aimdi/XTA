@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">O X retornou um erro de servidor. Você pode continuar lendo as publicações em cache e tentar de novo mais tarde.</string>
     <string name="problem_request_unavailable_title">Esta requisição não está disponível</string>
     <string name="problem_request_unavailable_text">O X rejeitou esta requisição. Ela pode estar temporariamente indisponível ou esta parte do serviço pode ter mudado.</string>
-    <string name="problem_oops">Ops! Algo deu errado 🥲</string>
+    <string name="problem_oops">Não foi possível carregar</string>
     <string name="problem_http_text">O X retornou HTTP %1$d.</string>
     <string name="problem_retry_in">Tentar novamente em %1$s</string>
     <string name="close_app_confirm">Tem certeza de que deseja fechar o XTA?</string>

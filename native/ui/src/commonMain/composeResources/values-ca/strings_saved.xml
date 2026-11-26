@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">No s'ha pogut descarregar. Aquest mitjà només pot estar disponible com a flux, cosa que XTA encara no pot descarregar.</string>
     <string name="saved_open_in_browser">Obre al navegador</string>
     <string name="saved_ok">D'acord</string>
-    <string name="saved_something_wrong">Ui! Alguna cosa ha anat malament 🥲</string>
+    <string name="saved_something_wrong">Alguna cosa ha anat malament</string>
     <string name="archive_tags">Etiquetes</string>
     <string name="archive_extract">Extreu text d’una captura</string>
     <string name="archive_extract_notice">La imatge PNG o JPEG triada s’enviarà a %1$s amb el model d’IA configurat. El text extret pot contenir errors.</string>

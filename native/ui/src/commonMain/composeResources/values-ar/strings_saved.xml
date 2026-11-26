@@ -134,7 +134,7 @@
     <string name="saved_no_media_file">غير قادر على تحميل . هذا المحتوى قد يكون متاحا فقط على شكل بث ، فريتر لا يمكنه تحميله .</string>
     <string name="saved_open_in_browser">فتح في المتصفح</string>
     <string name="saved_ok">تمام</string>
-    <string name="saved_something_wrong">أوبسي! حدث خطأ ما 🥲</string>
+    <string name="saved_something_wrong">حدث خطأ ما</string>
     <string name="archive_tags">الوسوم</string>
     <string name="archive_extract">استخراج نص لقطة الشاشة</string>
     <string name="archive_extract_notice">ستُرسل صورة PNG أو JPEG المختارة إلى %1$s باستخدام نموذج الذكاء الاصطناعي الذي أعددته. قد يحتوي النص المستخرج على أخطاء.</string>

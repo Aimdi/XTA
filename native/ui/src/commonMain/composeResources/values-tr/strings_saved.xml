@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">İndirilemiyor. Bu medya yalnızca XTA'ın henüz indiremediği bir akış olarak mevcut olabilir.</string>
     <string name="saved_open_in_browser">Tarayıcıda aç</string>
     <string name="saved_ok">TAMAM</string>
-    <string name="saved_something_wrong">Hop! Bir şeyler ters gitti 🥲</string>
+    <string name="saved_something_wrong">Bir şeyler ters gitti</string>
     <string name="archive_tags">Etiketler</string>
     <string name="archive_extract">Ekran görüntüsünden metin çıkar</string>
     <string name="archive_extract_notice">Seçilen PNG veya JPEG, yapılandırdığınız yapay zekâ modeliyle %1$s adresine gönderilecek. Çıkarılan metin hata içerebilir.</string>

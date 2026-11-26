@@ -128,7 +128,7 @@
     <string name="saved_no_media_file">Не вдалося завантажити. Це медіа може бути доступне лише у вигляді потоку, який XTA ще не може завантажити.</string>
     <string name="saved_open_in_browser">Відкрити у браузері</string>
     <string name="saved_ok">Добре</string>
-    <string name="saved_something_wrong">Ой! Щось пішло не так 🥲</string>
+    <string name="saved_something_wrong">Щось пішло не так</string>
     <string name="archive_tags">Теги</string>
     <string name="archive_extract">Розпізнати текст зі знімка екрана</string>
     <string name="archive_extract_notice">Вибране зображення PNG або JPEG буде надіслано на %1$s з налаштованою моделлю ШІ. Розпізнаний текст може містити помилки.</string>

@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">Allalaadimine ei õnnestu. See meedia võib olla saadaval vaid voogedastusena ning XTA veel ei oska teda alla laadida.</string>
     <string name="saved_open_in_browser">Ava brauseris</string>
     <string name="saved_ok">Sobib</string>
-    <string name="saved_something_wrong">Hopsti! Midagi läks nüüd viltu 🥲</string>
+    <string name="saved_something_wrong">Midagi läks valesti</string>
     <string name="archive_tags">Sildid</string>
     <string name="archive_extract">Tuvasta kuvatõmmise tekst</string>
     <string name="archive_extract_notice">Valitud PNG- või JPEG-pilt saadetakse teenusele %1$s sinu seadistatud tehisintellektimudeliga. Tuvastatud tekst võib sisaldada vigu.</string>

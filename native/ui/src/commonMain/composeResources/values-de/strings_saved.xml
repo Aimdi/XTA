@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">Download nicht möglich. Diese Datei ist möglicherweise nur als Stream verfügbar, welche XTA noch nicht herunterladen kann.</string>
     <string name="saved_open_in_browser">Im Browser öffnen</string>
     <string name="saved_ok">OK</string>
-    <string name="saved_something_wrong">Oh nein! Ein Fehler ist aufgetreten 🥲</string>
+    <string name="saved_something_wrong">Etwas ist schiefgelaufen</string>
     <string name="archive_tags">Tags</string>
     <string name="archive_extract">Text aus Screenshot erkennen</string>
     <string name="archive_extract_notice">Das ausgewählte PNG- oder JPEG-Bild wird mit deinem eingerichteten KI-Modell an %1$s gesendet. Der erkannte Text kann Fehler enthalten.</string>

@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X 傳回了伺服器錯誤。你可以繼續閱讀快取的貼文，稍後再試。</string>
     <string name="problem_request_unavailable_title">此請求無法使用</string>
     <string name="problem_request_unavailable_text">X 拒絕了此請求。它可能暫時無法使用，或者服務的這個部分已經變更。</string>
-    <string name="problem_oops">哎呀！發生錯誤了 🥲</string>
+    <string name="problem_oops">無法載入</string>
     <string name="problem_http_text">X 傳回了 HTTP %1$d。</string>
     <string name="problem_retry_in">%1$s 後重試</string>
     <string name="close_app_confirm">您確定要關閉 XTA 嗎？</string>

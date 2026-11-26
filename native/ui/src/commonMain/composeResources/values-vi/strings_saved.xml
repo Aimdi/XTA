@@ -119,7 +119,7 @@
     <string name="saved_no_media_file">Không thể tải, có thể đây là buổi phát trực tiếp, thứ mà XTA không thể tải</string>
     <string name="saved_open_in_browser">Mở trong trình duyệt</string>
     <string name="saved_ok">OK</string>
-    <string name="saved_something_wrong">Vốnlài, đã có gì đó không đúng 🥲</string>
+    <string name="saved_something_wrong">Đã xảy ra lỗi</string>
     <string name="archive_tags">Thẻ</string>
     <string name="archive_extract">Trích xuất chữ từ ảnh chụp màn hình</string>
     <string name="archive_extract_notice">Ảnh PNG hoặc JPEG đã chọn sẽ được gửi đến %1$s bằng mô hình AI bạn đã cấu hình. Văn bản trích xuất có thể có lỗi.</string>

@@ -125,7 +125,7 @@
     <string name="saved_no_media_file">Nu se poate descărca. Această media poate fi disponibilă doar ca flux, pe care XTA nu îl poate descărca încă.</string>
     <string name="saved_open_in_browser">Deschide în browser</string>
     <string name="saved_ok">OK</string>
-    <string name="saved_something_wrong">Ups! Ceva a mers prost 🥲</string>
+    <string name="saved_something_wrong">Ceva nu a funcționat</string>
     <string name="archive_tags">Etichete</string>
     <string name="archive_extract">Extrage text din captură</string>
     <string name="archive_extract_notice">Imaginea PNG sau JPEG aleasă va fi trimisă la %1$s folosind modelul AI configurat. Textul extras poate conține greșeli.</string>

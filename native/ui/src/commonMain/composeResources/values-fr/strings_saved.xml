@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">Impossible de télécharger. Ce média pourrait être disponible uniquement sous forme de flux, ce que XTA ne sait pas encore télécharger.</string>
     <string name="saved_open_in_browser">Ouvrir dans le navigateur</string>
     <string name="saved_ok">OK</string>
-    <string name="saved_something_wrong">Oups ! Quelque chose s'est mal passé 🥲</string>
+    <string name="saved_something_wrong">Une erreur s'est produite</string>
     <string name="archive_tags">Tags</string>
     <string name="archive_extract">Extraire le texte d’une capture</string>
     <string name="archive_extract_notice">L’image PNG ou JPEG choisie sera envoyée à %1$s avec votre modèle IA configuré. Le texte extrait peut contenir des erreurs.</string>

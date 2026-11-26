@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">Ingen URL tilgjengelig for nedlasting av media</string>
     <string name="saved_open_in_browser">Åpne i nettleser</string>
     <string name="saved_ok">OK</string>
-    <string name="saved_something_wrong">Oops! Noe gikk galt 🥲</string>
+    <string name="saved_something_wrong">Noe gikk galt</string>
     <string name="archive_tags">Tagger</string>
     <string name="archive_extract">Hent tekst fra skjermbilde</string>
     <string name="archive_extract_notice">Det valgte PNG- eller JPEG-bildet sendes til %1$s med den konfigurerte KI-modellen. Teksten kan inneholde feil.</string>

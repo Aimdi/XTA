@@ -119,7 +119,7 @@
     <string name="saved_no_media_file">ダウンロードできません。このメディアはストリーム限定の可能性があり、今のQuackerではダウンロードできません。</string>
     <string name="saved_open_in_browser">ブラウザで開く</string>
     <string name="saved_ok">OK</string>
-    <string name="saved_something_wrong">問題が発生しました🥲</string>
+    <string name="saved_something_wrong">問題が発生しました</string>
     <string name="archive_tags">タグ</string>
     <string name="archive_extract">スクリーンショットから文字を抽出</string>
     <string name="archive_extract_notice">選択したPNGまたはJPEG画像を、設定済みのAIモデルで%1$sに送信します。抽出した文字には誤りが含まれる場合があります。</string>

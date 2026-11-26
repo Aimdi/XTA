@@ -128,7 +128,7 @@
     <string name="saved_no_media_file">Nepodařilo se stáhnout média. Možná jsou dostupná jen jako stream, který XTA zatím nedokáže stáhnout.</string>
     <string name="saved_open_in_browser">Otevřít v prohlížeči</string>
     <string name="saved_ok">OK</string>
-    <string name="saved_something_wrong">Jejda! Něco se pokazilo 🥲</string>
+    <string name="saved_something_wrong">Něco se pokazilo</string>
     <string name="archive_tags">Štítky</string>
     <string name="archive_extract">Získat text ze snímku obrazovky</string>
     <string name="archive_extract_notice">Vybraný obrázek PNG nebo JPEG bude odeslán na %1$s pomocí nastaveného modelu AI. Rozpoznaný text může obsahovat chyby.</string>

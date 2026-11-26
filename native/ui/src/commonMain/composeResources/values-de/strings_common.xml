@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X hat einen Serverfehler gemeldet. Du kannst die zwischengespeicherten Beiträge weiterlesen und es später erneut versuchen.</string>
     <string name="problem_request_unavailable_title">Diese Anfrage ist nicht verfügbar</string>
     <string name="problem_request_unavailable_text">X hat diese Anfrage abgelehnt. Sie ist vielleicht vorübergehend nicht verfügbar, oder dieser Teil des Dienstes hat sich geändert.</string>
-    <string name="problem_oops">Oh nein! Ein Fehler ist aufgetreten 🥲</string>
+    <string name="problem_oops">Konnte nicht geladen werden</string>
     <string name="problem_http_text">X hat HTTP %1$d zurückgegeben.</string>
     <string name="problem_retry_in">Erneut versuchen in %1$s</string>
     <string name="close_app_confirm">Willst du XTA wirklich schließen?</string>

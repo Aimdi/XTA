@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X svarte med en serverfeil. Du kan fortsette å lese bufrede innlegg og prøve igjen senere.</string>
     <string name="problem_request_unavailable_title">Denne forespørselen er utilgjengelig</string>
     <string name="problem_request_unavailable_text">X avviste denne forespørselen. Den kan være midlertidig utilgjengelig, eller denne delen av tjenesten kan ha endret seg.</string>
-    <string name="problem_oops">Oops! Noe gikk galt 🥲</string>
+    <string name="problem_oops">Kunne ikke lastes inn</string>
     <string name="problem_http_text">X svarte med HTTP %1$d.</string>
     <string name="problem_retry_in">Prøv igjen om %1$s</string>
     <string name="close_app_confirm">Lukk XTA?</string>

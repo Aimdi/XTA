@@ -128,7 +128,7 @@
     <string name="saved_no_media_file">Nie można pobrać. Te multimedia mogą być dostępne tylko jako strumień, którego XTA jeszcze nie obsługuje.</string>
     <string name="saved_open_in_browser">Otwórz w przeglądarce</string>
     <string name="saved_ok">OK</string>
-    <string name="saved_something_wrong">Ups! Coś poszło nie tak 🥲</string>
+    <string name="saved_something_wrong">Coś poszło nie tak</string>
     <string name="archive_tags">Tagi</string>
     <string name="archive_extract">Odczytaj tekst ze zrzutu ekranu</string>
     <string name="archive_extract_notice">Wybrany obraz PNG lub JPEG zostanie wysłany do %1$s przy użyciu skonfigurowanego modelu AI. Odczytany tekst może zawierać błędy.</string>
