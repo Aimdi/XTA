@@ -73,7 +73,7 @@ private fun MenuSheet(post: XPost, actions: PostActions, onDismiss: () -> Unit, 
     val windows = LocalPostWindows.current
     val inWindow = remember(windows, shown.id) { windows?.let { open -> { open(shown.id) } } }
     PostMenuSurface(onDismiss) {
-        PostMenuRows(menu, saved, handlers, onDone = { onStep(MenuStep.CLOSED) }, newWindow = inWindow)
+        PostMenuRows(menu, saved, handlers, onDone = { onStep(MenuStep.CLOSED) }, newWindow = inWindow, hints = true)
     }
 }
 

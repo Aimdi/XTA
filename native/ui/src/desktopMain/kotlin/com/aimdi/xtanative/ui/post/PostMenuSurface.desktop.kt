@@ -53,7 +53,7 @@ import com.aimdi.xtanative.ui.theme.MouseRipples
 
 /** A menu's width on the desktop, as Material's menus keep theirs. */
 private val MenuMinWidth = 200.dp
-private val MenuMaxWidth = 320.dp
+private val MenuMaxWidth = 360.dp
 
 /**
  * A menu the keyboard opened: at the top of the post's end, where its ⋯ is,

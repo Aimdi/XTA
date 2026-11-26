@@ -1,7 +1,7 @@
 package com.aimdi.xtanative.ui.plugins
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,6 +19,10 @@ import com.aimdi.xtanative.ui.generated.resources.saved_add_note
 import com.aimdi.xtanative.ui.generated.resources.saved_save_here
 import com.aimdi.xtanative.ui.generated.resources.saved_save_to_folder
 import com.aimdi.xtanative.ui.generated.resources.saved_unsave
+import com.aimdi.xtanative.ui.home.HomeIcons
+import com.aimdi.xtanative.ui.post.HintedMenuRow
+import com.aimdi.xtanative.ui.post.MenuGroupDivider
+import com.aimdi.xtanative.ui.post.MenuHint
 import com.aimdi.xtanative.ui.post.NewWindowIcon
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.saved.SavedIcons
@@ -72,17 +76,25 @@ internal fun PostMenuRows(
     onDone: () -> Unit,
     row: PluginMenuEntry = SheetEntry,
     newWindow: (() -> Unit)? = null,
+    hints: Boolean = false,
 ) {
     val outside = rememberOpenOutside()
     val share = rememberShareText()
     val then = { action: () -> Unit -> { onDone(); action() } }
-    row(if (saved) SavedIcons.Bookmark else SavedIcons.BookmarkBorder, stringResource(if (saved) Res.string.saved_unsave else Res.string.saved_save_here), then(handlers.toggleSaved))
+    // The keys an X post's entries have on the desktop ([hints]), shown in a pointer menu; a plugin's rows draw none.
+    val hinted: @Composable (ImageVector, String, MenuHint, () -> Unit) -> Unit = { icon, label, hint, onClick ->
+        if (hints) HintedMenuRow(icon, label, hint, onClick) else row(icon, label, onClick)
+    }
+    // Keeping it on this device and sharing it, then the lists of who passed it on, then opening it elsewhere: lines between them in a pointer menu.
+    hinted(if (saved) SavedIcons.Bookmark else SavedIcons.BookmarkBorder, stringResource(if (saved) Res.string.saved_unsave else Res.string.saved_save_here), MenuHint.SAVE, then(handlers.toggleSaved))
     row(SavedIcons.EditNote, stringResource(Res.string.saved_add_note), then(handlers.editNote))
-    menu.author?.let { author -> row(PostIcons.People, stringResource(Res.string.posts_add_to_group), then { handlers.addToGroup(author) }) }
-    row(Icons.Filled.Share, stringResource(Res.string.reader_link_share), then { share(menu.url) })
+    menu.author?.let { author -> row(HomeIcons.PeopleOutlined, stringResource(Res.string.posts_add_to_group), then { handlers.addToGroup(author) }) }
+    hinted(Icons.Outlined.Share, stringResource(Res.string.reader_link_share), MenuHint.COPY_LINK, then { share(menu.url) })
     row(SavedIcons.Folder, stringResource(Res.string.saved_save_to_folder), then(handlers.chooseFolder))
+    if (menu.reposts != null || menu.quotes != null) MenuGroupDivider()
     menu.reposts?.let { open -> row(XIcons.Repost, stringResource(Res.string.posts_reposted_by), then(open)) }
     menu.quotes?.let { open -> row(PostIcons.Quote, stringResource(Res.string.posts_quotes), then(open)) }
+    MenuGroupDivider()
     newWindow?.let { open -> row(NewWindowIcon, stringResource(Res.string.posts_open_in_new_window), then(open)) }
     row(PostIcons.OpenInNew, stringResource(Res.string.posts_open_in_browser), then { outside(menu.url) })
 }
