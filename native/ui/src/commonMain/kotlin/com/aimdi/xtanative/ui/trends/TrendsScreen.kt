@@ -28,7 +28,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
@@ -247,7 +246,7 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
     if (picking) PlacesSheet(vm, state.places, onDismiss = { picking = false })
 }
 
-/** The bar: [hint] says what it searches; the magnifier searches, the cross clears it, and the library button searches the reader's library. */
+/** The bar: [hint] says what it searches, with the magnifier every search field leads with; Enter searches, the cross clears it, and the library button searches the reader's library. */
 @Composable
 private fun DiscoverField(
     value: TextFieldValue,
@@ -263,7 +262,6 @@ private fun DiscoverField(
         onValueChange = onValueChange,
         placeholder = hint,
         onSearch = onSearch,
-        leading = { IconTip(stringResource(Res.string.discover_search)) { IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = stringResource(Res.string.discover_search)) } } },
         trailing = {
             if (value.text.isNotEmpty()) IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = onClear) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } }
             IconTip(stringResource(Res.string.saved_search_library)) { IconButton(onClick = onLibrary) { Icon(SavedIcons.ManageSearch, stringResource(Res.string.saved_search_library)) } }
