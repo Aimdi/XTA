@@ -48,6 +48,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -296,7 +297,7 @@ private fun AdvancedButton(filters: Int, onClick: () -> Unit) {
     } }
 }
 
-/** The tabs across the whole column where they fit side by side, as a community's are; narrower, a strip that scrolls. */
+/** The tabs across the whole column where they fit side by side, as a community's are; narrower, a strip that scrolls over the column's full-width divider. */
 @Composable
 private fun SearchTabs(selected: SearchTab, onSelect: (SearchTab) -> Unit) {
     val tabs: @Composable () -> Unit = {
@@ -314,7 +315,10 @@ private fun SearchTabs(selected: SearchTab, onSelect: (SearchTab) -> Unit) {
         if (maxWidth >= TABS_FILL_FROM) {
             TabRow(selectedTabIndex = selected.ordinal, containerColor = MaterialTheme.colorScheme.background, divider = { Hairline() }, tabs = tabs)
         } else {
-            ScrollableTabRow(selectedTabIndex = selected.ordinal, edgePadding = 8.dp, containerColor = MaterialTheme.colorScheme.background, divider = { Hairline() }, tabs = tabs)
+            // The strip's own divider stops at its last tab; the column's runs on to its edge, as the wide row's does.
+            // Under the strip (clear over it), so the picked tab's line is drawn over it as the wide row's is.
+            Hairline(Modifier.align(Alignment.BottomStart).fillMaxWidth())
+            ScrollableTabRow(selectedTabIndex = selected.ordinal, edgePadding = 8.dp, containerColor = Color.Transparent, divider = {}, tabs = tabs)
         }
     }
 }
