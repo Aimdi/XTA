@@ -52,6 +52,9 @@ object Motion {
     /** A standard change: something coming in or growing. */
     const val STANDARD_MS = 180
 
+    /** A desktop screen giving way to the next: a crossfade short enough not to hold the reader up. */
+    const val CROSSFADE_MS = 140
+
     /** How far a pill or notice grows from as it comes in, and shrinks to as it goes. */
     const val POP_FROM = 0.9f
 

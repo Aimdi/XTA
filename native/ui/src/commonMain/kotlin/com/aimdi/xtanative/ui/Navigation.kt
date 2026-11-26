@@ -57,6 +57,7 @@ import com.aimdi.xtanative.ui.chrome.push
 import com.aimdi.xtanative.ui.common.CenteredPage
 import com.aimdi.xtanative.ui.common.LocalProblemActions
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.Motion
 import com.aimdi.xtanative.ui.common.ProblemActions
 import com.aimdi.xtanative.ui.community.CommunityMembersScreen
 import com.aimdi.xtanative.ui.community.CommunityScreen
@@ -281,23 +282,56 @@ private const val FADE_MS = 180
 private typealias Enter = AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition
 private typealias Exit = AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition
 
+/** How one screen gives way to the next. */
+internal enum class ScreenChange {
+    /** At once: motion is reduced. */
+    NONE,
+
+    /** Sliding across, as a phone pushes its screens. */
+    SLIDE,
+
+    /** A short crossfade, as a desktop app changes its view in place. */
+    CROSSFADE,
+
+    ;
+
+    companion object {
+        /** The change on the desktop ([desktop]) or a phone, still while motion is [reduced]. */
+        fun of(desktop: Boolean, reduced: Boolean): ScreenChange = when {
+            reduced -> NONE
+            desktop -> CROSSFADE
+            else -> SLIDE
+        }
+    }
+}
+
 /**
- * How screens come and go: a slide as one is opened and closed, a fade for
- * the media viewer, and nothing while Settings › Accessibility › Disable
- * animations is on ([reduced]), as XTA then pushes its screens without a
- * transition. [reduced] is read as each change starts, so the switch applies at once.
+ * How screens come and go: a slide as one is opened and closed on a phone, a
+ * short crossfade on the desktop ([desktop]), whose screens change in place
+ * beside the navigation, a fade for the media viewer, and nothing while
+ * Settings › Accessibility › Disable animations is on ([reduced]), as XTA then
+ * pushes its screens without a transition ([ScreenChange]). [reduced] is read
+ * as each change starts, so the switch applies at once.
  * An opened post moves itself as a card over a picture of the screen it
  * came from (SwipeBackCard), so that screen stays still under it.
  */
-private class ScreenMotion(private val reduced: State<Boolean>) {
-    val enter: Enter = entering { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(SLIDE_MS)) }
-    val exit: Exit = leaving {
-        if (targetState.isCard()) ExitTransition.None else slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(SLIDE_MS)) { it / 4 }
-    }
-    val popEnter: Enter = entering {
-        if (initialState.isCard()) EnterTransition.None else slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) { it / 4 }
-    }
-    val popExit: Exit = leaving { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) }
+private class ScreenMotion(private val reduced: State<Boolean>, private val desktop: Boolean = isDesktop) {
+    val enter: Enter = moving(
+        slide = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(SLIDE_MS)) },
+        fade = { fadeIn(tween(Motion.CROSSFADE_MS)) },
+    )
+    val exit: Exit = going(
+        slide = { if (targetState.isCard()) ExitTransition.None else slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(SLIDE_MS)) { it / 4 } },
+        fade = { if (targetState.isCard()) ExitTransition.None else fadeOut(tween(Motion.CROSSFADE_MS)) },
+    )
+    val popEnter: Enter = moving(
+        slide = { if (initialState.isCard()) EnterTransition.None else slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) { it / 4 } },
+        fade = { if (initialState.isCard()) EnterTransition.None else fadeIn(tween(Motion.CROSSFADE_MS)) },
+    )
+    val popExit: Exit = going(
+        slide = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) },
+        fade = { fadeOut(tween(Motion.CROSSFADE_MS)) },
+    )
     val fadeEnter: Enter = entering { fadeIn(tween(FADE_MS)) }
     val fadeExit: Exit = leaving { fadeOut(tween(FADE_MS)) }
 
@@ -308,6 +342,22 @@ private class ScreenMotion(private val reduced: State<Boolean>) {
     private fun entering(moving: Enter): Enter = { if (reduced.value) EnterTransition.None else moving(this) }
 
     private fun leaving(moving: Exit): Exit = { if (reduced.value) ExitTransition.None else moving(this) }
+
+    private fun moving(slide: Enter, fade: Enter): Enter = {
+        when (ScreenChange.of(desktop, reduced.value)) {
+            ScreenChange.NONE -> EnterTransition.None
+            ScreenChange.SLIDE -> slide(this)
+            ScreenChange.CROSSFADE -> fade(this)
+        }
+    }
+
+    private fun going(slide: Exit, fade: Exit): Exit = {
+        when (ScreenChange.of(desktop, reduced.value)) {
+            ScreenChange.NONE -> ExitTransition.None
+            ScreenChange.SLIDE -> slide(this)
+            ScreenChange.CROSSFADE -> fade(this)
+        }
+    }
 
     private fun NavBackStackEntry.isCard(): Boolean = destination.route == Routes.POST || destination.route == PluginCards.ROUTE
 }
