@@ -24,7 +24,6 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,6 +41,7 @@ import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.SearchField
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.onSecondaryClick
@@ -203,12 +203,10 @@ private fun GroupsHeader(count: Int, query: String, onQuery: (String) -> Unit) {
             Text(stringResource(Res.string.home_groups), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
             Text("$count", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        OutlinedTextField(
+        SearchField(
             value = query,
             onValueChange = onQuery,
-            placeholder = { Text(stringResource(Res.string.search)) },
-            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-            singleLine = true,
+            placeholder = stringResource(Res.string.search),
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
         )
     }
