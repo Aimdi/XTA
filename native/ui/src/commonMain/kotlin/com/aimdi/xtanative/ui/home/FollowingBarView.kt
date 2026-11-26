@@ -201,7 +201,8 @@ private fun ModeTab(label: String, selected: Boolean, padding: Dp, onClick: () -
 private fun PickerButton(unread: Boolean, titled: Boolean, onPicker: () -> Unit) {
     val source = stringResource(Res.string.following)
     if (titled) return TitledPicker(source, unread, onPicker)
-    IconTip(source) { IconButton(onClick = onPicker, modifier = Modifier.switcherAnchor().semantics { contentDescription = source }) {
+    val opener = switcherButton("following", onPicker)
+    IconTip(source) { IconButton(onClick = opener.onClick, modifier = opener.modifier.semantics { contentDescription = source }) {
         UnreadDot(unread) { Icon(HomeIcons.DynamicFeed, contentDescription = null) }
     } }
 }
@@ -303,12 +304,13 @@ private fun Collapsing(behavior: TopAppBarScrollBehavior, content: @Composable (
 @Composable
 private fun TitledPicker(name: String, unread: Boolean, onPicker: () -> Unit) {
     val said = listOfNotNull(name, stringResource(Res.string.home_unread).takeIf { unread }, stringResource(Res.string.home_networks)).joinToString(", ")
+    val opener = switcherButton("following", onPicker)
     Row(
         Modifier
             .height(FollowingBar.TOUCH_TARGET.dp)
             .clip(RoundedCornerShape(8.dp))
-            .switcherAnchor()
-            .clickable(onClick = onPicker)
+            .then(opener.modifier)
+            .clickable(onClick = opener.onClick)
             .clearAndSetSemantics {
                 role = Role.DropdownList
                 contentDescription = said

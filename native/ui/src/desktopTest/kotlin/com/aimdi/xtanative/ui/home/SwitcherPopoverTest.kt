@@ -2,9 +2,12 @@ package com.aimdi.xtanative.ui.home
 
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.input.key.Key
+import kotlinx.coroutines.CoroutineScope
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 
 class SwitcherPopoverTest {
     @Test
@@ -56,5 +59,16 @@ class SwitcherPopoverTest {
         assertEquals(false, SwitcherPopoverPlace.end(Key.PageDown, modified = false))
         assertNull(SwitcherPopoverPlace.end(Key.MoveEnd, modified = true))
         assertNull(SwitcherPopoverPlace.end(Key.Tab, modified = false))
+    }
+
+    @Test
+    fun theButtonThatOpenedItIsTakenOnceSoAHoldOfHomeLaterRisesAsTheSheet() {
+        val anchor = SwitcherAnchor(CoroutineScope(EmptyCoroutineContext))
+        val picker = anchor.button("following")
+        assertSame(picker, anchor.button("following"), "the same button however often it is made afresh")
+        assertNull(anchor.take(), "nothing clicked: the sheet")
+        anchor.claim(picker)
+        assertSame(picker, anchor.take())
+        assertNull(anchor.take(), "taken already: a later hold of Home opens no drop-down under it")
     }
 }

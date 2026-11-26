@@ -156,9 +156,10 @@ internal fun PluginSwitcherSheet(ui: HomeUi, networks: HomeNetworks, shown: Home
     // In the desktop's wide frame (the sidebar or the rail beside it), a drop-down under the button that opened it.
     val anchor = LocalSwitcherAnchor.current
     val frame = LocalWideFrame.current
-    val at = remember { anchor?.takeIf { frame != null }?.bounds() }
-    if (anchor != null && at != null) {
-        SwitcherPopover(anchor, at, onDismiss = given.onDismiss) {
+    // Taken once, whether or not it drops down: a later switcher no button opened (a hold of Home) rises as the sheet.
+    val button = remember { anchor?.take()?.takeIf { frame != null && it.bounds != null } }
+    if (anchor != null && button != null) {
+        SwitcherPopover(anchor, button, onDismiss = given.onDismiss) {
             SwitcherBody(ui, networks, shown, unread, given, plugin, compact = true)
         }
         return

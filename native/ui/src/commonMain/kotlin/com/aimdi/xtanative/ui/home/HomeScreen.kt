@@ -248,7 +248,8 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean, wide: Boolean, frame:
     )
     if (frame != null) FollowedByFrame(frame, page) { index -> barTapped(shell, ui, index) }
     // The button that opens the timeline switcher, under which the desktop's switcher drops down.
-    val anchor = remember { SwitcherAnchor() }
+    val anchorScope = rememberCoroutineScope()
+    val anchor = remember(anchorScope) { SwitcherAnchor(anchorScope) }
     CompositionLocalProvider(LocalSwitcherAnchor provides anchor) {
         Row(Modifier.fillMaxSize()) {
             // The frame's column stands beside every screen, Home's included.

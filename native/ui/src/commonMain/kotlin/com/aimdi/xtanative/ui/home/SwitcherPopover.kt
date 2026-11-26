@@ -10,8 +10,6 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -40,7 +38,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
@@ -58,9 +55,6 @@ import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -87,34 +81,51 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
- * The button that last opened the timeline switcher ([switcherAnchor]):
- * where it stands, so the desktop's switcher drops down under it rather than
- * rising as a sheet from the window's foot, and how the focus goes back to it
- * once the switcher closes.
+ * A button that opens the timeline switcher ([switcherButton]), by its part
+ * of Home (Following's picker, a timeline's mark, a network's avatar): where
+ * it stands, followed as it moves ([bounds], in the window) and as the
+ * button is made afresh in another layout (the window narrowed to the rail,
+ * a column fewer), so the desktop's switcher drops down under it rather
+ * than rising as a sheet from the window's foot, and the focus that goes
+ * back to it once the switcher closes ([focus]).
  */
 @Stable
-internal class SwitcherAnchor {
-    private var place: LayoutCoordinates? = null
-    private var focus: FocusRequester? = null
-    private var scope: CoroutineScope? = null
+internal class SwitcherButton {
+    /** The button's bounds in the window as last laid out; null before. */
+    var bounds by mutableStateOf<Rect?>(null)
+        internal set
 
-    /** The button pressed or keyed now: the one the switcher opens under. */
-    fun claim(place: LayoutCoordinates?, focus: FocusRequester, scope: CoroutineScope) {
-        this.place = place
-        this.focus = focus
-        this.scope = scope
+    val focus = FocusRequester()
+}
+
+/**
+ * Which button opened the timeline switcher: claimed as one is clicked or
+ * keyed, taken once as the switcher opens, so a switcher no button opened (a
+ * hold of Home on the bar) never drops down under a button clicked before.
+ * [scope] is Home's, which gives the focus back to the button.
+ */
+@Stable
+internal class SwitcherAnchor(private val scope: CoroutineScope) {
+    private val buttons = HashMap<String, SwitcherButton>()
+    private var claimed: SwitcherButton? = null
+
+    /** The button that is Home's part [part], the same one however often it is made afresh. */
+    fun button(part: String): SwitcherButton = buttons.getOrPut(part) { SwitcherButton() }
+
+    /** [button] activated now: the one the switcher opens under. */
+    fun claim(button: SwitcherButton) {
+        claimed = button
     }
 
-    /** The button's bounds in the window, while it is still laid out; null for a switcher no button opened (a hold of Home). */
-    fun bounds(): Rect? = place?.takeIf { it.isAttached }?.boundsInWindow()
+    /** The button that opened the switcher, cleared as it is taken; null for a switcher no button opened. */
+    fun take(): SwitcherButton? = claimed.also { claimed = null }
 
-    /** The focus back on the button, once the switcher's popup has gone. */
-    fun refocus() {
-        val requester = focus ?: return
-        scope?.launch {
+    /** The focus back on [button], once the switcher's popup has gone. */
+    fun refocus(button: SwitcherButton) {
+        scope.launch {
             withFrameNanos {}
             withFrameNanos {}
-            runCatching { requester.requestFocus() }
+            runCatching { button.focus.requestFocus() }
         }
     }
 }
@@ -122,25 +133,29 @@ internal class SwitcherAnchor {
 /** The [SwitcherAnchor] of Home; null outside it. */
 internal val LocalSwitcherAnchor = staticCompositionLocalOf<SwitcherAnchor?> { null }
 
-/** Marks a button that opens the timeline switcher: pressed or keyed, the switcher opens under it ([SwitcherAnchor]). */
-internal fun Modifier.switcherAnchor(): Modifier = composed {
-    val anchor = LocalSwitcherAnchor.current ?: return@composed Modifier
-    val place = remember { arrayOfNulls<LayoutCoordinates>(1) }
-    val focus = remember { FocusRequester() }
-    val scope = rememberCoroutineScope()
-    val claim = { anchor.claim(place[0], focus, scope) }
-    onGloballyPositioned { place[0] = it }
-        .focusRequester(focus)
-        .onPreviewKeyEvent {
-            claim()
-            false
-        }
-        .pointerInput(anchor) {
-            awaitEachGesture {
-                awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
-                claim()
+/**
+ * A button that opens the timeline switcher: [modifier] goes on it, and
+ * [onClick] (its click or key) claims it before opening, so the switcher
+ * opens under it ([SwitcherAnchor]). Outside Home, the opening alone.
+ */
+internal class SwitcherOpener(val modifier: Modifier, val onClick: () -> Unit)
+
+/** The [SwitcherOpener] of Home's part [part] (one name per kind of button: "following", "timeline", a network's id), opening with [open]. */
+@Composable
+internal fun switcherButton(part: String, open: () -> Unit): SwitcherOpener {
+    val anchor = LocalSwitcherAnchor.current
+    val opening by rememberUpdatedState(open)
+    return remember(anchor, part) {
+        if (anchor == null) {
+            SwitcherOpener(Modifier) { opening() }
+        } else {
+            val button = anchor.button(part)
+            SwitcherOpener(Modifier.onGloballyPositioned { button.bounds = it.boundsInWindow() }.focusRequester(button.focus)) {
+                anchor.claim(button)
+                opening()
             }
         }
+    }
 }
 
 /** Where the desktop's switcher stands and how its keys move about it, apart from the popup. */
@@ -185,7 +200,8 @@ internal object SwitcherPopoverPlace {
 
 /**
  * The timeline switcher as a desktop's drop-down: under the button that
- * opened it ([anchor]), [SwitcherPopoverPlace.WIDTH] wide, scrolled where the
+ * opened it ([button]), following it as the window's layout moves it (the
+ * column turning to the rail), [SwitcherPopoverPlace.WIDTH] wide, scrolled where the
  * window is short, its edge the theme's outline. It grows in from the
  * button's corner and fades out (still while motion is reduced). ↑ ↓ move
  * along its stops, ← → across a row, Home and End to either end; Esc or a
@@ -194,7 +210,7 @@ internal object SwitcherPopoverPlace {
  * once, after it has gone, however often it is clicked meanwhile.
  */
 @Composable
-internal fun SwitcherPopover(anchor: SwitcherAnchor, at: Rect, onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+internal fun SwitcherPopover(anchor: SwitcherAnchor, button: SwitcherButton, onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
     val reduced = LocalReducedMotion.current
     val visible = remember { MutableTransitionState(false).apply { targetState = true } }
     val scope = rememberCoroutineScope()
@@ -206,7 +222,7 @@ internal fun SwitcherPopover(anchor: SwitcherAnchor, at: Rect, onDismiss: () -> 
         }) { dismiss() }
     }
     closer.reduced = reduced
-    val away = { closer.close { anchor.refocus() } }
+    val away = { closer.close { anchor.refocus(button) } }
     Popup(popupPositionProvider = WholeWindow, onDismissRequest = away, properties = PopupProperties(focusable = true)) {
         BoxWithConstraints(
             Modifier
@@ -217,6 +233,7 @@ internal fun SwitcherPopover(anchor: SwitcherAnchor, at: Rect, onDismiss: () -> 
         ) {
             val density = LocalDensity.current
             val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+            val at = button.bounds ?: Rect.Zero
             val (x, y, tall) = with(density) {
                 val width = SwitcherPopoverPlace.WIDTH.dp.toPx()
                 val margin = SwitcherPopoverPlace.MARGIN.dp.toPx()
