@@ -5,9 +5,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import com.aimdi.xtanative.services.links.LinkLaunch
-import com.aimdi.xtanative.ui.common.ChildProcess
-import java.awt.Desktop
-import java.net.URI
 
 @Composable
 internal actual fun rememberLinkPlatform(): LinkPlatform = DesktopLinks
@@ -23,23 +20,14 @@ internal actual fun IncomingLinkEffect(onLink: (String) -> Unit) {
     LaunchedEffect(Unit) { DesktopIncomingLinks.links.collect { latest(it) } }
 }
 
-/**
- * The desktop's one browser, its default: java.awt.Desktop, or xdg-open where
- * that cannot (desktops without GNOME's libraries). Only web links leave: a
- * post's link never starts a program of its own, and nothing here throws.
- */
+/** The desktop's one browser, its default ([BrowserHandoff]): only web links leave, and nothing here throws. */
 internal object DesktopLinks : LinkPlatform {
     override val desktop: Boolean = true
 
     override fun launch(launch: LinkLaunch) {
         val url = launch.url.trim()
-        if (!url.startsWith("https://") && !url.startsWith("http://")) return
+        if (!BrowserHandoff.isWeb(url)) return
         SentOutside.sent(url)
-        if (!browse(url)) runCatching { ChildProcess.start("xdg-open", url) }
+        BrowserHandoff.desktop.send(url)
     }
-
-    private fun browse(url: String): Boolean = runCatching {
-        val desktop = Desktop.getDesktop()
-        desktop.isSupported(Desktop.Action.BROWSE).also { supported -> if (supported) desktop.browse(URI(url)) }
-    }.getOrDefault(false)
 }
