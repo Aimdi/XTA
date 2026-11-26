@@ -101,7 +101,6 @@ internal fun GeneralSettings(title: String, vm: SettingsViewModel, focus: String
     val snackbar = remember { SnackbarHostState() }
     SettingsPage(title, onBack, snackbar) { padding ->
         SettingsList(padding) {
-            SettingsHeader(stringResource(Res.string.settings_general))
             val languages = listOf(SettingsChoices.SYSTEM_LANGUAGE) + SettingsChoices.languages.map { it.code }
             val language = settings[GeneralPrefs.locale].takeIf { it in languages } ?: SettingsChoices.SYSTEM_LANGUAGE
             ChoiceRow(
@@ -135,7 +134,7 @@ internal fun GeneralSettings(title: String, vm: SettingsViewModel, focus: String
                 PrefSwitch(settings, GeneralPrefs.disableScreenshots, stringResource(Res.string.settings_disable_screenshots), stringResource(Res.string.settings_disable_screenshots_hint), vm, focus)
             }
 
-            SettingsHeader(stringResource(Res.string.settings_default_tab))
+            SettingsDivider()
             ChoiceRow(
                 stringResource(Res.string.settings_default_tab),
                 stringResource(Res.string.settings_default_tab_description),
