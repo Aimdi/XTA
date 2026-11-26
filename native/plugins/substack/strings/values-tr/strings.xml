@@ -80,6 +80,7 @@
     <string name="no_results">Sonuç yok</string>
     <string name="notes_empty">Şu an gösterilecek Notes yok</string>
     <string name="notes_intro">Substack’teki herkese açık Notes — kişisel Following akışınız değil. Notu sitede açmak için dokunun veya yayınını takip edin.</string>
+    <string name="notes_intro_desktop">Substack’teki herkese açık Notes — kişisel Following akışınız değil. Notu sitede açmak için tıklayın veya yayınını takip edin.</string>
     <string name="open_in_browser">Tarayıcıda aç</string>
     <string name="open_pasted_post">Yapıştırılan yazıyı aç</string>
     <string name="opml_empty">Bu dosyada yayın yok</string>

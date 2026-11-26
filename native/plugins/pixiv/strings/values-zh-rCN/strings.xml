@@ -121,6 +121,7 @@
     <string name="error_unauthorized">你的 Pixiv 刷新令牌被拒绝</string>
     <string name="file_name">文件名</string>
     <string name="file_name_help">点按某项信息即可在光标处插入。每个文件保留其原有扩展名。</string>
+    <string name="file_name_help_desktop">点击某项信息即可在光标处插入。每个文件保留其原有扩展名。</string>
     <string name="file_name_part_required">请包含 %1$s，让作品的每一页都有各自的名称</string>
     <string name="file_name_preview">预览：%1$s</string>
     <string name="file_name_reset">重置</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">编辑喜爱的标签</string>
     <string name="search_favorite_tags_edit_hint">拖动标签可调整顺序，向一侧滑动可将其移除。</string>
     <string name="search_favorite_tags_empty">还没有喜爱的标签。长按作品上的标签即可添加。</string>
+    <string name="search_favorite_tags_empty_desktop">还没有喜爱的标签。右键点击作品上的标签即可添加。</string>
     <string name="search_filters_title">搜索筛选</string>
     <string name="search_hint">标签、标题或用户</string>
     <string name="search_history">最近搜索</string>

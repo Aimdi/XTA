@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Zure Pixiv freskatze-tokena baztertu da</string>
     <string name="file_name">Fitxategi-izena</string>
     <string name="file_name_help">Sakatu datu bat kurtsorearen lekuan txertatzeko. Fitxategi bakoitzak bere luzapena gordetzen du.</string>
+    <string name="file_name_help_desktop">Egin klik datu batean kurtsorearen lekuan txertatzeko. Fitxategi bakoitzak bere luzapena gordetzen du.</string>
     <string name="file_name_part_required">Gehitu %1$s, lan baten orrialde bakoitzak bere izena izan dezan</string>
     <string name="file_name_preview">Aurrebista: %1$s</string>
     <string name="file_name_reset">Berrezarri</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Editatu etiketa gogokoak</string>
     <string name="search_favorite_tags_edit_hint">Arrastatu etiketa bat hura mugitzeko. Irristatu alde batera kentzeko.</string>
     <string name="search_favorite_tags_empty">Oraindik ez dago etiketa gogokorik. Sakatu luze lan bateko etiketa bat gehitzeko.</string>
+    <string name="search_favorite_tags_empty_desktop">Oraindik ez dago etiketa gogokorik. Egin eskuineko klik lan bateko etiketa batean gehitzeko.</string>
     <string name="search_filters_title">Bilaketa-iragazkiak</string>
     <string name="search_hint">Etiketak, izenburuak edo erabiltzaileak</string>
     <string name="search_history">Azken bilaketak</string>

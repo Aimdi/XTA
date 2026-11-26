@@ -121,6 +121,7 @@
     <string name="error_unauthorized">आपका Pixiv रिफ़्रेश टोकन अस्वीकृत हुआ</string>
     <string name="file_name">फ़ाइल का नाम</string>
     <string name="file_name_help">किसी जानकारी को कर्सर की जगह डालने के लिए उस पर टैप करें। हर फ़ाइल अपना एक्सटेंशन बनाए रखती है।</string>
+    <string name="file_name_help_desktop">किसी जानकारी को कर्सर की जगह डालने के लिए उस पर क्लिक करें। हर फ़ाइल अपना एक्सटेंशन बनाए रखती है।</string>
     <string name="file_name_part_required">%1$s जोड़ें ताकि किसी काम के हर पृष्ठ का अपना नाम हो</string>
     <string name="file_name_preview">पूर्वावलोकन: %1$s</string>
     <string name="file_name_reset">रीसेट करें</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">पसंदीदा टैग बदलें</string>
     <string name="search_favorite_tags_edit_hint">टैग को खिसकाने के लिए खींचें। हटाने के लिए उसे किनारे की ओर स्वाइप करें।</string>
     <string name="search_favorite_tags_empty">अभी कोई पसंदीदा टैग नहीं है। जोड़ने के लिए किसी काम के टैग को देर तक दबाएँ।</string>
+    <string name="search_favorite_tags_empty_desktop">अभी कोई पसंदीदा टैग नहीं है। जोड़ने के लिए किसी काम के टैग पर राइट-क्लिक करें।</string>
     <string name="search_filters_title">खोज फ़िल्टर</string>
     <string name="search_hint">टैग, शीर्षक या उपयोगकर्ता</string>
     <string name="search_history">हाल की खोजें</string>

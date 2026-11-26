@@ -89,6 +89,7 @@ import com.aimdi.xtanative.ui.common.mediaShown
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.onSecondaryClickAt
 import com.aimdi.xtanative.ui.common.rememberPicture
+import com.aimdi.xtanative.ui.common.rememberPictureIndication
 import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.downloads.PluginDownloads
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -203,7 +204,8 @@ private fun MediaTile(item: MediaItem, hidden: Boolean, modifier: Modifier, onCl
         return
     }
     val poster = rememberPicture(item.tileUrl)
-    Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant).combinedClickable(onClick = onClick, onLongClick = onHold)) {
+    // Lit as XTA's own media tiles are (MediaGrid): a press washes it, the pointer resting on it leaves its colours alone.
+    Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant).combinedClickable(interactionSource = null, indication = rememberPictureIndication(), onClick = onClick, onLongClick = onHold)) {
         AsyncImage(
             model = poster,
             contentDescription = item.alt,

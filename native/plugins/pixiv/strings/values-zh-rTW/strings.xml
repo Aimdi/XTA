@@ -121,6 +121,7 @@
     <string name="error_unauthorized">你的 Pixiv 重新整理權杖被拒絕</string>
     <string name="file_name">檔案名稱</string>
     <string name="file_name_help">輕觸某項資訊即可在游標處插入。每個檔案保留其原有副檔名。</string>
+    <string name="file_name_help_desktop">按一下某項資訊即可在游標處插入。每個檔案保留其原有副檔名。</string>
     <string name="file_name_part_required">請包含 %1$s，讓作品的每一頁都有各自的名稱</string>
     <string name="file_name_preview">預覽：%1$s</string>
     <string name="file_name_reset">重設</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">編輯喜愛的標籤</string>
     <string name="search_favorite_tags_edit_hint">拖曳標籤可調整順序，往旁邊滑動即可移除。</string>
     <string name="search_favorite_tags_empty">還沒有喜愛的標籤。長按作品上的標籤即可加入。</string>
+    <string name="search_favorite_tags_empty_desktop">還沒有喜愛的標籤。在作品上的標籤按右鍵即可加入。</string>
     <string name="search_filters_title">搜尋篩選</string>
     <string name="search_hint">標籤、標題或使用者</string>
     <string name="search_history">最近搜尋</string>

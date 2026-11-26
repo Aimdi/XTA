@@ -33,6 +33,7 @@
     <string name="download_all_result">In coda: %1$d. Già scaricati: %2$d.</string>
     <string name="edit_as_text">Modifica come testo</string>
     <string name="edit_tag">Tocca per modificare</string>
+    <string name="edit_tag_desktop">Fai clic per modificare</string>
     <string name="either_tag">Oppure</string>
     <string name="empty_following">Segui dei tag dalla ricerca o da un post per riempire questa scheda</string>
     <string name="empty_following_posts">Nessun post recente per i tag che segui</string>
@@ -126,6 +127,7 @@
     <string name="rating_questionable">Discutibile</string>
     <string name="rating_sensitive">Sensibile</string>
     <string name="related_hint">Tocca per aggiungere alla ricerca · tieni premuto per escludere</string>
+    <string name="related_hint_desktop">Fai clic per aggiungere alla ricerca · clic destro per escludere</string>
     <string name="remove_site">Rimuovi sito</string>
     <string name="retry">Riprova</string>
     <string name="save_on_this_device">Salva su questo dispositivo</string>
@@ -154,6 +156,7 @@
     <string name="small_thumbnails_description">Carica nella griglia le anteprime piccole dell’host. Più rapide e consumano meno dati, ma sono più sfocate</string>
     <string name="source">Fonte</string>
     <string name="suggestions_hint">Tag simili a quello digitato: toccane uno per cercarlo al suo posto</string>
+    <string name="suggestions_hint_desktop">Tag simili a quello digitato: fai clic su uno per cercarlo al suo posto</string>
     <string name="tab_following">Seguiti</string>
     <string name="tab_latest">Più recenti</string>
     <string name="tag_artist">Artista</string>
@@ -171,6 +174,7 @@
     <string name="tag_sort_name">A–Z</string>
     <string name="tag_species">Specie</string>
     <string name="tag_tap_hint">Tocca un tag per cercarlo. Tienilo premuto per seguirlo, nasconderlo o leggerne la wiki.</string>
+    <string name="tag_tap_hint_desktop">Fai clic su un tag per cercarlo. Fai clic destro per seguirlo, nasconderlo o leggerne la wiki.</string>
     <string name="tags">Tag</string>
     <string name="test_connection">Prova la connessione</string>
     <string name="test_failed">Prova del booru non riuscita: %1$s</string>

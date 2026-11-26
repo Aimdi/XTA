@@ -33,6 +33,7 @@
     <string name="download_all_result">A la cua: %1$d. Ja baixats: %2$d.</string>
     <string name="edit_as_text">Edita com a text</string>
     <string name="edit_tag">Toca per editar</string>
+    <string name="edit_tag_desktop">Fes clic per editar</string>
     <string name="either_tag">O</string>
     <string name="empty_following">Segueix etiquetes des de la cerca o una publicació per omplir aquesta pestanya</string>
     <string name="empty_following_posts">No hi ha publicacions recents de les etiquetes que segueixes</string>
@@ -126,6 +127,7 @@
     <string name="rating_questionable">Qüestionable</string>
     <string name="rating_sensitive">Sensible</string>
     <string name="related_hint">Toca per afegir a la cerca · mantén premut per excloure</string>
+    <string name="related_hint_desktop">Fes clic per afegir a la cerca · clic amb el botó dret per excloure</string>
     <string name="remove_site">Suprimeix el lloc</string>
     <string name="retry">Reintentar</string>
     <string name="save_on_this_device">Desa en aquest dispositiu</string>
@@ -154,6 +156,7 @@
     <string name="small_thumbnails_description">Carrega a la graella les previsualitzacions petites del lloc. Més ràpid i amb menys dades, però més borrós</string>
     <string name="source">Font</string>
     <string name="suggestions_hint">Etiquetes semblants a la que has escrit: toca’n una per cercar-la</string>
+    <string name="suggestions_hint_desktop">Etiquetes semblants a la que has escrit: fes clic en una per cercar-la</string>
     <string name="tab_following">Seguint</string>
     <string name="tab_latest">Recents</string>
     <string name="tag_artist">Artista</string>
@@ -171,6 +174,7 @@
     <string name="tag_sort_name">A–Z</string>
     <string name="tag_species">Espècie</string>
     <string name="tag_tap_hint">Toca una etiqueta per cercar-la. Mantén-la premuda per seguir-la, amagar-la o llegir-ne la wiki.</string>
+    <string name="tag_tap_hint_desktop">Fes clic en una etiqueta per cercar-la. Fes-hi clic amb el botó dret per seguir-la, amagar-la o llegir-ne la wiki.</string>
     <string name="tags">Etiquetes</string>
     <string name="test_connection">Prova la connexió</string>
     <string name="test_failed">La prova del booru ha fallat: %1$s</string>

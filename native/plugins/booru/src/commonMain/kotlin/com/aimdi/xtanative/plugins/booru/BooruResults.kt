@@ -29,7 +29,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.booru.BooruQuery
 import com.aimdi.xtanative.networks.booru.BooruTagOperator
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.onContextClick
+import com.aimdi.xtanative.ui.plugins.pluginEdgeColor
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 
@@ -59,7 +61,7 @@ private fun RelatedTags(search: BooruSearch, results: BooruResults, query: List<
     val host = fromHost.orEmpty()
     val tags = if (host.isNotEmpty()) BooruQuery.unsearchedTags(host, query) else BooruQuery.relatedTags(posts.posts, query)
     if (tags.isEmpty()) return
-    val hint = pluginString(Strings.related_hint)
+    val hint = pluginString(if (PluginPlatform.isDesktop) Strings.related_hint_desktop else Strings.related_hint)
     Row(
         Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(start = 4.dp, end = 12.dp, top = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -78,7 +80,7 @@ private fun RelatedChip(tag: String, onAdd: () -> Unit, onExclude: () -> Unit) {
     Surface(
         shape = RoundedCornerShape(8.dp),
         color = Color.Transparent,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        border = BorderStroke(1.dp, pluginEdgeColor()),
         modifier = Modifier.clip(RoundedCornerShape(8.dp)).onContextClick(onExclude).combinedClickable(
             onClick = onAdd,
             onClickLabel = pluginString(Strings.add_to_search),

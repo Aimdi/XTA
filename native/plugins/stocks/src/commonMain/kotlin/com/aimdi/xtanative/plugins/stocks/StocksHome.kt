@@ -62,6 +62,7 @@ import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTab
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginNotices
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ShellFeeds
@@ -231,7 +232,7 @@ private fun EmptyStocks(app: StocksApp, model: StocksHomeModel, view: StocksView
         item { Icon(if (trending) PostIcons.TrendingUp else StocksIcons.ShowChart, null, Modifier.size(48.dp), tint = MaterialTheme.colorScheme.outline) }
         item { Text(pluginString(message), Modifier.padding(top = 16.dp), textAlign = TextAlign.Center) }
         if (view.tab != StocksTab.WATCHLIST) {
-            item { Text(pluginString(Strings.feed_hint), Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyMedium, color = muted, textAlign = TextAlign.Center) }
+            item { Text(pluginString(if (PluginPlatform.isDesktop) Strings.feed_hint_desktop else Strings.feed_hint), Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyMedium, color = muted, textAlign = TextAlign.Center) }
         }
         item {
             Button(onClick = if (trending) model::retryTrending else onAdd, modifier = Modifier.padding(top = 16.dp)) {

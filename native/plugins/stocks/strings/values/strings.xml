@@ -21,6 +21,7 @@
     <string name="error">That is not a ticker symbol</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Posts about your tickers show up below. Tap a symbol to filter; long-press opens its page.</string>
+    <string name="feed_hint_desktop">Posts about your tickers show up below. Click a symbol to filter; right-click opens its page.</string>
     <string name="fold_signal_posts">Fold signal-group posts</string>
     <string name="hide">Hide</string>
     <string name="liquidity">Liquidity</string>

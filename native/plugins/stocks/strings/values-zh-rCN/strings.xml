@@ -21,6 +21,7 @@
     <string name="error">这不是股票代码</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">与自选相关的帖子显示在下方。点按符号可筛选；长按打开其页面。</string>
+    <string name="feed_hint_desktop">与自选相关的帖子显示在下方。点击符号可筛选；右键点击打开其页面。</string>
     <string name="fold_signal_posts">折叠信号群帖子</string>
     <string name="hide">隐藏</string>
     <string name="liquidity">流动性</string>

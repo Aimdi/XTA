@@ -80,6 +80,7 @@
     <string name="no_results">Ez dago emaitzarik</string>
     <string name="notes_empty">Ez dago Notesik erakusteko orain</string>
     <string name="notes_intro">Substackeko Notes publikoak — ez zure Following pertsonala. Ukitu ohar bat gunean irekitzeko, edo jarraitu bere argitalpena.</string>
+    <string name="notes_intro_desktop">Substackeko Notes publikoak — ez zure Following pertsonala. Egin klik ohar batean gunean irekitzeko, edo jarraitu bere argitalpena.</string>
     <string name="open_in_browser">Ireki nabigatzailean</string>
     <string name="open_pasted_post">Ireki itsatsitako mezua</string>
     <string name="opml_empty">Fitxategi honetan ez dago argitalpenik</string>

@@ -33,6 +33,7 @@
     <string name="download_all_result">U čarzie: %1$d. Užo spampavana: %2$d.</string>
     <string name="edit_as_text">Zmianić jak tekst</string>
     <string name="edit_tag">Nacisnicie, kab zmianić</string>
+    <string name="edit_tag_desktop">Pstryknicie, kab zmianić</string>
     <string name="either_tag">Abo</string>
     <string name="empty_following">Padpišyciesia na tehi z pošuku abo z dopisu, kab zapoŭnić hetuju ŭkładku</string>
     <string name="empty_following_posts">Niama novych dopisaŭ pa vašych tehach</string>
@@ -127,6 +128,7 @@
     <string name="rating_questionable">Sumnieŭny</string>
     <string name="rating_sensitive">Dalikatny</string>
     <string name="related_hint">Nacisnicie, kab dadać u pošuk · utrymlivajcie, kab vyklučyć</string>
+    <string name="related_hint_desktop">Pstryknicie, kab dadać u pošuk · nacisnicie pravaj knopkaj myšy, kab vyklučyć</string>
     <string name="remove_site">Vydalić sajt</string>
     <string name="retry">Paŭtaryć</string>
     <string name="save_on_this_device">Zachavać na hetaj pryladzie</string>
@@ -155,6 +157,7 @@
     <string name="small_thumbnails_description">Zahružaje ŭ sietku maleńkija prevju z sajta. Chutčej i z mienšym trafikam, ale mienš vyrazna</string>
     <string name="source">Krynica</string>
     <string name="suggestions_hint">Tehi, padobnyja da ŭviedzienaha: nacisnicie, kab šukać pa im</string>
+    <string name="suggestions_hint_desktop">Tehi, padobnyja da ŭviedzienaha: pstryknicie, kab šukać pa im</string>
     <string name="tab_following">Padpiski</string>
     <string name="tab_latest">Novaje</string>
     <string name="tag_artist">Mastak</string>
@@ -173,6 +176,7 @@
     <string name="tag_sort_name">Pa alfavicie</string>
     <string name="tag_species">Vid</string>
     <string name="tag_tap_hint">Nacisnicie na teh, kab šukać jaho. Utrymlivajcie, kab padpisacca, schavać abo pračytać viki.</string>
+    <string name="tag_tap_hint_desktop">Pstryknicie na teh, kab šukać jaho. Nacisnicie na jaho pravaj knopkaj myšy, kab padpisacca, schavać abo pračytać viki.</string>
     <string name="tags">Tehi</string>
     <string name="test_connection">Pravieryć złučennie</string>
     <string name="test_failed">Pravierka buru nie ŭdalasia: %1$s</string>

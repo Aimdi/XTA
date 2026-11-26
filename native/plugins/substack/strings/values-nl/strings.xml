@@ -80,6 +80,7 @@
     <string name="no_results">Geen resultaten</string>
     <string name="notes_empty">Geen Notes om te tonen</string>
     <string name="notes_intro">Openbare Notes van Substack — niet je persoonlijke Following. Tik op een notitie om die op de site te openen, of volg de publicatie.</string>
+    <string name="notes_intro_desktop">Openbare Notes van Substack — niet je persoonlijke Following. Klik op een notitie om die op de site te openen, of volg de publicatie.</string>
     <string name="open_in_browser">Openen in browser</string>
     <string name="open_pasted_post">Geplakte post openen</string>
     <string name="opml_empty">Geen publicaties in dit bestand</string>

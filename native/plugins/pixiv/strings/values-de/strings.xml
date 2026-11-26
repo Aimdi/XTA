@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Dein Pixiv-Refresh-Token wurde abgelehnt</string>
     <string name="file_name">Dateiname</string>
     <string name="file_name_help">Tippe auf eine Angabe, um sie an der Cursorposition einzufügen. Jede Datei behält ihre eigene Endung.</string>
+    <string name="file_name_help_desktop">Klicke auf eine Angabe, um sie an der Cursorposition einzufügen. Jede Datei behält ihre eigene Endung.</string>
     <string name="file_name_part_required">Füge %1$s ein, damit jede Seite eines Werks ihren eigenen Namen bekommt</string>
     <string name="file_name_preview">Vorschau: %1$s</string>
     <string name="file_name_reset">Zurücksetzen</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Lieblings-Tags bearbeiten</string>
     <string name="search_favorite_tags_edit_hint">Ziehe einen Tag, um ihn zu verschieben. Wische ihn zur Seite, um ihn zu entfernen.</string>
     <string name="search_favorite_tags_empty">Noch keine Lieblings-Tags. Halte bei einem Werk einen Tag gedrückt, um ihn hinzuzufügen.</string>
+    <string name="search_favorite_tags_empty_desktop">Noch keine Lieblings-Tags. Klicke bei einem Werk mit der rechten Maustaste auf einen Tag, um ihn hinzuzufügen.</string>
     <string name="search_filters_title">Suchfilter</string>
     <string name="search_hint">Tags, Titel oder Nutzer</string>
     <string name="search_history">Letzte Suchen</string>

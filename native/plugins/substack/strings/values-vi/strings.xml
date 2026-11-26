@@ -79,6 +79,7 @@
     <string name="no_results">Không có kết quả</string>
     <string name="notes_empty">Hiện không có Notes để hiện</string>
     <string name="notes_intro">Notes công khai trên Substack — không phải feed Following cá nhân. Chạm ghi chú để mở trên site, hoặc theo dõi ấn phẩm.</string>
+    <string name="notes_intro_desktop">Notes công khai trên Substack — không phải feed Following cá nhân. Nhấp vào ghi chú để mở trên site, hoặc theo dõi ấn phẩm.</string>
     <string name="open_in_browser">Mở trong trình duyệt</string>
     <string name="open_pasted_post">Mở bài đã dán</string>
     <string name="opml_empty">Tệp này không có ấn phẩm nào</string>

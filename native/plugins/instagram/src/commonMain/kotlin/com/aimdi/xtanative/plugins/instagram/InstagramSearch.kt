@@ -28,7 +28,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -60,6 +59,7 @@ import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginSearch
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
@@ -184,7 +184,7 @@ internal fun InstagramSearchSheet(app: InstagramApp, initial: String?, onDismiss
         }
     }
     LaunchedEffect(Unit) { if (initial?.isNotBlank() == true) run(initial) }
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
+    PluginSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
         Column(Modifier.fillMaxWidth().fillMaxHeight(0.7f).imePadding().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
             OutlinedTextField(
                 value = text,

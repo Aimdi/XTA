@@ -26,7 +26,9 @@
     <string name="nsfw_hide">Amaga</string>
     <string name="nsfw_hide_description">Treu les publicacions NSFW dels canals i les llistes</string>
     <string name="nsfw_tap">Toca per mostrar</string>
+    <string name="nsfw_tap_desktop">Fes clic per mostrar</string>
     <string name="nsfw_tap_description">Cobreix el contingut NSFW fins que el toquis</string>
+    <string name="nsfw_tap_description_desktop">Cobreix el contingut NSFW fins que hi facis clic</string>
     <string name="nsfw_show">Mostra sempre</string>
     <string name="nsfw_show_description">Mostra el contingut NSFW sense coberta</string>
     <string name="online_now">en línia ara</string>
@@ -40,6 +42,7 @@
     <string name="show_spoilers">Mostra spoilers</string>
     <string name="show_spoilers_description">Mostra el contingut marcat com a spoiler sense tapar-lo</string>
     <string name="tap_to_show_spoiler">Toca per mostrar l\'espòiler</string>
+    <string name="tap_to_show_spoiler_desktop">Fes clic per mostrar l\'espòiler</string>
     <string name="sign_in">Inicia la sessió a Reddit</string>
     <string name="sign_in_failed">Ha fallat l’inici de sessió a Reddit</string>
     <string name="sign_out">Tanca la sessió</string>
@@ -108,6 +111,7 @@
     <string name="copy">Copia</string>
     <string name="more_options">Més opcions</string>
     <string name="tap_to_show_media">Toca per mostrar el contingut multimèdia</string>
+    <string name="tap_to_show_media_desktop">Fes clic per mostrar el contingut multimèdia</string>
     <plurals name="comment_count">
         <item quantity="one">%1$d comentari</item>
         <item quantity="other">%1$d comentaris</item>

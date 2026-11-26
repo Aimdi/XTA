@@ -36,6 +36,7 @@ import com.aimdi.xtanative.networks.booru.BooruTagGroups
 import com.aimdi.xtanative.networks.booru.BooruTagInfo
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -72,7 +73,7 @@ internal fun PostDetails(app: BooruApp, viewer: ViewerState, post: BooruPost, pa
 private fun PostTags(app: BooruApp, viewer: ViewerState, post: BooruPost, info: Map<String, BooruTagInfo>, settings: Settings) {
     TagSection(app, viewer, post, info, settings)
     if (post.tags.isNotEmpty()) {
-        Text(pluginString(Strings.tag_tap_hint), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp))
+        Text(pluginString(if (PluginPlatform.isDesktop) Strings.tag_tap_hint_desktop else Strings.tag_tap_hint), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp))
     }
 }
 

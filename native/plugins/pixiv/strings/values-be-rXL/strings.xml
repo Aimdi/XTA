@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Refresh-token Pixiv adchileny</string>
     <string name="file_name">Nazva fajła</string>
     <string name="file_name_help">Nacisnicie na element, kab ustavić jaho ŭ pazicyju kursora. Kožny fajł zachoŭvaje svajo pašyreńnie.</string>
+    <string name="file_name_help_desktop">Pstryknicie na element, kab ustavić jaho ŭ pazicyju kursora. Kožny fajł zachoŭvaje svajo pašyreńnie.</string>
     <string name="file_name_part_required">Dadajcie %1$s, kab kožnaja staronka tvora mieła ŭlasnuju nazvu</string>
     <string name="file_name_preview">Prykład: %1$s</string>
     <string name="file_name_reset">Skinuć</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Redahavać abranyja tehi</string>
     <string name="search_favorite_tags_edit_hint">Pieraciahnicie teh, kab pieramiascić jaho. Zmachnicie jaho ŭbok, kab prybrać.</string>
     <string name="search_favorite_tags_empty">Abranych tehaŭ pakul niama. Doŭha nacisnicie na teh u tvory, kab dadać jaho.</string>
+    <string name="search_favorite_tags_empty_desktop">Abranych tehaŭ pakul niama. Nacisnicie na teh u tvory pravaj knopkaj myšy, kab dadać jaho.</string>
     <string name="search_filters_title">Filtry pošuku</string>
     <string name="search_hint">Tehi, nazvy ci karystalniki</string>
     <string name="search_history">Niadaŭnija pošuki</string>

@@ -81,6 +81,7 @@
     <string name="no_results">Niciun rezultat</string>
     <string name="notes_empty">Nicio Note de afișat acum</string>
     <string name="notes_intro">Notes publice de pe Substack — nu fluxul tău personal Following. Atinge o notă ca s-o deschizi pe site sau urmărește publicația.</string>
+    <string name="notes_intro_desktop">Notes publice de pe Substack — nu fluxul tău personal Following. Fă clic pe o notă ca s-o deschizi pe site sau urmărește publicația.</string>
     <string name="open_in_browser">Deschide în browser</string>
     <string name="open_pasted_post">Deschide postarea lipită</string>
     <string name="opml_empty">Fișierul nu conține publicații</string>

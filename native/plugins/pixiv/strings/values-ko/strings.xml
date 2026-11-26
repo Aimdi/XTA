@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Pixiv 리프레시 토큰이 거부되었습니다</string>
     <string name="file_name">파일 이름</string>
     <string name="file_name_help">항목을 탭하면 커서 위치에 삽입됩니다. 각 파일은 원래 확장자를 유지합니다.</string>
+    <string name="file_name_help_desktop">항목을 클릭하면 커서 위치에 삽입됩니다. 각 파일은 원래 확장자를 유지합니다.</string>
     <string name="file_name_part_required">작품의 각 페이지가 서로 다른 이름을 갖도록 %1$s을(를) 넣으세요</string>
     <string name="file_name_preview">미리보기: %1$s</string>
     <string name="file_name_reset">초기화</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">즐겨찾는 태그 편집</string>
     <string name="search_favorite_tags_edit_hint">태그를 끌어서 옮기고, 옆으로 밀어서 삭제하세요.</string>
     <string name="search_favorite_tags_empty">아직 즐겨찾는 태그가 없습니다. 작품의 태그를 길게 눌러 추가하세요.</string>
+    <string name="search_favorite_tags_empty_desktop">아직 즐겨찾는 태그가 없습니다. 작품의 태그를 마우스 오른쪽 버튼으로 클릭해 추가하세요.</string>
     <string name="search_filters_title">검색 필터</string>
     <string name="search_hint">태그, 제목 또는 사용자</string>
     <string name="search_history">최근 검색</string>

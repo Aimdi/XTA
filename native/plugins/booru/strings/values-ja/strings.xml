@@ -33,6 +33,7 @@
     <string name="download_all_result">キューに追加: %1$d 件。ダウンロード済み: %2$d 件。</string>
     <string name="edit_as_text">テキストとして編集</string>
     <string name="edit_tag">タップして編集</string>
+    <string name="edit_tag_desktop">クリックして編集</string>
     <string name="either_tag">または</string>
     <string name="empty_following">検索や投稿からタグをフォローすると、ここに表示されます</string>
     <string name="empty_following_posts">フォロー中のタグの最近の投稿がありません</string>
@@ -124,6 +125,7 @@
     <string name="rating_questionable">やや過激</string>
     <string name="rating_sensitive">センシティブ</string>
     <string name="related_hint">タップで検索に追加・長押しで除外</string>
+    <string name="related_hint_desktop">クリックで検索に追加・右クリックで除外</string>
     <string name="remove_site">サイトを削除</string>
     <string name="retry">再試行</string>
     <string name="save_on_this_device">この端末に保存</string>
@@ -152,6 +154,7 @@
     <string name="small_thumbnails_description">グリッドにホストの小さなプレビューを読み込みます。高速で通信量も少なめですが、画像はぼやけます</string>
     <string name="source">ソース</string>
     <string name="suggestions_hint">入力したものに近いタグ: タップするとそのタグで検索し直します</string>
+    <string name="suggestions_hint_desktop">入力したものに近いタグ: クリックするとそのタグで検索し直します</string>
     <string name="tab_following">フォロー中</string>
     <string name="tab_latest">最新</string>
     <string name="tag_artist">アーティスト</string>
@@ -167,6 +170,7 @@
     <string name="tag_sort_name">名前順</string>
     <string name="tag_species">種族</string>
     <string name="tag_tap_hint">タグをタップすると検索します。長押しでフォロー、非表示、Wiki の表示ができます。</string>
+    <string name="tag_tap_hint_desktop">タグをクリックすると検索します。右クリックでフォロー、非表示、Wiki の表示ができます。</string>
     <string name="tags">タグ</string>
     <string name="test_connection">接続をテスト</string>
     <string name="test_failed">Booruのテストに失敗: %1$s</string>

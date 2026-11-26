@@ -153,6 +153,7 @@
     <string name="spoiler">Espòiler</string>
     <string name="sticker">Adhesiu</string>
     <string name="tap_to_show_spoiler">Toca per mostrar l\'espòiler</string>
+    <string name="tap_to_show_spoiler_desktop">Fes clic per mostrar l\'espòiler</string>
     <string name="copy_text">Copia el text</string>
     <string name="copy_link">Copia l\'enllaç</string>
     <string name="text_copied">Text copiat</string>

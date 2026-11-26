@@ -28,7 +28,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -161,7 +161,7 @@ internal fun PremiumBadge() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AccountSwitcher(onClose: () -> Unit, onAdd: () -> Unit) {
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onClose) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onClose) {
         Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
             Text(pluginString(Strings.switch_account), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(vertical = 8.dp))
             PixivAccountList(onChanged = onClose)

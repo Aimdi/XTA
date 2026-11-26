@@ -69,6 +69,7 @@ import com.aimdi.xtanative.networks.reddit.RedditCommentSort
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.plugins.pluginEdgeColor
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
@@ -409,7 +410,7 @@ internal fun JumpButton(modifier: Modifier, onClick: () -> Unit) {
         onClick = onClick,
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        border = BorderStroke(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant),
+        border = BorderStroke(Dp.Hairline, pluginEdgeColor()),
         shadowElevation = 2.dp,
         modifier = modifier.size(52.dp),
     ) {

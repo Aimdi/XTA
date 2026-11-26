@@ -21,6 +21,7 @@
     <string name="error">Heta nie biržavy tyker</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Pasty pra vašy tykery zjaŭlajucca nižej. Nacisnicie simval dla filtra; doŭhaje naciskannie adkryvaje staronku.</string>
+    <string name="feed_hint_desktop">Pasty pra vašy tykery zjaŭlajucca nižej. Pstryknicie simval dla filtra; naciskannie pravaj knopkaj myšy adkryvaje staronku.</string>
     <string name="fold_signal_posts">Zhortvać dopisy sihnalnych hrup</string>
     <string name="hide">Schavać</string>
     <string name="liquidity">Likvidnasć</string>

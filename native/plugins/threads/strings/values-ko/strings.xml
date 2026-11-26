@@ -146,6 +146,7 @@
     <string name="spoiler">스포일러</string>
     <string name="sticker">스티커</string>
     <string name="tap_to_show_spoiler">탭하여 스포일러 보기</string>
+    <string name="tap_to_show_spoiler_desktop">클릭하여 스포일러 보기</string>
     <string name="copy_text">텍스트 복사</string>
     <string name="copy_link">링크 복사</string>
     <string name="text_copied">텍스트를 복사했습니다</string>

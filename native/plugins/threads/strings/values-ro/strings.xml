@@ -154,6 +154,7 @@
     <string name="spoiler">Spoiler</string>
     <string name="sticker">Autocolant</string>
     <string name="tap_to_show_spoiler">Atinge pentru a afișa spoilerul</string>
+    <string name="tap_to_show_spoiler_desktop">Fă clic pentru a vedea spoilerul</string>
     <string name="copy_text">Copiază textul</string>
     <string name="copy_link">Copiază linkul</string>
     <string name="text_copied">Text copiat</string>

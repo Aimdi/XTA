@@ -7,7 +7,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -16,9 +15,11 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.PluginMenuRow
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.plugins.rememberShareText
+import com.aimdi.xtanative.ui.plugins.rememberSheetClose
 import com.aimdi.xtanative.ui.post.PostIcons
 
 /**
@@ -36,8 +37,9 @@ internal fun ThreadsMediaSheet(app: ThreadsApp, post: ThreadsPost, index: Int, i
     val copy = rememberCopyText()
     val share = rememberShareText()
     val copied = pluginString(Strings.link_copied)
-    val done = { action: () -> Unit -> { onDismiss(); action() } }
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+        val closeSheet = rememberSheetClose()
+        val done = { action: () -> Unit -> { closeSheet(action) } }
         Column(Modifier.navigationBarsPadding().padding(bottom = 8.dp)) {
             for (entry in ThreadsMediaActions.of(post, index, items, opens)) {
                 when (entry) {

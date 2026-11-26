@@ -21,6 +21,7 @@
     <string name="error">To není burzovní symbol</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Příspěvky o vašich tickerech jsou níže. Klepnutím filtrujete; dlouhým stiskem otevřete stránku.</string>
+    <string name="feed_hint_desktop">Příspěvky o vašich tickerech jsou níže. Kliknutím filtrujete; kliknutím pravým tlačítkem otevřete stránku.</string>
     <string name="fold_signal_posts">Sbalit příspěvky signálních skupin</string>
     <string name="hide">Skrýt</string>
     <string name="liquidity">Likvidita</string>

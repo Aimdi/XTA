@@ -70,6 +70,7 @@ import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.onSecondaryClickIf
 import com.aimdi.xtanative.ui.common.pointerOnlyFocus
+import com.aimdi.xtanative.ui.common.rememberBehindIndication
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.pinned
 import com.aimdi.xtanative.ui.generated.resources.plugin_post_hide
@@ -239,11 +240,13 @@ fun NetworkPostCard(
     var revealed by rememberSaveable(post.id, post.revision) { mutableStateOf(false) }
     val more = actions.more
     val press = extras.onLongPress ?: more?.let { open -> { open(post) } }
+    // Lit behind the post, as XTA's own posts are (PostCard's opening): its pictures keep their colours under the pointer.
+    val wash = rememberBehindIndication()
     Column(
         modifier
             .fillMaxWidth()
             .then(press?.let { Modifier.onSecondaryClick(it) } ?: Modifier)
-            .combinedClickable(onClick = { actions.open(post) }, onLongClick = press)
+            .combinedClickable(interactionSource = null, indication = wash, onClick = { actions.open(post) }, onLongClick = press)
             .padding(start = 16.dp + IndentStep * indent.coerceIn(0, MAX_INDENT), end = 16.dp, top = 12.dp, bottom = if (continues) 4.dp else 12.dp),
     ) {
         val repostedBy = post.repostedBy

@@ -21,6 +21,7 @@
     <string name="error">Bu bir hisse sembolü değil</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Ticker’larınızla ilgili gönderiler aşağıda. Filtrelemek için dokunun; sayfayı açmak için basılı tutun.</string>
+    <string name="feed_hint_desktop">Ticker’larınızla ilgili gönderiler aşağıda. Filtrelemek için tıklayın; sayfayı açmak için sağ tıklayın.</string>
     <string name="fold_signal_posts">Sinyal grubu gönderilerini daralt</string>
     <string name="hide">Gizle</string>
     <string name="liquidity">Likidite</string>

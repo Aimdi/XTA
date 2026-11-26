@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Votre jeton d’actualisation Pixiv a été refusé</string>
     <string name="file_name">Nom de fichier</string>
     <string name="file_name_help">Touchez un élément pour l’insérer à la position du curseur. Chaque fichier conserve sa propre extension.</string>
+    <string name="file_name_help_desktop">Cliquez sur un élément pour l’insérer à la position du curseur. Chaque fichier conserve sa propre extension.</string>
     <string name="file_name_part_required">Ajoutez %1$s pour que chaque page d’une œuvre ait son propre nom</string>
     <string name="file_name_preview">Aperçu : %1$s</string>
     <string name="file_name_reset">Réinitialiser</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Modifier les tags favoris</string>
     <string name="search_favorite_tags_edit_hint">Faites glisser un tag pour le déplacer. Balayez-le sur le côté pour le retirer.</string>
     <string name="search_favorite_tags_empty">Aucun tag favori pour l’instant. Appuyez longuement sur le tag d’une œuvre pour l’ajouter.</string>
+    <string name="search_favorite_tags_empty_desktop">Aucun tag favori pour l’instant. Faites un clic droit sur le tag d’une œuvre pour l’ajouter.</string>
     <string name="search_filters_title">Filtres de recherche</string>
     <string name="search_hint">Tags, titres ou utilisateurs</string>
     <string name="search_history">Recherches récentes</string>

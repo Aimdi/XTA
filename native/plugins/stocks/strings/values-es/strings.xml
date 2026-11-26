@@ -21,6 +21,7 @@
     <string name="error">Eso no es un símbolo bursátil</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Las publicaciones sobre tus tickers aparecen abajo. Toca un símbolo para filtrar; mantén pulsado para abrir su página.</string>
+    <string name="feed_hint_desktop">Las publicaciones sobre tus tickers aparecen abajo. Haz clic en un símbolo para filtrar; clic derecho para abrir su página.</string>
     <string name="fold_signal_posts">Plegar publicaciones de grupos de señales</string>
     <string name="hide">Ocultar</string>
     <string name="liquidity">Liquidez</string>

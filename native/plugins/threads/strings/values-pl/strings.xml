@@ -158,6 +158,7 @@
     <string name="spoiler">Spoiler</string>
     <string name="sticker">Naklejka</string>
     <string name="tap_to_show_spoiler">Stuknij, aby pokazać spoiler</string>
+    <string name="tap_to_show_spoiler_desktop">Kliknij, aby pokazać spoiler</string>
     <string name="copy_text">Kopiuj tekst</string>
     <string name="copy_link">Kopiuj link</string>
     <string name="text_copied">Skopiowano tekst</string>

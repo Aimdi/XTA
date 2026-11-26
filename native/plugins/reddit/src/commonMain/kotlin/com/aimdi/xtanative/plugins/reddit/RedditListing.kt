@@ -44,6 +44,7 @@ import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedState
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
+import com.aimdi.xtanative.ui.plugins.PluginReadingWidth
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
@@ -208,7 +209,7 @@ internal fun FollowIconButton(app: RedditApp, subreddit: String) {
 internal fun SavedScreen(app: RedditApp) {
     val saved by app.saved.collectAsState()
     val list = rememberLazyListState()
-    PluginScaffold(title = pluginString(Strings.saved), onBack = app.host::back) { padding ->
+    PluginScaffold(title = pluginString(Strings.saved), onBack = app.host::back, column = PluginReadingWidth) { padding ->
         PluginReadingColumn(padding, list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             if (saved.isEmpty()) item(key = "none") { RedditEmpty(RedditGlyphs.BookmarkBorder, pluginString(Strings.saved_empty)) }
             items(saved, key = { "post:" + it.id }) { post -> RedditPostCard(app, post) }

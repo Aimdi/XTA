@@ -26,7 +26,9 @@
     <string name="nsfw_hide">Схаваць</string>
     <string name="nsfw_hide_description">Выдаляць публікацыі NSFW са стужак і спісаў</string>
     <string name="nsfw_tap">Націснуць для паказу</string>
+    <string name="nsfw_tap_desktop">Пстрыкнуць для паказу</string>
     <string name="nsfw_tap_description">Закрываць медыя NSFW, пакуль вы не націснеце</string>
+    <string name="nsfw_tap_description_desktop">Закрываць медыя NSFW, пакуль вы не пстрыкнеце</string>
     <string name="nsfw_show">Заўсёды паказваць</string>
     <string name="nsfw_show_description">Паказваць медыя NSFW без закрыцця</string>
     <string name="online_now">зараз анлайн</string>
@@ -40,6 +42,7 @@
     <string name="show_spoilers">Паказваць спойлеры</string>
     <string name="show_spoilers_description">Паказваць медыя са спойлерам без накрыцця</string>
     <string name="tap_to_show_spoiler">Націсніце, каб паказаць спойлер</string>
+    <string name="tap_to_show_spoiler_desktop">Пстрыкніце, каб паказаць спойлер</string>
     <string name="sign_in">Увайсці ў Reddit</string>
     <string name="sign_in_failed">Не ўдалося ўвайсці ў Reddit</string>
     <string name="sign_out">Выйсці</string>
@@ -108,6 +111,7 @@
     <string name="copy">Капіраваць</string>
     <string name="more_options">Дадатковыя параметры</string>
     <string name="tap_to_show_media">Націсніце, каб паказаць медыя</string>
+    <string name="tap_to_show_media_desktop">Пстрыкніце, каб паказаць медыя</string>
     <plurals name="comment_count">
         <item quantity="one">%1$d каментарый</item>
         <item quantity="few">%1$d каментарыі</item>

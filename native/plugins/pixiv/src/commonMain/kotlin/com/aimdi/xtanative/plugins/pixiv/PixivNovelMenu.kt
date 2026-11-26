@@ -20,7 +20,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -45,6 +44,7 @@ import com.aimdi.xtanative.networks.pixiv.pixivUserUrl
 import com.aimdi.xtanative.store.reading.ReadingAppearance
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -63,7 +63,7 @@ internal fun NovelMenu(novel: PixivNovel, content: PixivNovelContent?, onAppeara
         onClose()
         action()
     }
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onClose) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onClose) {
         Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = 8.dp)) {
             val user = novel.user
             ListItem(
@@ -113,7 +113,7 @@ private fun MenuRow(icon: ImageVector, label: PluginText, hint: PluginText? = nu
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun NovelExportSheet(onPick: (PixivNovelExportFormat) -> Unit, onClose: () -> Unit) {
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onClose) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onClose) {
         Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = 8.dp)) {
             ListItem(headlineContent = { Text(pluginString(Strings.novel_export), style = MaterialTheme.typography.titleMedium) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
             MenuRow(PixivIcons.Notes, Strings.novel_export_plain, Strings.novel_export_plain_hint) { onPick(PixivNovelExportFormat.PLAIN) }

@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Sinu Pixivi värskendustoken lükati tagasi</string>
     <string name="file_name">Failinimi</string>
     <string name="file_name_help">Puuduta andmevälja, et lisada see kursori kohale. Iga fail säilitab oma laiendi.</string>
+    <string name="file_name_help_desktop">Klõpsa andmeväljal, et lisada see kursori kohale. Iga fail säilitab oma laiendi.</string>
     <string name="file_name_part_required">Lisa %1$s, et teose igal lehel oleks oma nimi</string>
     <string name="file_name_preview">Eelvaade: %1$s</string>
     <string name="file_name_reset">Lähtesta</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Muuda lemmiksilte</string>
     <string name="search_favorite_tags_edit_hint">Sildi teisaldamiseks lohista seda. Eemaldamiseks libista see kõrvale.</string>
     <string name="search_favorite_tags_empty">Lemmiksilte veel pole. Lisamiseks vajuta teose sildil pikalt.</string>
+    <string name="search_favorite_tags_empty_desktop">Lemmiksilte veel pole. Lisamiseks tee teose sildil paremklõps.</string>
     <string name="search_filters_title">Otsingufiltrid</string>
     <string name="search_hint">Sildid, pealkirjad või kasutajad</string>
     <string name="search_history">Hiljutised otsingud</string>

@@ -24,7 +24,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -45,6 +44,7 @@ import com.aimdi.xtanative.networks.mastodon.MastodonTimelineFilter.Content
 import com.aimdi.xtanative.networks.mastodon.MastodonTimelineFilter.Order
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.PluginSwitchRow
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -93,7 +93,7 @@ internal fun FiltersButton(app: MastodonApp, timeline: MastodonTimeline) {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun FilterSheet(filter: MastodonTimelineFilter, source: String?, onChange: (MastodonTimelineFilter) -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {

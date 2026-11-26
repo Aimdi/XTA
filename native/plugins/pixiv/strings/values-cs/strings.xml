@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Refresh token Pixiv byl odmítnut</string>
     <string name="file_name">Název souboru</string>
     <string name="file_name_help">Klepnutím na údaj ho vložíte na místo kurzoru. Každý soubor si ponechá svou příponu.</string>
+    <string name="file_name_help_desktop">Kliknutím na údaj ho vložíte na místo kurzoru. Každý soubor si ponechá svou příponu.</string>
     <string name="file_name_part_required">Přidejte %1$s, aby měla každá stránka díla vlastní název</string>
     <string name="file_name_preview">Náhled: %1$s</string>
     <string name="file_name_reset">Obnovit</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Upravit oblíbené štítky</string>
     <string name="search_favorite_tags_edit_hint">Štítek přesunete přetažením. Odstraníte ho přejetím do strany.</string>
     <string name="search_favorite_tags_empty">Zatím nemáte žádné oblíbené štítky. Přidáte je dlouhým stisknutím štítku u díla.</string>
+    <string name="search_favorite_tags_empty_desktop">Zatím nemáte žádné oblíbené štítky. Přidáte je kliknutím pravým tlačítkem na štítek u díla.</string>
     <string name="search_filters_title">Filtry hledání</string>
     <string name="search_hint">Tagy, názvy nebo uživatelé</string>
     <string name="search_history">Nedávná hledání</string>

@@ -43,6 +43,7 @@ import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
+import com.aimdi.xtanative.ui.plugins.PluginReadingWidth
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -166,7 +167,7 @@ internal fun ThreadsCommunityScreen(app: ThreadsApp, start: ThreadsTopic) {
     val list = rememberLazyListState()
     ReadsMoreNear(list, pager, paged)
     val web = ThreadsCommunityReads.webUrl(topic)
-    PluginScaffold(title = topic.name, onBack = app.host::back, actions = { CommunityActions(app, web) }) { padding ->
+    PluginScaffold(title = topic.name, onBack = app.host::back, column = PluginReadingWidth, actions = { CommunityActions(app, web) }) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             PullToRefreshBox(isRefreshing = state.loading && found != null, onRefresh = { model.page.load(force = true) }, modifier = Modifier.fillMaxSize()) {
                 PluginReadingColumn(PaddingValues(), list) { column -> LazyColumn(state = list, modifier = Modifier.fillMaxSize(), contentPadding = column) {

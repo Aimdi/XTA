@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Twój refresh token Pixiv został odrzucony</string>
     <string name="file_name">Nazwa pliku</string>
     <string name="file_name_help">Stuknij element, aby wstawić go w miejscu kursora. Każdy plik zachowuje własne rozszerzenie.</string>
+    <string name="file_name_help_desktop">Kliknij element, aby wstawić go w miejscu kursora. Każdy plik zachowuje własne rozszerzenie.</string>
     <string name="file_name_part_required">Dodaj %1$s, aby każda strona pracy miała własną nazwę</string>
     <string name="file_name_preview">Podgląd: %1$s</string>
     <string name="file_name_reset">Przywróć</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Edytuj ulubione tagi</string>
     <string name="search_favorite_tags_edit_hint">Przeciągnij tag, aby go przenieść. Przesuń go w bok, aby go usunąć.</string>
     <string name="search_favorite_tags_empty">Nie masz jeszcze ulubionych tagów. Przytrzymaj tag przy dziele, aby go dodać.</string>
+    <string name="search_favorite_tags_empty_desktop">Nie masz jeszcze ulubionych tagów. Kliknij prawym przyciskiem tag przy dziele, aby go dodać.</string>
     <string name="search_filters_title">Filtry wyszukiwania</string>
     <string name="search_hint">Tagi, tytuły lub użytkownicy</string>
     <string name="search_history">Ostatnie wyszukiwania</string>

@@ -49,9 +49,14 @@ import kotlinx.serialization.json.JsonElement
  * entries ([ShellMenuButton]), in the plugin sheet on Home; 15 adds
  * [onContextClick], a right-click that opens what a card's long press
  * opens on the desktop, [PluginReadingColumn], a plugin's list in the
- * reading column, and [rememberPluginSheetState], its sheets as the app's.
+ * reading column, and [rememberPluginSheetState], its sheets as the app's;
+ * 16 adds [PluginSheet] (a sheet the desktop's keys reach, with
+ * [rememberSheetClose] and [keyScrolled]), [PluginPlatform] (words for a click
+ * where a phone's say a tap), [PluginScaffold] with a `column` and
+ * [PluginReadingWidth] (a bar over the reading column) and
+ * [pluginEdgeColor], the app's card border (after native-1.0.16).
  */
-const val PLUGIN_API_VERSION: Int = 15
+const val PLUGIN_API_VERSION: Int = 16
 
 /**
  * The oldest plugin API whose plugins this app still loads: what they use of

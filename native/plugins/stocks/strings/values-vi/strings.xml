@@ -21,6 +21,7 @@
     <string name="error">Đó không phải là mã cổ phiếu</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Bài viết về mã của bạn hiện bên dưới. Chạm để lọc; nhấn giữ để mở trang.</string>
+    <string name="feed_hint_desktop">Bài viết về mã của bạn hiện bên dưới. Nhấp để lọc; nhấp chuột phải để mở trang.</string>
     <string name="fold_signal_posts">Thu gọn bài đăng của nhóm tín hiệu</string>
     <string name="hide">Ẩn</string>
     <string name="liquidity">Thanh khoản</string>

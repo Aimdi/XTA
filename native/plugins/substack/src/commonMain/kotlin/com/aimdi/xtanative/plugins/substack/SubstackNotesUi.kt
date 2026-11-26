@@ -49,7 +49,9 @@ import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.NetworkPostCard
 import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
+import com.aimdi.xtanative.ui.plugins.PluginReadingWidth
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.TextRun
@@ -73,10 +75,10 @@ internal fun NotesPane(app: SubstackApp, notes: SubstackNotesFeed, frame: Plugin
             when {
                 state.notes.isEmpty() && error != null -> item(key = "problem") { FailurePane(error, onRetry = { notes.refresh(force = true) }) }
                 state.notes.isEmpty() && !state.loaded -> item(key = "loading") { LoadingRow() }
-                state.notes.isEmpty() -> item(key = "empty") { EmptyState(pluginString(Strings.notes_empty), description = pluginString(Strings.notes_intro)) }
+                state.notes.isEmpty() -> item(key = "empty") { EmptyState(pluginString(Strings.notes_empty), description = pluginString(if (PluginPlatform.isDesktop) Strings.notes_intro_desktop else Strings.notes_intro)) }
                 else -> {
                     item(key = "intro") {
-                        Text(pluginString(Strings.notes_intro), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp))
+                        Text(pluginString(if (PluginPlatform.isDesktop) Strings.notes_intro_desktop else Strings.notes_intro), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp))
                     }
                     if (error != null) item(key = "refresh-failed") { FailureRow(error, { notes.refresh(force = true) }) }
                     items(state.notes, key = { "note-" + it.id }, contentType = { "note" }) { note -> NoteRow(app, note, actions) }
@@ -207,6 +209,7 @@ internal fun SubstackNoteScreen(app: SubstackApp, id: String) {
     PluginScaffold(
         title = pluginString(Strings.tab_notes),
         onBack = app.host::back,
+        column = PluginReadingWidth,
         actions = {
             if (url != null && note != null) {
                 IconTip(pluginString(Strings.share_link)) { IconButton(onClick = { share(url) }) { Icon(Icons.Default.Share, pluginString(Strings.share_link)) } }

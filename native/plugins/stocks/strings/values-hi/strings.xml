@@ -21,6 +21,7 @@
     <string name="error">यह टिकर सिंबल नहीं है</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">आपके टिकरों के पोस्ट नीचे दिखते हैं। फ़िल्टर के लिए टैप करें; पेज खोलने के लिए देर तक दबाएँ।</string>
+    <string name="feed_hint_desktop">आपके टिकरों के पोस्ट नीचे दिखते हैं। फ़िल्टर के लिए क्लिक करें; पेज खोलने के लिए राइट-क्लिक करें।</string>
     <string name="fold_signal_posts">सिग्नल ग्रुप वाली पोस्ट समेटें</string>
     <string name="hide">छिपाएँ</string>
     <string name="liquidity">तरलता</string>

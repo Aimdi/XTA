@@ -21,6 +21,7 @@
     <string name="error">這不是股票代號</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">與自選相關的貼文顯示在下方。點一下符號可篩選；長按開啟其頁面。</string>
+    <string name="feed_hint_desktop">與自選相關的貼文顯示在下方。按一下符號可篩選；按右鍵開啟其頁面。</string>
     <string name="fold_signal_posts">摺疊訊號群貼文</string>
     <string name="hide">隱藏</string>
     <string name="liquidity">流動性</string>

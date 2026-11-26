@@ -52,6 +52,7 @@ import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.MediaPager
 import com.aimdi.xtanative.ui.plugins.MediaTiles
 import com.aimdi.xtanative.ui.plugins.onContextClick
+import com.aimdi.xtanative.ui.plugins.pluginEdgeColor
 import com.aimdi.xtanative.ui.plugins.pluginString
 import kotlin.math.roundToInt
 
@@ -143,7 +144,7 @@ private fun MediaTile(item: MediaItem, place: Int, count: Int, modifier: Modifie
     Box(
         modifier
             .clip(MediaShape)
-            .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, MediaShape)
+            .border(Dp.Hairline, pluginEdgeColor(), MediaShape)
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .onContextClick(onHold)
             .combinedClickable(onClick = onClick, onLongClick = onHold, onLongClickLabel = pluginString(Strings.more_options)),

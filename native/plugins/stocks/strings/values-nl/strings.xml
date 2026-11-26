@@ -21,6 +21,7 @@
     <string name="error">Dat is geen tickersymbool</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Berichten over je tickers verschijnen hieronder. Tik om te filteren; lang indrukken opent de pagina.</string>
+    <string name="feed_hint_desktop">Berichten over je tickers verschijnen hieronder. Klik om te filteren; rechtsklik opent de pagina.</string>
     <string name="fold_signal_posts">Berichten van signaalgroepen inklappen</string>
     <string name="hide">Verbergen</string>
     <string name="liquidity">Liquiditeit</string>

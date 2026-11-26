@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Refresh-токен Pixiv адхілены</string>
     <string name="file_name">Назва файла</string>
     <string name="file_name_help">Націсніце на элемент, каб уставіць яго ў пазіцыю курсора. Кожны файл захоўвае сваё пашырэнне.</string>
+    <string name="file_name_help_desktop">Пстрыкніце на элемент, каб уставіць яго ў пазіцыю курсора. Кожны файл захоўвае сваё пашырэнне.</string>
     <string name="file_name_part_required">Дадайце %1$s, каб кожная старонка твора мела ўласную назву</string>
     <string name="file_name_preview">Прыклад: %1$s</string>
     <string name="file_name_reset">Скінуць</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Рэдагаваць абраныя тэгі</string>
     <string name="search_favorite_tags_edit_hint">Перацягніце тэг, каб перамясціць яго. Змахніце яго ўбок, каб прыбраць.</string>
     <string name="search_favorite_tags_empty">Абраных тэгаў пакуль няма. Доўга націсніце на тэг у творы, каб дадаць яго.</string>
+    <string name="search_favorite_tags_empty_desktop">Абраных тэгаў пакуль няма. Націсніце на тэг у творы правай кнопкай мышы, каб дадаць яго.</string>
     <string name="search_filters_title">Фільтры пошуку</string>
     <string name="search_hint">Тэгі, назвы ці карыстальнікі</string>
     <string name="search_history">Нядаўнія пошукі</string>

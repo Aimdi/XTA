@@ -21,6 +21,7 @@
     <string name="error">See ei ole aktsia sümbol</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Sinu tickerite postitused ilmuvad all. Puuduta filtreerimiseks; hoia all lehe avamiseks.</string>
+    <string name="feed_hint_desktop">Sinu tickerite postitused ilmuvad all. Klõpsa filtreerimiseks; paremklõps avab lehe.</string>
     <string name="fold_signal_posts">Ahenda signaaligruppide postitused</string>
     <string name="hide">Peida</string>
     <string name="liquidity">Likviidsus</string>

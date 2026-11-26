@@ -33,6 +33,7 @@
     <string name="download_all_result">У чарзе: %1$d. Ужо спампавана: %2$d.</string>
     <string name="edit_as_text">Змяніць як тэкст</string>
     <string name="edit_tag">Націсніце, каб змяніць</string>
+    <string name="edit_tag_desktop">Пстрыкніце, каб змяніць</string>
     <string name="either_tag">Або</string>
     <string name="empty_following">Падпішыцеся на тэгі з пошуку або з допісу, каб запоўніць гэтую ўкладку</string>
     <string name="empty_following_posts">Няма новых допісаў па вашых тэгах</string>
@@ -127,6 +128,7 @@
     <string name="rating_questionable">Сумнеўны</string>
     <string name="rating_sensitive">Далікатны</string>
     <string name="related_hint">Націсніце, каб дадаць у пошук · утрымлівайце, каб выключыць</string>
+    <string name="related_hint_desktop">Пстрыкніце, каб дадаць у пошук · націсніце правай кнопкай мышы, каб выключыць</string>
     <string name="remove_site">Выдаліць сайт</string>
     <string name="retry">Паўтарыць</string>
     <string name="save_on_this_device">Захаваць на гэтай прыладзе</string>
@@ -155,6 +157,7 @@
     <string name="small_thumbnails_description">Загружае ў сетку маленькія прэв’ю з сайта. Хутчэй і з меншым трафікам, але менш выразна</string>
     <string name="source">Крыніца</string>
     <string name="suggestions_hint">Тэгі, падобныя да ўведзенага: націсніце, каб шукаць па ім</string>
+    <string name="suggestions_hint_desktop">Тэгі, падобныя да ўведзенага: пстрыкніце, каб шукаць па ім</string>
     <string name="tab_following">Падпіскі</string>
     <string name="tab_latest">Новае</string>
     <string name="tag_artist">Мастак</string>
@@ -173,6 +176,7 @@
     <string name="tag_sort_name">Па алфавіце</string>
     <string name="tag_species">Від</string>
     <string name="tag_tap_hint">Націсніце на тэг, каб шукаць яго. Утрымлівайце, каб падпісацца, схаваць або прачытаць вікі.</string>
+    <string name="tag_tap_hint_desktop">Пстрыкніце на тэг, каб шукаць яго. Націсніце на яго правай кнопкай мышы, каб падпісацца, схаваць або прачытаць вікі.</string>
     <string name="tags">Тэгі</string>
     <string name="test_connection">Праверыць злучэнне</string>
     <string name="test_failed">Праверка буру не ўдалася: %1$s</string>

@@ -52,6 +52,7 @@ import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
+import com.aimdi.xtanative.ui.plugins.PluginReadingWidth
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginPlural
@@ -85,6 +86,7 @@ internal fun ThreadScreen(app: RedditApp, route: RedditRoute.Thread) {
     PluginScaffold(
         title = "r/" + state.post.subreddit,
         onBack = app.host::back,
+        column = PluginReadingWidth,
         actions = { IconTip(pluginString(Strings.more_options)) { IconButton(onClick = { sheet = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) } } },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {

@@ -67,6 +67,7 @@ import com.aimdi.xtanative.store.reading.BlockExtent
 import com.aimdi.xtanative.store.reading.firstVisibleBlock
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.rememberPictureIndication
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.plugin_reader_appearance
@@ -204,7 +205,7 @@ fun LazyListScope.readerBlocks(
                     contentScale = ContentScale.FillWidth,
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).clip(RoundedCornerShape(8.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .clickable { onImage(images.indexOf(block).coerceAtLeast(0)) },
+                        .clickable(interactionSource = null, indication = rememberPictureIndication()) { onImage(images.indexOf(block).coerceAtLeast(0)) },
                 )
                 ReaderBlock.Divider -> HorizontalDivider(Modifier.padding(vertical = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
             }

@@ -33,6 +33,7 @@
     <string name="download_all_result">대기열에 추가: %1$d개. 이미 다운로드됨: %2$d개.</string>
     <string name="edit_as_text">텍스트로 편집</string>
     <string name="edit_tag">탭하여 편집</string>
+    <string name="edit_tag_desktop">클릭하여 편집</string>
     <string name="either_tag">또는</string>
     <string name="empty_following">검색이나 게시물에서 태그를 팔로우하면 이 탭이 채워집니다</string>
     <string name="empty_following_posts">팔로우한 태그의 최근 게시물이 없습니다</string>
@@ -124,6 +125,7 @@
     <string name="rating_questionable">주의</string>
     <string name="rating_sensitive">민감</string>
     <string name="related_hint">탭하면 검색에 추가 · 길게 누르면 제외</string>
+    <string name="related_hint_desktop">클릭하면 검색에 추가 · 마우스 오른쪽 버튼으로 클릭하면 제외</string>
     <string name="remove_site">사이트 삭제</string>
     <string name="retry">재시도</string>
     <string name="save_on_this_device">이 기기에 저장</string>
@@ -152,6 +154,7 @@
     <string name="small_thumbnails_description">그리드에 호스트의 작은 미리보기를 불러옵니다. 더 빠르고 데이터를 덜 쓰지만 화질이 흐릿합니다</string>
     <string name="source">출처</string>
     <string name="suggestions_hint">입력한 것과 비슷한 태그: 탭하면 대신 그 태그로 검색합니다</string>
+    <string name="suggestions_hint_desktop">입력한 것과 비슷한 태그: 클릭하면 대신 그 태그로 검색합니다</string>
     <string name="tab_following">팔로잉</string>
     <string name="tab_latest">최신</string>
     <string name="tag_artist">작가</string>
@@ -167,6 +170,7 @@
     <string name="tag_sort_name">이름순</string>
     <string name="tag_species">종족</string>
     <string name="tag_tap_hint">태그를 탭하면 검색합니다. 길게 누르면 팔로우하거나 숨기거나 위키를 볼 수 있습니다.</string>
+    <string name="tag_tap_hint_desktop">태그를 클릭하면 검색합니다. 마우스 오른쪽 버튼으로 클릭하면 팔로우하거나 숨기거나 위키를 볼 수 있습니다.</string>
     <string name="tags">태그</string>
     <string name="test_connection">연결 테스트</string>
     <string name="test_failed">부루 테스트 실패: %1$s</string>

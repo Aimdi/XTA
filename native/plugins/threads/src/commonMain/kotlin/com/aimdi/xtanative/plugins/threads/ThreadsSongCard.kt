@@ -56,6 +56,7 @@ import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.media.rememberContinuityPlayers
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.onContextClick
+import com.aimdi.xtanative.ui.plugins.pluginEdgeColor
 import com.aimdi.xtanative.ui.plugins.pluginString
 import kotlinx.coroutines.isActive
 
@@ -124,7 +125,7 @@ internal fun SongCard(music: ThreadsMusic, state: SongCardState, focal: Boolean,
         modifier
             .fillMaxWidth()
             .clip(shape)
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape)
+            .border(1.dp, pluginEdgeColor(), shape)
             .then(actions)
             .semantics(mergeDescendants = true) { contentDescription = said }
             .padding(10.dp),

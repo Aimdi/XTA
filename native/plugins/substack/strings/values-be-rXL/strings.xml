@@ -82,6 +82,7 @@
     <string name="no_results">Niama vyniku</string>
     <string name="notes_empty">Pakul niama Notes</string>
     <string name="notes_intro">Publičnyja Notes z Substack — nie vaša asabistaja stužka Following. Nacisnicie natatku, kab adkryć jaje na sajcie, abo padpišyciesia na vydannie.</string>
+    <string name="notes_intro_desktop">Publičnyja Notes z Substack — nie vaša asabistaja stužka Following. Pstryknicie natatku, kab adkryć jaje na sajcie, abo padpišyciesia na vydannie.</string>
     <string name="open_in_browser">Adčynić u braŭzery</string>
     <string name="open_pasted_post">Adkryć ustaŭleny post</string>
     <string name="opml_empty">U hetym fajle niama vydanniaŭ</string>

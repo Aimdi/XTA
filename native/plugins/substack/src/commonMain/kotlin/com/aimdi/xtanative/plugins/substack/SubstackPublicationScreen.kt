@@ -35,7 +35,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -64,11 +63,14 @@ import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
+import com.aimdi.xtanative.ui.plugins.PluginReadingWidth
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
+import com.aimdi.xtanative.ui.plugins.rememberSheetClose
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -179,7 +181,7 @@ internal fun SubstackPublicationScreen(app: SubstackApp, opened: SubstackPublica
     val page = state.page
     val posts = SubstackFilters.publicationPosts(page.posts, state.filter, state.order, marks.readIds)
     val error = page.error
-    PluginScaffold(title = state.publication.displayName, onBack = app.host::back) { padding ->
+    PluginScaffold(title = state.publication.displayName, onBack = app.host::back, column = PluginReadingWidth) { padding ->
         PullToRefreshBox(isRefreshing = page.loading && page.posts.isNotEmpty(), onRefresh = model::refresh, modifier = Modifier.fillMaxSize().padding(padding)) {
             val scroll = rememberLazyListState()
             PluginReadingColumn(PaddingValues(), scroll) { column -> LazyColumn(Modifier.fillMaxSize(), state = scroll, contentPadding = column) {
@@ -350,7 +352,8 @@ private fun EmptyPublication(model: PublicationModel, filter: SubstackPublicatio
 private fun SimilarSheet(app: SubstackApp, publication: SubstackPublication, onDismiss: () -> Unit) {
     val similar = rememberKept("substack-similar-${publication.baseUrl}") { scope -> SimilarModel(app, publication, scope) }
     val state by similar.state.collectAsState()
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
+    PluginSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
+        val closeSheet = rememberSheetClose()
         Column(Modifier.fillMaxHeight(0.85f)) {
             SheetHeading(pluginString(Strings.similar_title), onDismiss)
             Text(pluginString(Strings.similar_intro), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp))
@@ -361,7 +364,7 @@ private fun SimilarSheet(app: SubstackApp, publication: SubstackPublication, onD
                 state.recommendations.isEmpty() -> EmptyState(pluginString(Strings.similar_empty))
                 else -> LazyColumn(Modifier.fillMaxWidth(), contentPadding = PaddingValues(bottom = 24.dp)) {
                     items(state.recommendations, key = { it.publication.id + "\n" + it.publication.baseUrl }) { recommendation ->
-                        SimilarRow(app, recommendation) { onDismiss(); app.openPublication(recommendation.publication) }
+                        SimilarRow(app, recommendation) { closeSheet { app.openPublication(recommendation.publication) } }
                     }
                 }
             }

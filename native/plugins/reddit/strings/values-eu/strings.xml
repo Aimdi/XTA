@@ -26,7 +26,9 @@
     <string name="nsfw_hide">Ezkutatu</string>
     <string name="nsfw_hide_description">Kendu NSFW argitalpenak jarioetatik eta zerrendetatik</string>
     <string name="nsfw_tap">Sakatu erakusteko</string>
+    <string name="nsfw_tap_desktop">Egin klik erakusteko</string>
     <string name="nsfw_tap_description">Estali NSFW multimedia sakatu arte</string>
+    <string name="nsfw_tap_description_desktop">Estali NSFW multimedia klik egin arte</string>
     <string name="nsfw_show">Erakutsi beti</string>
     <string name="nsfw_show_description">Erakutsi NSFW multimedia estalkirik gabe</string>
     <string name="online_now">orain linean</string>
@@ -40,6 +42,7 @@
     <string name="show_spoilers">Erakutsi spoiler-ak</string>
     <string name="show_spoilers_description">Erakutsi spoiler gisa markatutako multimedia estali gabe</string>
     <string name="tap_to_show_spoiler">Sakatu spoilerra erakusteko</string>
+    <string name="tap_to_show_spoiler_desktop">Egin klik spoilerra erakusteko</string>
     <string name="sign_in">Hasi saioa Redditen</string>
     <string name="sign_in_failed">Redditen saioa hasteak huts egin du</string>
     <string name="sign_out">Amaitu saioa</string>
@@ -108,6 +111,7 @@
     <string name="copy">Kopiatu</string>
     <string name="more_options">Aukera gehiago</string>
     <string name="tap_to_show_media">Sakatu multimedia erakusteko</string>
+    <string name="tap_to_show_media_desktop">Egin klik multimedia erakusteko</string>
     <plurals name="comment_count">
         <item quantity="one">%1$d iruzkin</item>
         <item quantity="other">%1$d iruzkin</item>

@@ -32,7 +32,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -59,10 +58,12 @@ import com.aimdi.xtanative.networks.substack.SubstackPost
 import com.aimdi.xtanative.networks.substack.SubstackPublication
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
+import com.aimdi.xtanative.ui.plugins.rememberSheetClose
 
 /**
  * The row above a feed's posts, as XTA's SubstackReadingToolbar: the
@@ -124,7 +125,7 @@ private fun Marked(on: Boolean, content: @Composable () -> Unit) {
 internal fun ReadingOptions(state: HomeState, pane: HomePane, autofocus: Boolean, onDismiss: () -> Unit) {
     val controls = state.controls
     val options = controls.options(pane)
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
+    PluginSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
         Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 16.dp)) {
             SheetHeading(pluginString(Strings.filters), onDismiss)
             LoadedControls(options, autofocus) { controls.configure(pane, it) }
@@ -182,13 +183,14 @@ private fun PublicationPicker(app: SubstackApp, followed: List<SubstackPublicati
     val read by app.read.state.collectAsState()
     val pins by app.pins.state.collectAsState()
     val unread = remember(posts, read) { SubstackHomeRules.withUnread(posts, read) }
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+        val closeSheet = rememberSheetClose()
         SheetHeading(pluginString(Strings.library_following), onDismiss)
         LazyColumn(Modifier.fillMaxWidth(), contentPadding = PaddingValues(bottom = 16.dp)) {
             items(followed, key = { it.id + "\n" + it.baseUrl }) { publication ->
                 val marked = publication.baseUrl.lowercase() in unread
                 Row(
-                    Modifier.fillMaxWidth().clickable { onDismiss(); app.openPublication(publication) }.padding(horizontal = 16.dp, vertical = 10.dp),
+                    Modifier.fillMaxWidth().clickable { closeSheet { app.openPublication(publication) } }.padding(horizontal = 16.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     BadgedBox(badge = { if (marked) Badge(containerColor = MaterialTheme.colorScheme.primary) }) { PublicationLogo(publication.logoUrl, 36.dp) }

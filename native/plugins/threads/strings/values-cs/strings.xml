@@ -158,6 +158,7 @@
     <string name="spoiler">Spoiler</string>
     <string name="sticker">Nálepka</string>
     <string name="tap_to_show_spoiler">Klepnutím zobrazíte spoiler</string>
+    <string name="tap_to_show_spoiler_desktop">Kliknutím zobrazíte spoiler</string>
     <string name="copy_text">Kopírovat text</string>
     <string name="copy_link">Kopírovat odkaz</string>
     <string name="text_copied">Text zkopírován</string>

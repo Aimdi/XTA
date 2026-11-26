@@ -26,7 +26,9 @@
     <string name="nsfw_hide">छिपाएँ</string>
     <string name="nsfw_hide_description">फ़ीड और सूचियों से NSFW पोस्ट हटाएँ</string>
     <string name="nsfw_tap">दिखाने के लिए टैप करें</string>
+    <string name="nsfw_tap_desktop">दिखाने के लिए क्लिक करें</string>
     <string name="nsfw_tap_description">टैप करने तक NSFW मीडिया ढका रहे</string>
+    <string name="nsfw_tap_description_desktop">क्लिक करने तक NSFW मीडिया ढका रहे</string>
     <string name="nsfw_show">हमेशा दिखाएँ</string>
     <string name="nsfw_show_description">NSFW मीडिया बिना ढके दिखाएँ</string>
     <string name="online_now">अभी ऑनलाइन</string>
@@ -40,6 +42,7 @@
     <string name="show_spoilers">स्पॉइलर दिखाएँ</string>
     <string name="show_spoilers_description">स्पॉइलर चिह्नित मीडिया को बिना ढके दिखाएँ</string>
     <string name="tap_to_show_spoiler">स्पॉइलर देखने के लिए टैप करें</string>
+    <string name="tap_to_show_spoiler_desktop">स्पॉइलर देखने के लिए क्लिक करें</string>
     <string name="sign_in">Reddit में साइन इन करें</string>
     <string name="sign_in_failed">Reddit साइन इन विफल</string>
     <string name="sign_out">साइन आउट</string>
@@ -108,6 +111,7 @@
     <string name="copy">कॉपी करें</string>
     <string name="more_options">ज़्यादा विकल्प</string>
     <string name="tap_to_show_media">मीडिया दिखाने के लिए टैप करें</string>
+    <string name="tap_to_show_media_desktop">मीडिया दिखाने के लिए क्लिक करें</string>
     <plurals name="comment_count">
         <item quantity="one">%1$d टिप्पणी</item>
         <item quantity="other">%1$d टिप्पणियाँ</item>

@@ -84,6 +84,7 @@
     <string name="no_results">لا نتائج</string>
     <string name="notes_empty">لا توجد Notes للعرض الآن</string>
     <string name="notes_intro">Notes عامة من أنحاء Substack — وليست خلاصة المتابعة الشخصية. انقر ملاحظة لفتحها في الموقع، أو تابع منشأتها.</string>
+    <string name="notes_intro_desktop">Notes عامة من أنحاء Substack — وليست خلاصة المتابعة الشخصية. انقر على ملاحظة لفتحها في الموقع، أو تابع منشأتها.</string>
     <string name="open_in_browser">فتح في المتصفح</string>
     <string name="open_pasted_post">فتح المنشور الملصوق</string>
     <string name="opml_empty">لا توجد نشرات في هذا الملف</string>

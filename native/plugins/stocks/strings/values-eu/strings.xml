@@ -21,6 +21,7 @@
     <string name="error">Hori ez da burtsa-sinbolo bat</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Zure tickerrei buruzko mezuak behean agertzen dira. Sakatu iragazteko; luze sakatu orria irekitzeko.</string>
+    <string name="feed_hint_desktop">Zure tickerrei buruzko mezuak behean agertzen dira. Egin klik iragazteko; eskuineko klikak orria irekitzen du.</string>
     <string name="fold_signal_posts">Tolestu seinale-taldeen argitalpenak</string>
     <string name="hide">Ezkutatu</string>
     <string name="liquidity">Likidezia</string>

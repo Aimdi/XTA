@@ -25,7 +25,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
@@ -51,6 +50,7 @@ import com.aimdi.xtanative.networks.booru.BooruHosts
 import com.aimdi.xtanative.networks.booru.BooruPreset
 import com.aimdi.xtanative.store.settings.BooruPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
@@ -88,7 +88,7 @@ internal fun SwitchRow(title: String, description: String, checked: Boolean, onC
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun <T : Any> ChoiceSheet(choices: List<Pair<T, String>>, selected: T? = null, onDismiss: () -> Unit, onPick: (T) -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true), dragHandle = null) {
+    PluginSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true), dragHandle = false) {
         Column(Modifier.fillMaxWidth().navigationBarsPadding().verticalScroll(rememberScrollState()).padding(vertical = 8.dp)) {
             choices.forEach { (value, label) ->
                 Row(

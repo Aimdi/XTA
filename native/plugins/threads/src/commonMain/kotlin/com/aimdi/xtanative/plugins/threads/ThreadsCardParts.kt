@@ -25,7 +25,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -65,7 +64,9 @@ import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.plugins.PluginCounts
 import com.aimdi.xtanative.ui.plugins.PluginMenuRow
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.PluginPostMenuRows
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
 import com.aimdi.xtanative.ui.post.CardView
@@ -103,7 +104,7 @@ internal fun ThreadsCaptionText(app: ThreadsApp, post: ThreadsPost, modifier: Mo
 private fun CoveredText(post: ThreadsPost, style: TextStyle, maxLines: Int, show: () -> Unit) {
     val cover = MaterialTheme.colorScheme.onSurfaceVariant
     val link = MaterialTheme.colorScheme.primary
-    val said = pluginString(Strings.tap_to_show_spoiler)
+    val said = pluginString(if (PluginPlatform.isDesktop) Strings.tap_to_show_spoiler_desktop else Strings.tap_to_show_spoiler)
     val sticker = pluginString(Strings.sticker)
     val runs = remember(post.text, post.fragments) { ThreadsCaption.runs(post.text, post.fragments) }
     val shown = remember(runs) { runs.filterNot { it.spoiler } }
@@ -232,7 +233,7 @@ internal fun ReplyAudienceLine(post: ThreadsPost) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ThreadsPostSheet(app: ThreadsApp, post: ThreadsPost, onPicture: (() -> Unit)? = null, onDone: () -> Unit) {
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDone) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDone) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) {
             ThreadsPostSheetRows(app, post, onPicture, onDone)
         }

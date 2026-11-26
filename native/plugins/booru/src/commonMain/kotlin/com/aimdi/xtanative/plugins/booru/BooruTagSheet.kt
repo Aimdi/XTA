@@ -19,7 +19,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -38,6 +37,7 @@ import com.aimdi.xtanative.networks.booru.BooruTagOperator
 import com.aimdi.xtanative.networks.booru.BooruText
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.addToGroupText
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -62,7 +62,7 @@ internal fun TagActions(app: BooruApp, opened: OpenedTag, search: BooruSearch?, 
     val outside = rememberOutside()
     val copied = copiedNotice(app)
     val done = { action: () -> Unit -> action(); onDismiss() }
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
+    PluginSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
         Column(Modifier.navigationBarsPadding().verticalScroll(rememberScrollState())) {
             ListItem(
                 headlineContent = { Text(tokenText(tag, opened.category), style = MaterialTheme.typography.titleMedium) },
@@ -108,7 +108,7 @@ internal fun WikiSheet(app: BooruApp, tag: String, site: SiteRef?, onDismiss: ()
         value = null
         value = loadWiki(app, tag, site)
     }.value
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
+    PluginSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
         Box(Modifier.fillMaxWidth().heightIn(min = 200.dp).navigationBarsPadding()) {
             val body = page?.getOrNull()
             when {

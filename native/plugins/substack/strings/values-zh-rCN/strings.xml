@@ -79,6 +79,7 @@
     <string name="no_results">没有结果</string>
     <string name="notes_empty">暂时没有可显示的 Notes</string>
     <string name="notes_intro">来自 Substack 各处的公开 Notes——不是你的个人 Following。点按即可在网站打开，或关注其刊物。</string>
+    <string name="notes_intro_desktop">来自 Substack 各处的公开 Notes——不是你的个人 Following。点击即可在网站打开，或关注其刊物。</string>
     <string name="open_in_browser">在浏览器中打开</string>
     <string name="open_pasted_post">打开粘贴的文章</string>
     <string name="opml_empty">此文件中没有刊物</string>

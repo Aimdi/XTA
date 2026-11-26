@@ -21,6 +21,7 @@
     <string name="error">Это не биржевой тикер</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Посты о ваших тикерах появляются ниже. Нажмите символ для фильтра; долгое нажатие открывает страницу.</string>
+    <string name="feed_hint_desktop">Посты о ваших тикерах появляются ниже. Щёлкните символ для фильтра; щелчок правой кнопкой мыши открывает страницу.</string>
     <string name="fold_signal_posts">Сворачивать посты сигнальных групп</string>
     <string name="hide">Скрыть</string>
     <string name="liquidity">Ликвидность</string>

@@ -24,6 +24,7 @@ import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.NetworkPersonRow
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
+import com.aimdi.xtanative.ui.plugins.PluginReadingWidth
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
@@ -87,6 +88,7 @@ private fun <T : Any> ActivityScreen(
     PluginScaffold(
         title = pluginString(title),
         onBack = app.host::back,
+        column = PluginReadingWidth,
         actions = { IconTip(pluginString(Strings.open_in_browser)) { IconButton(onClick = { openOutside(url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser)) } } },
     ) { padding ->
         PullToRefreshBox(isRefreshing = paged.loading && paged.loaded, onRefresh = pages::refresh, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {

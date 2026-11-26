@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Je Pixiv-refresh-token is geweigerd</string>
     <string name="file_name">Bestandsnaam</string>
     <string name="file_name_help">Tik op een gegeven om het bij de cursor in te voegen. Elk bestand houdt zijn eigen extensie.</string>
+    <string name="file_name_help_desktop">Klik op een gegeven om het bij de cursor in te voegen. Elk bestand houdt zijn eigen extensie.</string>
     <string name="file_name_part_required">Voeg %1$s toe zodat elke pagina van een werk een eigen naam krijgt</string>
     <string name="file_name_preview">Voorbeeld: %1$s</string>
     <string name="file_name_reset">Herstellen</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Favoriete tags bewerken</string>
     <string name="search_favorite_tags_edit_hint">Sleep een tag om hem te verplaatsen. Veeg hem opzij om hem te verwijderen.</string>
     <string name="search_favorite_tags_empty">Nog geen favoriete tags. Houd een tag van een werk ingedrukt om hem toe te voegen.</string>
+    <string name="search_favorite_tags_empty_desktop">Nog geen favoriete tags. Klik met de rechtermuisknop op een tag van een werk om hem toe te voegen.</string>
     <string name="search_filters_title">Zoekfilters</string>
     <string name="search_hint">Tags, titels of gebruikers</string>
     <string name="search_history">Recente zoekopdrachten</string>

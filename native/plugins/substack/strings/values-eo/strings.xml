@@ -80,6 +80,7 @@
     <string name="no_results">Ne rezultoj</string>
     <string name="notes_empty">Neniuj Notes nun</string>
     <string name="notes_intro">Publikaj Notes el Substack — ne via persona Following. Tuŝu noton por malfermi ĝin en la retejo, aŭ sekvu ĝian eldonaĵon.</string>
+    <string name="notes_intro_desktop">Publikaj Notes el Substack — ne via persona Following. Alklaku noton por malfermi ĝin en la retejo, aŭ sekvu ĝian eldonaĵon.</string>
     <string name="open_in_browser">Malfermi en retumilo</string>
     <string name="open_pasted_post">Malfermi la algluitan afiŝon</string>
     <string name="opml_empty">Neniu publikaĵo en ĉi tiu dosiero</string>

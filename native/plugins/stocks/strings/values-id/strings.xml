@@ -21,6 +21,7 @@
     <string name="error">Itu bukan simbol saham</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Kiriman tentang ticker Anda muncul di bawah. Ketuk untuk memfilter; tekan lama untuk membuka halaman.</string>
+    <string name="feed_hint_desktop">Kiriman tentang ticker Anda muncul di bawah. Klik untuk memfilter; klik kanan untuk membuka halaman.</string>
     <string name="fold_signal_posts">Ciutkan postingan grup sinyal</string>
     <string name="hide">Sembunyikan</string>
     <string name="liquidity">Likuiditas</string>

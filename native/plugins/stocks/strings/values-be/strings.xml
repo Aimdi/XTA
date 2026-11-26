@@ -21,6 +21,7 @@
     <string name="error">Гэта не біржавы тыкер</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Пасты пра вашы тыкеры з’яўляюцца ніжэй. Націсніце сімвал для фільтра; доўгае націсканне адкрывае старонку.</string>
+    <string name="feed_hint_desktop">Пасты пра вашы тыкеры з’яўляюцца ніжэй. Пстрыкніце сімвал для фільтра; націсканне правай кнопкай мышы адкрывае старонку.</string>
     <string name="fold_signal_posts">Згортваць допісы сігнальных груп</string>
     <string name="hide">Схаваць</string>
     <string name="liquidity">Ліквіднасць</string>

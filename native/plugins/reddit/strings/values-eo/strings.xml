@@ -26,7 +26,9 @@
     <string name="nsfw_hide">Kaŝi</string>
     <string name="nsfw_hide_description">Forigi NSFW-afiŝojn el fluoj kaj listoj</string>
     <string name="nsfw_tap">Tuŝi por montri</string>
+    <string name="nsfw_tap_desktop">Alklaki por montri</string>
     <string name="nsfw_tap_description">Kovri NSFW-aŭdvidaĵojn ĝis vi tuŝas ilin</string>
+    <string name="nsfw_tap_description_desktop">Kovri NSFW-aŭdvidaĵojn ĝis vi alklakas ilin</string>
     <string name="nsfw_show">Ĉiam montri</string>
     <string name="nsfw_show_description">Montri NSFW-aŭdvidaĵojn sen kovrilo</string>
     <string name="online_now">nun konektitaj</string>
@@ -40,6 +42,7 @@
     <string name="show_spoilers">Montri spoilerojn</string>
     <string name="show_spoilers_description">Montri spoiler-markitajn aŭdvidaĵojn sen kovrilo</string>
     <string name="tap_to_show_spoiler">Tuŝu por montri la intrigmalkaŝon</string>
+    <string name="tap_to_show_spoiler_desktop">Alklaku por montri la intrigmalkaŝon</string>
     <string name="sign_in">Ensaluti al Reddit</string>
     <string name="sign_in_failed">Ensaluto al Reddit malsukcesis</string>
     <string name="sign_out">Elsaluti</string>
@@ -108,6 +111,7 @@
     <string name="copy">Kopii</string>
     <string name="more_options">Pliaj opcioj</string>
     <string name="tap_to_show_media">Tuŝu por montri la aŭdvidaĵojn</string>
+    <string name="tap_to_show_media_desktop">Alklaku por montri la aŭdvidaĵojn</string>
     <plurals name="comment_count">
         <item quantity="one">%1$d komento</item>
         <item quantity="other">%1$d komentoj</item>

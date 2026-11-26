@@ -80,6 +80,7 @@
     <string name="no_results">कोई परिणाम नहीं</string>
     <string name="notes_empty">अभी दिखाने के लिए कोई Notes नहीं</string>
     <string name="notes_intro">Substack भर की सार्वजनिक Notes — आपका निजी Following फ़ीड नहीं। नोट खोलने के लिए टैप करें, या उसका प्रकाशन फ़ॉलो करें।</string>
+    <string name="notes_intro_desktop">Substack भर की सार्वजनिक Notes — आपका निजी Following फ़ीड नहीं। नोट खोलने के लिए क्लिक करें, या उसका प्रकाशन फ़ॉलो करें।</string>
     <string name="open_in_browser">ब्राउज़र में खोलें</string>
     <string name="open_pasted_post">चिपकाई गई पोस्ट खोलें</string>
     <string name="opml_empty">इस फ़ाइल में कोई प्रकाशन नहीं है</string>

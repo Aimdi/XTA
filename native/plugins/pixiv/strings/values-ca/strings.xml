@@ -121,6 +121,7 @@
     <string name="error_unauthorized">S’ha rebutjat el testimoni d’actualització de Pixiv</string>
     <string name="file_name">Nom del fitxer</string>
     <string name="file_name_help">Toca una dada per inserir-la on hi ha el cursor. Cada fitxer conserva la seva extensió.</string>
+    <string name="file_name_help_desktop">Fes clic en una dada per inserir-la on hi ha el cursor. Cada fitxer conserva la seva extensió.</string>
     <string name="file_name_part_required">Inclou %1$s perquè cada pàgina d’una obra tingui un nom propi</string>
     <string name="file_name_preview">Previsualització: %1$s</string>
     <string name="file_name_reset">Restableix</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Edita les etiquetes preferides</string>
     <string name="search_favorite_tags_edit_hint">Arrossega una etiqueta per moure-la. Llisca-la cap a un costat per treure-la.</string>
     <string name="search_favorite_tags_empty">Encara no tens etiquetes preferides. Mantén premuda una etiqueta d’una obra per afegir-la.</string>
+    <string name="search_favorite_tags_empty_desktop">Encara no tens etiquetes preferides. Fes clic amb el botó dret en una etiqueta d’una obra per afegir-la.</string>
     <string name="search_filters_title">Filtres de cerca</string>
     <string name="search_hint">Etiquetes, títols o usuaris</string>
     <string name="search_history">Cerques recents</string>

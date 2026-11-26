@@ -57,6 +57,7 @@ import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.plugins.LinkedText
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
+import com.aimdi.xtanative.ui.plugins.PluginReadingWidth
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.TextRun
 import com.aimdi.xtanative.ui.plugins.pluginPlural
@@ -81,6 +82,7 @@ internal fun HnStoryScreen(app: HnApp, id: Long) {
     PluginScaffold(
         title = pluginString(Strings.comments),
         onBack = app.host::back,
+        column = PluginReadingWidth,
         actions = {
             if (url != null) IconTip(pluginString(Strings.open_article)) { IconButton(onClick = { app.host.openLink(url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_article)) } }
             // The story's sheet, as a long press on its row opens it: Saved, its note, its page shared or opened.

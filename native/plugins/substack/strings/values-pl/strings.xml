@@ -82,6 +82,7 @@
     <string name="no_results">Brak wyników</string>
     <string name="notes_empty">Brak Notes do pokazania</string>
     <string name="notes_intro">Publiczne Notes z Substacka — nie Twoja osobista oś Following. Dotknij notatki, by otworzyć ją w witrynie, albo obserwuj publikację.</string>
+    <string name="notes_intro_desktop">Publiczne Notes z Substacka — nie Twoja osobista oś Following. Kliknij notatkę, by otworzyć ją w witrynie, albo obserwuj publikację.</string>
     <string name="open_in_browser">Otwórz w przeglądarce</string>
     <string name="open_pasted_post">Otwórz wklejony post</string>
     <string name="opml_empty">W tym pliku nie ma publikacji</string>

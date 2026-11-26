@@ -33,6 +33,7 @@
     <string name="download_all_result">Ilaran: %1$d. Dagoeneko deskargatuta: %2$d.</string>
     <string name="edit_as_text">Editatu testu gisa</string>
     <string name="edit_tag">Sakatu editatzeko</string>
+    <string name="edit_tag_desktop">Egin klik editatzeko</string>
     <string name="either_tag">Edo</string>
     <string name="empty_following">Jarraitu etiketei bilaketatik edo argitalpen batetik fitxa hau betetzeko</string>
     <string name="empty_following_posts">Ez dago argitalpen berririk jarraitzen dituzun etiketekin</string>
@@ -125,6 +126,7 @@
     <string name="rating_questionable">Zalantzazkoa</string>
     <string name="rating_sensitive">Sentikorra</string>
     <string name="related_hint">Sakatu bilaketari gehitzeko · luze sakatu baztertzeko</string>
+    <string name="related_hint_desktop">Egin klik bilaketari gehitzeko · eskuineko klik baztertzeko</string>
     <string name="remove_site">Kendu gunea</string>
     <string name="retry">Saiatu berriro</string>
     <string name="save_on_this_device">Gorde gailu honetan</string>
@@ -153,6 +155,7 @@
     <string name="small_thumbnails_description">Saretan ostalariaren aurrebista txikiak kargatzen ditu. Azkarragoa da eta datu gutxiago erabiltzen ditu, baina irudiak lausoagoak dira</string>
     <string name="source">Iturburua</string>
     <string name="suggestions_hint">Idatzitakoaren antzeko etiketak: sakatu bat horren ordez bilatzeko</string>
+    <string name="suggestions_hint_desktop">Idatzitakoaren antzeko etiketak: egin klik bati horren ordez bilatzeko</string>
     <string name="tab_following">Jarraitzen</string>
     <string name="tab_latest">Azkenak</string>
     <string name="tag_artist">Artista</string>
@@ -169,6 +172,7 @@
     <string name="tag_sort_name">A–Z</string>
     <string name="tag_species">Espeziea</string>
     <string name="tag_tap_hint">Ukitu etiketa bat bilatzeko. Eduki sakatuta jarraitzeko, ezkutatzeko edo bere wikia irakurtzeko.</string>
+    <string name="tag_tap_hint_desktop">Egin klik etiketa batean bilatzeko. Egin eskuineko klik jarraitzeko, ezkutatzeko edo bere wikia irakurtzeko.</string>
     <string name="tags">Etiketak</string>
     <string name="test_connection">Probatu konexioa</string>
     <string name="test_failed">Booru probak huts egin du: %1$s</string>

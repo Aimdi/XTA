@@ -121,6 +121,7 @@
     <string name="error_unauthorized">O seu token de atualização do Pixiv foi rejeitado</string>
     <string name="file_name">Nome do ficheiro</string>
     <string name="file_name_help">Toque num dado para o inserir na posição do cursor. Cada ficheiro mantém a sua extensão.</string>
+    <string name="file_name_help_desktop">Clique num dado para o inserir na posição do cursor. Cada ficheiro mantém a sua extensão.</string>
     <string name="file_name_part_required">Inclua %1$s para que cada página de uma obra tenha o seu próprio nome</string>
     <string name="file_name_preview">Pré-visualização: %1$s</string>
     <string name="file_name_reset">Repor</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Editar etiquetas favoritas</string>
     <string name="search_favorite_tags_edit_hint">Arraste uma etiqueta para a mover. Deslize-a para o lado para a remover.</string>
     <string name="search_favorite_tags_empty">Ainda não tem etiquetas favoritas. Mantenha premida uma etiqueta de uma obra para a adicionar.</string>
+    <string name="search_favorite_tags_empty_desktop">Ainda não tem etiquetas favoritas. Clique com o botão direito numa etiqueta de uma obra para a adicionar.</string>
     <string name="search_filters_title">Filtros de pesquisa</string>
     <string name="search_hint">Etiquetas, títulos ou utilizadores</string>
     <string name="search_history">Pesquisas recentes</string>

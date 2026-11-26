@@ -33,6 +33,7 @@
     <string name="download_all_result">कतार में: %1$d। पहले से डाउनलोड: %2$d।</string>
     <string name="edit_as_text">टेक्स्ट के रूप में संपादित करें</string>
     <string name="edit_tag">संपादित करने के लिए टैप करें</string>
+    <string name="edit_tag_desktop">संपादित करने के लिए क्लिक करें</string>
     <string name="either_tag">या</string>
     <string name="empty_following">इस टैब को भरने के लिए खोज या किसी पोस्ट से टैग फ़ॉलो करें</string>
     <string name="empty_following_posts">फ़ॉलो किए गए टैग की कोई हाल की पोस्ट नहीं</string>
@@ -125,6 +126,7 @@
     <string name="rating_questionable">संदिग्ध</string>
     <string name="rating_sensitive">संवेदनशील</string>
     <string name="related_hint">खोज में जोड़ने के लिए टैप करें · बाहर रखने के लिए देर तक दबाएँ</string>
+    <string name="related_hint_desktop">खोज में जोड़ने के लिए क्लिक करें · बाहर रखने के लिए राइट-क्लिक करें</string>
     <string name="remove_site">साइट हटाएँ</string>
     <string name="retry">पुनः प्रयास करें</string>
     <string name="save_on_this_device">इस डिवाइस पर सहेजें</string>
@@ -153,6 +155,7 @@
     <string name="small_thumbnails_description">ग्रिड में होस्ट के छोटे पूर्वावलोकन लोड होते हैं। तेज़ और कम डेटा खर्च, पर थोड़े धुंधले</string>
     <string name="source">स्रोत</string>
     <string name="suggestions_hint">आपके लिखे जैसे टैग: उसकी जगह खोजने के लिए किसी एक पर टैप करें</string>
+    <string name="suggestions_hint_desktop">आपके लिखे जैसे टैग: उसकी जगह खोजने के लिए किसी एक पर क्लिक करें</string>
     <string name="tab_following">फ़ॉलो किए गए</string>
     <string name="tab_latest">नवीनतम</string>
     <string name="tag_artist">कलाकार</string>
@@ -169,6 +172,7 @@
     <string name="tag_sort_name">वर्णानुक्रम</string>
     <string name="tag_species">प्रजाति</string>
     <string name="tag_tap_hint">किसी टैग को खोजने के लिए उस पर टैप करें। उसे फ़ॉलो करने, छिपाने या उसकी विकि पढ़ने के लिए उसे दबाकर रखें।</string>
+    <string name="tag_tap_hint_desktop">किसी टैग को खोजने के लिए उस पर क्लिक करें। उसे फ़ॉलो करने, छिपाने या उसकी विकि पढ़ने के लिए उस पर राइट-क्लिक करें।</string>
     <string name="tags">टैग</string>
     <string name="test_connection">कनेक्शन जाँचें</string>
     <string name="test_failed">बूरू जाँच विफल: %1$s</string>

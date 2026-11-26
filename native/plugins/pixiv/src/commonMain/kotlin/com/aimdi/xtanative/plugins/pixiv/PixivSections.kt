@@ -31,7 +31,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -59,6 +58,7 @@ import com.aimdi.xtanative.networks.pixiv.Pixivision
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.agoText
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
@@ -243,7 +243,7 @@ private fun RankingPinsSheet(novels: Boolean, onClose: () -> Unit) {
     val table = PixivRankingPins.tableOf(novels)
     val offered = PixivRanking.offered(table, settings[PixivPrefs.showR18])
     val pins = PixivRankingPins.of(settings, novels)
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onClose) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onClose) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 24.dp)) {
             Text(pluginString(Strings.ranking_edit_title), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(4.dp))

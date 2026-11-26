@@ -15,8 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -36,9 +38,14 @@ fun PluginScaffold(
     content: @Composable (PaddingValues) -> Unit,
 ) = PluginScaffold({ TipText(title, maxLines = 1, overflow = TextOverflow.Ellipsis) }, onBack, modifier, actions, content)
 
-/** [PluginScaffold] titled [title], its bar over a centred [column] (see the one with a drawn title). */
+/**
+ * [PluginScaffold] titled [title], its bar's Back, title and actions over a
+ * centred [column] (see the one with a drawn title): a list kept to the
+ * reading column ([PluginReadingColumn]) passes [PluginReadingWidth], so its
+ * bar lines up with its rows in a wide window. Plugin API 16.
+ */
 @Composable
-internal fun PluginScaffold(
+fun PluginScaffold(
     title: String,
     onBack: (() -> Unit)?,
     column: Dp?,
@@ -61,15 +68,17 @@ fun PluginScaffold(
 ) = PluginScaffold(title, onBack, column = null, modifier, actions, content)
 
 /**
- * [PluginScaffold] for the app's own pages drawn as a plugin's (the plugin
- * store, a plugin's settings): with a [column], the bar's Back, title and
- * actions stand over the centred column [content] keeps to in a wide window
- * ([ColumnTopAppBar]); without, across the whole bar, since a plugin's own
- * screen may well fill the width.
+ * [PluginScaffold] with a drawn title and a [column]: the bar's Back, title
+ * and actions stand over the centred column [content] keeps to in a wide
+ * window ([ColumnTopAppBar]: [PluginReadingWidth] for a list in the reading
+ * column, as the app's own pages, the plugin store and a plugin's settings,
+ * are drawn); without one, across the whole bar, since a plugin's own
+ * screen may well fill the width. A phone or a narrow window has the plain
+ * bar either way. Plugin API 16 (before, the app's own pages only).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun PluginScaffold(
+fun PluginScaffold(
     title: @Composable () -> Unit,
     onBack: (() -> Unit)?,
     column: Dp?,
@@ -96,3 +105,6 @@ internal fun PluginScaffold(
         content = content,
     )
 }
+
+/** The width of the app's reading column ([PluginReadingColumn]), for a [PluginScaffold]'s `column`. Plugin API 16. */
+val PluginReadingWidth: Dp = ReadingColumn.MAX_WIDTH.dp

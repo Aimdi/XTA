@@ -36,6 +36,7 @@
     <string name="download_all_result">Queued: %1$d. Already downloaded: %2$d.</string>
     <string name="edit_as_text">Edit as text</string>
     <string name="edit_tag">Tap to edit</string>
+    <string name="edit_tag_desktop">Click to edit</string>
     <string name="either_tag">Or</string>
     <string name="empty_following">Follow tags from search or a post to fill this tab</string>
     <string name="empty_following_posts">No recent posts for your followed tags</string>
@@ -128,6 +129,7 @@
     <string name="rating_questionable">Questionable</string>
     <string name="rating_sensitive">Sensitive</string>
     <string name="related_hint">Tap to add to the search · long-press to exclude</string>
+    <string name="related_hint_desktop">Click to add to the search · right-click to exclude</string>
     <string name="remove_site">Remove site</string>
     <string name="retry">Retry</string>
     <string name="save_on_this_device">Save on this device</string>
@@ -156,6 +158,7 @@
     <string name="small_thumbnails_description">Loads the host\'s small previews in the grid. Faster and lighter on data, but blurrier</string>
     <string name="source">Source</string>
     <string name="suggestions_hint">Tags like the one you typed: tap one to search it instead</string>
+    <string name="suggestions_hint_desktop">Tags like the one you typed: click one to search it instead</string>
     <string name="tab_following">Following</string>
     <string name="tab_latest">Latest</string>
     <string name="tag_artist">Artist</string>
@@ -172,6 +175,7 @@
     <string name="tag_sort_name">A–Z</string>
     <string name="tag_species">Species</string>
     <string name="tag_tap_hint">Tap a tag to search it. Touch and hold it to follow it, hide it or read its wiki.</string>
+    <string name="tag_tap_hint_desktop">Click a tag to search it. Right-click it to follow it, hide it or read its wiki.</string>
     <string name="tags">Tags</string>
     <string name="test_connection">Test connection</string>
     <string name="test_failed">Booru test failed: %1$s</string>

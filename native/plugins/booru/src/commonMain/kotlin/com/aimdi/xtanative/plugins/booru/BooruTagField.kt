@@ -55,6 +55,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.booru.BooruQueryToken
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /**
@@ -120,7 +121,7 @@ internal fun TagField(search: BooruSearch, state: BooruSearchState, field: Mutab
 private fun FieldChip(tag: String, state: BooruSearchState, onEdit: () -> Unit, onRemove: () -> Unit) {
     TooltipBox(
         positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-        tooltip = { PlainTooltip { Text(pluginString(Strings.edit_tag)) } },
+        tooltip = { PlainTooltip { Text(pluginString(if (PluginPlatform.isDesktop) Strings.edit_tag_desktop else Strings.edit_tag)) } },
         state = rememberTooltipState(),
     ) {
         InputChip(

@@ -19,7 +19,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -34,10 +33,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsAccountFailure
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
+import com.aimdi.xtanative.ui.plugins.rememberSheetClose
 import java.time.Instant
 
 /**
@@ -66,13 +67,14 @@ internal fun FailedAccountsRow(app: ThreadsApp) {
 @Composable
 private fun FailedAccountsSheet(app: ThreadsApp, failures: List<ThreadsAccountFailure>, onDismiss: () -> Unit) {
     var unfollowing by remember { mutableStateOf<String?>(null) }
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+        val closeSheet = rememberSheetClose()
         LazyColumn(Modifier.navigationBarsPadding().padding(horizontal = 8.dp)) {
             item(key = "title") {
                 Text(pluginPlural(Strings.accounts_failed, failures.size, failures.size), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(16.dp))
             }
             items(failures, key = { it.handle }) { failure ->
-                FailedAccount(app, failure, onOpen = { onDismiss(); app.openProfile(failure.handle) }, onUnfollow = { unfollowing = failure.handle })
+                FailedAccount(app, failure, onOpen = { closeSheet { app.openProfile(failure.handle) } }, onUnfollow = { unfollowing = failure.handle })
             }
         }
     }

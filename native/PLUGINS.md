@@ -44,7 +44,7 @@ plugin API version it was built against, `PLUGIN_API_VERSION`) and `entry`
 
 ## The plugin API
 
-`PLUGIN_API_VERSION` is 15. Version 1 is what native-0.1.41 shipped; 2,
+`PLUGIN_API_VERSION` is 16. Version 1 is what native-0.1.41 shipped; 2,
 which native-0.1.45 shipped, added `cashtagStrip` and `routeForCashtag` and
 the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
 plugin, the chip tabs, the shelf, the recent searches, the action row,
@@ -103,6 +103,20 @@ desktop's scrollbar and reading keys, and `rememberPluginSheetState`, a
 sheet's state that opens it all the way on the desktop and gives the keys
 back as it closes; a plugin that uses any of them says 15,
 and an app of 14 (native-1.0.14) offers it as "needs a newer XTA Native".
+16 adds `PluginSheet`, the app's own sheet for a plugin's (in place of
+Material's `ModalBottomSheet`: the desktop's keys reach it as it opens, ↑
+and ↓ along its rows, Esc closes it), with `rememberSheetClose()` for a
+button in it that closes it (the sheet slides away, then the work is done)
+and `Modifier.keyScrolled(list)` for its list (Page Down, Space, Home, End);
+`PluginPlatform.isDesktop`, so a plugin's words say click and right-click
+on the desktop where a phone's say tap and long press (a `_desktop` string
+beside the touch one, as the app's own settings have them);
+`PluginScaffold(title, onBack, column)` with `PluginReadingWidth`, a bar
+whose Back, title and actions stand over the reading column its list keeps
+to; and `pluginEdgeColor()`, the hairline round the app's cards, for a
+plugin's own. The plugins built for 16 all say 16, so an app of 15
+(native-1.0.16) offers their updates as "needs a newer XTA Native" and keeps
+running the ones installed; this app still loads every plugin of 2 to 15.
 
 On Home every plugin is one shell (option A of the "Unified Plugin Shell"
 canvas), two rows that hide together as the posts scroll:
@@ -247,7 +261,10 @@ with a test.
   its `ArticleReaderControls` and `KeepsReaderPlace`, which Substack's own
   reader draws with too; and X posts drawn in a plugin with
   `rememberXPostActions` and `XPostMedia`.
-- Screens: `PluginScaffold`, `PluginRoute` (a screen and its arguments as
+- Screens: `PluginScaffold` (with a `column`, its bar over `PluginReadingWidth`),
+  `PluginSheet` with `rememberSheetClose` and `keyScrolled` (a sheet as the app's),
+  `PluginPlatform` (the desktop's words for a gesture), `pluginEdgeColor`
+  (a card's border), `PluginRoute` (a screen and its arguments as
   text, for `open`), `PluginChipTabs` over a home tab, `WithSettings`,
   `PluginShelf` (what one screen hands the next), `rememberKept` (state kept
   while the screen is on the back stack) and `PluginNotices` with

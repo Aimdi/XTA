@@ -54,10 +54,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivTag
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.onContextClick
+import com.aimdi.xtanative.ui.plugins.pluginEdgeColor
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -80,7 +82,7 @@ internal fun PixivFavoriteTagsScreen() {
         },
     ) { padding ->
         Box(Modifier.padding(padding).fillMaxSize()) {
-            if (tags.isEmpty()) PixivEmpty(pluginString(Strings.search_favorite_tags_empty), icon = PixivIcons.Label) else FavoriteTagList(tags, editing)
+            if (tags.isEmpty()) PixivEmpty(pluginString(if (PluginPlatform.isDesktop) Strings.search_favorite_tags_empty_desktop else Strings.search_favorite_tags_empty), icon = PixivIcons.Label) else FavoriteTagList(tags, editing)
         }
     }
 }
@@ -198,7 +200,7 @@ private fun MuteGroup(title: String, icon: ImageVector, chips: List<MuteChip>, l
             Surface(
                 shape = shape,
                 color = Color.Transparent,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                border = BorderStroke(1.dp, pluginEdgeColor()),
                 modifier = Modifier.clip(shape).then(copyChip?.let { Modifier.onContextClick(it) } ?: Modifier).combinedClickable(
                     onClick = { sheets.ask.ask(Strings.unmute_question.get(language, chip.label), Strings.unmute.get(language), chip.unmute) },
                     onLongClick = copyChip,

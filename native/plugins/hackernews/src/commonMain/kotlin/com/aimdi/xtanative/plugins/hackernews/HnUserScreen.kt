@@ -29,6 +29,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
+import com.aimdi.xtanative.ui.plugins.PluginReadingWidth
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.addToGroupText
 import com.aimdi.xtanative.ui.plugins.pluginPlural
@@ -45,7 +46,7 @@ internal fun HnUserScreen(app: HnApp, id: String) {
     val state by reader.state.collectAsState()
     val kept by app.kept.collectAsState()
     val page = state.value
-    PluginScaffold(title = id, onBack = app.host::back) { padding ->
+    PluginScaffold(title = id, onBack = app.host::back, column = PluginReadingWidth) { padding ->
         PullToRefreshBox(isRefreshing = state.loading && page != null, onRefresh = reader::refresh, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             val scroll = rememberLazyListState()
             PluginReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp), scroll) { column -> LazyColumn(modifier = Modifier.fillMaxSize(), state = scroll, contentPadding = column) {

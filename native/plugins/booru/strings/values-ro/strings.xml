@@ -33,6 +33,7 @@
     <string name="download_all_result">În coadă: %1$d. Descărcate deja: %2$d.</string>
     <string name="edit_as_text">Editează ca text</string>
     <string name="edit_tag">Atinge pentru a edita</string>
+    <string name="edit_tag_desktop">Fă clic pentru a edita</string>
     <string name="either_tag">Sau</string>
     <string name="empty_following">Urmărește etichete din căutare sau dintr-o postare ca să umpli această filă</string>
     <string name="empty_following_posts">Nicio postare recentă pentru etichetele urmărite</string>
@@ -126,6 +127,7 @@
     <string name="rating_questionable">Discutabil</string>
     <string name="rating_sensitive">Sensibil</string>
     <string name="related_hint">Atinge pentru a adăuga la căutare · apasă lung pentru a exclude</string>
+    <string name="related_hint_desktop">Fă clic pentru a adăuga la căutare · clic dreapta pentru a exclude</string>
     <string name="remove_site">Elimină site-ul</string>
     <string name="retry">Reîncercați</string>
     <string name="save_on_this_device">Salvează pe acest dispozitiv</string>
@@ -154,6 +156,7 @@
     <string name="small_thumbnails_description">Încarcă în grilă previzualizările mici de pe site. Mai rapid și consumă mai puține date, dar imaginile sunt mai neclare</string>
     <string name="source">Sursă</string>
     <string name="suggestions_hint">Etichete asemănătoare cu cea scrisă: atinge una ca să cauți după ea</string>
+    <string name="suggestions_hint_desktop">Etichete asemănătoare cu cea scrisă: fă clic pe una ca să cauți după ea</string>
     <string name="tab_following">Urmărite</string>
     <string name="tab_latest">Cele mai noi</string>
     <string name="tag_artist">Artist</string>
@@ -171,6 +174,7 @@
     <string name="tag_sort_name">A–Z</string>
     <string name="tag_species">Specie</string>
     <string name="tag_tap_hint">Atinge o etichetă ca s-o cauți. Ține apăsat ca s-o urmărești, s-o ascunzi sau să-i citești wiki-ul.</string>
+    <string name="tag_tap_hint_desktop">Fă clic pe o etichetă ca s-o cauți. Fă clic dreapta ca s-o urmărești, s-o ascunzi sau să-i citești wiki-ul.</string>
     <string name="tags">Etichete</string>
     <string name="test_connection">Testează conexiunea</string>
     <string name="test_failed">Testul booru a eșuat: %1$s</string>

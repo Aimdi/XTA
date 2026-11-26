@@ -26,6 +26,7 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
+import com.aimdi.xtanative.ui.plugins.PluginReadingWidth
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.RetryRow
@@ -44,6 +45,7 @@ internal fun MastodonTagScreen(app: MastodonApp, name: String) {
     PluginScaffold(
         title = "#" + name.removePrefix("#"),
         onBack = app.host::back,
+        column = PluginReadingWidth,
         actions = { IconTip(pluginString(Strings.retry)) { IconButton(onClick = reader::refresh) { Icon(Icons.Filled.Refresh, pluginString(Strings.retry)) } } },
     ) { padding ->
         PullToRefreshBox(isRefreshing = state.loading && state.posts.isNotEmpty(), onRefresh = reader::refresh, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
