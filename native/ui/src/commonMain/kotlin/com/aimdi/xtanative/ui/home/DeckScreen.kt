@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,8 +39,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -61,8 +60,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.backup.FollowGroup
@@ -72,10 +71,12 @@ import com.aimdi.xtanative.core.session.DeckColumns
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.DeckWidth
 import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.LocalSheetCloser
+import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.TopBarBack
 import com.aimdi.xtanative.ui.common.rememberSheetState
@@ -109,6 +110,7 @@ import com.aimdi.xtanative.ui.profile.ProfileScreen
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.common.EmptyState
 
 /** The narrowest the detail column gets: a post's conversation needs a page's width. */
 private const val DETAIL_MIN_WIDTH = 420
@@ -158,7 +160,9 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
+            // Over the empty state's column; over the columns, which run across the window, from edge to edge.
+            ColumnTopAppBar(
+                column = if (columns.isEmpty()) ReadingColumn.MAX_WIDTH.dp else Dp.Infinity,
                 title = { Text(stringResource(Res.string.home_deck)) },
                 navigationIcon = {
                     TopBarBack(onBack)
@@ -383,18 +387,8 @@ private fun widthLabel(width: DeckWidth): StringResource = when (width) {
 /** No columns yet: what the deck is for, and Add column. */
 @Composable
 private fun EmptyDeck(onAdd: () -> Unit) {
-    Column(
-        Modifier.fillMaxSize().padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
-    ) {
-        Text(
-            stringResource(Res.string.home_deck_empty),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        TextButton(onClick = onAdd) {
+    EmptyState(HomeIcons.ViewColumn, stringResource(Res.string.home_deck_empty)) {
+        Button(onClick = onAdd) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.home_deck_add), modifier = Modifier.padding(start = 8.dp))
         }
