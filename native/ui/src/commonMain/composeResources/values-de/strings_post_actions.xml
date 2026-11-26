@@ -2,13 +2,13 @@
 <!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
 <resources>
     <string name="posts_share">Beitrag teilen</string>
-    <string name="posts_share_content">Tweet-Inhalt teilen</string>
+    <string name="posts_share_content">Inhalt des Beitrags teilen</string>
     <string name="posts_share_article_link">Artikellink teilen</string>
-    <string name="posts_share_content_and_link">Tweet-Inhalt und Link teilen</string>
+    <string name="posts_share_content_and_link">Inhalt und Link des Beitrags teilen</string>
     <string name="posts_share_image">Beitrag als Bild teilen</string>
     <string name="posts_share_article_image">Artikel als Bild teilen</string>
     <string name="posts_copied">In die Zwischenablage kopiert</string>
-    <string name="posts_reply_not_found">Entschuldigung! Der beantwortete Tweet konnte nicht gefunden werden!</string>
+    <string name="posts_reply_not_found">Entschuldigung! Der beantwortete Beitrag konnte nicht gefunden werden!</string>
     <string name="posts_subscribe">Abonnieren</string>
     <string name="contract_address_copied">Vertragsadresse kopiert</string>
     <string name="poll_no_votes">Keine Stimmen</string>

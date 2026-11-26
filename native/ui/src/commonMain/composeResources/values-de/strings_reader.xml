@@ -21,7 +21,7 @@
     <string name="reader_link_likes">Gefällt mir: %1$s</string>
     <string name="reader_link_replies">Antworten: %1$s</string>
     <string name="reader_link_reposts">Reposts: %1$s</string>
-    <string name="reader_link_share_post">Tweet-Link teilen</string>
+    <string name="reader_link_share_post">Link zum Beitrag teilen</string>
     <string name="reader_link_unable">Link kann nicht geöffnet werden</string>
     <string name="reader_link_opened_outside">Diese Seite wurde im Browser geöffnet.</string>
     <string name="reader_links_open_in">Links öffnen in</string>

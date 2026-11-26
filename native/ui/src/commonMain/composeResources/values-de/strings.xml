@@ -10,7 +10,7 @@
     <string name="back">Zurück</string>
     <string name="close">Schließen</string>
     <string name="cancel">Abbrechen</string>
-    <string name="post">Post</string>
+    <string name="post">Beitrag</string>
 
     <string name="pinned">Angeheftet</string>
     <string name="reposted_by">%1$s hat repostet</string>
@@ -47,8 +47,8 @@
         <item quantity="other">%1$s Stimmen</item>
     </plurals>
     <plurals name="new_posts">
-        <item quantity="one">%1$d neuer Post</item>
-        <item quantity="other">%1$d neue Posts</item>
+        <item quantity="one">%1$d neuer Beitrag</item>
+        <item quantity="other">%1$d neue Beiträge</item>
     </plurals>
     <string name="problem_x_private">Privates Profil</string>
     <string name="problem_x_missing">Twitter behauptet diese Seite existiere nicht</string>

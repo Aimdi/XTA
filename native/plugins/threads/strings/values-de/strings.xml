@@ -126,8 +126,8 @@
     <string name="list_end">Keine weiteren Beiträge</string>
     <string name="retry_after">Versuche es nach %1$s erneut</string>
     <plurals name="new_posts">
-        <item quantity="one">%1$d neuer Post</item>
-        <item quantity="other">%1$d neue Posts</item>
+        <item quantity="one">%1$d neuer Beitrag</item>
+        <item quantity="other">%1$d neue Beiträge</item>
     </plurals>
     <string name="muted_words">Stummgeschaltete Wörter</string>
     <string name="muted_words_description">Blende Beiträge mit diesen Wörtern aus. Ein einzelnes Wort trifft nur ganze Wörter, eine Wortgruppe überall.</string>

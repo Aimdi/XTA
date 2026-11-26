@@ -47,7 +47,7 @@
     <string name="saved_write_note">Notiz schreiben</string>
     <string name="saved_note_delete_confirm">Diese Notiz löschen?</string>
     <string name="saved_likes_ungrouped">Ohne Gruppe</string>
-    <string name="saved_no_media">Keine Tweets mit Medien aus den letzten 7 Tagen gefunden!</string>
+    <string name="saved_no_media">Keine Beiträge mit Medien aus den letzten 7 Tagen gefunden!</string>
     <string name="saved_empty_search">Keine Beiträge entsprechen deiner Suche</string>
     <string name="saved_empty_likes">Noch keine markierten Beiträge — Herzen bleiben auf diesem Gerät</string>
     <string name="saved_empty_saved">Noch nichts gespeichert — Lesezeichen bleiben auf diesem Gerät</string>
@@ -57,7 +57,7 @@
     <string name="saved_add_note">Notiz zu diesem Beitrag</string>
     <string name="saved_edit_note">Notiz bearbeiten</string>
     <string name="saved_new_note">Neue Notiz</string>
-    <string name="saved_too_large">Der gespeicherte Tweet konnte nicht geladen werden, da er zu groß ist. Bitte melde das Problem den Entwicklern.</string>
+    <string name="saved_too_large">Der gespeicherte Beitrag konnte nicht geladen werden, da er zu groß ist. Bitte melde das Problem den Entwicklern.</string>
     <string name="saved_hide">Ausblenden</string>
     <string name="saved_show">Anzeigen</string>
     <plurals name="saved_folder_count">
