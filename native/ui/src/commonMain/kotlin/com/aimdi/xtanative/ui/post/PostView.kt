@@ -138,6 +138,15 @@ object PostView {
         !prefs.hideAuthors || post.author.screenName.equals(profileScreenName, ignoreCase = true)
 }
 
+/**
+ * X's like count as the reader sees it: a like on this device only is not
+ * sent to X, so it counts one more while [likedHere], unless X says its
+ * count holds the reader's own like already ([likedOnX]).
+ */
+object LikeCounts {
+    fun shown(xCount: Long, likedHere: Boolean, likedOnX: Boolean): Long = if (likedHere && !likedOnX) xCount + 1 else xCount
+}
+
 /** The numbers under a card, as XTA's footer writes them; null for one not shown. */
 data class FooterCounts(val replies: Long?, val reposts: Long?, val likes: Long?, val views: Long?) {
     companion object {

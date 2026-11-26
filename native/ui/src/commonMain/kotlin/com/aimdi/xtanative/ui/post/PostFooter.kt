@@ -244,7 +244,7 @@ private fun FooterCountItems(post: XPost, actions: PostActions, counts: FooterCo
         FooterCount(XIcons.Repost, counts.reposts ?: 0, stringResource(Res.string.posts_quotes), REPOST_GREEN, onLongClick = { quoteMenu = true }) { actions.openQuotes(post.id) }
         QuoteMenu(quoteMenu, onDismiss = { quoteMenu = false }, onQuotes = { actions.openQuotes(post.id) }, onRetweets = { actions.openReposters(post.id) }, onNote = onNote)
     }
-    actions.keep.LikeButton(post, count = counts.likes ?: 0)
+    actions.keep.LikeButton(post, count = counts.likes)
     if (views != null) {
         val label = pluralStringResource(Res.plurals.posts_views_count, viewsPluralCount(views), countText(views))
         Box(Modifier.padding(FooterFit.PADDING.dp)) { NetworkCount(XIcons.Views, views, label) }

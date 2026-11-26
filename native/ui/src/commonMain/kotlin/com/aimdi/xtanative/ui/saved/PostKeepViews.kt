@@ -52,6 +52,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_save_here
 import com.aimdi.xtanative.ui.generated.resources.saved_unlike
 import com.aimdi.xtanative.ui.generated.resources.saved_unsave
 import com.aimdi.xtanative.ui.plugins.CountButton
+import com.aimdi.xtanative.ui.post.LikeCounts
 import com.aimdi.xtanative.ui.post.sharedPostPrefs
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -60,9 +61,13 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun PostKeep.SaveButton(post: XPost, modifier: Modifier = Modifier, tint: Color = Color.Unspecified) = DeviceSaveButton(post, modifier, tint)
 
-/** The heart, liked on this device only, drawn as a post's counts are, with X's like [count] beside it when above 0. */
+/**
+ * The heart, liked on this device only, drawn as a post's counts are, with
+ * X's like [count] beside it when above 0, one more while liked here
+ * ([LikeCounts]); null draws no number, as zen and calm mode want.
+ */
 @Composable
-fun PostKeep.LikeButton(post: XPost, modifier: Modifier = Modifier, tint: Color = Color.Unspecified, count: Long = 0) =
+fun PostKeep.LikeButton(post: XPost, modifier: Modifier = Modifier, tint: Color = Color.Unspecified, count: Long? = null) =
     DeviceLikeButton(post, modifier, tint, count)
 
 /** The save sheet for [post], as a long press on the bookmark opens it. */
@@ -223,10 +228,11 @@ internal fun KeepableSaveButton(id: String, modifier: Modifier, tint: Color, ite
 /**
  * The device's like under an X post (XTA's LikeButton): liking plays X's
  * burst ([HeartBurst]) in the colour of a device like, unless motion is
- * reduced or calm or zen mode keeps actions quiet; X's count beside it rolls.
+ * reduced or calm or zen mode keeps actions quiet; X's count beside it, one
+ * more while liked here ([LikeCounts]), rolls.
  */
 @Composable
-internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, count: Long) {
+internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, count: Long?) {
     val keeper = LocalKeeper.current
     val switch = rememberOptimistic(post.shown.id, likedHere(post.shown.id))
     val liked = switch.shown
@@ -248,7 +254,7 @@ internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, coun
                     filled = { Icon(Icons.Filled.Favorite, contentDescription = null, tint = active, modifier = Modifier.size(17.dp)) },
                 )
             },
-            n = count,
+            n = count?.let { LikeCounts.shown(it, liked, post.shown.likedOnX) } ?: 0,
             label = label,
             tint = if (liked) active else rest,
             onLongClick = null,

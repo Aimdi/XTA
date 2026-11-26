@@ -43,6 +43,7 @@ object XtaTweetJson {
         put("retweet_count", post.repostCount)
         put("quote_count", post.quoteCount)
         put("favorite_count", post.likeCount)
+        if (post.likedOnX) put("favorited", true)
         post.viewCount?.let { put("viewCount", it) }
         post.replyToScreenName?.let { put("in_reply_to_screen_name", it) }
         post.conversationId?.let { put("conversationIdStr", it) }

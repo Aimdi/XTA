@@ -14,6 +14,7 @@ import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.core.x.model.XVerifiedType
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.serialization.json.JsonObject
@@ -68,6 +69,16 @@ class XPostAndUserFieldsTest {
         assertEquals("77", post.communityId)
         val back = XCodec.decode(XCodec.encode(listOf(XThread(post.id, listOf(post))))).single().posts.single()
         assertEquals(post.copy(author = back.author), back, "the disk cache keeps them")
+    }
+
+    @Test
+    fun xSayingTheReaderLikedAPostIsReadAndCached() {
+        assertFalse(post("").likedOnX, "a post X says nothing about is not liked on X")
+        assertFalse(post("", ""","favorited":false""").likedOnX)
+        val liked = post("", ""","favorited":true""")
+        assertTrue(liked.likedOnX)
+        val back = XCodec.decode(XCodec.encode(listOf(XThread(liked.id, listOf(liked))))).single().posts.single()
+        assertTrue(back.likedOnX, "the disk cache keeps it")
     }
 
     @Test

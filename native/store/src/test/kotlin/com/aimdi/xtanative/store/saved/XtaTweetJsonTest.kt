@@ -91,5 +91,7 @@ class XtaTweetJsonTest {
             conversationId = "40",
         )
         assertEquals(post, XtaTweetJson.decode(J(XtaTweetJson.encode(post))))
+        val likedOnX = post.copy(likedOnX = true)
+        assertEquals(likedOnX, XtaTweetJson.decode(J(XtaTweetJson.encode(likedOnX))), "X's word that the reader liked it is kept")
     }
 }
