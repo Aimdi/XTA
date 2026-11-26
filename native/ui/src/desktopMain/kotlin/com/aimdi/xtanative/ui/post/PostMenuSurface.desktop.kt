@@ -122,7 +122,7 @@ internal actual fun PostMenuSurface(onDismiss: () -> Unit, content: @Composable 
             Surface(
                 shape = MaterialTheme.shapes.extraSmall,
                 color = MaterialTheme.colorScheme.surfaceContainer,
-                tonalElevation = 3.dp,
+                tonalElevation = MENU_ELEVATION,
                 shadowElevation = 8.dp,
                 // A hairline keeps its edge on the black theme, where the shadow does not show.
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),

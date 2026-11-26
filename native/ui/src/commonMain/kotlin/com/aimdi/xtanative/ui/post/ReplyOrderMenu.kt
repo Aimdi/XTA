@@ -35,9 +35,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -246,6 +248,18 @@ private fun <T> ReplyOrderPopup(
     }
 }
 
+/**
+ * The desktop's menu panel colour, as the post menu's [androidx.compose.material3.Surface]
+ * draws its container lifted by [MENU_ELEVATION]: the page's surface tinted
+ * where the container is that surface (a light theme), the container as it
+ * is otherwise (the black theme's inset grey).
+ */
+internal fun ColorScheme.menuPanel(): Color =
+    if (surfaceContainer == surface) surfaceColorAtElevation(MENU_ELEVATION) else surfaceContainer
+
+/** How high a desktop menu panel stands: the post menu's tonal elevation. */
+internal val MENU_ELEVATION = 3.dp
+
 /** The menu: full-width rows ([look]), the chosen one ticked, and on a phone tinted with a 3 dp accent bar at its start. */
 @Composable
 private fun <T> ReplyOrderRows(
@@ -275,7 +289,7 @@ private fun <T> ReplyOrderRows(
             .width(width)
             .shadow(if (pointer) 8.dp else 12.dp, shape)
             .clip(shape)
-            .background(if (pointer) colors.surfaceContainer else colors.surfaceContainerLow)
+            .background(if (pointer) colors.menuPanel() else colors.surfaceContainerLow)
             .border(1.dp, if (pointer) colors.outlineVariant else colors.outlineVariant.copy(alpha = 0.5f), shape)
             // Keeps a click on the panel from closing it; no stop of Tab's either.
             .focusProperties { canFocus = false }
