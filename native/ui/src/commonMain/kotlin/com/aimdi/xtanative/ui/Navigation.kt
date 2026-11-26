@@ -899,7 +899,7 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Com
                 VerticalDivider()
             }
             if (home != null && kind == FrameKind.RAIL) {
-                FramedRail(home, frame, screens, Routes.HOME, calls, onMenu = { menu = true }, Modifier.frameNavigation(focus, covered = viewer), focus)
+                FramedRail(home, frame, screens, Routes.HOME, routes, calls, onMenu = { menu = true }, Modifier.frameNavigation(focus, covered = viewer), focus)
                 VerticalDivider()
             }
             Box(Modifier.weight(1f).fillMaxHeight().then(if (kind != FrameKind.NONE && !viewer) Modifier.clipToBounds() else Modifier)) {

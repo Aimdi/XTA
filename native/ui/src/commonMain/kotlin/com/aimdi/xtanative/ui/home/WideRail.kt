@@ -66,6 +66,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.TipSide
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_open_menu
@@ -77,7 +78,8 @@ import org.jetbrains.compose.resources.stringResource
  * Home's pages as icons down the start edge, named by a tip, the one where
  * the reader is marked as the column marks its row ([NavRowLook]), and above
  * them the menu, which opens the whole account menu over the window
- * ([onMenu]) and is marked while a screen of it is shown. It reads Home's
+ * ([onMenu]) and is marked while a screen of it is shown; at its foot
+ * Search and Settings, where the app has them ([routes]). It reads Home's
  * model from Home's place in the navigation ([home]), as the column does.
  */
 @Composable
@@ -86,6 +88,7 @@ fun FramedRail(
     frame: WideFrame,
     stack: List<FrameRoute>,
     homeRoute: String,
+    routes: HomeRoutes,
     calls: FrameCalls,
     onMenu: () -> Unit,
     modifier: Modifier = Modifier,
@@ -98,47 +101,81 @@ fun FramedRail(
         val ui = loaded ?: return@Surface
         val mark = FrameMarks.ofStack(stack, homeRoute, frame.homePage, ui.bar.mapTo(HashSet()) { it.id })
         val marked = focus?.let { Modifier.focusRequester(it.marked) } ?: Modifier
-        Column(
-            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(vertical = 12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            val inMenu = mark.screen != null || mark.group != null
-            val button = focus?.let { Modifier.focusRequester(it.menu) } ?: Modifier
-            RailItem(stringResource(Res.string.home_open_menu), selected = inMenu, onClick = onMenu, modifier = button.then(if (inMenu) marked else Modifier)) {
-                Icon(Icons.Filled.Menu, contentDescription = null)
+        val pinned = HomeMenu.shown(HomeMenu.buttons, routes.exists, deckFits = false)
+        Column(Modifier.fillMaxSize().padding(vertical = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                Modifier.weight(1f).verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                val inMenu = RailMarks.inMenu(mark, pinned)
+                val button = focus?.let { Modifier.focusRequester(it.menu) } ?: Modifier
+                RailItem(stringResource(Res.string.home_open_menu), selected = inMenu, onClick = onMenu, modifier = button.then(if (inMenu) marked else Modifier)) {
+                    Icon(Icons.Filled.Menu, contentDescription = null)
+                }
+                Spacer(Modifier.height(8.dp))
+                ui.bar.forEachIndexed { index, page ->
+                    val selected = page.id == mark.page
+                    RailItem(barLabel(page, ui), selected, onClick = { calls.page(index, page) }, modifier = if (selected) marked else Modifier) {
+                        BarPageIcon(page, selected, ui, networks)
+                    }
+                }
             }
-            Spacer(Modifier.height(8.dp))
-            ui.bar.forEachIndexed { index, page ->
-                val selected = page.id == mark.page
-                RailItem(barLabel(page, ui), selected, onClick = { calls.page(index, page) }, modifier = if (selected) marked else Modifier) {
-                    BarPageIcon(page, selected, ui, networks)
+            // Search and Settings pinned at the foot, as a desktop app's rail keeps them, a click away without the menu.
+            Column(Modifier.padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                pinned.forEach { destination ->
+                    val selected = destination.route == mark.screen
+                    RailItem(menuLabel(destination), selected, onClick = { calls.screen(destination.route) }, modifier = if (selected) marked else Modifier) {
+                        Icon(menuIcon(destination, selected), contentDescription = null)
+                    }
                 }
             }
         }
     }
 }
 
-/** A place on the rail: [icon] on a pill lit as the column's rows are (the tip draws the keyboard's ring), [label] its tip and what a screen reader says. */
+/** What the rail marks beside the pages: its menu button while a screen of the menu is shown, but not one pinned at the rail's foot. */
+internal object RailMarks {
+    fun inMenu(mark: FrameMark, pinned: List<HomeDestination>): Boolean =
+        mark.group != null || (mark.screen != null && pinned.none { it.route == mark.screen })
+}
+
+/**
+ * A place on the rail: [icon] on a pill ([label] its tip, at its end, and
+ * what a screen reader says; the tip draws the keyboard's ring). The pointer
+ * washes it as the column's rows are ([NavRowLook]); the place shown is lit
+ * in the accent, so it never passes for the one under the pointer, on a dark
+ * page too.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RailItem(label: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier, icon: @Composable () -> Unit) {
     val interactions = remember { MutableInteractionSource() }
     val hovered by interactions.collectIsHoveredAsState()
     val colors = MaterialTheme.colorScheme
-    CompositionLocalProvider(LocalRippleConfiguration provides PressOnly, LocalContentColor provides colors.onSurface) {
-        IconTip(label) {
+    val dark = colors.background.luminance() < 0.5f
+    val fill = if (selected) colors.primary.copy(alpha = RailLook.selectedAlpha(hovered)) else colors.onSurface.copy(alpha = NavRowLook.fillAlpha(false, hovered, dark))
+    CompositionLocalProvider(LocalRippleConfiguration provides PressOnly, LocalContentColor provides if (selected) colors.primary else colors.onSurface) {
+        IconTip(label, TipSide.END) {
             Box(
                 modifier
                     .size(width = RAIL_ITEM_WIDTH, height = RAIL_ITEM_HEIGHT)
                     .clip(CircleShape)
-                    .background(colors.onSurface.copy(alpha = NavRowLook.fillAlpha(selected, hovered, dark = colors.background.luminance() < 0.5f)))
+                    .background(fill)
                     .selectable(selected, interactionSource = interactions, indication = ripple(), role = Role.Tab, onClick = onClick)
                     .semantics { contentDescription = label },
                 contentAlignment = Alignment.Center,
             ) { icon() }
         }
     }
+}
+
+/** How strongly the accent lights the rail's place shown: clearly more than the pointer's wash, a little more under the pointer. */
+internal object RailLook {
+    const val SELECTED_ALPHA = 0.20f
+    const val SELECTED_HOVER_ALPHA = 0.26f
+
+    fun selectedAlpha(hovered: Boolean): Float = if (hovered) SELECTED_HOVER_ALPHA else SELECTED_ALPHA
 }
 
 private val RAIL_ITEM_WIDTH = 64.dp
