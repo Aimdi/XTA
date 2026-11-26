@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.settings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -100,11 +101,31 @@ private const val REPOSITORY = "https://github.com/Aimdi/XTA"
  * sections in groups, Advanced folded away, and the app's own information.
  */
 @Composable
-fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: () -> Unit) {
+fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: () -> Unit, onStartOver: () -> Unit = {}) {
     val graph = LocalGraph.current
     val vm: SettingsViewModel = viewModel { SettingsViewModel(graph) }
     var query by rememberSaveable { mutableStateOf("") }
     val snackbar = remember { SnackbarHostState() }
+    BoxWithConstraints {
+        if (SettingsPanes.twoPanes(isDesktop, maxWidth.value)) {
+            SettingsTwoPanes(vm, query, { query = it }, onBack, onOpen, onIntroAgain, onStartOver)
+        } else {
+            SettingsOnePane(vm, query, { query = it }, snackbar, onBack, onOpen, onIntroAgain)
+        }
+    }
+}
+
+/** Settings as a phone and a narrow window show it: the search and the sections, each opening its own screen. */
+@Composable
+private fun SettingsOnePane(
+    vm: SettingsViewModel,
+    query: String,
+    onQuery: (String) -> Unit,
+    snackbar: SnackbarHostState,
+    onBack: () -> Unit,
+    onOpen: (String) -> Unit,
+    onIntroAgain: () -> Unit,
+) {
 
     SettingsPage(stringResource(Res.string.settings_title), onBack, snackbar) { padding ->
         val scroll = rememberScrollState()
@@ -113,11 +134,11 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: (
         Column(Modifier.verticalScrollByKeys(scroll).padding(bottom = 24.dp)) {
             SearchField(
                 value = query,
-                onValueChange = { query = it },
+                onValueChange = onQuery,
                 placeholder = stringResource(Res.string.settings_search),
                 trailing = {
                     if (query.isNotEmpty()) {
-                        IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = { query = "" }) { Icon(Icons.Outlined.Close, stringResource(Res.string.discover_clear)) } }
+                        IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = { onQuery("") }) { Icon(Icons.Outlined.Close, stringResource(Res.string.discover_clear)) } }
                     }
                 },
                 modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp).foundWithKeys(),
@@ -167,7 +188,7 @@ private fun SectionRow(section: SettingsSection, onOpen: (String) -> Unit) {
     }
 }
 
-private fun sectionIcon(section: SettingsSection): ImageVector = when (section) {
+internal fun sectionIcon(section: SettingsSection): ImageVector = when (section) {
     SettingsSection.GENERAL -> Icons.Outlined.Settings
     SettingsSection.POSTS -> Icons.AutoMirrored.Outlined.List
     SettingsSection.MEDIA -> GroupIcons.PhotoLibraryOutlined
@@ -185,7 +206,7 @@ private fun sectionIcon(section: SettingsSection): ImageVector = when (section) 
 
 /** Settings › App info (_about.dart): the version, where XTA lives, its licences, and the first-launch cards again. */
 @Composable
-private fun AboutRows(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snackbar: SnackbarHostState, vm: SettingsViewModel) {
+internal fun AboutRows(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snackbar: SnackbarHostState, vm: SettingsViewModel) {
     val copyText = rememberCopyText()
     val links = LocalUriHandler.current
     val scope = rememberCoroutineScope()
@@ -217,7 +238,7 @@ private fun AboutRows(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snackb
 }
 
 @Composable
-private fun SearchResults(query: String, onOpen: (String) -> Unit) {
+internal fun SearchResults(query: String, onOpen: (String) -> Unit) {
     val controls = SettingsSearch.controls(searchableControls(), query)
     controls.forEach { control ->
         val section = stringResource(sectionTitle(control.section))

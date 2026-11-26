@@ -183,6 +183,54 @@ class SettingsRulesTest {
     }
 }
 
+class SettingsPanesTest {
+    @Test
+    fun twoPanesOnlyOnAWideDesktopPlace() {
+        assertTrue(SettingsPanes.twoPanes(desktop = true, widthDp = 1100f))
+        assertFalse(SettingsPanes.twoPanes(desktop = true, widthDp = 1099f))
+        assertFalse(SettingsPanes.twoPanes(desktop = false, widthDp = 2000f))
+    }
+
+    @Test
+    fun theArrowsWalkTheListAndStopAtItsEnds() {
+        assertEquals(SettingsSection.POSTS.id, SettingsPanes.step(SettingsSection.GENERAL.id, 1))
+        assertNull(SettingsPanes.step(SettingsSection.GENERAL.id, -1))
+        assertNull(SettingsPanes.step(SettingsPanes.ABOUT, 1))
+        assertEquals(SettingsPanes.PLUGIN_STORE, SettingsPanes.step(SettingsSection.ACCOUNT.id, 1))
+        assertNull(SettingsPanes.step("nowhere", 1))
+        assertEquals(SettingsPanes.ABOUT, SettingsPanes.rows.last())
+    }
+
+    @Test
+    fun thePluginStoreOpensItsOwnScreen() {
+        assertFalse(SettingsPanes.showsBeside(SettingsPanes.PLUGIN_STORE))
+        assertTrue(SettingsPanes.showsBeside(SettingsSection.DATA.id))
+        assertTrue(SettingsPanes.showsBeside(SettingsPanes.ABOUT))
+    }
+
+    @Test
+    fun syncMarksDataAndAnUnknownPageFallsBackToGeneral() {
+        assertEquals(SettingsSection.DATA.id, SettingsPanes.marked(SettingsSection.SYNC.id))
+        assertEquals(SettingsSection.THEME.id, SettingsPanes.marked(SettingsSection.THEME.id))
+        assertEquals(SettingsSection.GENERAL.id, SettingsPanes.marked("bluesky"))
+        assertEquals(SettingsSection.GENERAL.id, SettingsPanes.shown(null))
+        assertEquals(SettingsSection.GENERAL.id, SettingsPanes.shown("bluesky"))
+        assertEquals(SettingsSection.SYNC.id, SettingsPanes.shown(SettingsSection.SYNC.id))
+        assertEquals(SettingsPanes.ABOUT, SettingsPanes.shown(SettingsPanes.ABOUT))
+    }
+
+    @Test
+    fun aSectionsRouteOpensBesideTheListWithItsControl() {
+        assertEquals(PaneTarget(SettingsSection.MEDIA.id, "media.mute"), SettingsPanes.target(SettingsRoutes.section(SettingsSection.MEDIA.id, "media.mute")))
+        assertEquals(PaneTarget(SettingsSection.SYNC.id, null), SettingsPanes.target(SettingsRoutes.section(SettingsSection.SYNC.id)))
+        assertEquals(PaneTarget(SettingsSection.SPEECH.id, null), SettingsPanes.target(SettingsRoutes.SPEECH))
+        assertNull(SettingsPanes.target(SettingsRoutes.PLUGINS))
+        assertNull(SettingsPanes.target(SettingsRoutes.BACKUP))
+        // A network's settings are a screen of their own.
+        assertNull(SettingsPanes.target(SettingsRoutes.section("bluesky")))
+    }
+}
+
 class PlatformSettingsTest {
     @Test
     fun eachPlatformShowsOnlyWhatDoesSomethingThere() {

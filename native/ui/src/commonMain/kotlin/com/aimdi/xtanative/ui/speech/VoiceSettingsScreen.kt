@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Refresh
@@ -30,6 +29,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import com.aimdi.xtanative.ui.common.TopBarBack
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -117,7 +117,7 @@ fun VoiceSettingsScreen(onBack: () -> Unit) {
         topBar = {
             ColumnTopAppBar(
                 title = { Text(stringResource(Res.string.reader_speech_title)) },
-                navigationIcon = { IconTip(stringResource(Res.string.reader_back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.reader_back)) } } },
+                navigationIcon = { TopBarBack(onBack, stringResource(Res.string.reader_back)) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
                 column = SETTINGS_MAX_WIDTH,
             )

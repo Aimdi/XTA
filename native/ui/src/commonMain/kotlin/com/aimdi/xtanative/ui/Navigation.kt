@@ -707,6 +707,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
                 onBack = { nav.popBackStack() },
                 onOpen = { route -> nav.push(route) },
                 onIntroAgain = { nav.startOver(Routes.INTRO) },
+                onStartOver = { nav.startOver(Routes.IMPORT) },
             )
         }
         composable(Routes.SAVED) {
