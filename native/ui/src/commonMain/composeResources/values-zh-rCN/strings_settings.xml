@@ -196,6 +196,7 @@
     <string name="settings_import_backup">导入备份</string>
     <string name="settings_import">导入</string>
     <string name="settings_import_description">从其他设备导入数据</string>
+    <string name="settings_import_description_desktop">从其他设备导入数据，或把它的备份文件拖放到这里</string>
     <string name="settings_export">导出</string>
     <string name="settings_export_description">导出您的数据</string>
     <string name="settings_sync">同步</string>

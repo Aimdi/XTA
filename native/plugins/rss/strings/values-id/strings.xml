@@ -24,6 +24,7 @@
     <string name="opml_export_description">File yang bisa diimpor pembaca feed lain.</string>
     <string name="opml_import">Impor langganan dari OPML</string>
     <string name="opml_import_description">Mengikuti setiap umpan di file; yang sudah Anda ikuti tetap seperti semula.</string>
+    <string name="opml_import_description_desktop">Mengikuti setiap umpan di file; yang sudah Anda ikuti tetap seperti semula. Anda juga bisa meletakkan file OPML di layar ini.</string>
     <string name="opml_importing">Mengimpor %1$d dari %2$d</string>
     <string name="opml_result">Ditambahkan: %1$d · Sudah diikuti: %2$d · Gagal: %3$d</string>
     <string name="partial_error">Tidak dapat memuat %1$d sumber</string>

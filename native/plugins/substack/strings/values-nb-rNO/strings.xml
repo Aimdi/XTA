@@ -88,6 +88,7 @@
     <string name="opml_export_description">En fil andre feedlesere kan importere.</string>
     <string name="opml_import">Importer fulgte fra OPML</string>
     <string name="opml_import_description">Følger hver publikasjon i filen; de du allerede følger, forblir som de er.</string>
+    <string name="opml_import_description_desktop">Følger hver publikasjon i filen; de du allerede følger, forblir som de er. Du kan også slippe en OPML-fil på denne skjermen.</string>
     <string name="opml_importing">Importerer %1$d av %2$d</string>
     <string name="opml_result">Lagt til: %1$d · Fulgt fra før: %2$d · Mislyktes: %3$d</string>
     <string name="order_newest">Nyeste først</string>

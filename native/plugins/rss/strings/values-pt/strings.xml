@@ -24,6 +24,7 @@
     <string name="opml_export_description">Um ficheiro que outros leitores de feeds podem importar.</string>
     <string name="opml_import">Importar subscrições de OPML</string>
     <string name="opml_import_description">Segue cada fonte do ficheiro; as que já segue ficam como estão.</string>
+    <string name="opml_import_description_desktop">Segue cada fonte do ficheiro; as que já segue ficam como estão. Também pode largar um ficheiro OPML neste ecrã.</string>
     <string name="opml_importing">A importar: %1$d de %2$d</string>
     <string name="opml_result">Adicionadas: %1$d · Já seguidas: %2$d · Falhadas: %3$d</string>
     <string name="partial_error">Não foi possível carregar %1$d fontes</string>

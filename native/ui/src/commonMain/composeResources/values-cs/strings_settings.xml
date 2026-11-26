@@ -196,6 +196,7 @@
     <string name="settings_import_backup">Importovat zálohu</string>
     <string name="settings_import">Importovat</string>
     <string name="settings_import_description">Importovat data z jiného zařízení</string>
+    <string name="settings_import_description_desktop">Importovat data z jiného zařízení nebo sem přetáhnout soubor jeho zálohy</string>
     <string name="settings_export">Exportovat</string>
     <string name="settings_export_description">Exportovat vaše data</string>
     <string name="settings_sync">Synchronizace</string>

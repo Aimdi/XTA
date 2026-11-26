@@ -196,6 +196,7 @@
     <string name="settings_import_backup">Impor cadangan</string>
     <string name="settings_import">Impor</string>
     <string name="settings_import_description">Impor data dari perangkat lain</string>
+    <string name="settings_import_description_desktop">Impor data dari perangkat lain, atau letakkan file cadangannya di sini</string>
     <string name="settings_export">Ekspor</string>
     <string name="settings_export_description">Ekspor data Anda</string>
     <string name="settings_sync">Sinkronisasi</string>

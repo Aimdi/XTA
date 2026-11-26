@@ -31,6 +31,7 @@
 
     <string name="import_intro">XTA Native ist XTA, nur für Android geschrieben, zum Vergleich mit XTA. Es liest X mit den Konten, die du schon in XTA nutzt.</string>
     <string name="import_steps">Öffne in XTA Einstellungen → Daten → Exportieren, schalte „Konten exportieren“ ein, exportiere und wähle die Datei dann hier aus.</string>
+    <string name="import_steps_desktop">Öffne in XTA Einstellungen → Daten → Exportieren, schalte „Konten exportieren“ ein, exportiere und wähle die Datei dann hier aus oder zieh sie in dieses Fenster.</string>
     <string name="import_choose">XTA-Sicherung auswählen</string>
     <string name="import_choose_another">Andere Datei auswählen</string>
     <string name="import_no_accounts">Diese Sicherung enthält keine X-Konten: Exportiere sie noch einmal mit eingeschaltetem „Konten exportieren“.</string>

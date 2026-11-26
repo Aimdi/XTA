@@ -24,6 +24,7 @@
     <string name="opml_export_description">Plik, który mogą zaimportować inne czytniki kanałów.</string>
     <string name="opml_import">Importuj obserwowane z OPML</string>
     <string name="opml_import_description">Obserwuje każdy kanał z pliku; te, które już obserwujesz, pozostają bez zmian.</string>
+    <string name="opml_import_description_desktop">Obserwuje każdy kanał z pliku; te, które już obserwujesz, pozostają bez zmian. Plik OPML możesz też upuścić na tym ekranie.</string>
     <string name="opml_importing">Importowanie: %1$d z %2$d</string>
     <string name="opml_result">Dodano: %1$d · Już obserwowane: %2$d · Nieudane: %3$d</string>
     <string name="partial_error">Nie udało się wczytać źródeł: %1$d</string>

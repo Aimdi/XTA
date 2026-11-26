@@ -90,6 +90,7 @@
     <string name="opml_export_description">Файл, который могут импортировать другие читалки лент.</string>
     <string name="opml_import">Импортировать подписки из OPML</string>
     <string name="opml_import_description">Подписывается на каждое издание из файла; существующие подписки остаются как есть.</string>
+    <string name="opml_import_description_desktop">Подписывается на каждое издание из файла; существующие подписки остаются как есть. Файл OPML можно также перетащить на этот экран.</string>
     <string name="opml_importing">Импорт: %1$d из %2$d</string>
     <string name="opml_result">Добавлено: %1$d · Уже в подписках: %2$d · Не удалось: %3$d</string>
     <string name="order_newest">Сначала новые</string>

@@ -196,6 +196,7 @@
     <string name="settings_import_backup">Nhập thông tin tài khoản</string>
     <string name="settings_import">Nhập</string>
     <string name="settings_import_description">Nhập dữ liệu từ thiết bị khác</string>
+    <string name="settings_import_description_desktop">Nhập dữ liệu từ thiết bị khác, hoặc thả tệp sao lưu của nó vào đây</string>
     <string name="settings_export">Xuất</string>
     <string name="settings_export_description">Xuất dữ liệu</string>
     <string name="settings_sync">Đồng bộ</string>

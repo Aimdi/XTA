@@ -31,6 +31,7 @@
 
     <string name="import_intro">XTA Native este XTA scris doar pentru Android, ca să fie comparat cu XTA. Citește X cu conturile pe care le folosești deja în XTA.</string>
     <string name="import_steps">În XTA, deschide Setări → Date → Export, activează „Exportați conturile”, exportă, apoi alege fișierul aici.</string>
+    <string name="import_steps_desktop">În XTA, deschide Setări → Date → Export, activează „Exportați conturile”, exportă, apoi alege fișierul aici sau plasează-l pe această fereastră.</string>
     <string name="import_choose">Alege copia de rezervă XTA</string>
     <string name="import_choose_another">Alege alt fișier</string>
     <string name="import_no_accounts">Această copie de rezervă nu are conturi X: exportă din nou cu „Exportați conturile” activat.</string>

@@ -90,6 +90,7 @@
     <string name="opml_export_description">Файл, які могуць імпартаваць іншыя чыталкі стужак.</string>
     <string name="opml_import">Імпартаваць падпіскі з OPML</string>
     <string name="opml_import_description">Падпісваецца на кожнае выданне з файла; існыя падпіскі застаюцца як ёсць.</string>
+    <string name="opml_import_description_desktop">Падпісваецца на кожнае выданне з файла; існыя падпіскі застаюцца як ёсць. Файл OPML можна таксама перацягнуць на гэты экран.</string>
     <string name="opml_importing">Імпарт: %1$d з %2$d</string>
     <string name="opml_result">Дададзена: %1$d · Ужо ў падпісках: %2$d · Не ўдалося: %3$d</string>
     <string name="order_newest">Спачатку навейшыя</string>

@@ -196,6 +196,7 @@
     <string name="settings_import_backup">Inportatu babeskopia</string>
     <string name="settings_import">Inportatu</string>
     <string name="settings_import_description">Inportatu datuak beste gailu batetik</string>
+    <string name="settings_import_description_desktop">Inportatu datuak beste gailu batetik, edo jaregin hemen haren babeskopia-fitxategia</string>
     <string name="settings_export">Esportatu</string>
     <string name="settings_export_description">Esportatu zure datuak</string>
     <string name="settings_sync">Sinkronizazioa</string>

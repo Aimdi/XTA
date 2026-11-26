@@ -31,6 +31,7 @@
 
     <string name="import_intro">XTA Native 是專為 Android 撰寫的 XTA，用來和 XTA 比較。它用你在 XTA 已經使用的帳號讀取 X。</string>
     <string name="import_steps">在 XTA 開啟 設定 → 資料 → 匯出，開啟「匯出帳號」，匯出後在這裡選擇該檔案。</string>
+    <string name="import_steps_desktop">在 XTA 開啟 設定 → 資料 → 匯出，開啟「匯出帳號」，匯出後在這裡選擇該檔案，或把它拖放到此視窗。</string>
     <string name="import_choose">選擇 XTA 備份</string>
     <string name="import_choose_another">選擇其他檔案</string>
     <string name="import_no_accounts">這份備份沒有 X 帳號：請開啟「匯出帳號」後重新匯出。</string>

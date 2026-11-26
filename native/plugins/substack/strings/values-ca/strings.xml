@@ -88,6 +88,7 @@
     <string name="opml_export_description">Un fitxer que altres lectors de canals poden importar.</string>
     <string name="opml_import">Importa seguiments des d’OPML</string>
     <string name="opml_import_description">Segueix cada publicació del fitxer; les que ja segueixes queden igual.</string>
+    <string name="opml_import_description_desktop">Segueix cada publicació del fitxer; les que ja segueixes queden igual. També pots deixar anar un fitxer OPML en aquesta pantalla.</string>
     <string name="opml_importing">S’està important: %1$d de %2$d</string>
     <string name="opml_result">Afegides: %1$d · Ja seguides: %2$d · Errors: %3$d</string>
     <string name="order_newest">Més recents primer</string>

@@ -196,6 +196,7 @@
     <string name="settings_import_backup">استيراد نسخة احتياطية</string>
     <string name="settings_import">استيراد</string>
     <string name="settings_import_description">استيراد البيانات من جهاز آخر</string>
+    <string name="settings_import_description_desktop">استيراد البيانات من جهاز آخر، أو أفلت ملف نسخته الاحتياطية هنا</string>
     <string name="settings_export">تصدير</string>
     <string name="settings_export_description">تصدير بياناتك</string>
     <string name="settings_sync">المزامنة</string>

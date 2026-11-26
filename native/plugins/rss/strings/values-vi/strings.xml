@@ -24,6 +24,7 @@
     <string name="opml_export_description">Một tệp mà các trình đọc nguồn cấp khác có thể nhập.</string>
     <string name="opml_import">Nhập danh sách theo dõi từ OPML</string>
     <string name="opml_import_description">Theo dõi từng nguồn trong tệp; các nguồn bạn đã theo dõi vẫn giữ nguyên.</string>
+    <string name="opml_import_description_desktop">Theo dõi từng nguồn trong tệp; các nguồn bạn đã theo dõi vẫn giữ nguyên. Bạn cũng có thể thả tệp OPML vào màn hình này.</string>
     <string name="opml_importing">Đang nhập %1$d/%2$d</string>
     <string name="opml_result">Đã thêm: %1$d · Đã theo dõi: %2$d · Thất bại: %3$d</string>
     <string name="partial_error">Không tải được %1$d nguồn</string>

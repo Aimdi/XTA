@@ -17,7 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -30,7 +32,9 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.plugins.HomeTimelineIcon
 import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.pluginFileDrop
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberTextFileChooser
 import com.aimdi.xtanative.ui.plugins.rememberTextFileSaver
@@ -39,6 +43,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 
 /**
  * RSS's settings, as XTA's RssSettingsScreen: what the plugin keeps where,
@@ -48,12 +53,16 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun RssSettingsBody(app: RssApp, frame: PluginFrame) {
     var notice by rememberSaveable { mutableStateOf<String?>(null) }
-    LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+    val importOpml = rememberOpmlImport(app) { notice = it }
+    LazyColumn(
+        contentPadding = frame.padding,
+        modifier = Modifier.fillMaxSize().pluginFileDrop(accept = ::isOpml) { files -> importOpml { files.first().text() } },
+    ) {
         item(key = "blurb") { Text(pluginString(Strings.settings_blurb), modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)) }
         item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.in_home_feed), pluginString(Strings.in_home_feed_description), HomeTimelineIcon) }
         item(key = "opml") {
             Hairline()
-            OpmlRows(app) { notice = it }
+            OpmlRows(app, importOpml) { notice = it }
             notice?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(16.dp)) }
         }
     }
@@ -63,34 +72,65 @@ internal fun RssSettingsBody(app: RssApp, frame: PluginFrame) {
 internal class RssOpmlImports {
     private val mutable = MutableStateFlow<RssOpmlImport?>(null)
     val progress: StateFlow<RssOpmlImport?> = mutable.asStateFlow()
+    private val busy = Mutex()
 
-    /** Follows each feed of [urls] not followed yet, one at a time, as Add feed would. */
-    suspend fun run(app: RssApp, urls: List<String>): RssOpmlImport = try {
-        app.loadedFeeds()
-        RssOpml.import(urls, isFollowed = app::isFollowing, lookup = { app.client.lookup(it) }, follow = { app.follow(it) }, progress = { mutable.value = it })
-    } catch (e: CancellationException) {
-        mutable.value = null
-        throw e
+    /**
+     * Reads an OPML file's feed addresses with [read], then follows each not
+     * followed yet, one at a time, as Add feed would; a file with none gives a
+     * total of 0. Null, with nothing read, while another import runs: a second
+     * drop, or a file picked while a dropped one is still read, starts none.
+     */
+    suspend fun run(app: RssApp, read: suspend () -> List<String>): RssOpmlImport? = alone(read) { urls ->
+        try {
+            app.loadedFeeds()
+            RssOpml.import(urls, isFollowed = app::isFollowing, lookup = { app.client.lookup(it) }, follow = { app.follow(it) }, progress = { mutable.value = it })
+        } catch (e: CancellationException) {
+            mutable.value = null
+            throw e
+        }
+    }
+
+    /** [import] of what [read] gives, held from before the read to the end; null while one already is. */
+    internal suspend fun alone(read: suspend () -> List<String>, import: suspend (List<String>) -> RssOpmlImport): RssOpmlImport? {
+        if (!busy.tryLock()) return null
+        return try {
+            read().takeIf { it.isNotEmpty() }?.let { import(it) } ?: RssOpmlImport(total = 0)
+        } finally {
+            busy.unlock()
+        }
     }
 }
 
+/** Follows the feeds of an OPML file read by the function it is given (one chosen or dropped), telling [onNotice] how it went. */
 @Composable
-private fun OpmlRows(app: RssApp, onNotice: (String) -> Unit) {
+private fun rememberOpmlImport(app: RssApp, onNotice: (String) -> Unit): (read: suspend () -> String?) -> Unit {
+    val language = currentLanguage()
+    val empty = pluginString(Strings.opml_empty)
+    val notice by rememberUpdatedState(onNotice)
+    return remember(app, language, empty) {
+        { read ->
+            app.launch {
+                val result = app.opml.run(app) { runCatching { read() }.getOrNull()?.let(RssOpml::feedUrls).orEmpty() } ?: return@launch
+                if (result.total == 0) return@launch notice(empty)
+                notice(Strings.opml_result.get(language, result.added, result.alreadyFollowed, result.failed))
+            }
+        }
+    }
+}
+
+/** A dropped file that may be an OPML list: by its name, or a type of XML or text. */
+internal fun isOpml(name: String, mime: String): Boolean =
+    name.substringAfterLast('.', "").lowercase() in setOf("opml", "xml") || "xml" in mime || mime == "text/plain"
+
+@Composable
+private fun OpmlRows(app: RssApp, importOpml: (read: suspend () -> String?) -> Unit, onNotice: (String) -> Unit) {
     val progress by app.opml.progress.collectAsState()
     val importing = progress?.takeIf { it.done < it.total }
     val language = currentLanguage()
     val title = pluginString(Strings.plugin_name)
-    val empty = pluginString(Strings.opml_empty)
     val scope = rememberCoroutineScope()
     val save = rememberTextFileSaver(pluginString(Strings.opml_export), "text/x-opml") { name -> if (name != null) onNotice(Strings.data_exported_to.get(language, name)) }
-    val choose = rememberTextFileChooser(pluginString(Strings.opml_import)) { read ->
-        app.launch {
-            val urls = runCatching { read() }.getOrNull()?.let(RssOpml::feedUrls).orEmpty()
-            if (urls.isEmpty()) return@launch onNotice(empty)
-            val result = app.opml.run(app, urls)
-            onNotice(Strings.opml_result.get(language, result.added, result.alreadyFollowed, result.failed))
-        }
-    }
+    val choose = rememberTextFileChooser(pluginString(Strings.opml_import), importOpml)
     Column {
         ActionRow(RssIcons.Upload, pluginString(Strings.opml_export), pluginString(Strings.opml_export_description), enabled = importing == null) {
             scope.launch { save(FILE_NAME, RssOpml.export(app.loadedFeeds(), title)) }
@@ -98,7 +138,11 @@ private fun OpmlRows(app: RssApp, onNotice: (String) -> Unit) {
         ActionRow(
             RssIcons.Download,
             pluginString(Strings.opml_import),
-            if (importing != null) pluginString(Strings.opml_importing, importing.done, importing.total) else pluginString(Strings.opml_import_description),
+            when {
+                importing != null -> pluginString(Strings.opml_importing, importing.done, importing.total)
+                PluginPlatform.isDesktop -> pluginString(Strings.opml_import_description_desktop)
+                else -> pluginString(Strings.opml_import_description)
+            },
             enabled = importing == null,
             onClick = choose,
         )

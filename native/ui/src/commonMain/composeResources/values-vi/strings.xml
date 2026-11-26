@@ -31,6 +31,7 @@
 
     <string name="import_intro">XTA Native là XTA được viết riêng cho Android, để so sánh với XTA. Ứng dụng đọc X bằng các tài khoản bạn đã dùng trong XTA.</string>
     <string name="import_steps">Trong XTA, mở Cài đặt → Dữ liệu → Xuất, bật “Xuất thông tin tài khoản”, xuất, rồi chọn tệp đó ở đây.</string>
+    <string name="import_steps_desktop">Trong XTA, mở Cài đặt → Dữ liệu → Xuất, bật “Xuất thông tin tài khoản”, xuất, rồi chọn tệp đó ở đây hoặc thả nó vào cửa sổ này.</string>
     <string name="import_choose">Chọn bản sao lưu XTA</string>
     <string name="import_choose_another">Chọn tệp khác</string>
     <string name="import_no_accounts">Bản sao lưu này không có tài khoản X: hãy xuất lại với “Xuất thông tin tài khoản” được bật.</string>

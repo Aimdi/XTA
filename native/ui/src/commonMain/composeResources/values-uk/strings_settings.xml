@@ -196,6 +196,7 @@
     <string name="settings_import_backup">Імпортувати резервну копію</string>
     <string name="settings_import">Імпорт</string>
     <string name="settings_import_description">Імпортуйте дані з іншого пристрою</string>
+    <string name="settings_import_description_desktop">Імпортуйте дані з іншого пристрою або перетягніть сюди файл його копії</string>
     <string name="settings_export">Експорт</string>
     <string name="settings_export_description">Експортуйте свої дані</string>
     <string name="settings_sync">Синхронізація</string>

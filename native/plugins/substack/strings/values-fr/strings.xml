@@ -88,6 +88,7 @@
     <string name="opml_export_description">Un fichier que d’autres lecteurs de flux peuvent importer.</string>
     <string name="opml_import">Importer des abonnements depuis un OPML</string>
     <string name="opml_import_description">Suit chaque publication du fichier ; celles que vous suivez déjà restent inchangées.</string>
+    <string name="opml_import_description_desktop">Suit chaque publication du fichier ; celles que vous suivez déjà restent inchangées. Vous pouvez aussi déposer un fichier OPML sur cet écran.</string>
     <string name="opml_importing">Importation : %1$d sur %2$d</string>
     <string name="opml_result">Ajoutées : %1$d · Déjà suivies : %2$d · Échecs : %3$d</string>
     <string name="order_newest">Plus récentes d\'abord</string>

@@ -59,6 +59,11 @@ internal object DraggedText {
         runCatching { transfer.getTransferData(flavor) as? String }.getOrNull()?.takeIf { it.isNotBlank() }
     }
 
+    /** The `text/uri-list` [transfer] offers (a file manager's files, a browser's link); null when it offers none or it cannot be read. */
+    fun uriList(transfer: Transferable): String? = URI_LIST?.let { flavor ->
+        runCatching { transfer.takeIf { it.isDataFlavorSupported(flavor) }?.getTransferData(flavor) as? String }.getOrNull()
+    }
+
     private fun flavors(transfer: Transferable): List<DataFlavor> =
         listOfNotNull(URI_LIST, DataFlavor.stringFlavor).filter { flavor -> runCatching { transfer.isDataFlavorSupported(flavor) }.getOrDefault(false) }
 }

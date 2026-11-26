@@ -196,6 +196,7 @@
     <string name="settings_import_backup">Importer sikkerhetskopi</string>
     <string name="settings_import">Importer</string>
     <string name="settings_import_description">Importer data fra en annen enhet</string>
+    <string name="settings_import_description_desktop">Importer data fra en annen enhet, eller slipp sikkerhetskopifilen her</string>
     <string name="settings_export">Eksporter</string>
     <string name="settings_export_description">Eksporter dataen din</string>
     <string name="settings_sync">Synkronisering</string>

@@ -17,6 +17,7 @@ import com.aimdi.xtanative.ui.common.FileFilter
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.files_filter_media
 import com.aimdi.xtanative.ui.generated.resources.files_filter_pictures
+import com.aimdi.xtanative.ui.plugins.DroppedFiles
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.io.File
@@ -71,7 +72,7 @@ internal actual fun Modifier.takesDroppedFiles(enabled: Boolean, onDropped: (Lis
             }
         }
     }
-    return dragAndDropTarget(shouldStartDragAndDrop = { event -> event.awtTransferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor) }, target = target)
+    return dragAndDropTarget(shouldStartDragAndDrop = { event -> DroppedFiles.offered(event.awtTransferable) }, target = target)
 }
 
 @Composable

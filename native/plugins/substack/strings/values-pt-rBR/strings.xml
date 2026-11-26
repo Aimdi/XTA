@@ -88,6 +88,7 @@
     <string name="opml_export_description">Um arquivo que outros leitores de feeds podem importar.</string>
     <string name="opml_import">Importar inscrições de OPML</string>
     <string name="opml_import_description">Segue cada publicação do arquivo; as que você já segue ficam como estão.</string>
+    <string name="opml_import_description_desktop">Segue cada publicação do arquivo; as que você já segue ficam como estão. Você também pode soltar um arquivo OPML nesta tela.</string>
     <string name="opml_importing">Importando: %1$d de %2$d</string>
     <string name="opml_result">Adicionadas: %1$d · Já seguidas: %2$d · Com falha: %3$d</string>
     <string name="order_newest">Mais recentes primeiro</string>

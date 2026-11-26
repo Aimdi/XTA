@@ -31,6 +31,7 @@
 
     <string name="import_intro">XTA Native estas XTA verkita nur por Android, por kompari ĝin kun XTA. Ĝi legas X per la kontoj, kiujn vi jam uzas en XTA.</string>
     <string name="import_steps">En XTA, malfermu Agordoj → Datumoj → Eksporti, ŝaltu “Eksporti kontojn”, eksportu, poste elektu tiun dosieron ĉi tie.</string>
+    <string name="import_steps_desktop">En XTA, malfermu Agordoj → Datumoj → Eksporti, ŝaltu “Eksporti kontojn”, eksportu, poste elektu tiun dosieron ĉi tie aŭ demetu ĝin sur ĉi tiun fenestron.</string>
     <string name="import_choose">Elekti savkopion de XTA</string>
     <string name="import_choose_another">Elekti alian dosieron</string>
     <string name="import_no_accounts">Ĉi tiu savkopio ne havas X-kontojn: eksportu denove kun “Eksporti kontojn” ŝaltita.</string>

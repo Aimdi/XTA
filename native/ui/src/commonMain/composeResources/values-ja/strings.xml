@@ -31,6 +31,7 @@
 
     <string name="import_intro">XTA Native は、XTA と比べるために Android 専用に書かれた XTA です。XTA ですでに使っているアカウントで X を読みます。</string>
     <string name="import_steps">XTA で 設定 → データ → エクスポート を開き、「Export accounts?」をオンにしてエクスポートし、そのファイルをここで選んでください。</string>
+    <string name="import_steps_desktop">XTA で 設定 → データ → エクスポート を開き、「Export accounts?」をオンにしてエクスポートし、そのファイルをここで選ぶか、このウィンドウにドロップしてください。</string>
     <string name="import_choose">XTA のバックアップを選ぶ</string>
     <string name="import_choose_another">別のファイルを選ぶ</string>
     <string name="import_no_accounts">このバックアップには X アカウントがありません。「Export accounts?」をオンにしてもう一度エクスポートしてください。</string>

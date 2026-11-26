@@ -54,9 +54,11 @@ import kotlinx.serialization.json.JsonElement
  * [rememberSheetClose] and [keyScrolled]), [PluginPlatform] (words for a click
  * where a phone's say a tap), [PluginScaffold] with a `column` and
  * [PluginReadingWidth] (a bar over the reading column) and
- * [pluginEdgeColor], the app's card border (after native-1.0.16).
+ * [pluginEdgeColor], the app's card border (after native-1.0.16); 17 adds
+ * [pluginFileDrop] with [PluginDroppedFile], files dropped from the
+ * desktop's file manager onto a plugin's screen (an OPML list).
  */
-const val PLUGIN_API_VERSION: Int = 16
+const val PLUGIN_API_VERSION: Int = 17
 
 /**
  * The oldest plugin API whose plugins this app still loads: what they use of

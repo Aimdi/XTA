@@ -87,6 +87,7 @@
     <string name="opml_export_description">其他订阅阅读器可以导入的文件。</string>
     <string name="opml_import">从 OPML 导入关注</string>
     <string name="opml_import_description">关注文件中列出的每个刊物；已关注的保持不变。</string>
+    <string name="opml_import_description_desktop">关注文件中列出的每个刊物；已关注的保持不变。也可以把 OPML 文件拖放到此屏幕上。</string>
     <string name="opml_importing">正在导入：%1$d/%2$d</string>
     <string name="opml_result">已添加：%1$d · 已关注：%2$d · 失败：%3$d</string>
     <string name="order_newest">最新优先</string>

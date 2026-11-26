@@ -24,6 +24,7 @@
     <string name="opml_export_description">Fail, mida teised voolugejad oskavad importida.</string>
     <string name="opml_import">Impordi jälgitavad OPML-ist</string>
     <string name="opml_import_description">Hakkab jälgima iga failis olevat voogu; juba jälgitavad jäävad samaks.</string>
+    <string name="opml_import_description_desktop">Hakkab jälgima iga failis olevat voogu; juba jälgitavad jäävad samaks. OPML-faili võid ka sellele ekraanile lohistada.</string>
     <string name="opml_importing">Importimine: %1$d/%2$d</string>
     <string name="opml_result">Lisatud: %1$d · Juba jälgitud: %2$d · Ebaõnnestus: %3$d</string>
     <string name="partial_error">%1$d allika laadimine ebaõnnestus</string>

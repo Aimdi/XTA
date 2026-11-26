@@ -40,8 +40,10 @@ import com.aimdi.xtanative.store.settings.SubstackColumnWidth
 import com.aimdi.xtanative.store.settings.SubstackPrefs
 import com.aimdi.xtanative.store.settings.SubstackReaderFont
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.pluginFileDrop
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberTextFileChooser
 import com.aimdi.xtanative.ui.plugins.rememberTextFileSaver
@@ -50,6 +52,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 
 /**
  * Substack's settings, as XTA's SubstackSettingsScreen: "Native reader
@@ -68,8 +71,12 @@ internal fun SubstackSettingsBody(app: SubstackApp, frame: PluginFrame) {
     val font by settings.observe(SubstackPrefs.readerFont).collectAsState(SubstackPrefs.readerFont.default)
     val column by settings.observe(SubstackPrefs.columnWidth).collectAsState(SubstackPrefs.columnWidth.default)
     val notices = rememberNotices()
+    val importOpml = rememberOpmlImport(app, notices)
     WithNotices(notices) {
-        LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            contentPadding = frame.padding,
+            modifier = Modifier.fillMaxSize().pluginFileDrop(accept = ::isOpml) { files -> importOpml { files.first().text() } },
+        ) {
             if (articleWebView) {
                 item(key = "native") {
                     SwitchRow(Strings.native_reader, Strings.native_reader_description, nativeReader) { on -> set(app, SubstackPrefs.nativeReader, on) }
@@ -79,7 +86,7 @@ internal fun SubstackSettingsBody(app: SubstackApp, frame: PluginFrame) {
                 SwitchRow(Strings.mark_read_on_scroll, Strings.mark_read_on_scroll_description, markOnScroll) { on -> set(app, SubstackPrefs.markReadOnScroll, on) }
                 HorizontalDivider()
             }
-            item(key = "opml") { OpmlRows(app, notices) }
+            item(key = "opml") { OpmlRows(app, notices, importOpml) }
             item(key = "font") {
                 ChoiceRow(Strings.reader_font, font, SubstackReaderFont.entries, ::fontLabel) { choice -> set(app, SubstackPrefs.readerFont, choice) }
             }
@@ -134,44 +141,76 @@ private fun <E : PrefChoice> ChoiceRow(title: PluginText, value: E, choices: Lis
 internal class OpmlImports {
     private val mutable = MutableStateFlow<SubstackOpmlImport?>(null)
     val progress: StateFlow<SubstackOpmlImport?> = mutable.asStateFlow()
+    private val busy = Mutex()
 
-    val running: Boolean get() = progress.value?.let { it.done < it.total } == true
+    /**
+     * Reads an OPML file's publications with [read], then follows each not
+     * followed yet, as XTA's SubstackOpmlImportStore; a file with none gives a
+     * total of 0. Null, with nothing read, while another import runs: a second
+     * drop, or a file picked while a dropped one is still read, starts none.
+     */
+    suspend fun run(app: SubstackApp, read: suspend () -> List<String>): SubstackOpmlImport? = alone(read) { sites ->
+        try {
+            app.follows.load()
+            SubstackOpml.import(
+                sites,
+                resolve = { app.client.resolve(it) },
+                followOf = app::followOf,
+                follow = { app.follows.follow(it) },
+                progress = { mutable.value = it },
+            )
+        } catch (e: CancellationException) {
+            mutable.value = null
+            throw e
+        }
+    }
 
-    /** Follows each of [sites] not followed yet, as XTA's SubstackOpmlImportStore. */
-    suspend fun run(app: SubstackApp, sites: List<String>): SubstackOpmlImport = try {
-        app.follows.load()
-        SubstackOpml.import(
-            sites,
-            resolve = { app.client.resolve(it) },
-            followOf = app::followOf,
-            follow = { app.follows.follow(it) },
-            progress = { mutable.value = it },
-        )
-    } catch (e: CancellationException) {
-        mutable.value = null
-        throw e
+    /** [import] of what [read] gives, held from before the read to the end; null while one already is. */
+    internal suspend fun alone(read: suspend () -> List<String>, import: suspend (List<String>) -> SubstackOpmlImport): SubstackOpmlImport? {
+        if (!busy.tryLock()) return null
+        return try {
+            read().takeIf { it.isNotEmpty() }?.let { import(it) } ?: SubstackOpmlImport(total = 0)
+        } finally {
+            busy.unlock()
+        }
     }
 }
 
+/**
+ * Follows the publications of an OPML file read by the function it is given
+ * (one chosen or dropped), telling [notices] how it went. It runs in the
+ * screen's scope: an import whose settings screen closed stops asking, as XTA's does.
+ */
+@Composable
+private fun rememberOpmlImport(app: SubstackApp, notices: Notices): (read: suspend () -> String?) -> Unit {
+    val empty = pluginString(Strings.opml_empty)
+    val language = currentLanguage()
+    val scope = rememberCoroutineScope()
+    return remember(app, notices, empty, language) {
+        { read ->
+            scope.launch {
+                val result = app.opml.run(app) { runCatching { read() }.getOrNull()?.let(SubstackOpml::sites).orEmpty() } ?: return@launch
+                if (result.total == 0) return@launch notices.show(empty)
+                notices.show(Strings.opml_result.get(language, result.added, result.alreadyFollowed, result.failed))
+            }
+        }
+    }
+}
+
+/** A dropped file that may be an OPML list: by its name, or a type of XML or text. */
+internal fun isOpml(name: String, mime: String): Boolean =
+    name.substringAfterLast('.', "").lowercase() in setOf("opml", "xml") || "xml" in mime || mime == "text/plain"
+
 /** The follows to an OPML file other feed readers import, and an OPML file's publications followed here. */
 @Composable
-private fun OpmlRows(app: SubstackApp, notices: Notices) {
+private fun OpmlRows(app: SubstackApp, notices: Notices, importOpml: (read: suspend () -> String?) -> Unit) {
     val progress by app.opml.progress.collectAsState()
     val running = progress?.let { it.done < it.total } == true
-    val empty = pluginString(Strings.opml_empty)
     val language = currentLanguage()
     val title = pluginString(Strings.plugin_name)
     val scope = rememberCoroutineScope()
     val save = rememberTextFileSaver(pluginString(Strings.opml_export), "text/x-opml") { name -> if (name != null) notices.show(Strings.data_exported_to.get(language, name)) }
-    // Run in the screen's scope: an import whose settings screen closed stops asking, as XTA's does.
-    val choose = rememberTextFileChooser(pluginString(Strings.opml_import)) { read ->
-        scope.launch {
-            val sites = runCatching { read() }.getOrNull()?.let(SubstackOpml::sites).orEmpty()
-            if (sites.isEmpty()) return@launch notices.show(empty)
-            val result = app.opml.run(app, sites)
-            notices.show(Strings.opml_result.get(language, result.added, result.alreadyFollowed, result.failed))
-        }
-    }
+    val choose = rememberTextFileChooser(pluginString(Strings.opml_import), importOpml)
     Column {
         ActionRow(SubstackIcons.UploadFile, pluginString(Strings.opml_export), pluginString(Strings.opml_export_description), enabled = !running) {
             scope.launch { save(FILE_NAME, SubstackOpml.export(app.follows.load().map { it.publication }, title)) }
@@ -180,7 +219,11 @@ private fun OpmlRows(app: SubstackApp, notices: Notices) {
         ActionRow(
             SubstackIcons.Download,
             pluginString(Strings.opml_import),
-            if (importing != null) pluginString(Strings.opml_importing, importing.done, importing.total) else pluginString(Strings.opml_import_description),
+            when {
+                importing != null -> pluginString(Strings.opml_importing, importing.done, importing.total)
+                PluginPlatform.isDesktop -> pluginString(Strings.opml_import_description_desktop)
+                else -> pluginString(Strings.opml_import_description)
+            },
             enabled = !running,
             onClick = choose,
         )

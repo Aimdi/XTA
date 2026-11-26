@@ -196,6 +196,7 @@
     <string name="settings_import_backup">Importați copie de rezervă</string>
     <string name="settings_import">Import</string>
     <string name="settings_import_description">Importați date de pe alt dispozitiv</string>
+    <string name="settings_import_description_desktop">Importați date de pe alt dispozitiv sau plasați aici fișierul copiei de rezervă</string>
     <string name="settings_export">Export</string>
     <string name="settings_export_description">Exportați datele dvs.</string>
     <string name="settings_sync">Sincronizare</string>

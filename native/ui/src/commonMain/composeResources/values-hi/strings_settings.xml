@@ -196,6 +196,7 @@
     <string name="settings_import_backup">बैकअप आयात करें</string>
     <string name="settings_import">आयात</string>
     <string name="settings_import_description">किसी अन्य डिवाइस से डेटा आयात करें</string>
+    <string name="settings_import_description_desktop">किसी अन्य डिवाइस से डेटा आयात करें, या उसकी बैकअप फ़ाइल यहाँ छोड़ें</string>
     <string name="settings_export">निर्यात</string>
     <string name="settings_export_description">अपना डेटा निर्यात करें</string>
     <string name="settings_sync">सिंक</string>

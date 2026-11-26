@@ -44,7 +44,7 @@ plugin API version it was built against, `PLUGIN_API_VERSION`) and `entry`
 
 ## The plugin API
 
-`PLUGIN_API_VERSION` is 16. Version 1 is what native-0.1.41 shipped; 2,
+`PLUGIN_API_VERSION` is 17. Version 1 is what native-0.1.41 shipped; 2,
 which native-0.1.45 shipped, added `cashtagStrip` and `routeForCashtag` and
 the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
 plugin, the chip tabs, the shelf, the recent searches, the action row,
@@ -117,6 +117,18 @@ to; and `pluginEdgeColor()`, the hairline round the app's cards, for a
 plugin's own. The plugins built for 16 all say 16, so an app of 15
 (native-1.0.16) offers their updates as "needs a newer XTA Native" and keeps
 running the ones installed; this app still loads every plugin of 2 to 15.
+17 adds `Modifier.pluginFileDrop(accept, onFiles)`: files dropped from the
+desktop's file manager onto a plugin's screen, those `accept(name, mime)`
+takes (asked off the main thread), reach `onFiles` on the main thread as
+`PluginDroppedFile`s (`name`, `mime`, `size`, and `bytes()` or `text()`,
+read only when asked, off the main thread), each no larger than
+`PluginDroppedFile.MAX_BYTES` (16 MiB); a dragged link, rather than files,
+is left to what is under it (the window's dropped links). On Android it
+does nothing, so the plugin's chooser stays the way in there. RSS and
+Substack take an OPML file dropped on their settings, as their Import row's
+chooser does. Every plugin built for 17 says 17 (the build stamps them all
+with the app's version), so an app of 16 offers their updates as "needs a
+newer XTA Native"; this app still loads every plugin of 2 to 16.
 
 On Home every plugin is one shell (option A of the "Unified Plugin Shell"
 canvas), two rows that hide together as the posts scroll:
