@@ -31,7 +31,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -70,6 +69,7 @@ import com.aimdi.xtanative.networks.ehviewer.EhPreview
 import com.aimdi.xtanative.networks.ehviewer.EhTag
 import com.aimdi.xtanative.networks.ehviewer.EhTagGroup
 import com.aimdi.xtanative.ui.common.rememberCopyText
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -206,7 +206,7 @@ internal fun GalleryComments(comments: List<EhComment>, onShowAll: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AllComments(comments: List<EhComment>, onDismiss: () -> Unit) {
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         LazyColumn(Modifier.fillMaxWidth()) {
             item {
                 Text(

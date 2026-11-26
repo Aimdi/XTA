@@ -33,7 +33,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -66,10 +65,12 @@ import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberCopyText
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
+import com.aimdi.xtanative.ui.plugins.rememberSheetClose
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import kotlin.math.roundToInt
@@ -143,7 +144,7 @@ private fun PageSlider(state: EhReaderState, model: EhReaderModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ModeSheet(current: EhReadingMode, onDismiss: () -> Unit, onPick: (EhReadingMode) -> Unit) {
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
         SheetTitle(pluginString(Strings.reader_mode))
         EhReadingMode.entries.forEach { mode ->
             ListItem(
@@ -171,29 +172,28 @@ internal fun PageActions(app: EhApp, open: EhOpenReader, page: Int, onDismiss: (
     val copyText = rememberCopyText()
     val openOutside = rememberOpenOutside()
     val copied = pluginString(Strings.link_copied)
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+        val closeSheet = rememberSheetClose()
         SheetTitle(pluginString(Strings.page_of, page, open.model.total))
         ActionRow(Icons.Filled.Refresh, pluginString(Strings.reload_image)) {
-            onDismiss()
-            open.resolver.reload(page)
+            closeSheet { open.resolver.reload(page) }
         }
         if (original != null) {
             ActionRow(PostIcons.OpenInNew, pluginString(Strings.reader_open_original)) {
-                onDismiss()
-                openOutside(original)
+                closeSheet { openOutside(original) }
             }
         }
         if (image != null) {
             ActionRow(GroupIcons.FileDownloadOutlined, pluginString(Strings.download)) {
-                onDismiss()
-                app.download(open.gallery, page, open.model.total, image.imageUrl)
+                closeSheet { app.download(open.gallery, page, open.model.total, image.imageUrl) }
             }
         }
         if (preview != null) {
             ActionRow(XIcons.Link, pluginString(Strings.copy_link)) {
-                onDismiss()
-                copyText(open.gallery.pageUrl(app.client.host, preview.pageToken, page))
-                app.notices.tell(copied)
+                closeSheet {
+                    copyText(open.gallery.pageUrl(app.client.host, preview.pageToken, page))
+                    app.notices.tell(copied)
+                }
             }
         }
     }
