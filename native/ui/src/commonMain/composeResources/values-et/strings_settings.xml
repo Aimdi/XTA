@@ -200,6 +200,7 @@
     <string name="settings_import_backup">Impordi varukoopia</string>
     <string name="settings_import">Import</string>
     <string name="settings_import_description">Impordi andmed muust seadmest</string>
+    <string name="settings_import_description_desktop">Impordi andmed muust seadmest või lohista selle varukoopia fail siia</string>
     <string name="settings_export">Eksport</string>
     <string name="settings_export_description">Ekspordi oma andmed</string>
     <string name="settings_sync">Sünkroonimine</string>

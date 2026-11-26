@@ -31,6 +31,7 @@
 
     <string name="import_intro">XTA Native केवल Android के लिए लिखा गया XTA है, ताकि उसकी XTA से तुलना की जा सके। यह X को उन्हीं खातों से पढ़ता है जिन्हें आप XTA में पहले से इस्तेमाल करते हैं।</string>
     <string name="import_steps">XTA में सेटिंग → डेटा → निर्यात खोलें, “खाते निर्यात करें” चालू करें, निर्यात करें, फिर वह फ़ाइल यहाँ चुनें।</string>
+    <string name="import_steps_desktop">XTA में सेटिंग → डेटा → निर्यात खोलें, “खाते निर्यात करें” चालू करें, निर्यात करें, फिर वह फ़ाइल यहाँ चुनें या इस विंडो पर छोड़ें।</string>
     <string name="import_choose">XTA बैकअप चुनें</string>
     <string name="import_choose_another">दूसरी फ़ाइल चुनें</string>
     <string name="import_no_accounts">इस बैकअप में कोई X खाता नहीं है: “खाते निर्यात करें” चालू करके फिर से निर्यात करें।</string>

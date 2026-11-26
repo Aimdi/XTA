@@ -31,6 +31,7 @@
 
     <string name="import_intro">XTA Native on XTA, mis on kirjutatud ainult Androidile, et seda XTA-ga võrrelda. See loeb X-i kontodega, mida juba XTA-s kasutad.</string>
     <string name="import_steps">Ava XTA-s Seaded → Andmed → Eksport, lülita sisse „Ekspordi kontod“, ekspordi ja vali see fail siin.</string>
+    <string name="import_steps_desktop">Ava XTA-s Seaded → Andmed → Eksport, lülita sisse „Ekspordi kontod“, ekspordi ja vali see fail siin või lohista see sellesse aknasse.</string>
     <string name="import_choose">Vali XTA varukoopia</string>
     <string name="import_choose_another">Vali teine fail</string>
     <string name="import_no_accounts">Selles varukoopias pole X-i kontosid: ekspordi uuesti, „Ekspordi kontod“ sisse lülitatud.</string>

@@ -31,6 +31,7 @@
 
     <string name="import_intro">XTA Native je XTA napsané jen pro Android, aby se dalo porovnat s XTA. Čte X účty, které už v XTA používáte.</string>
     <string name="import_steps">V XTA otevřete Nastavení → Data → Exportovat, zapněte „Exportovat účty“, exportujte a pak tu vyberte ten soubor.</string>
+    <string name="import_steps_desktop">V XTA otevřete Nastavení → Data → Exportovat, zapněte „Exportovat účty“, exportujte a pak tu vyberte ten soubor nebo ho přetáhněte do tohoto okna.</string>
     <string name="import_choose">Vybrat zálohu XTA</string>
     <string name="import_choose_another">Vybrat jiný soubor</string>
     <string name="import_no_accounts">Tato záloha neobsahuje žádné účty X: exportujte ji znovu se zapnutým „Exportovat účty“.</string>

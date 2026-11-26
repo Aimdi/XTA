@@ -200,6 +200,7 @@
     <string name="settings_import_backup">Back-up importeren</string>
     <string name="settings_import">Importeren</string>
     <string name="settings_import_description">Gegevens importeren van een ander apparaat</string>
+    <string name="settings_import_description_desktop">Gegevens importeren van een ander apparaat, of sleep het back-upbestand hierheen</string>
     <string name="settings_export">Exporteren</string>
     <string name="settings_export_description">Uw gegevens exporteren</string>
     <string name="settings_sync">Synchronisatie</string>

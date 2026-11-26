@@ -200,6 +200,7 @@
     <string name="settings_import_backup">Importi sekurkopion</string>
     <string name="settings_import">Importi</string>
     <string name="settings_import_description">Importi datumojn el alia aparato</string>
+    <string name="settings_import_description_desktop">Importi datumojn el alia aparato, aŭ demeti ĝian savkopian dosieron ĉi tien</string>
     <string name="settings_export">Eksporti</string>
     <string name="settings_export_description">Eksporti viajn datumojn</string>
     <string name="settings_sync">Sinkronigo</string>

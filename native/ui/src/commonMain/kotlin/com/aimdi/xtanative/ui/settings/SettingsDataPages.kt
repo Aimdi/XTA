@@ -80,6 +80,7 @@ import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.importer.rememberBackupChooser
+import com.aimdi.xtanative.ui.importer.takesDroppedBackup
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -198,7 +199,7 @@ internal fun DataSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
     val scope = rememberCoroutineScope()
     var offered by remember { mutableStateOf<BackupDocument?>(null) }
     var problem by remember { mutableStateOf<BackupRead?>(null) }
-    val choose = rememberBackupChooser { read ->
+    val takeBackup: (suspend () -> String?) -> Unit = { read ->
         scope.launch {
             val text = withContext(Dispatchers.IO) { runCatching { read() }.getOrNull() }
             when (val found = BackupRead.of(text)) {
@@ -207,13 +208,14 @@ internal fun DataSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
             }
         }
     }
+    val choose = rememberBackupChooser(takeBackup)
     SayOnce(snackbar, problem?.let { backupProblem(it) }) { problem = null }
     SettingsPage(title, onBack, snackbar) { padding ->
-        SettingsList(padding) {
+        SettingsList(padding, view = Modifier.takesDroppedBackup(enabled = offered == null, onDropped = takeBackup)) {
             NavigationRow(stringResource(Res.string.settings_downloads), icon = Icons.Outlined.KeyboardArrowDown) { onOpen(SettingsRoutes.DOWNLOADS) }
             NavigationRow(stringResource(Res.string.settings_offline), icon = Icons.Outlined.Done) { onOpen(SettingsRoutes.OFFLINE) }
             ImageCacheRow()
-            NavigationRow(stringResource(Res.string.settings_import), stringResource(Res.string.settings_import_description), Icons.Outlined.AddCircle, chevron = false, onClick = choose)
+            NavigationRow(stringResource(Res.string.settings_import), stringResource(if (isDesktop) Res.string.settings_import_description_desktop else Res.string.settings_import_description), Icons.Outlined.AddCircle, chevron = false, onClick = choose)
             NavigationRow(stringResource(Res.string.settings_export), stringResource(Res.string.settings_export_description), Icons.AutoMirrored.Outlined.ExitToApp) {
                 onOpen(SettingsRoutes.BACKUP)
             }

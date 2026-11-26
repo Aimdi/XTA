@@ -200,6 +200,7 @@
     <string name="settings_import_backup">Импортировать резервную копию</string>
     <string name="settings_import">Импортировать</string>
     <string name="settings_import_description">Импортировать данные с другого устройства</string>
+    <string name="settings_import_description_desktop">Импортировать данные с другого устройства или перетащить сюда файл его копии</string>
     <string name="settings_export">Экспортировать</string>
     <string name="settings_export_description">Экспортировать ваши данные</string>
     <string name="settings_sync">Синхронизация</string>

@@ -200,6 +200,7 @@
     <string name="settings_import_backup">Importa la còpia de seguretat</string>
     <string name="settings_import">Importar</string>
     <string name="settings_import_description">Importa dades des d'un altre dispositiu</string>
+    <string name="settings_import_description_desktop">Importa dades d'un altre dispositiu o deixa anar aquí el seu fitxer de còpia</string>
     <string name="settings_export">Exportar</string>
     <string name="settings_export_description">Expotar les teves dades</string>
     <string name="settings_sync">Sincronització</string>

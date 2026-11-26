@@ -200,6 +200,7 @@
     <string name="settings_import_backup">匯入備份</string>
     <string name="settings_import">匯入</string>
     <string name="settings_import_description">從其他裝置匯入資料</string>
+    <string name="settings_import_description_desktop">從其他裝置匯入資料，或把它的備份檔案拖放到這裡</string>
     <string name="settings_export">匯出</string>
     <string name="settings_export_description">匯出您的資料</string>
     <string name="settings_sync">同步</string>

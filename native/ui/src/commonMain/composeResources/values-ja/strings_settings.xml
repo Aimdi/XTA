@@ -200,6 +200,7 @@
     <string name="settings_import_backup">バックアップのインポート</string>
     <string name="settings_import">インポート</string>
     <string name="settings_import_description">他の端末からデータをインポートする</string>
+    <string name="settings_import_description_desktop">他の端末からデータをインポートするか、そのバックアップファイルをここにドロップします</string>
     <string name="settings_export">エクスポート</string>
     <string name="settings_export_description">データのエクスポート</string>
     <string name="settings_sync">同期</string>

@@ -31,6 +31,7 @@
 
     <string name="import_intro">XTA Native Androiderako soilik idatzitako XTA da, XTArekin alderatzeko. X irakurtzen du XTAn dagoeneko erabiltzen dituzun kontuekin.</string>
     <string name="import_steps">XTAn, ireki Ezarpenak → Datuak → Esportatu, aktibatu “Esportatu kontuak”, esportatu eta aukeratu fitxategi hori hemen.</string>
+    <string name="import_steps_desktop">XTAn, ireki Ezarpenak → Datuak → Esportatu, aktibatu “Esportatu kontuak”, esportatu eta aukeratu fitxategi hori hemen edo jaregin leiho honetan.</string>
     <string name="import_choose">Aukeratu XTAren babeskopia</string>
     <string name="import_choose_another">Aukeratu beste fitxategi bat</string>
     <string name="import_no_accounts">Babeskopia honek ez du X konturik: esportatu berriro “Esportatu kontuak” aktibatuta.</string>

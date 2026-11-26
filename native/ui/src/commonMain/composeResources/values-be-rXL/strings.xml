@@ -31,6 +31,7 @@
 
     <string name="import_intro">XTA Native — heta XTA, napisany tolki dla Android, kab paraŭnać jaho z XTA. Jon čytaje X praz akaŭnty, jakimi vy ŭžo karystajeciesia ŭ XTA.</string>
     <string name="import_steps">U XTA adkryjcie Nalady → Dadzienyja → Ekspartavać, uklučycie «Ekspartavać ulikovyja zapisy», ekspartujcie i vybierycie hety fajł tut.</string>
+    <string name="import_steps_desktop">U XTA adkryjcie Nalady → Dadzienyja → Ekspartavać, uklučycie «Ekspartavać ulikovyja zapisy», ekspartujcie i vybierycie hety fajł tut abo pieraciahnicie jaho ŭ hetaje akno.</string>
     <string name="import_choose">Vybrać rezervovuju kopiju XTA</string>
     <string name="import_choose_another">Vybrać inšy fajł</string>
     <string name="import_no_accounts">U hetaj rezervovaj kopii niama akaŭntaŭ X: ekspartujcie jaje znoŭ z uklučanym «Ekspartavać ulikovyja zapisy».</string>

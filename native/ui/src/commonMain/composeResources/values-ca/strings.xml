@@ -31,6 +31,7 @@
 
     <string name="import_intro">XTA Native és l'XTA escrit només per a Android, per comparar-lo amb l'XTA. Llegeix X amb els comptes que ja fas servir a l'XTA.</string>
     <string name="import_steps">A l'XTA, obre Configuració → Dades → Exportar, activa «Exporta els comptes», exporta i tria aquí aquest fitxer.</string>
+    <string name="import_steps_desktop">A l'XTA, obre Configuració → Dades → Exportar, activa «Exporta els comptes», exporta i tria aquí aquest fitxer o deixa'l anar sobre aquesta finestra.</string>
     <string name="import_choose">Tria una còpia de seguretat de l'XTA</string>
     <string name="import_choose_another">Tria un altre fitxer</string>
     <string name="import_no_accounts">Aquesta còpia de seguretat no té comptes d'X: torna a exportar-la amb «Exporta els comptes» activat.</string>

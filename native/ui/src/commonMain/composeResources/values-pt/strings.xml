@@ -31,6 +31,7 @@
 
     <string name="import_intro">O XTA Native é o XTA escrito só para Android, para comparar com o XTA. Lê o X com as contas que já usa no XTA.</string>
     <string name="import_steps">No XTA, abra Definições → Dados → Exportar, ative «Exportar contas», exporte e escolha esse ficheiro aqui.</string>
+    <string name="import_steps_desktop">No XTA, abra Definições → Dados → Exportar, ative «Exportar contas», exporte e escolha esse ficheiro aqui ou largue-o nesta janela.</string>
     <string name="import_choose">Escolher cópia de segurança do XTA</string>
     <string name="import_choose_another">Escolher outro ficheiro</string>
     <string name="import_no_accounts">Esta cópia de segurança não tem contas X: exporte novamente com «Exportar contas» ativado.</string>

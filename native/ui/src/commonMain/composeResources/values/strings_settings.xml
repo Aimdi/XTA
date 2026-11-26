@@ -200,6 +200,7 @@
     <string name="settings_import_backup">Import backup</string>
     <string name="settings_import">Import</string>
     <string name="settings_import_description">Import data from another device</string>
+    <string name="settings_import_description_desktop">Import data from another device, or drop its backup file here</string>
     <string name="settings_export">Export</string>
     <string name="settings_export_description">Export your data</string>
     <string name="settings_sync">Sync</string>

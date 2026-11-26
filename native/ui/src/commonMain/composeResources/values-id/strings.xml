@@ -31,6 +31,7 @@
 
     <string name="import_intro">XTA Native adalah XTA yang ditulis khusus untuk Android, untuk dibandingkan dengan XTA. Aplikasi ini membaca X dengan akun yang sudah Anda gunakan di XTA.</string>
     <string name="import_steps">Di XTA, buka Pengaturan → Data → Ekspor, nyalakan “Ekspor akun”, ekspor, lalu pilih file itu di sini.</string>
+    <string name="import_steps_desktop">Di XTA, buka Pengaturan → Data → Ekspor, nyalakan “Ekspor akun”, ekspor, lalu pilih file itu di sini atau letakkan di jendela ini.</string>
     <string name="import_choose">Pilih cadangan XTA</string>
     <string name="import_choose_another">Pilih file lain</string>
     <string name="import_no_accounts">Cadangan ini tidak berisi akun X: ekspor lagi dengan “Ekspor akun” dinyalakan.</string>

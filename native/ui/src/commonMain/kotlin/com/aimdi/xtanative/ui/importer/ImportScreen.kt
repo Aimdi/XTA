@@ -42,6 +42,7 @@ import com.aimdi.xtanative.ui.generated.resources.import_intro
 import com.aimdi.xtanative.ui.generated.resources.import_no_accounts
 import com.aimdi.xtanative.ui.generated.resources.import_privacy
 import com.aimdi.xtanative.ui.generated.resources.import_steps
+import com.aimdi.xtanative.ui.generated.resources.import_steps_desktop
 import com.aimdi.xtanative.ui.generated.resources.import_use
 import com.aimdi.xtanative.ui.generated.resources.settings_import_from
 import com.aimdi.xtanative.ui.generated.resources.settings_import_read_positions
@@ -50,6 +51,7 @@ import com.aimdi.xtanative.ui.generated.resources.signin_add_account
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.settings.backupProblem
 import com.aimdi.xtanative.ui.settings.categoryLabel
+import com.aimdi.xtanative.ui.settings.isDesktop
 import com.aimdi.xtanative.ui.settings.shortDateTime
 import org.jetbrains.compose.resources.stringResource
 
@@ -81,12 +83,14 @@ fun ImportScreen(onImported: () -> Unit, onSignIn: () -> Unit) {
     }
 
     Column(
-        Modifier.fillMaxSize().safeDrawingPadding().verticalScrollByKeys(rememberScrollState()).padding(24.dp),
+        Modifier.fillMaxSize()
+            .takesDroppedBackup(enabled = state != ImportUi.Reading && state != ImportUi.Restoring, onDropped = vm::read)
+            .safeDrawingPadding().verticalScrollByKeys(rememberScrollState()).padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(stringResource(Res.string.app_name), style = MaterialTheme.typography.headlineMedium)
         Text(stringResource(Res.string.import_intro), style = MaterialTheme.typography.bodyLarge)
-        Text(stringResource(Res.string.import_steps), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(if (isDesktop) Res.string.import_steps_desktop else Res.string.import_steps), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         when (val now = state) {
             ImportUi.Idle, ImportUi.Done -> {
                 Button(onClick = choose, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.import_choose)) }

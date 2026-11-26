@@ -200,6 +200,7 @@
     <string name="settings_import_backup">Yedeği içe aktar</string>
     <string name="settings_import">İçe aktar</string>
     <string name="settings_import_description">Verileri başka bir cihazdan aktarın</string>
+    <string name="settings_import_description_desktop">Verileri başka bir cihazdan aktarın ya da yedek dosyasını buraya bırakın</string>
     <string name="settings_export">Dışa aktar</string>
     <string name="settings_export_description">Verilerinizi dışa aktarın</string>
     <string name="settings_sync">Eşitleme</string>

@@ -31,6 +31,7 @@
 
     <string name="import_intro">XTA Native, XTA ile karşılaştırmak için yalnızca Android için yazılmış XTA'dır. X'i XTA'da zaten kullandığın hesaplarla okur.</string>
     <string name="import_steps">XTA'da Ayarlar → Veriler → Dışa aktar'ı aç, “Hesapları dışa aktar” seçeneğini aç, dışa aktar, sonra o dosyayı burada seç.</string>
+    <string name="import_steps_desktop">XTA'da Ayarlar → Veriler → Dışa aktar'ı aç, “Hesapları dışa aktar” seçeneğini aç, dışa aktar, sonra o dosyayı burada seç ya da bu pencereye bırak.</string>
     <string name="import_choose">XTA yedeğini seç</string>
     <string name="import_choose_another">Başka bir dosya seç</string>
     <string name="import_no_accounts">Bu yedekte X hesabı yok: “Hesapları dışa aktar” açıkken yeniden dışa aktar.</string>

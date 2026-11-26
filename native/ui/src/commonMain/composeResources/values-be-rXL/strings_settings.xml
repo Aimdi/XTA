@@ -200,6 +200,7 @@
     <string name="settings_import_backup">Impartavać rezervovuju kopiju</string>
     <string name="settings_import">Impartavać</string>
     <string name="settings_import_description">Impartavać dadzienyja z inšaj prylady</string>
+    <string name="settings_import_description_desktop">Impartavać dadzienyja z inšaj prylady abo pieraciahnuć siudy fajł jaje kopii</string>
     <string name="settings_export">Ekspartavać</string>
     <string name="settings_export_description">Ekspartavać svaje danyja</string>
     <string name="settings_sync">Sinchranizacyja</string>

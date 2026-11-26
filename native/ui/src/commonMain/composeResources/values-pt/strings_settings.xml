@@ -200,6 +200,7 @@
     <string name="settings_import_backup">Importar cópia de segurança</string>
     <string name="settings_import">Importar</string>
     <string name="settings_import_description">Importar dados de outro aparelho</string>
+    <string name="settings_import_description_desktop">Importar dados de outro aparelho ou largar aqui o ficheiro da cópia</string>
     <string name="settings_export">Exportar</string>
     <string name="settings_export_description">Exportar os seus dados</string>
     <string name="settings_sync">Sincronização</string>
