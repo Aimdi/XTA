@@ -1,8 +1,7 @@
 package com.aimdi.xtanative.store.crash
 
 import com.aimdi.xtanative.core.net.AppProxy
-import com.aimdi.xtanative.core.x.XNoAccountException
-import com.aimdi.xtanative.core.x.XRateLimitedException
+import com.aimdi.xtanative.core.x.XReadException
 import com.aimdi.xtanative.store.settings.CrashReportPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import java.io.IOException
@@ -60,14 +59,20 @@ data class CrashIssue(val error: String, val stack: String, val body: String) {
         }
 
         /**
-         * XTA files no network failure that slipped through, nor a cancelled
-         * job, nor the account errors the screens explain (no account, none
-         * working, every one rate-limited): only the app's own faults.
+         * XTA files no network failure that slipped through (a connection's,
+         * X's answer to a read, another network's), nor a cancelled job, nor
+         * the account errors the screens explain: only the app's own faults.
          */
         fun shouldReport(error: Throwable): Boolean = when (error) {
-            is IOException, is CancellationException, is XNoAccountException, is XRateLimitedException -> false
-            else -> true
+            is IOException, is CancellationException, is XReadException -> false
+            else -> !isNetworkFailure(error.javaClass)
         }
+
+        /** Whether [type] is a `networks` NetworkFailure, which `:store` cannot name. */
+        private fun isNetworkFailure(type: Class<*>?): Boolean =
+            type != null && (type.name == NETWORK_FAILURE || type.interfaces.any { isNetworkFailure(it) } || isNetworkFailure(type.superclass))
+
+        private const val NETWORK_FAILURE = "com.aimdi.xtanative.networks.NetworkFailure"
 
         /** The issue's body, as XTA writes it, with the thread and the time here. */
         fun body(error: String, stack: String, appVersion: String, os: String, thread: String, at: Instant, context: String? = null): String = buildString {
@@ -146,7 +151,7 @@ class CrashReporter(
         val url = issueApiUrl(repository(prefs)) ?: return CrashReportResult.INVALID_REPO
         if (!force && !takeFromBudget()) return CrashReportResult.RATE_LIMITED
         val status = try {
-            http.post(url, headers(token), buildJsonObject { put("title", issue.title); put("body", issue.body) }.toString())
+            http.post(url, headers(token), buildJsonObject { put("title", CrashScrub.scrubbed(issue.title)); put("body", CrashScrub.scrubbed(issue.body)) }.toString())
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
