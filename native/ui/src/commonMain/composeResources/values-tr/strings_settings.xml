@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Paylaşırken özel bir temel URL kullanın</string>
     <string name="settings_cancel">İptal et</string>
     <string name="settings_save">Kaydet</string>
-    <string name="settings_tab_following">Takip ediyor</string>
+    <string name="settings_tab_following">Takip edilenler</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Abonelikler</string>
     <string name="settings_page_discover">Keşfet</string>

@@ -77,7 +77,7 @@
     <string name="groups_import_sort">Ordigi la novajn abonojn en grupojn</string>
     <string name="groups_import_subscriptions">Importi abonojn</string>
     <string name="groups_imported_so_far">%1$s uzantoj importiĝis ĝis nun</string>
-    <string name="groups_in_following">Inkluzivi en Sekvataj kaj Por vi</string>
+    <string name="groups_in_following">Inkluzivi en Abonoj kaj Por vi</string>
     <string name="groups_include_replies">Ampleksi respondojn</string>
     <string name="groups_include_reposts">Ampleksi repepojn</string>
     <string name="groups_invalid_list">Ĉi tio ne aspektas kiel ligilo aŭ identigilo de listo</string>

@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">शेयर करते समय एक कस्टम बेस URL का उपयोग करें</string>
     <string name="settings_cancel">रद्द करें</string>
     <string name="settings_save">सहेजें</string>
-    <string name="settings_tab_following">अनुसरण कर रहे हैं</string>
+    <string name="settings_tab_following">फ़ॉलोइंग</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">सदस्यताएँ</string>
     <string name="settings_page_discover">खोजें</string>

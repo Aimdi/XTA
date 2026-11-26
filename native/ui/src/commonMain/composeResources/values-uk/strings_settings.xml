@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Використовувати спеціальну базову URL-адресу при поширенні</string>
     <string name="settings_cancel">Скасувати</string>
     <string name="settings_save">Зберегти</string>
-    <string name="settings_tab_following">Слідкує</string>
+    <string name="settings_tab_following">Стежу</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Підписки</string>
     <string name="settings_page_discover">Огляд</string>

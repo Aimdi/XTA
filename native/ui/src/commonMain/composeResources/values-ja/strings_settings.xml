@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Use a custom base URL when sharing</string>
     <string name="settings_cancel">キャンセル</string>
     <string name="settings_save">保存</string>
-    <string name="settings_tab_following">フォロー</string>
+    <string name="settings_tab_following">フォロー中</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">登録アカウント</string>
     <string name="settings_page_discover">見つける</string>

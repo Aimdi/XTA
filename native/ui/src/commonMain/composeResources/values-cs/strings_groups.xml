@@ -77,7 +77,7 @@
     <string name="groups_import_sort">Zařadit nové odběry do skupin</string>
     <string name="groups_import_subscriptions">Importovat odběry</string>
     <string name="groups_imported_so_far">Zatím importováno %1$s uživatelů</string>
-    <string name="groups_in_following">Zahrnout do Sleduji a Pro vás</string>
+    <string name="groups_in_following">Zahrnout do Sledování a Pro vás</string>
     <string name="groups_include_replies">Zahrnout odpovědi</string>
     <string name="groups_include_reposts">Zahrnout retweety</string>
     <string name="groups_invalid_list">Toto nevypadá jako odkaz na seznam ani ID seznamu</string>

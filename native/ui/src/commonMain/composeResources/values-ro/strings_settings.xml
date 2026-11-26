@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Utilizați un URL de bază personalizat la distribuire</string>
     <string name="settings_cancel">Anulare</string>
     <string name="settings_save">Salvează</string>
-    <string name="settings_tab_following">Urmăritori</string>
+    <string name="settings_tab_following">Urmăresc</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Abonamente</string>
     <string name="settings_page_discover">Descoperă</string>

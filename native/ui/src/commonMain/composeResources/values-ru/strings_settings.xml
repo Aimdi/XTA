@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Использовать пользовательский базовый URL при публикации</string>
     <string name="settings_cancel">Отмена</string>
     <string name="settings_save">Сохранить</string>
-    <string name="settings_tab_following">Читает</string>
+    <string name="settings_tab_following">Читаю</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Подписки</string>
     <string name="settings_page_discover">Обзор</string>

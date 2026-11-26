@@ -77,7 +77,7 @@
     <string name="groups_import_sort">Ordina le nuove iscrizioni nei gruppi</string>
     <string name="groups_import_subscriptions">Importa iscrizioni</string>
     <string name="groups_imported_so_far">%1$s utenti importati finora</string>
-    <string name="groups_in_following">Includi in Following e Per te</string>
+    <string name="groups_in_following">Includi in Seguiti e Per te</string>
     <string name="groups_include_replies">Includi risposte</string>
     <string name="groups_include_reposts">Includi retweet</string>
     <string name="groups_invalid_list">Questo non sembra un link o un ID di una lista</string>

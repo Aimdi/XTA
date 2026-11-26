@@ -77,7 +77,7 @@
     <string name="groups_import_sort">Sortează abonamentele noi în grupuri</string>
     <string name="groups_import_subscriptions">Importați abonamente</string>
     <string name="groups_imported_so_far">%1$s utilizatori importați până acum</string>
-    <string name="groups_in_following">Include în Urmărești și Pentru tine</string>
+    <string name="groups_in_following">Include în Urmăresc și Pentru tine</string>
     <string name="groups_include_replies">Includeți răspunsuri</string>
     <string name="groups_include_reposts">Includeți repostări</string>
     <string name="groups_invalid_list">Acesta nu pare a fi un link sau un ID de listă</string>

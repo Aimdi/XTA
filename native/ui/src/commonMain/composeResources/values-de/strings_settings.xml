@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Nutze beim Teilen eine andere Basisadresse</string>
     <string name="settings_cancel">Abbrechen</string>
     <string name="settings_save">Speichern</string>
-    <string name="settings_tab_following">Folgt</string>
+    <string name="settings_tab_following">Folge ich</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Abos</string>
     <string name="settings_page_discover">Entdecken</string>

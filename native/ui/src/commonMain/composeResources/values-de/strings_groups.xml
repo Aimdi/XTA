@@ -77,7 +77,7 @@
     <string name="groups_import_sort">Neue Abos in Gruppen sortieren</string>
     <string name="groups_import_subscriptions">Abonnements importieren</string>
     <string name="groups_imported_so_far">%1$s bisher importierte Benutzer</string>
-    <string name="groups_in_following">In Folgt und Für dich einbeziehen</string>
+    <string name="groups_in_following">In „Folge ich“ und „Für dich“ einbeziehen</string>
     <string name="groups_include_replies">Antworten anzeigen</string>
     <string name="groups_include_reposts">Retweets anzeigen</string>
     <string name="groups_invalid_list">Das sieht nicht nach einem Listen-Link oder einer Listen-ID aus</string>
