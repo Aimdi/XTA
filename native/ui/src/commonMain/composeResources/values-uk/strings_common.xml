@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X повернув помилку сервера. Можна читати дописи з кешу й повторити спробу пізніше.</string>
     <string name="problem_request_unavailable_title">Цей запит недоступний</string>
     <string name="problem_request_unavailable_text">X відхилив цей запит. Можливо, він тимчасово недоступний або ця частина сервісу змінилася.</string>
-    <string name="problem_oops">Ой! Щось пішло не так 🥲</string>
+    <string name="problem_oops">Не вдалося завантажити</string>
     <string name="problem_http_text">X повернув HTTP %1$d.</string>
     <string name="problem_retry_in">Повторити через %1$s</string>
     <string name="close_app_confirm">Ви впевнені, що хочете закрити XTA?</string>

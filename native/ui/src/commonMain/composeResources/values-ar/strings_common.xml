@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">أعاد X خطأً في الخادم. يمكنك متابعة قراءة المنشورات المحفوظة مؤقتًا وإعادة المحاولة لاحقًا.</string>
     <string name="problem_request_unavailable_title">هذا الطلب غير متاح</string>
     <string name="problem_request_unavailable_text">رفض X هذا الطلب. قد يكون غير متاح مؤقتًا أو ربما تغيّر هذا الجزء من الخدمة.</string>
-    <string name="problem_oops">أوبسي! حدث خطأ ما 🥲</string>
+    <string name="problem_oops">تعذّر تحميل هذا</string>
     <string name="problem_http_text">أعاد X رمز HTTP %1$d.</string>
     <string name="problem_retry_in">إعادة المحاولة بعد %1$s</string>
     <string name="close_app_confirm">هل أنت متأكد من أنك تريد إغلاق XTA؟</string>

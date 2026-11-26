@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X bir sunucu hatası döndürdü. Önbellekteki gönderileri okumaya devam edip daha sonra yeniden deneyebilirsiniz.</string>
     <string name="problem_request_unavailable_title">Bu istek kullanılamıyor</string>
     <string name="problem_request_unavailable_text">X bu isteği reddetti. Geçici olarak kullanılamıyor olabilir ya da hizmetin bu bölümü değişmiş olabilir.</string>
-    <string name="problem_oops">Hop! Bir şeyler ters gitti 🥲</string>
+    <string name="problem_oops">Yüklenemedi</string>
     <string name="problem_http_text">X, HTTP %1$d döndürdü.</string>
     <string name="problem_retry_in">%1$s sonra yeniden dene</string>
     <string name="close_app_confirm">XTA'ı kapatmak istediğinizden emin misiniz?</string>

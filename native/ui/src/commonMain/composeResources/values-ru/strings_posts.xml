@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Цитаты</string>
     <string name="posts_replies_missing">Не удалось загрузить ответы</string>
+    <string name="posts_no_replies_yet">Пока нет ответов</string>
     <string name="posts_replying_to">Ответить</string>
     <string name="posts_reposted">%1$s ретвитнул(а) %2$s</string>
     <string name="posts_reposted_by">Репостнули</string>

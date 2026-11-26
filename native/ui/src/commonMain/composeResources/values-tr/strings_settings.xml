@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Paylaşırken özel bir temel URL kullanın</string>
     <string name="settings_cancel">İptal et</string>
     <string name="settings_save">Kaydet</string>
-    <string name="settings_tab_following">Takip ediyor</string>
+    <string name="settings_tab_following">Takip edilenler</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Abonelikler</string>
     <string name="settings_page_discover">Keşfet</string>
@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">Mor</string>
     <string name="settings_colour_orange">Turuncu</string>
     <string name="settings_colour_green">Yeşil</string>
-    <string name="settings_true_black">Gerçek siyah olsun mu?</string>
-    <string name="settings_true_black_description">Koyu tema için gerçek siyahı kullanın</string>
-    <string name="settings_true_black_cards">Tweet kartları için gerçek siyah</string>
-    <string name="settings_true_black_cards_description">Tweet kartı arka planı için gerçek siyahı kullan</string>
+    <string name="settings_true_black">Gerçek siyah</string>
+    <string name="settings_true_black_description">Koyu temada koyu gri yerine siyah arka plan</string>
+    <string name="settings_true_black_cards">Gönderi kartlarında gerçek siyah</string>
+    <string name="settings_true_black_cards_description">Gönderi kartları da koyu gri yerine siyah</string>
     <string name="settings_navigation_labels">Gezinme etiketlerini göster</string>
     <string name="settings_hide_navigation">Kaydırırken üst ve alt çubukları gizle</string>
     <string name="settings_hide_status_bar">Durum çubuğunu gizle</string>

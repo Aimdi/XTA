@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Esta carpeta está vacía</string>
     <string name="saved_empty_notes">Aún no hay notas. No salen de este dispositivo salvo que hagas una copia o las sincronices.</string>
     <string name="saved_note_button">Nota</string>
-    <string name="saved_add_note">Añade una nota a esta publicación guardada</string>
+    <string name="saved_add_note">Añade una nota a esta publicación</string>
     <string name="saved_edit_note">Editar nota</string>
     <string name="saved_new_note">Nota nueva</string>
     <string name="saved_too_large">Esta publicación guardada no pudo mostrarse, ya que es demasiado grande para cargar. Por favor, infórmalo a los desarrolladores.</string>
@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">No se puede descargar. Este contenido puede estar disponible solo como transmisión, que XTA no puede descargar todavía.</string>
     <string name="saved_open_in_browser">Abrir en el navegador</string>
     <string name="saved_ok">OK</string>
-    <string name="saved_something_wrong">¡Vaya! Algo salió mal 🥲</string>
+    <string name="saved_something_wrong">Algo salió mal</string>
     <string name="archive_tags">Tags</string>
     <string name="archive_extract">Extraer texto de una captura</string>
     <string name="archive_extract_notice">La imagen PNG o JPEG elegida se enviará a %1$s con tu modelo de IA configurado. El texto extraído puede contener errores.</string>

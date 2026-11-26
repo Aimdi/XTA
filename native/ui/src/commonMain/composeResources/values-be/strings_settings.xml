@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Выкарыстоўваць карыстальніцкі базавы URL пры абагульванні</string>
     <string name="settings_cancel">Скасаваць</string>
     <string name="settings_save">Захаваць</string>
-    <string name="settings_tab_following">Чытае</string>
+    <string name="settings_tab_following">Чытаю</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Падпіскі</string>
     <string name="settings_page_discover">Агляд</string>
@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">Фіялетавы</string>
     <string name="settings_colour_orange">Аранжавы</string>
     <string name="settings_colour_green">Зялёны</string>
-    <string name="settings_true_black">Сапраўдны чорны (AMOLED)?</string>
-    <string name="settings_true_black_description">Выкарыстоўваць сапраўдны чорны (AMOLED) для цёмнай тэмы</string>
-    <string name="settings_true_black_cards">Сапраўдны чорны для картак твітаў</string>
-    <string name="settings_true_black_cards_description">Выкарыстоўваць сапраўдны чорны колер для фону картак твітаў</string>
+    <string name="settings_true_black">Сапраўдны чорны</string>
+    <string name="settings_true_black_description">Чорны фон замест цёмна-шэрага ў цёмнай тэме</string>
+    <string name="settings_true_black_cards">Сапраўдны чорны для картак допісаў</string>
+    <string name="settings_true_black_cards_description">Карткі допісаў таксама на чорным, а не цёмна-шэрым</string>
     <string name="settings_navigation_labels">Паказваць ярлыкі навігацыі</string>
     <string name="settings_hide_navigation">Хаваць верхнюю і ніжнюю панэлі пры прагортцы</string>
     <string name="settings_hide_status_bar">Хаваць радок стану</string>

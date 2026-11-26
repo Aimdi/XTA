@@ -29,7 +29,7 @@
     <string name="home_downloads">التنزيلات</string>
     <string name="home_antennas">الهوائيات</string>
     <string name="home_deck">الأعمدة</string>
-    <string name="home_deck_empty">ثبّت مجموعات لتراها متجاورة على شاشة عريضة</string>
+    <string name="home_deck_empty">أضف أعمدة لترى خلاصاتك ومجموعاتك متجاورة على شاشة عريضة</string>
     <string name="home_deck_add">إضافة عمود</string>
     <string name="home_deck_move_left">نقل لليسار</string>
     <string name="home_deck_move_right">نقل لليمين</string>

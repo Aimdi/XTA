@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Vykarystoŭvać karystalnicki bazavy URL pry abahulvanni</string>
     <string name="settings_cancel">Skasavać</string>
     <string name="settings_save">Zachavać</string>
-    <string name="settings_tab_following">Čytaje</string>
+    <string name="settings_tab_following">Čytaju</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Padpiski</string>
     <string name="settings_page_discover">Ahlad</string>
@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">Fijaletavy</string>
     <string name="settings_colour_orange">Aranžavy</string>
     <string name="settings_colour_green">Zialiony</string>
-    <string name="settings_true_black">Sapraŭdny čorny?</string>
-    <string name="settings_true_black_description">Vykarystoŭvać sapraŭdny čorny (AMOLED) dla ciomnaj temy</string>
-    <string name="settings_true_black_cards">Sapraŭdny čorny dla kartak tvitaŭ</string>
-    <string name="settings_true_black_cards_description">Vykarystoŭvać sapraŭdny čorny kolier dla fonu kartak tvitaŭ</string>
+    <string name="settings_true_black">Sapraŭdny čorny</string>
+    <string name="settings_true_black_description">Čorny fon zamiest ciomna-šeraha ŭ ciomnaj temie</string>
+    <string name="settings_true_black_cards">Sapraŭdny čorny dla kartak dopisaŭ</string>
+    <string name="settings_true_black_cards_description">Kartki dopisaŭ taksama na čornym, a nie ciomna-šerym</string>
     <string name="settings_navigation_labels">Pakazvać jarłyki navihacyi</string>
     <string name="settings_hide_navigation">Chavać vierchniuju i nižniuju paneli pry prahortcy</string>
     <string name="settings_hide_status_bar">Chavać radok stanu</string>

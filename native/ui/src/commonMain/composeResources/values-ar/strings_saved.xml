@@ -62,7 +62,7 @@
     <string name="saved_empty_folder">هذا المجلد فارغ</string>
     <string name="saved_empty_notes">لا توجد ملاحظات بعد. لا تغادر هذا الجهاز إلا عبر النسخ الاحتياطي أو المزامنة.</string>
     <string name="saved_note_button">ملاحظة</string>
-    <string name="saved_add_note">أضف ملاحظة إلى هذا المنشور المحفوظ</string>
+    <string name="saved_add_note">أضف ملاحظة إلى هذا المنشور</string>
     <string name="saved_edit_note">تعديل الملاحظة</string>
     <string name="saved_new_note">ملاحظة جديدة</string>
     <string name="saved_too_large">تعذر عرض هذه التغريدة المحفوظة لأنها كبيرة جدًا بحيث لا يمكن تحميلها. الرجاء الإبلاغ عن ذلك للمطورين.</string>
@@ -134,7 +134,7 @@
     <string name="saved_no_media_file">غير قادر على تحميل . هذا المحتوى قد يكون متاحا فقط على شكل بث ، فريتر لا يمكنه تحميله .</string>
     <string name="saved_open_in_browser">فتح في المتصفح</string>
     <string name="saved_ok">تمام</string>
-    <string name="saved_something_wrong">أوبسي! حدث خطأ ما 🥲</string>
+    <string name="saved_something_wrong">حدث خطأ ما</string>
     <string name="archive_tags">الوسوم</string>
     <string name="archive_extract">استخراج نص لقطة الشاشة</string>
     <string name="archive_extract_notice">ستُرسل صورة PNG أو JPEG المختارة إلى %1$s باستخدام نموذج الذكاء الاصطناعي الذي أعددته. قد يحتوي النص المستخرج على أخطاء.</string>

@@ -29,7 +29,7 @@
     <string name="home_downloads">Downloads</string>
     <string name="home_antennas">Antennen</string>
     <string name="home_deck">Deck</string>
-    <string name="home_deck_empty">Gruppen anheften, um sie auf großen Bildschirmen nebeneinander zu sehen</string>
+    <string name="home_deck_empty">Spalten hinzufügen, um Feeds und Gruppen auf großen Bildschirmen nebeneinander zu sehen</string>
     <string name="home_deck_add">Spalte hinzufügen</string>
     <string name="home_deck_move_left">Nach links</string>
     <string name="home_deck_move_right">Nach rechts</string>
@@ -59,7 +59,7 @@
     <string name="home_filter_reset">Filter zurücksetzen</string>
     <string name="home_filter_apply">Übernehmen</string>
 
-    <string name="home_for_you_empty">Die Posts für den Feed lassen sich nicht laden</string>
+    <string name="home_for_you_empty">Die Beiträge für den Feed lassen sich nicht laden</string>
     <string name="home_for_you_no_account">Importiere XTAs Sicherung mit ihren Konten, um „Für dich“ zu laden.</string>
     <string name="home_import">XTA-Sicherung importieren</string>
 
@@ -70,7 +70,7 @@
     <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
     <string name="home_alt_microblogging_group">Microblogging-Dienste gruppieren</string>
     <string name="home_alt_microblogging_group_detail">Mastodon, Bluesky und Threads in einem Bereich auf der Startseite anzeigen. Ausschalten, um sie wieder einzeln anzuzeigen. Daten und Einstellungen bleiben erhalten.</string>
-    <string name="home_posts">Tweets</string>
+    <string name="home_posts">Beiträge</string>
     <string name="home_media">Medien</string>
     <string name="home_missing_page">Fehlende Seite</string>
     <string name="home_two_pages_required">Du musst mindestens 2 Tabs auf der Startseite haben.</string>

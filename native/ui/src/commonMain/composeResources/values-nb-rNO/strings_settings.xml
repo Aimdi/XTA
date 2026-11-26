@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">Lilla</string>
     <string name="settings_colour_orange">Oransje</string>
     <string name="settings_colour_green">Grønn</string>
-    <string name="settings_true_black">Helt svart?</string>
-    <string name="settings_true_black_description">Bruk svart drakt for mørkt valg</string>
-    <string name="settings_true_black_cards">Ekte svart for tweet-kort</string>
-    <string name="settings_true_black_cards_description">Bruk ekte svart for bakgrunn på tweet-kort</string>
+    <string name="settings_true_black">Helt svart</string>
+    <string name="settings_true_black_description">Svart bakgrunn i stedet for mørkegrå i mørkt tema</string>
+    <string name="settings_true_black_cards">Helt svart for innleggskort</string>
+    <string name="settings_true_black_cards_description">Også innleggskort på svart i stedet for mørkegrått</string>
     <string name="settings_navigation_labels">Vis navigasjonsetiketter</string>
     <string name="settings_hide_navigation">Skjul topp- og bunnlinjen mens du blar</string>
     <string name="settings_hide_status_bar">Skjul statuslinjen</string>

@@ -52,7 +52,7 @@
     <string name="saved_empty_folder">此資料夾是空的</string>
     <string name="saved_empty_notes">還沒有筆記。除非備份或同步，否則它們不會離開此裝置。</string>
     <string name="saved_note_button">筆記</string>
-    <string name="saved_add_note">為這則已儲存的貼文新增筆記</string>
+    <string name="saved_add_note">為這則貼文新增筆記</string>
     <string name="saved_edit_note">編輯筆記</string>
     <string name="saved_new_note">新增筆記</string>
     <string name="saved_too_large">此已儲存的推文因過大無法載入而無法顯示。請向開發人員回報。</string>
@@ -119,7 +119,7 @@
     <string name="saved_no_media_file">無法下載。此媒體可能僅以串流形式提供，XTA 尚無法下載。</string>
     <string name="saved_open_in_browser">在瀏覽器中開啟</string>
     <string name="saved_ok">確定</string>
-    <string name="saved_something_wrong">哎呀！發生錯誤了 🥲</string>
+    <string name="saved_something_wrong">發生錯誤</string>
     <string name="archive_tags">標籤</string>
     <string name="archive_extract">擷取截圖文字</string>
     <string name="archive_extract_notice">所選 PNG 或 JPEG 圖片將透過你設定的 AI 模型傳送到 %1$s。擷取的文字可能有誤。</string>

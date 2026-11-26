@@ -58,7 +58,7 @@
     <string name="saved_empty_folder">Tato složka je prázdná</string>
     <string name="saved_empty_notes">Zatím žádné poznámky. Toto zařízení neopustí, dokud neuděláte zálohu nebo synchronizaci.</string>
     <string name="saved_note_button">Poznámka</string>
-    <string name="saved_add_note">Přidat poznámku k tomuto uloženému příspěvku</string>
+    <string name="saved_add_note">Přidat poznámku k tomuto příspěvku</string>
     <string name="saved_edit_note">Upravit poznámku</string>
     <string name="saved_new_note">Nová poznámka</string>
     <string name="saved_too_large">Tento uložený tweet nebylo možné zobrazit, protože je příliš velký na to, aby se načetl. Nahlaste to prosím vývojářům.</string>
@@ -128,7 +128,7 @@
     <string name="saved_no_media_file">Nepodařilo se stáhnout média. Možná jsou dostupná jen jako stream, který XTA zatím nedokáže stáhnout.</string>
     <string name="saved_open_in_browser">Otevřít v prohlížeči</string>
     <string name="saved_ok">OK</string>
-    <string name="saved_something_wrong">Jejda! Něco se pokazilo 🥲</string>
+    <string name="saved_something_wrong">Něco se pokazilo</string>
     <string name="archive_tags">Štítky</string>
     <string name="archive_extract">Získat text ze snímku obrazovky</string>
     <string name="archive_extract_notice">Vybraný obrázek PNG nebo JPEG bude odeslán na %1$s pomocí nastaveného modelu AI. Rozpoznaný text může obsahovat chyby.</string>

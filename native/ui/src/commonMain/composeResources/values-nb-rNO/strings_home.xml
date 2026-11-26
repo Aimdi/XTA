@@ -29,7 +29,7 @@
     <string name="home_downloads">Nedlastinger</string>
     <string name="home_antennas">Antenner</string>
     <string name="home_deck">Kolonner</string>
-    <string name="home_deck_empty">Fest grupper for å se dem side om side på en bred skjerm</string>
+    <string name="home_deck_empty">Legg til kolonner for å se strømmer og grupper side om side på en bred skjerm</string>
     <string name="home_deck_add">Legg til kolonne</string>
     <string name="home_deck_move_left">Flytt til venstre</string>
     <string name="home_deck_move_right">Flytt til høyre</string>

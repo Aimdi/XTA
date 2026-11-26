@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">Paars</string>
     <string name="settings_colour_orange">Oranje</string>
     <string name="settings_colour_green">Groen</string>
-    <string name="settings_true_black">Echt zwart?</string>
-    <string name="settings_true_black_description">Echt zwart gebruiken voor het donkere thema</string>
-    <string name="settings_true_black_cards">Echt zwart voor tweet-kaarten?</string>
-    <string name="settings_true_black_cards_description">Echt zwart gebruiken voor tweet-kaarten</string>
+    <string name="settings_true_black">Echt zwart</string>
+    <string name="settings_true_black_description">Een zwarte achtergrond in plaats van donkergrijs in het donkere thema</string>
+    <string name="settings_true_black_cards">Echt zwart voor berichtkaarten</string>
+    <string name="settings_true_black_cards_description">Ook berichtkaarten zwart in plaats van donkergrijs</string>
     <string name="settings_navigation_labels">Navigatielabels tonen</string>
     <string name="settings_hide_navigation">Bovenste en onderste balk verbergen tijdens scrollen</string>
     <string name="settings_hide_status_bar">Statusbalk verbergen</string>

@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Deze map is leeg</string>
     <string name="saved_empty_notes">Nog geen notities. Ze verlaten dit apparaat alleen via een back-up of sync.</string>
     <string name="saved_note_button">Notitie</string>
-    <string name="saved_add_note">Voeg een notitie toe aan dit opgeslagen bericht</string>
+    <string name="saved_add_note">Voeg een notitie toe aan dit bericht</string>
     <string name="saved_edit_note">Notitie bewerken</string>
     <string name="saved_new_note">Nieuwe notitie</string>
     <string name="saved_too_large">Dit opgeslagen bericht kon niet worden weergegeven omdat het te groot is om te laden. Meld dit aan de ontwikkelaars.</string>
@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">Kan niet downloaden. Deze media is mogelijk alleen beschikbaar als stream, die XTA nog niet kan downloaden.</string>
     <string name="saved_open_in_browser">Openen in browser</string>
     <string name="saved_ok">OK</string>
-    <string name="saved_something_wrong">Oeps! Er ging iets mis 🥲</string>
+    <string name="saved_something_wrong">Er ging iets mis</string>
     <string name="archive_tags">Tags</string>
     <string name="archive_extract">Tekst uit schermafbeelding halen</string>
     <string name="archive_extract_notice">De gekozen PNG- of JPEG-afbeelding wordt naar %1$s gestuurd met je ingestelde AI-model. De herkende tekst kan fouten bevatten.</string>

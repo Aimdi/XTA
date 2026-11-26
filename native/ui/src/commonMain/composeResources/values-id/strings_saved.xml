@@ -52,7 +52,7 @@
     <string name="saved_empty_folder">Folder ini kosong</string>
     <string name="saved_empty_notes">Belum ada catatan. Mereka tidak meninggalkan perangkat ini kecuali Anda mencadangkan atau menyinkronkan.</string>
     <string name="saved_note_button">Catatan</string>
-    <string name="saved_add_note">Tambahkan catatan ke postingan tersimpan ini</string>
+    <string name="saved_add_note">Tambahkan catatan ke postingan ini</string>
     <string name="saved_edit_note">Sunting catatan</string>
     <string name="saved_new_note">Catatan baru</string>
     <string name="saved_too_large">Tweet yang disimpan ini tidak bisa ditampilkan, karna terlalu besar. Silahkan laporkan ke developer.</string>
@@ -119,7 +119,7 @@
     <string name="saved_no_media_file">Tidak bisa mengunduh. Media ini hanya tersedia sebagai siaran, yang XTA belum bisa mengunduhnya.</string>
     <string name="saved_open_in_browser">Buka di browser</string>
     <string name="saved_ok">Oke</string>
-    <string name="saved_something_wrong">Aduh! Ada yang tidak beres 🥲</string>
+    <string name="saved_something_wrong">Terjadi kesalahan</string>
     <string name="archive_tags">Tag</string>
     <string name="archive_extract">Ekstrak teks tangkapan layar</string>
     <string name="archive_extract_notice">Gambar PNG atau JPEG yang dipilih akan dikirim ke %1$s menggunakan model AI yang Anda atur. Teks hasil ekstraksi mungkin mengandung kesalahan.</string>

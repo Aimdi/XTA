@@ -77,7 +77,7 @@
     <string name="groups_import_sort">把新訂閱分到群組</string>
     <string name="groups_import_subscriptions">匯入訂閱</string>
     <string name="groups_imported_so_far">已匯入 %1$s 位使用者</string>
-    <string name="groups_in_following">納入「正在追蹤」與「為你推薦」</string>
+    <string name="groups_in_following">納入「追蹤中」與「為你推薦」</string>
     <string name="groups_include_replies">包含回覆</string>
     <string name="groups_include_reposts">包含轉貼</string>
     <string name="groups_invalid_list">這看起來不像清單連結或清單 ID</string>

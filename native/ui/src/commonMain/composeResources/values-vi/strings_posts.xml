@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Trích dẫn</string>
     <string name="posts_replies_missing">Không thể tải phản hồi</string>
+    <string name="posts_no_replies_yet">Chưa có phản hồi nào</string>
     <string name="posts_replying_to">Đang trả lời</string>
     <string name="posts_reposted">%1$s đã đăng lại %2$s</string>
     <string name="posts_reposted_by">Được đăng lại bởi</string>

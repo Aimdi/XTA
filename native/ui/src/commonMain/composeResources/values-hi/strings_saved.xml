@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">यह फ़ोल्डर खाली है</string>
     <string name="saved_empty_notes">अभी कोई नोट नहीं। वे बैकअप या सिंक के बिना यह डिवाइस नहीं छोड़ते।</string>
     <string name="saved_note_button">नोट</string>
-    <string name="saved_add_note">इस सहेजी गई पोस्ट में नोट जोड़ें</string>
+    <string name="saved_add_note">इस पोस्ट में नोट जोड़ें</string>
     <string name="saved_edit_note">नोट संपादित करें</string>
     <string name="saved_new_note">नया नोट</string>
     <string name="saved_too_large">यह सहेजी गई पोस्ट प्रदर्शित नहीं की जा सकी, क्योंकि यह लोड करने के लिए बहुत बड़ी है। कृपया डेवलपर्स को रिपोर्ट करें।</string>
@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">डाउनलोड नहीं किया जा सकता। यह मीडिया केवल स्ट्रीम के रूप में उपलब्ध हो सकता है, जिसे XTA अभी तक डाउनलोड नहीं कर सकता।</string>
     <string name="saved_open_in_browser">ब्राउज़र में खोलें</string>
     <string name="saved_ok">ठीक है</string>
-    <string name="saved_something_wrong">ओह! कुछ गलत हो गया 🥲</string>
+    <string name="saved_something_wrong">कुछ गलत हो गया</string>
     <string name="archive_tags">टैग</string>
     <string name="archive_extract">स्क्रीनशॉट से टेक्स्ट निकालें</string>
     <string name="archive_extract_notice">चुनी गई PNG या JPEG छवि आपके कॉन्फ़िगर किए गए AI मॉडल से %1$s को भेजी जाएगी। निकाले गए टेक्स्ट में गलतियाँ हो सकती हैं।</string>

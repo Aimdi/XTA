@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">引用</string>
     <string name="posts_replies_missing">無法載入回覆</string>
+    <string name="posts_no_replies_yet">尚無回覆</string>
     <string name="posts_replying_to">正在回覆</string>
     <string name="posts_reposted">%1$s 在 %2$s 轉貼</string>
     <string name="posts_reposted_by">轉發者</string>

@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Cytaty</string>
     <string name="posts_replies_missing">Nie udało się wczytać odpowiedzi</string>
+    <string name="posts_no_replies_yet">Na razie brak odpowiedzi</string>
     <string name="posts_replying_to">W odpowiedzi do</string>
     <string name="posts_reposted">%1$s podał(a) dalej tweeta %2$s</string>
     <string name="posts_reposted_by">Udostępnili</string>

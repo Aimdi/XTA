@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">Ungu</string>
     <string name="settings_colour_orange">Oranye</string>
     <string name="settings_colour_green">Hijau</string>
-    <string name="settings_true_black">Hitam Pekat?</string>
-    <string name="settings_true_black_description">Gunakan hitam pekat untuk tema mode gelap</string>
-    <string name="settings_true_black_cards">Hitam murni untuk kartu tweet</string>
-    <string name="settings_true_black_cards_description">Gunakan hitam murni untuk latar belakang kartu tweet</string>
+    <string name="settings_true_black">Hitam pekat</string>
+    <string name="settings_true_black_description">Latar hitam, bukan abu-abu gelap, pada tema gelap</string>
+    <string name="settings_true_black_cards">Hitam pekat untuk kartu postingan</string>
+    <string name="settings_true_black_cards_description">Kartu postingan juga hitam, bukan abu-abu gelap</string>
     <string name="settings_navigation_labels">Tampilkan label navigasi</string>
     <string name="settings_hide_navigation">Sembunyikan bilah atas dan bawah saat menggulir</string>
     <string name="settings_hide_status_bar">Sembunyikan bilah status</string>

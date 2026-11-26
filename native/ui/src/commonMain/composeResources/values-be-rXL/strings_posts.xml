@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Vykl</string>
     <string name="posts_quotes">Cytaty</string>
     <string name="posts_replies_missing">Nie ŭdałosia zahruzić adkazy</string>
+    <string name="posts_no_replies_yet">Pakul niama adkazaŭ</string>
     <string name="posts_replying_to">Adkazać</string>
     <string name="posts_reposted">%1$s retvitnuŭ(ła) %2$s</string>
     <string name="posts_reposted_by">Pašyryli</string>

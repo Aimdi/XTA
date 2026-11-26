@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X ha restituito un errore del server. Puoi continuare a leggere i post in cache e riprovare più tardi.</string>
     <string name="problem_request_unavailable_title">Questa richiesta non è disponibile</string>
     <string name="problem_request_unavailable_text">X ha rifiutato questa richiesta. Potrebbe essere temporaneamente non disponibile o questa parte del servizio potrebbe essere cambiata.</string>
-    <string name="problem_oops">Ops! Qualcosa è andato storto 🥲</string>
+    <string name="problem_oops">Impossibile caricare</string>
     <string name="problem_http_text">X ha restituito HTTP %1$d.</string>
     <string name="problem_retry_in">Riprova tra %1$s</string>
     <string name="close_app_confirm">Sei sicuro di voler chiudere XTA?</string>

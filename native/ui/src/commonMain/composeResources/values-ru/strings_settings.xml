@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Использовать пользовательский базовый URL при публикации</string>
     <string name="settings_cancel">Отмена</string>
     <string name="settings_save">Сохранить</string>
-    <string name="settings_tab_following">Читает</string>
+    <string name="settings_tab_following">Читаю</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Подписки</string>
     <string name="settings_page_discover">Обзор</string>
@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">Фиолетовый</string>
     <string name="settings_colour_orange">Оранжевый</string>
     <string name="settings_colour_green">Зелёный</string>
-    <string name="settings_true_black">Настоящий чёрный (AMOLED)?</string>
-    <string name="settings_true_black_description">Использовать настоящий чёрный (AMOLED) для тёмной темы</string>
-    <string name="settings_true_black_cards">Настоящий чёрный для карточек твитов</string>
-    <string name="settings_true_black_cards_description">Использовать настоящий чёрный для фона карточек твитов</string>
+    <string name="settings_true_black">Настоящий чёрный</string>
+    <string name="settings_true_black_description">Чёрный фон вместо тёмно-серого в тёмной теме</string>
+    <string name="settings_true_black_cards">Настоящий чёрный для карточек постов</string>
+    <string name="settings_true_black_cards_description">Карточки постов тоже на чёрном, а не тёмно-сером фоне</string>
     <string name="settings_navigation_labels">Показывать подписи навигации</string>
     <string name="settings_hide_navigation">Скрывать верхнюю и нижнюю панели при прокрутке</string>
     <string name="settings_hide_status_bar">Скрывать строку состояния</string>

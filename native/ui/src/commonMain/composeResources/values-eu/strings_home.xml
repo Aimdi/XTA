@@ -29,7 +29,7 @@
     <string name="home_downloads">Deskargak</string>
     <string name="home_antennas">Antenak</string>
     <string name="home_deck">Zutabeak</string>
-    <string name="home_deck_empty">Ainguratu taldeak pantaila zabal batean elkarren ondoan ikusteko</string>
+    <string name="home_deck_empty">Gehitu zutabeak jarioak eta taldeak pantaila zabal batean elkarren ondoan ikusteko</string>
     <string name="home_deck_add">Gehitu zutabea</string>
     <string name="home_deck_move_left">Mugitu ezkerrera</string>
     <string name="home_deck_move_right">Mugitu eskuinera</string>

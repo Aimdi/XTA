@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">Viola</string>
     <string name="settings_colour_orange">Arancione</string>
     <string name="settings_colour_green">Verde</string>
-    <string name="settings_true_black">Nero assoluto?</string>
-    <string name="settings_true_black_description">Usa un nero vero per il tema scuro</string>
-    <string name="settings_true_black_cards">Nero vero per le schede tweet</string>
-    <string name="settings_true_black_cards_description">Usa il nero vero per lo sfondo delle schede tweet</string>
+    <string name="settings_true_black">Nero assoluto</string>
+    <string name="settings_true_black_description">Sfondo nero invece che grigio scuro nel tema scuro</string>
+    <string name="settings_true_black_cards">Nero assoluto per le schede dei post</string>
+    <string name="settings_true_black_cards_description">Anche le schede dei post su nero invece che grigio scuro</string>
     <string name="settings_navigation_labels">Mostra etichette di navigazione</string>
     <string name="settings_hide_navigation">Nascondi le barre superiore e inferiore durante lo scorrimento</string>
     <string name="settings_hide_status_bar">Nascondi la barra di stato</string>

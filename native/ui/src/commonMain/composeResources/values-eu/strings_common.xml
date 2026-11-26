@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X-k zerbitzari-errore bat itzuli du. Cachean gordetako argitalpenak irakurtzen jarrai dezakezu eta geroago berriro saiatu.</string>
     <string name="problem_request_unavailable_title">Eskaera hau ez dago erabilgarri</string>
     <string name="problem_request_unavailable_text">X-k eskaera hau baztertu du. Baliteke aldi baterako erabilgarri ez egotea edo zerbitzuaren zati hau aldatu izana.</string>
-    <string name="problem_oops">Hara! Zerbait gaizki atera da 🥲</string>
+    <string name="problem_oops">Ezin izan da kargatu</string>
     <string name="problem_http_text">X-k HTTP %1$d itzuli du.</string>
     <string name="problem_retry_in">Saiatu berriro %1$s barru</string>
     <string name="close_app_confirm">Ziur al zaude XTA itxi nahi duzula?</string>

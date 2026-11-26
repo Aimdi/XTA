@@ -29,7 +29,7 @@
     <string name="home_downloads">Unduhan</string>
     <string name="home_antennas">Antena</string>
     <string name="home_deck">Kolom</string>
-    <string name="home_deck_empty">Sematkan grup untuk melihatnya berdampingan di layar lebar</string>
+    <string name="home_deck_empty">Tambahkan kolom untuk melihat feed dan grup berdampingan di layar lebar</string>
     <string name="home_deck_add">Tambah kolom</string>
     <string name="home_deck_move_left">Geser ke kiri</string>
     <string name="home_deck_move_right">Geser ke kanan</string>

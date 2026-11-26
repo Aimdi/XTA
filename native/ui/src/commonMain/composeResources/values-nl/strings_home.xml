@@ -29,7 +29,7 @@
     <string name="home_downloads">Downloads</string>
     <string name="home_antennas">Antennes</string>
     <string name="home_deck">Deck</string>
-    <string name="home_deck_empty">Zet groepen vast om ze op een breed scherm naast elkaar te zien</string>
+    <string name="home_deck_empty">Voeg kolommen toe om feeds en groepen op een breed scherm naast elkaar te zien</string>
     <string name="home_deck_add">Kolom toevoegen</string>
     <string name="home_deck_move_left">Naar links</string>
     <string name="home_deck_move_right">Naar rechts</string>

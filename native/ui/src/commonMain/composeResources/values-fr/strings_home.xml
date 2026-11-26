@@ -29,7 +29,7 @@
     <string name="home_downloads">Téléchargements</string>
     <string name="home_antennas">Antennes</string>
     <string name="home_deck">Deck</string>
-    <string name="home_deck_empty">Épinglez des groupes pour les voir côte à côte sur un grand écran</string>
+    <string name="home_deck_empty">Ajoutez des colonnes pour voir vos fils et vos groupes côte à côte sur un grand écran</string>
     <string name="home_deck_add">Ajouter une colonne</string>
     <string name="home_deck_move_left">Déplacer à gauche</string>
     <string name="home_deck_move_right">Déplacer à droite</string>

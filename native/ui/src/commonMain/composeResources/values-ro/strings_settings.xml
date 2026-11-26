@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Utilizați un URL de bază personalizat la distribuire</string>
     <string name="settings_cancel">Anulare</string>
     <string name="settings_save">Salvează</string>
-    <string name="settings_tab_following">Urmăritori</string>
+    <string name="settings_tab_following">Urmăresc</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Abonamente</string>
     <string name="settings_page_discover">Descoperă</string>
@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">Violet</string>
     <string name="settings_colour_orange">Portocaliu</string>
     <string name="settings_colour_green">Verde</string>
-    <string name="settings_true_black">Negru adevărat?</string>
-    <string name="settings_true_black_description">Folosiți negru adevărat pentru tema întunecat</string>
-    <string name="settings_true_black_cards">Negru adevărat pentru carduri tweet?</string>
-    <string name="settings_true_black_cards_description">Folosiți negru adevărat pentru carduri tweet</string>
+    <string name="settings_true_black">Negru adevărat</string>
+    <string name="settings_true_black_description">Fundal negru în loc de gri închis în tema întunecată</string>
+    <string name="settings_true_black_cards">Negru adevărat pentru cardurile postărilor</string>
+    <string name="settings_true_black_cards_description">Și cardurile postărilor pe negru, nu pe gri închis</string>
     <string name="settings_navigation_labels">Afișați etichetele de navigare</string>
     <string name="settings_hide_navigation">Ascunde barele de sus și de jos la derulare</string>
     <string name="settings_hide_status_bar">Ascunde bara de stare</string>

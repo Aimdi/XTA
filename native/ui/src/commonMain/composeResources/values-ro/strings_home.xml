@@ -29,7 +29,7 @@
     <string name="home_downloads">Descărcări</string>
     <string name="home_antennas">Antene</string>
     <string name="home_deck">Coloane</string>
-    <string name="home_deck_empty">Fixează grupuri ca să le vezi unul lângă altul pe un ecran lat</string>
+    <string name="home_deck_empty">Adaugă coloane ca să vezi fluxuri și grupuri una lângă alta pe un ecran lat</string>
     <string name="home_deck_add">Adaugă coloană</string>
     <string name="home_deck_move_left">Mută la stânga</string>
     <string name="home_deck_move_right">Mută la dreapta</string>

@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Citaten</string>
     <string name="posts_replies_missing">Kon antwoorden niet laden</string>
+    <string name="posts_no_replies_yet">Nog geen antwoorden</string>
     <string name="posts_replying_to">Reagerend op</string>
     <string name="posts_reposted">%1$s heeft opnieuw geplaatst %2$s</string>
     <string name="posts_reposted_by">Opnieuw gedeeld door</string>

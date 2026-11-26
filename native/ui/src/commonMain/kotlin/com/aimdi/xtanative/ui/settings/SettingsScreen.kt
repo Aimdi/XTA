@@ -134,16 +134,16 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: (
 @Composable
 private fun SettingsHome(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snackbar: SnackbarHostState, vm: SettingsViewModel) {
     var advanced by rememberSaveable { mutableStateOf(false) }
-    SettingsHeader(stringResource(Res.string.settings_general))
+    // No header over a group whose first row has the same name (General, Accounts, Data): a hairline parts them.
     SettingsSection.everyday.forEach { SectionRow(it, onOpen) }
-    SettingsHeader(stringResource(Res.string.settings_account))
+    SettingsDivider()
     SectionRow(SettingsSection.ACCOUNT, onOpen)
     NavigationRow(
         stringResource(Res.string.settings_plugin_store),
         stringResource(Res.string.settings_plugin_store_description),
         SettingsIcons.ExtensionOutlined,
     ) { onOpen(SettingsRoutes.PLUGINS) }
-    SettingsHeader(stringResource(Res.string.settings_data))
+    SettingsDivider()
     SectionRow(SettingsSection.DATA, onOpen)
     Row(
         Modifier.fillMaxWidth().clickable { advanced = !advanced }.padding(horizontal = 16.dp, vertical = 16.dp),

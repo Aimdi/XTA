@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X がサーバーエラーを返しました。キャッシュ済みの投稿を読み続けて、後で再試行できます。</string>
     <string name="problem_request_unavailable_title">このリクエストは利用できません</string>
     <string name="problem_request_unavailable_text">X はこのリクエストを拒否しました。一時的に利用できないか、サービスのこの部分が変わった可能性があります。</string>
-    <string name="problem_oops">問題が発生しました🥲</string>
+    <string name="problem_oops">読み込めませんでした</string>
     <string name="problem_http_text">X が HTTP %1$d を返しました。</string>
     <string name="problem_retry_in">%1$s 後に再試行</string>
     <string name="close_app_confirm">XTA を終了しますか？</string>

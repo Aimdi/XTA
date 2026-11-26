@@ -29,7 +29,7 @@
     <string name="home_downloads">Pobrane pliki</string>
     <string name="home_antennas">Anteny</string>
     <string name="home_deck">Kolumny</string>
-    <string name="home_deck_empty">Przypnij grupy, by widzieć je obok siebie na szerokim ekranie</string>
+    <string name="home_deck_empty">Dodaj kolumny, by widzieć kanały i grupy obok siebie na szerokim ekranie</string>
     <string name="home_deck_add">Dodaj kolumnę</string>
     <string name="home_deck_move_left">Przesuń w lewo</string>
     <string name="home_deck_move_right">Przesuń w prawo</string>

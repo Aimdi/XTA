@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">Purpura</string>
     <string name="settings_colour_orange">Oranĝa</string>
     <string name="settings_colour_green">Verda</string>
-    <string name="settings_true_black">Nigro vera?</string>
-    <string name="settings_true_black_description">Uzi nigron veran kun la reĝimo malhela de temo</string>
-    <string name="settings_true_black_cards">Vera nigro por tweet-kartoj</string>
-    <string name="settings_true_black_cards_description">Uzi veran nigron por fono de tweet-kartoj</string>
+    <string name="settings_true_black">Vera nigro</string>
+    <string name="settings_true_black_description">Nigra fono anstataŭ malhelgriza en la malhela temo</string>
+    <string name="settings_true_black_cards">Vera nigro por afiŝ-kartoj</string>
+    <string name="settings_true_black_cards_description">Ankaŭ afiŝ-kartoj nigraj anstataŭ malhelgrizaj</string>
     <string name="settings_navigation_labels">Montri navigaciajn etikedojn</string>
     <string name="settings_hide_navigation">Kaŝi la suprajn kaj subajn bretojn dum rulumado</string>
     <string name="settings_hide_status_bar">Kaŝi la statan breton</string>

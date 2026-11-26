@@ -49,7 +49,7 @@
     <string name="groups_expire_month">Läuft in 1 Monat ab</string>
     <string name="groups_expire_never">Läuft nie ab</string>
     <string name="groups_expire_week">Läuft in 1 Woche ab</string>
-    <string name="groups_feed_empty">Keine Tweets aus den letzten 7 Tagen gefunden!</string>
+    <string name="groups_feed_empty">Keine Beiträge aus den letzten 7 Tagen gefunden!</string>
     <string name="groups_feed_issue">Feed-Problem erkannt</string>
     <string name="groups_feed_unrelated">Der Feed enthält nicht verwandte Beiträge</string>
     <string name="groups_filter_fold">Einklappen</string>
@@ -77,9 +77,9 @@
     <string name="groups_import_sort">Neue Abos in Gruppen sortieren</string>
     <string name="groups_import_subscriptions">Abonnements importieren</string>
     <string name="groups_imported_so_far">%1$s bisher importierte Benutzer</string>
-    <string name="groups_in_following">In Folgt und Für dich einbeziehen</string>
+    <string name="groups_in_following">In „Folge ich“ und „Für dich“ einbeziehen</string>
     <string name="groups_include_replies">Antworten anzeigen</string>
-    <string name="groups_include_reposts">Retweets anzeigen</string>
+    <string name="groups_include_reposts">Reposts anzeigen</string>
     <string name="groups_invalid_list">Das sieht nicht nach einem Listen-Link oder einer Listen-ID aus</string>
     <string name="groups_language_action">Beiträge in anderen Sprachen</string>
     <string name="groups_language_filter">Sprachfilter</string>
@@ -117,7 +117,7 @@
     <string name="groups_none_description">Mit Gruppen mischst du Abos zu eigenen Feeds. Lange drücken zum Bearbeiten.</string>
     <string name="groups_none_description_desktop">Mit Gruppen mischst du Abos zu eigenen Feeds. Rechtsklick auf eine Gruppe zum Bearbeiten.</string>
     <string name="groups_none_yet">Noch keine Gruppen</string>
-    <string name="groups_not_all_posts">Hinweis: Aufgrund einer Beschränkung seitens Twitter werden möglicherweise nicht alle Tweets angezeigt</string>
+    <string name="groups_not_all_posts">Hinweis: Aufgrund einer Beschränkung seitens X werden möglicherweise nicht alle Beiträge angezeigt</string>
     <string name="groups_ok">OK</string>
     <string name="groups_open_profile">Profil öffnen</string>
     <string name="groups_pack_export">Paket exportieren</string>
@@ -129,7 +129,7 @@
     <string name="groups_pin">Anheften</string>
     <string name="groups_please_enter_a_name">Bitte einen Namen eingeben</string>
     <string name="groups_popular">Beliebt</string>
-    <string name="groups_popular_description">Zeigt die beliebtesten Tweets zuerst statt der neuesten</string>
+    <string name="groups_popular_description">Zeigt die beliebtesten Beiträge zuerst statt der neuesten</string>
     <string name="groups_quiet_account">Max. Beiträge pro Feed-Laden</string>
     <string name="groups_quiet_account_description">Begrenzt, wie viele Beiträge dieses Kontos in einem Gruppen-Feed erscheinen. Aus = kein Limit.</string>
     <string name="groups_quiet_account_off">Aus</string>
@@ -208,7 +208,7 @@
 
     <string name="groups_discover">Entdecken</string>
     <string name="groups_media">Medien</string>
-    <string name="groups_media_empty">Keine Tweets mit Medien aus den letzten 7 Tagen gefunden!</string>
+    <string name="groups_media_empty">Keine Beiträge mit Medien aus den letzten 7 Tagen gefunden!</string>
     <string name="groups_discovery_scan_more">Mehr scannen</string>
     <string name="groups_discovery_empty">Noch keine ähnlichen Konten gefunden, denen du nicht folgst. Versuche es erneut, wenn Gruppenmitglieder weitere Beiträge geteilt haben.</string>
     <string name="groups_discovery_partial">Einige Quellen konnten nicht geladen werden.</string>

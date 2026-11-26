@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Use um URL base personalizado ao compartilhar</string>
     <string name="settings_cancel">Cancelar</string>
     <string name="settings_save">Gravar</string>
-    <string name="settings_tab_following">Seguindo</string>
+    <string name="settings_tab_following">A seguir</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Inscrições</string>
     <string name="settings_page_discover">Descobrir</string>
@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">Roxo</string>
     <string name="settings_colour_orange">Laranja</string>
     <string name="settings_colour_green">Verde</string>
-    <string name="settings_true_black">Preto Verdadeiro?</string>
-    <string name="settings_true_black_description">Use preto verdadeiro para o tema do modo escuro</string>
-    <string name="settings_true_black_cards">Preto real para cartões de tweets</string>
-    <string name="settings_true_black_cards_description">Usar preto real para fundo de cartões de tweets</string>
+    <string name="settings_true_black">Preto verdadeiro</string>
+    <string name="settings_true_black_description">Fundo preto em vez de cinzento-escuro no tema escuro</string>
+    <string name="settings_true_black_cards">Preto verdadeiro nos cartões de publicações</string>
+    <string name="settings_true_black_cards_description">Também os cartões de publicações a preto em vez de cinzento-escuro</string>
     <string name="settings_navigation_labels">Mostrar etiquetas de navegação</string>
     <string name="settings_hide_navigation">Ocultar as barras superior e inferior ao deslocar</string>
     <string name="settings_hide_status_bar">Ocultar a barra de estado</string>

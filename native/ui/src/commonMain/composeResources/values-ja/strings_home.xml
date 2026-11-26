@@ -29,7 +29,7 @@
     <string name="home_downloads">ダウンロード</string>
     <string name="home_antennas">アンテナ</string>
     <string name="home_deck">デッキ</string>
-    <string name="home_deck_empty">広い画面で並べて見るにはグループを固定してください</string>
+    <string name="home_deck_empty">列を追加すると、広い画面でフィードやグループを並べて見られます</string>
     <string name="home_deck_add">列を追加</string>
     <string name="home_deck_move_left">左へ移動</string>
     <string name="home_deck_move_right">右へ移動</string>

@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Esta pasta está vazia</string>
     <string name="saved_empty_notes">Ainda não há notas. Só saem deste dispositivo se fizeres uma cópia ou sincronizares.</string>
     <string name="saved_note_button">Nota</string>
-    <string name="saved_add_note">Adicionar uma nota a esta publicação guardada</string>
+    <string name="saved_add_note">Adicionar uma nota a esta publicação</string>
     <string name="saved_edit_note">Editar nota</string>
     <string name="saved_new_note">Nova nota</string>
     <string name="saved_too_large">Este tweet salvo não pôde ser exibido porque é muito grande para carregar. Por favor, denuncie aos programadores.</string>
@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">Incapaz de descarregar. Esta mídia pode estar disponível apenas como uma transmissão, que XTA ainda não pode descarregar.</string>
     <string name="saved_open_in_browser">Abrir no navegador</string>
     <string name="saved_ok">OK</string>
-    <string name="saved_something_wrong">Ops! Algo deu errado 🥲</string>
+    <string name="saved_something_wrong">Algo correu mal</string>
     <string name="archive_tags">Etiquetas</string>
     <string name="archive_extract">Extrair texto de captura</string>
     <string name="archive_extract_notice">A imagem PNG ou JPEG escolhida será enviada para %1$s com o modelo de IA configurado. O texto extraído pode conter erros.</string>

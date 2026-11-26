@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X mengembalikan galat server. Anda masih bisa membaca postingan yang tersimpan di cache dan mencoba lagi nanti.</string>
     <string name="problem_request_unavailable_title">Permintaan ini tidak tersedia</string>
     <string name="problem_request_unavailable_text">X menolak permintaan ini. Mungkin sedang tidak tersedia untuk sementara, atau bagian layanan ini telah berubah.</string>
-    <string name="problem_oops">Aduh! Ada yang tidak beres 🥲</string>
+    <string name="problem_oops">Tidak dapat memuat ini</string>
     <string name="problem_http_text">X mengembalikan HTTP %1$d.</string>
     <string name="problem_retry_in">Coba lagi dalam %1$s</string>
     <string name="close_app_confirm">Apakah Anda yakin ingin menutup XTA?</string>

@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Kasuta lingi jagamiseks kohandatud URL'i</string>
     <string name="settings_cancel">Katkesta</string>
     <string name="settings_save">salvesta</string>
-    <string name="settings_tab_following">Jälgitavaid</string>
+    <string name="settings_tab_following">Jälgin</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Tellimused</string>
     <string name="settings_page_discover">Avasta</string>
@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">Lilla</string>
     <string name="settings_colour_orange">Oranž</string>
     <string name="settings_colour_green">Roheline</string>
-    <string name="settings_true_black">Missugune must teema?</string>
-    <string name="settings_true_black_description">Tumeda teemana kasuta korrektset musta teemat</string>
-    <string name="settings_true_black_cards">Tõeline must postituskaartide jaoks</string>
-    <string name="settings_true_black_cards_description">Kasuta tõelist musta postituskaartide taustaks</string>
+    <string name="settings_true_black">Täismust</string>
+    <string name="settings_true_black_description">Tumedas teemas must taust tumehalli asemel</string>
+    <string name="settings_true_black_cards">Täismust postituskaartidel</string>
+    <string name="settings_true_black_cards_description">Ka postituskaardid musta, mitte tumehalli taustaga</string>
     <string name="settings_navigation_labels">Kuva navigeerimissildid</string>
     <string name="settings_hide_navigation">Peida ülemine ja alumine riba kerimisel</string>
     <string name="settings_hide_status_bar">Peida olekuriba</string>

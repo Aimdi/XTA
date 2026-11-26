@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">शेयर करते समय एक कस्टम बेस URL का उपयोग करें</string>
     <string name="settings_cancel">रद्द करें</string>
     <string name="settings_save">सहेजें</string>
-    <string name="settings_tab_following">अनुसरण कर रहे हैं</string>
+    <string name="settings_tab_following">फ़ॉलोइंग</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">सदस्यताएँ</string>
     <string name="settings_page_discover">खोजें</string>
@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">बैंगनी</string>
     <string name="settings_colour_orange">नारंगी</string>
     <string name="settings_colour_green">हरा</string>
-    <string name="settings_true_black">ट्रू ब्लैक?</string>
-    <string name="settings_true_black_description">डार्क मोड थीम के लिए ट्रू ब्लैक उपयोग करें</string>
-    <string name="settings_true_black_cards">पोस्ट कार्ड के लिए ट्रू ब्लैक?</string>
-    <string name="settings_true_black_cards_description">पोस्ट कार्ड के लिए ट्रू ब्लैक उपयोग करें</string>
+    <string name="settings_true_black">ट्रू ब्लैक</string>
+    <string name="settings_true_black_description">डार्क थीम में गहरे स्लेटी की जगह काली पृष्ठभूमि</string>
+    <string name="settings_true_black_cards">पोस्ट कार्ड के लिए ट्रू ब्लैक</string>
+    <string name="settings_true_black_cards_description">पोस्ट कार्ड भी गहरे स्लेटी की जगह काले</string>
     <string name="settings_navigation_labels">नेविगेशन लेबल दिखाएं</string>
     <string name="settings_hide_navigation">स्क्रॉल करते समय ऊपर और नीचे की पट्टियाँ छिपाएँ</string>
     <string name="settings_hide_status_bar">स्टेटस बार छिपाएँ</string>

@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">Purple</string>
     <string name="settings_colour_orange">Orange</string>
     <string name="settings_colour_green">Green</string>
-    <string name="settings_true_black">True Black?</string>
-    <string name="settings_true_black_description">Use true black for the dark mode theme</string>
-    <string name="settings_true_black_cards">True black tweet cards?</string>
-    <string name="settings_true_black_cards_description">Use true black for tweet cards</string>
+    <string name="settings_true_black">True black</string>
+    <string name="settings_true_black_description">A black background instead of dark grey in the dark theme</string>
+    <string name="settings_true_black_cards">True black post cards</string>
+    <string name="settings_true_black_cards_description">Post cards on black too, instead of dark grey</string>
     <string name="settings_navigation_labels">Show navigation labels?</string>
     <string name="settings_hide_navigation">Hide top and bottom bars while scrolling</string>
     <string name="settings_hide_status_bar">Hide the status bar</string>

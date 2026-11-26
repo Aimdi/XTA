@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">بنفسجي</string>
     <string name="settings_colour_orange">برتقالي</string>
     <string name="settings_colour_green">أخضر</string>
-    <string name="settings_true_black">أسود حقيقي؟</string>
-    <string name="settings_true_black_description">استخدم ميزة الأسود الحقيقي للسمة الداكنة</string>
-    <string name="settings_true_black_cards">الأسود الحقيقي لبطاقات التغريدات</string>
-    <string name="settings_true_black_cards_description">استخدام الأسود الحقيقي لخلفية بطاقات التغريدات</string>
+    <string name="settings_true_black">أسود حقيقي</string>
+    <string name="settings_true_black_description">خلفية سوداء بدلاً من الرمادي الداكن في السمة الداكنة</string>
+    <string name="settings_true_black_cards">الأسود الحقيقي لبطاقات المنشورات</string>
+    <string name="settings_true_black_cards_description">بطاقات المنشورات أيضاً على خلفية سوداء بدلاً من الرمادي الداكن</string>
     <string name="settings_navigation_labels">إظهار تسميات التنقل</string>
     <string name="settings_hide_navigation">إخفاء الشريطين العلوي والسفلي أثناء التمرير</string>
     <string name="settings_hide_status_bar">إخفاء شريط الحالة</string>

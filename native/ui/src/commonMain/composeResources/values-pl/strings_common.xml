@@ -19,7 +19,7 @@
     <string name="problem_service_unavailable_text">X zwrócił błąd serwera. Możesz dalej czytać wpisy z pamięci podręcznej i spróbować ponownie później.</string>
     <string name="problem_request_unavailable_title">To żądanie jest niedostępne</string>
     <string name="problem_request_unavailable_text">X odrzucił to żądanie. Może być chwilowo niedostępne albo ta część usługi mogła się zmienić.</string>
-    <string name="problem_oops">Ups! Coś poszło nie tak 🥲</string>
+    <string name="problem_oops">Nie udało się wczytać</string>
     <string name="problem_http_text">X zwrócił HTTP %1$d.</string>
     <string name="problem_retry_in">Spróbuj ponownie za %1$s</string>
     <string name="close_app_confirm">Czy na pewno chcesz zamknąć XTA?</string>

@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Bu klasör boş</string>
     <string name="saved_empty_notes">Henüz not yok. Yedekleme veya senkron yapmadıkça bu cihazdan çıkmazlar.</string>
     <string name="saved_note_button">Not</string>
-    <string name="saved_add_note">Bu kaydedilen gönderiye not ekle</string>
+    <string name="saved_add_note">Bu gönderiye not ekle</string>
     <string name="saved_edit_note">Notu düzenle</string>
     <string name="saved_new_note">Yeni not</string>
     <string name="saved_too_large">Kaydedilen bu tweet, yüklenemeyecek kadar büyük olduğu için görüntülenemedi. Lütfen bunu geliştiricilere bildirin.</string>
@@ -122,7 +122,7 @@
     <string name="saved_no_media_file">İndirilemiyor. Bu medya yalnızca XTA'ın henüz indiremediği bir akış olarak mevcut olabilir.</string>
     <string name="saved_open_in_browser">Tarayıcıda aç</string>
     <string name="saved_ok">TAMAM</string>
-    <string name="saved_something_wrong">Hop! Bir şeyler ters gitti 🥲</string>
+    <string name="saved_something_wrong">Bir şeyler ters gitti</string>
     <string name="archive_tags">Etiketler</string>
     <string name="archive_extract">Ekran görüntüsünden metin çıkar</string>
     <string name="archive_extract_notice">Seçilen PNG veya JPEG, yapılandırdığınız yapay zekâ modeliyle %1$s adresine gönderilecek. Çıkarılan metin hata içerebilir.</string>

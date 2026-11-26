@@ -55,7 +55,7 @@
     <string name="settings_share_base_url_description">Use a custom base URL when sharing</string>
     <string name="settings_cancel">キャンセル</string>
     <string name="settings_save">保存</string>
-    <string name="settings_tab_following">フォロー</string>
+    <string name="settings_tab_following">フォロー中</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">登録アカウント</string>
     <string name="settings_page_discover">見つける</string>
@@ -162,10 +162,10 @@
     <string name="settings_colour_purple">パープル</string>
     <string name="settings_colour_orange">オレンジ</string>
     <string name="settings_colour_green">グリーン</string>
-    <string name="settings_true_black">トゥルーブラック？</string>
-    <string name="settings_true_black_description">ダークテーマで完全な黒を使用する</string>
-    <string name="settings_true_black_cards">True black tweet cards?</string>
-    <string name="settings_true_black_cards_description">Use true black for tweet cards</string>
+    <string name="settings_true_black">トゥルーブラック</string>
+    <string name="settings_true_black_description">ダークテーマの背景を濃いグレーではなく黒にする</string>
+    <string name="settings_true_black_cards">投稿カードもトゥルーブラック</string>
+    <string name="settings_true_black_cards_description">投稿カードも濃いグレーではなく黒にする</string>
     <string name="settings_navigation_labels">Show navigation labels?</string>
     <string name="settings_hide_navigation">スクロール中は上部と下部のバーを隠す</string>
     <string name="settings_hide_status_bar">ステータスバーを隠す</string>
