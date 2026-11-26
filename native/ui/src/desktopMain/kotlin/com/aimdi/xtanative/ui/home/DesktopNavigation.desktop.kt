@@ -23,6 +23,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.InputMode
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
@@ -46,6 +47,7 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.InterceptPlatformTextInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.LayoutDirection
@@ -82,6 +84,7 @@ import kotlinx.coroutines.launch
 actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, openHome: () -> Unit, goForward: () -> Boolean, content: @Composable () -> Unit) {
     val focus = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    val inputModes = LocalInputModeManager.current
     val settingsStore = LocalSettingsStore.current
     val keeper = LocalKeeper.current
     val scope = rememberCoroutineScope()
@@ -264,8 +267,14 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         if (event.type == KeyEventType.Unknown && LayoutKeys.ctrlTypesNothing(event.utf16CodePoint, event.isCtrlPressed, event.isAltPressed)) return true
         if (event.type != KeyEventType.KeyDown) return event.type != KeyEventType.KeyUp && keyTaken
         afterControl[0] = null
-        // Tab and F6 move the focus with the keyboard: where it lands keeps the keys, as before any click.
-        if (event.key == Key.Tab || event.key == Key.F6) clicked = false
+        // Tab and F6 move the focus with the keyboard: where it lands keeps the keys, as before any click. The window
+        // moves it itself (into the page, to the other region), so it tells Compose the keyboard is in use, as Compose's
+        // own Tab does: after a click Compose holds the pointer's mode, and drops the focus it is told of from the
+        // lighting of the first control reached (Home's picker after Retry), which then showed no ring.
+        if (event.key == Key.Tab || event.key == Key.F6) {
+            clicked = false
+            inputModes.requestInputMode(InputMode.Keyboard)
+        }
         // Letters and digits by where they sit when the layout names them otherwise ([shortcutKey]): Ctrl+1 on a French keyboard, j on a Russian one.
         val pressed = shortcutKey(event)
         tabbing[0] = DesktopKeys.tabStep(deskKey(pressed), event.isShiftPressed, event.isCtrlPressed, event.isAltPressed)
