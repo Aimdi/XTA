@@ -4,6 +4,7 @@ import com.aimdi.xtanative.store.saved.LocalPost
 import com.aimdi.xtanative.store.saved.LocalPosts
 import com.aimdi.xtanative.store.saved.NoteEditorState
 import com.aimdi.xtanative.store.saved.NoteMedia
+import com.aimdi.xtanative.store.saved.SavedContent
 import kotlinx.serialization.json.JsonElement
 
 /** The title a note editor opens with. */
@@ -22,8 +23,18 @@ sealed interface NoteTarget {
         val quoted: JsonElement? = null,
     ) : NoteTarget
 
-    /** The note under a saved post, or under an article's highlight: text alone. */
-    data class Text(val note: String?, val draftKey: String, val allowUnchanged: Boolean = false) : NoteTarget
+    /**
+     * The note under a saved post, or under an article's highlight: text
+     * alone. The editor shows what it is written about over it: the post
+     * ([about]) or the highlighted words ([quote]).
+     */
+    data class Text(
+        val note: String?,
+        val draftKey: String,
+        val allowUnchanged: Boolean = false,
+        val about: SavedContent? = null,
+        val quote: String? = null,
+    ) : NoteTarget
 }
 
 /** XTA's note editors, as rules (local_post_compose.dart, saved_note_editor.dart, note_editor_frame.dart). */

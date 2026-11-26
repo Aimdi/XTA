@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.aimdi.xtanative.store.saved.SavedContent
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.saved_add_note
 import com.aimdi.xtanative.ui.saved.Keepable
@@ -26,7 +27,7 @@ fun PluginNoteEditor(item: Keepable, onDismiss: () -> Unit) {
     val keeper = LocalKeeper.current
     val notes = remember(keeper) { PluginNotes(keeper.saved, keeper.settings) }
     val target by produceState<NoteTarget.Text?>(null, item.id) {
-        value = NoteTarget.Text(notes.noteOf(item.id), NoteRules.savedNoteKey(item.id))
+        value = NoteTarget.Text(notes.noteOf(item.id), NoteRules.savedNoteKey(item.id), about = SavedContent.of(item.content))
     }
     target?.let { NoteEditorDialog(it, onDismiss, saveText = { note -> notes.keep(item, note) }) }
 }

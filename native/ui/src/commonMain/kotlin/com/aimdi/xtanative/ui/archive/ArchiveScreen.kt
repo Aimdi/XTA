@@ -160,7 +160,7 @@ fun ArchiveScreen(id: String, onBack: () -> Unit) {
     }
     highlighting?.let { quote ->
         NoteEditorDialog(
-            target = NoteTarget.Text(state.annotation.highlights[quote], ArchiveNotesStore.draftKey(id, quote), allowUnchanged = true),
+            target = NoteTarget.Text(state.annotation.highlights[quote], ArchiveNotesStore.draftKey(id, quote), allowUnchanged = true, quote = quote),
             onDismiss = { highlighting = null },
             saveText = { note -> vm.highlight(quote, note) },
         )

@@ -158,7 +158,7 @@ private fun SavedRow(post: SavedPost, actions: PostActions, selecting: Boolean, 
     }
     if (editing) {
         NoteEditorDialog(
-            target = NoteTarget.Text(post.note, NoteRules.savedNoteKey(post.id)),
+            target = NoteTarget.Text(post.note, NoteRules.savedNoteKey(post.id), about = content),
             onDismiss = { editing = false },
             saveText = { note -> vm.setNote(post.id, note) },
         )

@@ -8,6 +8,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.ui.graphics.graphicsLayer
+import com.aimdi.xtanative.store.saved.SavedContent
 import com.aimdi.xtanative.ui.common.HeartBurstMotion
 import com.aimdi.xtanative.ui.common.HitArea
 import androidx.compose.foundation.layout.Box
@@ -112,7 +113,8 @@ internal fun SavedNoteEditor(item: Keepable, onDismiss: () -> Unit) {
     LaunchedEffect(keeper) { keeper.saved.index() }
     val loaded = library ?: return
     val note = remember(item.id) { loaded.post(item.id)?.note }
-    NoteEditorDialog(NoteTarget.Text(note, NoteRules.savedNoteKey(item.id)), onDismiss, saveText = { text -> Keeping.writeNote(keeper, item, text) })
+    val about = remember(item.id) { SavedContent.of(item.content) }
+    NoteEditorDialog(NoteTarget.Text(note, NoteRules.savedNoteKey(item.id), about = about), onDismiss, saveText = { text -> Keeping.writeNote(keeper, item, text) })
 }
 
 /**
