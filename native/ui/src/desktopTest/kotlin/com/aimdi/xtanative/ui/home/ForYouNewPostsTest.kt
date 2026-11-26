@@ -9,10 +9,12 @@ import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XTimelinePage
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.store.settings.PostsPrefs
 import java.nio.file.Files
 import java.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
@@ -30,9 +32,16 @@ class ForYouNewPostsTest {
     @Volatile
     private var answer: List<Long> = listOf(3, 2, 1)
 
-    private val reads = HomeReads { _, _, _ -> XTimelinePage(answer.map(::thread), null, null) }
+    /** The first page's cursor on, and the page under it, which comes once [older] opens. */
+    @Volatile
+    private var next: String? = null
+    private val older = CompletableDeferred<List<Long>>()
 
-    private fun withModel(test: suspend ForYouViewModel.() -> Unit) = runBlocking {
+    private val reads = HomeReads { _, cursor, _ ->
+        if (cursor == null) XTimelinePage(answer.map(::thread), next, null) else XTimelinePage(older.await().map(::thread), null, null)
+    }
+
+    private fun withModel(test: suspend ForYouViewModel.(AppGraph) -> Unit) = runBlocking {
         val dir = Files.createTempDirectory("for-you").toFile()
         try {
             val graph = AppGraph(dir, flowOf(true), "test")
@@ -40,7 +49,7 @@ class ForYouNewPostsTest {
             val vm = withContext(Dispatchers.Main) { ForYouViewModel(graph, reads) }
             try {
                 vm.until { it.threads.size == 3 && !it.refreshing }
-                vm.test()
+                vm.test(graph)
             } finally {
                 vm.viewModelScope.cancel()
             }
@@ -89,6 +98,32 @@ class ForYouNewPostsTest {
         answer = listOf(4, 3, 2, 1)
         onMain { refresh(byReader = false) }
         assertEquals(0, until { it.threads.size == 4 && !it.refreshing }.newPosts)
+    }
+
+    @Test
+    fun aRefreshFromSettingsIsShownAtOnce() = withModel { graph ->
+        answer = listOf(4, 3, 2, 1)
+        onMain { atTop(false) }
+        graph.settings.set(PostsPrefs.rememberReadingPosition, false)
+        val shown = until { it.threads.size == 4 && !it.refreshing }
+        assertEquals(0, shown.newPosts, "what the reader changed applies at once")
+    }
+
+    @Test
+    fun aNextPageOnItsWayWhileARefreshIsHeldIsKept() {
+        next = "older"
+        withModel {
+            onMain { atTop(false); loadMore() }
+            until { it.loadingMore }
+            answer = listOf(4, 3, 2, 1)
+            onMain { refresh(byReader = false) }
+            val held = until { it.newPosts == 1 }
+            assertEquals(false, held.refreshing, "a held refresh leaves nothing in flight")
+            older.complete(listOf(-1, -2))
+            val more = until { !it.loadingMore && it.threads.size == 5 }
+            assertEquals(listOf(3L, 2, 1, -1, -2), ids(more), "the list goes on under the posts still shown")
+            assertEquals(1, more.newPosts)
+        }
     }
 
     @Test

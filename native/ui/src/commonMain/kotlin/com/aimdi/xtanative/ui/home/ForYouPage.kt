@@ -146,7 +146,8 @@ private fun NewPostsOver(count: Int, modifier: Modifier, onClick: () -> Unit) {
 @Composable
 private fun ForYouList(state: ForYouUi, vm: ForYouViewModel, actions: PostActions, list: LazyListState, contentPadding: PaddingValues) {
     val nearEnd by rememberNearEnd(list)
-    LaunchedEffect(nearEnd, state.threads.size, state.hasMore) {
+    // Again once a refresh is over: one held for the reader leaves the list as it was, and a next page asked meanwhile waited.
+    LaunchedEffect(nearEnd, state.threads.size, state.hasMore, state.refreshing) {
         if (nearEnd) vm.loadMore()
     }
     val layout = rememberFeedLayout(state.threads)

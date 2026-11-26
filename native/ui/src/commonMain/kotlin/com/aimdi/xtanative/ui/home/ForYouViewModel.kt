@@ -107,7 +107,8 @@ class ForYouViewModel(
             }.distinctUntilChanged().collect { next ->
                 shape = next
                 state.update { it.copy(tracks = next.tracks) }
-                refresh(byReader = false)
+                // What the reader changed (an account off, zen mode's pages) applies at once, never held.
+                reload(byReader = false, mayHold = false)
             }
         }
     }
@@ -128,13 +129,20 @@ class ForYouViewModel(
      * are down the list, waits for them ([showNew]), so nothing moves under
      * their eyes, as Following holds what its plugins bring.
      */
-    fun refresh(byReader: Boolean = true) {
+    fun refresh(byReader: Boolean = true) = reload(byReader, mayHold = !byReader)
+
+    /**
+     * [refresh]; [mayHold] lets a page read while the reader is down the
+     * list wait for them. Until a page is shown ([show]), the next pages
+     * under what is shown still load and are kept.
+     */
+    private fun reload(byReader: Boolean, mayHold: Boolean) {
         val shape = shape ?: return
         refreshJob?.cancel()
-        resets++
         held = null
         state.update { it.copy(newPosts = 0) }
         if (shape.accounts.isEmpty()) {
+            resets++
             state.value = ForYouUi(noAccount = true, answered = true)
             return
         }
@@ -149,7 +157,7 @@ class ForYouViewModel(
                 state.update { it.copy(refreshing = false, problem = problem.takeIf { _ -> it.threads.isEmpty() }, notice = problem.takeIf { _ -> it.threads.isNotEmpty() }) }
                 return@launch
             }
-            if (!byReader && !atTop && state.value.threads.isNotEmpty()) {
+            if (mayHold && !atTop && state.value.threads.isNotEmpty()) {
                 held = page
                 state.update { it.copy(refreshing = false, newPosts = ForYouRules.newCount(it.threads, page.threads)) }
                 return@launch
@@ -160,6 +168,8 @@ class ForYouViewModel(
 
     /** [page] as the first page, in place of what is shown; [byReader] goes back to the top. */
     private suspend fun show(page: ForYouPage, shape: Shape, byReader: Boolean) {
+        // A next page still on its way belongs under what this replaces: dropped.
+        resets++
         val step = FeedStops(pageCap = shape.pageCap).page(page.threads, first = true, isSeen = null, hasMore = page.next != null)
         stops = step.stops
         cursor = page.next
@@ -189,7 +199,6 @@ class ForYouViewModel(
         val page = held ?: return
         val shape = shape ?: return
         held = null
-        resets++
         state.update { it.copy(newPosts = 0, loadingMore = false) }
         refreshJob = viewModelScope.launch { show(page, shape, byReader = true) }
     }
