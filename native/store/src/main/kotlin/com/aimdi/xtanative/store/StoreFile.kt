@@ -56,6 +56,9 @@ fun File.replaceWith(text: String) = replaceWith(text.toByteArray())
  */
 fun File.replaceWith(bytes: ByteArray) = replaceThrough { it.write(bytes) }
 
+/** [replaceWith] by a copy of [source]'s bytes, streamed rather than held whole. */
+fun File.replaceWithCopyOf(source: File) = replaceThrough { out -> source.inputStream().use { it.copyTo(out) } }
+
 private fun File.replaceThrough(write: (FileOutputStream) -> Unit) {
     val folder = absoluteFile.parentFile.apply { mkdirs() }
     val partial = Files.createTempFile(folder.toPath(), ".$name.", ".part")

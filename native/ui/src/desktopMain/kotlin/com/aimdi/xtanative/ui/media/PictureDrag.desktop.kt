@@ -17,7 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.store.replaceWithCopyOf
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.PictureCacheFolder
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.media_drag_out
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -77,12 +79,14 @@ internal object DraggedPictures {
     private val folder: File by lazy {
         // The XDG spec has a relative $XDG_CACHE_HOME ignored.
         val cache = System.getenv("XDG_CACHE_HOME")?.let(::File)?.takeIf { it.isAbsolute } ?: File(System.getProperty("user.home"), ".cache")
-        File(File(cache, "xta-native"), "dragged-pictures").also { folder ->
-            folder.mkdirs()
+        staging(cache).also { folder ->
             val old = System.currentTimeMillis() - KEEP_MS
             folder.listFiles()?.filter { it.isFile && it.lastModified() < old }?.forEach { it.delete() }
         }
     }
+
+    /** The folder drags are put out in under [cache], it and the app's folder above it listable by their owner alone. */
+    fun staging(cache: File): File = PictureCacheFolder.prepare(File(PictureCacheFolder.prepare(File(cache, "xta-native")), "dragged-pictures"))
 
     /** [url]'s cached picture as a file named [name] (its last path part only); null while the cache has none. */
     fun file(url: String, name: String): File? = runCatching {
@@ -91,18 +95,11 @@ internal object DraggedPictures {
         cache.openSnapshot(url)?.use { snapshot -> snapshot.data.toFile().takeIf { it.isFile }?.let { put(it, folder, name) } }
     }.getOrNull()
 
-    /** [source] copied into [folder] as [name], made safe as one file's name. */
+    /** [source] copied into [folder] as [name], made safe as one file's name; the copy is its owner's only. */
     fun put(source: File, folder: File, name: String): File {
         val safe = name.substringAfterLast('/').substringAfterLast('\\').replace(Regex("[\\u0000-\\u001f]"), "").trimStart('.').ifEmpty { "picture" }
         val target = File(folder, safe)
-        if (!(target.isFile && target.length() == source.length())) {
-            val part = File(folder, "$safe.part")
-            source.copyTo(part, overwrite = true)
-            if (!part.renameTo(target)) {
-                target.delete()
-                part.renameTo(target)
-            }
-        }
+        if (!(target.isFile && target.length() == source.length())) target.replaceWithCopyOf(source)
         return target
     }
 
