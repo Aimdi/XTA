@@ -94,6 +94,20 @@ class PluginSurfaceTest {
     }
 
     @Test
+    fun pluginsDrawTheirSheetsAsTheAppsOwn() {
+        val material = pluginSources.filter { Regex("""^import androidx\.compose\.material3\.ModalBottomSheet$""", RegexOption.MULTILINE).containsMatchIn(it.readText()) }
+        assertTrue(
+            material.isEmpty(),
+            "these plugins draw Material's ModalBottomSheet, which the desktop's keys do not reach: use PluginSheet. " + material.joinToString { it.name },
+        )
+    }
+
+    @Test
+    fun pluginPlatformKnowsTheDesktop() {
+        assertTrue(PluginPlatform.isDesktop, "the desktop tests run on the desktop")
+    }
+
+    @Test
     fun theListNamesOnlyWhatIsStillUsed() {
         val used = pluginSources.flatMap { file -> imported.findAll(file.readText()).map { it.groupValues[1] } }.toSet()
         val stale = outsideTheApi - used
