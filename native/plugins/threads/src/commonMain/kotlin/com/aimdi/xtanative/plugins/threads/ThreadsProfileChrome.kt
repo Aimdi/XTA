@@ -34,7 +34,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -82,12 +81,14 @@ import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginMenuRow
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.addToGroupText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
+import com.aimdi.xtanative.ui.plugins.rememberSheetClose
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import java.util.Locale
@@ -419,7 +420,8 @@ internal fun ProfileFiltersSheet(
     onDismiss: () -> Unit,
 ) {
     val outside = rememberOpenOutside()
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+        val closeSheet = rememberSheetClose()
         Column(Modifier.navigationBarsPadding().padding(bottom = 16.dp)) {
             Text(pluginString(Strings.filters), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 24.dp))
             ProfileJoined(app, profile.username)
@@ -428,8 +430,8 @@ internal fun ProfileFiltersSheet(
                     PluginFilterChip(pluginString(contentLabel(option)), option == selected, onClick = { onChoose(option) })
                 }
             }
-            PluginMenuRow(AddToGroupIcon, addToGroupText(), onClick = { onDismiss(); app.addToGroup(ThreadsAccount.of(profile)) })
-            PluginMenuRow(PostIcons.OpenInNew, pluginString(Strings.open_in_browser), onClick = { onDismiss(); outside("${ThreadsLinks.WEB}/@${profile.username}") })
+            PluginMenuRow(AddToGroupIcon, addToGroupText(), onClick = { closeSheet { app.addToGroup(ThreadsAccount.of(profile)) } })
+            PluginMenuRow(PostIcons.OpenInNew, pluginString(Strings.open_in_browser), onClick = { closeSheet { outside("${ThreadsLinks.WEB}/@${profile.username}") } })
         }
     }
 }
