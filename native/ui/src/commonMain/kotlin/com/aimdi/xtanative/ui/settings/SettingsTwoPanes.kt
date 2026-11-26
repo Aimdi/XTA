@@ -45,6 +45,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.InputMode
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
@@ -54,6 +55,7 @@ import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.ColumnScrollbar
@@ -109,8 +111,17 @@ internal fun SettingsTwoPanes(
         if (target != null) show(target.id, target.focus) else onOpen(route)
     }
     val pick: (String) -> Unit = { id -> if (SettingsPanes.showsBeside(id)) show(id) else onOpen(SettingsRoutes.PLUGINS) }
-    val intoPane = { runCatching { pane.requestFocus(FocusDirection.Enter) }.getOrDefault(false) }
-    val toRow = { id: String -> runCatching { rows[id]?.requestFocus() } }
+    // The keys move the focus here themselves, so Compose is told the keyboard is in use, as its own Tab does: after a
+    // click on a row it holds the pointer's mode and drops the focus from the next row's lighting, which showed no ring.
+    val modes = LocalInputModeManager.current
+    val intoPane = {
+        modes.requestInputMode(InputMode.Keyboard)
+        runCatching { pane.requestFocus(FocusDirection.Enter) }.getOrDefault(false)
+    }
+    val toRow = { id: String ->
+        modes.requestInputMode(InputMode.Keyboard)
+        runCatching { rows[id]?.requestFocus() }
+    }
 
     // Esc in the section takes the keys back to its row in the list, before it would leave Settings.
     val actions = LocalDesktopActions.current
