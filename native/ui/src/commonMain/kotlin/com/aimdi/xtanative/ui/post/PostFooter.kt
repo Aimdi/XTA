@@ -211,14 +211,18 @@ private fun QuoteMenu(open: Boolean, onDismiss: () -> Unit, onQuotes: () -> Unit
 private fun FooterEndButtons(post: XPost, actions: PostActions, onShare: () -> Unit) {
     actions.keep.SaveButton(post)
     val label = stringResource(Res.string.posts_share)
-    Box(
-        Modifier
-            .size(FooterFit.BUTTON.dp)
-            .clip(CircleShape)
-            .clickable(interactionSource = null, indication = ripple(color = MaterialTheme.colorScheme.primary), role = Role.Button, onClickLabel = label, onClick = onShare),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(Icons.Filled.Share, contentDescription = label, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+    // The keyboard's focus: the accent's ring round its round, as on an icon button, not an accent disc.
+    RingedFocus {
+        Box(
+            Modifier
+                .size(FooterFit.BUTTON.dp)
+                .keyboardFocusRing(0.dp)
+                .clip(CircleShape)
+                .clickable(interactionSource = null, indication = ripple(color = MaterialTheme.colorScheme.primary), role = Role.Button, onClickLabel = label, onClick = onShare),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(Icons.Filled.Share, contentDescription = label, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+        }
     }
 }
 

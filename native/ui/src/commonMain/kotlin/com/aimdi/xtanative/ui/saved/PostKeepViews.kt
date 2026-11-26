@@ -41,7 +41,9 @@ import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.ui.common.HEART_BURST_MILLIS
 import com.aimdi.xtanative.ui.common.HeartBurst
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.RingedFocus
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.saved_like
@@ -171,43 +173,47 @@ internal fun KeepableSaveButton(id: String, modifier: Modifier, tint: Color, ite
     val still = LocalReducedMotion.current || quietActions()
     val hit = remember { HitArea() }
     val presses = remember { MutableInteractionSource() }
-    Box(
-        modifier
-            .then(hit.outer)
-            // A right-click picks the folder, as a long press does.
-            .onSecondaryClick { sheetFor = item() }
-            .combinedClickable(
-                role = Role.Button,
-                onClickLabel = label,
-                indication = null,
-                interactionSource = presses,
-                onClick = {
-                    if (!saved && !still) scope.launch {
-                        pop.snapTo(0f)
-                        pop.animateTo(1f, tween(BOOKMARK_POP_MILLIS, easing = LinearEasing))
-                    }
-                    switch.tap()
-                    Keeping.toggleSave(keeper, item())
+    // The keyboard's focus: the accent's ring round its round, as on an icon button, not an accent disc.
+    RingedFocus {
+        Box(
+            modifier
+                .keyboardFocusRing(0.dp)
+                .then(hit.outer)
+                // A right-click picks the folder, as a long press does.
+                .onSecondaryClick { sheetFor = item() }
+                .combinedClickable(
+                    role = Role.Button,
+                    onClickLabel = label,
+                    indication = null,
+                    interactionSource = presses,
+                    onClick = {
+                        if (!saved && !still) scope.launch {
+                            pop.snapTo(0f)
+                            pop.animateTo(1f, tween(BOOKMARK_POP_MILLIS, easing = LinearEasing))
+                        }
+                        switch.tap()
+                        Keeping.toggleSave(keeper, item())
+                    },
+                    onLongClick = { sheetFor = item() },
+                )
+                .then(hit.inner)
+                .size(40.dp)
+                .clip(CircleShape)
+                // Lit in the accent under the pointer, as a saved bookmark is drawn, rather than in a neutral grey.
+                .indication(presses, ripple(color = MaterialTheme.colorScheme.primary)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                if (saved) SavedIcons.Bookmark else SavedIcons.BookmarkBorder,
+                contentDescription = label,
+                tint = if (saved) MaterialTheme.colorScheme.primary else tint.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant },
+                modifier = Modifier.size(19.dp).graphicsLayer {
+                    val scale = if (pop.value >= 1f) 1f else HeartBurstMotion.popScale(pop.value)
+                    scaleX = scale
+                    scaleY = scale
                 },
-                onLongClick = { sheetFor = item() },
             )
-            .then(hit.inner)
-            .size(40.dp)
-            .clip(CircleShape)
-            // Lit in the accent under the pointer, as a saved bookmark is drawn, rather than in a neutral grey.
-            .indication(presses, ripple(color = MaterialTheme.colorScheme.primary)),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            if (saved) SavedIcons.Bookmark else SavedIcons.BookmarkBorder,
-            contentDescription = label,
-            tint = if (saved) MaterialTheme.colorScheme.primary else tint.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant },
-            modifier = Modifier.size(19.dp).graphicsLayer {
-                val scale = if (pop.value >= 1f) 1f else HeartBurstMotion.popScale(pop.value)
-                scaleX = scale
-                scaleY = scale
-            },
-        )
+        }
     }
     sheetFor?.let { item -> SaveSheet(item) { sheetFor = null } }
 }

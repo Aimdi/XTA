@@ -1,7 +1,6 @@
 package com.aimdi.xtanative.ui.plugins
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.background
@@ -38,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
@@ -61,12 +59,14 @@ import com.aimdi.xtanative.data.plugins.keepable
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.HitArea
+import com.aimdi.xtanative.ui.common.RingedFocus
 import com.aimdi.xtanative.ui.common.RollingCount
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.onSecondaryClickIf
 import com.aimdi.xtanative.ui.common.pointerOnlyFocus
@@ -567,7 +567,8 @@ fun NetworkCount(
  * heart burst; its number rolls as it changes ([RollingCount]). [hue], where
  * given, colours its ripple, so the pointer resting on it lights it faintly
  * in what it does (X's footer: the like's colour, the repost's green), not
- * in a neutral grey.
+ * in a neutral grey. The keyboard's focus is the accent's ring round it
+ * alone ([keyboardFocusRing]), as on an icon button, not a disc in [hue].
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -581,26 +582,31 @@ internal fun CountButton(
     hue: Color = Color.Unspecified,
 ) {
     val clickable = if (onClick != null) {
-        // The press reaches a little past the glyph and its number (HitArea), while its ripple stays on them.
+        // The press reaches a little past the glyph and its number (HitArea), while its ripple stays on them,
+        // and the ring is drawn round them too: it stands before the hit area, at their own size.
         val hit = remember { HitArea() }
         val presses = remember { MutableInteractionSource() }
-        hit.outer
+        Modifier
+            .keyboardFocusRing(0.dp)
+            .then(hit.outer)
             .onSecondaryClickIf(onLongClick)
             .combinedClickable(presses, indication = null, role = Role.Button, onClick = onClick, onLongClick = onLongClick)
             .then(hit.inner)
             .clip(CircleShape)
-            .indication(presses, if (hue.isSpecified) ripple(color = hue) else LocalIndication.current)
+            .indication(presses, ripple(color = hue))
             .padding(4.dp)
     } else {
         Modifier
     }
-    Row(
-        clickable.let { if (label != null) it.semantics { contentDescription = label } else it },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        glyph()
-        if (n > 0) {
-            RollingCount(countText(n), n, MaterialTheme.typography.labelMedium, tint, Modifier.padding(start = 4.dp))
+    RingedFocus {
+        Row(
+            clickable.let { if (label != null) it.semantics { contentDescription = label } else it },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            glyph()
+            if (n > 0) {
+                RollingCount(countText(n), n, MaterialTheme.typography.labelMedium, tint, Modifier.padding(start = 4.dp))
+            }
         }
     }
 }
