@@ -329,7 +329,7 @@ private fun NetworkColumn(id: String, label: String, place: ColumnPlace, calls: 
 @Composable
 private fun ColumnHeader(column: DeckColumn, label: String, place: ColumnPlace, calls: ColumnCalls, onRefresh: () -> Unit, extra: @Composable RowScope.() -> Unit = {}) {
     // A group's emoji stands in the mark's place, ahead of its bare name.
-    val (emoji, name) = if (column is DeckColumn.Group) ColumnTitle.split(label) else null to label
+    val (emoji, name) = ColumnTitle.of(column, label)
     Column(Modifier.fillMaxWidth().wrapContentWidth().widthIn(max = ReadingColumn.MAX_WIDTH.dp)) {
         Row(Modifier.fillMaxWidth().then(calls.handle).heightIn(min = 48.dp).padding(start = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.weight(1f)) {
@@ -359,6 +359,9 @@ private fun ColumnHeader(column: DeckColumn, label: String, place: ColumnPlace, 
 
 /** A column's name as its head shows it. */
 internal object ColumnTitle {
+    /** [column]'s [label] as its head shows it: a group's emoji apart from its name ([split]); any other column's label whole. */
+    fun of(column: DeckColumn, label: String): Pair<String?, String> = if (column is DeckColumn.Group) split(label) else null to label
+
     /** A group's label ([HomeStrip.groupLabel]) as its emoji, null without one, and its name. */
     fun split(label: String): Pair<String?, String> {
         val first = label.substringBefore(' ')
@@ -432,7 +435,7 @@ private fun widthLabel(width: DeckWidth): StringResource = when (width) {
 /** No columns yet: what the deck is for, and Add column. */
 @Composable
 private fun EmptyDeck(onAdd: () -> Unit) {
-    EmptyState(HomeIcons.ViewColumn, stringResource(Res.string.home_deck_empty)) {
+    EmptyState(HomeIcons.ViewColumnOutlined, stringResource(Res.string.home_deck_empty)) {
         Button(onClick = onAdd) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.home_deck_add), modifier = Modifier.padding(start = 8.dp))
@@ -477,10 +480,12 @@ private fun AddColumnSheet(choices: List<DeckColumn>, networks: HomeNetworks, on
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
+                    // Each choice led by the mark its column's head will show: a group's emoji, else its people.
+                    val (emoji, name) = ColumnTitle.of(column, labelOf(column, groups, available))
                     Box(Modifier.size(24.dp), contentAlignment = Alignment.Center) {
-                        (column as? DeckColumn.Network)?.let { networks.Mark(it.networkId, 24.dp) }
+                        if (emoji != null) Text(emoji, fontSize = 18.sp, maxLines = 1) else ColumnMark(column)
                     }
-                    TipText(labelOf(column, groups, available), style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    TipText(name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }
         }
