@@ -52,7 +52,7 @@
     <string name="saved_empty_folder">이 폴더가 비어 있습니다</string>
     <string name="saved_empty_notes">아직 메모가 없습니다. 백업이나 동기화를 하지 않으면 이 기기를 떠나지 않습니다.</string>
     <string name="saved_note_button">메모</string>
-    <string name="saved_add_note">저장한 이 게시물에 메모 추가</string>
+    <string name="saved_add_note">이 게시물에 메모 추가</string>
     <string name="saved_edit_note">메모 편집</string>
     <string name="saved_new_note">새 메모</string>
     <string name="saved_too_large">이 저장된 게시물은 너무 커서 표시할 수 없습니다. 개발자에게 신고해 주세요.</string>

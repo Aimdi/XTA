@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Dieser Ordner ist leer</string>
     <string name="saved_empty_notes">Noch keine Notizen. Sie verlassen dieses Gerät nur über Sicherung oder Sync.</string>
     <string name="saved_note_button">Notiz</string>
-    <string name="saved_add_note">Notiz zu diesem gespeicherten Beitrag</string>
+    <string name="saved_add_note">Notiz zu diesem Beitrag</string>
     <string name="saved_edit_note">Notiz bearbeiten</string>
     <string name="saved_new_note">Neue Notiz</string>
     <string name="saved_too_large">Der gespeicherte Tweet konnte nicht geladen werden, da er zu groß ist. Bitte melde das Problem den Entwicklern.</string>

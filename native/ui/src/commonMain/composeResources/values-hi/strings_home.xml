@@ -29,7 +29,7 @@
     <string name="home_downloads">डाउनलोड</string>
     <string name="home_antennas">एंटेना</string>
     <string name="home_deck">कॉलम</string>
-    <string name="home_deck_empty">चौड़ी स्क्रीन पर समूहों को साथ-साथ देखने के लिए उन्हें पिन करें</string>
+    <string name="home_deck_empty">चौड़ी स्क्रीन पर फ़ीड और समूहों को साथ-साथ देखने के लिए कॉलम जोड़ें</string>
     <string name="home_deck_add">कॉलम जोड़ें</string>
     <string name="home_deck_move_left">बाईं ओर ले जाएँ</string>
     <string name="home_deck_move_right">दाईं ओर ले जाएँ</string>

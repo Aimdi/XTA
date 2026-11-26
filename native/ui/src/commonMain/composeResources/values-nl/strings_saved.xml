@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Deze map is leeg</string>
     <string name="saved_empty_notes">Nog geen notities. Ze verlaten dit apparaat alleen via een back-up of sync.</string>
     <string name="saved_note_button">Notitie</string>
-    <string name="saved_add_note">Voeg een notitie toe aan dit opgeslagen bericht</string>
+    <string name="saved_add_note">Voeg een notitie toe aan dit bericht</string>
     <string name="saved_edit_note">Notitie bewerken</string>
     <string name="saved_new_note">Nieuwe notitie</string>
     <string name="saved_too_large">Dit opgeslagen bericht kon niet worden weergegeven omdat het te groot is om te laden. Meld dit aan de ontwikkelaars.</string>

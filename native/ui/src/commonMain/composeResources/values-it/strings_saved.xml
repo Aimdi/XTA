@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Questa cartella è vuota</string>
     <string name="saved_empty_notes">Nessuna nota ancora. Non lasciano questo dispositivo se non fai un backup o una sync.</string>
     <string name="saved_note_button">Nota</string>
-    <string name="saved_add_note">Aggiungi una nota a questo post salvato</string>
+    <string name="saved_add_note">Aggiungi una nota a questo post</string>
     <string name="saved_edit_note">Modifica nota</string>
     <string name="saved_new_note">Nuova nota</string>
     <string name="saved_too_large">Non è stato possibile visualizzare questo tweet salvato, poiché è troppo grande per essere caricato. Si prega di segnalarlo agli sviluppatori.</string>

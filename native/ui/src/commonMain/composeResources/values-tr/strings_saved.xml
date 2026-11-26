@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Bu klasör boş</string>
     <string name="saved_empty_notes">Henüz not yok. Yedekleme veya senkron yapmadıkça bu cihazdan çıkmazlar.</string>
     <string name="saved_note_button">Not</string>
-    <string name="saved_add_note">Bu kaydedilen gönderiye not ekle</string>
+    <string name="saved_add_note">Bu gönderiye not ekle</string>
     <string name="saved_edit_note">Notu düzenle</string>
     <string name="saved_new_note">Yeni not</string>
     <string name="saved_too_large">Kaydedilen bu tweet, yüklenemeyecek kadar büyük olduğu için görüntülenemedi. Lütfen bunu geliştiricilere bildirin.</string>

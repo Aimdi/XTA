@@ -58,7 +58,7 @@
     <string name="saved_empty_folder">Ця тека порожня</string>
     <string name="saved_empty_notes">Ще немає нотаток. Вони не залишають пристрій, доки ви не зробите резервну копію або синхронізацію.</string>
     <string name="saved_note_button">Нотатка</string>
-    <string name="saved_add_note">Додати нотатку до цього збереженого допису</string>
+    <string name="saved_add_note">Додати нотатку до цього допису</string>
     <string name="saved_edit_note">Редагувати нотатку</string>
     <string name="saved_new_note">Нова нотатка</string>
     <string name="saved_too_large">Ця збережена публікація не може бути відображена, оскільки вона надто велика для завантаження. Будь ласка, повідомте розробників.</string>

@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">See kaust on tühi</string>
     <string name="saved_empty_notes">Märkmeid pole veel. Need ei lahku seadmest enne varundust või sünki.</string>
     <string name="saved_note_button">Märge</string>
-    <string name="saved_add_note">Lisa sellele salvestatud postitusele märge</string>
+    <string name="saved_add_note">Lisa sellele postitusele märge</string>
     <string name="saved_edit_note">Muuda märget</string>
     <string name="saved_new_note">Uus märge</string>
     <string name="saved_too_large">Seda salvestatud säutsu ei saa kuvada, kuna see on laadimiseks liiga suur. Palun teata sellest veast arendajatele.</string>

@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">यह फ़ोल्डर खाली है</string>
     <string name="saved_empty_notes">अभी कोई नोट नहीं। वे बैकअप या सिंक के बिना यह डिवाइस नहीं छोड़ते।</string>
     <string name="saved_note_button">नोट</string>
-    <string name="saved_add_note">इस सहेजी गई पोस्ट में नोट जोड़ें</string>
+    <string name="saved_add_note">इस पोस्ट में नोट जोड़ें</string>
     <string name="saved_edit_note">नोट संपादित करें</string>
     <string name="saved_new_note">नया नोट</string>
     <string name="saved_too_large">यह सहेजी गई पोस्ट प्रदर्शित नहीं की जा सकी, क्योंकि यह लोड करने के लिए बहुत बड़ी है। कृपया डेवलपर्स को रिपोर्ट करें।</string>

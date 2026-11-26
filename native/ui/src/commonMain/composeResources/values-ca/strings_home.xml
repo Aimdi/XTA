@@ -29,7 +29,7 @@
     <string name="home_downloads">Baixades</string>
     <string name="home_antennas">Antenes</string>
     <string name="home_deck">Deck</string>
-    <string name="home_deck_empty">Fixa grups per veure-los un al costat de l’altre en una pantalla ampla</string>
+    <string name="home_deck_empty">Afegeix columnes per veure els feeds i els grups un al costat de l’altre en una pantalla ampla</string>
     <string name="home_deck_add">Afegeix una columna</string>
     <string name="home_deck_move_left">Mou a l'esquerra</string>
     <string name="home_deck_move_right">Mou a la dreta</string>

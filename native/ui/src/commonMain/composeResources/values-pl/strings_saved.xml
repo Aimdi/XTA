@@ -58,7 +58,7 @@
     <string name="saved_empty_folder">Ten folder jest pusty</string>
     <string name="saved_empty_notes">Nie ma jeszcze notatek. Nie opuszczają tego urządzenia, dopóki nie zrobisz kopii lub synchronizacji.</string>
     <string name="saved_note_button">Notatka</string>
-    <string name="saved_add_note">Dodaj notatkę do tego zapisanego wpisu</string>
+    <string name="saved_add_note">Dodaj notatkę do tego wpisu</string>
     <string name="saved_edit_note">Edytuj notatkę</string>
     <string name="saved_new_note">Nowa notatka</string>
     <string name="saved_too_large">Ten zapisany tweet nie mógł zostać wyświetlony, ponieważ jest zbyt duży, aby go załadować. Zgłoś to programistom.</string>

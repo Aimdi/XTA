@@ -62,7 +62,7 @@
     <string name="saved_empty_folder">هذا المجلد فارغ</string>
     <string name="saved_empty_notes">لا توجد ملاحظات بعد. لا تغادر هذا الجهاز إلا عبر النسخ الاحتياطي أو المزامنة.</string>
     <string name="saved_note_button">ملاحظة</string>
-    <string name="saved_add_note">أضف ملاحظة إلى هذا المنشور المحفوظ</string>
+    <string name="saved_add_note">أضف ملاحظة إلى هذا المنشور</string>
     <string name="saved_edit_note">تعديل الملاحظة</string>
     <string name="saved_new_note">ملاحظة جديدة</string>
     <string name="saved_too_large">تعذر عرض هذه التغريدة المحفوظة لأنها كبيرة جدًا بحيث لا يمكن تحميلها. الرجاء الإبلاغ عن ذلك للمطورين.</string>

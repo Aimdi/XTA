@@ -52,7 +52,7 @@
     <string name="saved_empty_folder">このフォルダーは空です</string>
     <string name="saved_empty_notes">まだメモはありません。バックアップや同期をしなければ、この端末から出ません。</string>
     <string name="saved_note_button">メモ</string>
-    <string name="saved_add_note">保存した投稿にメモを追加</string>
+    <string name="saved_add_note">この投稿にメモを追加</string>
     <string name="saved_edit_note">メモを編集</string>
     <string name="saved_new_note">新しいメモ</string>
     <string name="saved_too_large">この保存した投稿は大きすぎて読み込めないため、表示できませんでした。開発者に報告してください。</string>

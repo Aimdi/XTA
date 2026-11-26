@@ -29,7 +29,7 @@
     <string name="home_downloads">Загрузки</string>
     <string name="home_antennas">Антенны</string>
     <string name="home_deck">Колонки</string>
-    <string name="home_deck_empty">Закрепите группы, чтобы видеть их рядом на широком экране</string>
+    <string name="home_deck_empty">Добавьте колонки, чтобы видеть ленты и группы рядом на широком экране</string>
     <string name="home_deck_add">Добавить колонку</string>
     <string name="home_deck_move_left">Сдвинуть влево</string>
     <string name="home_deck_move_right">Сдвинуть вправо</string>

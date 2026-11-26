@@ -29,7 +29,7 @@
     <string name="home_downloads">다운로드</string>
     <string name="home_antennas">안테나</string>
     <string name="home_deck">덱</string>
-    <string name="home_deck_empty">넓은 화면에서 나란히 보려면 그룹을 고정하세요</string>
+    <string name="home_deck_empty">열을 추가하면 넓은 화면에서 피드와 그룹을 나란히 볼 수 있습니다</string>
     <string name="home_deck_add">열 추가</string>
     <string name="home_deck_move_left">왼쪽으로 이동</string>
     <string name="home_deck_move_right">오른쪽으로 이동</string>

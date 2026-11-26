@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Esta pasta está vazia</string>
     <string name="saved_empty_notes">Ainda não há notas. Elas não saem deste dispositivo a menos que você faça backup ou sincronize.</string>
     <string name="saved_note_button">Nota</string>
-    <string name="saved_add_note">Adicionar uma nota a esta publicação salva</string>
+    <string name="saved_add_note">Adicionar uma nota a esta publicação</string>
     <string name="saved_edit_note">Editar nota</string>
     <string name="saved_new_note">Nova nota</string>
     <string name="saved_too_large">Este tweet salvo não pôde ser exibido porque é muito grande para carregar. Por favor, denuncie aos desenvolvedores.</string>

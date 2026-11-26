@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Ĉi tiu dosierujo estas malplena</string>
     <string name="saved_empty_notes">Ankoraŭ neniuj notoj. Ili ne forlasas la aparaton krom se vi savkopias aŭ sinkronigas.</string>
     <string name="saved_note_button">Noto</string>
-    <string name="saved_add_note">Aldoni noton al ĉi tiu konservita afiŝo</string>
+    <string name="saved_add_note">Aldoni noton al ĉi tiu afiŝo</string>
     <string name="saved_edit_note">Redakti noton</string>
     <string name="saved_new_note">Nova noto</string>
     <string name="saved_too_large">Tiu ĉi pepo konservita ne eblas vidiĝi, pro ĝi estas tro granda por ŝarĝi. Bonvolu raporti al la programistoj.</string>

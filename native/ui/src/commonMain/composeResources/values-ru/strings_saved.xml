@@ -58,7 +58,7 @@
     <string name="saved_empty_folder">Эта папка пуста</string>
     <string name="saved_empty_notes">Пока нет заметок. Они не покидают устройство, пока вы не сделаете резервную копию или синхронизацию.</string>
     <string name="saved_note_button">Заметка</string>
-    <string name="saved_add_note">Добавить заметку к этому сохранённому посту</string>
+    <string name="saved_add_note">Добавить заметку к этому посту</string>
     <string name="saved_edit_note">Изменить заметку</string>
     <string name="saved_new_note">Новая заметка</string>
     <string name="saved_too_large">Сохранённый твит слишком большой</string>

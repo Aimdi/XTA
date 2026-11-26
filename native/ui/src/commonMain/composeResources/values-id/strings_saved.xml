@@ -52,7 +52,7 @@
     <string name="saved_empty_folder">Folder ini kosong</string>
     <string name="saved_empty_notes">Belum ada catatan. Mereka tidak meninggalkan perangkat ini kecuali Anda mencadangkan atau menyinkronkan.</string>
     <string name="saved_note_button">Catatan</string>
-    <string name="saved_add_note">Tambahkan catatan ke postingan tersimpan ini</string>
+    <string name="saved_add_note">Tambahkan catatan ke postingan ini</string>
     <string name="saved_edit_note">Sunting catatan</string>
     <string name="saved_new_note">Catatan baru</string>
     <string name="saved_too_large">Tweet yang disimpan ini tidak bisa ditampilkan, karna terlalu besar. Silahkan laporkan ke developer.</string>

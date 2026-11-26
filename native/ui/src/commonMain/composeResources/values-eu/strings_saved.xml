@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Karpeta hau hutsik dago</string>
     <string name="saved_empty_notes">Oraindik ez dago oharrik. Gailutik ez dira irteten babeskopia edo sinkronizazioa egin ezean.</string>
     <string name="saved_note_button">Oharra</string>
-    <string name="saved_add_note">Gehitu ohar bat gordetako argitalpen honi</string>
+    <string name="saved_add_note">Gehitu ohar bat argitalpen honi</string>
     <string name="saved_edit_note">Editatu oharra</string>
     <string name="saved_new_note">Ohar berria</string>
     <string name="saved_too_large">Gordetako txioa handiegia da</string>

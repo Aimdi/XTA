@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">This folder is empty</string>
     <string name="saved_empty_notes">No notes yet. They never leave this device unless you back up or sync.</string>
     <string name="saved_note_button">Note</string>
-    <string name="saved_add_note">Add a note to this saved post</string>
+    <string name="saved_add_note">Add a note to this post</string>
     <string name="saved_edit_note">Edit note</string>
     <string name="saved_new_note">New note</string>
     <string name="saved_too_large">This saved post could not be displayed, as it's too big to load. Please report it to the developers.</string>

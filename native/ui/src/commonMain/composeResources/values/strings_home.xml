@@ -29,7 +29,7 @@
     <string name="home_downloads">Downloads</string>
     <string name="home_antennas">Antennas</string>
     <string name="home_deck">Deck</string>
-    <string name="home_deck_empty">Pin groups to see them side by side on a wide screen</string>
+    <string name="home_deck_empty">Add columns to see your feeds and groups side by side on a wide screen</string>
     <string name="home_deck_add">Add column</string>
     <string name="home_deck_move_left">Move left</string>
     <string name="home_deck_move_right">Move right</string>

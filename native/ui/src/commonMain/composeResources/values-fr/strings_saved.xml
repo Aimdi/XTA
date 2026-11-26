@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Ce dossier est vide</string>
     <string name="saved_empty_notes">Pas encore de notes. Elles ne quittent cet appareil que via une sauvegarde ou une sync.</string>
     <string name="saved_note_button">Note</string>
-    <string name="saved_add_note">Ajouter une note à ce post enregistré</string>
+    <string name="saved_add_note">Ajouter une note à ce post</string>
     <string name="saved_edit_note">Modifier la note</string>
     <string name="saved_new_note">Nouvelle note</string>
     <string name="saved_too_large">Ce tweet enregistré n'a pas pu être affiché car il est trop volumineux. Veuillez le signaler aux développeurs.</string>

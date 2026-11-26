@@ -56,7 +56,7 @@
     <string name="saved_empty_folder">Acest dosar este gol</string>
     <string name="saved_empty_notes">Nicio notiță încă. Nu părăsesc dispozitivul decât prin backup sau sincronizare.</string>
     <string name="saved_note_button">Notiță</string>
-    <string name="saved_add_note">Adaugă o notiță la această postare salvată</string>
+    <string name="saved_add_note">Adaugă o notiță la această postare</string>
     <string name="saved_edit_note">Editează notița</string>
     <string name="saved_new_note">Notiță nouă</string>
     <string name="saved_too_large">Această postare salvată nu a putut fi afișată deoarece este prea mare pentru a fi încărcată. Raportați-o dezvoltatorilor.</string>

@@ -52,7 +52,7 @@
     <string name="saved_empty_folder">此資料夾是空的</string>
     <string name="saved_empty_notes">還沒有筆記。除非備份或同步，否則它們不會離開此裝置。</string>
     <string name="saved_note_button">筆記</string>
-    <string name="saved_add_note">為這則已儲存的貼文新增筆記</string>
+    <string name="saved_add_note">為這則貼文新增筆記</string>
     <string name="saved_edit_note">編輯筆記</string>
     <string name="saved_new_note">新增筆記</string>
     <string name="saved_too_large">此已儲存的推文因過大無法載入而無法顯示。請向開發人員回報。</string>

@@ -29,7 +29,7 @@
     <string name="home_downloads">下载</string>
     <string name="home_antennas">天线</string>
     <string name="home_deck">多栏</string>
-    <string name="home_deck_empty">在宽屏上将分组固定以便并排查看</string>
+    <string name="home_deck_empty">添加栏，在宽屏上并排查看信息流和分组</string>
     <string name="home_deck_add">添加栏</string>
     <string name="home_deck_move_left">左移</string>
     <string name="home_deck_move_right">右移</string>

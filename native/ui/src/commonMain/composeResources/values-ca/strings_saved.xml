@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Aquesta carpeta és buida</string>
     <string name="saved_empty_notes">Encara no hi ha notes. No surten d'aquest dispositiu si no en fes una còpia o les sincronitzes.</string>
     <string name="saved_note_button">Nota</string>
-    <string name="saved_add_note">Afegeix una nota a aquesta publicació desada</string>
+    <string name="saved_add_note">Afegeix una nota a aquesta publicació</string>
     <string name="saved_edit_note">Edita la nota</string>
     <string name="saved_new_note">Nota nova</string>
     <string name="saved_too_large">El tuit desat és massa gran</string>

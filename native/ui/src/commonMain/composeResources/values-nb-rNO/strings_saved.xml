@@ -54,7 +54,7 @@
     <string name="saved_empty_folder">Denne mappen er tom</string>
     <string name="saved_empty_notes">Ingen notater ennå. De forlater ikke enheten med mindre du tar sikkerhetskopi eller synkroniserer.</string>
     <string name="saved_note_button">Notat</string>
-    <string name="saved_add_note">Legg til et notat på dette lagrede innlegget</string>
+    <string name="saved_add_note">Legg til et notat på dette innlegget</string>
     <string name="saved_edit_note">Rediger notat</string>
     <string name="saved_new_note">Nytt notat</string>
     <string name="saved_too_large">Lagret innlegg er for stort</string>

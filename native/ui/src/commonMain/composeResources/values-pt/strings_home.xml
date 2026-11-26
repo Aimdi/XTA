@@ -29,7 +29,7 @@
     <string name="home_downloads">Transferências</string>
     <string name="home_antennas">Antenas</string>
     <string name="home_deck">Deck</string>
-    <string name="home_deck_empty">Fixe grupos para os ver lado a lado num ecrã largo</string>
+    <string name="home_deck_empty">Adicione colunas para ver feeds e grupos lado a lado num ecrã largo</string>
     <string name="home_deck_add">Adicionar coluna</string>
     <string name="home_deck_move_left">Mover para a esquerda</string>
     <string name="home_deck_move_right">Mover para a direita</string>

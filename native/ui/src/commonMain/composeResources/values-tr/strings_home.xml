@@ -29,7 +29,7 @@
     <string name="home_downloads">İndirilenler</string>
     <string name="home_antennas">Antenler</string>
     <string name="home_deck">Sütunlar</string>
-    <string name="home_deck_empty">Geniş ekranda yan yana görmek için grupları sabitle</string>
+    <string name="home_deck_empty">Akışları ve grupları geniş ekranda yan yana görmek için sütun ekle</string>
     <string name="home_deck_add">Sütun ekle</string>
     <string name="home_deck_move_left">Sola taşı</string>
     <string name="home_deck_move_right">Sağa taşı</string>

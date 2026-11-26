@@ -52,7 +52,7 @@
     <string name="saved_empty_folder">Thư mục này trống</string>
     <string name="saved_empty_notes">Chưa có ghi chú. Chúng không rời thiết bị trừ khi bạn sao lưu hoặc đồng bộ.</string>
     <string name="saved_note_button">Ghi chú</string>
-    <string name="saved_add_note">Thêm ghi chú cho bài đã lưu này</string>
+    <string name="saved_add_note">Thêm ghi chú cho bài viết này</string>
     <string name="saved_edit_note">Sửa ghi chú</string>
     <string name="saved_new_note">Ghi chú mới</string>
     <string name="saved_too_large">Bài viết đã lưu này không thể xem, có thể nó quá lớn.</string>

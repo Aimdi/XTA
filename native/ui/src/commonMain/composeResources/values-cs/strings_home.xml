@@ -29,7 +29,7 @@
     <string name="home_downloads">Stahování</string>
     <string name="home_antennas">Antény</string>
     <string name="home_deck">Sloupce</string>
-    <string name="home_deck_empty">Připněte skupiny a uvidíte je na širokém displeji vedle sebe</string>
+    <string name="home_deck_empty">Přidejte sloupce a uvidíte své kanály a skupiny na širokém displeji vedle sebe</string>
     <string name="home_deck_add">Přidat sloupec</string>
     <string name="home_deck_move_left">Posunout doleva</string>
     <string name="home_deck_move_right">Posunout doprava</string>

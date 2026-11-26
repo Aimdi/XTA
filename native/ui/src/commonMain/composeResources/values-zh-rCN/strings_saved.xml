@@ -52,7 +52,7 @@
     <string name="saved_empty_folder">此文件夹为空</string>
     <string name="saved_empty_notes">还没有笔记。除非备份或同步，否则它们不会离开此设备。</string>
     <string name="saved_note_button">笔记</string>
-    <string name="saved_add_note">为这条收藏添加备注</string>
+    <string name="saved_add_note">为这条帖子添加备注</string>
     <string name="saved_edit_note">编辑笔记</string>
     <string name="saved_new_note">新建笔记</string>
     <string name="saved_too_large">无法显示这条已保存的推文，因其太大导致难以加载。请将它报告给开发者。</string>
