@@ -1,6 +1,12 @@
 package com.aimdi.xtanative.ui.post
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import com.aimdi.xtanative.ui.settings.isDesktop
+import com.aimdi.xtanative.ui.subscriptions.Unfollowing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -411,9 +417,12 @@ private enum class BadgeSheet { NONE, CHOICES, GROUPS }
 
 /**
  * XTA's follow badge (avatar_follow_badge.dart): a small + on the rim of the
- * face of an author not followed. A tap follows them here, never on X; a
- * long press offers to subscribe or to file them in groups right away,
- * which follows them too (tweet.dart's _showSubscribeSheet).
+ * face of an author not followed. A tap follows them here, never on X, with
+ * "Changes saved" and its undo; a long press offers to subscribe or to file
+ * them in groups right away, which follows them too (tweet.dart's
+ * _showSubscribeSheet). The face itself still opens the profile: the badge
+ * answers above it only on its disc, and a touch's larger target lies under
+ * it ([PostGeometry.followBadgeTouchTarget]).
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -422,14 +431,15 @@ internal fun FollowBadge(author: XUser, size: Dp, avatar: @Composable () -> Unit
     val badged = notFollowed(sessions, author.id)
     var sheet by rememberSaveable(author.id) { mutableStateOf(BadgeSheet.NONE) }
     val coroutines = rememberCoroutineScope()
-    val follow = { coroutines.launch { sessions.update { it.follow(author, System.currentTimeMillis()) } } }
+    val follow = { coroutines.launch { Unfollowing.badgeFollow(sessions, author, System.currentTimeMillis()) } }
     val subscribe = stringResource(Res.string.posts_subscribe)
     val addToGroup = stringResource(Res.string.posts_add_to_group)
+    val pressed = remember { MutableInteractionSource() }
+    val badge = BadgePresses(pressed, subscribe, addToGroup, onFollow = { follow() }, onMore = { sheet = BadgeSheet.CHOICES })
     Box(Modifier.size(size)) {
+        if (badged) BadgeTouchTarget(size, badge)
         avatar()
-        if (badged) {
-            BadgeDisc(size, subscribe, addToGroup, onFollow = { follow() }, onMore = { sheet = BadgeSheet.CHOICES })
-        }
+        if (badged) BadgeDisc(size, badge)
     }
     when (sheet) {
         BadgeSheet.CHOICES -> SubscribeSheet(
@@ -458,41 +468,71 @@ private fun notFollowed(sessions: SessionStore, authorId: String): Boolean {
     return session?.isFollowed(authorId) == false
 }
 
-/**
- * The badge itself (avatar_follow_badge.dart's _Disc): a solid disc in the
- * text colour with a + in the page colour, ringed in the page colour so it
- * stands off the face, centred on the avatar's rim at the lower right. It
- * answers in a 48 dp target around it, larger than the disc.
- */
+/** What pressing the follow badge does, shared by its disc and a touch's target under the avatar, which ripple as one. */
+private class BadgePresses(
+    val interactions: MutableInteractionSource,
+    val subscribe: String,
+    val addToGroup: String,
+    val onFollow: () -> Unit,
+    val onMore: () -> Unit,
+)
+
 @OptIn(ExperimentalFoundationApi::class)
+private fun Modifier.badgePresses(badge: BadgePresses, indication: Indication?): Modifier = onSecondaryClick(badge.onMore)
+    .combinedClickable(
+        interactionSource = badge.interactions,
+        indication = indication,
+        role = Role.Button,
+        onClickLabel = badge.subscribe,
+        onLongClickLabel = badge.addToGroup,
+        onClick = badge.onFollow,
+        onLongClick = badge.onMore,
+    )
+
+/**
+ * A touch's 48 dp target round the badge, under the avatar: a tap past the
+ * avatar's rim near the badge follows, one on the face opens the profile. No
+ * focus stop or second button for a screen reader: the disc is both.
+ */
 @Composable
-private fun BadgeDisc(avatar: Dp, subscribe: String, addToGroup: String, onFollow: () -> Unit, onMore: () -> Unit) {
-    val disc = PostGeometry.followBadgeSize(avatar.value)
-    val ring = PostGeometry.followBadgeRing(disc).dp
-    val target = PostGeometry.TOUCH_TARGET.dp
+private fun BadgeTouchTarget(avatar: Dp, badge: BadgePresses) {
+    val target = PostGeometry.followBadgeTouchTarget(isDesktop)?.dp ?: return
     val at = PostGeometry.followBadgeCenter(avatar.value).dp - target / 2
-    val page = MaterialTheme.colorScheme.background
     Box(
         Modifier
             .offset(at, at)
             .size(target)
-            .onSecondaryClick(onMore)
-            .combinedClickable(
-                interactionSource = null,
-                indication = ripple(bounded = false, radius = disc.dp),
-                role = Role.Button,
-                onClickLabel = subscribe,
-                onLongClickLabel = addToGroup,
-                onClick = onFollow,
-                onLongClick = onMore,
-            ),
+            .focusProperties { canFocus = false }
+            .clearAndSetSemantics { }
+            .badgePresses(badge, indication = null),
+    )
+}
+
+/**
+ * The badge itself (avatar_follow_badge.dart's _Disc): a solid disc in the
+ * text colour with a + in the page colour, ringed in the page colour so it
+ * stands off the face, centred on the avatar's rim at the lower right. Above
+ * the avatar it answers on the disc alone ([PostGeometry.followBadgeDiscHit]).
+ */
+@Composable
+private fun BadgeDisc(avatar: Dp, badge: BadgePresses) {
+    val disc = PostGeometry.followBadgeSize(avatar.value)
+    val ring = PostGeometry.followBadgeRing(disc).dp
+    val hit = PostGeometry.followBadgeDiscHit(disc, isDesktop).dp
+    val at = PostGeometry.followBadgeCenter(avatar.value).dp - hit / 2
+    val page = MaterialTheme.colorScheme.background
+    Box(
+        Modifier
+            .offset(at, at)
+            .size(hit)
+            .badgePresses(badge, ripple(bounded = false, radius = disc.dp)),
         contentAlignment = Alignment.Center,
     ) {
         Box(
             Modifier.size(disc.dp).background(page, CircleShape).padding(ring).background(MaterialTheme.colorScheme.onBackground, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.Filled.Add, subscribe, tint = page, modifier = Modifier.size(disc.dp - ring * 2 - 2.dp))
+            Icon(Icons.Filled.Add, badge.subscribe, tint = page, modifier = Modifier.size(disc.dp - ring * 2 - 2.dp))
         }
     }
 }

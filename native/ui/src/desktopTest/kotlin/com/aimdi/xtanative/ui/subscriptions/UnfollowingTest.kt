@@ -93,4 +93,15 @@ class UnfollowingTest {
         val after = PluginKept(mapOf("follows" to "[a]", "likes" to "[x]", "old" to null), emptyMap())
         assertEquals(mapOf("follows" to "[a,b]"), PluginUndo.changedSections(before, after))
     }
+
+    @Test
+    fun theFollowBadgesUndoUnfollowsTheAuthorUnlessTheyWereFiledOrUnfollowedSince() {
+        val user = com.aimdi.xtanative.core.x.model.XUser("9", "h9", "Nine")
+        val followed = session.follow(user, at = 9)
+        val undone = Unfollows.badgeFollowUndone(followed, "9")!!
+        assertEquals(listOf("1", "2", "3"), undone.following.map { it.id })
+        // Gone already, or filed in a group since: the undo leaves the later change.
+        assertNull(Unfollows.badgeFollowUndone(session, "9"))
+        assertNull(Unfollows.badgeFollowUndone(followed.withGroupMembers("g1", listOf("2", "cats", "9")), "9"))
+    }
 }
