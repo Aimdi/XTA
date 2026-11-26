@@ -19,7 +19,8 @@ CI ("XTA", `.github/workflows/native-prototype.yml`) measures every push:
   Android has compiled the app (`speed-profile`), and memory once the first
   screen is up, in total (PSS) and by where it is (Java heap, native heap,
   code, graphics). The app's own marks of each cold start (`StartMarks`,
-  milliseconds after its process began) are copied from the log.
+  milliseconds after its process began) are copied from the log. Last, the
+  start with every method compiled (`speed`), the most compiling can give.
 
 The emulator is slower than a phone and its numbers move a few percent from
 run to run: a change smaller than about 3% in start time or memory is noise
@@ -35,6 +36,7 @@ until a second run agrees. APK bytes are exact.
 | 237 | `7ba79455` | The string tables packed | 10,140,776 (−16.0%) | 798 ms | 752 ms | 117,511 kB |
 | 238 | `28ab943b` | Kept videos in the app's own player | 9,955,126 (−17.5%) | 974 ms | 858 ms | 118,338 kB |
 | 240 | `09bc6fc9` | Measurement only (the same app as 238) | 9,955,126 | 630 ms | 643 ms | 118,434 kB |
+| 241 | `a88b50e1` | Measurement only | 9,955,126 | 611 ms (2.14 × Settings' 285) | 529 ms | not comparable (read after a full compile) |
 
 At the baseline the two dex files are 9,383,959 bytes packed (78% of the
 APK) and the resource table 659,364.
@@ -113,6 +115,18 @@ round's.
   installed (643 against 630), which asks whether a profile is applied at
   all; the next run compiles everything (`speed`) to see what compiled code
   can give, and marks the end of the first composition.
+- **What compiled code gives** (run 241; Settings 285 ms): as installed
+  611 ms, compiled by its profile 529, with every method compiled 532. So
+  the profile already has all that compiling ahead can give, about 13%,
+  and a fuller profile would add nothing. (That run read the memory after
+  the full compile, 130 MB with 73 of code: not the app's, the
+  measurement's; the comparison now reads memory first.)
+- **The first composition is the placeholder** (run 241): `composed` is
+  marked at 65 ms, because the root shows only the theme's background until
+  the session is read; the screens themselves are composed, laid out and
+  drawn inside the first frame, which ends at about 500 ms. The next run
+  marks the root past its wait, Home, the first post and the frame's
+  beginning (`ui/StartSteps.kt`), to see which of them the 435 ms is.
 - Before that was known: **the starts could not be read.** Installed and compiled, run by run:
   749/708, 759/702, 798/779, 798/752, 974/858 ms. Nothing in rounds 2 to 4
   adds work before the first frame, and run 238's five launches agree with

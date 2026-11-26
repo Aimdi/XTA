@@ -62,6 +62,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.DeckGroups
 import com.aimdi.xtanative.data.LocalGraph
+import com.aimdi.xtanative.ui.StartSteps
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.CenteredPage
 import com.aimdi.xtanative.ui.common.IconTip
@@ -113,6 +114,7 @@ class HomeBarScreens(
  */
 @Composable
 fun HomeScreen(actions: PostActions, routes: HomeRoutes, screens: HomeBarScreens) {
+    StartSteps.reached("home")
     val graph = LocalGraph.current
     val networks = LocalHomeNetworks.current
     val vm: HomeViewModel = viewModel { HomeViewModel(graph, networks.available, networks.missing) }

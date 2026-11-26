@@ -46,14 +46,6 @@ measure() {
   adb logcat -d 2> /dev/null | tr -d '\r' | sed -n 's/.*XTA Native: start: /'"$label"', start steps: /p' | tail -5 | tee -a "$out" || true
   adb shell cmd package compile -m speed-profile -f "$pkg" > /dev/null
   echo "$label, compiled: cold start $(cold_starts "$pkg" "$activity")" | tee -a "$out"
-  # How Android has compiled it by now, and the start with every method compiled ahead of time: the most
-  # a fuller profile could give (native/PERF.md).
-  adb shell dumpsys package dexopt 2> /dev/null | tr -d '\r' | grep -A2 "\[$pkg\]" | grep -o "status=[a-z-]*\|reason=[a-z-]*" | sort -u | tr '\n' ' ' | sed "s/^/$label, compiled as: /; s/ \$//" | tee -a "$out" || true
-  echo | tee -a "$out" > /dev/null
-  adb shell cmd package compile -m speed -f "$pkg" > /dev/null || true
-  adb logcat -c > /dev/null 2>&1 || true
-  echo "$label, all compiled: cold start $(cold_starts "$pkg" "$activity" || true)" | tee -a "$out"
-  adb logcat -d 2> /dev/null | tr -d '\r' | sed -n 's/.*XTA Native: start: /'"$label"', all compiled, start steps: /p' | tail -3 | tee -a "$out" || true
   adb shell am force-stop "$pkg"
   adb shell am start -W -n "$activity" > /dev/null
   sleep 10
@@ -64,6 +56,13 @@ measure() {
   # Where that memory is (Java heap, native heap, code, graphics…), for the next round of making it less (native/PERF.md).
   adb shell dumpsys meminfo "$pkg" | tr -d '\r' | sed -n '/App Summary/,/TOTAL/p' | awk 'NF >= 2 && /:/ { gsub(/^ +/, ""); print "'"$label"', memory: " $0 }' | tee -a "$out" || true
   echo "$label, APK: $(stat -c %s "$apk") bytes" | tee -a "$out"
+  # After the memory, which is read as its profile compiled it: how Android has compiled it by now, and the start with every method compiled ahead of time: the most
+  # a fuller profile could give (native/PERF.md).
+  adb shell dumpsys package dexopt 2> /dev/null | tr -d '\r' | grep -A2 "\[$pkg\]" | grep -o "status=[a-z-]*\|reason=[a-z-]*" | sort -u | tr '\n' ' ' | sed "s/^/$label, compiled as: /; s/ \$//" | { cat; echo; } | tee -a "$out" || true
+  adb shell cmd package compile -m speed -f "$pkg" > /dev/null || true
+  adb logcat -c > /dev/null 2>&1 || true
+  echo "$label, all compiled: cold start $(cold_starts "$pkg" "$activity" || true)" | tee -a "$out"
+  adb logcat -d 2> /dev/null | tr -d '\r' | sed -n 's/.*XTA Native: start: /'"$label"', all compiled, start steps: /p' | tail -3 | tee -a "$out" || true
   adb shell am force-stop "$pkg"
 }
 

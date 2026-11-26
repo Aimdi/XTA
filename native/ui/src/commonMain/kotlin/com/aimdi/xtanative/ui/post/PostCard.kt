@@ -45,6 +45,7 @@ import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.services.ai.TranslationStatus
 import com.aimdi.xtanative.services.links.XLinks
+import com.aimdi.xtanative.ui.StartSteps
 import com.aimdi.xtanative.ui.article.ArticlePreviewCard
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
@@ -64,9 +65,9 @@ import com.aimdi.xtanative.ui.generated.resources.posts_quote_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_reply_not_found
 import com.aimdi.xtanative.ui.generated.resources.posts_replying_to
 import com.aimdi.xtanative.ui.generated.resources.posts_reposted
+import com.aimdi.xtanative.ui.generated.resources.posts_share
 import com.aimdi.xtanative.ui.generated.resources.posts_subscribers_only_of_author
 import com.aimdi.xtanative.ui.generated.resources.posts_thread
-import com.aimdi.xtanative.ui.generated.resources.posts_share
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_view_quoted
 import com.aimdi.xtanative.ui.generated.resources.saved_like
@@ -167,6 +168,7 @@ fun PostCard(
     firstOfThread: Boolean = false,
     midThread: Boolean = false,
 ) {
+    StartSteps.reached("first post")
     val scope = postScope()
     val shown = post.shown
     val translation = rememberPostTranslation(shown, scope)

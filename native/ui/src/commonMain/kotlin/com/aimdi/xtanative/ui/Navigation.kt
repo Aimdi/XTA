@@ -298,6 +298,7 @@ fun XtaNativeRoot() {
         Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
         return
     }
+    StartSteps.reached("root")
     val secondary = LocalSecondaryWindow.current
     val start = remember {
         secondary?.route ?: if (IntroFlow.opensOn(prefs, hasAccounts = loaded.accounts.isNotEmpty())) Routes.INTRO else Routes.HOME

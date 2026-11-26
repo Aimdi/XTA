@@ -26,6 +26,8 @@ unzip -lv "$apk" | awk 'NF==8 && $1 ~ /^[0-9]+$/ { n=$8; k="other"
   END { for (k in size) printf "%10d bytes packed  %10d unpacked  %5d files  %s\n", size[k], raw[k], count[k], k }' | sort -n -r | tee -a "$out/size-by-kind.txt"
 
 unzip -lv "$apk" | awk 'NF==8 && $1 ~ /^[0-9]+$/ { printf "%10d %10d %s\n", $3, $1, $8 }' | sort -n -r | head -60 > "$out/largest-files.txt"
+# Whether the profile of what to compile ahead of time is packed, to be installed on the phone.
+unzip -lv "$apk" | awk 'NF==8 && $8 ~ /^assets\/dexopt\// { printf "profile: %s, %d bytes\n", $8, $1 }' | tee -a "$out/size-by-kind.txt"
 
 analyzer=$(command -v apkanalyzer || true)
 [ -n "$analyzer" ] || analyzer=$(ls "${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/nonexistent}}"/cmdline-tools/*/bin/apkanalyzer 2>/dev/null | head -1)
@@ -39,6 +41,7 @@ args=(dex packages --defined-only)
 "$analyzer" "${args[@]}" "$apk" > "$out/apkanalyzer.txt" 2> "$out/apkanalyzer.log"
 if awk '$1 == "P" { printf "%10d bytes  %6d methods  %s\n", $5, $3, $6 }' "$out/apkanalyzer.txt" | sort -n -r > "$out/dex-packages.txt" && [ -s "$out/dex-packages.txt" ]; then
   head -100 "$out/dex-packages.txt" > "$out/dex-top.txt"
+  grep -m1 "androidx.profileinstaller$" "$out/dex-packages.txt" | sed 's/^/profile installer: /' || echo "profile installer: not in the APK"
   rm -f "$out/apkanalyzer.txt"
   echo "The code by package, largest first (a package counts what is under it):"
   head -70 "$out/dex-top.txt"

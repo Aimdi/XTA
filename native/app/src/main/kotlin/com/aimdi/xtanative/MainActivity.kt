@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color as ComposeColor
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.ThemePrefs
+import com.aimdi.xtanative.ui.StartSteps
 import com.aimdi.xtanative.ui.XtaNativeContent
 import com.aimdi.xtanative.ui.chrome.AppLockSession
 import com.aimdi.xtanative.ui.chrome.StatusBarFrame
@@ -54,7 +55,14 @@ class MainActivity : ComponentActivity() {
         arriveAtLock()
         StartMarks.mark("settings read")
         // The first frame drawn ends the start's marks (native/PERF.md).
-        Choreographer.getInstance().postFrameCallback { window.decorView.post { StartMarks.firstFrame() } }
+        StartSteps.listener = StartMarks::mark
+        Choreographer.getInstance().postFrameCallback {
+            StartMarks.mark("frame begins")
+            window.decorView.post {
+                StartMarks.firstFrame()
+                StartSteps.listener = null
+            }
+        }
         setContent {
             // The first composition is done when its effects run (native/PERF.md).
             SideEffect { StartMarks.mark("composed") }
