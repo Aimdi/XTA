@@ -23,6 +23,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.node.DelegatableNode
 import androidx.compose.ui.node.DrawModifierNode
@@ -53,11 +54,14 @@ internal object RowHighlight {
     const val HOVER = 0.08f
     const val PRESS = 0.12f
 
-    /** The lit shape of a [width] × [height] dp row, in dp. */
+    /** The lit shape of a [width] × [height] dp row, in dp; a [tab]'s inset at its sides from [TAB_WIDE]. */
     data class Block(val left: Float, val top: Float, val width: Float, val height: Float, val radius: Float)
 
-    fun block(width: Float, height: Float): Block {
-        val side = if (width >= WIDE) SIDE_INSET else 0f
+    /** From this wide a tab is inset at its sides as a wide row is: a search page's tabs are narrower than a row. */
+    const val TAB_WIDE = 48f
+
+    fun block(width: Float, height: Float, tab: Boolean = false): Block {
+        val side = if (width >= (if (tab) TAB_WIDE else WIDE)) SIDE_INSET else 0f
         val end = if (height >= TALL) END_INSET else 0f
         val w = (width - 2 * side).coerceAtLeast(0f)
         val h = (height - 2 * end).coerceAtLeast(0f)
@@ -80,12 +84,21 @@ internal object RowHighlight {
  * ring, where Material's ripple filled the whole row with a heavy grey (the
  * Tweets tab). Material's own buttons draw their own ripple and keep it.
  */
-internal class RowIndication(private val wash: Color, private val ring: Color, private val keyboard: State<Boolean>) : IndicationNodeFactory {
-    override fun create(interactionSource: InteractionSource): DelegatableNode = RowNode(interactionSource, wash, ring, keyboard)
+internal class RowIndication(
+    private val wash: Color,
+    private val ring: Color,
+    private val keyboard: State<Boolean>,
+    private val tab: Boolean = false,
+) : IndicationNodeFactory {
+    override fun create(interactionSource: InteractionSource): DelegatableNode = RowNode(interactionSource, wash, ring, keyboard, tab)
 
-    override fun equals(other: Any?): Boolean = other is RowIndication && other.wash == wash && other.ring == ring && other.keyboard === keyboard
+    /** The same lighting for a tab ([XtaTab]): inset at its sides too, as narrow as a page's tabs are. */
+    fun forTab(): RowIndication = RowIndication(wash, ring, keyboard, tab = true)
 
-    override fun hashCode(): Int = (wash.hashCode() * 31 + ring.hashCode()) * 31 + keyboard.hashCode()
+    override fun equals(other: Any?): Boolean =
+        other is RowIndication && other.wash == wash && other.ring == ring && other.keyboard === keyboard && other.tab == tab
+
+    override fun hashCode(): Int = ((wash.hashCode() * 31 + ring.hashCode()) * 31 + keyboard.hashCode()) * 31 + tab.hashCode()
 }
 
 private class RowNode(
@@ -93,6 +106,7 @@ private class RowNode(
     private val wash: Color,
     private val ring: Color,
     private val keyboard: State<Boolean>,
+    private val tab: Boolean,
 ) : Modifier.Node(), DrawModifierNode {
     private val hovers = mutableSetOf<HoverInteraction.Enter>()
     private val focuses = mutableSetOf<FocusInteraction.Focus>()
@@ -125,22 +139,29 @@ private class RowNode(
         val ringed = focuses.isNotEmpty() && keyboard.value
         if (alpha == 0f && !ringed) return
         val px = density
-        val block = RowHighlight.block(size.width / px, size.height / px)
+        val block = RowHighlight.block(size.width / px, size.height / px, tab)
         val topLeft = Offset(block.left * px, block.top * px)
         val shape = Size(block.width * px, block.height * px)
         if (shape.minDimension <= 0f) return
         if (alpha > 0f) drawRoundRect(wash.copy(alpha = alpha), topLeft, shape, CornerRadius(block.radius * px))
-        if (ringed) {
-            val half = RowHighlight.RING * px / 2
-            drawRoundRect(
-                ring,
-                topLeft + Offset(half, half),
-                Size(shape.width - 2 * half, shape.height - 2 * half),
-                CornerRadius((block.radius * px - half).coerceAtLeast(0f)),
-                style = Stroke(RowHighlight.RING * px),
-            )
-        }
+        if (ringed) focusRing(ring, block)
     }
+}
+
+/** The keyboard's ring in [color] round [block] (in dp), inside it: the rows', the posts'. */
+internal fun DrawScope.focusRing(color: Color, block: RowHighlight.Block) {
+    val px = density
+    val half = RowHighlight.RING * px / 2
+    val width = block.width * px - 2 * half
+    val height = block.height * px - 2 * half
+    if (width <= 0f || height <= 0f) return
+    drawRoundRect(
+        color,
+        Offset(block.left * px + half, block.top * px + half),
+        Size(width, height),
+        CornerRadius((block.radius * px - half).coerceAtLeast(0f)),
+        style = Stroke(RowHighlight.RING * px),
+    )
 }
 
 /**
@@ -165,11 +186,12 @@ internal fun XtaTab(
         return
     }
     val interactions = remember { MutableInteractionSource() }
+    val lit = remember(indication) { indication.forTab() }
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Tab(
             selected,
             onClick,
-            modifier.indication(interactions, indication),
+            modifier.indication(interactions, lit),
             text = text,
             selectedContentColor = selectedContentColor,
             unselectedContentColor = unselectedContentColor,

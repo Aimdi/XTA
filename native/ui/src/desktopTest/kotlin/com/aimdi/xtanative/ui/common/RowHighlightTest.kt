@@ -11,8 +11,15 @@ class RowHighlightTest {
     }
 
     @Test
-    fun aTabIsInsetAboveAndBelowButNotAtItsNarrowSides() {
+    fun aNarrowRowIsInsetAboveAndBelowButNotAtItsSides() {
         assertEquals(RowHighlight.Block(0f, 4f, 90f, 40f, 8f), RowHighlight.block(90f, 48f))
+    }
+
+    @Test
+    fun aTabIsInsetAtItsSidesTooThoughNarrowerThanARow() {
+        // A search page's tab: 130 × 48 dp, five to a column.
+        assertEquals(RowHighlight.Block(8f, 4f, 114f, 40f, 8f), RowHighlight.block(130f, 48f, tab = true))
+        assertEquals(RowHighlight.Block(0f, 4f, 40f, 40f, 8f), RowHighlight.block(40f, 48f, tab = true))
     }
 
     @Test

@@ -42,25 +42,27 @@ import com.aimdi.xtanative.ui.theme.keyboardFocusShown
 
 /**
  * How a row of the account menu is lit, one rule for every row in it: the
- * selected one is clearly the strongest, the pointer only a faint wash, and
- * the keyboard's focus a ring, which never darkens the fill so it cannot pass
+ * selected one is clearly the strongest, in the accent as the rail lights
+ * its place shown ([RailLook]), where it was a grey that read as the
+ * pointer's; the pointer only a faint wash of the text colour, and the
+ * keyboard's focus a ring, which never darkens the fill so it cannot pass
  * for the selection.
  */
 internal object NavRowLook {
-    const val SELECTED_ALPHA = 0.14f
-    const val SELECTED_HOVER_ALPHA = 0.18f
     const val HOVER_ALPHA = 0.06f
 
     /** The pointer's wash on a dark page, where light text at [HOVER_ALPHA] barely shows on black (Lights out). */
     const val DARK_HOVER_ALPHA = 0.10f
 
-    /** How much of the text colour washes the row, on a [dark] page or a light one. */
+    /** How much of its colour ([accented]: the accent, else the text colour) washes the row, on a [dark] page or a light one. */
     fun fillAlpha(selected: Boolean, hovered: Boolean, dark: Boolean = false): Float = when {
-        selected && hovered -> SELECTED_HOVER_ALPHA
-        selected -> SELECTED_ALPHA
+        selected -> RailLook.selectedAlpha(hovered)
         hovered -> if (dark) DARK_HOVER_ALPHA else HOVER_ALPHA
         else -> 0f
     }
+
+    /** Whether the row is lit in the accent, not the text colour: the place shown, as on the rail. */
+    fun accented(selected: Boolean): Boolean = selected
 
     /** A ring marks the focus only where the keyboard moved it ([keyboard]). */
     fun ring(focused: Boolean, keyboard: Boolean): Boolean = focused && keyboard
@@ -128,7 +130,10 @@ internal fun NavRowFrame(
                 .fillMaxWidth()
                 .heightIn(min = minHeight)
                 .clip(shape)
-                .background(colors.onSurface.copy(alpha = NavRowLook.fillAlpha(selected, hovered, dark = colors.background.luminance() < 0.5f)))
+                .background(
+                    (if (NavRowLook.accented(selected)) colors.primary else colors.onSurface)
+                        .copy(alpha = NavRowLook.fillAlpha(selected, hovered, dark = colors.background.luminance() < 0.5f)),
+                )
                 .then(if (ring) Modifier.border(2.dp, colors.primary, shape) else Modifier)
                 .selectable(selected, interactionSource = interactions, indication = ripple(), role = role, onClick = onClick)
                 .padding(start = 16.dp, end = 16.dp),
@@ -139,11 +144,17 @@ internal fun NavRowFrame(
     }
 }
 
-/** A page or a screen in the account menu: its icon, centred in the rows' one icon slot ([NavRowSizes.ICON_SLOT]), and label, the label bold while [selected]. */
+/**
+ * A page or a screen in the account menu: its icon, centred in the rows' one
+ * icon slot ([NavRowSizes.ICON_SLOT]), and label; while [selected] the icon
+ * in the accent, as the rail's, and the label bold, in the text colour,
+ * which reads on the accent's light wash where the accent itself would not.
+ */
 @Composable
 internal fun NavRow(label: String, selected: Boolean, onClick: () -> Unit, icon: @Composable () -> Unit, modifier: Modifier = Modifier) {
     NavRowFrame(selected, onClick, modifier) {
-        Box(Modifier.size(NavRowSizes.ICON_SLOT), contentAlignment = Alignment.Center) { icon() }
+        val tint = if (NavRowLook.accented(selected)) MaterialTheme.colorScheme.primary else LocalContentColor.current
+        Box(Modifier.size(NavRowSizes.ICON_SLOT), contentAlignment = Alignment.Center) { CompositionLocalProvider(LocalContentColor provides tint, content = icon) }
         TipText(label, fontWeight = NavRowLook.weight(selected), style = MaterialTheme.typography.bodyLarge, maxLines = 1, modifier = Modifier.weight(1f))
     }
 }
