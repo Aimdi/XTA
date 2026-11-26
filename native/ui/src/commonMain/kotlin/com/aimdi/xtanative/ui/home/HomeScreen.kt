@@ -4,6 +4,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -49,6 +50,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
@@ -320,7 +322,9 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
             // Made afresh at a new interface size (Ctrl+Alt with + −): the sheet keeps its width in pixels for the
             // scale it grows by when dragged, so a closed one would otherwise peek in by the difference.
             key(LocalDensity.current.density) {
-                ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
+                // Closed, the sheet still stands beside the window, out of sight: Tab passes it by, as it shows nothing.
+                val shut = Modifier.focusProperties { onEnter = { if (shell.drawer.shut()) cancelFocusChange() } }.focusGroup()
+                ModalDrawerSheet(shut, drawerContainerColor = MaterialTheme.colorScheme.background) {
                     AccountMenu(
                         ui = parts.ui,
                         routes = parts.routes,
@@ -337,6 +341,9 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
         content = { Box(Modifier.fillMaxSize().then(if (shell.wide) Modifier else Modifier.drawerEdge(shell.drawer))) { content() } },
     )
 }
+
+/** Closed and staying so: not on its way open, when the keys may go in. */
+private fun DrawerState.shut(): Boolean = isClosed && targetValue == DrawerValue.Closed
 
 /**
  * The account menu opened from Home (the timeline picker, its sheet): its
