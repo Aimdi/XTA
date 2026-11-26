@@ -86,4 +86,31 @@ class CardBacksTest {
         assertSame(picture, backs.take("post"), "kept for its screen")
         assertNull(backs.take("another"))
     }
+
+    @Test
+    fun onlyTheNewestTwoPicturesAreKept() {
+        val held = Held()
+        val scope = CoroutineScope(held + Job())
+        val backs = CardBacks()
+        val pictures = (1..3).map { Picture() }
+        pictures.forEachIndexed { index, picture ->
+            backs.pictured = { picture }
+            backs.open(scope) { true }
+            held.runAll()
+            assertSame(picture, backs.take("post $index"))
+        }
+        assertNull(backs.take("post 0"), "the deepest card is dragged off the dark stage")
+        assertSame(pictures[1], backs.take("post 1"))
+        assertSame(pictures[2], backs.take("post 2"))
+    }
+
+    @Test
+    fun noPictureIsTakenOfScreensThatWereNeverDrawn() {
+        val held = Held()
+        val scope = CoroutineScope(held + Job())
+        val backs = CardBacks()
+        backs.open(scope) { true }
+        held.runAll()
+        assertNull(backs.take("post"))
+    }
 }
