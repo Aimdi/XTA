@@ -28,7 +28,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -46,6 +45,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.input.InputMode
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isAltPressed
@@ -59,6 +59,7 @@ import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -266,46 +267,64 @@ internal fun SwitcherPopover(anchor: SwitcherAnchor, button: SwitcherButton, onD
 @Composable
 private fun PopoverPanel(closer: SheetCloser, tall: Dp, content: @Composable ColumnScope.() -> Unit) {
     val manager = LocalFocusManager.current
-    // The rows' focus is lit by ripples made for the input's mode at the time: a panel the mouse opened is made
-    // afresh at the first key, its first stop then taking the focus as in one the keyboard opened. Never back.
-    val keyed = remember { booleanArrayOf(false) }
-    if (keyboardFocusShown()) keyed[0] = true
-    val byKeys = keyed[0]
-    key(byKeys) {
-        var holding by remember { mutableStateOf(!byKeys) }
-        val holder = remember { FocusRequester() }
-        val held = remember { booleanArrayOf(false) }
-        LaunchedEffect(Unit) {
-            withFrameNanos {}
-            if (byKeys) manager.moveFocus(FocusDirection.Next) else runCatching { holder.requestFocus() }
+    val modes = LocalInputModeManager.current
+    // Opened with the keyboard, its first stop takes the focus; opened with the mouse, an unseen stop holds it
+    // until a key moves it on, that key's move standing (the rows light the keyboard's focus as it comes).
+    val keyboardNow = keyboardFocusShown()
+    val byKeys = remember { keyboardNow }
+    var holding by remember { mutableStateOf(!byKeys) }
+    val holder = remember { FocusRequester() }
+    val held = remember { booleanArrayOf(false) }
+    LaunchedEffect(Unit) {
+        withFrameNanos {}
+        if (byKeys) {
+            manager.moveFocus(FocusDirection.Next)
+            return@LaunchedEffect
         }
-        Surface(
-            shape = MaterialTheme.shapes.medium,
-            color = MaterialTheme.colorScheme.surfaceContainer,
-            tonalElevation = 3.dp,
-            shadowElevation = 8.dp,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-            modifier = Modifier
-                .width(SwitcherPopoverPlace.WIDTH.dp)
-                .heightIn(max = tall)
-                // A click on the panel is no click beside it.
-                .focusProperties { canFocus = false }
-                .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {}
-                .onPreviewKeyEvent { event -> event.type == KeyEventType.KeyDown && keyed(event.key, event.isCtrlPressed || event.isAltPressed || event.isShiftPressed || event.isMetaPressed, manager) },
-        ) {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                Box(
-                    Modifier
-                        .focusProperties { canFocus = holding }
-                        .focusRequester(holder)
-                        .onFocusChanged { if (held[0] && !it.isFocused) holding = false else held[0] = it.isFocused }
-                        .focusable(),
-                )
-                CompositionLocalProvider(LocalSheetCloser provides closer, LocalMenuRowMetrics provides MenuRowMetrics.Pointer) { content() }
-            }
+        // The popup's window may take the keys a few frames late, dropping a focus asked for before: asked again until held.
+        repeat(HOLD_TRIES) {
+            if (held[0] || !holding) return@LaunchedEffect
+            runCatching { holder.requestFocus() }
+            withFrameNanos {}
+        }
+    }
+    // A key that found no focus in the panel (the unseen stop never took it) still reaches its first stop.
+    LaunchedEffect(keyboardNow) {
+        if (keyboardNow && !byKeys && holding && !held[0]) manager.moveFocus(FocusDirection.Next)
+    }
+    Surface(
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        tonalElevation = 3.dp,
+        shadowElevation = 8.dp,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        modifier = Modifier
+            .width(SwitcherPopoverPlace.WIDTH.dp)
+            .heightIn(max = tall)
+            // A click on the panel is no click beside it.
+            .focusProperties { canFocus = false }
+            .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {}
+            .onPreviewKeyEvent { event ->
+                // A stop the arrows reach is the keyboard's, lit as Tab's is (as the post menu's are).
+                (event.type == KeyEventType.KeyDown && keyed(event.key, event.isCtrlPressed || event.isAltPressed || event.isShiftPressed || event.isMetaPressed, manager))
+                    .also { moved -> if (moved) modes.requestInputMode(InputMode.Keyboard) }
+            },
+    ) {
+        Column(Modifier.verticalScroll(rememberScrollState())) {
+            Box(
+                Modifier
+                    .focusProperties { canFocus = holding }
+                    .focusRequester(holder)
+                    .onFocusChanged { if (held[0] && !it.isFocused) holding = false else held[0] = it.isFocused }
+                    .focusable(),
+            )
+            CompositionLocalProvider(LocalSheetCloser provides closer, LocalMenuRowMetrics provides MenuRowMetrics.Pointer) { content() }
         }
     }
 }
+
+/** How many frames the unseen stop is asked to take the focus before the panel gives up on it. */
+private const val HOLD_TRIES = 10
 
 /** [key] moving the focus with [focus]: true when it did. */
 private fun keyed(key: Key, modified: Boolean, focus: FocusManager): Boolean {
