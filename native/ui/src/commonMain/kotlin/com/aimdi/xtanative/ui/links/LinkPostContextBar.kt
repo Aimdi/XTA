@@ -39,12 +39,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.aimdi.xtanative.core.format.Formats
 import com.aimdi.xtanative.services.links.LinkPostContext
 import com.aimdi.xtanative.services.links.NetworkLink
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.countFormat
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -64,7 +64,6 @@ import com.aimdi.xtanative.ui.generated.resources.reader_network_threads
 import com.aimdi.xtanative.ui.generated.resources.reader_network_tiktok
 import com.aimdi.xtanative.ui.generated.resources.reader_network_x
 import com.aimdi.xtanative.ui.media.ReaderIcons
-import java.text.DecimalFormatSymbols
 import org.jetbrains.compose.resources.stringResource
 
 private val AvatarSize = 32.dp
@@ -82,8 +81,8 @@ fun LinkPostContextBar(post: LinkPostContext, onBackToPost: () -> Unit, onShareP
     val settingsStore = LocalSettingsStore.current
     val settings by settingsStore.state.collectAsStateWithLifecycle()
     val locale = currentLocale()
-    val decimal = remember(locale) { DecimalFormatSymbols.getInstance(locale).decimalSeparator }
-    val counts = LinkPostBar.counts(post, LinkPostBar.countsHidden(settings)) { Formats.count(it, decimal) }
+    val format = remember(locale) { countFormat(locale) }
+    val counts = LinkPostBar.counts(post, LinkPostBar.countsHidden(settings), format)
     val back = stringResource(Res.string.reader_link_back_to_post)
     val spoken = counts.filter { it.shown.isNotEmpty() }.map { stringResource(countLabel(it.kind), it.shown) }
     val label = (listOf(back) + listOfNotNull(post.author.ifEmpty { null }) + spoken).joinToString(", ")

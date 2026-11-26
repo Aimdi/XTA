@@ -14,6 +14,17 @@ class FormatsTest {
     }
 
     @Test
+    fun aCountTheLanguageShortensKeepsOneDecimalOnlyBeforeASingleDigit() {
+        fun fake(scaled: String) = { _: Long, digits: Int -> if (digits == 1) scaled else scaled.substringBefore(',') + " Mio." }
+        assertEquals("1,2 Mio.", Formats.compactCount(1_234_567, ',', fake("1,2 Mio.")))
+        assertEquals("12 Mio.", Formats.compactCount(12_345_678, ',', fake("12,3 Mio.")), "12.3 million is cut to 12, as X writes 12M")
+        assertEquals("12.345", Formats.compactCount(12_345, ',', fake("12.345")), "a grouped count with no decimals stays as it is")
+        assertEquals("1.2K", Formats.compactCount(1_250, '.', null), "no compact format: X's own")
+        assertEquals("1.2K", Formats.compactCount(1_250, '.') { _, _ -> error("unsupported") })
+        assertEquals("0", Formats.compactCount(-5, '.', null))
+    }
+
+    @Test
     fun aRowSaysHowLongAgoInOneUnit() {
         val now = Instant.parse("2026-11-02T12:00:00Z")
         val year = { at: Instant -> at.atZone(ZoneOffset.UTC).year }
