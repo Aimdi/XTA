@@ -180,10 +180,28 @@ private fun ProgressLine(notice: KeepNotice.Progress) {
     }
 }
 
-/** Centred at the foot of the window, [lift] pixels above its edge. */
+/**
+ * At the foot of the window, [lift] pixels above its edge, centred across
+ * where it is composed (the screens beside the frame's navigation, the whole
+ * window where there is none), so it stands under the column being read.
+ */
 private class FootOfWindow(private val lift: Int) : PopupPositionProvider {
     override fun calculatePosition(anchorBounds: IntRect, windowSize: IntSize, layoutDirection: LayoutDirection, popupContentSize: IntSize): IntOffset =
-        IntOffset((windowSize.width - popupContentSize.width) / 2, (windowSize.height - popupContentSize.height - lift).coerceAtLeast(0))
+        IntOffset(NoticePlace.x(anchorBounds.left, anchorBounds.width, windowSize.width, popupContentSize.width), (windowSize.height - popupContentSize.height - lift).coerceAtLeast(0))
+}
+
+/** Where along the window the foot's notice stands. */
+internal object NoticePlace {
+    /**
+     * The notice's left edge, [width] wide, centred across the area at [areaLeft]
+     * [areaWidth] wide, kept inside a window [windowWidth] wide (from its left
+     * edge where it is wider than the window). An area with no width yet (not
+     * laid out) is the whole window.
+     */
+    fun x(areaLeft: Int, areaWidth: Int, windowWidth: Int, width: Int): Int {
+        val (left, across) = if (areaWidth > 0) areaLeft to areaWidth else 0 to windowWidth
+        return (left + (across - width) / 2).coerceAtMost(windowWidth - width).coerceAtLeast(0)
+    }
 }
 
 /** What [notice] says, in the reader's language. */

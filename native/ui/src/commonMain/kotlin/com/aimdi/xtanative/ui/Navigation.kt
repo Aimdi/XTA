@@ -517,9 +517,12 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
     val reduced = rememberUpdatedState(LocalReducedMotion.current)
     val motion = remember(reduced) { ScreenMotion(reduced) }
     // In a wide desktop window the navigation column stands beside every screen; only the screens are pictured under a card.
-    WideFramed(nav, all.home) { all.backs.Recorded { ScreenHost(nav, start, all, motion) } }
-    // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved).
-    KeepHost()
+    WideFramed(nav, all.home) {
+        all.backs.Recorded { ScreenHost(nav, start, all, motion) }
+        // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved):
+        // beside the screens, so a notice centres under the reading column, not under the navigation too.
+        KeepHost()
+    }
     // The sheets plugins open over the screens: a post's folders, its note, its menu, an account's groups. The main window's alone, so each shows once.
     if (LocalSecondaryWindow.current == null) PluginSheetHost()
 }
