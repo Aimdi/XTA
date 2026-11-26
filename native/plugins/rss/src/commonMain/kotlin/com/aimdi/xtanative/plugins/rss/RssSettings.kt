@@ -43,6 +43,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 
 /**
  * RSS's settings, as XTA's RssSettingsScreen: what the plugin keeps where,
@@ -53,12 +54,9 @@ import kotlinx.coroutines.launch
 internal fun RssSettingsBody(app: RssApp, frame: PluginFrame) {
     var notice by rememberSaveable { mutableStateOf<String?>(null) }
     val importOpml = rememberOpmlImport(app) { notice = it }
-    val importing by app.opml.progress.collectAsState()
     LazyColumn(
         contentPadding = frame.padding,
-        modifier = Modifier.fillMaxSize().pluginFileDrop(accept = ::isOpml) { files ->
-            if (importing?.let { it.done < it.total } != true) importOpml { files.first().text() }
-        },
+        modifier = Modifier.fillMaxSize().pluginFileDrop(accept = ::isOpml) { files -> importOpml { files.first().text() } },
     ) {
         item(key = "blurb") { Text(pluginString(Strings.settings_blurb), modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)) }
         item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.in_home_feed), pluginString(Strings.in_home_feed_description), HomeTimelineIcon) }
@@ -74,14 +72,32 @@ internal fun RssSettingsBody(app: RssApp, frame: PluginFrame) {
 internal class RssOpmlImports {
     private val mutable = MutableStateFlow<RssOpmlImport?>(null)
     val progress: StateFlow<RssOpmlImport?> = mutable.asStateFlow()
+    private val busy = Mutex()
 
-    /** Follows each feed of [urls] not followed yet, one at a time, as Add feed would. */
-    suspend fun run(app: RssApp, urls: List<String>): RssOpmlImport = try {
-        app.loadedFeeds()
-        RssOpml.import(urls, isFollowed = app::isFollowing, lookup = { app.client.lookup(it) }, follow = { app.follow(it) }, progress = { mutable.value = it })
-    } catch (e: CancellationException) {
-        mutable.value = null
-        throw e
+    /**
+     * Reads an OPML file's feed addresses with [read], then follows each not
+     * followed yet, one at a time, as Add feed would; a file with none gives a
+     * total of 0. Null, with nothing read, while another import runs: a second
+     * drop, or a file picked while a dropped one is still read, starts none.
+     */
+    suspend fun run(app: RssApp, read: suspend () -> List<String>): RssOpmlImport? = alone(read) { urls ->
+        try {
+            app.loadedFeeds()
+            RssOpml.import(urls, isFollowed = app::isFollowing, lookup = { app.client.lookup(it) }, follow = { app.follow(it) }, progress = { mutable.value = it })
+        } catch (e: CancellationException) {
+            mutable.value = null
+            throw e
+        }
+    }
+
+    /** [import] of what [read] gives, held from before the read to the end; null while one already is. */
+    internal suspend fun alone(read: suspend () -> List<String>, import: suspend (List<String>) -> RssOpmlImport): RssOpmlImport? {
+        if (!busy.tryLock()) return null
+        return try {
+            read().takeIf { it.isNotEmpty() }?.let { import(it) } ?: RssOpmlImport(total = 0)
+        } finally {
+            busy.unlock()
+        }
     }
 }
 
@@ -94,9 +110,8 @@ private fun rememberOpmlImport(app: RssApp, onNotice: (String) -> Unit): (read: 
     return remember(app, language, empty) {
         { read ->
             app.launch {
-                val urls = runCatching { read() }.getOrNull()?.let(RssOpml::feedUrls).orEmpty()
-                if (urls.isEmpty()) return@launch notice(empty)
-                val result = app.opml.run(app, urls)
+                val result = app.opml.run(app) { runCatching { read() }.getOrNull()?.let(RssOpml::feedUrls).orEmpty() } ?: return@launch
+                if (result.total == 0) return@launch notice(empty)
                 notice(Strings.opml_result.get(language, result.added, result.alreadyFollowed, result.failed))
             }
         }

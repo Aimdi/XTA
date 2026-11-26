@@ -52,6 +52,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 
 /**
  * Substack's settings, as XTA's SubstackSettingsScreen: "Native reader
@@ -74,9 +75,7 @@ internal fun SubstackSettingsBody(app: SubstackApp, frame: PluginFrame) {
     WithNotices(notices) {
         LazyColumn(
             contentPadding = frame.padding,
-            modifier = Modifier.fillMaxSize().pluginFileDrop(accept = ::isOpml) { files ->
-                if (!app.opml.running) importOpml { files.first().text() }
-            },
+            modifier = Modifier.fillMaxSize().pluginFileDrop(accept = ::isOpml) { files -> importOpml { files.first().text() } },
         ) {
             if (articleWebView) {
                 item(key = "native") {
@@ -142,22 +141,38 @@ private fun <E : PrefChoice> ChoiceRow(title: PluginText, value: E, choices: Lis
 internal class OpmlImports {
     private val mutable = MutableStateFlow<SubstackOpmlImport?>(null)
     val progress: StateFlow<SubstackOpmlImport?> = mutable.asStateFlow()
+    private val busy = Mutex()
 
-    val running: Boolean get() = progress.value?.let { it.done < it.total } == true
+    /**
+     * Reads an OPML file's publications with [read], then follows each not
+     * followed yet, as XTA's SubstackOpmlImportStore; a file with none gives a
+     * total of 0. Null, with nothing read, while another import runs: a second
+     * drop, or a file picked while a dropped one is still read, starts none.
+     */
+    suspend fun run(app: SubstackApp, read: suspend () -> List<String>): SubstackOpmlImport? = alone(read) { sites ->
+        try {
+            app.follows.load()
+            SubstackOpml.import(
+                sites,
+                resolve = { app.client.resolve(it) },
+                followOf = app::followOf,
+                follow = { app.follows.follow(it) },
+                progress = { mutable.value = it },
+            )
+        } catch (e: CancellationException) {
+            mutable.value = null
+            throw e
+        }
+    }
 
-    /** Follows each of [sites] not followed yet, as XTA's SubstackOpmlImportStore. */
-    suspend fun run(app: SubstackApp, sites: List<String>): SubstackOpmlImport = try {
-        app.follows.load()
-        SubstackOpml.import(
-            sites,
-            resolve = { app.client.resolve(it) },
-            followOf = app::followOf,
-            follow = { app.follows.follow(it) },
-            progress = { mutable.value = it },
-        )
-    } catch (e: CancellationException) {
-        mutable.value = null
-        throw e
+    /** [import] of what [read] gives, held from before the read to the end; null while one already is. */
+    internal suspend fun alone(read: suspend () -> List<String>, import: suspend (List<String>) -> SubstackOpmlImport): SubstackOpmlImport? {
+        if (!busy.tryLock()) return null
+        return try {
+            read().takeIf { it.isNotEmpty() }?.let { import(it) } ?: SubstackOpmlImport(total = 0)
+        } finally {
+            busy.unlock()
+        }
     }
 }
 
@@ -174,9 +189,8 @@ private fun rememberOpmlImport(app: SubstackApp, notices: Notices): (read: suspe
     return remember(app, notices, empty, language) {
         { read ->
             scope.launch {
-                val sites = runCatching { read() }.getOrNull()?.let(SubstackOpml::sites).orEmpty()
-                if (sites.isEmpty()) return@launch notices.show(empty)
-                val result = app.opml.run(app, sites)
+                val result = app.opml.run(app) { runCatching { read() }.getOrNull()?.let(SubstackOpml::sites).orEmpty() } ?: return@launch
+                if (result.total == 0) return@launch notices.show(empty)
                 notices.show(Strings.opml_result.get(language, result.added, result.alreadyFollowed, result.failed))
             }
         }
