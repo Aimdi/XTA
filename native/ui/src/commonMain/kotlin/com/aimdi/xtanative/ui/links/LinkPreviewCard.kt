@@ -21,6 +21,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,12 +39,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import com.aimdi.xtanative.services.links.LinkPreview
 import com.aimdi.xtanative.services.links.LinkPreviewLayout
 import com.aimdi.xtanative.services.links.LinkPreviews
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.onSecondaryClickIf
+import com.aimdi.xtanative.ui.media.ReaderIcons
 import com.aimdi.xtanative.ui.post.dragsLink
 import com.aimdi.xtanative.ui.theme.edgeColor
 
@@ -90,12 +95,7 @@ fun LinkPreviewCard(
     ) {
         if (layout == LinkPreviewLayout.LARGE && image != null) {
             Column {
-                AsyncImage(
-                    model = image,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f).background(MaterialTheme.colorScheme.surfaceVariant),
-                )
+                LinkCardPicture(image, 16f / 9f)
                 PreviewTexts(domain, shown, description, titleLines = 2, Modifier.padding(horizontal = 12.dp, vertical = 10.dp))
             }
         } else {
@@ -131,6 +131,33 @@ fun FetchedLinkPreviewCard(url: String, modifier: Modifier = Modifier, from: Lin
         LinkPreviewCard(loaded.copy(url = url), open, modifier, onLongPress)
     } else {
         LinkPreviewCard(url, null, open, modifier, onLongPress = onLongPress)
+    }
+}
+
+/** How tall a link card's picture is once it failed to load: a band, not the empty 16:9 box it would leave. */
+private val BrokenPictureHeight = 72.dp
+
+/**
+ * A link card's picture across the card at [ratio]. One that fails to load
+ * (a dead or blocked address) shrinks to a short band with the
+ * broken-picture mark, as the viewer marks one, instead of a large empty box.
+ */
+@Composable
+internal fun LinkCardPicture(model: Any?, ratio: Float, modifier: Modifier = Modifier) {
+    var failed by remember(model) { mutableStateOf(false) }
+    val colors = MaterialTheme.colorScheme
+    if (failed) {
+        Box(modifier.fillMaxWidth().height(BrokenPictureHeight).background(colors.surfaceVariant), contentAlignment = Alignment.Center) {
+            Icon(ReaderIcons.BrokenImage, contentDescription = null, tint = colors.onSurfaceVariant, modifier = Modifier.size(28.dp))
+        }
+    } else {
+        AsyncImage(
+            model = model,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            onState = { if (it is AsyncImagePainter.State.Error) failed = true },
+            modifier = modifier.fillMaxWidth().aspectRatio(ratio).background(colors.surfaceVariant),
+        )
     }
 }
 

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -60,6 +59,7 @@ import com.aimdi.xtanative.ui.generated.resources.poll_ends_minutes
 import com.aimdi.xtanative.ui.generated.resources.poll_no_votes
 import com.aimdi.xtanative.ui.generated.resources.poll_votes
 import com.aimdi.xtanative.ui.generated.resources.reader_media
+import com.aimdi.xtanative.ui.links.LinkCardPicture
 import com.aimdi.xtanative.ui.links.LinkFrom
 import com.aimdi.xtanative.ui.links.LinkPreviewCard
 import com.aimdi.xtanative.ui.links.LocalLinks
@@ -149,12 +149,7 @@ private fun LargeLinkCard(card: XCard.Link, onOpen: () -> Unit, modifier: Modifi
                 .border(Dp.Hairline, edgeColor(), CardShape)
                 .clickable(interactionSource = null, indication = rememberPictureIndication(), onClick = onOpen),
         ) {
-            AsyncImage(
-                model = picture?.url,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth().aspectRatio(ratio.coerceIn(1f, 2.2f)).background(MaterialTheme.colorScheme.surfaceVariant),
-            )
+            LinkCardPicture(picture?.url, ratio.coerceIn(1f, 2.2f))
             TitleOverPicture(card.title, Modifier.align(Alignment.BottomStart))
         }
         CardSite(card.domain)
