@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Citate</string>
     <string name="posts_replies_missing">Nu s-au putut încărca răspunsurile</string>
+    <string name="posts_no_replies_yet">Încă nu există răspunsuri</string>
     <string name="posts_replying_to">Răspuns la</string>
     <string name="posts_reposted">%1$s a repostat %2$s</string>
     <string name="posts_reposted_by">Redistribuit de</string>

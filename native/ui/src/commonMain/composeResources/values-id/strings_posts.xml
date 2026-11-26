@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Kutipan</string>
     <string name="posts_replies_missing">Tidak dapat memuat balasan</string>
+    <string name="posts_no_replies_yet">Belum ada balasan</string>
     <string name="posts_replying_to">Membalas ke</string>
     <string name="posts_reposted">%1$s mencuit ulang %2$s</string>
     <string name="posts_reposted_by">Dibagikan ulang oleh</string>

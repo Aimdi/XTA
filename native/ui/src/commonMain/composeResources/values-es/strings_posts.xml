@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Desactivado</string>
     <string name="posts_quotes">Citas</string>
     <string name="posts_replies_missing">No se pudieron cargar las respuestas</string>
+    <string name="posts_no_replies_yet">Aún no hay respuestas</string>
     <string name="posts_replying_to">Respondiendo a</string>
     <string name="posts_reposted">%1$s retuiteó %2$s</string>
     <string name="posts_reposted_by">Compartido por</string>

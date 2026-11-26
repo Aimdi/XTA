@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Sitater</string>
     <string name="posts_replies_missing">Kunne ikke laste svar</string>
+    <string name="posts_no_replies_yet">Ingen svar ennå</string>
     <string name="posts_replying_to">Svarer til</string>
     <string name="posts_reposted">%1$s re-tvitret</string>
     <string name="posts_reposted_by">Delt videre av</string>

@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Aipamenak</string>
     <string name="posts_replies_missing">Ezin izan dira erantzunak kargatu</string>
+    <string name="posts_no_replies_yet">Oraindik ez dago erantzunik</string>
     <string name="posts_replying_to">Erantzun</string>
     <string name="posts_reposted">Orain dela %2$s %1$s birtxiotua</string>
     <string name="posts_reposted_by">Berrargitaratzaileak</string>

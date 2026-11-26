@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Alıntılar</string>
     <string name="posts_replies_missing">Yanıtlar yüklenemedi</string>
+    <string name="posts_no_replies_yet">Henüz yanıt yok</string>
     <string name="posts_replying_to">Yanıtlıyor</string>
     <string name="posts_reposted">%1$s %2$s retweet'ledi</string>
     <string name="posts_reposted_by">Yeniden paylaşanlar</string>

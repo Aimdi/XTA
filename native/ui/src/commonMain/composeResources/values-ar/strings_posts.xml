@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">الاقتباسات</string>
     <string name="posts_replies_missing">تعذر تحميل الردود</string>
+    <string name="posts_no_replies_yet">لا توجد ردود بعد</string>
     <string name="posts_replying_to">يرد على</string>
     <string name="posts_reposted">%1$s أعاد تغريد %2$s</string>
     <string name="posts_reposted_by">أعاد نشره</string>

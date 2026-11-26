@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">उद्धरण</string>
     <string name="posts_replies_missing">जवाब लोड नहीं हो सके</string>
+    <string name="posts_no_replies_yet">अभी कोई जवाब नहीं</string>
     <string name="posts_replying_to">उत्तर दे रहे हैं</string>
     <string name="posts_reposted">%1$s ने %2$s रिपोस्ट किया</string>
     <string name="posts_reposted_by">इन्होंने फिर से साझा किया</string>

@@ -62,6 +62,7 @@
     <string name="posts_quiet_account_off">オフ</string>
     <string name="posts_quotes">引用</string>
     <string name="posts_replies_missing">返信を読み込めませんでした</string>
+    <string name="posts_no_replies_yet">まだ返信はありません</string>
     <string name="posts_replying_to">返信：</string>
     <string name="posts_reposted">%1$sがリツイート %2$s</string>
     <string name="posts_reposted_by">リポストした人</string>

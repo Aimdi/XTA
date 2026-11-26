@@ -66,6 +66,7 @@
     <string name="posts_quiet_account_off">Off</string>
     <string name="posts_quotes">Quotes</string>
     <string name="posts_replies_missing">Couldn't load replies</string>
+    <string name="posts_no_replies_yet">No replies yet</string>
     <string name="posts_replying_to">Replying to</string>
     <string name="posts_reposted">%1$s reposted %2$s</string>
     <string name="posts_reposted_by">Reposted by</string>

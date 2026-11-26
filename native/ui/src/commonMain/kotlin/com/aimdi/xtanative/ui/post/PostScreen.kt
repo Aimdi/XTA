@@ -94,6 +94,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_continue_thread
 import com.aimdi.xtanative.ui.generated.resources.posts_more
 import com.aimdi.xtanative.ui.generated.resources.posts_no_text
 import com.aimdi.xtanative.ui.generated.resources.posts_replies_missing
+import com.aimdi.xtanative.ui.generated.resources.posts_no_replies_yet
 import com.aimdi.xtanative.ui.generated.resources.posts_retry
 import com.aimdi.xtanative.ui.generated.resources.posts_show_additional_replies
 import com.aimdi.xtanative.ui.generated.resources.posts_sort_most_liked
@@ -214,6 +215,11 @@ internal object PostLoading {
         null -> MOST
         else -> replyCount.coerceIn(0, MOST.toLong()).toInt()
     }
+
+    /** X answered with the post and not one reply, nothing more to load, retry or show: "No replies yet" under it. */
+    fun noReplies(state: PostUi): Boolean =
+        state.answered && !state.loading && !state.loadingMore && state.focal != null && state.replies.isEmpty() &&
+            state.problem == null && state.moreProblem == null && state.showMore == null && !state.repliesMissing
 }
 
 private fun LazyListScope.focalItems(state: PostUi, id: String, actions: PostActions, vm: PostViewModel, prefs: PostPrefs, startMedia: Int) {
@@ -286,7 +292,7 @@ private fun ContinueThread(row: ThreadRow.Continue, actions: PostActions) {
     }
 }
 
-/** Where the replies end: more loading, a failed page, X's withheld replies, or a retry for replies X counted but never sent. */
+/** Where the replies end: more loading, a failed page, X's withheld replies, a retry for replies X counted but never sent, or that there are none yet. */
 @Composable
 private fun ThreadEnd(state: PostUi, vm: PostViewModel) {
     val more = state.moreProblem
@@ -306,6 +312,12 @@ private fun ThreadEnd(state: PostUi, vm: PostViewModel) {
                 Text(stringResource(Res.string.posts_retry), modifier = Modifier.padding(start = 8.dp))
             }
         }
+        PostLoading.noReplies(state) -> Text(
+            stringResource(Res.string.posts_no_replies_yet),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().padding(24.dp),
+        )
     }
 }
 
