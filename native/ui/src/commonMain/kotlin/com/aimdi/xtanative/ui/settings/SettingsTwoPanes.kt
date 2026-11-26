@@ -118,18 +118,20 @@ internal fun SettingsTwoPanes(
         modes.requestInputMode(InputMode.Keyboard)
         runCatching { pane.requestFocus(FocusDirection.Enter) }.getOrDefault(false)
     }
+    // Whether the row took the focus: none does while search results stand in place of the list.
     val toRow = { id: String ->
         modes.requestInputMode(InputMode.Keyboard)
-        runCatching { rows[id]?.requestFocus() }
+        runCatching { rows[id]?.requestFocus(FocusDirection.Enter) == true }.getOrDefault(false)
     }
 
-    // Esc in the section takes the keys back to its row in the list, before it would leave Settings.
+    // Esc in the section takes the keys back to its row in the list, before it would leave Settings; with no list
+    // shown (a search's results), it leaves the section as Esc does anywhere else.
     val actions = LocalDesktopActions.current
     val latestMarked by rememberUpdatedState(marked)
     val latestInPane by rememberUpdatedState(inPane)
     DisposableEffect(actions) {
         val owner = Any()
-        actions?.addFieldEscape(owner) { latestInPane.also { if (it) toRow(latestMarked) } }
+        actions?.addFieldEscape(owner) { latestInPane && toRow(latestMarked) }
         onDispose { actions?.removeFieldEscape(owner) }
     }
 
