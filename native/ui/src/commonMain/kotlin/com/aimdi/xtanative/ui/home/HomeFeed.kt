@@ -376,7 +376,7 @@ private fun TimelineTopBar(
 @Composable
 private fun PickerMark(tab: HomeTab, ui: HomeUi, networks: HomeNetworks, unread: Boolean, onClick: () -> Unit) {
     val label = listOfNotNull(tabLabel(tab, ui), stringResource(Res.string.home_unread).takeIf { unread }, stringResource(Res.string.home_networks)).joinToString(", ")
-    IconTip(label) { IconButton(onClick = onClick, modifier = Modifier.semantics { contentDescription = label }) {
+    IconTip(label) { IconButton(onClick = onClick, modifier = Modifier.switcherAnchor().semantics { contentDescription = label }) {
         // The label says the dot already.
         Box(Modifier.clearAndSetSemantics {}) { UnreadDot(unread) { TimelineMark(tab, networks, 24.dp) } }
     } }

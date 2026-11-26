@@ -207,6 +207,7 @@ private fun Avatar(id: String, name: String, networks: HomeNetworks, mark: Avata
         modifier
             .size(44.dp)
             .clip(CircleShape)
+            .switcherAnchor()
             // A right-click switches the account, as a long press does.
             .then(onAccounts?.let { Modifier.onSecondaryClick(it) } ?: Modifier)
             .combinedClickable(onClick = onClick, onLongClick = onAccounts, onLongClickLabel = switchLabel.takeIf { onAccounts != null })

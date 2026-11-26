@@ -54,6 +54,7 @@ import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.SheetCloser
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.common.longPressOver
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -152,7 +153,16 @@ private fun SwitcherCalls.closingWith(closer: SheetCloser): SwitcherCalls = Swit
 @Composable
 internal fun PluginSwitcherSheet(ui: HomeUi, networks: HomeNetworks, shown: HomeTab?, unread: Set<String>, calls: SwitcherCalls, plugin: SheetPlugin? = null) {
     val given = calls
-    val ids = remember(ui.tabs, ui.recentNetworks) { PluginSwitcher.networks(ui.tabs, ui.recentNetworks) }
+    // In the desktop's wide frame (the sidebar or the rail beside it), a drop-down under the button that opened it.
+    val anchor = LocalSwitcherAnchor.current
+    val frame = LocalWideFrame.current
+    val at = remember { anchor?.takeIf { frame != null }?.bounds() }
+    if (anchor != null && at != null) {
+        SwitcherPopover(anchor, at, onDismiss = given.onDismiss) {
+            SwitcherBody(ui, networks, shown, unread, given, plugin, compact = true)
+        }
+        return
+    }
     val title = stringResource(Res.string.home_switcher_title)
     val shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
     // Whole at once, and the page's own colour under a hairline, as the app's screens are flat.
@@ -165,44 +175,93 @@ internal fun PluginSwitcherSheet(ui: HomeUi, networks: HomeNetworks, shown: Home
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.semantics { paneTitle = title },
     ) {
-        val closer = LocalSheetCloser.current
-        val calls = remember(given, closer) { given.closingWith(closer) }
-        val close = remember(closer) { { closer.close() } }
         Column(Modifier.verticalScrollByKeys(rememberScrollState()).padding(bottom = 12.dp)) {
-            SheetHead(shown, ui, networks, plugin)
-            Column(Modifier.padding(horizontal = 4.dp, vertical = 6.dp)) {
-                if (plugin != null) {
-                    plugin.items?.invoke(this, close)
-                    plugin.appEntries(this, close)
-                }
-                calls.onMenu?.let { MenuRow(it, calls.onAvatar) }
+            SwitcherBody(ui, networks, shown, unread, given, plugin, compact = false)
+        }
+    }
+}
+
+/**
+ * What the switcher holds, as a sheet or as the desktop's drop-down
+ * ([compact]: a head of one row and lower tiles, as a pointer's menu is
+ * denser); its picks close it through [LocalSheetCloser].
+ */
+@Composable
+private fun SwitcherBody(ui: HomeUi, networks: HomeNetworks, shown: HomeTab?, unread: Set<String>, given: SwitcherCalls, plugin: SheetPlugin?, compact: Boolean) {
+    val ids = remember(ui.tabs, ui.recentNetworks) { PluginSwitcher.networks(ui.tabs, ui.recentNetworks) }
+    val closer = LocalSheetCloser.current
+    val calls = remember(given, closer) { given.closingWith(closer) }
+    val close = remember(closer) { { closer.close() } }
+    val title = stringResource(Res.string.home_switcher_title)
+    Column(if (compact) Modifier.semantics { paneTitle = title } else Modifier) {
+        if (compact) CompactHead(shown, ui, networks, plugin) else SheetHead(shown, ui, networks, plugin)
+        Column(Modifier.padding(horizontal = 4.dp, vertical = if (compact) 2.dp else 6.dp)) {
+            if (plugin != null) {
+                plugin.items?.invoke(this, close)
+                plugin.appEntries(this, close)
             }
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            TimelineWords(ui, shown, unread, calls)
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            if (ids.isNotEmpty()) {
-                Text(
-                    stringResource(Res.string.home_switcher_recent),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 4.dp),
-                )
-                Column(Modifier.padding(horizontal = 8.dp)) {
-                    ids.chunked(PluginSwitcher.PER_ROW).forEach { row ->
-                        Row {
-                            row.forEach { id ->
-                                NetworkTile(id, ui, networks, shown = shown == HomeTab.Network(id), lit = HomeTab.Network(id).key in unread, Modifier.weight(1f)) { calls.onNetwork(id) }
-                            }
-                            repeat(PluginSwitcher.PER_ROW - row.size) { Spacer(Modifier.weight(1f)) }
+            calls.onMenu?.let { MenuRow(it, calls.onAvatar) }
+        }
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        TimelineWords(ui, shown, unread, calls)
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        if (ids.isNotEmpty()) {
+            Text(
+                stringResource(Res.string.home_switcher_recent),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = if (compact) 10.dp else 14.dp, bottom = 4.dp),
+            )
+            Column(Modifier.padding(horizontal = 8.dp)) {
+                ids.chunked(PluginSwitcher.PER_ROW).forEach { row ->
+                    Row {
+                        row.forEach { id ->
+                            NetworkTile(id, ui, networks, shown = shown == HomeTab.Network(id), lit = HomeTab.Network(id).key in unread, Modifier.weight(1f).height(if (compact) 72.dp else 88.dp)) { calls.onNetwork(id) }
                         }
+                        repeat(PluginSwitcher.PER_ROW - row.size) { Spacer(Modifier.weight(1f)) }
                     }
                 }
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             }
-            Row(Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
-                FootButton(stringResource(Res.string.home_manage_plugins), Modifier.weight(1f), calls.onManage)
-                FootButton(stringResource(Res.string.home_xta_settings), Modifier.weight(1f), calls.onSettings)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        }
+        Row(Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
+            FootButton(stringResource(Res.string.home_manage_plugins), Modifier.weight(1f), calls.onManage)
+            FootButton(stringResource(Res.string.home_xta_settings), Modifier.weight(1f), calls.onSettings)
+        }
+    }
+}
+
+/** The drop-down's head: the mark in a small ringed disc, the name and subtitle beside it, the plugin's settings and account switch at its end. */
+@Composable
+private fun CompactHead(shown: HomeTab?, ui: HomeUi, networks: HomeNetworks, plugin: SheetPlugin?) {
+    Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(start = 12.dp, end = 4.dp, top = 6.dp, bottom = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            Modifier.size(36.dp).background(MaterialTheme.colorScheme.surfaceContainerHigh, CircleShape).border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (shown != null) TimelineMark(shown, networks, 20.dp)
+        }
+        Column(Modifier.weight(1f).padding(start = 12.dp, end = 4.dp)) {
+            TipText(shown?.let { tabLabel(it, ui) }.orEmpty(), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            plugin?.subtitle?.let {
+                TipText(it.text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
+        }
+        HeadActions(plugin, compact = true)
+    }
+}
+
+/** The plugin's settings and its account switch, as the head has them. */
+@Composable
+private fun HeadActions(plugin: SheetPlugin?, compact: Boolean = false) {
+    val closer = LocalSheetCloser.current
+    plugin?.onSettings?.let { settings ->
+        IconTip(stringResource(Res.string.settings)) { IconButton(onClick = closer.closing(settings)) { Icon(GroupIcons.Tune, stringResource(Res.string.settings)) } }
+    }
+    plugin?.onSwitchAccount?.let { switch ->
+        TextButton(onClick = closer.closing(switch), modifier = Modifier.heightIn(min = if (compact) 40.dp else 48.dp)) {
+            Text(stringResource(Res.string.home_switch_account), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, maxLines = 1)
+            Icon(GroupIcons.ExpandMore, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 4.dp).size(18.dp))
         }
     }
 }
@@ -210,7 +269,6 @@ internal fun PluginSwitcherSheet(ui: HomeUi, networks: HomeNetworks, shown: Home
 /** The head, as a profile's: the mark in a ringed disc, the plugin's settings and account switch across from it, then the name and subtitle. */
 @Composable
 private fun SheetHead(shown: HomeTab?, ui: HomeUi, networks: HomeNetworks, plugin: SheetPlugin?) {
-    val accent = MaterialTheme.colorScheme.primary
     Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(
             Modifier.size(64.dp).background(MaterialTheme.colorScheme.surfaceContainerHigh, CircleShape).border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
@@ -219,16 +277,7 @@ private fun SheetHead(shown: HomeTab?, ui: HomeUi, networks: HomeNetworks, plugi
             if (shown != null) TimelineMark(shown, networks, 30.dp)
         }
         Spacer(Modifier.weight(1f))
-        val closer = LocalSheetCloser.current
-        plugin?.onSettings?.let { settings ->
-            IconTip(stringResource(Res.string.settings)) { IconButton(onClick = closer.closing(settings)) { Icon(GroupIcons.Tune, stringResource(Res.string.settings)) } }
-        }
-        plugin?.onSwitchAccount?.let { switch ->
-            TextButton(onClick = closer.closing(switch), modifier = Modifier.heightIn(min = 48.dp)) {
-                Text(stringResource(Res.string.home_switch_account), fontWeight = FontWeight.Bold, color = accent, maxLines = 1)
-                Icon(GroupIcons.ExpandMore, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 4.dp).size(18.dp))
-            }
-        }
+        HeadActions(plugin)
     }
     Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
         TipText(shown?.let { tabLabel(it, ui) }.orEmpty(), fontSize = 22.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -270,6 +319,8 @@ private fun Word(label: String, picked: Boolean, lit: Boolean, onClick: () -> Un
     Row(
         Modifier
             .heightIn(min = 48.dp)
+            .keyboardFocusRing()
+            .clip(RoundedCornerShape(24.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp)
             .clearAndSetSemantics {
@@ -298,7 +349,7 @@ private fun NetworkTile(id: String, ui: HomeUi, networks: HomeNetworks, shown: B
     val unread = stringResource(Res.string.home_unread)
     Box(
         modifier
-            .height(88.dp)
+            .keyboardFocusRing(0.dp)
             .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
             // One thing to a screen reader: its name as written, shown or not, and "unread" as its state.

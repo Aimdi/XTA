@@ -246,21 +246,25 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean, wide: Boolean, frame:
         },
     )
     if (frame != null) FollowedByFrame(frame, page) { index -> barTapped(shell, ui, index) }
-    Row(Modifier.fillMaxSize()) {
-        // The frame's column stands beside every screen, Home's included.
-        if (wide && frame == null) {
-            HomeSidebar(parts, shell, page, deckFits, unread)
-            VerticalDivider()
-        }
-        // Clipped: the closed drawer's sheet waits just past the start edge, over the sidebar otherwise.
-        Box(Modifier.weight(1f).fillMaxHeight().clipToBounds()) {
-            HomeDrawer(parts, shell, deckFits, unread) {
-                HomeBody(parts, shell, page, followingLook(following, ui, unread), unread, refresh, feedCalls, wide)
+    // The button that opens the timeline switcher, under which the desktop's switcher drops down.
+    val anchor = remember { SwitcherAnchor() }
+    CompositionLocalProvider(LocalSwitcherAnchor provides anchor) {
+        Row(Modifier.fillMaxSize()) {
+            // The frame's column stands beside every screen, Home's included.
+            if (wide && frame == null) {
+                HomeSidebar(parts, shell, page, deckFits, unread)
+                VerticalDivider()
             }
-            HomeLayers(parts, shell, following)
+            // Clipped: the closed drawer's sheet waits just past the start edge, over the sidebar otherwise.
+            Box(Modifier.weight(1f).fillMaxHeight().clipToBounds()) {
+                HomeDrawer(parts, shell, deckFits, unread) {
+                    HomeBody(parts, shell, page, followingLook(following, ui, unread), unread, refresh, feedCalls, wide)
+                }
+                HomeLayers(parts, shell, following)
+            }
         }
+        HomeSheets(parts, shell, following, unread)
     }
-    HomeSheets(parts, shell, following, unread)
 }
 
 /**
