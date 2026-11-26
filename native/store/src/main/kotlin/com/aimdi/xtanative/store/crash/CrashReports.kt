@@ -125,10 +125,11 @@ class CrashReports(private val folder: File, private val clock: () -> Long = Sys
         /** Android's main thread and the desktop's event thread, where the screens are drawn. */
         fun isScreensThread(name: String): Boolean = name == "main" || name.startsWith("AWT-EventQueue")
 
-        /** The report, as the issue body XTA files: the build, the system, the error and its stack. */
+        /** The report, as the issue body XTA files: the build, the system, the error and its stack, [CrashScrub]bed. */
         fun text(error: Throwable, thread: String, appVersion: String, at: Instant): String {
             val stack = StringWriter().also { error.printStackTrace(PrintWriter(it)) }.toString().trimEnd()
-            return CrashIssue.body(error.toString(), stack, appVersion, "${System.getProperty("os.name")} ${System.getProperty("os.version")}", thread, at)
+            val os = "${System.getProperty("os.name")} ${System.getProperty("os.version")}"
+            return CrashIssue.body(CrashScrub.scrubbed(error.toString()), CrashScrub.scrubbed(stack), appVersion, os, thread, at)
         }
     }
 }

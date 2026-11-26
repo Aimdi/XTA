@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.chrome
 
+import com.aimdi.xtanative.core.log.LogRedaction
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.nio.file.Files
