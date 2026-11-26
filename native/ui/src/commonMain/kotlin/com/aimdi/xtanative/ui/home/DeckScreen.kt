@@ -65,6 +65,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.feed.FeedStrip
@@ -323,15 +324,19 @@ private fun NetworkColumn(id: String, label: String, place: ColumnPlace, calls: 
  */
 @Composable
 private fun ColumnHeader(column: DeckColumn, label: String, place: ColumnPlace, calls: ColumnCalls, onRefresh: () -> Unit, extra: @Composable RowScope.() -> Unit = {}) {
+    // A group's emoji stands in the mark's place, ahead of its bare name.
+    val (emoji, name) = if (column is DeckColumn.Group) ColumnTitle.split(label) else null to label
     Row(Modifier.fillMaxWidth().then(calls.handle).heightIn(min = 48.dp).padding(start = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.weight(1f)) {
             Row(
                 Modifier.heightIn(min = 48.dp).clip(RoundedCornerShape(8.dp)).clickable(onClick = calls.onTitle).padding(end = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) { ColumnMark(column) }
+                Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+                    if (emoji != null) Text(emoji, fontSize = 20.sp, maxLines = 1) else ColumnMark(column)
+                }
                 TipText(
-                    label,
+                    name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
@@ -344,6 +349,16 @@ private fun ColumnHeader(column: DeckColumn, label: String, place: ColumnPlace, 
         if (calls.menu) ColumnMenu(place, calls)
     }
     HorizontalDivider()
+}
+
+/** A column's name as its head shows it. */
+internal object ColumnTitle {
+    /** A group's label ([HomeStrip.groupLabel]) as its emoji, null without one, and its name. */
+    fun split(label: String): Pair<String?, String> {
+        val first = label.substringBefore(' ')
+        val rest = label.substringAfter(' ', "")
+        return if (rest.isNotBlank() && first.none { it.isLetterOrDigit() }) first to rest else null to label
+    }
 }
 
 /** A column's mark, as Home's bar draws its timeline's: Following's stacked posts, X's own mark, a network's, a group's people. */
