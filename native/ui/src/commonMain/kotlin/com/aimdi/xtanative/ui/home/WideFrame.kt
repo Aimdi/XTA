@@ -198,7 +198,7 @@ internal fun frameModel(home: ViewModelStoreOwner): HomeViewModel {
  * the window's frame goes on to the page's first control.
  */
 @Stable
-class FrameFocus {
+class FrameFocus(private val bar: FocusRequester = FocusRequester()) {
     val marked = FocusRequester()
     val whole = FocusRequester()
     val page = FocusRequester()
@@ -224,7 +224,10 @@ class FrameFocus {
 
     /**
      * The keys onto the page's first control, the one at its top start (a
-     * screen's Back): onto the page's start ([PageStart]), at its top start
+     * screen's Back): into the [bar] of a page that puts its bar first
+     * ([WideFrame.pageBar], Home's), whose first control stands flush with
+     * the page's top edge, where the step down below would pass it by for the
+     * first post. Else onto the page's start ([PageStart]), at its top start
      * corner, then down from there to the nearest control; where that finds
      * none in the page, the next in Tab's own order. A plain Enter would pick
      * the start-most control instead (a list's row before the bar above it),
@@ -234,7 +237,7 @@ class FrameFocus {
     fun toPage(): Boolean {
         entering = true
         try {
-            return page.enters() && (move(FocusDirection.Down) || move(FocusDirection.Next))
+            return bar.enters() || page.enters() && (move(FocusDirection.Down) || move(FocusDirection.Next))
         } finally {
             entering = false
         }

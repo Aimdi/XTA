@@ -7,9 +7,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Constraints
+import com.aimdi.xtanative.ui.home.LocalWideFrame
 
 /**
  * A page under a top bar, as Material's [Scaffold] with a [topBar] alone
@@ -35,9 +37,11 @@ internal fun BarFirstScaffold(
         Scaffold(modifier = modifier, containerColor = containerColor, topBar = topBar, content = content)
         return
     }
+    // Beside the desktop frame's navigation, Tab from the window's frame comes into the bar (WideFrame.pageBar).
+    val frame = LocalWideFrame.current
     Surface(modifier = modifier, color = containerColor) {
         Layout(content = {
-            Box { topBar() }
+            Box(if (frame != null) Modifier.focusRequester(frame.pageBar) else Modifier) { topBar() }
             Box { content(NoPadding) }
         }) { (bar, page), constraints ->
             val width = constraints.maxWidth

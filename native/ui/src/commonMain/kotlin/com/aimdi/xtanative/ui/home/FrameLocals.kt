@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -38,6 +39,14 @@ class WideFrame {
 
     /** Opens the whole account menu over the window where the navigation is only a rail ([FrameKind.RAIL]); null beside the column, which shows it all. */
     var openMenu by mutableStateOf<(() -> Unit)?>(null)
+
+    /**
+     * The bar of the screen shown where it stands first in Tab's order
+     * ([com.aimdi.xtanative.ui.common.BarFirstScaffold], Home's timelines):
+     * Tab from the window's frame goes into it ([FrameFocus.toPage]), as
+     * onto any other page's first control.
+     */
+    val pageBar = FocusRequester()
 }
 
 /** The wide window's navigation column around the screens; null where there is none (Android, a narrow window, a post's own window). */

@@ -82,6 +82,16 @@ class FrameRegionTest {
     }
 
     @Test
+    fun aPageWhoseBarStandsFirstIsTriedFirstThenThePagesStart() {
+        val focus = FrameFocus(FocusRequester())
+        var stepped = 0
+        focus.move = { stepped++; true }
+        assertFalse(focus.toPage(), "neither a bar nor the page's start composed: nothing took the keys")
+        assertEquals(0, stepped, "no step on from a start that took no focus")
+        assertFalse(focus.entering, "and the page's start takes none afterwards")
+    }
+
+    @Test
     fun whileTheRailsMenuHoldsTheKeysTheWindowLeavesThemToIt() {
         for (action in listOf(DeskAction.OTHER_REGION, DeskAction.ENTER_PAGE, DeskAction.CLOSE, DeskAction.LEAVE_FIELD, DeskAction.NEXT_COLUMN)) {
             assertFalse(DesktopKeys.windowActs(action, overlayHolds = true), "$action is the menu's")

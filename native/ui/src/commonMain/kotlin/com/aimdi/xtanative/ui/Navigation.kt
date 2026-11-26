@@ -873,7 +873,7 @@ private val FULL_WINDOW = setOf(Routes.MEDIA, Routes.GALLERY, Routes.IMAGE, Plug
 private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Composable () -> Unit) {
     if (!isDesktop || LocalSecondaryWindow.current != null) return content()
     val frame = remember { WideFrame() }
-    val focus = remember { FrameFocus() }
+    val focus = remember(frame) { FrameFocus(frame.pageBar) }
     var menu by remember { mutableStateOf(false) }
     val stack by nav.currentBackStack.collectAsStateWithLifecycle()
     val visible by nav.visibleEntries.collectAsStateWithLifecycle()
