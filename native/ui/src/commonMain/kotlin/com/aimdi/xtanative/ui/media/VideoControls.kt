@@ -40,6 +40,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -85,6 +86,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
+import com.aimdi.xtanative.ui.common.RingedFocus
 import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.rememberSheetState
@@ -338,27 +340,31 @@ private val MuteCornerReserve = MuteInset + MuteDisc + MuteInset + 2.dp
 @Composable
 internal fun MuteCorner(muted: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier, disc: Dp = MuteDisc, inset: Dp = MuteInset) {
     val label = stringResource(Res.string.reader_video_mute)
-    Box(
-        modifier
-            .padding(inset - (TouchTarget - disc) / 2)
-            .size(TouchTarget)
-            .keyboardFocusRing()
-            .clip(CircleShape)
-            .toggleable(value = muted, role = Role.Switch, onValueChange = { onToggle() })
-            .semantics { contentDescription = label },
-        contentAlignment = Alignment.Center,
-    ) {
+    // The round ring alone marks the keyboard's focus, no white disc under it.
+    RingedFocus {
         Box(
-            Modifier
-                .size(disc)
+            modifier
+                .padding(inset - (TouchTarget - disc) / 2)
+                .size(TouchTarget)
+                .keyboardFocusRing()
                 .clip(CircleShape)
-                .background(Color.Black.copy(alpha = 0.4f))
-                .background(Brush.verticalGradient(0f to Color.White.copy(alpha = 0.16f), 0.5f to Color.Transparent))
-                .border(0.75.dp, Color.White.copy(alpha = 0.24f), CircleShape),
+                // The round ring above is the keyboard's one; the row's lighting would ring it a second time.
+                .toggleable(value = muted, interactionSource = null, indication = ripple(color = Color.White), role = Role.Switch, onValueChange = { onToggle() })
+                .semantics { contentDescription = label },
             contentAlignment = Alignment.Center,
         ) {
-            Crossfade(targetState = muted, animationSpec = tween(MOTION_FAST_MS)) { quiet ->
-                Icon(if (quiet) ReaderIcons.VolumeOff else ReaderIcons.VolumeUp, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+            Box(
+                Modifier
+                    .size(disc)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.4f))
+                    .background(Brush.verticalGradient(0f to Color.White.copy(alpha = 0.16f), 0.5f to Color.Transparent))
+                    .border(0.75.dp, Color.White.copy(alpha = 0.24f), CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Crossfade(targetState = muted, animationSpec = tween(MOTION_FAST_MS)) { quiet ->
+                    Icon(if (quiet) ReaderIcons.VolumeOff else ReaderIcons.VolumeUp, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                }
             }
         }
     }
@@ -368,31 +374,34 @@ internal fun MuteCorner(muted: Boolean, onToggle: () -> Unit, modifier: Modifier
 @Composable
 private fun PlayPauseButton(state: VideoState, modifier: Modifier, onClick: () -> Unit) {
     val label = stringResource(if (state.completed) Res.string.reader_video_restart else Res.string.reader_video)
-    Box(
-        modifier
-            .size(64.dp)
-            // Its own ring: on black, an icon button's focus shade is not seen.
-            .keyboardFocusRing()
-            .clip(CircleShape)
-            .background(Color.Black.copy(alpha = 0.54f))
-            .clickable(onClick = onClick)
-            .clearAndSetSemantics {
-                contentDescription = label
-                role = Role.Button
-                onClick {
-                    onClick()
-                    true
-                }
-            },
-        contentAlignment = Alignment.Center,
-    ) {
-        val shown = when {
-            state.completed -> ReaderIcons.Replay
-            state.playing -> ReaderIcons.Pause
-            else -> Icons.Filled.PlayArrow
-        }
-        Crossfade(targetState = shown, animationSpec = tween(MOTION_STANDARD_MS)) { icon ->
-            Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(32.dp))
+    // The round ring alone marks the keyboard's focus, no white disc under it.
+    RingedFocus {
+        Box(
+            modifier
+                .size(64.dp)
+                // Its own ring: on black, an icon button's focus shade is not seen.
+                .keyboardFocusRing()
+                .clip(CircleShape)
+                .background(Color.Black.copy(alpha = 0.54f))
+                .clickable(interactionSource = null, indication = ripple(color = Color.White), onClick = onClick)
+                .clearAndSetSemantics {
+                    contentDescription = label
+                    role = Role.Button
+                    onClick {
+                        onClick()
+                        true
+                    }
+                },
+            contentAlignment = Alignment.Center,
+        ) {
+            val shown = when {
+                state.completed -> ReaderIcons.Replay
+                state.playing -> ReaderIcons.Pause
+                else -> Icons.Filled.PlayArrow
+            }
+            Crossfade(targetState = shown, animationSpec = tween(MOTION_STANDARD_MS)) { icon ->
+                Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(32.dp))
+            }
         }
     }
 }

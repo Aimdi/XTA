@@ -1,10 +1,12 @@
 package com.aimdi.xtanative.ui.home
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,9 +54,9 @@ import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSheetCloser
+import com.aimdi.xtanative.ui.common.RowHighlight
 import com.aimdi.xtanative.ui.common.SheetCloser
 import com.aimdi.xtanative.ui.common.TipText
-import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.common.longPressOver
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -69,6 +71,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_xta_settings
 import com.aimdi.xtanative.ui.generated.resources.settings
 import com.aimdi.xtanative.ui.generated.resources.settings_avatar_title
 import com.aimdi.xtanative.ui.plugins.ShellSubtitleContent
+import com.aimdi.xtanative.ui.settings.isDesktop
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import org.jetbrains.compose.resources.stringResource
 
@@ -320,9 +323,10 @@ private fun Word(label: String, picked: Boolean, lit: Boolean, onClick: () -> Un
     Row(
         Modifier
             .heightIn(min = 48.dp)
-            .keyboardFocusRing()
-            .clip(RoundedCornerShape(24.dp))
-            .clickable(onClick = onClick)
+            // On the desktop lit as the app's rows are, the keyboard's ring theirs: one ring, its corners the row's.
+            // Its own interactions, so the lighting is there before the first focus arrives and rings that too.
+            .clip(RoundedCornerShape(if (isDesktop) RowHighlight.RADIUS.dp else 24.dp))
+            .clickable(interactionSource = remember { MutableInteractionSource() }, indication = LocalIndication.current, onClick = onClick)
             .padding(horizontal = 12.dp)
             .clearAndSetSemantics {
                 role = Role.Tab
@@ -350,9 +354,9 @@ private fun NetworkTile(id: String, ui: HomeUi, networks: HomeNetworks, shown: B
     val unread = stringResource(Res.string.home_unread)
     Box(
         modifier
-            .keyboardFocusRing(0.dp)
+            // The row's lighting draws the keyboard's ring, one ring, not two; there from the first focus on.
             .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick)
+            .clickable(interactionSource = remember { MutableInteractionSource() }, indication = LocalIndication.current, onClick = onClick)
             // One thing to a screen reader: its name as written, shown or not, and "unread" as its state.
             .semantics(mergeDescendants = true) {
                 role = Role.Button
