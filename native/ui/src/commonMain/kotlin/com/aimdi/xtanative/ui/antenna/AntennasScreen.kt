@@ -24,7 +24,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -58,12 +57,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -73,6 +68,7 @@ import com.aimdi.xtanative.store.antenna.Antenna
 import com.aimdi.xtanative.store.antenna.AntennaScope
 import com.aimdi.xtanative.ui.common.ActionsInTopBar
 import com.aimdi.xtanative.ui.common.ColumnTopAppBar
+import com.aimdi.xtanative.ui.common.EmptyState
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
@@ -84,7 +80,6 @@ import com.aimdi.xtanative.ui.common.TopBarBack
 import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_antenna_empty
 import com.aimdi.xtanative.ui.generated.resources.discover_antenna_exclude
 import com.aimdi.xtanative.ui.generated.resources.discover_antenna_include
@@ -218,17 +213,7 @@ private fun AntennaRow(antenna: Antenna, onOpen: () -> Unit, onSettings: () -> U
 
 @Composable
 private fun EmptyAntennas(onNew: () -> Unit) {
-    Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Icon(DiscoverIcons.Radar, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(48.dp))
-        Text(
-            stringResource(Res.string.discover_antenna_empty),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(vertical = 16.dp).semantics { liveRegion = LiveRegionMode.Polite },
-        )
+    EmptyState(DiscoverIcons.Radar, stringResource(Res.string.discover_antenna_empty)) {
         Button(onClick = onNew, modifier = Modifier.heightIn(min = 48.dp)) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.discover_antenna_new), modifier = Modifier.padding(start = 8.dp))

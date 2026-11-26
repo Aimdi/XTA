@@ -27,10 +27,8 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -50,7 +48,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -76,6 +73,7 @@ import com.aimdi.xtanative.ui.home.rowMovedByKeys
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import com.aimdi.xtanative.ui.settings.isDesktop
+import com.aimdi.xtanative.ui.common.EmptyState
 
 /** Each level of nesting moves a list row this far in. */
 private val NEST_INDENT = 20.dp
@@ -102,16 +100,12 @@ fun GroupsPage(
 
 @Composable
 private fun EmptyGroups(onCreate: () -> Unit, contentPadding: PaddingValues) {
-    Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(contentPadding).padding(start = 24.dp, end = 24.dp, top = 48.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+    EmptyState(
+        GroupIcons.Workspaces,
+        stringResource(Res.string.groups_none_yet),
+        Modifier.padding(contentPadding),
+        body = stringResource(if (isDesktop) Res.string.groups_none_description_desktop else Res.string.groups_none_description),
     ) {
-        Icon(GroupIcons.Workspaces, contentDescription = null, tint = MaterialTheme.colorScheme.outline, modifier = Modifier.size(48.dp))
-        Spacer(Modifier.height(8.dp))
-        Text(stringResource(Res.string.groups_none_yet), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-        Text(stringResource(if (isDesktop) Res.string.groups_none_description_desktop else Res.string.groups_none_description), textAlign = TextAlign.Center)
-        Spacer(Modifier.height(16.dp))
         Button(onClick = onCreate) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.groups_create), modifier = Modifier.padding(start = 8.dp))

@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.ui.downloads
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,7 +33,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,13 +42,13 @@ import com.aimdi.xtanative.store.downloads.DownloadEntry
 import com.aimdi.xtanative.store.downloads.DownloadStatus
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.ui.common.ColumnTopAppBar
+import com.aimdi.xtanative.ui.common.EmptyState
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.TopBarBack
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.downloads_cancelled
 import com.aimdi.xtanative.ui.generated.resources.downloads_choose_location
@@ -121,14 +119,7 @@ fun DownloadsScreen(onBack: () -> Unit) {
             Box(Modifier.weight(1f).fillMaxWidth()) {
                 when {
                     !state.ready -> CircularProgressIndicator(Modifier.align(Alignment.Center))
-                    state.entries.isEmpty() -> Column(
-                        Modifier.align(Alignment.Center).padding(32.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        Icon(SavedIcons.Download, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(40.dp))
-                        Text(stringResource(Res.string.downloads_empty), textAlign = TextAlign.Center)
-                    }
+                    state.entries.isEmpty() -> EmptyState(SavedIcons.Download, stringResource(Res.string.downloads_empty))
                     else -> rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 16.dp), readList) { column -> LazyColumn(state = readList, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                         items(state.shown, key = { it.id }) { entry ->
                             DownloadRowView(
