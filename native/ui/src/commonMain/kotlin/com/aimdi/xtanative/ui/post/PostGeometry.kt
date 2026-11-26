@@ -23,6 +23,12 @@ object PostGeometry {
 
     /** How far down its target a header glyph sits, so it is level with the author line. */
     const val GLYPH_TOP = 3f
+
+    /** A header glyph's edge (translate, ⋯). */
+    const val GLYPH_SIZE = 18f
+
+    /** How far a header target centred on its glyph stands above the slot the glyph sits [GLYPH_TOP] down in. */
+    const val GLYPH_LIFT = TOUCH_TARGET / 2 - GLYPH_TOP - GLYPH_SIZE / 2
     const val RAIL_WIDTH = 2f
 
     /** How far the avatar's 48 dp target reaches past the avatar on each side. */

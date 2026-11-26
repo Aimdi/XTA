@@ -102,4 +102,13 @@ class AuthorLineLayoutTest {
         assertTrue(center + badge / 2 > avatar)
         assertTrue(center + badge / 2 <= avatar + inset)
     }
+
+    @Test
+    fun aHeaderTargetCentredOnItsGlyphStandsAboveTheGlyphsSlot() {
+        // The glyph's centre, 3 dp down its slot, is the lifted target's centre.
+        assertEquals(12f, PostGeometry.GLYPH_LIFT)
+        assertEquals(PostGeometry.GLYPH_TOP + PostGeometry.GLYPH_SIZE / 2, PostGeometry.TOUCH_TARGET / 2 - PostGeometry.GLYPH_LIFT)
+        // It reaches no higher than the post's own top padding.
+        assertTrue(PostGeometry.GLYPH_LIFT <= PostGeometry.COLUMN_TOP)
+    }
 }

@@ -61,6 +61,7 @@ import com.aimdi.xtanative.ui.common.LocalSessions
 import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.onSecondaryClickIf
 import com.aimdi.xtanative.ui.common.rememberSheetState
@@ -245,9 +246,11 @@ private fun rememberPictureShare(post: XPost, picture: PostPicture?): (() -> Uni
 
 /**
  * A glyph at a post's top-right, beside the author: translate and ⋯, each a
- * [PostGeometry.TOUCH_TARGET] target. In a timeline the glyph sits at the
- * target's top, level with the author line, and the target reaches down over
- * the text as X's ⋯ does ([glyphTop]); elsewhere it is centred.
+ * [PostGeometry.TOUCH_TARGET] target. In a timeline the glyph sits level with
+ * the author line ([glyphTop]): its slot is laid out from the line's top, as
+ * X's ⋯ is, and the target, centred on the glyph, reaches up into the post's
+ * top padding ([PostGeometry.GLYPH_LIFT]), so the pointer's wash, a press and
+ * the keyboard's ring are rounds about the glyph, as an icon button's are.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -261,16 +264,26 @@ internal fun HeaderButton(
 ) {
     Box(
         Modifier
+            .offset(y = if (glyphTop) -PostGeometry.GLYPH_LIFT.dp else 0.dp)
             .size(PostGeometry.TOUCH_TARGET.dp)
-            .clip(CircleShape)
+            .keyboardFocusRing()
             .onSecondaryClickIf(onLongClick)
-            .combinedClickable(role = Role.Button, onClick = onClick, onLongClick = onLongClick)
+            .combinedClickable(
+                interactionSource = null,
+                indication = ripple(bounded = false, radius = (PostGeometry.TOUCH_TARGET / 2 - HEADER_RING_INSET).dp),
+                role = Role.Button,
+                onClick = onClick,
+                onLongClick = onLongClick,
+            )
             .semantics { contentDescription = label },
-        contentAlignment = if (glyphTop) Alignment.TopCenter else Alignment.Center,
+        contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.padding(top = if (glyphTop) PostGeometry.GLYPH_TOP.dp else 0.dp).size(18.dp))
+        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(PostGeometry.GLYPH_SIZE.dp))
     }
 }
+
+/** How far in from a header target's edge its ripple round ends: an icon button's 40 dp in its 48 dp target. */
+private const val HEADER_RING_INSET = 4f
 
 /**
  * The translate control: translates, or shows the original again; red once
