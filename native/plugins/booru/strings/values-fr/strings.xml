@@ -33,6 +33,7 @@
     <string name="download_all_result">En file d’attente : %1$d. Déjà téléchargés : %2$d.</string>
     <string name="edit_as_text">Modifier en texte</string>
     <string name="edit_tag">Toucher pour modifier</string>
+    <string name="edit_tag_desktop">Cliquer pour modifier</string>
     <string name="either_tag">Ou</string>
     <string name="empty_following">Suivez des tags depuis la recherche ou une publication pour remplir cet onglet</string>
     <string name="empty_following_posts">Aucune publication récente pour vos tags suivis</string>
@@ -126,6 +127,7 @@
     <string name="rating_questionable">Douteux</string>
     <string name="rating_sensitive">Sensible</string>
     <string name="related_hint">Toucher pour ajouter à la recherche · appui long pour exclure</string>
+    <string name="related_hint_desktop">Cliquer pour ajouter à la recherche · clic droit pour exclure</string>
     <string name="remove_site">Retirer le site</string>
     <string name="retry">Réessayer</string>
     <string name="save_on_this_device">Enregistrer sur cet appareil</string>
@@ -154,6 +156,7 @@
     <string name="small_thumbnails_description">Charge les petits aperçus de l’hôte dans la grille. Plus rapide et moins gourmand en données, mais plus flou</string>
     <string name="source">Source</string>
     <string name="suggestions_hint">Tags proches de celui saisi : touchez-en un pour le chercher à la place</string>
+    <string name="suggestions_hint_desktop">Tags proches de celui saisi : cliquez-en un pour le chercher à la place</string>
     <string name="tab_following">Suivis</string>
     <string name="tab_latest">Récents</string>
     <string name="tag_artist">Artiste</string>
@@ -171,6 +174,7 @@
     <string name="tag_sort_name">A–Z</string>
     <string name="tag_species">Espèce</string>
     <string name="tag_tap_hint">Touchez un tag pour le rechercher. Maintenez-le appuyé pour le suivre, le masquer ou lire son wiki.</string>
+    <string name="tag_tap_hint_desktop">Cliquez sur un tag pour le rechercher. Faites un clic droit dessus pour le suivre, le masquer ou lire son wiki.</string>
     <string name="tags">Tags</string>
     <string name="test_connection">Tester la connexion</string>
     <string name="test_failed">Échec du test Booru : %1$s</string>

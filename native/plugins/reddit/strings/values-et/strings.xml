@@ -26,7 +26,9 @@
     <string name="nsfw_hide">Peida</string>
     <string name="nsfw_hide_description">Eemalda NSFW-postitused voogudest ja loenditest</string>
     <string name="nsfw_tap">Näitamiseks puuduta</string>
+    <string name="nsfw_tap_desktop">Näitamiseks klõpsa</string>
     <string name="nsfw_tap_description">Kata NSFW-meedia, kuni seda puudutad</string>
+    <string name="nsfw_tap_description_desktop">Kata NSFW-meedia, kuni sellel klõpsad</string>
     <string name="nsfw_show">Näita alati</string>
     <string name="nsfw_show_description">Näita NSFW-meediat ilma katteta</string>
     <string name="online_now">praegu võrgus</string>
@@ -40,6 +42,7 @@
     <string name="show_spoilers">Näita spoilerid</string>
     <string name="show_spoilers_description">Näita spoilerina märgitud meediat ilma katteta</string>
     <string name="tap_to_show_spoiler">Sisupaljastuse nägemiseks puuduta</string>
+    <string name="tap_to_show_spoiler_desktop">Sisupaljastuse nägemiseks klõpsa</string>
     <string name="sign_in">Logi Redditisse sisse</string>
     <string name="sign_in_failed">Redditisse sisselogimine ebaõnnestus</string>
     <string name="sign_out">Logi välja</string>
@@ -108,6 +111,7 @@
     <string name="copy">Kopeeri</string>
     <string name="more_options">Rohkem valikuid</string>
     <string name="tap_to_show_media">Meedia nägemiseks puuduta</string>
+    <string name="tap_to_show_media_desktop">Meedia nägemiseks klõpsa</string>
     <plurals name="comment_count">
         <item quantity="one">%1$d kommentaar</item>
         <item quantity="other">%1$d kommentaari</item>

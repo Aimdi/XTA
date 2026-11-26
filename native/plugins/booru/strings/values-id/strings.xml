@@ -33,6 +33,7 @@
     <string name="download_all_result">Dalam antrean: %1$d. Sudah diunduh: %2$d.</string>
     <string name="edit_as_text">Edit sebagai teks</string>
     <string name="edit_tag">Ketuk untuk mengedit</string>
+    <string name="edit_tag_desktop">Klik untuk mengedit</string>
     <string name="either_tag">Atau</string>
     <string name="empty_following">Ikuti tag dari pencarian atau postingan untuk mengisi tab ini</string>
     <string name="empty_following_posts">Belum ada postingan baru untuk tag yang Anda ikuti</string>
@@ -124,6 +125,7 @@
     <string name="rating_questionable">Meragukan</string>
     <string name="rating_sensitive">Sensitif</string>
     <string name="related_hint">Ketuk untuk menambahkan ke pencarian · tekan lama untuk mengecualikan</string>
+    <string name="related_hint_desktop">Klik untuk menambahkan ke pencarian · klik kanan untuk mengecualikan</string>
     <string name="remove_site">Hapus situs</string>
     <string name="retry">Ulang</string>
     <string name="save_on_this_device">Simpan di perangkat ini</string>
@@ -152,6 +154,7 @@
     <string name="small_thumbnails_description">Memuat pratinjau kecil dari host di kisi. Lebih cepat dan hemat data, tetapi lebih buram</string>
     <string name="source">Sumber</string>
     <string name="suggestions_hint">Tag yang mirip dengan yang Anda ketik: ketuk salah satu untuk mencarinya</string>
+    <string name="suggestions_hint_desktop">Tag yang mirip dengan yang Anda ketik: klik salah satu untuk mencarinya</string>
     <string name="tab_following">Diikuti</string>
     <string name="tab_latest">Terbaru</string>
     <string name="tag_artist">Artis</string>
@@ -167,6 +170,7 @@
     <string name="tag_sort_name">A–Z</string>
     <string name="tag_species">Spesies</string>
     <string name="tag_tap_hint">Ketuk tag untuk mencarinya. Sentuh lama untuk mengikutinya, menyembunyikannya, atau membaca wikinya.</string>
+    <string name="tag_tap_hint_desktop">Klik tag untuk mencarinya. Klik kanan untuk mengikutinya, menyembunyikannya, atau membaca wikinya.</string>
     <string name="tags">Tag</string>
     <string name="test_connection">Uji koneksi</string>
     <string name="test_failed">Uji booru gagal: %1$s</string>

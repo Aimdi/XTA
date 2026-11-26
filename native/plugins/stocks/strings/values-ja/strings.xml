@@ -21,6 +21,7 @@
     <string name="error">それはティッカーシンボルではありません</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">ティッカーに関する投稿が下に表示されます。タップで絞り込み、長押しでページを開きます。</string>
+    <string name="feed_hint_desktop">ティッカーに関する投稿が下に表示されます。クリックで絞り込み、右クリックでページを開きます。</string>
     <string name="fold_signal_posts">シグナルグループの投稿を折りたたむ</string>
     <string name="hide">非表示</string>
     <string name="liquidity">流動性</string>

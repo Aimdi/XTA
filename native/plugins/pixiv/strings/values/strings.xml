@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Your Pixiv refresh token was rejected</string>
     <string name="file_name">File name</string>
     <string name="file_name_help">Tap a detail to insert it at the cursor. Each file keeps its own extension.</string>
+    <string name="file_name_help_desktop">Click a detail to insert it at the cursor. Each file keeps its own extension.</string>
     <string name="file_name_part_required">Include %1$s so each page of a work gets its own name</string>
     <string name="file_name_preview">Preview: %1$s</string>
     <string name="file_name_reset">Reset</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Edit favorite tags</string>
     <string name="search_favorite_tags_edit_hint">Drag a tag to move it. Swipe it aside to remove it.</string>
     <string name="search_favorite_tags_empty">No favorite tags yet. Long-press a tag on a work to add it.</string>
+    <string name="search_favorite_tags_empty_desktop">No favorite tags yet. Right-click a tag on a work to add it.</string>
     <string name="search_filters_title">Search filters</string>
     <string name="search_hint">Tags, titles or users</string>
     <string name="search_history">Recent searches</string>

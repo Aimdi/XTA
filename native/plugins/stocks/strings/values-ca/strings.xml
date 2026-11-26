@@ -21,6 +21,7 @@
     <string name="error">Això no és un símbol borsari</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Les publicacions sobre els teus tickers apareixen a sota. Toca un símbol per filtrar; mantén premut per obrir-ne la pàgina.</string>
+    <string name="feed_hint_desktop">Les publicacions sobre els teus tickers apareixen a sota. Fes clic en un símbol per filtrar; amb el botó dret se n’obre la pàgina.</string>
     <string name="fold_signal_posts">Plega les publicacions de grups de senyals</string>
     <string name="hide">Amaga</string>
     <string name="liquidity">Liquiditat</string>

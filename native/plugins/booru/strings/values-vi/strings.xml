@@ -33,6 +33,7 @@
     <string name="download_all_result">Đã xếp hàng: %1$d. Đã tải trước đó: %2$d.</string>
     <string name="edit_as_text">Sửa dạng văn bản</string>
     <string name="edit_tag">Chạm để sửa</string>
+    <string name="edit_tag_desktop">Nhấp để sửa</string>
     <string name="either_tag">Hoặc</string>
     <string name="empty_following">Theo dõi thẻ từ tìm kiếm hoặc một bài đăng để lấp đầy tab này</string>
     <string name="empty_following_posts">Không có bài đăng mới cho các thẻ bạn theo dõi</string>
@@ -124,6 +125,7 @@
     <string name="rating_questionable">Đáng ngờ</string>
     <string name="rating_sensitive">Nhạy cảm</string>
     <string name="related_hint">Chạm để thêm vào tìm kiếm · nhấn giữ để loại trừ</string>
+    <string name="related_hint_desktop">Nhấp để thêm vào tìm kiếm · nhấp chuột phải để loại trừ</string>
     <string name="remove_site">Xóa trang</string>
     <string name="retry">Thử lại</string>
     <string name="save_on_this_device">Lưu trên thiết bị này</string>
@@ -152,6 +154,7 @@
     <string name="small_thumbnails_description">Tải ảnh xem trước cỡ nhỏ của trang vào lưới. Nhanh và tiết kiệm dữ liệu hơn, nhưng mờ hơn</string>
     <string name="source">Nguồn</string>
     <string name="suggestions_hint">Các thẻ giống thẻ bạn đã gõ: chạm vào một thẻ để tìm theo thẻ đó</string>
+    <string name="suggestions_hint_desktop">Các thẻ giống thẻ bạn đã gõ: nhấp vào một thẻ để tìm theo thẻ đó</string>
     <string name="tab_following">Đang theo dõi</string>
     <string name="tab_latest">Mới nhất</string>
     <string name="tag_artist">Họa sĩ</string>
@@ -167,6 +170,7 @@
     <string name="tag_sort_name">A–Z</string>
     <string name="tag_species">Loài</string>
     <string name="tag_tap_hint">Chạm vào thẻ để tìm kiếm. Nhấn giữ để theo dõi, ẩn hoặc đọc wiki của thẻ.</string>
+    <string name="tag_tap_hint_desktop">Nhấp vào thẻ để tìm kiếm. Nhấp chuột phải để theo dõi, ẩn hoặc đọc wiki của thẻ.</string>
     <string name="tags">Thẻ</string>
     <string name="test_connection">Kiểm tra kết nối</string>
     <string name="test_failed">Kiểm tra booru thất bại: %1$s</string>

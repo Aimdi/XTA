@@ -80,6 +80,7 @@
     <string name="no_results">Keine Ergebnisse</string>
     <string name="notes_empty">Keine Notes zum Anzeigen</string>
     <string name="notes_intro">Öffentliche Notes aus Substack — nicht dein persönlicher Following-Feed. Tippe eine Note an, um sie auf der Website zu öffnen, oder folge der Publikation.</string>
+    <string name="notes_intro_desktop">Öffentliche Notes aus Substack — nicht dein persönlicher Following-Feed. Klicke auf eine Note, um sie auf der Website zu öffnen, oder folge der Publikation.</string>
     <string name="open_in_browser">Im Browser öffnen</string>
     <string name="open_pasted_post">Eingefügten Beitrag öffnen</string>
     <string name="opml_empty">Diese Datei enthält keine Publikationen</string>

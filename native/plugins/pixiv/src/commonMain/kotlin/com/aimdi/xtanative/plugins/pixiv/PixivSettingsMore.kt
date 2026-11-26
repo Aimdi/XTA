@@ -40,6 +40,7 @@ import com.aimdi.xtanative.store.settings.PixivDetailLayout
 import com.aimdi.xtanative.store.settings.PixivImageQuality
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -202,7 +203,7 @@ private fun FileNameDialog(onClose: () -> Unit) {
                     onValueChange = { value = it },
                     singleLine = true,
                     isError = !hasPart,
-                    supportingText = { Text(if (hasPart) pluginString(Strings.file_name_help) else pluginString(Strings.file_name_part_required, PixivNameToken.PART.token)) },
+                    supportingText = { Text(if (hasPart) pluginString(if (PluginPlatform.isDesktop) Strings.file_name_help_desktop else Strings.file_name_help) else pluginString(Strings.file_name_part_required, PixivNameToken.PART.token)) },
                     trailingIcon = { IconTip(pluginString(Strings.file_name_reset)) { IconButton(onClick = { value = TextFieldValue(PixivSaveNaming.DEFAULT_TEMPLATE, TextRange(PixivSaveNaming.DEFAULT_TEMPLATE.length)) }) { Icon(Icons.Filled.Refresh, pluginString(Strings.file_name_reset)) } } },
                     modifier = Modifier.fillMaxWidth(),
                 )

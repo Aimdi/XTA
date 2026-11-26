@@ -33,6 +33,7 @@
     <string name="download_all_result">في قائمة الانتظار: %1$d. مُنزَّلة مسبقًا: %2$d.</string>
     <string name="edit_as_text">تعديل كنص</string>
     <string name="edit_tag">انقر للتعديل</string>
+    <string name="edit_tag_desktop">انقر للتعديل</string>
     <string name="either_tag">أو</string>
     <string name="empty_following">تابِع وسومًا من البحث أو من منشور لملء هذا التبويب</string>
     <string name="empty_following_posts">لا منشورات حديثة للوسوم التي تتابعها</string>
@@ -129,6 +130,7 @@
     <string name="rating_questionable">مشكوك فيه</string>
     <string name="rating_sensitive">حسّاس</string>
     <string name="related_hint">انقر للإضافة إلى البحث · اضغط مطولًا للاستبعاد</string>
+    <string name="related_hint_desktop">انقر للإضافة إلى البحث · انقر بزر الفأرة الأيمن للاستبعاد</string>
     <string name="remove_site">إزالة الموقع</string>
     <string name="retry">إعادة المحاولة</string>
     <string name="save_on_this_device">حفظ على هذا الجهاز</string>
@@ -157,6 +159,7 @@
     <string name="small_thumbnails_description">يحمّل المعاينات الصغيرة من الموقع في الشبكة. أسرع وأخفّ على البيانات، لكنها أقل وضوحًا</string>
     <string name="source">المصدر</string>
     <string name="suggestions_hint">وسوم تشبه ما كتبت: انقر على أحدها للبحث عنه بدلًا منه</string>
+    <string name="suggestions_hint_desktop">وسوم تشبه ما كتبت: انقر على أحدها للبحث عنه بدلًا منه</string>
     <string name="tab_following">المتابَعة</string>
     <string name="tab_latest">الأحدث</string>
     <string name="tag_artist">الفنان</string>
@@ -177,6 +180,7 @@
     <string name="tag_sort_name">أبجديًا</string>
     <string name="tag_species">الفصيلة</string>
     <string name="tag_tap_hint">انقر على وسم للبحث عنه. المس مطولًا لمتابعته أو إخفائه أو قراءة الويكي الخاص به.</string>
+    <string name="tag_tap_hint_desktop">انقر على وسم للبحث عنه. انقر عليه بزر الفأرة الأيمن لمتابعته أو إخفائه أو قراءة الويكي الخاص به.</string>
     <string name="tags">الوسوم</string>
     <string name="test_connection">اختبار الاتصال</string>
     <string name="test_failed">فشل اختبار البورو: %1$s</string>

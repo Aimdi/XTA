@@ -26,7 +26,9 @@
     <string name="nsfw_hide">Schavać</string>
     <string name="nsfw_hide_description">Vydalać publikacyi NSFW sa stužak i spisaŭ</string>
     <string name="nsfw_tap">Nacisnuć dla pakazu</string>
+    <string name="nsfw_tap_desktop">Pstryknuć dla pakazu</string>
     <string name="nsfw_tap_description">Zakryvać medyja NSFW, pakul vy nie nacisniecie</string>
+    <string name="nsfw_tap_description_desktop">Zakryvać medyja NSFW, pakul vy nie pstrykniecie</string>
     <string name="nsfw_show">Zaŭsiody pakazvać</string>
     <string name="nsfw_show_description">Pakazvać medyja NSFW biez zakryccia</string>
     <string name="online_now">zaraz anlajn</string>
@@ -40,6 +42,7 @@
     <string name="show_spoilers">Pakazvać spojlery</string>
     <string name="show_spoilers_description">Pakazvać medyja sa spojleram biez nakryccia</string>
     <string name="tap_to_show_spoiler">Nacisnicie, kab pakazać spojler</string>
+    <string name="tap_to_show_spoiler_desktop">Pstryknicie, kab pakazać spojler</string>
     <string name="sign_in">Uvajsci ŭ Reddit</string>
     <string name="sign_in_failed">Nie ŭdałosia ŭvajsci ŭ Reddit</string>
     <string name="sign_out">Vyjsci</string>
@@ -108,6 +111,7 @@
     <string name="copy">Kapiravać</string>
     <string name="more_options">Dadatkovyja parametry</string>
     <string name="tap_to_show_media">Nacisnicie, kab pakazać medyja</string>
+    <string name="tap_to_show_media_desktop">Pstryknicie, kab pakazać medyja</string>
     <plurals name="comment_count">
         <item quantity="one">%1$d kamentaryj</item>
         <item quantity="few">%1$d kamentaryi</item>

@@ -42,6 +42,7 @@ import com.aimdi.xtanative.store.settings.RedditSource
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -115,7 +116,7 @@ private fun SourceRow(app: RedditApp, source: RedditSource, icon: ImageVector, t
 private fun NsfwRow(app: RedditApp, mode: RedditNsfwMode, selected: Boolean) {
     val (icon, title, description) = when (mode) {
         RedditNsfwMode.HIDE -> Triple(RedditGlyphs.VisibilityOff, Strings.nsfw_hide, Strings.nsfw_hide_description)
-        RedditNsfwMode.TAP -> Triple(RedditGlyphs.TouchApp, Strings.nsfw_tap, Strings.nsfw_tap_description)
+        RedditNsfwMode.TAP -> if (PluginPlatform.isDesktop) Triple(RedditGlyphs.TouchApp, Strings.nsfw_tap_desktop, Strings.nsfw_tap_description_desktop) else Triple(RedditGlyphs.TouchApp, Strings.nsfw_tap, Strings.nsfw_tap_description)
         RedditNsfwMode.SHOW -> Triple(RedditGlyphs.Visibility, Strings.nsfw_show, Strings.nsfw_show_description)
     }
     SettingRow(icon, pluginString(title), pluginString(description), selected) { app.change { it.with(RedditPrefs.nsfwMode, mode) } }

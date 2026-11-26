@@ -26,7 +26,9 @@
     <string name="nsfw_hide">Skrýt</string>
     <string name="nsfw_hide_description">Odebrat příspěvky NSFW z kanálů a výpisů</string>
     <string name="nsfw_tap">Klepnutím zobrazit</string>
+    <string name="nsfw_tap_desktop">Kliknutím zobrazit</string>
     <string name="nsfw_tap_description">Zakryje média NSFW, dokud na ně neklepnete</string>
+    <string name="nsfw_tap_description_desktop">Zakryje média NSFW, dokud na ně nekliknete</string>
     <string name="nsfw_show">Vždy zobrazit</string>
     <string name="nsfw_show_description">Zobrazit média NSFW bez zakrytí</string>
     <string name="online_now">právě online</string>
@@ -40,6 +42,7 @@
     <string name="show_spoilers">Zobrazit spoilery</string>
     <string name="show_spoilers_description">Zobrazit média označená jako spoiler bez překrytí</string>
     <string name="tap_to_show_spoiler">Klepnutím zobrazíte spoiler</string>
+    <string name="tap_to_show_spoiler_desktop">Kliknutím zobrazíte spoiler</string>
     <string name="sign_in">Přihlásit se k Redditu</string>
     <string name="sign_in_failed">Přihlášení k Redditu selhalo</string>
     <string name="sign_out">Odhlásit se</string>
@@ -108,6 +111,7 @@
     <string name="copy">Kopírovat</string>
     <string name="more_options">Další možnosti</string>
     <string name="tap_to_show_media">Klepnutím zobrazíte média</string>
+    <string name="tap_to_show_media_desktop">Kliknutím zobrazíte média</string>
     <plurals name="comment_count">
         <item quantity="one">%1$d komentář</item>
         <item quantity="few">%1$d komentáře</item>

@@ -33,6 +33,7 @@
     <string name="download_all_result">已加入佇列：%1$d。已下載過：%2$d。</string>
     <string name="edit_as_text">以文字編輯</string>
     <string name="edit_tag">輕觸即可編輯</string>
+    <string name="edit_tag_desktop">按一下即可編輯</string>
     <string name="either_tag">或</string>
     <string name="empty_following">從搜尋或貼文追蹤標籤，即可填滿這個分頁</string>
     <string name="empty_following_posts">你追蹤的標籤沒有新貼文</string>
@@ -124,6 +125,7 @@
     <string name="rating_questionable">可疑</string>
     <string name="rating_sensitive">敏感</string>
     <string name="related_hint">輕觸加入搜尋 · 長按排除</string>
+    <string name="related_hint_desktop">按一下加入搜尋 · 按右鍵排除</string>
     <string name="remove_site">移除站點</string>
     <string name="retry">重試</string>
     <string name="save_on_this_device">儲存在此裝置</string>
@@ -152,6 +154,7 @@
     <string name="small_thumbnails_description">在網格中載入站點提供的小預覽圖。速度較快、較省數據用量，但畫面較模糊</string>
     <string name="source">來源</string>
     <string name="suggestions_hint">與你輸入的相近的標籤：點一下改為搜尋它</string>
+    <string name="suggestions_hint_desktop">與你輸入的相近的標籤：按一下改為搜尋它</string>
     <string name="tab_following">追蹤中</string>
     <string name="tab_latest">最新</string>
     <string name="tag_artist">繪師</string>
@@ -167,6 +170,7 @@
     <string name="tag_sort_name">依名稱</string>
     <string name="tag_species">物種</string>
     <string name="tag_tap_hint">點按標籤即可搜尋。長按可追蹤、隱藏或查看其 Wiki。</string>
+    <string name="tag_tap_hint_desktop">按一下標籤即可搜尋。按右鍵可追蹤、隱藏或查看其 Wiki。</string>
     <string name="tags">標籤</string>
     <string name="test_connection">測試連線</string>
     <string name="test_failed">Booru 測試失敗：%1$s</string>

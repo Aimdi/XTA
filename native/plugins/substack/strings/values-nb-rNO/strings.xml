@@ -80,6 +80,7 @@
     <string name="no_results">Ingen resultater</string>
     <string name="notes_empty">Ingen Notes å vise nå</string>
     <string name="notes_intro">Offentlige Notes fra Substack — ikke din personlige Following. Trykk på et notat for å åpne det på nettstedet, eller følg publikasjonen.</string>
+    <string name="notes_intro_desktop">Offentlige Notes fra Substack — ikke din personlige Following. Klikk på et notat for å åpne det på nettstedet, eller følg publikasjonen.</string>
     <string name="open_in_browser">Åpne i nettleser</string>
     <string name="open_pasted_post">Åpne det innlimte innlegget</string>
     <string name="opml_empty">Ingen publikasjoner i denne filen</string>

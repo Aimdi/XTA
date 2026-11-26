@@ -82,6 +82,7 @@
     <string name="no_results">Ничего не найдено</string>
     <string name="notes_empty">Сейчас нет Notes для показа</string>
     <string name="notes_intro">Публичные Notes с Substack — не ваша личная лента Following. Нажмите заметку, чтобы открыть её на сайте, или подпишитесь на издание.</string>
+    <string name="notes_intro_desktop">Публичные Notes с Substack — не ваша личная лента Following. Щёлкните заметку, чтобы открыть её на сайте, или подпишитесь на издание.</string>
     <string name="open_in_browser">Открыть в браузере</string>
     <string name="open_pasted_post">Открыть вставленный пост</string>
     <string name="opml_empty">В этом файле нет изданий</string>

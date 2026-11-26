@@ -80,6 +80,7 @@
     <string name="no_results">Sense resultats</string>
     <string name="notes_empty">Ara no hi ha Notes per mostrar</string>
     <string name="notes_intro">Notes públiques d’arreu de Substack — no el teu fil Following personal. Toca una nota per obrir-la al lloc, o segueix-ne la publicació.</string>
+    <string name="notes_intro_desktop">Notes públiques d’arreu de Substack — no el teu fil Following personal. Fes clic en una nota per obrir-la al lloc, o segueix-ne la publicació.</string>
     <string name="open_in_browser">Obre al navegador</string>
     <string name="open_pasted_post">Obre l’entrada enganxada</string>
     <string name="opml_empty">Aquest fitxer no conté cap publicació</string>

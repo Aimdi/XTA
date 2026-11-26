@@ -21,6 +21,7 @@
     <string name="error">هذا ليس رمز سهم</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">تظهر المنشورات عن رموزك بالأسفل. المس رمزًا للتصفية؛ اضغط مطولًا لفتح صفحته.</string>
+    <string name="feed_hint_desktop">تظهر المنشورات عن رموزك بالأسفل. انقر رمزًا للتصفية؛ انقر بزر الفأرة الأيمن لفتح صفحته.</string>
     <string name="fold_signal_posts">طيّ منشورات مجموعات الإشارات</string>
     <string name="hide">إخفاء</string>
     <string name="liquidity">السيولة</string>

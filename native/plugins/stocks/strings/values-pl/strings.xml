@@ -21,6 +21,7 @@
     <string name="error">To nie jest symbol giełdowy</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Posty o Twoich tickerach pojawiają się poniżej. Dotknij symbolu, by filtrować; przytrzymaj, by otworzyć stronę.</string>
+    <string name="feed_hint_desktop">Posty o Twoich tickerach pojawiają się poniżej. Kliknij symbol, by filtrować; kliknij prawym przyciskiem, by otworzyć stronę.</string>
     <string name="fold_signal_posts">Zwijaj wpisy grup sygnałowych</string>
     <string name="hide">Ukryj</string>
     <string name="liquidity">Płynność</string>

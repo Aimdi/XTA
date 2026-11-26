@@ -33,6 +33,7 @@
     <string name="download_all_result">En cola: %1$d. Ya descargados: %2$d.</string>
     <string name="edit_as_text">Editar como texto</string>
     <string name="edit_tag">Toca para editar</string>
+    <string name="edit_tag_desktop">Haz clic para editar</string>
     <string name="either_tag">O</string>
     <string name="empty_following">Sigue etiquetas desde la búsqueda o una publicación para llenar esta pestaña</string>
     <string name="empty_following_posts">No hay publicaciones recientes de tus etiquetas</string>
@@ -126,6 +127,7 @@
     <string name="rating_questionable">Cuestionable</string>
     <string name="rating_sensitive">Sensible</string>
     <string name="related_hint">Toca para añadir a la búsqueda · mantén pulsado para excluir</string>
+    <string name="related_hint_desktop">Haz clic para añadir a la búsqueda · clic derecho para excluir</string>
     <string name="remove_site">Quitar sitio</string>
     <string name="retry">Reintentar</string>
     <string name="save_on_this_device">Guardar en este dispositivo</string>
@@ -154,6 +156,7 @@
     <string name="small_thumbnails_description">Usa las vistas previas pequeñas del servidor en la cuadrícula. Cargan más rápido y gastan menos datos, pero se ven más borrosas</string>
     <string name="source">Fuente</string>
     <string name="suggestions_hint">Etiquetas parecidas a la que escribiste: toca una para buscarla en su lugar</string>
+    <string name="suggestions_hint_desktop">Etiquetas parecidas a la que escribiste: haz clic en una para buscarla en su lugar</string>
     <string name="tab_following">Siguiendo</string>
     <string name="tab_latest">Recientes</string>
     <string name="tag_artist">Artista</string>
@@ -171,6 +174,7 @@
     <string name="tag_sort_name">A–Z</string>
     <string name="tag_species">Especie</string>
     <string name="tag_tap_hint">Toca una etiqueta para buscarla. Mantenla pulsada para seguirla, ocultarla o leer su wiki.</string>
+    <string name="tag_tap_hint_desktop">Haz clic en una etiqueta para buscarla. Haz clic derecho en ella para seguirla, ocultarla o leer su wiki.</string>
     <string name="tags">Etiquetas</string>
     <string name="test_connection">Probar conexión</string>
     <string name="test_failed">Prueba de Booru fallida: %1$s</string>

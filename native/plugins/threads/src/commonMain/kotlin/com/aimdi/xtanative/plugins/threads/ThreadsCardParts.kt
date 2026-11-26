@@ -64,6 +64,7 @@ import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.plugins.PluginCounts
 import com.aimdi.xtanative.ui.plugins.PluginMenuRow
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.PluginPostMenuRows
 import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -103,7 +104,7 @@ internal fun ThreadsCaptionText(app: ThreadsApp, post: ThreadsPost, modifier: Mo
 private fun CoveredText(post: ThreadsPost, style: TextStyle, maxLines: Int, show: () -> Unit) {
     val cover = MaterialTheme.colorScheme.onSurfaceVariant
     val link = MaterialTheme.colorScheme.primary
-    val said = pluginString(Strings.tap_to_show_spoiler)
+    val said = pluginString(if (PluginPlatform.isDesktop) Strings.tap_to_show_spoiler_desktop else Strings.tap_to_show_spoiler)
     val sticker = pluginString(Strings.sticker)
     val runs = remember(post.text, post.fragments) { ThreadsCaption.runs(post.text, post.fragments) }
     val shown = remember(runs) { runs.filterNot { it.spoiler } }

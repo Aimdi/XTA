@@ -21,6 +21,7 @@
     <string name="error">Das ist kein Tickersymbol</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Beiträge zu deinen Tickern erscheinen unten. Tippen filtert; langes Drücken öffnet die Seite.</string>
+    <string name="feed_hint_desktop">Beiträge zu deinen Tickern erscheinen unten. Klicken filtert; Rechtsklick öffnet die Seite.</string>
     <string name="fold_signal_posts">Signal-Gruppen-Beiträge einklappen</string>
     <string name="hide">Ausblenden</string>
     <string name="liquidity">Liquidität</string>

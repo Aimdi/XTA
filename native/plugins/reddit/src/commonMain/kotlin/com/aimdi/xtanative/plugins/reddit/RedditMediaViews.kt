@@ -51,6 +51,7 @@ import com.aimdi.xtanative.networks.reddit.RedditPost
 import com.aimdi.xtanative.ui.common.Graphemes
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.MediaTiles
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -282,7 +283,14 @@ private fun Covered(post: RedditPost, gate: MediaGate?, ratio: Float = 4f / 3f, 
             Icon(if (spoiler) RedditGlyphs.WarningAmber else RedditGlyphs.VisibilityOff, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(pluginString(if (spoiler) Strings.spoiler else Strings.possibly_sensitive), style = MaterialTheme.typography.titleSmall, textAlign = TextAlign.Center)
             Text(
-                pluginString(if (spoiler) Strings.tap_to_show_spoiler else Strings.tap_to_show_media),
+                pluginString(
+                    when {
+                        spoiler && PluginPlatform.isDesktop -> Strings.tap_to_show_spoiler_desktop
+                        spoiler -> Strings.tap_to_show_spoiler
+                        PluginPlatform.isDesktop -> Strings.tap_to_show_media_desktop
+                        else -> Strings.tap_to_show_media
+                    },
+                ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

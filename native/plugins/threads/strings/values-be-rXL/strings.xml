@@ -158,6 +158,7 @@
     <string name="spoiler">Spojler</string>
     <string name="sticker">Stykier</string>
     <string name="tap_to_show_spoiler">Nacisnicie, kab pakazać spojler</string>
+    <string name="tap_to_show_spoiler_desktop">Pstryknicie, kab pakazać spojler</string>
     <string name="copy_text">Skapijavać tekst</string>
     <string name="copy_link">Skapijavać spasyłku</string>
     <string name="text_copied">Tekst skapijavany</string>

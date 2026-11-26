@@ -81,6 +81,7 @@
     <string name="no_results">Žádné výsledky</string>
     <string name="notes_empty">Teď nejsou žádné Notes</string>
     <string name="notes_intro">Veřejné Notes ze Substacku — ne váš osobní Following. Klepnutím otevřete poznámku na webu, nebo sledujte její publikaci.</string>
+    <string name="notes_intro_desktop">Veřejné Notes ze Substacku — ne váš osobní Following. Kliknutím otevřete poznámku na webu, nebo sledujte její publikaci.</string>
     <string name="open_in_browser">Otevřít v prohlížeči</string>
     <string name="open_pasted_post">Otevřít vložený příspěvek</string>
     <string name="opml_empty">V tomto souboru nejsou žádné publikace</string>

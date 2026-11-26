@@ -26,7 +26,9 @@
     <string name="nsfw_hide">Hide</string>
     <string name="nsfw_hide_description">Remove NSFW posts from feeds and listings</string>
     <string name="nsfw_tap">Tap to show</string>
+    <string name="nsfw_tap_desktop">Click to show</string>
     <string name="nsfw_tap_description">Cover NSFW media until you tap it</string>
+    <string name="nsfw_tap_description_desktop">Cover NSFW media until you click it</string>
     <string name="nsfw_show">Always show</string>
     <string name="nsfw_show_description">Show NSFW media without a cover</string>
     <string name="online_now">online now</string>
@@ -40,6 +42,7 @@
     <string name="show_spoilers">Show spoilers</string>
     <string name="show_spoilers_description">Show spoiler-tagged media without a cover</string>
     <string name="tap_to_show_spoiler">Tap to show spoiler</string>
+    <string name="tap_to_show_spoiler_desktop">Click to show spoiler</string>
     <string name="sign_in">Sign in to Reddit</string>
     <string name="sign_in_failed">Reddit sign-in failed</string>
     <string name="sign_out">Sign out</string>
@@ -108,6 +111,7 @@
     <string name="copy">Copy</string>
     <string name="more_options">More options</string>
     <string name="tap_to_show_media">Tap to show media</string>
+    <string name="tap_to_show_media_desktop">Click to show media</string>
     <plurals name="comment_count">
         <item quantity="one">%1$d comment</item>
         <item quantity="other">%1$d comments</item>

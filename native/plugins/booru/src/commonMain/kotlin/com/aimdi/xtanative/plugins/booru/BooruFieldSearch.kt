@@ -31,6 +31,7 @@ import com.aimdi.xtanative.networks.booru.BooruQuery
 import com.aimdi.xtanative.networks.booru.BooruTagSuggestion
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
@@ -104,7 +105,7 @@ private fun TypedTagSuggestions(app: BooruApp, search: BooruSearch, tags: List<S
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
-            Icon(Icons.Filled.Search, pluginString(Strings.suggestions_hint), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+            Icon(Icons.Filled.Search, pluginString(if (PluginPlatform.isDesktop) Strings.suggestions_hint_desktop else Strings.suggestions_hint), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
         }
         found.take(SUGGESTED).forEach { suggestion ->
             TagChip(

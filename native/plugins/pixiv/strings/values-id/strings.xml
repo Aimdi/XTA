@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Refresh token Pixiv Anda ditolak</string>
     <string name="file_name">Nama file</string>
     <string name="file_name_help">Ketuk sebuah detail untuk menyisipkannya di posisi kursor. Setiap file tetap memakai ekstensinya sendiri.</string>
+    <string name="file_name_help_desktop">Klik sebuah detail untuk menyisipkannya di posisi kursor. Setiap file tetap memakai ekstensinya sendiri.</string>
     <string name="file_name_part_required">Sertakan %1$s agar setiap halaman karya punya nama sendiri</string>
     <string name="file_name_preview">Pratinjau: %1$s</string>
     <string name="file_name_reset">Atur ulang</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Edit tag favorit</string>
     <string name="search_favorite_tags_edit_hint">Seret tag untuk memindahkannya. Geser ke samping untuk menghapusnya.</string>
     <string name="search_favorite_tags_empty">Belum ada tag favorit. Tekan lama tag pada sebuah karya untuk menambahkannya.</string>
+    <string name="search_favorite_tags_empty_desktop">Belum ada tag favorit. Klik kanan tag pada sebuah karya untuk menambahkannya.</string>
     <string name="search_filters_title">Filter pencarian</string>
     <string name="search_hint">Tag, judul, atau pengguna</string>
     <string name="search_history">Pencarian terbaru</string>

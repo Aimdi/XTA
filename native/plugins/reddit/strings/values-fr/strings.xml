@@ -26,7 +26,9 @@
     <string name="nsfw_hide">Masquer</string>
     <string name="nsfw_hide_description">Retire les publications NSFW des fils et des listes</string>
     <string name="nsfw_tap">Touchez pour afficher</string>
+    <string name="nsfw_tap_desktop">Cliquez pour afficher</string>
     <string name="nsfw_tap_description">Couvre les médias NSFW jusqu\'à ce que vous les touchiez</string>
+    <string name="nsfw_tap_description_desktop">Couvre les médias NSFW jusqu\'à ce que vous cliquiez dessus</string>
     <string name="nsfw_show">Toujours afficher</string>
     <string name="nsfw_show_description">Affiche les médias NSFW sans cache</string>
     <string name="online_now">en ligne</string>
@@ -40,6 +42,7 @@
     <string name="show_spoilers">Afficher les spoilers</string>
     <string name="show_spoilers_description">Afficher les médias marqués comme spoiler sans couverture</string>
     <string name="tap_to_show_spoiler">Touchez pour afficher le spoiler</string>
+    <string name="tap_to_show_spoiler_desktop">Cliquez pour afficher le spoiler</string>
     <string name="sign_in">Se connecter à Reddit</string>
     <string name="sign_in_failed">Échec de la connexion à Reddit</string>
     <string name="sign_out">Se déconnecter</string>
@@ -108,6 +111,7 @@
     <string name="copy">Copier</string>
     <string name="more_options">Plus d’options</string>
     <string name="tap_to_show_media">Appuyez pour afficher le média</string>
+    <string name="tap_to_show_media_desktop">Cliquez pour afficher le média</string>
     <plurals name="comment_count">
         <item quantity="one">%1$d commentaire</item>
         <item quantity="other">%1$d commentaires</item>

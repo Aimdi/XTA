@@ -33,6 +33,7 @@
     <string name="download_all_result">Na fila: %1$d. Já transferidos: %2$d.</string>
     <string name="edit_as_text">Editar como texto</string>
     <string name="edit_tag">Toque para editar</string>
+    <string name="edit_tag_desktop">Clique para editar</string>
     <string name="either_tag">Ou</string>
     <string name="empty_following">Siga etiquetas a partir da pesquisa ou de uma publicação para preencher este separador</string>
     <string name="empty_following_posts">Não há publicações recentes das etiquetas que segue</string>
@@ -126,6 +127,7 @@
     <string name="rating_questionable">Questionável</string>
     <string name="rating_sensitive">Sensível</string>
     <string name="related_hint">Toque para adicionar à pesquisa · toque longo para excluir</string>
+    <string name="related_hint_desktop">Clique para adicionar à pesquisa · clique com o botão direito para excluir</string>
     <string name="remove_site">Remover site</string>
     <string name="retry">Tentar novamente</string>
     <string name="save_on_this_device">Guardar neste dispositivo</string>
@@ -154,6 +156,7 @@
     <string name="small_thumbnails_description">Carrega na grelha as pré-visualizações pequenas do anfitrião. Mais rápido e poupa dados, mas menos nítido</string>
     <string name="source">Fonte</string>
     <string name="suggestions_hint">Etiquetas parecidas com a que escreveu: toque numa para a pesquisar em vez dessa</string>
+    <string name="suggestions_hint_desktop">Etiquetas parecidas com a que escreveu: clique numa para a pesquisar em vez dessa</string>
     <string name="tab_following">Seguidas</string>
     <string name="tab_latest">Recentes</string>
     <string name="tag_artist">Artista</string>
@@ -171,6 +174,7 @@
     <string name="tag_sort_name">A–Z</string>
     <string name="tag_species">Espécie</string>
     <string name="tag_tap_hint">Toque numa etiqueta para a pesquisar. Mantenha premido para a seguir, ocultar ou ler a wiki.</string>
+    <string name="tag_tap_hint_desktop">Clique numa etiqueta para a pesquisar. Clique com o botão direito para a seguir, ocultar ou ler a wiki.</string>
     <string name="tags">Etiquetas</string>
     <string name="test_connection">Testar a ligação</string>
     <string name="test_failed">O teste do booru falhou: %1$s</string>

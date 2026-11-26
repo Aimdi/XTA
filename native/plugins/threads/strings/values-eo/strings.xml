@@ -150,6 +150,7 @@
     <string name="spoiler">Malkaŝo</string>
     <string name="sticker">Glumarko</string>
     <string name="tap_to_show_spoiler">Tuŝu por montri la malkaŝon</string>
+    <string name="tap_to_show_spoiler_desktop">Alklaku por montri la malkaŝon</string>
     <string name="copy_text">Kopii tekston</string>
     <string name="copy_link">Kopii ligilon</string>
     <string name="text_copied">Teksto kopiita</string>

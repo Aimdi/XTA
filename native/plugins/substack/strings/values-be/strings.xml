@@ -82,6 +82,7 @@
     <string name="no_results">Нічога не знойдзена</string>
     <string name="notes_empty">Пакуль няма Notes</string>
     <string name="notes_intro">Публічныя Notes з Substack — не ваша асабістая стужка Following. Націсніце нататку, каб адкрыць яе на сайце, або падпішыцеся на выданне.</string>
+    <string name="notes_intro_desktop">Публічныя Notes з Substack — не ваша асабістая стужка Following. Пстрыкніце нататку, каб адкрыць яе на сайце, або падпішыцеся на выданне.</string>
     <string name="open_in_browser">Адкрыць у браўзеры</string>
     <string name="open_pasted_post">Адкрыць устаўлены пост</string>
     <string name="opml_empty">У гэтым файле няма выданняў</string>

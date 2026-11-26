@@ -26,7 +26,9 @@
     <string name="nsfw_hide">隐藏</string>
     <string name="nsfw_hide_description">从动态和列表中移除 NSFW 帖子</string>
     <string name="nsfw_tap">点按显示</string>
+    <string name="nsfw_tap_desktop">点击显示</string>
     <string name="nsfw_tap_description">点按前遮盖 NSFW 媒体</string>
+    <string name="nsfw_tap_description_desktop">点击前遮盖 NSFW 媒体</string>
     <string name="nsfw_show">始终显示</string>
     <string name="nsfw_show_description">不遮盖地显示 NSFW 媒体</string>
     <string name="online_now">当前在线</string>
@@ -40,6 +42,7 @@
     <string name="show_spoilers">显示剧透</string>
     <string name="show_spoilers_description">直接显示标记为剧透的媒体，不加遮罩</string>
     <string name="tap_to_show_spoiler">点按显示剧透</string>
+    <string name="tap_to_show_spoiler_desktop">点击显示剧透</string>
     <string name="sign_in">登录 Reddit</string>
     <string name="sign_in_failed">登录 Reddit 失败</string>
     <string name="sign_out">退出登录</string>
@@ -108,6 +111,7 @@
     <string name="copy">复制</string>
     <string name="more_options">更多选项</string>
     <string name="tap_to_show_media">点按以显示媒体</string>
+    <string name="tap_to_show_media_desktop">点击以显示媒体</string>
     <plurals name="comment_count">
         <item quantity="other">%1$d 条评论</item>
     </plurals>

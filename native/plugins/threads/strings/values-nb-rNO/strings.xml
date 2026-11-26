@@ -150,6 +150,7 @@
     <string name="spoiler">Spoiler</string>
     <string name="sticker">Klistremerke</string>
     <string name="tap_to_show_spoiler">Trykk for å vise spoileren</string>
+    <string name="tap_to_show_spoiler_desktop">Klikk for å vise spoileren</string>
     <string name="copy_text">Kopier tekst</string>
     <string name="copy_link">Kopier lenke</string>
     <string name="text_copied">Teksten er kopiert</string>

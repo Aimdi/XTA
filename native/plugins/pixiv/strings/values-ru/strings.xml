@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Refresh-токен Pixiv отклонён</string>
     <string name="file_name">Имя файла</string>
     <string name="file_name_help">Нажмите на элемент, чтобы вставить его в позицию курсора. Каждый файл сохраняет своё расширение.</string>
+    <string name="file_name_help_desktop">Щёлкните по элементу, чтобы вставить его в позицию курсора. Каждый файл сохраняет своё расширение.</string>
     <string name="file_name_part_required">Добавьте %1$s, чтобы у каждой страницы работы было своё имя</string>
     <string name="file_name_preview">Пример: %1$s</string>
     <string name="file_name_reset">Сбросить</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Редактировать избранные теги</string>
     <string name="search_favorite_tags_edit_hint">Перетащите тег, чтобы переместить его. Смахните в сторону, чтобы убрать.</string>
     <string name="search_favorite_tags_empty">Избранных тегов пока нет. Нажмите и удерживайте тег у работы, чтобы добавить его.</string>
+    <string name="search_favorite_tags_empty_desktop">Избранных тегов пока нет. Щёлкните правой кнопкой мыши по тегу у работы, чтобы добавить его.</string>
     <string name="search_filters_title">Фильтры поиска</string>
     <string name="search_hint">Теги, названия или пользователи</string>
     <string name="search_history">Недавние поиски</string>

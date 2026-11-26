@@ -55,6 +55,7 @@ import com.aimdi.xtanative.networks.stocks.Watchlist
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.rememberCopyContract
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -202,7 +203,7 @@ internal fun StocksManageSheet(app: StocksApp, onDismiss: () -> Unit, onRemoved:
         val closeSheet = rememberSheetClose()
         LazyColumn(Modifier.fillMaxWidth().navigationBarsPadding()) {
             item {
-                ListItem(headlineContent = { Text(pluginString(Strings.manage_watchlist)) }, supportingContent = { Text(pluginString(Strings.feed_hint)) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
+                ListItem(headlineContent = { Text(pluginString(Strings.manage_watchlist)) }, supportingContent = { Text(pluginString(if (PluginPlatform.isDesktop) Strings.feed_hint_desktop else Strings.feed_hint)) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
             }
             items(shown.ids, key = { it }) { symbol ->
                 val asset = shown.assets[symbol]

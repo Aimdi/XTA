@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Tokenul de reînnoire Pixiv a fost respins</string>
     <string name="file_name">Numele fișierului</string>
     <string name="file_name_help">Atinge o informație ca s-o inserezi la cursor. Fiecare fișier își păstrează extensia.</string>
+    <string name="file_name_help_desktop">Fă clic pe o informație ca s-o inserezi la cursor. Fiecare fișier își păstrează extensia.</string>
     <string name="file_name_part_required">Include %1$s ca fiecare pagină a unei lucrări să aibă propriul nume</string>
     <string name="file_name_preview">Previzualizare: %1$s</string>
     <string name="file_name_reset">Resetează</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Editează etichetele preferate</string>
     <string name="search_favorite_tags_edit_hint">Trage o etichetă pentru a o muta. Glisează-o lateral pentru a o elimina.</string>
     <string name="search_favorite_tags_empty">Nu ai încă etichete preferate. Apasă lung pe eticheta unei lucrări pentru a o adăuga.</string>
+    <string name="search_favorite_tags_empty_desktop">Nu ai încă etichete preferate. Fă clic dreapta pe eticheta unei lucrări pentru a o adăuga.</string>
     <string name="search_filters_title">Filtre de căutare</string>
     <string name="search_hint">Etichete, titluri sau utilizatori</string>
     <string name="search_history">Căutări recente</string>

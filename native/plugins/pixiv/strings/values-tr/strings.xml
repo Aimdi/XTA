@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Pixiv yenileme jetonun reddedildi</string>
     <string name="file_name">Dosya adı</string>
     <string name="file_name_help">İmlecin bulunduğu yere eklemek için bir bilgiye dokunun. Her dosya kendi uzantısını korur.</string>
+    <string name="file_name_help_desktop">İmlecin bulunduğu yere eklemek için bir bilgiye tıklayın. Her dosya kendi uzantısını korur.</string>
     <string name="file_name_part_required">Bir eserin her sayfasının kendi adı olması için %1$s ekleyin</string>
     <string name="file_name_preview">Önizleme: %1$s</string>
     <string name="file_name_reset">Sıfırla</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Favori etiketleri düzenle</string>
     <string name="search_favorite_tags_edit_hint">Taşımak için bir etiketi sürükleyin. Kaldırmak için yana kaydırın.</string>
     <string name="search_favorite_tags_empty">Henüz favori etiket yok. Eklemek için bir eserdeki etikete uzun basın.</string>
+    <string name="search_favorite_tags_empty_desktop">Henüz favori etiket yok. Eklemek için bir eserdeki etikete sağ tıklayın.</string>
     <string name="search_filters_title">Arama filtreleri</string>
     <string name="search_hint">Etiketler, başlıklar veya kullanıcılar</string>
     <string name="search_history">Son aramalar</string>

@@ -54,6 +54,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivTag
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -80,7 +81,7 @@ internal fun PixivFavoriteTagsScreen() {
         },
     ) { padding ->
         Box(Modifier.padding(padding).fillMaxSize()) {
-            if (tags.isEmpty()) PixivEmpty(pluginString(Strings.search_favorite_tags_empty), icon = PixivIcons.Label) else FavoriteTagList(tags, editing)
+            if (tags.isEmpty()) PixivEmpty(pluginString(if (PluginPlatform.isDesktop) Strings.search_favorite_tags_empty_desktop else Strings.search_favorite_tags_empty), icon = PixivIcons.Label) else FavoriteTagList(tags, editing)
         }
     }
 }

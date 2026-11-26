@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Pixiv のリフレッシュトークンが拒否されました</string>
     <string name="file_name">ファイル名</string>
     <string name="file_name_help">項目をタップするとカーソル位置に挿入されます。拡張子は元のファイルのものが使われます。</string>
+    <string name="file_name_help_desktop">項目をクリックするとカーソル位置に挿入されます。拡張子は元のファイルのものが使われます。</string>
     <string name="file_name_part_required">作品の各ページが別の名前になるよう %1$s を含めてください</string>
     <string name="file_name_preview">プレビュー：%1$s</string>
     <string name="file_name_reset">リセット</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">お気に入りタグを編集</string>
     <string name="search_favorite_tags_edit_hint">タグをドラッグして並べ替え、横にスワイプして削除します。</string>
     <string name="search_favorite_tags_empty">お気に入りタグはまだありません。作品のタグを長押しすると追加できます。</string>
+    <string name="search_favorite_tags_empty_desktop">お気に入りタグはまだありません。作品のタグを右クリックすると追加できます。</string>
     <string name="search_filters_title">検索フィルター</string>
     <string name="search_hint">タグ・タイトル・ユーザー</string>
     <string name="search_history">最近の検索</string>

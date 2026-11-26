@@ -33,6 +33,7 @@
     <string name="download_all_result">У черзі: %1$d. Уже завантажено: %2$d.</string>
     <string name="edit_as_text">Змінити як текст</string>
     <string name="edit_tag">Торкніться, щоб змінити</string>
+    <string name="edit_tag_desktop">Клацніть, щоб змінити</string>
     <string name="either_tag">Або</string>
     <string name="empty_following">Підпишіться на теги з пошуку або допису, щоб заповнити цю вкладку</string>
     <string name="empty_following_posts">Немає нових дописів за вашими тегами</string>
@@ -127,6 +128,7 @@
     <string name="rating_questionable">Сумнівний</string>
     <string name="rating_sensitive">Делікатний</string>
     <string name="related_hint">Торкніться, щоб додати до пошуку · утримуйте, щоб виключити</string>
+    <string name="related_hint_desktop">Клацніть, щоб додати до пошуку · клацніть правою кнопкою миші, щоб виключити</string>
     <string name="remove_site">Видалити сайт</string>
     <string name="retry">Повторити</string>
     <string name="save_on_this_device">Зберегти на цьому пристрої</string>
@@ -155,6 +157,7 @@
     <string name="small_thumbnails_description">Завантажує в сітку маленькі ескізи з сайту. Швидше й ощадливіше для трафіку, але менш чітко</string>
     <string name="source">Джерело</string>
     <string name="suggestions_hint">Теги, схожі на введений: торкніться, щоб шукати за ним</string>
+    <string name="suggestions_hint_desktop">Теги, схожі на введений: клацніть, щоб шукати за ним</string>
     <string name="tab_following">Підписки</string>
     <string name="tab_latest">Нове</string>
     <string name="tag_artist">Художник</string>
@@ -173,6 +176,7 @@
     <string name="tag_sort_name">За абеткою</string>
     <string name="tag_species">Вид</string>
     <string name="tag_tap_hint">Торкніться тегу, щоб знайти його. Утримуйте, щоб підписатися, приховати чи прочитати вікі.</string>
+    <string name="tag_tap_hint_desktop">Клацніть тег, щоб знайти його. Клацніть правою кнопкою миші, щоб підписатися, приховати чи прочитати вікі.</string>
     <string name="tags">Теги</string>
     <string name="test_connection">Перевірити з’єднання</string>
     <string name="test_failed">Перевірка буру не вдалася: %1$s</string>

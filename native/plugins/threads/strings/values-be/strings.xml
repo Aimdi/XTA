@@ -158,6 +158,7 @@
     <string name="spoiler">Спойлер</string>
     <string name="sticker">Стыкер</string>
     <string name="tap_to_show_spoiler">Націсніце, каб паказаць спойлер</string>
+    <string name="tap_to_show_spoiler_desktop">Пстрыкніце, каб паказаць спойлер</string>
     <string name="copy_text">Скапіяваць тэкст</string>
     <string name="copy_link">Скапіяваць спасылку</string>
     <string name="text_copied">Тэкст скапіяваны</string>

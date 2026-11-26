@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Il refresh token di Pixiv è stato rifiutato</string>
     <string name="file_name">Nome del file</string>
     <string name="file_name_help">Tocca un dato per inserirlo nella posizione del cursore. Ogni file mantiene la propria estensione.</string>
+    <string name="file_name_help_desktop">Fai clic su un dato per inserirlo nella posizione del cursore. Ogni file mantiene la propria estensione.</string>
     <string name="file_name_part_required">Includi %1$s perché ogni pagina di un’opera abbia un nome diverso</string>
     <string name="file_name_preview">Anteprima: %1$s</string>
     <string name="file_name_reset">Ripristina</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Modifica tag preferiti</string>
     <string name="search_favorite_tags_edit_hint">Trascina un tag per spostarlo. Scorrilo di lato per rimuoverlo.</string>
     <string name="search_favorite_tags_empty">Nessun tag preferito per ora. Tieni premuto un tag di un’opera per aggiungerlo.</string>
+    <string name="search_favorite_tags_empty_desktop">Nessun tag preferito per ora. Fai clic destro su un tag di un’opera per aggiungerlo.</string>
     <string name="search_filters_title">Filtri di ricerca</string>
     <string name="search_hint">Tag, titoli o utenti</string>
     <string name="search_history">Ricerche recenti</string>

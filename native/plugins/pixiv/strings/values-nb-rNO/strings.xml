@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Pixiv-oppfriskningstokenet ble avvist</string>
     <string name="file_name">Filnavn</string>
     <string name="file_name_help">Trykk på en opplysning for å sette den inn ved markøren. Hver fil beholder sin egen filtype.</string>
+    <string name="file_name_help_desktop">Klikk på en opplysning for å sette den inn ved markøren. Hver fil beholder sin egen filtype.</string>
     <string name="file_name_part_required">Ta med %1$s så hver side av et verk får sitt eget navn</string>
     <string name="file_name_preview">Forhåndsvisning: %1$s</string>
     <string name="file_name_reset">Tilbakestill</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Rediger favorittagger</string>
     <string name="search_favorite_tags_edit_hint">Dra en tagg for å flytte den. Sveip den til siden for å fjerne den.</string>
     <string name="search_favorite_tags_empty">Ingen favorittagger ennå. Trykk lenge på en tagg på et verk for å legge den til.</string>
+    <string name="search_favorite_tags_empty_desktop">Ingen favorittagger ennå. Høyreklikk på en tagg på et verk for å legge den til.</string>
     <string name="search_filters_title">Søkefiltre</string>
     <string name="search_hint">Tagger, titler eller brukere</string>
     <string name="search_history">Nylige søk</string>

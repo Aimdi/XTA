@@ -21,6 +21,7 @@
     <string name="error">Acesta nu este un simbol bursier</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Postările despre tickerele tale apar mai jos. Atinge un simbol pentru filtru; apasă lung pentru a deschide pagina.</string>
+    <string name="feed_hint_desktop">Postările despre tickerele tale apar mai jos. Fă clic pe un simbol pentru filtru; clic dreapta pentru a deschide pagina.</string>
     <string name="fold_signal_posts">Restrânge postările grupurilor de semnale</string>
     <string name="hide">Ascunde</string>
     <string name="liquidity">Lichiditate</string>

@@ -146,6 +146,7 @@
     <string name="spoiler">剧透</string>
     <string name="sticker">贴纸</string>
     <string name="tap_to_show_spoiler">点按显示剧透</string>
+    <string name="tap_to_show_spoiler_desktop">点击显示剧透</string>
     <string name="copy_text">复制文字</string>
     <string name="copy_link">复制链接</string>
     <string name="text_copied">文字已复制</string>

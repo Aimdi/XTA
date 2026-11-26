@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Refresh token Pixiv bị từ chối</string>
     <string name="file_name">Tên tệp</string>
     <string name="file_name_help">Chạm vào một thông tin để chèn vào vị trí con trỏ. Mỗi tệp giữ nguyên phần mở rộng của nó.</string>
+    <string name="file_name_help_desktop">Nhấp vào một thông tin để chèn vào vị trí con trỏ. Mỗi tệp giữ nguyên phần mở rộng của nó.</string>
     <string name="file_name_part_required">Thêm %1$s để mỗi trang của một tác phẩm có tên riêng</string>
     <string name="file_name_preview">Xem trước: %1$s</string>
     <string name="file_name_reset">Đặt lại</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Chỉnh sửa thẻ yêu thích</string>
     <string name="search_favorite_tags_edit_hint">Kéo một thẻ để di chuyển. Vuốt sang bên để xóa.</string>
     <string name="search_favorite_tags_empty">Chưa có thẻ yêu thích nào. Nhấn giữ một thẻ trên tác phẩm để thêm.</string>
+    <string name="search_favorite_tags_empty_desktop">Chưa có thẻ yêu thích nào. Nhấp chuột phải vào một thẻ trên tác phẩm để thêm.</string>
     <string name="search_filters_title">Bộ lọc tìm kiếm</string>
     <string name="search_hint">Thẻ, tiêu đề hoặc người dùng</string>
     <string name="search_history">Tìm kiếm gần đây</string>

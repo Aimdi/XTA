@@ -79,6 +79,7 @@
     <string name="no_results">結果なし</string>
     <string name="notes_empty">表示できる Notes はありません</string>
     <string name="notes_intro">Substack 全体の公開 Notes です。個人の Following ではありません。タップでサイトで開き、発行元をフォローできます。</string>
+    <string name="notes_intro_desktop">Substack 全体の公開 Notes です。個人の Following ではありません。クリックでサイトで開き、発行元をフォローできます。</string>
     <string name="open_in_browser">ブラウザで開く</string>
     <string name="open_pasted_post">貼り付けた記事を開く</string>
     <string name="opml_empty">このファイルにはパブリケーションがありません</string>

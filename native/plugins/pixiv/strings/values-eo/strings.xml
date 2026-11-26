@@ -121,6 +121,7 @@
     <string name="error_unauthorized">Via Pixiv-refresha ĵetono estis rifuzita</string>
     <string name="file_name">Dosiernomo</string>
     <string name="file_name_help">Tuŝetu detalon por enmeti ĝin ĉe la kursoro. Ĉiu dosiero konservas sian propran sufikson.</string>
+    <string name="file_name_help_desktop">Alklaku detalon por enmeti ĝin ĉe la kursoro. Ĉiu dosiero konservas sian propran sufikson.</string>
     <string name="file_name_part_required">Enmetu %1$s, por ke ĉiu paĝo de verko havu propran nomon</string>
     <string name="file_name_preview">Antaŭvido: %1$s</string>
     <string name="file_name_reset">Restarigi</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">Redakti ŝatatajn etikedojn</string>
     <string name="search_favorite_tags_edit_hint">Trenu etikedon por movi ĝin. Ŝovu ĝin flanken por forigi ĝin.</string>
     <string name="search_favorite_tags_empty">Ankoraŭ neniuj ŝatataj etikedoj. Longe premu etikedon de verko por aldoni ĝin.</string>
+    <string name="search_favorite_tags_empty_desktop">Ankoraŭ neniuj ŝatataj etikedoj. Dekstre alklaku etikedon de verko por aldoni ĝin.</string>
     <string name="search_filters_title">Serĉaj filtriloj</string>
     <string name="search_hint">Etikedoj, titoloj aŭ uzantoj</string>
     <string name="search_history">Lastatempaj serĉoj</string>

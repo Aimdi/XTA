@@ -21,6 +21,7 @@
     <string name="error">Dette er ikke et tickersymbol</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Innlegg om tickerne dine vises under. Trykk for å filtrere; langt trykk åpner siden.</string>
+    <string name="feed_hint_desktop">Innlegg om tickerne dine vises under. Klikk for å filtrere; høyreklikk åpner siden.</string>
     <string name="fold_signal_posts">Fold sammen innlegg fra signalgrupper</string>
     <string name="hide">Skjul</string>
     <string name="liquidity">Likviditet</string>

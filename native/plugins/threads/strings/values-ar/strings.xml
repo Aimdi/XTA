@@ -166,6 +166,7 @@
     <string name="spoiler">حرق للأحداث</string>
     <string name="sticker">ملصق</string>
     <string name="tap_to_show_spoiler">اضغط لعرض الحرق</string>
+    <string name="tap_to_show_spoiler_desktop">انقر لعرض الحرق</string>
     <string name="copy_text">نسخ النص</string>
     <string name="copy_link">نسخ الرابط</string>
     <string name="text_copied">نُسخ النص</string>

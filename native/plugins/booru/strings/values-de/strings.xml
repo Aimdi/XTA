@@ -33,6 +33,7 @@
     <string name="download_all_result">In der Warteschlange: %1$d. Bereits heruntergeladen: %2$d.</string>
     <string name="edit_as_text">Als Text bearbeiten</string>
     <string name="edit_tag">Tippen zum Bearbeiten</string>
+    <string name="edit_tag_desktop">Klicken zum Bearbeiten</string>
     <string name="either_tag">Oder</string>
     <string name="empty_following">Folge Tags über Suche oder Beitrag, um diesen Tab zu füllen</string>
     <string name="empty_following_posts">Keine aktuellen Beiträge für gefolgte Tags</string>
@@ -125,6 +126,7 @@
     <string name="rating_questionable">Fragwürdig</string>
     <string name="rating_sensitive">Sensibel</string>
     <string name="related_hint">Tippen fügt zur Suche hinzu · lang drücken schließt aus</string>
+    <string name="related_hint_desktop">Klicken fügt zur Suche hinzu · Rechtsklick schließt aus</string>
     <string name="remove_site">Seite entfernen</string>
     <string name="retry">Erneut versuchen</string>
     <string name="save_on_this_device">Auf diesem Gerät speichern</string>
@@ -153,6 +155,7 @@
     <string name="small_thumbnails_description">Lädt die kleinen Vorschauen des Hosts ins Raster. Schneller und datensparender, aber unschärfer</string>
     <string name="source">Quelle</string>
     <string name="suggestions_hint">Tags wie der eingegebene: antippen, um stattdessen danach zu suchen</string>
+    <string name="suggestions_hint_desktop">Tags wie der eingegebene: anklicken, um stattdessen danach zu suchen</string>
     <string name="tab_following">Gefolgt</string>
     <string name="tab_latest">Neueste</string>
     <string name="tag_artist">Künstler</string>
@@ -169,6 +172,7 @@
     <string name="tag_sort_name">A–Z</string>
     <string name="tag_species">Spezies</string>
     <string name="tag_tap_hint">Tippe auf einen Tag, um danach zu suchen. Halte ihn gedrückt, um ihm zu folgen, ihn auszublenden oder sein Wiki zu lesen.</string>
+    <string name="tag_tap_hint_desktop">Klicke auf einen Tag, um danach zu suchen. Mit Rechtsklick kannst du ihm folgen, ihn ausblenden oder sein Wiki lesen.</string>
     <string name="tags">Tags</string>
     <string name="test_connection">Verbindung testen</string>
     <string name="test_failed">Booru-Test fehlgeschlagen: %1$s</string>

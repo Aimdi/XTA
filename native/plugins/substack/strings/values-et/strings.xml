@@ -80,6 +80,7 @@
     <string name="no_results">Tulemusi pole</string>
     <string name="notes_empty">Praegu pole Notes’e näidata</string>
     <string name="notes_intro">Avalikud Notes Substackist — mitte sinu isiklik Following. Puuduta märkust, et avada see saidil, või jälgi väljaannet.</string>
+    <string name="notes_intro_desktop">Avalikud Notes Substackist — mitte sinu isiklik Following. Klõpsa märkusel, et avada see saidil, või jälgi väljaannet.</string>
     <string name="open_in_browser">Ava brauseris</string>
     <string name="open_pasted_post">Ava kleebitud postitus</string>
     <string name="opml_empty">Selles failis pole väljaandeid</string>

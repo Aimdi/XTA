@@ -150,6 +150,7 @@
     <string name="spoiler">Spoilerra</string>
     <string name="sticker">Pegatina</string>
     <string name="tap_to_show_spoiler">Sakatu spoilerra ikusteko</string>
+    <string name="tap_to_show_spoiler_desktop">Egin klik spoilerra erakusteko</string>
     <string name="copy_text">Kopiatu testua</string>
     <string name="copy_link">Kopiatu esteka</string>
     <string name="text_copied">Testua kopiatu da</string>

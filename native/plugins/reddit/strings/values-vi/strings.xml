@@ -26,7 +26,9 @@
     <string name="nsfw_hide">Ẩn</string>
     <string name="nsfw_hide_description">Loại bài viết NSFW khỏi bảng tin và danh sách</string>
     <string name="nsfw_tap">Chạm để hiện</string>
+    <string name="nsfw_tap_desktop">Nhấp để hiện</string>
     <string name="nsfw_tap_description">Che phương tiện NSFW cho đến khi bạn chạm</string>
+    <string name="nsfw_tap_description_desktop">Che phương tiện NSFW cho đến khi bạn nhấp</string>
     <string name="nsfw_show">Luôn hiển thị</string>
     <string name="nsfw_show_description">Hiển thị phương tiện NSFW không che</string>
     <string name="online_now">đang trực tuyến</string>
@@ -40,6 +42,7 @@
     <string name="show_spoilers">Hiện spoiler</string>
     <string name="show_spoilers_description">Hiện nội dung đánh dấu spoiler mà không che</string>
     <string name="tap_to_show_spoiler">Chạm để hiện phần tiết lộ</string>
+    <string name="tap_to_show_spoiler_desktop">Nhấp để hiện phần tiết lộ</string>
     <string name="sign_in">Đăng nhập Reddit</string>
     <string name="sign_in_failed">Đăng nhập Reddit thất bại</string>
     <string name="sign_out">Đăng xuất</string>
@@ -108,6 +111,7 @@
     <string name="copy">Sao chép</string>
     <string name="more_options">Tùy chọn khác</string>
     <string name="tap_to_show_media">Nhấn để hiện nội dung đa phương tiện</string>
+    <string name="tap_to_show_media_desktop">Nhấp để hiện nội dung đa phương tiện</string>
     <plurals name="comment_count">
         <item quantity="other">%1$d bình luận</item>
     </plurals>

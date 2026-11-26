@@ -21,6 +21,7 @@
     <string name="error">티커 심볼이 아닙니다</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">티커에 대한 게시물이 아래에 표시됩니다. 탭하면 필터링되고, 길게 누르면 페이지가 열립니다.</string>
+    <string name="feed_hint_desktop">티커에 대한 게시물이 아래에 표시됩니다. 클릭하면 필터링되고, 마우스 오른쪽 버튼으로 클릭하면 페이지가 열립니다.</string>
     <string name="fold_signal_posts">시그널 그룹 게시물 접기</string>
     <string name="hide">숨기기</string>
     <string name="liquidity">유동성</string>

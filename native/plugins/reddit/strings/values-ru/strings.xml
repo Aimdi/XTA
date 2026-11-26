@@ -26,7 +26,9 @@
     <string name="nsfw_hide">Скрывать</string>
     <string name="nsfw_hide_description">Убирать посты NSFW из лент и списков</string>
     <string name="nsfw_tap">Показывать по нажатию</string>
+    <string name="nsfw_tap_desktop">Показывать по щелчку</string>
     <string name="nsfw_tap_description">Закрывать медиа NSFW, пока вы не нажмёте</string>
+    <string name="nsfw_tap_description_desktop">Закрывать медиа NSFW, пока вы не щёлкнете</string>
     <string name="nsfw_show">Всегда показывать</string>
     <string name="nsfw_show_description">Показывать медиа NSFW без заглушки</string>
     <string name="online_now">сейчас онлайн</string>
@@ -40,6 +42,7 @@
     <string name="show_spoilers">Показывать спойлеры</string>
     <string name="show_spoilers_description">Показывать помеченные спойлером медиа без обложки</string>
     <string name="tap_to_show_spoiler">Нажмите, чтобы показать спойлер</string>
+    <string name="tap_to_show_spoiler_desktop">Щёлкните, чтобы показать спойлер</string>
     <string name="sign_in">Войти в Reddit</string>
     <string name="sign_in_failed">Не удалось войти в Reddit</string>
     <string name="sign_out">Выйти</string>
@@ -108,6 +111,7 @@
     <string name="copy">Копировать</string>
     <string name="more_options">Другие параметры</string>
     <string name="tap_to_show_media">Нажмите, чтобы показать медиа</string>
+    <string name="tap_to_show_media_desktop">Щёлкните, чтобы показать медиа</string>
     <plurals name="comment_count">
         <item quantity="one">%1$d комментарий</item>
         <item quantity="few">%1$d комментария</item>

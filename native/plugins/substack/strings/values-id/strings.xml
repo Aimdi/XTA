@@ -79,6 +79,7 @@
     <string name="no_results">Tidak ada hasil</string>
     <string name="notes_empty">Tidak ada Notes untuk ditampilkan sekarang</string>
     <string name="notes_intro">Notes publik dari Substack — bukan umpan Following pribadi Anda. Ketuk catatan untuk membukanya di situs, atau ikuti publikasinya.</string>
+    <string name="notes_intro_desktop">Notes publik dari Substack — bukan umpan Following pribadi Anda. Klik catatan untuk membukanya di situs, atau ikuti publikasinya.</string>
     <string name="open_in_browser">Buka di browser</string>
     <string name="open_pasted_post">Buka postingan yang ditempel</string>
     <string name="opml_empty">Tidak ada publikasi di file ini</string>

@@ -146,6 +146,7 @@
     <string name="spoiler">Tiết lộ nội dung</string>
     <string name="sticker">Nhãn dán</string>
     <string name="tap_to_show_spoiler">Chạm để hiện phần tiết lộ</string>
+    <string name="tap_to_show_spoiler_desktop">Nhấp để hiện phần tiết lộ</string>
     <string name="copy_text">Sao chép văn bản</string>
     <string name="copy_link">Sao chép liên kết</string>
     <string name="text_copied">Đã sao chép văn bản</string>

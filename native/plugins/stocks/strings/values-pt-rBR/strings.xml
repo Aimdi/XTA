@@ -21,6 +21,7 @@
     <string name="error">Isso não é um código de ação</string>
     <string name="fdv">FDV</string>
     <string name="feed_hint">Posts sobre seus tickers aparecem abaixo. Toque em um símbolo para filtrar; pressione e segure para abrir a página.</string>
+    <string name="feed_hint_desktop">Posts sobre seus tickers aparecem abaixo. Clique em um símbolo para filtrar; clique com o botão direito para abrir a página.</string>
     <string name="fold_signal_posts">Recolher posts de grupos de sinais</string>
     <string name="hide">Ocultar</string>
     <string name="liquidity">Liquidez</string>

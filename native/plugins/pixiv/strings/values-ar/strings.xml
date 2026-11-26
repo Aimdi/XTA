@@ -121,6 +121,7 @@
     <string name="error_unauthorized">رُفض رمز تحديث Pixiv</string>
     <string name="file_name">اسم الملف</string>
     <string name="file_name_help">اضغط على معلومة لإدراجها في موضع المؤشر. يحتفظ كل ملف بامتداده الأصلي.</string>
+    <string name="file_name_help_desktop">انقر على معلومة لإدراجها في موضع المؤشر. يحتفظ كل ملف بامتداده الأصلي.</string>
     <string name="file_name_part_required">أضف %1$s لتحصل كل صفحة من العمل على اسمها الخاص</string>
     <string name="file_name_preview">معاينة: %1$s</string>
     <string name="file_name_reset">إعادة تعيين</string>
@@ -375,6 +376,7 @@
     <string name="search_favorite_tags_edit">تعديل الوسوم المفضلة</string>
     <string name="search_favorite_tags_edit_hint">اسحب وسمًا لنقله، واسحبه جانبًا لإزالته.</string>
     <string name="search_favorite_tags_empty">لا توجد وسوم مفضلة بعد. اضغط مطولًا على وسم في أي عمل لإضافته.</string>
+    <string name="search_favorite_tags_empty_desktop">لا توجد وسوم مفضلة بعد. انقر بزر الفأرة الأيمن على وسم في أي عمل لإضافته.</string>
     <string name="search_filters_title">عوامل تصفية البحث</string>
     <string name="search_hint">وسوم أو عناوين أو مستخدمون</string>
     <string name="search_history">عمليات البحث الأخيرة</string>
