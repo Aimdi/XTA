@@ -147,6 +147,7 @@ import com.aimdi.xtanative.ui.generated.resources.settings
 import com.aimdi.xtanative.ui.generated.resources.settings_show_as_tab
 import com.aimdi.xtanative.ui.home.FindsWithKeys
 import com.aimdi.xtanative.ui.home.MicroblogGroupingRow
+import com.aimdi.xtanative.ui.home.isFrameRoot
 import com.aimdi.xtanative.ui.home.rememberLeaveField
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
@@ -199,7 +200,8 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
 
     PluginScaffold(
         title = stringResource(Res.string.plugin_store),
-        onBack = onBack,
+        // Beside the desktop frame's navigation, which led here, no Back of its own (Esc still goes back).
+        onBack = if (isFrameRoot()) null else onBack,
         column = STORE_COLUMN,
         actions = {
             ShowPrivateMenu(store.showPrivate) { show -> scope.launch { plugins.showPrivate(show) } }
