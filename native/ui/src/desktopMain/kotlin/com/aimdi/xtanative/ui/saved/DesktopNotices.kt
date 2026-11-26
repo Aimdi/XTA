@@ -23,7 +23,7 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * The end of a download or an offline save, said by the desktop's own
- * notifications (org.freedesktop.Notifications) while the window is not the
+ * notifications (org.freedesktop.Notifications) while none of the app's windows is the
  * one in use, as a browser tells of a finished download: the line the
  * window's foot says, under the app's name. Clicking it brings the window
  * forward; a finished download's has "Show in folder" too, which opens the
@@ -162,9 +162,9 @@ class DesktopNotifications(
 
 /**
  * Tells the desktop of each notice [DesktopNotifications.tells] of while
- * the window is not the active one ([windowActive]) and Settings › General
- * › Desktop notifications is on ([enabled]); the window's own foot says it
- * as ever. [appName] heads it.
+ * none of the app's windows (the main one or a post's) is the active one
+ * ([windowActive]) and Settings › General › Desktop notifications is on
+ * ([enabled]); the window's own foot says it as ever. [appName] heads it.
  */
 @Composable
 fun DesktopNotices(appName: String, enabled: Boolean, windowActive: () -> Boolean) {

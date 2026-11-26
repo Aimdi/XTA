@@ -271,7 +271,7 @@ fun main(args: Array<String>) {
                         XtaNativeContent(graph, app.plugins)
                         // A download or offline save that ends while another window is in use is told by the desktop too.
                         val notifies by remember(graph) { graph.settings.observe(DesktopPrefs.notifications) }.collectAsState(initial = true)
-                        DesktopNotices(name, notifies) { window.isActive }
+                        DesktopNotices(name, notifies) { KeyboardFocusManager.getCurrentKeyboardFocusManager().activeWindow != null }
                         VideoCheck.Shown()
                         WindowCrash.TestCrash("main")
                     }
