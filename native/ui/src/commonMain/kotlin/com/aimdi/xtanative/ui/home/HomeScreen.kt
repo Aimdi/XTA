@@ -1,7 +1,6 @@
 package com.aimdi.xtanative.ui.home
 
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
@@ -39,6 +38,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -52,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
@@ -412,18 +413,33 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
 
 /**
  * A page of the bar, its state kept while another is shown, as XTA keeps its
- * pages alive; it fades in, at once while motion is reduced. Each is told how
- * often its place on the bar was tapped again ([LocalBarRetap]).
+ * pages alive; it fades in, at once while motion is reduced. Only the page
+ * shown is composed: the one left goes at once rather than fading out, so two
+ * timelines are never laid out and drawn together. Each is told how often its
+ * place on the bar was tapped again ([LocalBarRetap]).
  */
 @Composable
 private fun BarPageHost(page: BarPage, retaps: Map<String, Int>, content: @Composable (BarPage) -> Unit) {
     val holder = rememberSaveableStateHolder()
     val reduced = LocalReducedMotion.current
-    Crossfade(targetState = page, animationSpec = if (reduced) snap() else tween(PAGE_FADE_MS), label = "home-page") { shown ->
-        holder.SaveableStateProvider(shown.id) {
-            CompositionLocalProvider(LocalBarRetap provides (retaps[shown.id] ?: 0)) { content(shown) }
+    val last = remember { arrayOf(page.id) }
+    val from = BarPageFade.from(last[0], page.id, reduced)
+    SideEffect { last[0] = page.id }
+    key(page.id) {
+        val fade = remember { Animatable(from) }
+        LaunchedEffect(Unit) { if (fade.value < 1f) fade.animateTo(1f, tween(PAGE_FADE_MS)) }
+        Box(Modifier.graphicsLayer { alpha = fade.value }) {
+            holder.SaveableStateProvider(page.id) {
+                CompositionLocalProvider(LocalBarRetap provides (retaps[page.id] ?: 0)) { content(page) }
+            }
         }
     }
+}
+
+/** How a page of the bar comes in ([BarPageHost]). */
+internal object BarPageFade {
+    /** The opacity page [shown] starts at after [previous]: faded in when it is another page and motion is not reduced. */
+    fun from(previous: String, shown: String, reduced: Boolean): Float = if (previous != shown && !reduced) 0f else 1f
 }
 
 private const val PAGE_FADE_MS = 150
