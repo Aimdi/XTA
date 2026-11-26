@@ -80,6 +80,7 @@ import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.settings.isDesktop
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -125,6 +126,23 @@ internal object ReplyOrderMotion {
     fun menuY(anchorTop: Float, anchorBottom: Float, menuHeight: Float, windowHeight: Float, gap: Float, margin: Float): Float {
         val below = anchorBottom + gap
         return if (below + menuHeight + margin <= windowHeight) below else (anchorTop - gap - menuHeight).coerceAtLeast(margin)
+    }
+}
+
+/**
+ * How the reply order menu looks where it opens: on a phone ([Touch]) over a
+ * dimming, its 48 dp rows the chosen one tinted, barred in the accent, bold
+ * and ticked; on the desktop ([Pointer]) as the post's ⋯ menu looks there
+ * ([MenuRowMetrics.Pointer]): no dimming, 36 dp rows, the chosen one ticked
+ * and nothing more, the pointer's own wash on the row under it.
+ */
+internal data class ReplyOrderLook(val scrimAlpha: Float, val rowHeight: Int, val highlight: Boolean) {
+    companion object {
+        val Touch = ReplyOrderLook(scrimAlpha = ReplyOrderMotion.SCRIM_ALPHA, rowHeight = ReplyOrderMotion.ROW_HEIGHT, highlight = true)
+        val Pointer = ReplyOrderLook(scrimAlpha = 0f, rowHeight = 36, highlight = false)
+
+        /** The desktop's look, or the phone's. */
+        fun of(desktop: Boolean): ReplyOrderLook = if (desktop) Pointer else Touch
     }
 }
 
@@ -187,9 +205,10 @@ private fun <T> ReplyOrderPopup(
     onSelect: (T) -> Unit,
 ) {
     val close = { visible.targetState = false }
+    val look = ReplyOrderLook.of(isDesktop)
     Popup(popupPositionProvider = WholeWindow, onDismissRequest = close, properties = PopupProperties(focusable = true)) {
         val scrim by animateFloatAsState(
-            if (visible.targetState) ReplyOrderMotion.SCRIM_ALPHA else 0f,
+            if (visible.targetState) look.scrimAlpha else 0f,
             tween(ReplyOrderMotion.duration(if (visible.targetState) ReplyOrderMotion.SCRIM_IN_MS else ReplyOrderMotion.CLOSE_MS, reduced)),
         )
         BoxWithConstraints(
@@ -203,7 +222,7 @@ private fun <T> ReplyOrderPopup(
             val density = LocalDensity.current
             val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
             val width = ReplyOrderMotion.MENU_WIDTH.dp
-            val height = (ReplyOrderMotion.ROW_HEIGHT * options.size + 8).dp
+            val height = (look.rowHeight * options.size + 8).dp
             val (x, y) = with(density) {
                 val box = anchor ?: Rect(0f, 0f, constraints.maxWidth.toFloat(), 0f)
                 ReplyOrderMotion.menuX(box.left, box.right, width.toPx(), constraints.maxWidth.toFloat(), 12.dp.toPx(), rtl) to
@@ -218,7 +237,7 @@ private fun <T> ReplyOrderPopup(
                 exit = fadeOut(tween(ReplyOrderMotion.duration(ReplyOrderMotion.CLOSE_MS, reduced), easing = ReplyOrderMotion.In)) +
                     scaleOut(tween(ReplyOrderMotion.duration(ReplyOrderMotion.CLOSE_MS, reduced), easing = ReplyOrderMotion.In), targetScale = 0.96f, transformOrigin = TransformOrigin(if (rtl) 0f else 1f, 0f)),
             ) {
-                ReplyOrderRows(shown, options, label, icon, reduced, width) { picked ->
+                ReplyOrderRows(shown, options, label, icon, reduced, width, look) { picked ->
                     if (picked != shown) onSelect(picked)
                     close()
                 }
@@ -227,7 +246,7 @@ private fun <T> ReplyOrderPopup(
     }
 }
 
-/** The menu: full-width 48 dp rows, the chosen one tinted with a 3 dp accent bar at its start and a tick. */
+/** The menu: full-width rows ([look]), the chosen one ticked, and on a phone tinted with a 3 dp accent bar at its start. */
 @Composable
 private fun <T> ReplyOrderRows(
     shown: T,
@@ -236,37 +255,43 @@ private fun <T> ReplyOrderRows(
     icon: (T) -> androidx.compose.ui.graphics.vector.ImageVector,
     reduced: Boolean,
     width: Dp,
+    look: ReplyOrderLook,
     onPicked: (T) -> Unit,
 ) {
     var chosen by remember { mutableStateOf(shown) }
     var picking by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val colors = MaterialTheme.colorScheme
-    val shape = RoundedCornerShape(ReplyOrderMotion.CORNER.dp)
+    val pointer = !look.highlight
+    // On the desktop, the post menu's panel: its small corners, container and hairline.
+    val shape = if (pointer) MaterialTheme.shapes.extraSmall else RoundedCornerShape(ReplyOrderMotion.CORNER.dp)
+    val metrics = MenuRowMetrics.Pointer
     val highlight by animateDpAsState(
-        (ReplyOrderMotion.ROW_HEIGHT * options.indexOf(chosen).coerceAtLeast(0)).dp,
+        (look.rowHeight * options.indexOf(chosen).coerceAtLeast(0)).dp,
         tween(ReplyOrderMotion.duration(ReplyOrderMotion.HIGHLIGHT_MS, reduced), easing = ReplyOrderMotion.Expo),
     )
     Box(
         Modifier
             .width(width)
-            .shadow(12.dp, shape)
+            .shadow(if (pointer) 8.dp else 12.dp, shape)
             .clip(shape)
-            .background(colors.surfaceContainerLow)
-            .border(1.dp, colors.outlineVariant.copy(alpha = 0.5f), shape)
+            .background(if (pointer) colors.surfaceContainer else colors.surfaceContainerLow)
+            .border(1.dp, if (pointer) colors.outlineVariant else colors.outlineVariant.copy(alpha = 0.5f), shape)
             // Keeps a click on the panel from closing it; no stop of Tab's either.
             .focusProperties { canFocus = false }
             .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {}
             .padding(vertical = 4.dp),
     ) {
-        Box(
-            Modifier
-                .offset(y = highlight)
-                .fillMaxWidth()
-                .height(ReplyOrderMotion.ROW_HEIGHT.dp)
-                .background(colors.primary.copy(alpha = 0.14f)),
-        ) {
-            Box(Modifier.padding(vertical = 10.dp).width(3.dp).fillMaxSize().background(colors.primary))
+        if (look.highlight) {
+            Box(
+                Modifier
+                    .offset(y = highlight)
+                    .fillMaxWidth()
+                    .height(look.rowHeight.dp)
+                    .background(colors.primary.copy(alpha = 0.14f)),
+            ) {
+                Box(Modifier.padding(vertical = 10.dp).width(3.dp).fillMaxSize().background(colors.primary))
+            }
         }
         Column {
             options.forEachIndexed { index, option ->
@@ -285,7 +310,7 @@ private fun <T> ReplyOrderRows(
                             translationY = (1f - enter.value) * -4.dp.toPx()
                         }
                         .fillMaxWidth()
-                        .height(ReplyOrderMotion.ROW_HEIGHT.dp)
+                        .height(look.rowHeight.dp)
                         .clickable(enabled = !picking) {
                             chosen = option
                             picking = true
@@ -298,16 +323,20 @@ private fun <T> ReplyOrderRows(
                             role = Role.RadioButton
                             selected = picked
                         }
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = metrics.padding),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                    horizontalArrangement = Arrangement.spacedBy(if (pointer) metrics.gap else 14.dp),
                 ) {
-                    Icon(icon(option), null, tint = if (picked) colors.primary else colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
+                    Icon(icon(option), null, tint = if (picked && !pointer) colors.primary else colors.onSurfaceVariant, modifier = Modifier.size(metrics.iconSize))
                     TipText(
                         label(option),
-                        color = if (picked) colors.onSurface else colors.onSurface.copy(alpha = 0.85f),
+                        color = if (picked || pointer) colors.onSurface else colors.onSurface.copy(alpha = 0.85f),
                         fontSize = 16.sp,
-                        fontWeight = if (picked) FontWeight.SemiBold else FontWeight.Medium,
+                        fontWeight = when {
+                            pointer -> FontWeight.Normal
+                            picked -> FontWeight.SemiBold
+                            else -> FontWeight.Medium
+                        },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f),
