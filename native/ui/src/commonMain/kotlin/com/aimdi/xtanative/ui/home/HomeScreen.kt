@@ -208,6 +208,7 @@ private fun rememberShell(ui: HomeUi): HomeShellState {
 
 @Composable
 private fun HomeShell(parts: HomeParts, deckFits: Boolean, wide: Boolean) {
+    StartSteps.reached("home shell")
     val ui = parts.ui
     val shell = rememberShell(ui)
     val scope = rememberCoroutineScope()
@@ -260,6 +261,7 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean, wide: Boolean) {
         }
     }
     HomeSheets(parts, shell, following, unread)
+    StartSteps.reached("home shell composed")
 }
 
 /**
@@ -306,6 +308,10 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
         parts.routes.openIfExists(route)
     }
     LaunchedEffect(shell.drawer.isOpen) { if (shell.drawer.isOpen) parts.vm.reloadUnread() }
+    // The menu is first made when the drawer is first asked to open. Closed, it was composed and measured
+    // at every start of the app, in the frame the reader waits for (native/PERF.md).
+    val menuMade = remember { booleanArrayOf(false) }
+    if (DrawerMenu.makes(menuMade[0], shell.drawer.targetValue == DrawerValue.Open, shell.drawer.isOpen, shell.drawer.isAnimationRunning)) menuMade[0] = true
     ModalNavigationDrawer(
         drawerState = shell.drawer,
         // Swipes belong to the timelines: the drawer opens from the picker or a drag from the edge, and closes with a swipe too.
@@ -315,7 +321,7 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
             // scale it grows by when dragged, so a closed one would otherwise peek in by the difference.
             key(LocalDensity.current.density) {
                 ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
-                    AccountMenu(
+                    if (menuMade[0]) AccountMenu(
                         ui = parts.ui,
                         routes = parts.routes,
                         deckFits = deckFits,
@@ -335,12 +341,14 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
 /** The bar's page shown, above the bar, which slips away as the page is scrolled down. */
 @Composable
 private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, following: FollowingLook, unread: Set<String>, refresh: () -> Unit, feedCalls: FeedPageCalls, wide: Boolean) {
+    StartSteps.reached("home body")
     val ui = parts.ui
     val takeover = remember { NetworkBarTakeover() }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
+            StartSteps.reached("bottom bar")
             HomeBottomBar(
                 ui,
                 ui.bar.indexOf(page),
@@ -355,6 +363,7 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
             )
         },
     ) { padding ->
+        StartSteps.reached("page")
         // The bottom bar's height changes at every frame of its slide: the pages are measured with it, not composed again.
         val bottom = rememberLiveEdges(padding).second
         CompositionLocalProvider(LocalNetworkBarTakeover provides takeover) {
@@ -690,4 +699,14 @@ private fun rememberTabRefresh(tab: HomeTab?, networks: HomeNetworks): () -> Uni
     }
     is HomeTab.Network -> remember(tab.id) { { networks.refresh(tab.id) } }
     is HomeTab.Group, null -> remember { {} }
+}
+
+/** When the account menu inside the drawer is made. */
+internal object DrawerMenu {
+    /**
+     * Whether the menu is composed: once it has been ([made]), and from the
+     * moment the drawer is asked to open, is open or is moving. A drawer
+     * that was never opened holds an empty sheet of its own width.
+     */
+    fun makes(made: Boolean, opening: Boolean, open: Boolean, moving: Boolean): Boolean = made || opening || open || moving
 }

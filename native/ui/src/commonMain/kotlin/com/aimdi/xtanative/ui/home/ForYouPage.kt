@@ -83,6 +83,7 @@ internal fun forYouViewModel(): ForYouViewModel {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ForYouPage(toTop: Int, actions: PostActions, contentPadding: PaddingValues) {
+    com.aimdi.xtanative.ui.StartSteps.reached("for you")
     val vm = forYouViewModel()
     val state by vm.ui.collectAsStateWithLifecycle()
     val list = rememberLazyListState()

@@ -154,6 +154,7 @@ fun GroupFeedBody(
     mediaOnly: Boolean,
     toTop: Int = 0,
 ) {
+    com.aimdi.xtanative.ui.StartSteps.reached("group feed")
     val plugin by vm.plugin.collectAsStateWithLifecycle()
     val plugins = rememberRunningPlugins()
     val media = rememberLazyListState()

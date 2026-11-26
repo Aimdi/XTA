@@ -147,7 +147,9 @@ internal fun HomeFeedPage(
     refresh: () -> Unit,
     calls: FeedPageCalls,
 ) {
+    com.aimdi.xtanative.ui.StartSteps.reached("feed page")
     BoxWithConstraints(Modifier.fillMaxSize()) {
+        com.aimdi.xtanative.ui.StartSteps.reached("timeline")
         val count = HomeWide.columns(maxWidth.value, ui.tabs.size)
         val beside = HomeWide.beside(ui.tabs, timelines.index, count)
         if (beside.isEmpty()) {

@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun FeedSkeleton(modifier: Modifier = Modifier, count: Int = 6) {
+    com.aimdi.xtanative.ui.StartSteps.reached("skeleton")
     val pulse = rememberSkeletonPulse()
     Column(modifier.fillMaxWidth().padding(top = 4.dp)) {
         repeat(count) { PostSkeletonBones(pulse) }

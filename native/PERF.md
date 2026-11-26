@@ -37,6 +37,7 @@ until a second run agrees. APK bytes are exact.
 | 238 | `28ab943b` | Kept videos in the app's own player | 9,955,126 (−17.5%) | 974 ms | 858 ms | 118,338 kB |
 | 240 | `09bc6fc9` | Measurement only (the same app as 238) | 9,955,126 | 630 ms | 643 ms | 118,434 kB |
 | 241 | `a88b50e1` | Measurement only | 9,955,126 | 611 ms (2.14 × Settings' 285) | 529 ms | not comparable (read after a full compile) |
+| 249 | `5484bb87` | Measurement only | 9,955,126 | 931 ms (2.00 × Settings' 465) | 854 ms | 116,944 kB |
 
 At the baseline the two dex files are 9,383,959 bytes packed (78% of the
 APK) and the resource table 659,364.
@@ -127,6 +128,19 @@ round's.
   drawn inside the first frame, which ends at about 500 ms. The next run
   marks the root past its wait, Home, the first post and the frame's
   beginning (`ui/StartSteps.kt`), to see which of them the 435 ms is.
+- **The first frame is Home being laid out** (run 249, a slow runner:
+  Settings 465 ms, the app 931, twice it; all compiled 813). The frame
+  begins at about 50 ms, the root is past its wait at 71, Home begins at 87
+  and the composition is over at 96; the frame ends at about 850 ms, with
+  no post composed in it. Home's shell stands in a `BoxWithConstraints`, so
+  everything under it is composed while the frame is measured, after the
+  composition's own end: the three quarters of a second are Home's shell,
+  its bars, its page and the drawer.
+- **The account menu made only once the drawer is asked to open**
+  (`DrawerMenu`, `HomeScreen.kt`): the closed drawer's whole menu was composed
+  and measured in that first frame. Result pending its first run, with
+  marks at the shell, its body, the bottom bar, the page, the feed page and
+  its timeline to split what remains.
 - Before that was known: **the starts could not be read.** Installed and compiled, run by run:
   749/708, 759/702, 798/779, 798/752, 974/858 ms. Nothing in rounds 2 to 4
   adds work before the first frame, and run 238's five launches agree with
