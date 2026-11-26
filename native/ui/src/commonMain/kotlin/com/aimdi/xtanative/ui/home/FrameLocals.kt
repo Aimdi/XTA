@@ -61,14 +61,23 @@ val LocalWideFrame = staticCompositionLocalOf<WideFrame?> { null }
 val LocalFrameRoots = compositionLocalOf<Set<Any>> { emptySet() }
 
 /**
+ * Whether what is composed here is a page shown beside the list that picks
+ * it, as Settings' sections are in a wide window: the list is the way to the
+ * others, so its bar draws no Back ([isFrameRoot]).
+ */
+val LocalBesideList = staticCompositionLocalOf { false }
+
+/**
  * Whether the screen composed here is one the frame's column or rail opened
  * ([LocalFrameRoots]): the navigation beside it already leads everywhere, so
  * its bar draws no Back of its own. Esc, Alt+Left and the mouse's back
  * button still go back. False on a phone, in a narrow window, and for a
  * screen opened any other way (Search from a hashtag, Settings by Ctrl+comma).
+ * True too for a page shown beside the list that picks it ([LocalBesideList]).
  */
 @Composable
 fun isFrameRoot(): Boolean {
+    if (LocalBesideList.current) return true
     val owner = LocalViewModelStoreOwner.current ?: return false
     return LocalWideFrame.current != null && owner in LocalFrameRoots.current
 }

@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -90,6 +91,7 @@ import org.jetbrains.compose.resources.stringResource
 /** A switch bound to [pref]; [focus] is the control the search opened the page for. */
 @Composable
 private fun PrefSwitch(settings: Settings, pref: Pref<Boolean>, title: String, description: String?, vm: SettingsViewModel, focus: String?, enabled: Boolean = true) {
+    if (!shownHere(pref.key)) return
     SwitchRow(title, description, settings[pref], enabled, focus == pref.key) { vm.set(pref, it) }
 }
 
@@ -465,21 +467,22 @@ internal fun ThemeSettings(title: String, vm: SettingsViewModel, focus: String?,
             SettingsHeader(stringResource(Res.string.settings_accent), stringResource(Res.string.settings_accent_description))
             AccentPicker(settings[ThemePrefs.accent], Modifier.focusedSetting(focus == ThemePrefs.accent.key)) { vm.set(ThemePrefs.accent, it) }
             SettingsDivider()
+            // Pure black is a dark theme's: under a light one the switches stand, greyed, as their description says.
+            val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
             SwitchRow(
                 stringResource(Res.string.settings_true_black),
                 stringResource(Res.string.settings_true_black_description),
                 settings[ThemePrefs.trueBlack],
+                enabled = dark,
                 focused = focus == ThemePrefs.trueBlack.key,
             ) { on -> vm.update { it.with(ThemePrefs.trueBlack, on).with(ThemePrefs.trueBlackPostCards, on) } }
             PrefSwitch(
                 settings, ThemePrefs.trueBlackPostCards, stringResource(Res.string.settings_true_black_cards),
-                stringResource(Res.string.settings_true_black_cards_description), vm, focus, enabled = settings[ThemePrefs.trueBlack],
+                stringResource(Res.string.settings_true_black_cards_description), vm, focus, enabled = dark && settings[ThemePrefs.trueBlack],
             )
             PrefSwitch(settings, ThemePrefs.showNavigationLabels, stringResource(Res.string.settings_navigation_labels), null, vm, focus)
             PrefSwitch(settings, ThemePrefs.hideNavigationOnScroll, stringResource(Res.string.settings_hide_navigation), null, vm, focus)
-            if (!isDesktop) {
-                PrefSwitch(settings, ThemePrefs.hideStatusBar, stringResource(Res.string.settings_hide_status_bar), stringResource(Res.string.settings_hide_status_bar_description), vm, focus)
-            }
+            PrefSwitch(settings, ThemePrefs.hideStatusBar, stringResource(Res.string.settings_hide_status_bar), stringResource(Res.string.settings_hide_status_bar_description), vm, focus)
         }
     }
 }
