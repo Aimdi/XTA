@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.common
 import java.util.Locale
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertSame
 
 /** Counts as each language shortens them ([countFormat]), cut down as X cuts them. */
 class CountFormatTest {
@@ -48,5 +49,10 @@ class CountFormatTest {
     @Test
     fun latinBelarusianKeepsXsLettersNotCyrillicWords() {
         assertEquals("1,2K", countFormat(Locale("be", "XL"))(1_234))
+    }
+
+    @Test
+    fun aLanguagesFormatIsMadeOnce() {
+        assertSame(countFormat(Locale.GERMAN), countFormat(Locale.GERMAN), "one per language, not one per count")
     }
 }

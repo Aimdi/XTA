@@ -84,10 +84,15 @@ internal expect fun compactCounts(locale: Locale): ((Long, Int) -> String)?
 
 /**
  * How [locale] shortens counts ([Formats.compactCount]), in Latin digits as
- * every other number in the app; made once per language. Latin Belarusian
- * keeps X's own 1.2K: the platform knows only the Cyrillic words.
+ * every other number in the app; made once per language and thread (the
+ * platform's formats are not safe to share), not once per count on a card.
+ * Latin Belarusian keeps X's own 1.2K: the platform knows only the Cyrillic words.
  */
-internal fun countFormat(locale: Locale): (Long) -> String {
+internal fun countFormat(locale: Locale): (Long) -> String = countFormats.get().getOrPut(locale) { madeCountFormat(locale) }
+
+private val countFormats: ThreadLocal<HashMap<Locale, (Long) -> String>> = ThreadLocal.withInitial { HashMap() }
+
+private fun madeCountFormat(locale: Locale): (Long) -> String {
     val latin = runCatching { Locale.Builder().setLocale(locale).setUnicodeLocaleKeyword("nu", "latn").build() }.getOrDefault(locale)
     val decimal = DecimalFormatSymbols.getInstance(latin).decimalSeparator
     val compact = if (latin.country == AppLocale.LATIN_BELARUSIAN_REGION) null else runCatching { compactCounts(latin) }.getOrNull()
