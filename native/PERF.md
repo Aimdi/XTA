@@ -40,6 +40,7 @@ until a second run agrees. APK bytes are exact.
 | 249 | `5484bb87` | Measurement only | 9,955,126 | 931 ms (2.00 × Settings' 465) | 854 ms | 116,944 kB |
 | 250 | `0dc8e15c` | The account menu made when its drawer first opens | 9,955,126 | 917 ms (2.12 × Settings' 433) | 875 ms | 113,779 kB |
 | 251 | `2ce906fa` | Measurement only | 9,955,126 | 568 ms (1.64 × Settings' 346) | 580 ms | 114,985 kB |
+| 253 | `c27f11d7` | Measurement only | 9,955,126 | 815 ms (2.24 × Settings' 364) | — | — |
 
 At the baseline the two dex files are 9,383,959 bytes packed (78% of the
 APK) and the resource table 659,364.
@@ -53,6 +54,34 @@ Run 235's memory after start, PSS: code 60,332 kB (the app's own dex and
 compiled code mapped in: nearly half of the total, so less code is also less
 memory) · native heap 32,564 · private other 20,304 · system 6,771 · Java
 heap 6,192 · graphics 0 on the emulator.
+
+## The owner's decision: what the kept libraries weigh
+
+Run 253 built the same app a second time, for measuring only, with the
+libraries the plugin contract keeps whole (Kotlin, kotlinx, Compose,
+lifecycle, navigation, OkHttp, okio, jsoup, Coil) kept only as far as the
+app itself uses them:
+
+| | APK | code (dex), packed |
+|---|---|---|
+| As released (libraries kept whole) | 9,955,126 bytes | 7,884,325 |
+| Libraries kept as far as the app uses them | 7,006,002 bytes | 4,972,823 |
+
+So that part of the contract costs 2,949,124 bytes, 30% of the APK. A
+build like the second is not shippable as it is: an installed plugin
+calling a library method the app does not use would fail. What would make
+it shippable is the owner's to choose, not a round's:
+
+- keep, of the libraries, what the app uses **and** what any published
+  plugin references (a list a tool can make from the plugins' own classes,
+  as `tool/plugin_abi.py` reads them), raising `OLDEST_PLUGIN_API` so that
+  only plugins built against that list load; a plugin needing more of a
+  library then needs a newer app, as one needing more of the plugin API
+  does today; or
+- leave the contract as it is, and the APK near ten megabytes.
+
+`-PkeepRules=<file>` on `:app:assembleRelease` builds with other rules than
+the app's, to measure such a list before deciding.
 
 ## What holds the size up
 
@@ -169,10 +198,10 @@ round's.
   runner's sound alone any more. The check now writes down how long it
   waited and what mpv says of itself (pause, idle, end of file, the sound
   output), to tell a player that never started from one that was slow.
-- **What the kept libraries weigh**: the next run builds a second APK, for
-  measuring only, with the libraries the plugin contract keeps whole kept
-  only as far as the app uses them, and prints the difference: what that
-  part of the contract costs, for the owner to weigh.
+- **What the kept libraries weigh**: measured in run 253, see "The owner's
+  decision" above. The measuring step is out of CI again.
+- Run 253's podcast check passed (1,585 ms in), so its new lines said
+  nothing yet; they stay for the next time it does not.
 - Before that was known: **the starts could not be read.** Installed and compiled, run by run:
   749/708, 759/702, 798/779, 798/752, 974/858 ms. Nothing in rounds 2 to 4
   adds work before the first frame, and run 238's five launches agree with
@@ -183,23 +212,18 @@ round's.
   where its start went (`StartMarks`: application, graph made, application
   ready, activity, settings read, first frame).
 
-## Next, in the order the measurements suggest
+## Next
 
-1. Run 236's code by package (dex bytes): the app 7.04 MB, of which
-   `ui` 5.87 MB (`ui.generated.resources` 2.19 MB before packing, `ui.home`
-   0.41, `ui.subscriptions` 0.31, `ui.plugins` 0.31, `ui.settings` 0.29,
-   `ui.saved` 0.28, `ui.post` 0.27), `store` 0.45, `core` 0.35; Compose 4.69
-   MB (kept whole by the plugin contract); Media3 0.84; Kotlin 0.59; kotlinx
-   0.53; OkHttp 0.25; navigation 0.23; Coil 0.21; jsoup 0.19.
-2. After the tables, the app's own screens are the largest thing a round
-   can still move: `ui.home` 0.41 MB, `ui.subscriptions` 0.31, `ui.plugins`
-   0.31, `ui.settings` 0.29, `ui.saved` 0.28, `ui.post` 0.27 of dex. What in
-   them the desktop alone uses (the deck, windows, keys) is in the Android
-   app too, kept by the plugin contract's `ui.**`.
-3. Memory by kind, once `compare.txt` has it: the picture cache's share, and
-   what is made at start that could wait for its first use.
-4. Start: what runs before the first frame (`XtaNativeApp.onCreate`,
-   `MainActivity.onCreate`, `AppGraph.start`), measured, not guessed.
+The rounds a round can decide are done: what is left of the size is the
+kept libraries above (the owner's), the app's own screens (3.9 MB of dex,
+kept by the same contract's `ui.**`) and the screens' strings (1.3 MB
+packed, in the generator's own format). Of the memory after start, about
+115 MB, 54 is code mapped in, 31 native heap, 20 private other; less code
+is the way to less of the first. The start is the emulator's first draw.
+
+A round worth opening again: when the owner decides on the kept libraries;
+when a run's `dex-top.txt` shows a package grown; when the podcast check
+fails with its new lines.
 
 ## Not done, and why
 

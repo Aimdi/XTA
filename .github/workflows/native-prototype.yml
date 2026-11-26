@@ -214,26 +214,6 @@ jobs:
           name: xta-native-plugins-android-${{ env.VERSION_NAME }}
           path: native/plugins/build/out/android
 
-      # A measure, not a build anyone gets: the APK as R8 makes it when the libraries the plugin contract
-      # keeps whole (Kotlin, kotlinx, Compose, lifecycle, navigation, OkHttp, okio, jsoup, Coil) are kept
-      # only as far as the app itself uses them. What the difference is, is what that part of the contract
-      # weighs (native/PERF.md). It never fails the job.
-      - name: What the kept libraries weigh
-        env:
-          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-        run: |
-          grep -vE '^-keep public class (!kotlin\.Metadata, )?(kotlin|kotlinx|androidx|okhttp3|okio|org\.jsoup|coil3)\.' app/proguard-rules.pro > "$RUNNER_TEMP/lean.pro"
-          before=$(stat -c %s "$RUNNER_TEMP"/xta-native-*.apk | head -1)
-          if ./gradlew :app:assembleRelease -PkeepRules="$RUNNER_TEMP/lean.pro" --console=plain > "$RUNNER_TEMP/lean.log" 2>&1; then
-            after=$(stat -c %s app/build/outputs/apk/release/app-release.apk)
-            echo "Kept libraries: the APK is $before bytes; with them kept only as far as the app uses them, $after bytes ($((before - after)) fewer)"
-            bash tool/apk_report.sh app/build/outputs/apk/release/app-release.apk "" "$RUNNER_TEMP/lean-report" | grep "bytes packed" | sed 's/^/Kept libraries, lean: /'
-          else
-            echo "Kept libraries: the lean build did not finish"; tail -20 "$RUNNER_TEMP/lean.log"
-          fi
-
 
   # Live x.com, as XTA's own X check reads it: the request signer derived from
   # x.com's pages with no session, then @X's profile as a guest, and every
