@@ -123,6 +123,21 @@ internal fun SavedNoteEditor(item: Keepable, onDismiss: () -> Unit) {
 }
 
 /**
+ * The note [post] has in Saved, as Saved's row shows it, where it is saved
+ * with one: the opened post shows it under its counts, and a click edits it.
+ */
+@Composable
+internal fun SavedNoteOnPost(post: XPost, modifier: Modifier = Modifier) {
+    val keeper = LocalKeeper.current
+    LaunchedEffect(keeper) { keeper.saved.index() }
+    val library by keeper.saved.index.collectAsStateWithLifecycle()
+    val note = NoteRules.shownSavedNote(library?.post(post.shown.id)?.note) ?: return
+    var editing by remember(post.shown.id) { mutableStateOf(false) }
+    SavedNoteBox(note, onEdit = { editing = true }, modifier)
+    if (editing) SavedNoteEditor(remember(post.shown.id) { Keepable.of(post) }, onDismiss = { editing = false })
+}
+
+/**
  * Whether [postId] is saved here, as that changes: read from the frame's
  * [KeptNow], where a change redraws only the bookmarks it changes, else
  * followed here.

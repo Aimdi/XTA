@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">Kontoen er suspendert</string>
     <string name="posts_add_to_group">Legg til i gruppe</string>
+    <string name="posts_copy_text">Kopier tekst</string>
     <string name="posts_article_on_x">Artikkel på X</string>
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Skjul</string>

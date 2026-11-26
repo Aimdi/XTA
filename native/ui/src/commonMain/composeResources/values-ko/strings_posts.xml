@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">계정 정지됨</string>
     <string name="posts_add_to_group">그룹에 추가</string>
+    <string name="posts_copy_text">텍스트 복사</string>
     <string name="posts_article_on_x">X의 아티클</string>
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">접기</string>

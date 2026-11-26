@@ -50,6 +50,9 @@ object NoteRules {
     /** The saved post's note is kept as a draft under this key. */
     fun savedNoteKey(postId: String): String = "saved:$postId"
 
+    /** A saved post's note as a post shows it: none when it is blank. */
+    fun shownSavedNote(note: String?): String? = note?.takeIf { it.isNotBlank() }
+
     fun title(target: NoteTarget): NoteTitle = when (target) {
         is NoteTarget.Note -> when {
             target.editing != null -> NoteTitle.EDIT

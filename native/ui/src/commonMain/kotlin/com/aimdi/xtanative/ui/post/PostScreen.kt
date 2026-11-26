@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.post
 
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -83,6 +84,9 @@ import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.bleed
+import com.aimdi.xtanative.ui.saved.SavedNoteLook
+import com.aimdi.xtanative.ui.saved.SavedNoteOnPost
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.common.itemMotion
@@ -419,17 +423,21 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 if (PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.weight(1f, fill = false)) {
-                            AuthorHoverCard(shown.author, shown.author.largeAvatarUrl, { actions.openUser(shown.author.screenName, shown.author.id) }) {
-                                TipText(shown.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    val openAuthor = { actions.openUser(shown.author.screenName, shown.author.id) }
+                    // The name and @handle open the profile, as the picture beside them does; the keyboard reaches it on the picture.
+                    Column(Modifier.focusProperties { canFocus = false }.clickable(onClick = openAuthor)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(Modifier.weight(1f, fill = false)) {
+                                AuthorHoverCard(shown.author, shown.author.largeAvatarUrl, openAuthor) {
+                                    TipText(shown.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                }
+                            }
+                            if (shown.author.verified) {
+                                Icon(XIcons.Verified, null, tint = Color.Unspecified, modifier = Modifier.padding(start = 2.dp).size(18.dp))
                             }
                         }
-                        if (shown.author.verified) {
-                            Icon(XIcons.Verified, null, tint = Color.Unspecified, modifier = Modifier.padding(start = 2.dp).size(18.dp))
-                        }
+                        Text("@" + shown.author.screenName, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
-                    Text("@" + shown.author.screenName, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
             translation?.let { TranslateButton(it, scope, glyphTop = false) }
@@ -460,6 +468,8 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
         }
         FocalMetaLine(shown, scope.prefs, order, picture)
         if (article == null) PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture, countsMax = FooterFit.FOCAL_COUNTS_MAX.dp)
+        // Its note in Saved, as Saved shows it, the pencil level with the text above.
+        SavedNoteOnPost(post, Modifier.padding(top = 4.dp).bleed(SavedNoteLook.PADDING.dp))
     }
     Hairline()
     if (menu) {

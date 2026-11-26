@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">Hesap askıya alındı</string>
     <string name="posts_add_to_group">Gruba ekle</string>
+    <string name="posts_copy_text">Metni kopyala</string>
     <string name="posts_article_on_x">X'te makale</string>
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Daralt</string>

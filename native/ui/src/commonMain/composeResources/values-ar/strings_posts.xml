@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">الحساب معلق</string>
     <string name="posts_add_to_group">أضف إلى المجموعة</string>
+    <string name="posts_copy_text">نسخ النص</string>
     <string name="posts_article_on_x">مقال على X</string>
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">طي</string>

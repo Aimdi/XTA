@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">凍結済みアカウント</string>
     <string name="posts_add_to_group">グループに追加</string>
+    <string name="posts_copy_text">テキストをコピー</string>
     <string name="posts_article_on_x">X の記事</string>
     <string name="posts_boosts">リポスト</string>
     <string name="posts_collapse">折りたたむ</string>

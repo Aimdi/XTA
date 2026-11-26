@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">Account uitgeschakeld</string>
     <string name="posts_add_to_group">Aan groep toevoegen</string>
+    <string name="posts_copy_text">Tekst kopiëren</string>
     <string name="posts_article_on_x">Artikel op X</string>
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Inklappen</string>

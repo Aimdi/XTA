@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">Účet pozastaven</string>
     <string name="posts_add_to_group">Přidat do skupiny</string>
+    <string name="posts_copy_text">Kopírovat text</string>
     <string name="posts_article_on_x">Článek na X</string>
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Sbalit</string>

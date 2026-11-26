@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">Ulikovy zapis prypynieny</string>
     <string name="posts_add_to_group">Dadać u hrupu</string>
+    <string name="posts_copy_text">Skapijavać tekst</string>
     <string name="posts_article_on_x">Artykuł na X</string>
     <string name="posts_boosts">Reposty</string>
     <string name="posts_collapse">Zharnuć</string>

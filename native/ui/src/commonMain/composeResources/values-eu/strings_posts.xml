@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">Etendako kontua</string>
     <string name="posts_add_to_group">Gehitu taldera</string>
+    <string name="posts_copy_text">Kopiatu testua</string>
     <string name="posts_article_on_x">Artikulua X-en</string>
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Tolestu</string>

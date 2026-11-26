@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">अकाउंट निलंबित</string>
     <string name="posts_add_to_group">समूह में जोड़ें</string>
+    <string name="posts_copy_text">टेक्स्ट कॉपी करें</string>
     <string name="posts_article_on_x">X पर लेख</string>
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">संक्षिप्त करें</string>
