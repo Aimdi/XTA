@@ -205,6 +205,15 @@ object ThreadTree {
     /** Extra start inset of a reply at [depth]: answers to the opened post sit flush with it, deeper ones step in. */
     fun indentLevels(depth: Int): Int = (depth - 1).coerceAtLeast(0)
 
+    /** How far one level steps in, in dp: enough to read as an answer, little enough to leave a narrow window its text. */
+    const val INDENT_STEP = 24f
+
+    /** The most levels a reply steps in, whatever the cap on depth, so a deep thread keeps its width. */
+    const val MAX_INDENT_LEVELS = 3
+
+    /** The start inset of a reply at [depth], in dp: [INDENT_STEP] per level, at most [MAX_INDENT_LEVELS] of them. */
+    fun indent(depth: Int): Float = indentLevels(depth).coerceAtMost(MAX_INDENT_LEVELS) * INDENT_STEP
+
     private fun skipSubtree(nodes: List<ThreadNode>, start: Int): Int {
         val depth = nodes[start].depth
         var at = start + 1

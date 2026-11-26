@@ -257,7 +257,7 @@ private fun LazyListScope.replyItems(replies: List<XThread>, tree: List<ThreadRo
     }
     items(tree, key = { row -> rowKey(row) }, contentType = { row -> if (row is ThreadRow.Reply) "thread" else "continue" }) { row ->
         when (row) {
-            is ThreadRow.Reply -> Box(itemMotion(LocalReducedMotion.current).padding(start = (ThreadTree.indentLevels(row.visualDepth) * 40).dp)) {
+            is ThreadRow.Reply -> Box(itemMotion(LocalReducedMotion.current).padding(start = ThreadTree.indent(row.visualDepth).dp)) {
                 ThreadRows(row.node.thread, actions)
             }
             is ThreadRow.Continue -> Box(itemMotion(LocalReducedMotion.current)) { ContinueThread(row, actions) }
@@ -279,7 +279,7 @@ private fun ContinueThread(row: ThreadRow.Continue, actions: PostActions) {
             .fillMaxWidth()
             .heightIn(min = 48.dp)
             .clickable { actions.openPost(first.id) }
-            .padding(start = (ThreadTree.indentLevels(row.indentDepth) * 40 + 16).dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+            .padding(start = (ThreadTree.indent(row.indentDepth) + 16).dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(PostIcons.SubdirectoryArrow, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
