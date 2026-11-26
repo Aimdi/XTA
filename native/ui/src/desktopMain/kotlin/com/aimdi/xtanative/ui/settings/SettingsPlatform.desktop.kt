@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.settings
 
 import androidx.compose.runtime.Composable
+import com.aimdi.xtanative.store.replaceWith
 import com.aimdi.xtanative.ui.chrome.AppLog
 import com.aimdi.xtanative.ui.chrome.Diagnostics
 import com.aimdi.xtanative.ui.chrome.LogsFolder
@@ -9,6 +10,9 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.settings_download_path
 import com.aimdi.xtanative.ui.generated.resources.settings_export
 import java.io.File
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.attribute.PosixFilePermissions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
@@ -22,8 +26,21 @@ internal actual fun rememberBackupSaver(onSaved: (String?) -> Unit): (fileName: 
     return { fileName, text ->
         FileChoosers.launch {
             val chosen = FileChoosers.save(title, fileName)
-            val saved = chosen != null && withContext(Dispatchers.IO) { runCatching { chosen.writeText(text) }.isSuccess }
+            val saved = chosen != null && withContext(Dispatchers.IO) { runCatching { BackupFile.write(chosen, text) }.isSuccess }
             onSaved(chosen?.name?.takeIf { saved })
+        }
+    }
+}
+
+/** A backup on disk. It can hold the X sessions, so only its owner may read it. */
+internal object BackupFile {
+    /** [text] as [file], whole; where a file cannot be staged beside it, written in place and made the owner's only. */
+    fun write(file: File, text: String) {
+        try {
+            file.replaceWith(text)
+        } catch (_: IOException) {
+            file.writeText(text)
+            runCatching { Files.setPosixFilePermissions(file.toPath(), PosixFilePermissions.fromString("rw-------")) }
         }
     }
 }
