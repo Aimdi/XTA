@@ -66,3 +66,5 @@ internal actual fun rememberLoginStart(): LoginStart? = null
 internal actual val logsFolder: String? = null
 
 internal actual fun openLogsFolder(): Boolean = false
+
+internal actual fun diagnosticsText(): String? = null

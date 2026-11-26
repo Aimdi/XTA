@@ -323,6 +323,7 @@
     <string name="settings_intro_again">عرض المقدمة مجددًا</string>
     <string name="settings_intro_again_description">إعادة عرض بطاقات التشغيل الأول.</string>
     <string name="settings_open_logs">فتح مجلد السجلات</string>
+    <string name="settings_copy_diagnostics">نسخ معلومات التشخيص</string>
     <string name="settings_ok">تمام</string>
     <string name="settings_diagnostics_copy">نسخ التقرير</string>
     <string name="settings_diagnostics_copied">تم نسخ التشخيص إلى الحافظة</string>

@@ -323,6 +323,7 @@
     <string name="settings_intro_again">Паказаць уводзіны зноў</string>
     <string name="settings_intro_again_description">Яшчэ раз прайсці карткі першага запуску.</string>
     <string name="settings_open_logs">Адкрыць папку журналаў</string>
+    <string name="settings_copy_diagnostics">Скапіяваць звесткі для дыягностыкі</string>
     <string name="settings_ok">Добра</string>
     <string name="settings_diagnostics_copy">Скапіяваць справаздачу</string>
     <string name="settings_diagnostics_copied">Дыягностыка скапіявана ў буфер абмену</string>

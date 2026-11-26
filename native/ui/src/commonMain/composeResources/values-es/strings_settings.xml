@@ -323,6 +323,7 @@
     <string name="settings_intro_again">Volver a mostrar la introducción</string>
     <string name="settings_intro_again_description">Vuelve a ver las tarjetas del primer inicio.</string>
     <string name="settings_open_logs">Abrir carpeta de registros</string>
+    <string name="settings_copy_diagnostics">Copiar diagnóstico</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Copiar el informe</string>
     <string name="settings_diagnostics_copied">Diagnóstico copiado al portapapeles</string>

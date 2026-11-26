@@ -323,6 +323,7 @@
     <string name="settings_intro_again">Revoir l'introduction</string>
     <string name="settings_intro_again_description">Réaffiche les cartes du premier lancement.</string>
     <string name="settings_open_logs">Ouvrir le dossier des journaux</string>
+    <string name="settings_copy_diagnostics">Copier les diagnostics</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Copier le rapport</string>
     <string name="settings_diagnostics_copied">Diagnostic copié dans le presse-papiers</string>

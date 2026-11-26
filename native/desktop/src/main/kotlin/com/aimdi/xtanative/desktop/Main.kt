@@ -47,6 +47,7 @@ import com.aimdi.xtanative.ui.appName
 import com.aimdi.xtanative.ui.chrome.AppLog
 import com.aimdi.xtanative.ui.chrome.AppQuit
 import com.aimdi.xtanative.ui.chrome.CommandLine
+import com.aimdi.xtanative.ui.chrome.Diagnostics
 import com.aimdi.xtanative.ui.chrome.InstanceMessage
 import com.aimdi.xtanative.ui.chrome.SavedWindow
 import com.aimdi.xtanative.ui.chrome.SavedWindowFile
@@ -111,6 +112,9 @@ fun main(args: Array<String>) {
     val instance = SingleInstance.claim(files, link?.let(InstanceMessage::Open) ?: InstanceMessage.Raise) ?: exitProcess(0)
     // What the app prints is kept in its log too, once this start is the one that runs: from the menu, nothing reads the terminal.
     AppLog.install()
+    // `--verbose`: the system's facts and each request's line in the log as well.
+    val verbose = "--verbose" in args
+    if (verbose) Diagnostics.verbose()
     link?.let(DesktopIncomingLinks::hand)
     val raises = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val trayClicks = MutableSharedFlow<TrayAction>(extraBufferCapacity = 4)
@@ -244,6 +248,8 @@ fun main(args: Array<String>) {
                         .collect(windowFile::write)
                 }
                 DisposableEffect(window) {
+                    Diagnostics.renderer = { window.renderApi.name }
+                    if (verbose) println("XTA Native: Renderer: ${window.renderApi.name}")
                     mainWindow.set(state to window)
                     onDispose { mainWindow.set(null) }
                 }

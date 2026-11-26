@@ -323,6 +323,7 @@
     <string name="settings_intro_again">Pokaż wprowadzenie ponownie</string>
     <string name="settings_intro_again_description">Obejrzyj jeszcze raz karty z pierwszego uruchomienia.</string>
     <string name="settings_open_logs">Otwórz folder dzienników</string>
+    <string name="settings_copy_diagnostics">Kopiuj dane diagnostyczne</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Skopiuj raport</string>
     <string name="settings_diagnostics_copied">Diagnostyka skopiowana do schowka</string>

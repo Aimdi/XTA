@@ -323,6 +323,7 @@
     <string name="settings_intro_again">Показать введение снова</string>
     <string name="settings_intro_again_description">Ещё раз пройти карточки первого запуска.</string>
     <string name="settings_open_logs">Открыть папку журналов</string>
+    <string name="settings_copy_diagnostics">Копировать диагностические данные</string>
     <string name="settings_ok">Ок</string>
     <string name="settings_diagnostics_copy">Скопировать отчёт</string>
     <string name="settings_diagnostics_copied">Диагностика скопирована в буфер обмена</string>

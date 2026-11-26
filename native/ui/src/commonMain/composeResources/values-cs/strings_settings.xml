@@ -323,6 +323,7 @@
     <string name="settings_intro_again">Zobrazit úvod znovu</string>
     <string name="settings_intro_again_description">Znovu projít karty z prvního spuštění.</string>
     <string name="settings_open_logs">Otevřít složku s protokoly</string>
+    <string name="settings_copy_diagnostics">Kopírovat diagnostické údaje</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Zkopírovat hlášení</string>
     <string name="settings_diagnostics_copied">Diagnostika zkopírována do schránky</string>

@@ -323,6 +323,7 @@
     <string name="settings_intro_again">Mostra di nuovo l'introduzione</string>
     <string name="settings_intro_again_description">Rivedi le schede del primo avvio.</string>
     <string name="settings_open_logs">Apri cartella dei log</string>
+    <string name="settings_copy_diagnostics">Copia diagnostica</string>
     <string name="settings_ok">Ok</string>
     <string name="settings_diagnostics_copy">Copia il rapporto</string>
     <string name="settings_diagnostics_copied">Diagnostica copiata negli appunti</string>

@@ -323,6 +323,7 @@
     <string name="settings_intro_again">Introductie opnieuw tonen</string>
     <string name="settings_intro_again_description">Bekijk de kaarten van de eerste start opnieuw.</string>
     <string name="settings_open_logs">Logmap openen</string>
+    <string name="settings_copy_diagnostics">Diagnose-informatie kopiëren</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Rapport kopiëren</string>
     <string name="settings_diagnostics_copied">Diagnose gekopieerd naar het klembord</string>

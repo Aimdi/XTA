@@ -49,11 +49,12 @@ object AppProxy {
     /** A host no route leads to: where an [ProxyRoute.Unusable] request is sent to fail. */
     internal const val UNUSABLE_HOST = "unusable-proxy.invalid"
 
-    /** The client every other derives from. */
+    /** The client every other derives from; `--verbose` records its requests ([RequestTrace]). */
     val client: OkHttpClient = OkHttpClient.Builder()
         .proxySelector(Selector)
         .proxyAuthenticator(ProxyLogin)
         .dns(UnusableDns)
+        .addInterceptor(RequestTrace)
         .addNetworkInterceptor(ProxyLoginGuard)
         .build()
 

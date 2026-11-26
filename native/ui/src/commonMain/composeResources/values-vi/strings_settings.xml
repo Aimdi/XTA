@@ -323,6 +323,7 @@
     <string name="settings_intro_again">Hiện lại phần giới thiệu</string>
     <string name="settings_intro_again_description">Xem lại các thẻ khi mở lần đầu.</string>
     <string name="settings_open_logs">Mở thư mục nhật ký</string>
+    <string name="settings_copy_diagnostics">Sao chép thông tin chẩn đoán</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Sao chép báo cáo</string>
     <string name="settings_diagnostics_copied">Đã sao chép chẩn đoán vào bảng nhớ tạm</string>

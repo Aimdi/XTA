@@ -323,6 +323,7 @@
     <string name="settings_intro_again">परिचय फिर से दिखाएँ</string>
     <string name="settings_intro_again_description">पहली बार खोलने पर दिखे कार्ड फिर से देखें।</string>
     <string name="settings_open_logs">लॉग फ़ोल्डर खोलें</string>
+    <string name="settings_copy_diagnostics">निदान जानकारी कॉपी करें</string>
     <string name="settings_ok">ठीक है</string>
     <string name="settings_diagnostics_copy">रिपोर्ट कॉपी करें</string>
     <string name="settings_diagnostics_copied">निदान क्लिपबोर्ड पर कॉपी हो गया</string>

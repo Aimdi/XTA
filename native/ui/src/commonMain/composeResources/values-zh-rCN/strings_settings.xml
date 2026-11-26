@@ -323,6 +323,7 @@
     <string name="settings_intro_again">再次显示引导</string>
     <string name="settings_intro_again_description">重新查看首次启动时的卡片。</string>
     <string name="settings_open_logs">打开日志文件夹</string>
+    <string name="settings_copy_diagnostics">复制诊断信息</string>
     <string name="settings_ok">确定</string>
     <string name="settings_diagnostics_copy">复制报告</string>
     <string name="settings_diagnostics_copied">诊断已复制到剪贴板</string>

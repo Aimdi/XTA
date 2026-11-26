@@ -6,14 +6,14 @@ package com.aimdi.xtanative.ui.chrome
  * process, as command-line programs answer them; an option it does not know
  * (`--bogus`, `-x`) is refused there with the usage and exit status 2, as
  * getopt programs refuse one, instead of starting the app; anything else (a
- * link, `--minimized`) starts the app. A link never begins with `-`. Terminal text, in English as such answers are, not the app's screens.
+ * link, `--minimized`, `--verbose`) starts the app. A link never begins with `-`. Terminal text, in English as such answers are, not the app's screens.
  */
 object CommandLine {
     /** What a start does with its arguments. */
     enum class Answer { HELP, VERSION, RUN, UNKNOWN }
 
     /** The options a start knows; every other argument beginning with `-` is refused. */
-    val options: Set<String> = setOf("--help", "-h", "--version", "--minimized")
+    val options: Set<String> = setOf("--help", "-h", "--version", "--minimized", "--verbose")
 
     /** The first argument of [args] that looks like an option but is none this app knows, or null. */
     fun unknownOption(args: Array<String>): String? = args.firstOrNull { it.startsWith("-") && it !in options }
@@ -49,6 +49,8 @@ object CommandLine {
         |                 this start ends
         |  --minimized    start hidden in the tray (with Settings > General >
         |                 Close to tray on, while a tray shows the icon)
+        |  --verbose      also log the system's facts and every request the app
+        |                 makes (where to, not what: no query, header or body)
         |  --version      print the version and exit
         |  -h, --help     print this help and exit
         |

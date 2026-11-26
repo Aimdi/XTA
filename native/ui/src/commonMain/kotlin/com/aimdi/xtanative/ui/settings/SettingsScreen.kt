@@ -229,6 +229,16 @@ internal fun AboutRows(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snack
     logsFolder?.let { folder ->
         NavigationRow(stringResource(Res.string.settings_open_logs), folder, SettingsIcons.FolderOutlined, chevron = false) { openLogsFolder() }
     }
+    // The versions and the system's facts a bug report asks for, never an account or a token.
+    if (isDesktop) {
+        val diagnosticsCopied = stringResource(Res.string.settings_diagnostics_copied)
+        NavigationRow(stringResource(Res.string.settings_copy_diagnostics), icon = Icons.Outlined.Build, chevron = false) {
+            diagnosticsText()?.let { text ->
+                copyText(text)
+                scope.launch { snackbar.showSnackbar(diagnosticsCopied) }
+            }
+        }
+    }
     NavigationRow(stringResource(Res.string.settings_intro_again), stringResource(Res.string.settings_intro_again_description), Icons.Outlined.Refresh, chevron = false) {
         vm.graph.keep {
             vm.graph.settings.update(IntroFlow::again)

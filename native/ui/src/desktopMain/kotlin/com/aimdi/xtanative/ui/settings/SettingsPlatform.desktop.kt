@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.settings
 
 import androidx.compose.runtime.Composable
 import com.aimdi.xtanative.ui.chrome.AppLog
+import com.aimdi.xtanative.ui.chrome.Diagnostics
 import com.aimdi.xtanative.ui.chrome.LogsFolder
 import com.aimdi.xtanative.ui.common.FileChoosers
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -44,3 +45,6 @@ internal actual val logsFolder: String? get() = AppLog.folder().path
 
 /** Through xdg-open, the folder handed as one argument. */
 internal actual fun openLogsFolder(): Boolean = LogsFolder.open()
+
+/** [Diagnostics]' text, of this machine now. */
+internal actual fun diagnosticsText(): String? = Diagnostics.text(Diagnostics.facts())

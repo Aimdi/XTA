@@ -323,6 +323,7 @@
     <string name="settings_intro_again">Remontri la enkondukon</string>
     <string name="settings_intro_again_description">Retrarigardi la kartojn de la unua lanĉo.</string>
     <string name="settings_open_logs">Malfermi dosierujon de protokoloj</string>
+    <string name="settings_copy_diagnostics">Kopii diagnozajn informojn</string>
     <string name="settings_ok">Bone</string>
     <string name="settings_diagnostics_copy">Kopii la raporton</string>
     <string name="settings_diagnostics_copied">Diagnozo kopiita al la tondujo</string>

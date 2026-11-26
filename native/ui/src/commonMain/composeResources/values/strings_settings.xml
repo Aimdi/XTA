@@ -323,6 +323,7 @@
     <string name="settings_intro_again">Show intro again</string>
     <string name="settings_intro_again_description">Replay the first-launch cards.</string>
     <string name="settings_open_logs">Open logs folder</string>
+    <string name="settings_copy_diagnostics">Copy diagnostics</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Copy report</string>
     <string name="settings_diagnostics_copied">Diagnostics copied to the clipboard</string>

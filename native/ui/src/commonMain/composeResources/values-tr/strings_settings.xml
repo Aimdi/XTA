@@ -323,6 +323,7 @@
     <string name="settings_intro_again">Tanıtımı yeniden göster</string>
     <string name="settings_intro_again_description">İlk açılış kartlarını yeniden izleyin.</string>
     <string name="settings_open_logs">Günlük klasörünü aç</string>
+    <string name="settings_copy_diagnostics">Tanılama bilgilerini kopyala</string>
     <string name="settings_ok">TAMAM</string>
     <string name="settings_diagnostics_copy">Raporu kopyala</string>
     <string name="settings_diagnostics_copied">Tanılama panoya kopyalandı</string>
