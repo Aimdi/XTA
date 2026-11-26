@@ -68,7 +68,6 @@ import com.aimdi.xtanative.ui.home.DesktopNavigation
 import com.aimdi.xtanative.ui.home.FrameCalls
 import com.aimdi.xtanative.ui.home.FrameFocus
 import com.aimdi.xtanative.ui.home.FrameKind
-import com.aimdi.xtanative.ui.home.FrameMarks
 import com.aimdi.xtanative.ui.home.FrameRoute
 import com.aimdi.xtanative.ui.home.FramedRail
 import com.aimdi.xtanative.ui.home.FramedSidebar
@@ -78,6 +77,7 @@ import com.aimdi.xtanative.ui.home.HomeRequests
 import com.aimdi.xtanative.ui.home.HomeRoutes
 import com.aimdi.xtanative.ui.home.HomeScreen
 import com.aimdi.xtanative.ui.home.HomeWide
+import com.aimdi.xtanative.ui.home.FrameRoots
 import com.aimdi.xtanative.ui.home.LocalFrameRoots
 import com.aimdi.xtanative.ui.home.LocalWideFrame
 import com.aimdi.xtanative.ui.home.PageStart
@@ -885,11 +885,14 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Com
         val viewer = visible.any { it.destination.route in FULL_WINDOW }
         val deckFits = DeckGroups.fits(maxWidth.value, minOf(maxWidth, maxHeight).value)
         val screens = stack.map { entry -> FrameRoute(entry.destination.route, entry.text("id")?.takeIf { entry.destination.route == Routes.GROUP }) }
-        val calls = remember(nav, frame, routes, leaveRow) { frameCalls(nav, frame, routes, leaveRow) }
+        val opened = remember { FrameRoots() }
+        val calls = remember(nav, frame, routes, leaveRow) { frameCalls(nav, frame, routes, leaveRow, opened) }
         val railMenu = menu && kind == FrameKind.RAIL
         SideEffect {
             frame.inset = HomeWide.inset(kind)
             frame.openMenu = if (kind == FrameKind.RAIL) ({ menu = true }) else null
+            // Read now, not as collected: a place the column has just opened is in the navigation already.
+            opened.keep(nav.currentBackStack.value.map { it.id })
         }
         // A menu open over a rail is closed once the window has the column, or nothing beside its screens.
         LaunchedEffect(kind) { if (kind != FrameKind.RAIL) menu = false }
@@ -906,7 +909,12 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Com
             }
             Box(Modifier.weight(1f).fillMaxHeight().then(if (kind != FrameKind.NONE && !viewer) Modifier.clipToBounds() else Modifier)) {
                 PageStart(focus)
-                val roots = if (kind == FrameKind.NONE) emptySet() else FrameMarks.roots(screens, Routes.HOME).mapTo(HashSet<Any>()) { stack[it] }
+                val roots = if (kind == FrameKind.NONE) {
+                    emptySet()
+                } else {
+                    val ids = opened.among(stack.map { it.id })
+                    stack.filterTo(HashSet<Any>()) { it.id in ids }
+                }
                 CompositionLocalProvider(LocalWideFrame provides frame.takeIf { kind != FrameKind.NONE }, LocalFrameRoots provides roots, content = content)
             }
         }
@@ -931,7 +939,7 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Com
  * a group opens over Home, what was open over Home closed, as a desktop
  * app's sidebar leads from one place to the next; the one shown stays.
  */
-private fun frameCalls(nav: NavHostController, frame: WideFrame, routes: HomeRoutes, leaveRow: () -> Unit) = FrameCalls(
+private fun frameCalls(nav: NavHostController, frame: WideFrame, routes: HomeRoutes, leaveRow: () -> Unit, opened: FrameRoots) = FrameCalls(
     page = { index, page ->
         leaveRow()
         val tap = frame.homeTap
@@ -946,7 +954,12 @@ private fun frameCalls(nav: NavHostController, frame: WideFrame, routes: HomeRou
         leaveRow()
         if (nav.currentDestination?.route?.substringBefore('?') != route) {
             nav.popBackStack(Routes.HOME, inclusive = false)
-            routes.openIfExists(route)
+            val under = nav.currentBackStackEntry?.id
+            // The screen the column opens has no Back beside it ([FrameRoots]); one opened any other way keeps it.
+            if (routes.openIfExists(route)) nav.currentBackStackEntry?.id?.takeIf { it != under }?.let(opened::open)
+        } else if (nav.previousBackStackEntry?.destination?.route == Routes.HOME) {
+            // Shown already, right over Home (Settings by Ctrl+comma): the column's own from now on.
+            nav.currentBackStackEntry?.id?.let(opened::open)
         }
     },
     group = { group ->

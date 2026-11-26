@@ -44,19 +44,19 @@ class WideFrame {
 val LocalWideFrame = staticCompositionLocalOf<WideFrame?> { null }
 
 /**
- * The screens the frame's navigation leads to straight (Search, Settings,
- * Downloads, the deck…) while one stands right over Home: their places in
- * the navigation, as the owners their screens are composed under
+ * The screens the frame's navigation opened itself (Search, Settings,
+ * Downloads, the deck… picked in its column or rail): their places in the
+ * navigation, as the owners their screens are composed under
  * ([LocalViewModelStoreOwner]). Empty where there is no frame.
  */
 val LocalFrameRoots = compositionLocalOf<Set<Any>> { emptySet() }
 
 /**
- * Whether the screen composed here is one the frame's column or rail leads
- * to, shown right over Home beside it ([LocalFrameRoots]): the navigation
- * beside it already leads everywhere, so its bar draws no Back of its own.
- * Esc, Alt+Left and the mouse's back button still go back. False on a phone,
- * in a narrow window, and for a screen opened over another.
+ * Whether the screen composed here is one the frame's column or rail opened
+ * ([LocalFrameRoots]): the navigation beside it already leads everywhere, so
+ * its bar draws no Back of its own. Esc, Alt+Left and the mouse's back
+ * button still go back. False on a phone, in a narrow window, and for a
+ * screen opened any other way (Search from a hashtag, Settings by Ctrl+comma).
  */
 @Composable
 fun isFrameRoot(): Boolean {

@@ -83,18 +83,34 @@ object FrameMarks {
      */
     fun ofStack(stack: List<FrameRoute>, home: String, homePage: String?, bar: Set<String>): FrameMark =
         stack.asReversed().asSequence().map { of(it.route, home, homePage, it.group, bar) }.firstOrNull { it != FrameMark() } ?: FrameMark()
+}
 
-    /**
-     * The places in the navigation's [stack] (their indices) of the screens
-     * the column leads to straight, a menu entry's own ([HomeDestination]),
-     * while one stands right over Home ([home]): as the column opens them.
-     * The same screen opened over another (Search from a post) is not one.
-     */
-    fun roots(stack: List<FrameRoute>, home: String): Set<Int> =
-        stack.indices.filterTo(HashSet()) { index ->
-            val base = stack[index].route?.substringBefore('?')
-            index > 0 && stack[index - 1].route == home && HomeDestination.entries.any { it.route == base }
-        }
+/**
+ * The screens the frame's column or rail opened ([FrameCalls.screen]), by
+ * their places' ids in the navigation: they draw no Back of their own
+ * ([LocalFrameRoots]), as the navigation beside them leads everywhere, and
+ * keep that for as long as they are in the navigation, going out included,
+ * so their bar does not change as they slide away. The same screen opened
+ * any other way (Search from a hashtag, Settings by Ctrl+comma, Downloads
+ * from a snackbar, the deck from Home's button) keeps its Back.
+ */
+@Stable
+class FrameRoots {
+    private var opened by mutableStateOf(emptySet<String>())
+
+    /** The place [id] the column opened. */
+    fun open(id: String) {
+        if (id !in opened) opened = opened + id
+    }
+
+    /** Those of [ids] the column opened; read in a composition, followed as it changes. */
+    fun among(ids: Collection<String>): Set<String> = ids.filterTo(HashSet()) { it in opened }
+
+    /** Forgets the places gone from [live] (the navigation's and those still shown, one going out among them). */
+    fun keep(live: Collection<String>) {
+        val kept = opened.intersect(live.toSet())
+        if (kept.size != opened.size) opened = kept
+    }
 }
 
 /** What the column does when a row is picked: Home's page at an index of its bar, a menu entry's route, a group. */
