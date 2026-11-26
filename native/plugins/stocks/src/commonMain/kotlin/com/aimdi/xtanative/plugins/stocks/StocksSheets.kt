@@ -28,7 +28,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -56,9 +55,11 @@ import com.aimdi.xtanative.networks.stocks.Watchlist
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.rememberCopyContract
 import com.aimdi.xtanative.ui.plugins.PluginFilterChip
+import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberPluginSheetState
+import com.aimdi.xtanative.ui.plugins.rememberSheetClose
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -118,7 +119,7 @@ internal fun StocksAddSheet(app: StocksApp, onDismiss: () -> Unit, onPick: (Stri
     val focus = remember { FocusRequester() }
     val state = model.state
     LaunchedEffect(focus) { focus.requestFocus() }
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
+    PluginSheet(onDismissRequest = onDismiss, sheetState = rememberPluginSheetState(alwaysFull = true)) {
         Column(Modifier.fillMaxWidth().fillMaxHeight(0.68f).imePadding()) {
             Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 PluginFilterChip(pluginString(Strings.plugin_name), selected = !state.crypto, onClick = { model.change(text, crypto = false) })
@@ -197,7 +198,8 @@ internal fun StocksManageSheet(app: StocksApp, onDismiss: () -> Unit, onRemoved:
     val entries by app.watchlist.state.collectAsState()
     val copy = rememberCopyContract(say)
     val shown = entries ?: return
-    ModalBottomSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+    PluginSheet(sheetState = rememberPluginSheetState(), onDismissRequest = onDismiss) {
+        val closeSheet = rememberSheetClose()
         LazyColumn(Modifier.fillMaxWidth().navigationBarsPadding()) {
             item {
                 ListItem(headlineContent = { Text(pluginString(Strings.manage_watchlist)) }, supportingContent = { Text(pluginString(Strings.feed_hint)) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
@@ -216,8 +218,7 @@ internal fun StocksManageSheet(app: StocksApp, onDismiss: () -> Unit, onRemoved:
                     },
                     modifier = Modifier.then(copyAddress?.let { Modifier.onContextClick(it) } ?: Modifier).combinedClickable(
                         onClick = {
-                            onDismiss()
-                            app.open(symbol)
+                            closeSheet { app.open(symbol) }
                         },
                         onLongClick = copyAddress,
                     ),
