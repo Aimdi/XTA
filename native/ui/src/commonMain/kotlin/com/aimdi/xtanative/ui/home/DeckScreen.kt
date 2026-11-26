@@ -3,6 +3,8 @@ package com.aimdi.xtanative.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -280,13 +282,13 @@ internal fun DeckColumnView(
                 val vm = groupFeedViewModel((column as? DeckColumn.Group)?.groupId)
                 val state by vm.ui.collectAsStateWithLifecycle()
                 RefreshesOn(reads) { vm.refresh() }
-                ColumnHeader(label, place, calls, onRefresh = { refreshed++ })
+                ColumnHeader(column, label, place, calls, onRefresh = { refreshed++ })
                 GroupFeedBody(state, vm, actions, rememberLazyListState(), PaddingValues(), mediaOnly = false, toTop = toTop)
             }
             DeckColumn.ForYou -> {
                 val vm = forYouViewModel()
                 RefreshesOn(reads) { vm.refresh() }
-                ColumnHeader(label, place, calls, onRefresh = { refreshed++ })
+                ColumnHeader(column, label, place, calls, onRefresh = { refreshed++ })
                 ForYouPage(toTop, actions, PaddingValues())
             }
             is DeckColumn.Network -> NetworkColumn(column.networkId, label, place, calls, toTop, reads) { refreshed++ }
@@ -304,7 +306,7 @@ private fun NetworkColumn(id: String, label: String, place: ColumnPlace, calls: 
     val networks = LocalHomeNetworks.current
     val client = remember(id) { PluginClientBar() }
     RefreshesOn(reads) { networks.refresh(id) }
-    ColumnHeader(label, place, calls, onRefresh) { PluginActions(client) }
+    ColumnHeader(DeckColumn.Network(id), label, place, calls, onRefresh) { PluginActions(client) }
     val rows = ShellRows.of(client.feeds?.feeds, client.content?.tabs?.value.orEmpty(), onBar = false)
     val accent = pluginAccent(client.content?.accent?.value)
     rows.sections?.let { ShellFeedRow(it, null, accent) }
@@ -314,23 +316,45 @@ private fun NetworkColumn(id: String, label: String, place: ColumnPlace, calls: 
     }
 }
 
-/** A column's first row: its name (back to the top), [extra] (a network's own search and menu), Refresh, and its menu. */
+/**
+ * A column's first row, as Home's bar leads with the timeline's mark: the
+ * column's mark ([ColumnMark]) and its name (back to the top), [extra] (a
+ * network's own search and menu), Refresh, and its menu.
+ */
 @Composable
-private fun ColumnHeader(label: String, place: ColumnPlace, calls: ColumnCalls, onRefresh: () -> Unit, extra: @Composable RowScope.() -> Unit = {}) {
+private fun ColumnHeader(column: DeckColumn, label: String, place: ColumnPlace, calls: ColumnCalls, onRefresh: () -> Unit, extra: @Composable RowScope.() -> Unit = {}) {
     Row(Modifier.fillMaxWidth().then(calls.handle).heightIn(min = 48.dp).padding(start = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        TipText(
-            label,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f).clickable(onClick = calls.onTitle).padding(horizontal = 12.dp, vertical = 12.dp),
-        )
+        Box(Modifier.weight(1f)) {
+            Row(
+                Modifier.heightIn(min = 48.dp).clip(RoundedCornerShape(8.dp)).clickable(onClick = calls.onTitle).padding(end = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) { ColumnMark(column) }
+                TipText(
+                    label,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
         extra()
         IconTip(stringResource(Res.string.home_refresh)) { IconButton(onClick = onRefresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) } }
         if (calls.menu) ColumnMenu(place, calls)
     }
     HorizontalDivider()
+}
+
+/** A column's mark, as Home's bar draws its timeline's: Following's stacked posts, X's own mark, a network's, a group's people. */
+@Composable
+private fun ColumnMark(column: DeckColumn) {
+    when (column) {
+        DeckColumn.Following -> TimelineMark(HomeTab.Following, LocalHomeNetworks.current, 24.dp)
+        DeckColumn.ForYou -> TimelineMark(HomeTab.ForYou, LocalHomeNetworks.current, 24.dp)
+        is DeckColumn.Network -> LocalHomeNetworks.current.Mark(column.networkId, 24.dp)
+        is DeckColumn.Group -> Icon(HomeIcons.PeopleOutlined, contentDescription = null, modifier = Modifier.size(24.dp))
+    }
 }
 
 @Composable

@@ -29,6 +29,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -157,7 +158,9 @@ internal fun HomeFeedPage(
             // Ctrl+← and Ctrl+→ choose the column the reading keys move, as on the Deck.
             ReadColumns(listOfNotNull(shown) + beside.map { it.key })
             val chosen = chosenReadColumn()
-            Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center) {
+            // Beside the navigation, as the deck's columns: from the start edge, a line closing them off where the window is wider still.
+            val spare = maxWidth.value - each.value * (beside.size + 1) - beside.size >= 1f
+            Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Start) {
                 ReadColumn(shown ?: Unit) {
                     ShownTimeline(
                         ui, vm, timelines, following, networks, actions, routes, refresh, calls,
@@ -181,6 +184,7 @@ internal fun HomeFeedPage(
                         }
                     }
                 }
+                if (spare) VerticalDivider()
             }
         }
     }
@@ -353,11 +357,15 @@ private fun TimelineTopBar(
     onPins: (String, List<String>) -> Unit,
 ) {
     val ui = look.ui
+    // In the desktop's frame as low as Following's bar and the columns' heads beside it, the name as theirs.
+    val framed = LocalWideFrame.current != null
     TopAppBar(
+        expandedHeight = if (framed) FollowingBar.HEIGHT.dp else TopAppBarDefaults.TopAppBarExpandedHeight,
         navigationIcon = { if (current != null) PickerMark(current, ui, networks, look.anyUnread) { calls.openSheet(HomeSheet.PICKER) } },
         title = {
             TipText(
                 current?.let { tabLabel(it, ui) }.orEmpty(),
+                style = if (framed) MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold) else LocalTextStyle.current,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.clickable(onClick = calls.toTitleTop),
