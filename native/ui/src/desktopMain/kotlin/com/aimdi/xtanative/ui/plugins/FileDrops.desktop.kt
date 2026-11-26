@@ -59,10 +59,16 @@ internal object DroppedFiles {
             .map { file -> PluginDroppedFile(file.name, mime(file), file.length()) { withContext(Dispatchers.IO) { readUpTo(file, max) } } }
             .filter { runCatching { accept(it.name, it.mime) }.getOrDefault(false) }
 
-    /** [file]'s bytes, refused once it is gone or past [max]. */
+    /**
+     * [file]'s bytes, refused once it is gone or past [max]: read no further
+     * than one byte past it, as a file still being written, or one whose size
+     * the system misreports (a network mount's), can hold more than it said.
+     */
     fun readUpTo(file: File, max: Long): ByteArray {
         if (!file.isFile || file.length() > max) throw IOException("Cannot read ${file.name}")
-        return file.readBytes()
+        val bytes = file.inputStream().use { it.readNBytes((max + 1).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()) }
+        if (bytes.size > max) throw IOException("Cannot read ${file.name}")
+        return bytes
     }
 }
 

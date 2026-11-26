@@ -104,6 +104,16 @@ class PluginFileDropTest {
     }
 
     @Test
+    fun aFileLargerThanItsSizeSaidIsReadNoFurtherThanTheCap() {
+        val growing = file("growing.opml", "x".repeat(20))
+        val saysEmpty = object : File(growing.path) {
+            override fun length(): Long = 0
+        }
+        assertFailsWith<IOException> { DroppedFiles.readUpTo(saysEmpty, max = 10) }
+        assertEquals(20, DroppedFiles.readUpTo(saysEmpty, max = 20).size)
+    }
+
+    @Test
     fun anAcceptThatThrowsTakesNothing() {
         assertEquals(emptyList(), DroppedFiles.forPlugin(listOf(file("a.opml")), accept = { _, _ -> error("plugin bug") }))
     }
