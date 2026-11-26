@@ -22,10 +22,8 @@ internal actual fun rememberBackupChooser(onChosen: (read: suspend () -> String?
 /** A backup dropped from the file manager, read as one chosen in the dialog is. */
 @Composable
 internal actual fun Modifier.takesDroppedBackup(enabled: Boolean, onDropped: (read: suspend () -> String?) -> Unit): Modifier =
-    takesFiles(enabled) { files ->
-        val file = BackupDrops.backupIn(files) ?: return@takesFiles false
+    takesFiles(enabled, pick = BackupDrops::backupIn) { file ->
         onDropped { withContext(Dispatchers.IO) { DroppedFiles.readUpTo(file, BackupDrops.MAX_BYTES).decodeToString() } }
-        true
     }
 
 /** Which file of a drop is read as a backup. */
@@ -33,6 +31,6 @@ internal object BackupDrops {
     /** The largest file read as a backup (256 MiB): saved posts and notes make big ones, a disk image is none. */
     const val MAX_BYTES: Long = 256L * 1024 * 1024
 
-    /** The first of [files] small enough to be one; whether it is a backup, reading it tells. */
+    /** The first of [files] small enough to be one; whether it is a backup, reading it tells. Asks the disk, so off the window's thread. */
     fun backupIn(files: List<File>): File? = files.firstOrNull()?.takeIf { it.isFile && it.length() <= MAX_BYTES }
 }

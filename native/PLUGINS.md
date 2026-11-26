@@ -119,9 +119,10 @@ plugin's own. The plugins built for 16 all say 16, so an app of 15
 running the ones installed; this app still loads every plugin of 2 to 15.
 17 adds `Modifier.pluginFileDrop(accept, onFiles)`: files dropped from the
 desktop's file manager onto a plugin's screen, those `accept(name, mime)`
-takes, reach `onFiles` as `PluginDroppedFile`s (`name`, `mime`, `size`, and
-`bytes()` or `text()`, read only when asked, off the main thread), each no
-larger than `PluginDroppedFile.MAX_BYTES` (16 MiB); a drop with none of them
+takes (asked off the main thread), reach `onFiles` on the main thread as
+`PluginDroppedFile`s (`name`, `mime`, `size`, and `bytes()` or `text()`,
+read only when asked, off the main thread), each no larger than
+`PluginDroppedFile.MAX_BYTES` (16 MiB); a dragged link, rather than files,
 is left to what is under it (the window's dropped links). On Android it
 does nothing, so the plugin's chooser stays the way in there. RSS and
 Substack take an OPML file dropped on their settings, as their Import row's

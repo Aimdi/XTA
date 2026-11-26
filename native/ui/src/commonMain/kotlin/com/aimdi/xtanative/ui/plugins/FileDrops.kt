@@ -30,10 +30,10 @@ class PluginDroppedFile internal constructor(
 /**
  * Lets the reader drop files from the file manager onto what this modifies
  * (a plugin's settings screen taking an OPML file, as its Import row's
- * chooser does). [accept] is asked of each file by its name and type; the
- * ones it takes, up to [PluginDroppedFile.MAX_BYTES] each, reach [onFiles]
- * together, on the main thread. A drop with none of them is left to what is
- * under it. The Linux desktop only: nothing on Android, whose screens take
+ * chooser does). [accept] is asked of each file by its name and type, off
+ * the main thread; the ones it takes, up to [PluginDroppedFile.MAX_BYTES]
+ * each, reach [onFiles] together, on the main thread. A dragged link, rather
+ * than files, is left to what is under it. The Linux desktop only: nothing on Android, whose screens take
  * no drops. Plugin API 17.
  */
 @Composable

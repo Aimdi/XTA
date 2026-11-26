@@ -37,7 +37,8 @@ class PluginFileDropTest {
         val a = file("a.xml")
         val transfer = filesOf(b, dir, a)
         assertTrue(DroppedFiles.offered(transfer))
-        assertEquals(listOf(b, a), DroppedFiles.files(transfer))
+        assertEquals(listOf(b, dir, a), DroppedFiles.files(transfer))
+        assertEquals(listOf(b, a), DroppedFiles.regular(DroppedFiles.files(transfer)))
     }
 
     @Test
