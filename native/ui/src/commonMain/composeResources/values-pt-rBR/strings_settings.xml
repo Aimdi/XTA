@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">Roxo</string>
     <string name="settings_colour_orange">Laranja</string>
     <string name="settings_colour_green">Verde</string>
-    <string name="settings_true_black">Preto Verdadeiro?</string>
-    <string name="settings_true_black_description">Use preto verdadeiro para o tema do modo escuro</string>
-    <string name="settings_true_black_cards">Preto verdadeiro para cartões de tweets</string>
-    <string name="settings_true_black_cards_description">Usar preto verdadeiro para fundo de cartões de tweets</string>
     <string name="settings_navigation_labels">Mostrar rótulos de navegação</string>
     <string name="settings_hide_navigation">Ocultar as barras superior e inferior ao rolar</string>
     <string name="settings_hide_status_bar">Ocultar a barra de status</string>

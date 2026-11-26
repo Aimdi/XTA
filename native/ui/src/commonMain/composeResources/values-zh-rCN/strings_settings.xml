@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">紫色</string>
     <string name="settings_colour_orange">橙色</string>
     <string name="settings_colour_green">绿色</string>
-    <string name="settings_true_black">纯黑模式？</string>
-    <string name="settings_true_black_description">在暗色主题中使用纯黑</string>
-    <string name="settings_true_black_cards">推文卡片使用纯黑色</string>
-    <string name="settings_true_black_cards_description">为推文卡片背景使用纯黑色</string>
     <string name="settings_navigation_labels">显示导航标签</string>
     <string name="settings_hide_navigation">滚动时隐藏顶栏和底栏</string>
     <string name="settings_hide_status_bar">隐藏状态栏</string>

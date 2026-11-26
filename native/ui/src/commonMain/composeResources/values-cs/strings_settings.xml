@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">Fialová</string>
     <string name="settings_colour_orange">Oranžová</string>
     <string name="settings_colour_green">Zelená</string>
-    <string name="settings_true_black">Pravá černá?</string>
-    <string name="settings_true_black_description">Použít pravou černou pro tmavé téma</string>
-    <string name="settings_true_black_cards">Skutečná černá pro karty tweetů</string>
-    <string name="settings_true_black_cards_description">Použít skutečnou černou pro pozadí karet tweetů</string>
     <string name="settings_navigation_labels">Zobrazit navigační popisky</string>
     <string name="settings_hide_navigation">Skrýt horní a spodní lištu při posouvání</string>
     <string name="settings_hide_status_bar">Skrýt stavový řádek</string>

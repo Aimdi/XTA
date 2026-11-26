@@ -293,8 +293,6 @@ private val INDEX = listOf(
     Indexed(SettingsSection.MEDIA, MediaPrefs.downloadConcurrency.key, Res.string.settings_download_concurrency, Res.string.settings_download_concurrency_description),
     Indexed(SettingsSection.THEME, ThemePrefs.background.key, Res.string.settings_background, Res.string.settings_background_description),
     Indexed(SettingsSection.THEME, ThemePrefs.accent.key, Res.string.settings_accent, Res.string.settings_accent_description),
-    Indexed(SettingsSection.THEME, ThemePrefs.trueBlack.key, Res.string.settings_true_black, Res.string.settings_true_black_description),
-    Indexed(SettingsSection.THEME, ThemePrefs.trueBlackPostCards.key, Res.string.settings_true_black_cards, Res.string.settings_true_black_cards_description),
     Indexed(SettingsSection.THEME, ThemePrefs.showNavigationLabels.key, Res.string.settings_navigation_labels, null),
     Indexed(SettingsSection.THEME, ThemePrefs.hideNavigationOnScroll.key, Res.string.settings_hide_navigation, null),
     Indexed(SettingsSection.THEME, ThemePrefs.hideStatusBar.key, Res.string.settings_hide_status_bar, Res.string.settings_hide_status_bar_description),

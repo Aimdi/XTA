@@ -50,7 +50,7 @@ object ThemePrefs : PrefSection() {
     val background = choice("theme.x_look.background", ThemeBackground.SYSTEM, ThemeBackground.entries)
     val accent = choice("theme.x_look.accent", ThemeAccent.BLUE, ThemeAccent.entries)
 
-    /** True black for the dark theme; XTA's switch sets [trueBlackPostCards] along with it. */
+    /** XTA's true-black switches, kept only so settings import and export round-trip with XTA; the Lights out background is the black theme here. */
     val trueBlack = flag("theme.true_black", true)
     val trueBlackPostCards = flag("theme.true_black_tweet_cards", true)
     val showNavigationLabels = flag("theme.show_navigation_labels", false)

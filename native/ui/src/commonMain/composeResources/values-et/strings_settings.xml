@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">Lilla</string>
     <string name="settings_colour_orange">Oranž</string>
     <string name="settings_colour_green">Roheline</string>
-    <string name="settings_true_black">Missugune must teema?</string>
-    <string name="settings_true_black_description">Tumeda teemana kasuta korrektset musta teemat</string>
-    <string name="settings_true_black_cards">Tõeline must postituskaartide jaoks</string>
-    <string name="settings_true_black_cards_description">Kasuta tõelist musta postituskaartide taustaks</string>
     <string name="settings_navigation_labels">Kuva navigeerimissildid</string>
     <string name="settings_hide_navigation">Peida ülemine ja alumine riba kerimisel</string>
     <string name="settings_hide_status_bar">Peida olekuriba</string>

@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">Фіялетавы</string>
     <string name="settings_colour_orange">Аранжавы</string>
     <string name="settings_colour_green">Зялёны</string>
-    <string name="settings_true_black">Сапраўдны чорны (AMOLED)?</string>
-    <string name="settings_true_black_description">Выкарыстоўваць сапраўдны чорны (AMOLED) для цёмнай тэмы</string>
-    <string name="settings_true_black_cards">Сапраўдны чорны для картак твітаў</string>
-    <string name="settings_true_black_cards_description">Выкарыстоўваць сапраўдны чорны колер для фону картак твітаў</string>
     <string name="settings_navigation_labels">Паказваць ярлыкі навігацыі</string>
     <string name="settings_hide_navigation">Хаваць верхнюю і ніжнюю панэлі пры прагортцы</string>
     <string name="settings_hide_status_bar">Хаваць радок стану</string>

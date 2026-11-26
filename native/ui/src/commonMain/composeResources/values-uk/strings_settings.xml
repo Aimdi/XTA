@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">Фіолетовий</string>
     <string name="settings_colour_orange">Помаранчевий</string>
     <string name="settings_colour_green">Зелений</string>
-    <string name="settings_true_black">Справжній чорний?</string>
-    <string name="settings_true_black_description">Використовуйте справжній чорний колір для темної теми</string>
-    <string name="settings_true_black_cards">Справжній чорний для карток твітів</string>
-    <string name="settings_true_black_cards_description">Використовувати справжній чорний колір для фону карток твітів</string>
     <string name="settings_navigation_labels">Показувати мітки навігації</string>
     <string name="settings_hide_navigation">Ховати верхню і нижню панелі під час прокручування</string>
     <string name="settings_hide_status_bar">Приховувати рядок стану</string>

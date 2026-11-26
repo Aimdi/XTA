@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">Fioletowy</string>
     <string name="settings_colour_orange">Pomarańczowy</string>
     <string name="settings_colour_green">Zielony</string>
-    <string name="settings_true_black">Prawdziwa czerń?</string>
-    <string name="settings_true_black_description">Używaj prawdziwej czerni dla ciemnego motywu</string>
-    <string name="settings_true_black_cards">Czarny kolor dla kart tweetów</string>
-    <string name="settings_true_black_cards_description">Użyj czarnego tła dla kart tweetów</string>
     <string name="settings_navigation_labels">Pokaż etykiety nawigacji</string>
     <string name="settings_hide_navigation">Ukrywaj górny i dolny pasek podczas przewijania</string>
     <string name="settings_hide_status_bar">Ukryj pasek stanu</string>

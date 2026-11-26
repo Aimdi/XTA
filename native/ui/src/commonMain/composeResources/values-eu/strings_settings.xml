@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">Morea</string>
     <string name="settings_colour_orange">Laranja</string>
     <string name="settings_colour_green">Berdea</string>
-    <string name="settings_true_black">Benetako beltza?</string>
-    <string name="settings_true_black_description">Erabili benetako beltza gai ilunerako</string>
-    <string name="settings_true_black_cards">Benetako beltza txio-txarteletarako</string>
-    <string name="settings_true_black_cards_description">Erabili benetako beltza txio-txartelen atzealderako</string>
     <string name="settings_navigation_labels">Erakutsi nabigazioko etiketak</string>
     <string name="settings_hide_navigation">Ezkutatu goiko eta beheko barrak korritzean</string>
     <string name="settings_hide_status_bar">Ezkutatu egoera-barra</string>

@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">Fijaletavy</string>
     <string name="settings_colour_orange">Aranžavy</string>
     <string name="settings_colour_green">Zialiony</string>
-    <string name="settings_true_black">Sapraŭdny čorny?</string>
-    <string name="settings_true_black_description">Vykarystoŭvać sapraŭdny čorny (AMOLED) dla ciomnaj temy</string>
-    <string name="settings_true_black_cards">Sapraŭdny čorny dla kartak tvitaŭ</string>
-    <string name="settings_true_black_cards_description">Vykarystoŭvać sapraŭdny čorny kolier dla fonu kartak tvitaŭ</string>
     <string name="settings_navigation_labels">Pakazvać jarłyki navihacyi</string>
     <string name="settings_hide_navigation">Chavać vierchniuju i nižniuju paneli pry prahortcy</string>
     <string name="settings_hide_status_bar">Chavać radok stanu</string>

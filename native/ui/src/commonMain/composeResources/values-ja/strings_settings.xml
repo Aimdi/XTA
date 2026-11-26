@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">パープル</string>
     <string name="settings_colour_orange">オレンジ</string>
     <string name="settings_colour_green">グリーン</string>
-    <string name="settings_true_black">トゥルーブラック？</string>
-    <string name="settings_true_black_description">ダークテーマで完全な黒を使用する</string>
-    <string name="settings_true_black_cards">True black tweet cards?</string>
-    <string name="settings_true_black_cards_description">Use true black for tweet cards</string>
     <string name="settings_navigation_labels">Show navigation labels?</string>
     <string name="settings_hide_navigation">スクロール中は上部と下部のバーを隠す</string>
     <string name="settings_hide_status_bar">ステータスバーを隠す</string>

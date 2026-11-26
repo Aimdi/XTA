@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">Violet</string>
     <string name="settings_colour_orange">Portocaliu</string>
     <string name="settings_colour_green">Verde</string>
-    <string name="settings_true_black">Negru adevărat?</string>
-    <string name="settings_true_black_description">Folosiți negru adevărat pentru tema întunecat</string>
-    <string name="settings_true_black_cards">Negru adevărat pentru carduri tweet?</string>
-    <string name="settings_true_black_cards_description">Folosiți negru adevărat pentru carduri tweet</string>
     <string name="settings_navigation_labels">Afișați etichetele de navigare</string>
     <string name="settings_hide_navigation">Ascunde barele de sus și de jos la derulare</string>
     <string name="settings_hide_status_bar">Ascunde bara de stare</string>

@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">Violet</string>
     <string name="settings_colour_orange">Orange</string>
     <string name="settings_colour_green">Vert</string>
-    <string name="settings_true_black">Noir profond ?</string>
-    <string name="settings_true_black_description">Utiliser un noir profond pour le thème sombre</string>
-    <string name="settings_true_black_cards">Noir profond pour les tweets ?</string>
-    <string name="settings_true_black_cards_description">Utiliser un noir profond pour les tweets</string>
     <string name="settings_navigation_labels">Afficher les libellés de navigation</string>
     <string name="settings_hide_navigation">Masquer les barres du haut et du bas pendant le défilement</string>
     <string name="settings_hide_status_bar">Masquer la barre d'état</string>

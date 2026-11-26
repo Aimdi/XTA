@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">보라</string>
     <string name="settings_colour_orange">주황</string>
     <string name="settings_colour_green">초록</string>
-    <string name="settings_true_black">완전한 검정?</string>
-    <string name="settings_true_black_description">다크 모드 테마에 완전한 검정 사용</string>
-    <string name="settings_true_black_cards">트윗 카드에 완전한 검정?</string>
-    <string name="settings_true_black_cards_description">트윗 카드 배경에 완전한 검정 사용</string>
     <string name="settings_navigation_labels">탐색 레이블 표시</string>
     <string name="settings_hide_navigation">스크롤하는 동안 상단 및 하단 바 숨기기</string>
     <string name="settings_hide_status_bar">상태 표시줄 숨기기</string>

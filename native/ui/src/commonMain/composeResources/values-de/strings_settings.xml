@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">Lila</string>
     <string name="settings_colour_orange">Orange</string>
     <string name="settings_colour_green">Grün</string>
-    <string name="settings_true_black">Reines Schwarz?</string>
-    <string name="settings_true_black_description">Reines Schwarz für dunkles Design verwenden</string>
-    <string name="settings_true_black_cards">Echtes Schwarz für Tweet-Karten</string>
-    <string name="settings_true_black_cards_description">Echtes Schwarz für Tweet-Kartenhintergrund verwenden</string>
     <string name="settings_navigation_labels">Navigationsbeschriftungen anzeigen</string>
     <string name="settings_hide_navigation">Leisten oben und unten beim Scrollen ausblenden</string>
     <string name="settings_hide_status_bar">Statusleiste ausblenden</string>

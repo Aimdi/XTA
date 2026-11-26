@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">Morado</string>
     <string name="settings_colour_orange">Naranja</string>
     <string name="settings_colour_green">Verde</string>
-    <string name="settings_true_black">¿Negro real?</string>
-    <string name="settings_true_black_description">Usar negro real para el tema oscuro</string>
-    <string name="settings_true_black_cards">¿Negro real para tarjetas de tweets?</string>
-    <string name="settings_true_black_cards_description">Usar negro real para las tarjetas de tweets</string>
     <string name="settings_navigation_labels">Mostrar etiquetas de navegación</string>
     <string name="settings_hide_navigation">Ocultar las barras superior e inferior al desplazarse</string>
     <string name="settings_hide_status_bar">Ocultar la barra de estado</string>

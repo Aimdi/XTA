@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">Tím</string>
     <string name="settings_colour_orange">Cam</string>
     <string name="settings_colour_green">Xanh lá</string>
-    <string name="settings_true_black">Tối đen </string>
-    <string name="settings_true_black_description">Sử dụng màu đen tuyền cho chế độ tối</string>
-    <string name="settings_true_black_cards">Màu tối đen cho thẻ bài viết </string>
-    <string name="settings_true_black_cards_description">Sử dụng màu tối đen cho bài viết</string>
     <string name="settings_navigation_labels">Hiện thị thanh điều hướng </string>
     <string name="settings_hide_navigation">Ẩn thanh trên và thanh dưới khi cuộn</string>
     <string name="settings_hide_status_bar">Ẩn thanh trạng thái</string>

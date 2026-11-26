@@ -464,16 +464,6 @@ internal fun ThemeSettings(title: String, vm: SettingsViewModel, focus: String?,
             SettingsHeader(stringResource(Res.string.settings_accent), stringResource(Res.string.settings_accent_description))
             AccentPicker(settings[ThemePrefs.accent], Modifier.focusedSetting(focus == ThemePrefs.accent.key)) { vm.set(ThemePrefs.accent, it) }
             SettingsDivider()
-            SwitchRow(
-                stringResource(Res.string.settings_true_black),
-                stringResource(Res.string.settings_true_black_description),
-                settings[ThemePrefs.trueBlack],
-                focused = focus == ThemePrefs.trueBlack.key,
-            ) { on -> vm.update { it.with(ThemePrefs.trueBlack, on).with(ThemePrefs.trueBlackPostCards, on) } }
-            PrefSwitch(
-                settings, ThemePrefs.trueBlackPostCards, stringResource(Res.string.settings_true_black_cards),
-                stringResource(Res.string.settings_true_black_cards_description), vm, focus, enabled = settings[ThemePrefs.trueBlack],
-            )
             PrefSwitch(settings, ThemePrefs.showNavigationLabels, stringResource(Res.string.settings_navigation_labels), null, vm, focus)
             PrefSwitch(settings, ThemePrefs.hideNavigationOnScroll, stringResource(Res.string.settings_hide_navigation), null, vm, focus)
             if (!isDesktop) {

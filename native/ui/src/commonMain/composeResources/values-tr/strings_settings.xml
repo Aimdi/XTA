@@ -162,10 +162,6 @@
     <string name="settings_colour_purple">Mor</string>
     <string name="settings_colour_orange">Turuncu</string>
     <string name="settings_colour_green">Yeşil</string>
-    <string name="settings_true_black">Gerçek siyah olsun mu?</string>
-    <string name="settings_true_black_description">Koyu tema için gerçek siyahı kullanın</string>
-    <string name="settings_true_black_cards">Tweet kartları için gerçek siyah</string>
-    <string name="settings_true_black_cards_description">Tweet kartı arka planı için gerçek siyahı kullan</string>
     <string name="settings_navigation_labels">Gezinme etiketlerini göster</string>
     <string name="settings_hide_navigation">Kaydırırken üst ve alt çubukları gizle</string>
     <string name="settings_hide_status_bar">Durum çubuğunu gizle</string>
