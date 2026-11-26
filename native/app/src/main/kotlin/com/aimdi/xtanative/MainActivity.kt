@@ -56,6 +56,12 @@ class MainActivity : ComponentActivity() {
         StartMarks.mark("settings read")
         // The first frame drawn ends the start's marks (native/PERF.md).
         StartSteps.listener = StartMarks::mark
+        // Measured and laid out (with all that is composed meanwhile), then drawing: the two halves of the first frame.
+        window.decorView.viewTreeObserver.addOnPreDrawListener {
+            StartMarks.mark("laid out")
+            true
+        }
+        window.decorView.viewTreeObserver.addOnDrawListener { StartMarks.mark("drawing") }
         Choreographer.getInstance().postFrameCallback {
             StartMarks.mark("frame begins")
             window.decorView.post {

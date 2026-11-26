@@ -38,6 +38,7 @@ until a second run agrees. APK bytes are exact.
 | 240 | `09bc6fc9` | Measurement only (the same app as 238) | 9,955,126 | 630 ms | 643 ms | 118,434 kB |
 | 241 | `a88b50e1` | Measurement only | 9,955,126 | 611 ms (2.14 × Settings' 285) | 529 ms | not comparable (read after a full compile) |
 | 249 | `5484bb87` | Measurement only | 9,955,126 | 931 ms (2.00 × Settings' 465) | 854 ms | 116,944 kB |
+| 250 | `0dc8e15c` | The account menu made when its drawer first opens | 9,955,126 | 917 ms (2.12 × Settings' 433) | 875 ms | 113,779 kB |
 
 At the baseline the two dex files are 9,383,959 bytes packed (78% of the
 APK) and the resource table 659,364.
@@ -138,9 +139,17 @@ round's.
   its bars, its page and the drawer.
 - **The account menu made only once the drawer is asked to open**
   (`DrawerMenu`, `HomeScreen.kt`): the closed drawer's whole menu was composed
-  and measured in that first frame. Result pending its first run, with
-  marks at the shell, its body, the bottom bar, the page, the feed page and
-  its timeline to split what remains.
+  and measured in that first frame. Run 250: the start did not move (2.12
+  times Settings against 2.00, within the runs' spread), memory 113.8 MB
+  from 116.9. The menu was not where the time is.
+- **Nor is Home's composition** (run 250): the shell begins at 101 ms, its
+  body at 105, the bottom bar at 110, the page at 118, the feed page at
+  120, the group feed at 152 and its skeleton at 154; the frame ends at
+  about 850. All of Home is composing within 100 ms, and 700 ms pass after
+  the skeleton begins with nothing marked: either the skeleton's rows, the
+  frame's layout, or its drawing (the emulator draws in software). The
+  next run marks the skeleton's end, the end of layout and the start of
+  drawing.
 - Before that was known: **the starts could not be read.** Installed and compiled, run by run:
   749/708, 759/702, 798/779, 798/752, 974/858 ms. Nothing in rounds 2 to 4
   adds work before the first frame, and run 238's five launches agree with

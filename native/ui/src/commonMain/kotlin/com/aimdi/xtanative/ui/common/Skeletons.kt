@@ -49,6 +49,7 @@ fun FeedSkeleton(modifier: Modifier = Modifier, count: Int = 6) {
     Column(modifier.fillMaxWidth().padding(top = 4.dp)) {
         repeat(count) { PostSkeletonBones(pulse) }
     }
+    com.aimdi.xtanative.ui.StartSteps.reached("skeleton composed")
 }
 
 /**
