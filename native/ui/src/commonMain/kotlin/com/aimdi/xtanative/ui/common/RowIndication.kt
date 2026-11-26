@@ -121,6 +121,18 @@ private class RowNode(
         }
     }
 
+    // A node detached (scrolled out of a list) or reused for another row starts unlit: no hover, focus or press
+    // whose end it will never hear of stays drawn.
+    override fun onDetach() = forget()
+
+    override fun onReset() = forget()
+
+    private fun forget() {
+        hovers.clear()
+        focuses.clear()
+        presses.clear()
+    }
+
     private fun track(interaction: Interaction) {
         when (interaction) {
             is HoverInteraction.Enter -> hovers += interaction
