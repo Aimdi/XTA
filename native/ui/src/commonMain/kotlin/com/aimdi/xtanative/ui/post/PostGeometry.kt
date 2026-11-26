@@ -58,4 +58,21 @@ object PostGeometry {
 
     /** The badge's centre from the avatar's top-left, on both axes: on the rim, where it crosses the lower-right 45° diagonal. */
     fun followBadgeCenter(avatar: Float): Float = avatar / 2 * (1 + COS_45)
+
+    /** How far past the badge's disc a pointer's click still reaches it: a hair, so the face beside it opens the profile. */
+    const val FOLLOW_BADGE_POINTER_SLACK = 4f
+
+    /**
+     * The square the badge's disc [disc] wide answers in, above the avatar:
+     * the disc and a hair round it for a pointer; the disc alone for a touch,
+     * whose 48 dp target ([followBadgeTouchTarget]) lies under the avatar.
+     */
+    fun followBadgeDiscHit(disc: Float, pointer: Boolean): Float = if (pointer) disc + FOLLOW_BADGE_POINTER_SLACK else disc
+
+    /**
+     * The 48 dp target a touch reaches the badge in, under the avatar, so a
+     * tap on the face opens the profile and one just past the rim follows;
+     * none for a pointer, which aims at the disc.
+     */
+    fun followBadgeTouchTarget(pointer: Boolean): Float? = if (pointer) null else TOUCH_TARGET
 }

@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.subscriptions
 import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.session.SavedSearch
 import com.aimdi.xtanative.core.session.Session
+import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.ui.saved.KeepNotice
 import com.aimdi.xtanative.ui.saved.KeepNotices
@@ -29,6 +30,17 @@ object Unfollows {
             postCaps = session.postCaps.filterKeys { it in wanted },
         )
         return wanted.fold(session) { next, id -> next.unfollow(id) } to taken
+    }
+
+    /**
+     * The undo of a follow the follow badge just made: [session] without
+     * [id] again; null when it is no longer followed, or was filed in a
+     * group since (an undo never takes back a later change).
+     */
+    fun badgeFollowUndone(session: Session, id: String): Session? = when {
+        !session.isFollowed(id) -> null
+        session.groups.any { id in it.memberIds } -> null
+        else -> accounts(session, listOf(id)).first
     }
 
     /** [session] without the search [query], and what that took. */
@@ -100,6 +112,19 @@ object Unfollowing {
     private suspend fun restore(sessions: SessionStore, taken: Unfollowed): Boolean {
         var done = false
         sessions.update { session -> Unfollows.restored(session, taken)?.also { done = true } ?: session }
+        return done
+    }
+
+    /** Follows [user] from the follow badge, offering "Changes saved" with its undo ([Unfollows.badgeFollowUndone]). */
+    suspend fun badgeFollow(sessions: SessionStore, user: XUser, at: Long) {
+        var followed = false
+        sessions.update { session -> session.follow(user, at).also { followed = !session.isFollowed(user.id) && it.isFollowed(user.id) } }
+        if (followed) offer { undoBadgeFollow(sessions, user.id) }
+    }
+
+    private suspend fun undoBadgeFollow(sessions: SessionStore, id: String): Boolean {
+        var done = false
+        sessions.update { session -> Unfollows.badgeFollowUndone(session, id)?.also { done = true } ?: session }
         return done
     }
 

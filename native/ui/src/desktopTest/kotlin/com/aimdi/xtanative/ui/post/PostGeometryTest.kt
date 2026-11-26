@@ -111,4 +111,18 @@ class AuthorLineLayoutTest {
         // It reaches no higher than the post's own top padding.
         assertTrue(PostGeometry.GLYPH_LIFT <= PostGeometry.COLUMN_TOP)
     }
+
+    @Test
+    fun theFollowBadgeLeavesTheFaceToTheProfile() {
+        val disc = PostGeometry.followBadgeSize(PostGeometry.AVATAR_SIZE)
+        val center = PostGeometry.followBadgeCenter(PostGeometry.AVATAR_SIZE)
+        // A pointer reaches the badge on its disc and a hair round it: the face's centre opens the profile.
+        val pointer = PostGeometry.followBadgeDiscHit(disc, pointer = true)
+        assertTrue(pointer < disc + 8f)
+        assertTrue(center - pointer / 2 > PostGeometry.AVATAR_SIZE / 2)
+        assertEquals(null, PostGeometry.followBadgeTouchTarget(pointer = true))
+        // A touch has its 48 dp target, under the avatar, and the disc alone above it.
+        assertEquals(disc, PostGeometry.followBadgeDiscHit(disc, pointer = false))
+        assertEquals(PostGeometry.TOUCH_TARGET, PostGeometry.followBadgeTouchTarget(pointer = false))
+    }
 }
