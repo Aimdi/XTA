@@ -238,7 +238,8 @@ internal class MpvVideoCore<P : MpvPictures>(
     /**
      * The media keys (MPRIS) reach a video that is heard: once it starts
      * playing with its sound on, until it is stopped, muted or let go;
-     * paused, it stays theirs, so the play key plays it again.
+     * paused, it stays theirs, so the play key plays it again. While it is
+     * heard playing it keeps the screen on ([IdleInhibit]).
      */
     private fun tellControls() {
         if (player == null) return
@@ -250,6 +251,7 @@ internal class MpvVideoCore<P : MpvPictures>(
         // Only starting to be heard playing (it plays, or its sound comes on) claims the keys: a reading bound since keeps them while this plays on.
         val startedPlaying = heard && now.playing && !wasPlaying
         wasPlaying = heard && now.playing
+        IdleInhibit.playing(this, IdleInhibitRules.keepsAwake(heard, now.playing))
         when {
             !heard -> sessions.clear(this)
             sessions.holds(this) -> sessions.update(this, now.playing, now.positionMs, durationMs)
