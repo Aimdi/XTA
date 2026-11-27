@@ -259,6 +259,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             showKeys = true
             true
         }
+        DeskAction.MARK_READ -> actions.markRead()
         DeskAction.QUICK_SWITCH -> {
             switcher.show()
             true

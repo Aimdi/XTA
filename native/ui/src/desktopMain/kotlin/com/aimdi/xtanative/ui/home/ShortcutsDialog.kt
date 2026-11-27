@@ -42,6 +42,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.aimdi.xtanative.ui.common.ColumnScrollbar
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
+import com.aimdi.xtanative.ui.generated.resources.home_mark_all_read
 import com.aimdi.xtanative.ui.generated.resources.keys_alt
 import com.aimdi.xtanative.ui.generated.resources.keys_back
 import com.aimdi.xtanative.ui.generated.resources.keys_columns
@@ -176,6 +177,7 @@ object DesktopShortcuts {
             Res.string.settings_posts,
             listOf(
                 Shortcut(Res.string.keys_next_post, listOf(listOf(sign("J")), listOf(sign("K")))),
+                Shortcut(Res.string.home_mark_all_read, listOf(listOf(shift, KeyCap.Named(Res.string.keys_esc)))),
                 Shortcut(Res.string.keys_post_open, listOf(listOf(sign("↵")), listOf(sign("O")))),
                 Shortcut(Res.string.keys_post_window, listOf(listOf(shift, sign("↵")), listOf(ctrl, sign("↵")))),
                 Shortcut(Res.string.keys_post_author, listOf(listOf(sign("U")))),

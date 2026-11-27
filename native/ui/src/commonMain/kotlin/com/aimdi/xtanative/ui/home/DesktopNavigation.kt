@@ -236,6 +236,21 @@ class DesktopActions(
     /** The New of the page shown opens; false when it has none, or none now (its editor already open). */
     fun create(): Boolean = creators.lastOrNull()?.second?.invoke() ?: false
 
+    /** What Shift+Esc marks read, the last shown on top ([MarksReadWithKeys]). */
+    private val readMarkers = mutableListOf<Pair<Any, () -> Boolean>>()
+
+    internal fun addReadMarker(owner: Any, mark: () -> Boolean) {
+        readMarkers.removeAll { it.first === owner }
+        readMarkers += owner to mark
+    }
+
+    internal fun removeReadMarker(owner: Any) {
+        readMarkers.removeAll { it.first === owner }
+    }
+
+    /** The timeline shown is marked read; false where the page shows none. */
+    fun markRead(): Boolean = readMarkers.lastOrNull()?.second?.invoke() ?: false
+
     /** The selections Ctrl+A, Delete and Esc work on, the last shown on top ([SelectsWithKeys]). */
     private val selections = mutableListOf<Pair<Any, KeySelection>>()
 
@@ -803,6 +818,21 @@ fun CreatesWithKeys(create: () -> Boolean) {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.addCreator(owner) { latest() } }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.removeCreator(owner) }
     DisposableEffect(actions) { onDispose { actions.removeCreator(owner) } }
+}
+
+/**
+ * Shift+Esc on the page shown: [markRead] marks the timeline it shows read,
+ * as its Mark all as read does, answering false where it shows none. While
+ * the page is shown (resumed), as Ctrl+N's [CreatesWithKeys].
+ */
+@Composable
+fun MarksReadWithKeys(markRead: () -> Boolean) {
+    val actions = LocalDesktopActions.current ?: return
+    val latest by rememberUpdatedState(markRead)
+    val owner = remember { Any() }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { actions.addReadMarker(owner) { latest() } }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { actions.removeReadMarker(owner) }
+    DisposableEffect(actions) { onDispose { actions.removeReadMarker(owner) } }
 }
 
 /**

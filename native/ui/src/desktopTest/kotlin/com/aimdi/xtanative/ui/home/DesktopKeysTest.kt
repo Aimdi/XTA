@@ -979,6 +979,24 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun shiftEscMarksTheTimelineReadWhereEscGoesBack() {
+        assertEquals(DeskAction.MARK_READ, action(DeskKey.ESCAPE, shift = true))
+        assertEquals(DeskAction.MARK_READ, action(DeskKey.ESCAPE, shift = true, canGoBack = false))
+        assertEquals(DeskAction.NONE, action(DeskKey.ESCAPE, shift = true, open = true), "not under what is open")
+        assertEquals(DeskAction.LEAVE_FIELD, action(DeskKey.ESCAPE, shift = true, focusInside = true), "out of a field first")
+        assertEquals(DeskAction.BACK, action(DeskKey.ESCAPE))
+        val actions = DesktopActions()
+        assertFalse(actions.markRead(), "no timeline shown")
+        var marked = 0
+        val home = Any()
+        actions.addReadMarker(home) { marked++; true }
+        assertTrue(actions.markRead())
+        actions.removeReadMarker(home)
+        assertFalse(actions.markRead())
+        assertEquals(1, marked)
+    }
+
+    @Test
     fun theCurrentPostIsTheFirstStartingUnderTheLine() {
         fun item(index: Int, offset: Int, size: Int = 300) = DesktopKeys.ShownItem(index, offset, size)
         // Posts at 0, 300 and 600: the first.

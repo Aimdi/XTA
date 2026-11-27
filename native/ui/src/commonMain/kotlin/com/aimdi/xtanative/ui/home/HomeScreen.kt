@@ -223,6 +223,8 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean, wide: Boolean, frame:
     val page = shell.page(ui)
     val index = shell.index(ui)
     val refresh = rememberRefresh(page, ui.tabs.getOrNull(index), parts.networks)
+    // Shift+Esc: the timeline shown counts as read, as its Mark all as read does.
+    MarksReadWithKeys { (page == BarPage.Feed).also { feed -> if (feed) ui.tabs.getOrNull(index)?.let(parts.vm::markRead) } }
     DesktopShortcuts(
         refresh = refresh,
         turn = { by -> if (page == BarPage.Feed) DesktopKeys.turned(index, ui.tabs.size, by)?.let { shell.turnTo(ui, it) } },

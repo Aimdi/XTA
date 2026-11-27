@@ -77,6 +77,9 @@ enum class DeskAction {
     /** The list of the desktop's keys opens ([DesktopShortcuts]). */
     SHOW_KEYS,
 
+    /** The timeline shown counts as read, as its Mark all as read does ([DesktopActions.markRead]). */
+    MARK_READ,
+
     /** The quick switcher opens: a field that goes to one of the reader's own places by its name (QuickSwitch). */
     QUICK_SWITCH,
 
@@ -157,6 +160,8 @@ object DesktopKeys {
      * where Tab and Shift+Tab then go on from one to the next. Ctrl+F, even
      * from a field, and / while nothing is being typed in, go to the search,
      * as a desktop app's do: the page's own field, else the app's search;
+     * Shift+Esc, while nothing is being typed in and nothing is open over the
+     * page, marks the timeline shown read, as its Mark all as read does.
      * Ctrl+L, as a browser's goes to its address bar, does the same; Ctrl+P
      * and Ctrl+K, as an editor's and a chat app's, open the quick switcher
      * over the reader's own places, from a field too. On a page with a find bar (an opened post, an article)
@@ -234,6 +239,7 @@ object DesktopKeys {
         // Only what is open over the page stops the reading keys; a column opened beside it is read with them.
         val covered = somethingOpen && !openIsRead
         return when {
+            key == DeskKey.ESCAPE && shift && !alt && !ctrl && !focusInside -> if (somethingOpen) DeskAction.NONE else DeskAction.MARK_READ
             key == DeskKey.ESCAPE && focusInside && (leavesFirst || back(canGoBack, somethingOpen || backOpen) == DeskAction.NONE) -> DeskAction.LEAVE_FIELD
             key == DeskKey.ESCAPE && selecting && !somethingOpen -> DeskAction.LEAVE_SELECTION
             key == DeskKey.ESCAPE || key == DeskKey.BACK || (key == DeskKey.LEFT && alt) -> back(canGoBack, somethingOpen || backOpen)
