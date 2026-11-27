@@ -12,6 +12,7 @@ import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.store.settings.DesktopPrefs
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.common.LocalLayoutDensity
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.settings.isDesktop
@@ -44,6 +45,7 @@ fun XtaTheme(content: @Composable () -> Unit) {
         // The app's own switch, or the desktop's settings turning animations off.
         LocalReducedMotion provides (settings[AccessibilityPrefs.disableAnimations] || reducesMotion),
         LocalDensity provides scaled,
+        LocalLayoutDensity provides scaled,
     ) {
         // Inside the reader's text size: the desktop marks the density with the language.
         ProvideAppLanguage(language) {
