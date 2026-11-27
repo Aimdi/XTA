@@ -21,6 +21,9 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,6 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.roundToIntRect
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import com.aimdi.xtanative.ui.LocalSecondaryWindow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -129,7 +136,9 @@ private fun KeepNoticeHost() {
             TextButton(onClick = { KeepNotices.undo(current, keeper::keep) }) { Text(stringResource(Res.string.groups_undo), color = MaterialTheme.colorScheme.inversePrimary) }
         }
     }
-    val position = remember(lift) { FootOfWindow(lift) }
+    // In a post's own window the main window's Home claims nothing here.
+    val main = LocalSecondaryWindow.current == null
+    val position = remember(lift, main) { FootOfWindow(lift) { NoticeArea.bounds.takeIf { main } } }
     val notice = current.notice
     Popup(popupPositionProvider = position, properties = PopupProperties(focusable = false)) {
         AnimatedVisibility(
@@ -185,9 +194,44 @@ private fun ProgressLine(notice: KeepNotice.Progress) {
  * where it is composed (the screens beside the frame's navigation, the whole
  * window where there is none), so it stands under the column being read.
  */
-private class FootOfWindow(private val lift: Int) : PopupPositionProvider {
-    override fun calculatePosition(anchorBounds: IntRect, windowSize: IntSize, layoutDirection: LayoutDirection, popupContentSize: IntSize): IntOffset =
-        IntOffset(NoticePlace.x(anchorBounds.left, anchorBounds.width, windowSize.width, popupContentSize.width), (windowSize.height - popupContentSize.height - lift).coerceAtLeast(0))
+private class FootOfWindow(private val lift: Int, private val claimed: () -> IntRect?) : PopupPositionProvider {
+    override fun calculatePosition(anchorBounds: IntRect, windowSize: IntSize, layoutDirection: LayoutDirection, popupContentSize: IntSize): IntOffset {
+        val area = NoticePlace.area(claimed(), anchorBounds)
+        return IntOffset(NoticePlace.x(area.left, area.width, windowSize.width, popupContentSize.width), (windowSize.height - popupContentSize.height - lift).coerceAtLeast(0))
+    }
+}
+
+/**
+ * The part of the page a screen asks the foot's notice to centre under, in
+ * the window: Home's shown timeline where others are read beside it, so a
+ * notice stands under the column read, not across the line between two.
+ * Null for the whole page beside the navigation.
+ */
+internal object NoticeArea {
+    private var owner: Any? = null
+
+    var bounds by mutableStateOf<IntRect?>(null)
+        private set
+
+    fun claim(by: Any, area: IntRect) {
+        owner = by
+        if (bounds != area) bounds = area
+    }
+
+    /** [by] gone: the area it claimed with it, not one claimed since by another. */
+    fun release(by: Any) {
+        if (owner !== by) return
+        owner = null
+        bounds = null
+    }
+}
+
+/** This element as the [NoticeArea] while it is shown: the foot's notices centre under it. */
+@Composable
+internal fun Modifier.noticeArea(): Modifier {
+    val holder = remember { Any() }
+    DisposableEffect(holder) { onDispose { NoticeArea.release(holder) } }
+    return onGloballyPositioned { NoticeArea.claim(holder, it.boundsInWindow().roundToIntRect()) }
 }
 
 /** Where along the window the foot's notice stands. */
@@ -198,6 +242,9 @@ internal object NoticePlace {
      * edge where it is wider than the window). An area with no width yet (not
      * laid out) is the whole window.
      */
+    /** Where the notice centres: the part of the page a screen claimed ([NoticeArea]) while it is laid out, else the whole page ([page]). */
+    fun area(claimed: IntRect?, page: IntRect): IntRect = claimed?.takeIf { it.width > 0 } ?: page
+
     fun x(areaLeft: Int, areaWidth: Int, windowWidth: Int, width: Int): Int {
         val (left, across) = if (areaWidth > 0) areaLeft to areaWidth else 0 to windowWidth
         return (left + (across - width) / 2).coerceAtMost(windowWidth - width).coerceAtLeast(0)

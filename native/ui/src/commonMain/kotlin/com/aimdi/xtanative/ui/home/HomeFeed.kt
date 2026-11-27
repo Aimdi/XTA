@@ -103,6 +103,7 @@ import com.aimdi.xtanative.ui.plugins.ShellMenu
 import com.aimdi.xtanative.ui.plugins.rememberHomeReading
 import com.aimdi.xtanative.ui.pluginstore.PluginRoutes
 import com.aimdi.xtanative.ui.post.PostActions
+import com.aimdi.xtanative.ui.saved.noticeArea
 import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import com.aimdi.xtanative.ui.settings.SettingsSection
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -167,7 +168,8 @@ internal fun HomeFeedPage(
                 ReadColumn(shown ?: Unit) {
                     ShownTimeline(
                         ui, vm, timelines, following, networks, actions, routes, refresh, calls,
-                        Modifier.width(each).fillMaxHeight().chosenMark(shown != null && chosen == shown),
+                        // The foot's notices centre under the timeline read, not across the line beside it.
+                        Modifier.width(each).fillMaxHeight().chosenMark(shown != null && chosen == shown).noticeArea(),
                     )
                 }
                 beside.forEach { tab ->
