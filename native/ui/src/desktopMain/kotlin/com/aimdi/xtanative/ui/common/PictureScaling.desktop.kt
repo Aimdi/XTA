@@ -10,6 +10,8 @@ import coil3.request.Options
 import coil3.size.Dimension
 import coil3.size.Scale
 import java.io.IOException
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Canvas
 import org.jetbrains.skia.FilterMipmap
@@ -30,7 +32,9 @@ internal actual fun ComponentRegistry.Builder.addPlatformPictureDecoders() {
  * [PictureScaling.MOST_PIXELS] by its header is refused, never decoded.
  */
 internal class SmoothPictureDecoder(private val bytes: ByteArray, private val options: Options) : Decoder {
-    override suspend fun decode(): DecodeResult? {
+    override suspend fun decode(): DecodeResult? = decoding.withPermit { decodeNow() }
+
+    private fun decodeNow(): DecodeResult? {
         val image = runCatching { Image.makeFromEncoded(bytes) }.getOrNull() ?: return null
         return try {
             if (!PictureScaling.decodable(image.width, image.height)) throw IOException("Picture of ${image.width}x${image.height} pixels is too large")
@@ -69,6 +73,18 @@ internal class SmoothPictureDecoder(private val bytes: ByteArray, private val op
     }
 
     private fun pixels(dimension: Dimension): Int = (dimension as? Dimension.Pixels)?.px ?: 0
+
+    companion object {
+        /**
+         * Pictures decoded at once. Each takes its whole source in memory while
+         * it is shrunk, so a page of large pictures decoded together took
+         * gigabytes; those waiting here are dropped unread when their post
+         * scrolls away.
+         */
+        const val AT_ONCE = 2
+
+        private val decoding = Semaphore(AT_ONCE)
+    }
 
     class Factory : Decoder.Factory {
         override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder? {
