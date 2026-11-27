@@ -213,10 +213,11 @@ class DesktopWindowTest {
             val sockets = File(runtime, "xta-native")
             assertEquals("rwx------", PosixFilePermissions.toString(Files.getPosixFilePermissions(sockets.toPath())))
             assertEquals(listOf("instance-${SingleInstance.folderKey(folder)}.socket"), sockets.list()!!.filter { it.contains(SingleInstance.folderKey(folder)) })
-            assertFalse(File(folder, "instance.socket").exists(), "nothing listens in the data folder")
+            assertTrue(File(folder, "instance.socket").exists(), "the old place beside the lock is served too")
         } finally {
             first.close()
         }
+        assertFalse(File(folder, "instance.socket").exists(), "both go when the copy ends")
         assertEquals(SingleInstance.folderKey(folder), SingleInstance.folderKey(File(folder, "../${folder.name}")), "one name for each spelling")
     }
 
@@ -272,8 +273,37 @@ class DesktopWindowTest {
         val folder = Files.createTempDirectory("xta-instance").toFile()
         val heard = LinkedBlockingQueue<String>()
         oldCopy(folder, heard).use {
-            assertNull(claim(folder, InstanceMessage.Hello), "ends: the lock is held")
+            val started = System.currentTimeMillis()
+            val err = System.err
+            val said = java.io.ByteArrayOutputStream()
+            System.setErr(java.io.PrintStream(said))
+            try {
+                assertNull(claim(folder, InstanceMessage.Hello), "ends: the lock is held")
+            } finally {
+                System.setErr(err)
+            }
+            assertTrue(System.currentTimeMillis() - started < 2_000, "the old copy read the hello and closed: no waiting out")
             assertTrue(heard.none { it == "raise" }, "never asked to raise")
+            assertFalse("does not answer" in said.toString(), "nothing said of a copy that runs")
+        }
+    }
+
+    @Test
+    fun aStartFromBeforeTheMoveReachesANewCopyBesideTheLock() {
+        val folder = Files.createTempDirectory("xta-instance").toFile()
+        val first = assertNotNull(claim(folder))
+        val heard = LinkedBlockingQueue<InstanceMessage>()
+        first.listen(heard::add)
+        try {
+            // What a start of 1.0.17 or older does: it asks only beside the lock.
+            val channel = java.nio.channels.SocketChannel.open(UnixDomainSocketAddress.of(File(folder, "instance.socket").toPath()))
+            channel.use {
+                it.write(ByteBuffer.wrap("raise\n".toByteArray()))
+                assertEquals("raised", Channels.newReader(it, Charsets.UTF_8).buffered().readLine())
+            }
+            assertEquals(InstanceMessage.Raise, heard.poll(5, TimeUnit.SECONDS))
+        } finally {
+            first.close()
         }
     }
 
