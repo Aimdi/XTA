@@ -61,13 +61,14 @@ import org.jetbrains.compose.resources.stringResource
  * plays in place, only the corner shows and the tile's tap opens the viewer.
  */
 @Composable
-internal fun TileVideo(media: XMedia, poster: Any?, post: XPost?, modifier: Modifier = Modifier) =
-    TileVideo({ VideoSource.of(media, it)?.copy(credit = VideoCredit.of(post, poster)) }, media.alt, media.aspectRatio, media.durationMs, poster, modifier) { rememberTileDownload(media, post) }
+internal fun TileVideo(media: XMedia, poster: Any?, post: XPost?, modifier: Modifier = Modifier, fill: Boolean = true) =
+    TileVideo({ VideoSource.of(media, it)?.copy(credit = VideoCredit.of(post, poster)) }, media.alt, media.aspectRatio, media.durationMs, poster, modifier, fill) { rememberTileDownload(media, post) }
 
 /**
  * [TileVideo] for any video: [source] what it plays as the settings given
  * say, [alt] its description, [aspectRatio] its shape full screen,
- * [durationMs] its length as its post says (null when it does not), and
+ * [durationMs] its length as its post says (null when it does not),
+ * [fill] whether it covers its tile (else it is fitted in it, letterboxed), and
  * [download] full screen's Download of what a player plays, null for none.
  */
 @Composable
@@ -78,6 +79,7 @@ internal fun TileVideo(
     durationMs: Long?,
     poster: Any?,
     modifier: Modifier = Modifier,
+    fill: Boolean = true,
     download: @Composable () -> ((VideoPlayer) -> Unit)?,
 ) {
     val tiles = rememberTilePlayer() ?: return Box(modifier) {
@@ -134,7 +136,7 @@ internal fun TileVideo(
         player == null -> IdleTile(autoplay, VideoMute.muted(muteSetting), durationMs, label, onOpen = open, modifier = placed)
         // Full screen has it: the tile keeps its poster meanwhile.
         inFullscreen === player -> Box(placed)
-        else -> PlayingTile(player, alt, poster, seen, own = !tiles.shared, durationMs, label, onOpen = open, modifier = placed)
+        else -> PlayingTile(player, alt, poster, seen, own = !tiles.shared, durationMs, label, fill, onOpen = open, modifier = placed)
     }
 }
 
@@ -216,8 +218,8 @@ internal fun PosterUntilStarted(state: VideoState, modifier: Modifier, overFailu
 }
 
 @Composable
-private fun TilePoster(poster: Any?, alt: String?) {
-    AsyncImage(model = poster, contentDescription = alt, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+private fun TilePoster(poster: Any?, alt: String?, scale: ContentScale = ContentScale.Crop) {
+    AsyncImage(model = poster, contentDescription = alt, contentScale = scale, modifier = Modifier.fillMaxSize())
 }
 
 /** What a video tile says to a screen reader: that it is a video, how long, and that a tap opens it full screen with sound. */
@@ -255,7 +257,7 @@ private fun IdleTile(autoplay: Boolean, muted: Boolean, durationMs: Long?, label
  * the time left and the mute switch; a tap opens it full screen with sound.
  */
 @Composable
-private fun PlayingTile(player: VideoPlayer, alt: String?, poster: Any?, seen: Boolean, own: Boolean, durationMs: Long?, labels: TileLabels, onOpen: () -> Unit, modifier: Modifier) {
+private fun PlayingTile(player: VideoPlayer, alt: String?, poster: Any?, seen: Boolean, own: Boolean, durationMs: Long?, labels: TileLabels, fill: Boolean, onOpen: () -> Unit, modifier: Modifier) {
     val state by player.state.collectAsState()
     PausesUnseen(player, seen)
     // A feed's own player stops and starts again with its screen (InlinePlayer.pause).
@@ -268,8 +270,8 @@ private fun PlayingTile(player: VideoPlayer, alt: String?, poster: Any?, seen: B
             .clickable(interactionSource = null, indication = rememberPictureIndication(), onClickLabel = labels.onClick, role = Role.Button, onClick = onOpen)
             .semantics { contentDescription = labels.description },
     ) {
-        player.Picture(fill = true, Modifier.matchParentSize())
-        PosterUntilStarted(state, Modifier.matchParentSize(), overFailure = true) { TilePoster(poster, alt) }
+        player.Picture(fill = fill, Modifier.matchParentSize())
+        PosterUntilStarted(state, Modifier.matchParentSize(), overFailure = true) { TilePoster(poster, alt, if (fill) ContentScale.Crop else ContentScale.Fit) }
         TileCorner(VideoRules.cornerTimeMs(state, durationMs), play = false, Modifier.align(Alignment.BottomStart))
         MuteCorner(state.muted, onToggle = { toggleMute(player, state.muted) }, Modifier.align(Alignment.BottomEnd), disc = TileMuteDisc, inset = TileInset)
     }

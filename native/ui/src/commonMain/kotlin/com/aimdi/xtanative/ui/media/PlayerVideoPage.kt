@@ -91,12 +91,12 @@ internal fun SourceVideoPage(
         if (fullscreen?.shows(player) == true) return@Box poster()
         player.Picture(fill = false, Modifier.fillMaxSize())
         if (!gif) {
-            // On the desktop the viewer's bar above already saves it.
-            VideoControls(player, VideoChrome(onFullscreen = open, onDownload = if (isDesktop) null else download), Modifier.fillMaxSize())
+            // On the desktop the viewer's bar above already saves it, and the mute button sits in the controls' row as full screen's does.
+            VideoControls(player, VideoChrome(onFullscreen = open, onDownload = if (isDesktop) null else download, muteInBar = isDesktop), Modifier.fillMaxSize())
         }
         // Over the player: a surface of its own lies behind the window, and would clear a poster drawn under it.
         PosterUntilStarted(state, Modifier.fillMaxSize(), poster = poster)
-        if (!gif) MuteCorner(state.muted, onToggle = { toggleMute(player, state.muted) }, Modifier.align(Alignment.BottomEnd))
+        if (!gif && !isDesktop) MuteCorner(state.muted, onToggle = { toggleMute(player, state.muted) }, Modifier.align(Alignment.BottomEnd))
     }
 }
 

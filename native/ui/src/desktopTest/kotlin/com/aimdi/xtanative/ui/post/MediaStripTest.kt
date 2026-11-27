@@ -57,4 +57,13 @@ class MediaStripTest {
         assertEquals(3f, MediaStrip.feedSingleAspect(3f), "however wide")
         assertEquals(1f, MediaStrip.feedSingleAspect(0f), "a shape X did not give is still square")
     }
+
+    @Test
+    fun aVideoAloneInADesktopFeedIsNoTallerThanMostOfTheWindow() {
+        assertEquals(360f, MediaStrip.desktopVideoHeight(640f, 16f / 9f, 900f), "a wide video keeps its own height")
+        assertEquals(540f, MediaStrip.desktopVideoHeight(640f, 0.8f, 900f), "a portrait one stops at 60 % of the window, letterboxed")
+        assertEquals(540f, MediaStrip.desktopVideoHeight(640f, 1f, 900f), "so does a square one")
+        assertEquals(360f, MediaStrip.desktopVideoHeight(640f, 9f / 16f, 400f), "a low window still leaves a 16:9 box")
+        assertEquals(800f, MediaStrip.desktopVideoHeight(640f, 0.5f, 3000f), "never taller than a 4:5 picture")
+    }
 }

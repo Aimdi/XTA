@@ -136,7 +136,12 @@ internal class VideoChrome(
     val onTurn: (() -> Unit)? = null,
     val onClose: (() -> Unit)? = null,
     val keys: ControlsKeys? = null,
-)
+    /** The mute button in the bar in place too, as full screen has it, rather than in the corner: the desktop viewer's. */
+    val muteInBar: Boolean = false,
+) {
+    /** Whether the bar holds the mute button, and the seek bar runs its full width. */
+    val barMute: Boolean get() = fullscreen || muteInBar
+}
 
 /**
  * Full screen's keys and its controls between them: [show] brings the
@@ -274,7 +279,7 @@ private fun BottomBar(state: VideoState, playback: VideoPlayback, chrome: VideoC
         Row(Modifier.fillMaxWidth().padding(start = 14.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             PositionText(state)
             Spacer(Modifier.weight(1f))
-            if (chrome.fullscreen) {
+            if (chrome.barMute) {
                 MuteButton(state.muted) {
                     touch()
                     toggleMute(playback, state.muted)
@@ -300,7 +305,7 @@ private fun BottomBar(state: VideoState, playback: VideoPlayback, chrome: VideoC
                 }
             }
         }
-        val end = if (chrome.fullscreen) 16.dp else MuteCornerReserve
+        val end = if (chrome.barMute) 16.dp else MuteCornerReserve
         SeekBar(state, Modifier.offset(y = (-8).dp).padding(start = 14.dp, end = end, bottom = 6.dp), onTouch = touch) { playback.seekTo(it) }
     }
 }

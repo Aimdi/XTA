@@ -42,6 +42,11 @@ class MediaRulesTest {
         assertEquals(qualities[2].url, VideoRules.defaultUrl(qualities, null, MediaQuality.SMALL))
         assertEquals(qualities[2].url, VideoRules.defaultUrl(qualities, null, MediaQuality.THUMB))
         assertEquals("fallback", VideoRules.defaultUrl(emptyList(), "fallback", MediaQuality.LARGE))
+        val four = listOf("1080", "720", "540", "320").map { VideoQuality(it, it + "p") }
+        assertEquals("720", VideoRules.defaultUrl(four, null, MediaQuality.MEDIUM), "medium is the upper middle of an even count")
+        assertEquals("320", VideoRules.defaultUrl(four, null, MediaQuality.SMALL))
+        val two = listOf("720", "320").map { VideoQuality(it, it + "p") }
+        assertEquals("720", VideoRules.defaultUrl(two, null, MediaQuality.MEDIUM), "of two, medium is not the lowest")
     }
 
     @Test

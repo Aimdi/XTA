@@ -43,6 +43,22 @@ object MediaStrip {
      */
     fun feedSingleAspect(aspect: Float): Float = singleAspect(aspect).coerceAtLeast(MIN_ASPECT)
 
+    /** The most of the window's height a video alone in a desktop feed takes ([desktopVideoHeight]). */
+    const val VIDEO_WINDOW_SHARE = 0.6f
+
+    /**
+     * How tall a video alone in a desktop feed is across [width]: its own
+     * shape's height, but no taller than [VIDEO_WINDOW_SHARE] of the window
+     * ([windowHeight]) nor than a 4:5 picture, and the cap never under 16:9
+     * of the width; a taller video is letterboxed in it, whole, rather than
+     * filling the screen or losing its top and foot.
+     */
+    fun desktopVideoHeight(width: Float, aspect: Float, windowHeight: Float): Float {
+        val own = width / singleAspect(aspect)
+        val cap = maxOf(windowHeight * VIDEO_WINDOW_SHARE, width * 9f / 16f)
+        return minOf(own, cap, width / MIN_ASPECT)
+    }
+
     /** [aspect] kept within the row's range. */
     fun clamp(aspect: Float): Float = if (!aspect.isFinite() || aspect <= 0f) 1f else aspect.coerceIn(MIN_ASPECT, MAX_ASPECT)
 

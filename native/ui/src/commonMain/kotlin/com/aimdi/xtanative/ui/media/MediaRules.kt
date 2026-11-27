@@ -191,13 +191,17 @@ object VideoRules {
     /** What a player streams with no quality to pick from: the best MP4, else X's first variant (a live playlist). */
     fun streamUrl(media: XMedia): String? = qualities(media).firstOrNull()?.url ?: media.variants.firstOrNull()?.url
 
-    /** The variant the video-quality setting picks among [qualities] (highest first); [fallback] when there are none. */
+    /**
+     * The variant the video-quality setting picks among [qualities] (highest
+     * first); [fallback] when there are none. Medium takes the upper middle:
+     * 720p of X's 1080/720/540/320, the better of two, not the lowest.
+     */
     fun defaultUrl(qualities: List<VideoQuality>, fallback: String?, quality: MediaQuality): String? {
         if (qualities.isEmpty()) return fallback
         val index = when (quality) {
             MediaQuality.THUMB -> qualities.size - 1
             MediaQuality.SMALL -> qualities.size * 3 / 4
-            MediaQuality.MEDIUM -> qualities.size / 2
+            MediaQuality.MEDIUM -> (qualities.size - 1) / 2
             MediaQuality.LARGE -> 0
         }
         return qualities[index.coerceIn(0, qualities.size - 1)].url

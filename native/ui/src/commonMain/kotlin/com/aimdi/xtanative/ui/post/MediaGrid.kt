@@ -34,6 +34,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalWindowInfo
+import com.aimdi.xtanative.ui.settings.isDesktop
+import kotlin.math.roundToInt
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
@@ -108,15 +111,26 @@ internal fun MediaGrid(
     val owner = MediaOwner(username, postId, post)
     if (media.size == 1) {
         val own = MediaStrip.singleAspect(MediaStrip.aspectOf(media[0]))
+        val letterboxed = tallCapped && isDesktop && media[0].kind == XMedia.Kind.VIDEO
         val shown = if (tallCapped) MediaStrip.feedSingleAspect(own) else own
-        val frame = modifier.fillMaxWidth().aspectRatio(shown).clip(MediaShape)
-        val scale = if (shown == own) ContentScale.Fit else ContentScale.Crop
+        val windowHeight = LocalWindowInfo.current.containerSize.height
+        val sized = if (letterboxed) modifier.fillMaxWidth().videoHeight(own, windowHeight) else modifier.fillMaxWidth().aspectRatio(shown)
+        val frame = sized.clip(MediaShape)
+        val scale = if (letterboxed || shown == own) ContentScale.Fit else ContentScale.Crop
         Box(frame.border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, MediaShape).background(Color.Black)) {
             ShownMedia(media[0], 0, 1, scale, Color.Black, owner) { onOpen(0) }
         }
     } else {
         MediaRow(media, owner, start, bleed, modifier, onOpen)
     }
+}
+
+/** As tall as [MediaStrip.desktopVideoHeight] makes a video of [aspect] across the width given, in a window [windowHeight] pixels tall. */
+private fun Modifier.videoHeight(aspect: Float, windowHeight: Int): Modifier = layout { measurable, constraints ->
+    val width = constraints.maxWidth
+    val tall = MediaStrip.desktopVideoHeight(width.toFloat(), aspect, windowHeight.toFloat()).roundToInt().coerceIn(constraints.minHeight, constraints.maxHeight)
+    val placeable = measurable.measure(constraints.copy(minWidth = width, minHeight = tall, maxHeight = tall))
+    layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
 }
 
 /** Whose a post's media is, for a photo saved with a long press, and the [post] a saved video is named by. */
@@ -266,7 +280,7 @@ private fun MediaTile(media: XMedia, url: String, scale: ContentScale, post: XPo
         when (media.kind) {
             XMedia.Kind.PHOTO -> Unit
             // Its corners (the time, the mute switch) are the tile's own; a tap opens it full screen.
-            XMedia.Kind.VIDEO -> TileVideo(media, url, post, Modifier.matchParentSize())
+            XMedia.Kind.VIDEO -> TileVideo(media, url, post, Modifier.matchParentSize(), fill = scale != ContentScale.Fit)
             XMedia.Kind.GIF -> {
                 TileGif(media, url, Modifier.matchParentSize())
                 GifCorner(Modifier.align(Alignment.BottomStart))

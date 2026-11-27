@@ -198,7 +198,9 @@ internal fun VideoSurface(frames: MpvFrames, crop: Boolean, modifier: Modifier, 
     val surface = remember { Any() }
     val shown = remember(frames) { ShownFrame() }
     var size by remember { mutableStateOf(IntSize.Zero) }
-    SideEffect { if (frames.owner === surface) frames.show(size, crop) }
+    // Read here, not in the effect: a surface whose size comes after it was put on screen draws at that size, not mpv's idle one.
+    val shownSize = size
+    SideEffect { if (frames.owner === surface) frames.show(shownSize, crop) }
     DisposableEffect(frames, surface) {
         frames.attach(surface)
         if (size != IntSize.Zero) frames.show(size, crop)
