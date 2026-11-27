@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Zamacavać u kałonkach</string>
     <string name="groups_deck_unpin">Admacavać z kałonak</string>
     <string name="groups_delete">Vydalić</string>
+    <string name="groups_edit">Redahavać hrupu</string>
     <string name="groups_delete_confirm">Vy ŭpeŭnienyja, što žadajecie vydalić hrupu padpisak %1$s?</string>
     <string name="groups_engagement">Aktyŭnasć</string>
     <string name="groups_engagement_description">Chavaje pasty, u jakich mienš lajkaŭ ci repostaŭ, čym vy vybrali.</string>

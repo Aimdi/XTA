@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Выдаліць</string>
+    <string name="groups_edit">Рэдагаваць групу</string>
     <string name="groups_delete_confirm">Вы ўпэўненыя, што жадаеце выдаліць групу падпісак %1$s?</string>
     <string name="groups_engagement">Актыўнасць</string>
     <string name="groups_engagement_description">Хавае пасты, у якіх менш лайкаў ці рэпостаў, чым вы выбралі.</string>

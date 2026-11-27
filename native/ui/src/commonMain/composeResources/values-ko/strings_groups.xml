@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">삭제</string>
+    <string name="groups_edit">그룹 편집</string>
     <string name="groups_delete_confirm">구독 그룹 %1$s을(를) 삭제하시겠습니까?</string>
     <string name="groups_engagement">반응</string>
     <string name="groups_engagement_description">선택한 수보다 좋아요나 리포스트가 적은 게시물을 숨깁니다.</string>

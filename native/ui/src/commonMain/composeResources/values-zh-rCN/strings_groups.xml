@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">固定到 Deck</string>
     <string name="groups_deck_unpin">从 Deck 取消固定</string>
     <string name="groups_delete">删除</string>
+    <string name="groups_edit">编辑分组</string>
     <string name="groups_delete_confirm">您确定要删除订阅组 %1$s 吗？</string>
     <string name="groups_engagement">互动</string>
     <string name="groups_engagement_description">隐藏点赞或转帖少于所选数量的帖子。</string>

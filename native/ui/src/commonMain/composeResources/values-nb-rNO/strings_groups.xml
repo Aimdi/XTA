@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Slett</string>
+    <string name="groups_edit">Rediger gruppe</string>
     <string name="groups_delete_confirm">Slett %1$s-abonnementsgruppen?</string>
     <string name="groups_engagement">Engasjement</string>
     <string name="groups_engagement_description">Skjuler innlegg med færre likes eller reposter enn du velger.</string>

@@ -1,5 +1,13 @@
 package com.aimdi.xtanative.ui.subscriptions
 
+import com.aimdi.xtanative.ui.generated.resources.groups_no
+import com.aimdi.xtanative.ui.generated.resources.groups_yes
+import com.aimdi.xtanative.ui.generated.resources.groups_delete_confirm
+import com.aimdi.xtanative.ui.generated.resources.groups_are_you_sure
+import com.aimdi.xtanative.ui.common.dialogDefault
+import com.aimdi.xtanative.ui.common.destructiveTextColors
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.AlertDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -124,6 +132,8 @@ fun SubscriptionsScreen(navigation: SubscriptionsNavigation, onBack: (() -> Unit
     var menu by rememberSaveable { mutableStateOf(false) }
     var cleanup by rememberSaveable { mutableStateOf(false) }
     var editing by remember { mutableStateOf<Editing?>(null) }
+    // The group whose Delete its menu chose, asked about first.
+    var deleting by remember { mutableStateOf<String?>(null) }
     var picking by remember { mutableStateOf<SubscriptionRow?>(null) }
     val choosePack = rememberPackChooser(onChosen = vm::importPack)
     val savePack = rememberPackSaver()
@@ -194,6 +204,7 @@ fun SubscriptionsScreen(navigation: SubscriptionsNavigation, onBack: (() -> Unit
                     onStep = vm::stepGroup,
                     contentPadding = content,
                     onDiscover = navigation.discoverGroup?.takeIf { state.aiReady },
+                    onDelete = { deleting = it },
                 )
                 SubscriptionsTab.PEOPLE -> PeoplePage(
                     state,
@@ -234,6 +245,20 @@ fun SubscriptionsScreen(navigation: SubscriptionsNavigation, onBack: (() -> Unit
                 settings = navigation.settings,
             ),
             onDismiss = { menu = false },
+        )
+    }
+    deleting?.let { id -> state.session.groups.firstOrNull { it.id == id } }?.let { group ->
+        AlertDialog(
+            onDismissRequest = { deleting = null },
+            title = { Text(stringResource(Res.string.groups_are_you_sure)) },
+            text = { Text(stringResource(Res.string.groups_delete_confirm, group.name)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    deleting = null
+                    vm.groups.delete(group.id)
+                }, colors = destructiveTextColors()) { Text(stringResource(Res.string.groups_yes)) }
+            },
+            dismissButton = { TextButton(onClick = { deleting = null }, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.groups_no)) } },
         )
     }
     editing?.let { edit ->

@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Видалити</string>
+    <string name="groups_edit">Редагувати групу</string>
     <string name="groups_delete_confirm">Ви впевнені, що хочете видалити групу підписників %1$s?</string>
     <string name="groups_engagement">Активність</string>
     <string name="groups_engagement_description">Приховує пости, у яких менше вподобань або репостів, ніж ви вибрали.</string>

@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Forigi</string>
+    <string name="groups_edit">Redakti grupon</string>
     <string name="groups_delete_confirm">Ĉu vi certas, vi volas forigi la grupon de abonoj %1$s?</string>
     <string name="groups_engagement">Interago</string>
     <string name="groups_engagement_description">Kaŝas afiŝojn kun malpli da ŝatoj aŭ reafiŝoj ol vi elektas.</string>

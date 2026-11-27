@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">刪除</string>
+    <string name="groups_edit">編輯群組</string>
     <string name="groups_delete_confirm">您確定要刪除訂閱群組「%1$s」嗎？</string>
     <string name="groups_engagement">互動</string>
     <string name="groups_engagement_description">隱藏讚數或轉發少於所選數量的貼文。</string>

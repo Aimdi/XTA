@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">An Deck anheften</string>
     <string name="groups_deck_unpin">Vom Deck lösen</string>
     <string name="groups_delete">Löschen</string>
+    <string name="groups_edit">Gruppe bearbeiten</string>
     <string name="groups_delete_confirm">Bist du dir sicher, dass du die Gruppe %1$s löschen willst?</string>
     <string name="groups_engagement">Reaktionen</string>
     <string name="groups_engagement_description">Blende Beiträge mit weniger Likes oder Reposts aus, als du festlegst.</string>

@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Eliminar</string>
+    <string name="groups_edit">Edita el grup</string>
     <string name="groups_delete_confirm">Estàs segur que vols suprimir el grup de subscripcions %1$s?</string>
     <string name="groups_engagement">Interacció</string>
     <string name="groups_engagement_description">Amaga les publicacions amb menys m’agrada o reposts dels que triïs.</string>

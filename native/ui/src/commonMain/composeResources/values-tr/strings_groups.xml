@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Sil</string>
+    <string name="groups_edit">Grubu düzenle</string>
     <string name="groups_delete_confirm">%1$s abonelik grubunu silmek istediğinizden emin misiniz?</string>
     <string name="groups_engagement">Etkileşim</string>
     <string name="groups_engagement_description">Seçtiğinizden az beğeni veya repost alan gönderileri gizler.</string>

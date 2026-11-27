@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Elimina</string>
+    <string name="groups_edit">Modifica gruppo</string>
     <string name="groups_delete_confirm">Sei sicuro/a di voler eliminare il gruppo di iscrizioni %1$s?</string>
     <string name="groups_engagement">Interazioni</string>
     <string name="groups_engagement_description">Nasconde i post con meno mi piace o repost di quelli che scegli.</string>

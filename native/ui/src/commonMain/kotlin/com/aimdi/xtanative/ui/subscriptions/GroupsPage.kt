@@ -1,5 +1,19 @@
 package com.aimdi.xtanative.ui.subscriptions
 
+import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.ui.generated.resources.groups_delete
+import com.aimdi.xtanative.ui.generated.resources.groups_edit
+import com.aimdi.xtanative.ui.generated.resources.plugin_open
+import com.aimdi.xtanative.ui.post.PostMenuSurface
+import com.aimdi.xtanative.ui.post.MenuGroupDivider
+import com.aimdi.xtanative.ui.post.MenuRow
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Constraints
 import kotlin.math.roundToInt
@@ -93,11 +107,49 @@ fun GroupsPage(
     onStep: (id: String, up: Boolean) -> Unit,
     contentPadding: PaddingValues,
     onDiscover: ((String) -> Unit)? = null,
+    onDelete: ((String) -> Unit)? = null,
 ) {
+    val menu = { tile: GroupTile ->
+        GroupMenuActions(
+            open = { onOpen(tile.id) },
+            edit = { onEdit(tile.id) },
+            pin = { onPin(tile.id, !tile.group.pinned) },
+            delete = onDelete?.let { { it(tile.id) } },
+        )
+    }
     when {
         state.groupCount == 0 -> EmptyGroups(onCreate, contentPadding)
-        state.layout == GroupsLayout.LIST -> GroupsList(state, onOpen, onEdit, onPin, onMove, onStep, contentPadding, onDiscover)
-        else -> GroupsBoard(state, onOpen, onEdit, contentPadding, onDiscover)
+        state.layout == GroupsLayout.LIST -> GroupsList(state, menu, onMove, onStep, contentPadding, onDiscover)
+        else -> GroupsBoard(state, menu, contentPadding, onDiscover)
+    }
+}
+
+/** What a group's menu ([GroupMenu]) and its tile or row do: open it, edit it, pin or unpin it, delete it (asked first). */
+private class GroupMenuActions(val open: () -> Unit, val edit: () -> Unit, val pin: () -> Unit, val delete: (() -> Unit)?)
+
+/**
+ * A group's menu at the pointer, which a right-click on its tile or row
+ * opens ([PostMenuSurface]) as a desktop opens a thing's menu: Open, Edit,
+ * Pin or Unpin, and Delete in the error colour. A long press still opens the
+ * edit sheet, as it did.
+ */
+@Composable
+private fun GroupMenu(group: FollowGroup, actions: GroupMenuActions, onDismiss: () -> Unit) {
+    val picked = { action: () -> Unit -> { onDismiss(); action() } }
+    PostMenuSurface(onDismiss) {
+        MenuRow(GroupIcons.ChevronRight, stringResource(Res.string.plugin_open), picked(actions.open))
+        MenuRow(GroupIcons.Tune, stringResource(Res.string.groups_edit), picked(actions.edit))
+        MenuRow(
+            if (group.pinned) GroupIcons.PushPin else GroupIcons.PushPinOutlined,
+            stringResource(if (group.pinned) Res.string.groups_unpin else Res.string.groups_pin),
+            picked(actions.pin),
+        )
+        actions.delete?.let { delete ->
+            MenuGroupDivider()
+            CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.error) {
+                MenuRow(Icons.Filled.Delete, stringResource(Res.string.groups_delete), picked(delete))
+            }
+        }
     }
 }
 
@@ -121,7 +173,7 @@ private fun EmptyGroups(onCreate: () -> Unit, contentPadding: PaddingValues) {
 private fun tileColor(): Color = MaterialTheme.colorScheme.background
 
 @Composable
-private fun GroupsBoard(state: SubscriptionsUi, onOpen: (String) -> Unit, onEdit: (String) -> Unit, contentPadding: PaddingValues, onDiscover: ((String) -> Unit)?) {
+private fun GroupsBoard(state: SubscriptionsUi, menu: (GroupTile) -> GroupMenuActions, contentPadding: PaddingValues, onDiscover: ((String) -> Unit)?) {
     // Compact tiles sit two to a phone row, like the large ones.
     val chosen = if (state.compact) 2 else state.columns
     val textScale = LocalDensity.current.fontScale
@@ -143,12 +195,12 @@ private fun GroupsBoard(state: SubscriptionsUi, onOpen: (String) -> Unit, onEdit
             modifier = Modifier.fillMaxSize(),
         ) {
             items(state.board.safe, key = { it.id }) { tile ->
-                GroupTileView(tile, state.compact, fixedHeight, ratio, { onOpen(tile.id) }, { onEdit(tile.id) }, onDiscover?.let { { it(tile.id) } })
+                GroupTileView(tile, state.compact, fixedHeight, ratio, menu(tile), onDiscover?.let { { it(tile.id) } })
             }
             if (state.board.nsfw.isNotEmpty()) {
                 item(key = "censored", span = { GridItemSpan(maxLineSpan) }) { CensoredHeader() }
                 items(state.board.nsfw, key = { it.id }) { tile ->
-                    GroupTileView(tile, state.compact, fixedHeight, ratio, { onOpen(tile.id) }, { onEdit(tile.id) }, onDiscover?.let { { it(tile.id) } })
+                    GroupTileView(tile, state.compact, fixedHeight, ratio, menu(tile), onDiscover?.let { { it(tile.id) } })
                 }
             }
         }
@@ -164,7 +216,9 @@ private fun GroupsBoard(state: SubscriptionsUi, onOpen: (String) -> Unit, onEdit
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun GroupTileView(tile: GroupTile, compact: Boolean, fixedHeight: Float?, ratio: Float, onTap: () -> Unit, onLongPress: () -> Unit, onDiscover: (() -> Unit)?) {
+private fun GroupTileView(tile: GroupTile, compact: Boolean, fixedHeight: Float?, ratio: Float, actions: GroupMenuActions, onDiscover: (() -> Unit)?) {
+    var menu by remember { mutableStateOf(false) }
+    if (menu) GroupMenu(tile.group, actions) { menu = false }
     val group = tile.group
     val base = tileColor()
     val chosen = group.color?.let(::groupColor)
@@ -177,9 +231,9 @@ private fun GroupTileView(tile: GroupTile, compact: Boolean, fixedHeight: Float?
             .let { if (fixedHeight != null) it.height(fixedHeight.dp) else it.aspectRatio(ratio) }
             .clip(shape)
             .let { if (chosen != null) it.border(1.dp, chosen.copy(alpha = 0.55f), shape) else it }
-            // A right-click opens what a long press does, as a desktop opens a thing's menu.
-            .onSecondaryClick(onLongPress)
-            .combinedClickable(onClick = onTap, onLongClick = onLongPress)
+            // A right-click opens the group's menu at the pointer, as a desktop opens a thing's menu.
+            .onSecondaryClick { menu = true }
+            .combinedClickable(onClick = actions.open, onLongClick = actions.edit)
             .semantics(mergeDescendants = true) { contentDescription = label },
     ) {
         val cover = Modifier.let { if (group.nsfw) it.blur(8.dp) else it }
@@ -299,9 +353,7 @@ private const val HEADER = "censored-header"
 @Composable
 private fun GroupsList(
     state: SubscriptionsUi,
-    onOpen: (String) -> Unit,
-    onEdit: (String) -> Unit,
-    onPin: (String, Boolean) -> Unit,
+    menu: (GroupTile) -> GroupMenuActions,
     onMove: (Int, Int) -> Unit,
     onStep: (id: String, up: Boolean) -> Unit,
     contentPadding: PaddingValues,
@@ -333,9 +385,7 @@ private fun GroupsList(
                 Box(Modifier.rowMovedByKeys(moves, key).graphicsLayer { translationY = if (dragged) drag.offset else 0f }.let { if (dragged) it.background(MaterialTheme.colorScheme.surfaceContainerHigh) else it }) {
                     GroupListRow(
                         tile = tile,
-                        onOpen = { onOpen(tile.id) },
-                        onEdit = { onEdit(tile.id) },
-                        onPin = { onPin(tile.id, !tile.group.pinned) },
+                        actions = menu(tile),
                         onDiscover = onDiscover?.let { { it(tile.id) } },
                         handle = if (!state.canDragGroups) {
                             null
@@ -361,8 +411,10 @@ private fun GroupsList(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun GroupListRow(tile: GroupTile, onOpen: () -> Unit, onEdit: () -> Unit, onPin: () -> Unit, onDiscover: (() -> Unit)?, handle: Modifier?) {
+private fun GroupListRow(tile: GroupTile, actions: GroupMenuActions, onDiscover: (() -> Unit)?, handle: Modifier?) {
     val group = tile.group
+    var menu by remember { mutableStateOf(false) }
+    if (menu) GroupMenu(group, actions) { menu = false }
     val count = pluralStringResource(Res.plurals.groups_member_count, tile.memberCount, tile.memberCount)
     val hidden = tile.memberCount - tile.faces.size
     Row(
@@ -370,9 +422,9 @@ private fun GroupListRow(tile: GroupTile, onOpen: () -> Unit, onEdit: () -> Unit
             .fillMaxWidth()
             .heightIn(min = 64.dp)
             .clip(RoundedCornerShape(12.dp))
-            // A right-click opens what a long press does, as a desktop opens a thing's menu.
-            .onSecondaryClick(onEdit)
-            .combinedClickable(onClick = onOpen, onLongClick = onEdit)
+            // A right-click opens the group's menu at the pointer, as a desktop opens a thing's menu.
+            .onSecondaryClick { menu = true }
+            .combinedClickable(onClick = actions.open, onLongClick = actions.edit)
             .padding(start = 16.dp + NEST_INDENT * tile.depth, end = 8.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -401,7 +453,7 @@ private fun GroupListRow(tile: GroupTile, onOpen: () -> Unit, onEdit: () -> Unit
             }
         }
         if (onDiscover != null) RankWithAiButton(iconSize = 20.dp, onClick = onDiscover)
-        IconTip(stringResource(if (group.pinned) Res.string.groups_unpin else Res.string.groups_pin)) { IconButton(onClick = onPin) {
+        IconTip(stringResource(if (group.pinned) Res.string.groups_unpin else Res.string.groups_pin)) { IconButton(onClick = actions.pin) {
             Icon(
                 if (group.pinned) GroupIcons.PushPin else GroupIcons.PushPinOutlined,
                 contentDescription = stringResource(if (group.pinned) Res.string.groups_unpin else Res.string.groups_pin),

@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Delete</string>
+    <string name="groups_edit">Edit group</string>
     <string name="groups_delete_confirm">Are you sure you want to delete the subscription group %1$s?</string>
     <string name="groups_engagement">Engagement</string>
     <string name="groups_engagement_description">Hide posts that have fewer likes or reposts than you choose.</string>

@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">हटाएं</string>
+    <string name="groups_edit">समूह संपादित करें</string>
     <string name="groups_delete_confirm">क्या आप सदस्यता समूह %1$s हटाना चाहते हैं?</string>
     <string name="groups_engagement">सहभागिता</string>
     <string name="groups_engagement_description">आपके चुने हुए से कम लाइक या रीपोस्ट वाली पोस्ट छिपाएँ।</string>

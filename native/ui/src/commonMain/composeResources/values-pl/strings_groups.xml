@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Usuń</string>
+    <string name="groups_edit">Edytuj grupę</string>
     <string name="groups_delete_confirm">Czy na pewno chcesz usunąć grupę subskrypcji %1$s?</string>
     <string name="groups_engagement">Zaangażowanie</string>
     <string name="groups_engagement_description">Ukrywa wpisy z mniejszą liczbą polubień lub repostów niż wybrana.</string>

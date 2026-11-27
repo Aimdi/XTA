@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">デッキに固定</string>
     <string name="groups_deck_unpin">デッキから外す</string>
     <string name="groups_delete">削除</string>
+    <string name="groups_edit">グループを編集</string>
     <string name="groups_delete_confirm">登録グループ%1$sを削除してもよろしいですか？</string>
     <string name="groups_engagement">反応</string>
     <string name="groups_engagement_description">選んだ数より いいね や リポスト が少ない投稿を隠します。</string>

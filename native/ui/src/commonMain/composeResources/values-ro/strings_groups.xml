@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Ștergeți</string>
+    <string name="groups_edit">Editează grupul</string>
     <string name="groups_delete_confirm">Ești sigur că vrei să ștergi grupul de abonamente %1$s?</string>
     <string name="groups_engagement">Interacțiune</string>
     <string name="groups_engagement_description">Ascunde postările cu mai puține aprecieri sau repostări decât alegi.</string>

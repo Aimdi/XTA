@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Удалить</string>
+    <string name="groups_edit">Редактировать группу</string>
     <string name="groups_delete_confirm">Вы уверены, что хотите удалить группу подписок %1$s?</string>
     <string name="groups_engagement">Активность</string>
     <string name="groups_engagement_description">Скрывает посты, у которых меньше лайков или репостов, чем вы выбрали.</string>

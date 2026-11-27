@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">حذف</string>
+    <string name="groups_edit">تعديل المجموعة</string>
     <string name="groups_delete_confirm">هل أنت متأكد من حذف اسم مجموعة الاشتراك %1$s?</string>
     <string name="groups_engagement">التفاعل</string>
     <string name="groups_engagement_description">يخفي المنشورات التي عدد إعجاباتها أو إعادات نشرها أقل مما تختاره.</string>

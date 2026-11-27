@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Épingler au deck</string>
     <string name="groups_deck_unpin">Retirer du deck</string>
     <string name="groups_delete">Supprimer</string>
+    <string name="groups_edit">Modifier le groupe</string>
     <string name="groups_delete_confirm">Voulez-vous vraiment supprimer le groupe d'abonnement %1$s ?</string>
     <string name="groups_engagement">Engagement</string>
     <string name="groups_engagement_description">Masquez les publications ayant moins de likes ou de reposts que le seuil choisi.</string>

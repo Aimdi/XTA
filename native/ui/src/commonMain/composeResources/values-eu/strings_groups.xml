@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Ezabatu</string>
+    <string name="groups_edit">Editatu taldea</string>
     <string name="groups_delete_confirm">Ziur %1$s harpidetza taldea ezabatu nahi duzula?</string>
     <string name="groups_engagement">Interakzioa</string>
     <string name="groups_engagement_description">Aukeratzen duzuna baino atsegite edo repost gutxiago dituzten argitalpenak ezkutatzen ditu.</string>

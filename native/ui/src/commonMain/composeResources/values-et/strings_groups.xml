@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Kustuta</string>
+    <string name="groups_edit">Muuda gruppi</string>
     <string name="groups_delete_confirm">Kas sa oled kindel, et soovid kustutada tellimuste grupi %1$s?</string>
     <string name="groups_engagement">Kaasatus</string>
     <string name="groups_engagement_description">Peidab postitused, millel on vähem meeldimisi või repostitusi, kui valid.</string>

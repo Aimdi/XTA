@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Hapus</string>
+    <string name="groups_edit">Edit grup</string>
     <string name="groups_delete_confirm">Apakah Anda yakin Anda ingin menghapus grup langganan %1$s?</string>
     <string name="groups_engagement">Interaksi</string>
     <string name="groups_engagement_description">Sembunyikan postingan dengan suka atau repost lebih sedikit dari pilihan Anda.</string>

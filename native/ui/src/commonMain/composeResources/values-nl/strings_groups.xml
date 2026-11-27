@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Verwijderen</string>
+    <string name="groups_edit">Groep bewerken</string>
     <string name="groups_delete_confirm">Weet je zeker dat je de abonnementsgroep %1$s wilt verwijderen?</string>
     <string name="groups_engagement">Interactie</string>
     <string name="groups_engagement_description">Verberg berichten met minder likes of reposts dan je kiest.</string>

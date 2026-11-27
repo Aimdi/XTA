@@ -1,5 +1,10 @@
 package com.aimdi.xtanative.ui.antenna
 
+import com.aimdi.xtanative.ui.post.PostMenuSurface
+import com.aimdi.xtanative.ui.post.MenuRow
+import com.aimdi.xtanative.ui.common.onSecondaryClick
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.runtime.CompositionLocalProvider
 import com.aimdi.xtanative.ui.common.destructiveButtonColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -170,12 +175,32 @@ fun AntennasScreen(openAntenna: (String) -> Unit, onBack: () -> Unit) {
 private fun scopeLabel(scope: AntennaScope): String =
     stringResource(if (scope == AntennaScope.FOLLOWING) Res.string.discover_antenna_scope_following else Res.string.discover_antenna_scope_search)
 
-/** An antenna: its name, whose posts it listens to and its terms; the menu holds Settings and Delete. */
+/**
+ * An antenna: its name, whose posts it listens to and its terms; the menu
+ * holds Settings and Delete, under its ⋮ or, at a right-click on the row, at
+ * the pointer ([PostMenuSurface]), as a desktop opens a thing's menu.
+ */
 @Composable
 private fun AntennaRow(antenna: Antenna, onOpen: () -> Unit, onSettings: () -> Unit, onDelete: () -> Unit) {
     var menu by remember { mutableStateOf(false) }
+    var pointerMenu by remember { mutableStateOf(false) }
+    if (pointerMenu) {
+        PostMenuSurface(onDismiss = { pointerMenu = false }) {
+            MenuRow(DiscoverIcons.Tune, stringResource(Res.string.discover_settings)) {
+                pointerMenu = false
+                onSettings()
+            }
+            CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.error) {
+                MenuRow(Icons.Filled.Delete, stringResource(Res.string.discover_delete)) {
+                    pointerMenu = false
+                    onDelete()
+                }
+            }
+        }
+    }
     Row(
-        Modifier.fillMaxWidth().heightIn(min = 72.dp).clickable(onClick = onOpen).padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
+        Modifier.fillMaxWidth().heightIn(min = 72.dp).onSecondaryClick { pointerMenu = true }.clickable(onClick = onOpen)
+            .padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(DiscoverIcons.Radar, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)

@@ -41,6 +41,7 @@
     <string name="groups_deck_pin">Pin to deck</string>
     <string name="groups_deck_unpin">Unpin from deck</string>
     <string name="groups_delete">Xóa</string>
+    <string name="groups_edit">Sửa nhóm</string>
     <string name="groups_delete_confirm">Bạn có muốn xóa nhóm %1$s đăng kí không </string>
     <string name="groups_engagement">Tương tác</string>
     <string name="groups_engagement_description">Ẩn bài viết có ít lượt thích hoặc repost hơn mức bạn chọn.</string>
