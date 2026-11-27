@@ -108,6 +108,8 @@ internal fun TileVideo(
         share = VideoRules.shareStep(VideoRules.seenShare(bounds.width, bounds.height, coordinates.size.width, coordinates.size.height))
     }
     val fullscreen = LocalVideoFullscreen.current
+    // Read on every composition, whatever the tile shows: the tile must hear full screen close to take its player back.
+    val inFullscreen = fullscreen?.shown?.player
     val save = download()
     val open: () -> Unit = open@{
         // Its sound on, from where it is: the tile takes the player first if it has not.
@@ -131,7 +133,7 @@ internal fun TileVideo(
     when {
         player == null -> IdleTile(autoplay, VideoMute.muted(muteSetting), durationMs, label, onOpen = open, modifier = placed)
         // Full screen has it: the tile keeps its poster meanwhile.
-        fullscreen?.shows(player) == true -> Box(placed)
+        inFullscreen === player -> Box(placed)
         else -> PlayingTile(player, alt, poster, seen, own = !tiles.shared, durationMs, label, onOpen = open, modifier = placed)
     }
 }
