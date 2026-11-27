@@ -25,6 +25,20 @@ object SettingsPanes {
     val rows: List<String> = SettingsSection.everyday.map { it.id } + SettingsSection.ACCOUNT.id + PLUGIN_STORE + SettingsSection.DATA.id +
         SettingsSection.advanced.map { it.id } + ABOUT
 
+    /**
+     * Whether ↑ or ↓ reaching row [id] shows its page at once: all but the
+     * plugin store, which reads its catalogue from the network as it opens,
+     * so only Enter or a click opens it, not the arrows passing by.
+     */
+    fun showsWhenWalked(id: String): Boolean = id != PLUGIN_STORE
+
+    /**
+     * Whether Back (Esc, Alt+←) from the page beside the list goes to its row
+     * first rather than leaving Settings: while the keys are [inPane] and the
+     * list is shown ([listShown]: no search's results in its place).
+     */
+    fun backToRow(inPane: Boolean, listShown: Boolean): Boolean = inPane && listShown
+
     /** The row ↑ ([by] -1) or ↓ (1) from [from]; null at either end, or from no row of the list. */
     fun step(from: String?, by: Int): String? {
         val index = rows.indexOf(from)

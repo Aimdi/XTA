@@ -221,6 +221,15 @@ class SettingsPanesTest {
     fun thePluginStoreStandsBesideTheListAsASectionDoes() {
         assertEquals(SettingsPanes.PLUGIN_STORE, SettingsPanes.shown(SettingsPanes.PLUGIN_STORE))
         assertEquals(SettingsPanes.PLUGIN_STORE, SettingsPanes.marked(SettingsPanes.PLUGIN_STORE))
+        assertFalse(SettingsPanes.showsWhenWalked(SettingsPanes.PLUGIN_STORE), "the arrows pass the store without opening it")
+        assertTrue(SettingsPanes.showsWhenWalked(SettingsSection.DATA.id))
+    }
+
+    @Test
+    fun backFromThePageGoesToItsRowFirstWhileTheListIsShown() {
+        assertTrue(SettingsPanes.backToRow(inPane = true, listShown = true))
+        assertFalse(SettingsPanes.backToRow(inPane = false, listShown = true), "from the row Back leaves Settings")
+        assertFalse(SettingsPanes.backToRow(inPane = true, listShown = false), "no row to go to under a search's results")
     }
 
     @Test

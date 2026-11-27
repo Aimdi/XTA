@@ -51,6 +51,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.ColumnScrollbar
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.SearchField
@@ -134,6 +135,10 @@ internal fun SettingsTwoPanes(
         onDispose { actions?.removeFieldEscape(owner) }
     }
 
+    // Esc, Alt+← and the back button on a control of the page (not a field: that is the field escape above) go to its
+    // row first too; from the row, the next leaves Settings.
+    BackHandling(enabled = SettingsPanes.backToRow(inPane, listShown = query.isBlank())) { toRow(marked) }
+
     fun keys(id: String, event: KeyEvent): Boolean {
         if (event.isAltPressed || event.isCtrlPressed) return false
         val down = event.type == KeyEventType.KeyDown
@@ -142,7 +147,7 @@ internal fun SettingsTwoPanes(
                 if (down && !event.isShiftPressed) {
                     SettingsPanes.step(id, if (event.key == Key.DirectionDown) 1 else -1)?.let { next ->
                         toRow(next)
-                        show(next)
+                        if (SettingsPanes.showsWhenWalked(next)) show(next)
                     }
                 }
                 !event.isShiftPressed
