@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">Tehisintellekt ei andnud kasutatavat tulemust. Kuvatakse kohalikke soovitusi.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Kas sa oled kindel?</string>
-    <string name="groups_batch_progress">Kontrollitud pakette: %1$d/%2$d</string>
     <string name="groups_broken_found">Neid kontosid enam ei ole:</string>
     <string name="groups_catch_up_end">See on kõik, mis on lisandunud pärast selle voo viimast lugemist.</string>
     <string name="groups_catch_up_incomplete">Jõudsid postitusteni, mida oled juba lugenud, kuid kõike vahepealset ei õnnestunud laadida – ülalpool võib olla veel.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Otsi või loo</string>
     <string name="groups_show_in_main_feed">Kuva põhivoos</string>
     <string name="groups_skip">Jäta vahele</string>
+    <string name="groups_some_not_loaded">Kõiki postitusi ei õnnestunud laadida</string>
     <string name="groups_some_unchecked">Mõnda kontot ei õnnestunud kontrollida ja need jäeti alles.</string>
     <string name="groups_sort_ai">Sordi tehisintellektiga</string>
     <string name="groups_sort_ai_note">Järjestatud sinu tehisintellekti teenusega.</string>

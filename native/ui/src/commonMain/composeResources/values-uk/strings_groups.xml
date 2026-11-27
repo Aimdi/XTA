@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">ШІ не надав придатного результату. Показано локальні пропозиції.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Ви впевнені?</string>
-    <string name="groups_batch_progress">Перевірено пакетів: %1$d/%2$d</string>
     <string name="groups_broken_found">Ці облікові записи більше не існують:</string>
     <string name="groups_catch_up_end">Це все з того часу, як ви востаннє читали цю стрічку.</string>
     <string name="groups_catch_up_incomplete">Ви дійшли до дописів, які вже читали, але не все проміжне вдалося завантажити — вище може бути більше.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Знайти або створити</string>
     <string name="groups_show_in_main_feed">Показати в головній стрічці</string>
     <string name="groups_skip">Пропустити</string>
+    <string name="groups_some_not_loaded">Не всі дописи вдалося завантажити</string>
     <string name="groups_some_unchecked">Деякі облікові записи не вдалося перевірити, їх було залишено.</string>
     <string name="groups_sort_ai">Розподілити за допомогою ШІ</string>
     <string name="groups_sort_ai_note">Розподілено з вашим постачальником ШІ.</string>

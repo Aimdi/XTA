@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">AI 未能提供可用结果，正在显示本地建议。</string>
     <string name="groups_antennas">天线</string>
     <string name="groups_are_you_sure">你确定吗？</string>
-    <string name="groups_batch_progress">已检查批次：%1$d/%2$d</string>
     <string name="groups_broken_found">以下账号已不存在：</string>
     <string name="groups_catch_up_end">这就是你上次阅读此信息流之后的全部内容。</string>
     <string name="groups_catch_up_incomplete">你已经看到读过的帖子，但中间的内容未能全部加载——此处上方可能还有更多。</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">搜索或新建</string>
     <string name="groups_show_in_main_feed">在主信息流中显示</string>
     <string name="groups_skip">跳过</string>
+    <string name="groups_some_not_loaded">部分帖子无法加载</string>
     <string name="groups_some_unchecked">部分账号无法检查，已保留。</string>
     <string name="groups_sort_ai">用 AI 分类</string>
     <string name="groups_sort_ai_note">已用你的 AI 服务整理。</string>

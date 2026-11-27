@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">KI ga ikke et brukbart resultat. Lokale forslag vises.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Er du sikker?</string>
-    <string name="groups_batch_progress">Kontrollerte grupper: %1$d/%2$d</string>
     <string name="groups_broken_found">Disse kontoene finnes ikke lenger:</string>
     <string name="groups_catch_up_end">Det var alt siden sist du leste denne strømmen.</string>
     <string name="groups_catch_up_incomplete">Du har nådd innlegg du allerede har lest, men alt imellom kunne ikke lastes – det kan finnes mer over dette punktet.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Søk eller opprett</string>
     <string name="groups_show_in_main_feed">Vis i hoved-feed</string>
     <string name="groups_skip">Hopp over</string>
+    <string name="groups_some_not_loaded">Ikke alle innlegg kunne lastes inn</string>
     <string name="groups_some_unchecked">Noen kontoer kunne ikke kontrolleres og ble beholdt.</string>
     <string name="groups_sort_ai">Sorter med KI</string>
     <string name="groups_sort_ai_note">Sortert med KI-leverandøren din.</string>

@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">AI से उपयोगी परिणाम नहीं मिला। स्थानीय सुझाव दिखाए जा रहे हैं।</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">क्या आप सुनिश्चित हैं?</string>
-    <string name="groups_batch_progress">जाँचे गए बैच: %1$d/%2$d</string>
     <string name="groups_broken_found">ये खाते अब मौजूद नहीं हैं:</string>
     <string name="groups_catch_up_end">इस फ़ीड को पिछली बार पढ़ने के बाद से बस इतना ही है।</string>
     <string name="groups_catch_up_incomplete">आप उन पोस्ट तक पहुँच गए हैं जिन्हें आप पहले पढ़ चुके हैं, लेकिन बीच का सब कुछ लोड नहीं हो सका — इस बिंदु के ऊपर और भी हो सकता है।</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">खोजें या बनाएँ</string>
     <string name="groups_show_in_main_feed">मुख्य फ़ीड में दिखाएं</string>
     <string name="groups_skip">छोड़ें</string>
+    <string name="groups_some_not_loaded">सभी पोस्ट लोड नहीं हो सकीं</string>
     <string name="groups_some_unchecked">कुछ खातों की जाँच नहीं हो सकी, उन्हें रखा गया है।</string>
     <string name="groups_sort_ai">AI से क्रमबद्ध करें</string>
     <string name="groups_sort_ai_note">आपके एआई प्रदाता से छाँटा गया।</string>

@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">AI tidak memberikan hasil yang dapat digunakan. Saran lokal ditampilkan.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Apakah Anda yakin?</string>
-    <string name="groups_batch_progress">Batch diperiksa: %1$d/%2$d</string>
     <string name="groups_broken_found">Akun-akun ini sudah tidak ada:</string>
     <string name="groups_catch_up_end">Itu semua sejak terakhir kali Anda membaca linimasa ini.</string>
     <string name="groups_catch_up_incomplete">Anda telah sampai pada postingan yang sudah dibaca, tetapi tidak semua yang ada di antaranya bisa dimuat — mungkin masih ada lagi di atas titik ini.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Cari atau buat</string>
     <string name="groups_show_in_main_feed">Tampilkan di feed utama</string>
     <string name="groups_skip">Lewati</string>
+    <string name="groups_some_not_loaded">Tidak semua postingan dapat dimuat</string>
     <string name="groups_some_unchecked">Beberapa akun tidak dapat diperiksa dan tetap dipertahankan.</string>
     <string name="groups_sort_ai">Urutkan dengan AI</string>
     <string name="groups_sort_ai_note">Diurutkan dengan penyedia AI Anda.</string>

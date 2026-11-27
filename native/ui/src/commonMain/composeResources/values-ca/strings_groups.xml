@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">La IA no ha proporcionat cap resultat útil. Es mostren suggeriments locals.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">N'estàs segur?</string>
-    <string name="groups_batch_progress">Lots comprovats: %1$d/%2$d</string>
     <string name="groups_broken_found">Aquests comptes ja no existeixen:</string>
     <string name="groups_catch_up_end">Això és tot des de l'última vegada que vas llegir aquest flux.</string>
     <string name="groups_catch_up_incomplete">Has arribat a publicacions que ja havies llegit, però no s'ha pogut carregar tot el que hi ha entremig: pot haver-hi més per sobre d'aquest punt.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Cerca o crea</string>
     <string name="groups_show_in_main_feed">Mostra al canal principal</string>
     <string name="groups_skip">Omet</string>
+    <string name="groups_some_not_loaded">No s'han pogut carregar totes les publicacions</string>
     <string name="groups_some_unchecked">No s'han pogut comprovar alguns comptes i s'han conservat.</string>
     <string name="groups_sort_ai">Ordena amb IA</string>
     <string name="groups_sort_ai_note">Ordenat amb el teu proveïdor d'IA.</string>

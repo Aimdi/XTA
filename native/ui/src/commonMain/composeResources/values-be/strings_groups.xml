@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">ШІ не даў прыдатнага выніку. Паказаны лакальныя прапановы.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Вы ўпэўнены?</string>
-    <string name="groups_batch_progress">Праверана пакетаў: %1$d/%2$d</string>
     <string name="groups_broken_found">Гэтыя ўліковыя запісы больш не існуюць:</string>
     <string name="groups_catch_up_end">Гэта ўсё з часу вашага апошняга чытання гэтай стужкі.</string>
     <string name="groups_catch_up_incomplete">Вы дайшлі да допісаў, якія ўжо чыталі, але не ўсё паміж імі ўдалося загрузіць — вышэй можа быць больш.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Шукаць або стварыць</string>
     <string name="groups_show_in_main_feed">Паказаць у галоўнай стужцы</string>
     <string name="groups_skip">Прапусціць</string>
+    <string name="groups_some_not_loaded">Не ўсе допісы ўдалося загрузіць</string>
     <string name="groups_some_unchecked">Некаторыя ўліковыя запісы не ўдалося праверыць, яны былі пакінуты.</string>
     <string name="groups_sort_ai">Размеркаваць з дапамогай ШІ</string>
     <string name="groups_sort_ai_note">Размеркавана з дапамогай вашага пастаўшчыка ШІ.</string>

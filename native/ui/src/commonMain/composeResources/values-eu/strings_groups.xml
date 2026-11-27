@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">AAk ez du emaitza erabilgarririk eman. Tokiko iradokizunak erakusten dira.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Ziur zaude?</string>
-    <string name="groups_batch_progress">Egiaztatutako sortak: %1$d/%2$d</string>
     <string name="groups_broken_found">Kontu hauek jada ez dira existitzen:</string>
     <string name="groups_catch_up_end">Hori da guztia jario hau azkenekoz irakurri zenuenetik.</string>
     <string name="groups_catch_up_incomplete">Jada irakurrita zenituen argitalpenetara iritsi zara, baina tartekoak ezin izan dira guztiak kargatu: puntu honen gainetik gehiago egon liteke.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Bilatu edo sortu</string>
     <string name="groups_show_in_main_feed">Erakutsi jario nagusian</string>
     <string name="groups_skip">Saltatu</string>
+    <string name="groups_some_not_loaded">Ezin izan dira argitalpen guztiak kargatu</string>
     <string name="groups_some_unchecked">Kontu batzuk ezin izan dira egiaztatu eta gorde egin dira.</string>
     <string name="groups_sort_ai">Ordenatu AArekin</string>
     <string name="groups_sort_ai_note">Zure AA hornitzailearekin ordenatuta.</string>

@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">L’IA non ha fornito un risultato utilizzabile. Vengono mostrati i suggerimenti locali.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Sei sicuro?</string>
-    <string name="groups_batch_progress">Lotti controllati: %1$d/%2$d</string>
     <string name="groups_broken_found">Questi account non esistono più:</string>
     <string name="groups_catch_up_end">Questo è tutto da quando hai letto questo feed l'ultima volta.</string>
     <string name="groups_catch_up_incomplete">Sei arrivato a post che avevi già letto, ma non è stato possibile caricare tutto ciò che sta in mezzo: sopra questo punto potrebbe esserci altro.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Cerca o crea</string>
     <string name="groups_show_in_main_feed">Mostra nel feed principale</string>
     <string name="groups_skip">Salta</string>
+    <string name="groups_some_not_loaded">Non è stato possibile caricare tutti i post</string>
     <string name="groups_some_unchecked">Non è stato possibile verificare alcuni account, che sono stati mantenuti.</string>
     <string name="groups_sort_ai">Ordina con l’IA</string>
     <string name="groups_sort_ai_note">Ordinato con il tuo fornitore IA.</string>

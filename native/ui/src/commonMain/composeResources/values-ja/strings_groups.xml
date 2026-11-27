@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">AIから有効な結果を得られませんでした。端末内の候補を表示しています。</string>
     <string name="groups_antennas">アンテナ</string>
     <string name="groups_are_you_sure">確認</string>
-    <string name="groups_batch_progress">確認済みのバッチ: %1$d/%2$d</string>
     <string name="groups_broken_found">以下のアカウントはもう存在しません：</string>
     <string name="groups_catch_up_end">このフィードを前回読んでから、これで全部です。</string>
     <string name="groups_catch_up_incomplete">すでに読んだ投稿に到達しましたが、その間のすべてを読み込めませんでした。この上にまだ投稿があるかもしれません。</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">検索または作成</string>
     <string name="groups_show_in_main_feed">メインフィードに表示</string>
     <string name="groups_skip">スキップ</string>
+    <string name="groups_some_not_loaded">一部の投稿を読み込めませんでした</string>
     <string name="groups_some_unchecked">一部のアカウントは確認できなかったため、そのまま残されました。</string>
     <string name="groups_sort_ai">AIで振り分ける</string>
     <string name="groups_sort_ai_note">指定した AI で分類しました。</string>

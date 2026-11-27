@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">AI could not provide a usable result. Showing local suggestions.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Are you sure?</string>
-    <string name="groups_batch_progress">Batches checked: %1$d/%2$d</string>
     <string name="groups_broken_found">These accounts no longer exist:</string>
     <string name="groups_catch_up_end">That's everything since you last read this feed.</string>
     <string name="groups_catch_up_incomplete">You've reached posts you had already read, but the feed could not load everything in between — there may be more above this point.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Search or create</string>
     <string name="groups_show_in_main_feed">Show in main feed</string>
     <string name="groups_skip">Skip</string>
+    <string name="groups_some_not_loaded">Not all posts could be loaded</string>
     <string name="groups_some_unchecked">Some accounts could not be checked and were kept.</string>
     <string name="groups_sort_ai">Sort with AI</string>
     <string name="groups_sort_ai_note">Sorted with your AI provider.</string>

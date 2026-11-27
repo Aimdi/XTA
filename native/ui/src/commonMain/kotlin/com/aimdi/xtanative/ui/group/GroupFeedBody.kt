@@ -92,7 +92,6 @@ import com.aimdi.xtanative.ui.feed.rememberNearEnd
 import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
-import com.aimdi.xtanative.ui.generated.resources.groups_batch_progress
 import com.aimdi.xtanative.ui.generated.resources.groups_catch_up_end
 import com.aimdi.xtanative.ui.generated.resources.groups_catch_up_incomplete
 import com.aimdi.xtanative.ui.generated.resources.groups_catch_up_nothing_new
@@ -105,6 +104,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_more_info
 import com.aimdi.xtanative.ui.generated.resources.groups_never_show_again
 import com.aimdi.xtanative.ui.generated.resources.groups_no_members
 import com.aimdi.xtanative.ui.generated.resources.groups_retry
+import com.aimdi.xtanative.ui.generated.resources.groups_some_not_loaded
 import com.aimdi.xtanative.ui.generated.resources.groups_zen_end
 import com.aimdi.xtanative.ui.generated.resources.groups_zen_load_more
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
@@ -233,8 +233,8 @@ fun GroupFeedBody(
         SourceLoadingHairline(plugin.loading, Modifier.align(Alignment.TopCenter))
         Column(Modifier.align(Alignment.TopCenter).padding(top = 12.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             AnimatedVisibility(state.unrelatedNotice, enter = Motion.popEnter(reduced), exit = Motion.popExit(reduced)) { UnrelatedPill(vm) }
-            AnimatedVisibility(progress.canRetry, enter = Motion.popEnter(reduced), exit = Motion.popExit(reduced)) {
-                RetryPill(progress.answered, progress.total, vm::retryFailed)
+            AnimatedVisibility(GroupFeedRules.offersRetryPill(progress, run), enter = Motion.popEnter(reduced), exit = Motion.popExit(reduced)) {
+                RetryPill(vm::retryFailed)
             }
             // The count the pill said, while it goes once the posts are shown.
             val held = remember { intArrayOf(0) }
@@ -369,11 +369,11 @@ private fun Pill(content: @Composable () -> Unit) {
     }
 }
 
-/** Some sources could not be read: how many were, and a retry of the rest. */
+/** Some sources could not be read, said plainly, and a retry of those. */
 @Composable
-private fun RetryPill(answered: Int, total: Int, onRetry: () -> Unit) {
+private fun RetryPill(onRetry: () -> Unit) {
     Pill {
-        Text(stringResource(Res.string.groups_batch_progress, answered, total), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 8.dp))
+        Text(stringResource(Res.string.groups_some_not_loaded), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 8.dp))
         TextButton(onClick = onRetry) { Text(stringResource(Res.string.groups_retry)) }
     }
 }

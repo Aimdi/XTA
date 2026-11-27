@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">لم يقدم الذكاء الاصطناعي نتيجة قابلة للاستخدام. تُعرض الاقتراحات المحلية.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">هل أنت متأكد؟</string>
-    <string name="groups_batch_progress">الدفعات المفحوصة: %1$d/%2$d</string>
     <string name="groups_broken_found">هذه الحسابات لم تعد موجودة:</string>
     <string name="groups_catch_up_end">هذا كل ما جدّ منذ آخر قراءة لهذا الموجز.</string>
     <string name="groups_catch_up_incomplete">وصلت إلى منشورات سبق أن قرأتها، لكن تعذّر تحميل كل ما بينهما، لذا قد يكون هناك المزيد فوق هذه النقطة.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">ابحث أو أنشئ</string>
     <string name="groups_show_in_main_feed">إظهار في الخلاصة الرئيسية</string>
     <string name="groups_skip">تخطّي</string>
+    <string name="groups_some_not_loaded">تعذّر تحميل بعض المنشورات</string>
     <string name="groups_some_unchecked">تعذر التحقق من بعض الحسابات وتم الإبقاء عليها.</string>
     <string name="groups_sort_ai">الترتيب بالذكاء الاصطناعي</string>
     <string name="groups_sort_ai_note">فُرز باستخدام مزوّد الذكاء الاصطناعي.</string>

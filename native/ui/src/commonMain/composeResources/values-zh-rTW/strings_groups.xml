@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">AI 未能提供可用結果，正在顯示本機建議。</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">您確定嗎？</string>
-    <string name="groups_batch_progress">已檢查批次：%1$d/%2$d</string>
     <string name="groups_broken_found">以下帳號已不存在：</string>
     <string name="groups_catch_up_end">這就是你上次閱讀此動態之後的全部內容。</string>
     <string name="groups_catch_up_incomplete">你已經看到讀過的貼文，但中間的內容未能全部載入——此處上方可能還有更多。</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">搜尋或新增</string>
     <string name="groups_show_in_main_feed">在主動態消息中顯示</string>
     <string name="groups_skip">略過</string>
+    <string name="groups_some_not_loaded">部分貼文無法載入</string>
     <string name="groups_some_unchecked">部分帳號無法檢查，已保留。</string>
     <string name="groups_sort_ai">用 AI 分類</string>
     <string name="groups_sort_ai_note">已用你的 AI 服務整理。</string>

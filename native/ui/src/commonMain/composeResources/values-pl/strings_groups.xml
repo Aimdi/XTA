@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">AI nie zwróciła przydatnego wyniku. Wyświetlane są lokalne propozycje.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Czy na pewno?</string>
-    <string name="groups_batch_progress">Sprawdzone partie: %1$d/%2$d</string>
     <string name="groups_broken_found">Te konta już nie istnieją:</string>
     <string name="groups_catch_up_end">To wszystko od czasu, gdy ostatnio czytałeś ten kanał.</string>
     <string name="groups_catch_up_incomplete">Dotarłeś do postów, które już czytałeś, ale nie udało się wczytać wszystkiego pomiędzy – powyżej może być ich więcej.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Szukaj lub utwórz</string>
     <string name="groups_show_in_main_feed">Pokaż w głównym kanale</string>
     <string name="groups_skip">Pomiń</string>
+    <string name="groups_some_not_loaded">Nie udało się wczytać wszystkich wpisów</string>
     <string name="groups_some_unchecked">Niektórych kont nie udało się sprawdzić i zostały zachowane.</string>
     <string name="groups_sort_ai">Sortuj za pomocą AI</string>
     <string name="groups_sort_ai_note">Posortowano z Twoim dostawcą AI.</string>

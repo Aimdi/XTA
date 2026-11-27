@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">AI nu a oferit un rezultat utilizabil. Sunt afișate sugestiile locale.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Ești sigur?</string>
-    <string name="groups_batch_progress">Loturi verificate: %1$d/%2$d</string>
     <string name="groups_broken_found">Aceste conturi nu mai există:</string>
     <string name="groups_catch_up_end">Asta e tot de la ultima dată când ai citit acest flux.</string>
     <string name="groups_catch_up_incomplete">Ai ajuns la postări pe care le citiseși deja, dar nu s-a putut încărca tot ce se află între ele — s-ar putea să fie mai multe deasupra acestui punct.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Caută sau creează</string>
     <string name="groups_show_in_main_feed">Afișați în fluxul principal</string>
     <string name="groups_skip">Omite</string>
+    <string name="groups_some_not_loaded">Nu toate postările au putut fi încărcate</string>
     <string name="groups_some_unchecked">Unele conturi nu au putut fi verificate și au fost păstrate.</string>
     <string name="groups_sort_ai">Sortează cu AI</string>
     <string name="groups_sort_ai_note">Sortat cu furnizorul tău de IA.</string>

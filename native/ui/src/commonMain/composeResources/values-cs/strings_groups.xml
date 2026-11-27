@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">AI neposkytla použitelný výsledek. Zobrazují se místní návrhy.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Opravdu?</string>
-    <string name="groups_batch_progress">Zkontrolované dávky: %1$d/%2$d</string>
     <string name="groups_broken_found">Tyto účty už neexistují:</string>
     <string name="groups_catch_up_end">To je vše od doby, kdy jste tento kanál naposledy četli.</string>
     <string name="groups_catch_up_incomplete">Došli jste k příspěvkům, které jste už četli, ale vše mezitím se nepodařilo načíst – nad tímto místem toho může být víc.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Hledat nebo vytvořit</string>
     <string name="groups_show_in_main_feed">Zobrazit v hlavním kanálu</string>
     <string name="groups_skip">Přeskočit</string>
+    <string name="groups_some_not_loaded">Některé příspěvky se nepodařilo načíst</string>
     <string name="groups_some_unchecked">Některé účty se nepodařilo zkontrolovat a byly ponechány.</string>
     <string name="groups_sort_ai">Seřadit pomocí AI</string>
     <string name="groups_sort_ai_note">Zařazeno pomocí vašeho poskytovatele AI.</string>

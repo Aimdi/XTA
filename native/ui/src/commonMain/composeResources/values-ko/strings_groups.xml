@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">AI가 사용할 수 있는 결과를 제공하지 못했습니다. 기기 내 추천을 표시합니다.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">확실합니까?</string>
-    <string name="groups_batch_progress">확인한 묶음: %1$d/%2$d</string>
     <string name="groups_broken_found">다음 계정은 더 이상 존재하지 않습니다:</string>
     <string name="groups_catch_up_end">이 피드를 마지막으로 읽은 이후의 내용은 여기까지입니다.</string>
     <string name="groups_catch_up_incomplete">이미 읽은 게시물에 도달했지만 그 사이의 모든 것을 불러오지는 못했습니다. 이 지점 위에 더 있을 수 있습니다.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">검색하거나 만들기</string>
     <string name="groups_show_in_main_feed">메인 피드에 표시</string>
     <string name="groups_skip">건너뛰기</string>
+    <string name="groups_some_not_loaded">일부 게시물을 불러오지 못했습니다</string>
     <string name="groups_some_unchecked">일부 계정은 확인할 수 없어 그대로 유지되었습니다.</string>
     <string name="groups_sort_ai">AI로 분류</string>
     <string name="groups_sort_ai_note">선택한 AI로 나눴습니다.</string>

@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">AI không đưa ra kết quả phù hợp. Đang hiển thị đề xuất cục bộ.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Bạn có chắc không </string>
-    <string name="groups_batch_progress">Lô đã kiểm tra: %1$d/%2$d</string>
     <string name="groups_broken_found">Những tài khoản này không còn tồn tại:</string>
     <string name="groups_catch_up_end">Đó là tất cả kể từ lần cuối bạn đọc dòng thời gian này.</string>
     <string name="groups_catch_up_incomplete">Bạn đã tới những bài đăng từng đọc, nhưng không tải được toàn bộ phần ở giữa — phía trên điểm này có thể còn nữa.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Tìm hoặc tạo</string>
     <string name="groups_show_in_main_feed">Hiện trong trang chủ</string>
     <string name="groups_skip">Bỏ qua</string>
+    <string name="groups_some_not_loaded">Không thể tải tất cả bài đăng</string>
     <string name="groups_some_unchecked">Không thể kiểm tra một số tài khoản nên chúng được giữ lại.</string>
     <string name="groups_sort_ai">Sắp xếp bằng AI</string>
     <string name="groups_sort_ai_note">Đã xếp bằng nhà cung cấp AI của bạn.</string>

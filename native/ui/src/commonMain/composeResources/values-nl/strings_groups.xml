@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">AI gaf geen bruikbaar resultaat. Lokale suggesties worden getoond.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Weet je het zeker?</string>
-    <string name="groups_batch_progress">Gecontroleerde batches: %1$d/%2$d</string>
     <string name="groups_broken_found">Deze accounts bestaan niet meer:</string>
     <string name="groups_catch_up_end">Dat is alles sinds je deze tijdlijn voor het laatst las.</string>
     <string name="groups_catch_up_incomplete">Je bent bij berichten gekomen die je al had gelezen, maar niet alles daartussen kon worden geladen — er kan meer boven dit punt staan.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Zoeken of maken</string>
     <string name="groups_show_in_main_feed">Weergeven in hoofd-feed</string>
     <string name="groups_skip">Overslaan</string>
+    <string name="groups_some_not_loaded">Niet alle berichten konden worden geladen</string>
     <string name="groups_some_unchecked">Sommige accounts konden niet worden gecontroleerd en zijn behouden.</string>
     <string name="groups_sort_ai">Sorteren met AI</string>
     <string name="groups_sort_ai_note">Gesorteerd met je AI-aanbieder.</string>

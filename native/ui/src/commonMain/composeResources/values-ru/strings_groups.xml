@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">ИИ не предоставил подходящего результата. Показаны локальные предложения.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Вы уверены?</string>
-    <string name="groups_batch_progress">Проверено пакетов: %1$d/%2$d</string>
     <string name="groups_broken_found">Эти учётные записи больше не существуют:</string>
     <string name="groups_catch_up_end">Это всё с тех пор, как вы в последний раз читали эту ленту.</string>
     <string name="groups_catch_up_incomplete">Вы дошли до постов, которые уже читали, но загрузить всё, что между ними, не удалось — выше может быть больше.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Найти или создать</string>
     <string name="groups_show_in_main_feed">Показать в основной ленте</string>
     <string name="groups_skip">Пропустить</string>
+    <string name="groups_some_not_loaded">Не все посты удалось загрузить</string>
     <string name="groups_some_unchecked">Некоторые учётные записи не удалось проверить, они были оставлены.</string>
     <string name="groups_sort_ai">Распределить с помощью ИИ</string>
     <string name="groups_sort_ai_note">Распределено с вашим поставщиком ИИ.</string>

@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">ŠI nie daŭ prydatnaha vyniku. Pakazany lakalnyja prapanovy.</string>
     <string name="groups_antennas">Anteny</string>
     <string name="groups_are_you_sure">Vy ŭpeŭnieny?</string>
-    <string name="groups_batch_progress">Pravierana pakietaŭ: %1$d/%2$d</string>
     <string name="groups_broken_found">Hetyja ŭlikovyja zapisy bolš nie isnujuć:</string>
     <string name="groups_catch_up_end">Heta ŭsio z času vašaha apošniaha čytannia hetaj stužki.</string>
     <string name="groups_catch_up_incomplete">Vy dajšli da dopisaŭ, jakija ŭžo čytali, ale nie ŭsio pamiž imi ŭdałosia zahruzić — vyšej moža być bolš.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Šukać abo stvaryć</string>
     <string name="groups_show_in_main_feed">Pakazać u hałoŭnaj stužcy</string>
     <string name="groups_skip">Prapuscić</string>
+    <string name="groups_some_not_loaded">Nie ŭsie dopisy ŭdałosia zahruzić</string>
     <string name="groups_some_unchecked">Niekatoryja ŭlikovyja zapisy nie ŭdałosia pravieryć, jany byli pakinuty.</string>
     <string name="groups_sort_ai">Razmerkavać z dapamohaj ŠI</string>
     <string name="groups_sort_ai_note">Razmerkavana z dapamohaj vašaha pastaŭščyka ŠI.</string>

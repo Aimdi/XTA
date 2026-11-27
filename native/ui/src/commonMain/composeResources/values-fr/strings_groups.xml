@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">L’IA n’a pas fourni de résultat exploitable. Les suggestions locales sont affichées.</string>
     <string name="groups_antennas">Antennes</string>
     <string name="groups_are_you_sure">Êtes-vous sûr ?</string>
-    <string name="groups_batch_progress">Lots vérifiés : %1$d/%2$d</string>
     <string name="groups_broken_found">Ces comptes n'existent plus :</string>
     <string name="groups_catch_up_end">C'est tout depuis votre dernière lecture de ce fil.</string>
     <string name="groups_catch_up_incomplete">Vous avez atteint des publications déjà lues, mais tout ce qui se trouve entre les deux n'a pas pu être chargé : il peut y en avoir davantage au-dessus.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Rechercher ou créer</string>
     <string name="groups_show_in_main_feed">Afficher dans le fil principal</string>
     <string name="groups_skip">Passer</string>
+    <string name="groups_some_not_loaded">Certaines publications n'ont pas pu être chargées</string>
     <string name="groups_some_unchecked">Certains comptes n'ont pas pu être vérifiés et ont été conservés.</string>
     <string name="groups_sort_ai">Trier avec l’IA</string>
     <string name="groups_sort_ai_note">Rangé avec votre fournisseur d'IA.</string>

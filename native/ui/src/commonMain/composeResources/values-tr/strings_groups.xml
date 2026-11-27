@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">Yapay zekâ kullanılabilir bir sonuç sunamadı. Yerel öneriler gösteriliyor.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Emin misiniz?</string>
-    <string name="groups_batch_progress">Kontrol edilen gruplar: %1$d/%2$d</string>
     <string name="groups_broken_found">Bu hesaplar artık mevcut değil:</string>
     <string name="groups_catch_up_end">Bu akışı en son okuduğunuzdan beri hepsi bu.</string>
     <string name="groups_catch_up_incomplete">Daha önce okuduğunuz gönderilere ulaştınız, ancak aradaki her şey yüklenemedi; bu noktanın üzerinde daha fazlası olabilir.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Ara veya oluştur</string>
     <string name="groups_show_in_main_feed">Ana akışta göster</string>
     <string name="groups_skip">Atla</string>
+    <string name="groups_some_not_loaded">Gönderilerin tümü yüklenemedi</string>
     <string name="groups_some_unchecked">Bazı hesaplar denetlenemedi ve olduğu gibi bırakıldı.</string>
     <string name="groups_sort_ai">Yapay zekâyla sırala</string>
     <string name="groups_sort_ai_note">Yapay zekâ sağlayıcınızla ayrıldı.</string>

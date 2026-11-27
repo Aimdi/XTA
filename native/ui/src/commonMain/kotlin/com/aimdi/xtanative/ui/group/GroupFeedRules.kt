@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.group
 
 import com.aimdi.xtanative.core.feed.ContentFilter
+import com.aimdi.xtanative.core.feed.FeedProgress
 import com.aimdi.xtanative.core.feed.FeedSettings
 import com.aimdi.xtanative.core.feed.FeedSort
 import com.aimdi.xtanative.core.feed.GroupFeedPlan
@@ -131,4 +132,12 @@ object GroupFeedRules {
         val trimmed = typed.trim()
         return trimmed to if (LanguageFilter.parseLanguages(trimmed).isEmpty()) LanguageAction.OFF else action
     }
+
+    /**
+     * Whether the pill offering to read the failed sources again shows: not
+     * while the whole first page failed, as its notice (or the error in the
+     * posts' place) has the one retry, nor once that notice was closed.
+     */
+    fun offersRetryPill(progress: FeedProgress, run: FeedRun): Boolean =
+        progress.canRetry && progress.failed < progress.total && run.problem == null && run.stale == null
 }

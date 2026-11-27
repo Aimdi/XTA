@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">La artefarita intelekto ne donis uzeblan rezulton. Lokaj proponoj estas montrataj.</string>
     <string name="groups_antennas">Antennas</string>
     <string name="groups_are_you_sure">Ĉu vi certas?</string>
-    <string name="groups_batch_progress">Kontrolitaj aroj: %1$d/%2$d</string>
     <string name="groups_broken_found">Ĉi tiuj kontoj ne plu ekzistas:</string>
     <string name="groups_catch_up_end">Jen ĉio ekde kiam vi laste legis ĉi tiun fluon.</string>
     <string name="groups_catch_up_incomplete">Vi atingis afiŝojn, kiujn vi jam legis, sed ne ĉio intera povis ŝargiĝi — super ĉi tiu punkto povas esti pli.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Serĉi aŭ krei</string>
     <string name="groups_show_in_main_feed">Montri en ĉefa fluo</string>
     <string name="groups_skip">Preterpasi</string>
+    <string name="groups_some_not_loaded">Ne ĉiuj afiŝoj povis esti ŝargitaj</string>
     <string name="groups_some_unchecked">Kelkaj kontoj ne povis esti kontrolitaj kaj estis konservitaj.</string>
     <string name="groups_sort_ai">Ordigi per artefarita intelekto</string>
     <string name="groups_sort_ai_note">Ordigita per via AI-provizanto.</string>

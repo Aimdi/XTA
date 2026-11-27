@@ -7,7 +7,6 @@
     <string name="groups_ai_fallback">Die KI hat kein brauchbares Ergebnis geliefert. Lokale Vorschläge werden angezeigt.</string>
     <string name="groups_antennas">Antennen</string>
     <string name="groups_are_you_sure">Bist du dir sicher?</string>
-    <string name="groups_batch_progress">Geprüfte Pakete: %1$d/%2$d</string>
     <string name="groups_broken_found">Diese Konten existieren nicht mehr:</string>
     <string name="groups_catch_up_end">Das ist alles, seit Sie diesen Feed zuletzt gelesen haben.</string>
     <string name="groups_catch_up_incomplete">Sie sind bei Beiträgen angekommen, die Sie schon gelesen hatten, aber nicht alles dazwischen konnte geladen werden – oberhalb kann es mehr geben.</string>
@@ -155,6 +154,7 @@
     <string name="groups_sheet_search_or_create">Suchen oder neu erstellen</string>
     <string name="groups_show_in_main_feed">Im Hauptfeed anzeigen</string>
     <string name="groups_skip">Überspringen</string>
+    <string name="groups_some_not_loaded">Nicht alle Beiträge konnten geladen werden</string>
     <string name="groups_some_unchecked">Einige Konten konnten nicht überprüft werden und wurden behalten.</string>
     <string name="groups_sort_ai">Mit KI sortieren</string>
     <string name="groups_sort_ai_note">Mit deinem KI-Anbieter sortiert.</string>
