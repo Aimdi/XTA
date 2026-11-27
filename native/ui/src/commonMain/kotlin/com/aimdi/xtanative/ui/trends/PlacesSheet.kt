@@ -35,18 +35,20 @@ import com.aimdi.xtanative.core.x.model.XTrendPlaces
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalSheetCloser
-import com.aimdi.xtanative.ui.common.ProblemView
+import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_find_the_available_trend_locations
+import com.aimdi.xtanative.ui.generated.resources.discover_add_location
 import com.aimdi.xtanative.ui.generated.resources.discover_country
 import com.aimdi.xtanative.ui.home.rememberSheetList
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * XTA's place picker: the places X has trends for, by country; picking one
- * keeps it as a tab and shows its trends.
+ * XTA's place picker, titled as the button that opens it: the places X has
+ * trends for, by country; picking one keeps it as a tab and shows its
+ * trends. A failed read is one row under the title, with its retry.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,9 +63,15 @@ internal fun PlacesSheet(vm: TrendsViewModel, places: XTrendPlaces, onDismiss: (
             closer.close()
         }
         val problem = picker.problem
+        Text(
+            stringResource(Res.string.discover_add_location),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 8.dp),
+        )
         when {
             picker.loading -> LoadingRow()
-            problem != null -> ProblemView(problem, vm::loadPlaces, context = stringResource(Res.string.problem_unable_to_find_the_available_trend_locations))
+            // A row under the title, not a page's worth of empty sheet around it.
+            problem != null -> ProblemRow(problem, vm::loadPlaces, context = stringResource(Res.string.problem_unable_to_find_the_available_trend_locations))
             else -> LazyColumn(Modifier.fillMaxWidth().padding(horizontal = 8.dp), state = rememberSheetList()) {
                 picker.rows.forEach { row ->
                     when (row) {
