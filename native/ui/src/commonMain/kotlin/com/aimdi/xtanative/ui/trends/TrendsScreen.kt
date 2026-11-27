@@ -267,6 +267,7 @@ private fun DiscoverField(
             IconTip(stringResource(Res.string.saved_search_library)) { IconButton(onClick = onLibrary) { Icon(SavedIcons.ManageSearch, stringResource(Res.string.saved_search_library)) } }
         },
         modifier = modifier,
+        onEscapeClear = onClear,
     )
 }
 

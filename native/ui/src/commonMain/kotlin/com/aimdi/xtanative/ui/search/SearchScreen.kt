@@ -279,6 +279,7 @@ private fun XSearchField(
             AdvancedButton(filters, onAdvanced)
         },
         modifier = modifier,
+        onEscapeClear = onClear,
     )
 }
 

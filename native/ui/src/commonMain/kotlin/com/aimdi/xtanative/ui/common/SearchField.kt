@@ -43,7 +43,7 @@ import com.aimdi.xtanative.ui.theme.fieldColor
  * ([fieldColor]) with a hairline round it ([edgeColor]), the accent's edge
  * while it has the keys, a grey magnifier, the hint in the text's own weight
  * whatever bar holds it, and [trailing] buttons (clear, filters) inside its
- * end. 40 dp tall on the desktop, as its fields are; 48 on a phone, where
+ * end. Esc empties it before it leaves it ([escapeClears]). 40 dp tall on the desktop, as its fields are; 48 on a phone, where
  * the buttons inside keep their touch size.
  */
 internal object SearchFieldLook {
@@ -72,12 +72,13 @@ internal fun SearchField(
     onSearch: (() -> Unit)? = null,
     leading: (@Composable () -> Unit)? = null,
     trailing: @Composable RowScope.() -> Unit = {},
+    onEscapeClear: () -> Unit = { onValueChange("") },
 ) {
     val interactions = remember { MutableInteractionSource() }
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = modifier,
+        modifier = modifier.escapeClears(value, onEscapeClear),
         singleLine = true,
         textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
@@ -98,12 +99,13 @@ internal fun SearchField(
     onSearch: (() -> Unit)? = null,
     leading: (@Composable () -> Unit)? = null,
     trailing: @Composable RowScope.() -> Unit = {},
+    onEscapeClear: () -> Unit = { onValueChange(TextFieldValue("")) },
 ) {
     val interactions = remember { MutableInteractionSource() }
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = modifier,
+        modifier = modifier.escapeClears(value.text, onEscapeClear),
         singleLine = true,
         textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),

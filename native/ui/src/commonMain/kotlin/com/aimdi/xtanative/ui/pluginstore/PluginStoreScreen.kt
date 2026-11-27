@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
@@ -135,6 +136,7 @@ import com.aimdi.xtanative.ui.generated.resources.plugin_store
 import com.aimdi.xtanative.ui.generated.resources.plugin_store_empty
 import com.aimdi.xtanative.ui.generated.resources.plugin_store_no_results
 import com.aimdi.xtanative.ui.generated.resources.plugin_store_search
+import com.aimdi.xtanative.ui.generated.resources.saved_clear_search
 import com.aimdi.xtanative.ui.generated.resources.plugin_store_show_private
 import com.aimdi.xtanative.ui.generated.resources.plugin_uninstall
 import com.aimdi.xtanative.ui.generated.resources.plugin_uninstall_confirm
@@ -323,7 +325,7 @@ private fun storeMatching(query: String, running: List<RunningPlugin>, locale: L
     }
 }
 
-/** XTA's "Search plugins": a pill above the list, filtering it as it is typed in. */
+/** XTA's "Search plugins": a pill above the list, filtering it as it is typed in, with a cross that empties it as Esc does. */
 @Composable
 private fun StoreSearchField(query: String, modifier: Modifier, onQuery: (String) -> Unit) {
     val leaveField = rememberLeaveField()
@@ -332,6 +334,12 @@ private fun StoreSearchField(query: String, modifier: Modifier, onQuery: (String
         onValueChange = onQuery,
         placeholder = stringResource(Res.string.plugin_store_search),
         onSearch = leaveField,
+        trailing = {
+            if (query.isNotEmpty()) {
+                val clear = stringResource(Res.string.saved_clear_search)
+                IconTip(clear) { IconButton(onClick = { onQuery("") }) { Icon(Icons.Filled.Close, clear, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp)) } }
+            }
+        },
         modifier = modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
     )
 }
