@@ -37,6 +37,25 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isAltPressed
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.isMetaPressed
+import androidx.compose.ui.input.key.isShiftPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
+import com.aimdi.xtanative.ui.common.RingedFocus
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
+import com.aimdi.xtanative.ui.settings.isDesktop
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -98,37 +117,55 @@ fun IntroScreen(onFinished: () -> Unit, onImport: () -> Unit, onOpen: (String) -
     BackHandling(enabled = shown.previous != null) { shown.previous?.let(show) }
     ConfirmCloseOnBack(enabled = shown.previous == null)
 
-    HorizontalPager(pager, Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { index ->
-        val page = IntroPage.entries[index]
-        IntroFrame(
-            page,
-            onSkip = finish,
-            footer = {
-                Footer(
-                    page,
-                    noAccount = accounts.isEmpty(),
-                    onNext = { page.next?.let(show) ?: finish() },
-                    onSignIn = { onOpen(SettingsRoutes.SIGN_IN) },
-                    onImport = onImport,
-                    onFinish = finish,
-                )
-            },
-        ) { CardOf(page, settings, accounts.map { it.screenName.orEmpty() }, change, onOpen) }
+    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    val primary = remember { FocusRequester() }
+    // On the desktop the keys have a place from the start: Enter goes on, the arrows turn the cards.
+    if (isDesktop) LaunchedEffect(Unit) { runCatching { primary.requestFocus() } }
+    Column(
+        Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).safeDrawingPadding()
+            .onKeyEvent { event -> event.type == KeyEventType.KeyDown && turnByKey(event, IntroPage.entries[pager.targetPage], rtl, show) },
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(horizontal = 12.dp, vertical = 6.dp), horizontalArrangement = Arrangement.End) {
+            if (shown != IntroPage.SOURCES) IntroTextButton(stringResource(Res.string.intro_skip), onClick = finish)
+        }
+        HorizontalPager(pager, Modifier.weight(1f).fillMaxWidth()) { index ->
+            val page = IntroPage.entries[index]
+            IntroCard { CardOf(page, settings, accounts.map { it.screenName.orEmpty() }, change, onOpen) }
+        }
+        // Under the cards rather than on each, so the button the keys are on stays theirs as the cards turn.
+        Footer(
+            shown,
+            noAccount = accounts.isEmpty(),
+            primary = primary,
+            onNext = { shown.next?.let(show) ?: finish() },
+            onSignIn = { onOpen(SettingsRoutes.SIGN_IN) },
+            onImport = onImport,
+            onFinish = finish,
+        )
     }
 }
 
-/** One card's page, as XTA's IntroPageFrame lays it out: Skip, the card scrolling when it must, and its buttons under it. */
+/** An unmodified ← or → turning to the card it points to from [from]: true when it did. */
+private fun turnByKey(event: KeyEvent, from: IntroPage, rtl: Boolean, show: (IntroPage) -> Unit): Boolean {
+    if (event.isCtrlPressed || event.isAltPressed || event.isShiftPressed || event.isMetaPressed) return false
+    val towardsRight = when (event.key) {
+        Key.DirectionRight -> true
+        Key.DirectionLeft -> false
+        else -> return false
+    }
+    IntroKeys.turned(from, towardsRight, rtl)?.let(show)
+    return true
+}
+
+/** One card, as XTA's IntroPageFrame lays it out, scrolling when it must. */
 @Composable
-private fun IntroFrame(page: IntroPage, onSkip: () -> Unit, footer: @Composable () -> Unit, card: @Composable () -> Unit) {
-    Column(Modifier.fillMaxSize().safeDrawingPadding(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(horizontal = 8.dp), horizontalArrangement = Arrangement.End) {
-            if (page != IntroPage.SOURCES) TextButton(onClick = onSkip) { Text(stringResource(Res.string.intro_skip)) }
-        }
+private fun IntroCard(card: @Composable () -> Unit) {
+    Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Column(
             Modifier.weight(1f).widthIn(max = 560.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) { card() }
-        footer()
     }
 }
 
@@ -305,19 +342,48 @@ private fun Tile(
     }
 }
 
-/** The page indicator and the card's buttons, pinned under the card: on the account card, XTA's Add account, Not now and Import backup. */
+/**
+ * The page indicator and the card's buttons, pinned under the cards: on the
+ * account card, XTA's Add account, Not now and Import backup. The first
+ * button is always the same one, Next, Add account or Start reading, so the
+ * keyboard's focus ([primary]) stays on it from card to card.
+ */
 @Composable
-private fun Footer(page: IntroPage, noAccount: Boolean, onNext: () -> Unit, onSignIn: () -> Unit, onImport: () -> Unit, onFinish: () -> Unit) {
+private fun Footer(
+    page: IntroPage,
+    noAccount: Boolean,
+    primary: FocusRequester,
+    onNext: () -> Unit,
+    onSignIn: () -> Unit,
+    onImport: () -> Unit,
+    onFinish: () -> Unit,
+) {
+    val signIn = page == IntroPage.ACCOUNT && noAccount
+    val (label, action) = when {
+        page == IntroPage.SOURCES -> stringResource(Res.string.intro_start_reading) to onFinish
+        signIn -> stringResource(Res.string.signin_add_account) to onSignIn
+        else -> stringResource(Res.string.intro_next) to onNext
+    }
     Column(Modifier.widthIn(max = 560.dp).fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         PageIndicator(page.ordinal, IntroPage.entries.size)
-        when {
-            page == IntroPage.SOURCES -> Button(onClick = onFinish, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.intro_start_reading)) }
-            page == IntroPage.ACCOUNT && noAccount -> {
-                Button(onClick = onSignIn, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.signin_add_account)) }
-                TextButton(onClick = onNext, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.intro_not_now)) }
-                TextButton(onClick = onImport, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.settings_import_backup)) }
-            }
-            else -> Button(onClick = onNext, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.intro_next)) }
+        RingedFocus {
+            Button(onClick = action, modifier = Modifier.fillMaxWidth().focusRequester(primary).keyboardFocusRing(outset = RING_GAP)) { Text(label) }
+        }
+        if (signIn) {
+            IntroTextButton(stringResource(Res.string.intro_not_now), Modifier.fillMaxWidth(), onNext)
+            IntroTextButton(stringResource(Res.string.settings_import_backup), Modifier.fillMaxWidth(), onImport)
         }
     }
 }
+
+/** A text button whose keyboard focus is a ring round it, as the app's other buttons show it, not a pale fill. */
+@Composable
+private fun IntroTextButton(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    RingedFocus {
+        TextButton(onClick = onClick, modifier = modifier.keyboardFocusRing(outset = RING_GAP)) { Text(text) }
+    }
+}
+
+/** How far outside a button its keyboard ring is drawn. */
+private val RING_GAP = 3.dp
+

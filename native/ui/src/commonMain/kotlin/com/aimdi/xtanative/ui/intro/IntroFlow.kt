@@ -130,3 +130,11 @@ object IntroDrawing {
         return (x * kotlin.math.cos(angle) - y * kotlin.math.sin(angle)) to (x * kotlin.math.sin(angle) + y * kotlin.math.cos(angle))
     }
 }
+
+/** Which card the arrow keys turn to: → the next, ← the one before, the other way round right to left. */
+object IntroKeys {
+    /** The card the arrow pointing right ([towardsRight]) or left reaches from [page]; null past either end. */
+    fun turned(page: IntroPage, towardsRight: Boolean, rtl: Boolean): IntroPage? =
+        if (towardsRight != rtl) page.next else page.previous
+}
+

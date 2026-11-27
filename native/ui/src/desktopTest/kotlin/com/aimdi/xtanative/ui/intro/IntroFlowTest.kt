@@ -95,4 +95,19 @@ class IntroFlowTest {
         val (_, top) = IntroDrawing.orbitPoint(100.0, 0.0, 0.25)
         assertEquals(22.9, top, 1e-9)
     }
+
+    @Test
+    fun theArrowsTurnTheCardsTheWayTheyPoint() {
+        assertEquals(IntroPage.DEVICE, IntroKeys.turned(IntroPage.WELCOME, towardsRight = true, rtl = false))
+        assertEquals(IntroPage.WELCOME, IntroKeys.turned(IntroPage.DEVICE, towardsRight = false, rtl = false))
+        assertNull(IntroKeys.turned(IntroPage.WELCOME, towardsRight = false, rtl = false))
+        assertNull(IntroKeys.turned(IntroPage.SOURCES, towardsRight = true, rtl = false))
+    }
+
+    @Test
+    fun rightToLeftTheLeftArrowGoesOn() {
+        assertEquals(IntroPage.DEVICE, IntroKeys.turned(IntroPage.WELCOME, towardsRight = false, rtl = true))
+        assertEquals(IntroPage.WELCOME, IntroKeys.turned(IntroPage.DEVICE, towardsRight = true, rtl = true))
+    }
+
 }
