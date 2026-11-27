@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Henüz okunacak metin yok</string>
     <string name="reader_speech_voice_settings">Ses ayarları</string>
     <string name="reader_speech_unavailable">Bu cihazda konuşma motoru yüklü değil</string>
-    <string name="reader_speech_no_engine">Sesli okuma için bir konuşma motoru gerekir ve masaüstü uygulamasında hiç yok.</string>
+    <string name="reader_speech_no_engine">Masaüstü uygulamasının bu kopyası sesli okuyamaz: indirilen sesleri çalıştıran ses motoru içinde yok. Sürüm arşivi ve Arch paketi bunu içerir.</string>
     <string name="reader_speech_voices_only">Masaüstü uygulaması indirilen seslerle sesli okur: okuduğunuz her dil için bir ses indirin.</string>
     <string name="reader_speech_no_voice">İndirilen hiçbir ses bunu okuyamaz</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS henüz yüklü değil</string>

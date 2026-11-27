@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">아직 읽을 텍스트가 없습니다</string>
     <string name="reader_speech_voice_settings">음성 설정</string>
     <string name="reader_speech_unavailable">이 기기에 설치된 음성 엔진이 없습니다</string>
-    <string name="reader_speech_no_engine">읽어 주기에는 음성 엔진이 필요하지만 데스크톱 앱에는 없습니다.</string>
+    <string name="reader_speech_no_engine">이 데스크톱 앱 사본은 읽어 줄 수 없습니다. 다운로드한 음성을 실행하는 음성 엔진이 포함되어 있지 않습니다. 릴리스 아카이브와 Arch 패키지에는 포함되어 있습니다.</string>
     <string name="reader_speech_voices_only">데스크톱 앱은 다운로드한 음성으로 읽어 줍니다. 읽는 언어마다 음성을 하나씩 다운로드하세요.</string>
     <string name="reader_speech_no_voice">이 글을 읽을 수 있는 다운로드한 음성이 없습니다</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS가 아직 설치되지 않았습니다</string>

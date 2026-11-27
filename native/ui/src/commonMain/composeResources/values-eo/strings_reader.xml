@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Ankoraŭ nenio legebla por laŭtlegi</string>
     <string name="reader_speech_voice_settings">Voĉaj agordoj</string>
     <string name="reader_speech_unavailable">Ĉi tiu aparato havas neniun parolmotoron</string>
-    <string name="reader_speech_no_engine">Laŭtlegado bezonas parolmotoron, kaj la labortabla aplikaĵo havas neniun.</string>
+    <string name="reader_speech_no_engine">Ĉi tiu kopio de la labortabla aplikaĵo ne povas laŭtlegi: mankas al ĝi la voĉa motoro, kiu funkciigas elŝutitajn voĉojn. La eldona arkivo kaj la Arch-pakaĵo enhavas ĝin.</string>
     <string name="reader_speech_voices_only">La labortabla aplikaĵo laŭtlegas per elŝutitaj voĉoj: elŝutu po unu por ĉiu lingvo, kiun vi legas.</string>
     <string name="reader_speech_no_voice">Neniu elŝutita voĉo povas laŭtlegi ĉi tion</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS ankoraŭ ne estas instalita</string>

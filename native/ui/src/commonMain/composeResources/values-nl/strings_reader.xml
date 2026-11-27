@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Nog geen leesbare tekst om voor te lezen</string>
     <string name="reader_speech_voice_settings">Steminstellingen</string>
     <string name="reader_speech_unavailable">Op dit apparaat is geen spraakmodule geïnstalleerd</string>
-    <string name="reader_speech_no_engine">Voorlezen heeft een spraakmodule nodig, en de desktop-app heeft er geen.</string>
+    <string name="reader_speech_no_engine">Deze kopie van de desktop-app kan niet voorlezen: de spraakengine die gedownloade stemmen uitvoert ontbreekt. Het release-archief en het Arch-pakket bevatten hem wel.</string>
     <string name="reader_speech_voices_only">De desktop-app leest voor met gedownloade stemmen: download er een voor elke taal die je leest.</string>
     <string name="reader_speech_no_voice">Geen enkele gedownloade stem kan dit voorlezen</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS is nog niet geïnstalleerd</string>

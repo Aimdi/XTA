@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Oraindik ez dago irakurri beharreko testurik</string>
     <string name="reader_speech_voice_settings">Ahots-ezarpenak</string>
     <string name="reader_speech_unavailable">Gailu honek ez du ahots-motorrik</string>
-    <string name="reader_speech_no_engine">Ozen irakurtzeko ahots-motor bat behar da, eta mahaigaineko aplikazioak ez du bat ere.</string>
+    <string name="reader_speech_no_engine">Mahaigaineko aplikazioaren kopia honek ezin du ozen irakurri: ez dauka deskargatutako ahotsak exekutatzen dituen ahots-motorra. Bertsioaren artxiboak eta Arch paketeak badaukate.</string>
     <string name="reader_speech_voices_only">Mahaigaineko aplikazioak deskargatutako ahotsekin irakurtzen du ozen: deskargatu ahots bat irakurtzen duzun hizkuntza bakoitzeko.</string>
     <string name="reader_speech_no_voice">Deskargatutako ahotsik ezin du hau irakurri</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS oraindik ez dago instalatuta</string>

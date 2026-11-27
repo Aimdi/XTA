@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Ainda não há texto legível para ouvir</string>
     <string name="reader_speech_voice_settings">Definições de voz</string>
     <string name="reader_speech_unavailable">Este dispositivo não tem nenhum motor de voz</string>
-    <string name="reader_speech_no_engine">A leitura em voz alta precisa de um motor de voz, e a aplicação para computador não tem nenhum.</string>
+    <string name="reader_speech_no_engine">Esta cópia da aplicação para computador não consegue ler em voz alta: não inclui o motor de voz que executa as vozes transferidas. O arquivo da versão e o pacote Arch incluem-no.</string>
     <string name="reader_speech_voices_only">A aplicação para computador lê em voz alta com vozes descarregadas: descarregue uma para cada língua em que lê.</string>
     <string name="reader_speech_no_voice">Nenhuma voz descarregada consegue ler isto</string>
     <string name="reader_speech_sherpa_missing">O Sherpa TTS ainda não está instalado</string>

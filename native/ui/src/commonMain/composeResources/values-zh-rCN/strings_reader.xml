@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">还没有可朗读的内容</string>
     <string name="reader_speech_voice_settings">语音设置</string>
     <string name="reader_speech_unavailable">此设备未安装语音引擎</string>
-    <string name="reader_speech_no_engine">朗读需要语音引擎，而桌面版没有。</string>
+    <string name="reader_speech_no_engine">此桌面版无法朗读：它没有附带运行已下载语音的语音引擎。发布版压缩包和 Arch 软件包中包含该引擎。</string>
     <string name="reader_speech_voices_only">桌面版使用已下载的语音朗读：请为你阅读的每种语言下载一个语音。</string>
     <string name="reader_speech_no_voice">没有可以朗读此内容的已下载语音</string>
     <string name="reader_speech_sherpa_missing">尚未安装 Sherpa TTS</string>

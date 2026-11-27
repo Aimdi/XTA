@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Поки немає що озвучити</string>
     <string name="reader_speech_voice_settings">Налаштування голосу</string>
     <string name="reader_speech_unavailable">На цьому пристрої немає синтезатора мовлення</string>
-    <string name="reader_speech_no_engine">Для читання вголос потрібен синтезатор мовлення, а в застосунку для комп'ютера його немає.</string>
+    <string name="reader_speech_no_engine">Ця копія застосунку для комп'ютера не може читати вголос: у ній немає голосового рушія, який запускає завантажені голоси. Він є в архіві випуску та в пакеті для Arch.</string>
     <string name="reader_speech_voices_only">Застосунок для комп'ютера читає вголос завантаженими голосами: завантажте голос для кожної мови, якою читаєте.</string>
     <string name="reader_speech_no_voice">Жоден завантажений голос не може це прочитати</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS ще не встановлено</string>

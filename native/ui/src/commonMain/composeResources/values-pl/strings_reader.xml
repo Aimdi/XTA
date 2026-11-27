@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Nie ma jeszcze tekstu do odczytania</string>
     <string name="reader_speech_voice_settings">Ustawienia głosu</string>
     <string name="reader_speech_unavailable">To urządzenie nie ma zainstalowanego silnika mowy</string>
-    <string name="reader_speech_no_engine">Czytanie na głos wymaga silnika mowy, a aplikacja na komputer go nie ma.</string>
+    <string name="reader_speech_no_engine">Ta kopia aplikacji na komputer nie może czytać na głos: brakuje w niej silnika mowy, który obsługuje pobrane głosy. Archiwum wydania i pakiet dla Arch go zawierają.</string>
     <string name="reader_speech_voices_only">Aplikacja na komputer czyta na głos pobranymi głosami: pobierz głos dla każdego języka, w którym czytasz.</string>
     <string name="reader_speech_no_voice">Żaden pobrany głos nie może tego przeczytać</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS nie jest jeszcze zainstalowany</string>

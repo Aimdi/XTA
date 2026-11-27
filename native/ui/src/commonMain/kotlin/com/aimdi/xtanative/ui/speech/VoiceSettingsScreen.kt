@@ -36,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -149,6 +150,38 @@ fun VoiceSettingsSheet(onDismiss: () -> Unit) {
     }
 }
 
+/**
+ * What the read-aloud page shows, from what this device reads with: a system
+ * engine (Android's text-to-speech; the desktop has none) and synthesis
+ * with downloaded voices (the voice engine the desktop's packages carry).
+ * Only what can do something is shown.
+ */
+internal data class VoicePage(
+    /** The page's first words: this device reads with downloaded voices alone. */
+    val voicesOnlyIntro: Boolean,
+    /** The switch between a downloaded voice and the system engine: only where there is a system engine to fall back to. */
+    val offlineSwitch: Boolean,
+    /** The voices and the voice engine to download, with their notes. */
+    val downloads: Boolean,
+    /** That downloaded voices cannot read in this build yet, while the system engine does. */
+    val synthesisMissing: Boolean,
+    /** That nothing here can read aloud, in place of every other row. */
+    val cannotRead: Boolean,
+    /** The system's engines, voices and speed. */
+    val systemEngine: Boolean,
+) {
+    companion object {
+        fun of(systemEngine: Boolean, synthesis: Boolean): VoicePage = VoicePage(
+            voicesOnlyIntro = !systemEngine && synthesis,
+            offlineSwitch = systemEngine,
+            downloads = systemEngine || synthesis,
+            synthesisMissing = systemEngine && !synthesis,
+            cannotRead = !systemEngine && !synthesis,
+            systemEngine = systemEngine,
+        )
+    }
+}
+
 @Composable
 private fun voiceSettingsViewModel(): VoiceSettingsViewModel {
     val settings = LocalSettingsStore.current
@@ -160,13 +193,15 @@ private fun voiceSettingsViewModel(): VoiceSettingsViewModel {
 private fun VoiceSettingsList(vm: VoiceSettingsViewModel, padding: PaddingValues, modifier: Modifier) {
     val ui by vm.ui.collectAsStateWithLifecycle()
     val parts = rememberSpeechParts()
+    val page = VoicePage.of(systemEngine = parts.systemVoices != null, synthesis = parts.synthesisAvailable)
+    // Without a system engine the switch is not offered: a downloaded voice is the only reader, so it stays on.
+    LaunchedEffect(page.offlineSwitch, ui.offlineVoice) { if (!page.offlineSwitch && !ui.offlineVoice) vm.setOfflineVoice(true) }
     LazyColumn(modifier, state = rememberSheetList(), contentPadding = padding) {
-        offlineVoices(ui, vm, parts)
-        if (parts.systemVoices == null) {
-            item(key = "no-engine") {
-                Note(stringResource(if (parts.synthesisAvailable) Res.string.reader_speech_voices_only else Res.string.reader_speech_no_engine))
-            }
-        } else {
+        // The desktop reads with downloaded voices or not at all: it says which first, and offers only what does something.
+        if (page.voicesOnlyIntro) item(key = "voices-only") { Note(stringResource(Res.string.reader_speech_voices_only)) }
+        if (page.cannotRead) item(key = "no-engine") { Note(stringResource(Res.string.reader_speech_no_engine)) }
+        if (page.downloads) offlineVoices(ui, vm, parts, page)
+        if (page.systemEngine) {
             engines(ui, vm)
             voices(ui, vm)
             item(key = "speed") { SpeedRow(ui.choice.rate, vm::setRate) }
@@ -174,14 +209,14 @@ private fun VoiceSettingsList(vm: VoiceSettingsViewModel, padding: PaddingValues
     }
 }
 
-/** "Downloaded voices": the switch, the engine that runs them where it is downloaded, each voice, and what to know about them. */
-private fun LazyListScope.offlineVoices(ui: VoiceSettingsUi, vm: VoiceSettingsViewModel, parts: SpeechParts) {
+/** "Downloaded voices": the switch where another engine reads, the engine that runs them where it is downloaded, each voice, and what to know about them. */
+private fun LazyListScope.offlineVoices(ui: VoiceSettingsUi, vm: VoiceSettingsViewModel, parts: SpeechParts, page: VoicePage) {
     val engine = parts.voices.engine
     item(key = "voices-header") { Header(stringResource(Res.string.reader_voices)) }
-    item(key = "voices-switch") {
+    if (page.offlineSwitch) item(key = "voices-switch") {
         SwitchRow(stringResource(Res.string.reader_voices_use), stringResource(Res.string.reader_voices_use_description), ui.offlineVoice, vm::setOfflineVoice)
     }
-    if (!parts.synthesisAvailable) item(key = "voices-synthesis") { Note(stringResource(Res.string.reader_voices_synthesis_missing)) }
+    if (page.synthesisMissing) item(key = "voices-synthesis") { Note(stringResource(Res.string.reader_voices_synthesis_missing)) }
     if (!engine.bundled) {
         item(key = "voice-engine") {
             val archive = engine.engine?.archiveBytes ?: 0

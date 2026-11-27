@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Non c’è ancora testo leggibile da ascoltare</string>
     <string name="reader_speech_voice_settings">Impostazioni voce</string>
     <string name="reader_speech_unavailable">Su questo dispositivo non è installato alcun motore vocale</string>
-    <string name="reader_speech_no_engine">La lettura ad alta voce richiede un motore vocale, e l'app desktop non ne ha nessuno.</string>
+    <string name="reader_speech_no_engine">Questa copia dell'app desktop non può leggere ad alta voce: non include il motore vocale che esegue le voci scaricate. L'archivio della versione e il pacchetto Arch lo includono.</string>
     <string name="reader_speech_voices_only">L'app desktop legge ad alta voce con le voci scaricate: scaricane una per ogni lingua in cui leggi.</string>
     <string name="reader_speech_no_voice">Nessuna voce scaricata può leggere questo testo</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS non è ancora installato</string>

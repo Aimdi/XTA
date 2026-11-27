@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Belum ada teks yang bisa dibacakan</string>
     <string name="reader_speech_voice_settings">Pengaturan suara</string>
     <string name="reader_speech_unavailable">Perangkat ini tidak memiliki mesin suara</string>
-    <string name="reader_speech_no_engine">Membacakan teks memerlukan mesin suara, dan aplikasi desktop tidak memilikinya.</string>
+    <string name="reader_speech_no_engine">Salinan aplikasi desktop ini tidak dapat membacakan teks: mesin suara yang menjalankan suara unduhan tidak disertakan. Arsip rilis dan paket Arch menyertakannya.</string>
     <string name="reader_speech_voices_only">Aplikasi desktop membacakan teks dengan suara yang diunduh: unduh satu suara untuk setiap bahasa yang Anda baca.</string>
     <string name="reader_speech_no_voice">Tidak ada suara yang diunduh yang dapat membacakan ini</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS belum terpasang</string>

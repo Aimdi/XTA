@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Noch kein lesbarer Text zum Vorlesen</string>
     <string name="reader_speech_voice_settings">Stimme einstellen</string>
     <string name="reader_speech_unavailable">Auf diesem Gerät ist keine Sprachausgabe installiert</string>
-    <string name="reader_speech_no_engine">Vorlesen braucht eine Sprachausgabe, und die Desktop-App hat keine.</string>
+    <string name="reader_speech_no_engine">Diese Kopie der Desktop-App kann nicht vorlesen: Ihr fehlt die Stimmen-Engine, die heruntergeladene Stimmen ausführt. Das Release-Archiv und das Arch-Paket enthalten sie.</string>
     <string name="reader_speech_voices_only">Die Desktop-App liest mit heruntergeladenen Stimmen vor: Lade für jede Sprache, die du liest, eine herunter.</string>
     <string name="reader_speech_no_voice">Keine heruntergeladene Stimme kann das vorlesen</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS ist noch nicht installiert</string>

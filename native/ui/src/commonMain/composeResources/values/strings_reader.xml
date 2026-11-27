@@ -51,7 +51,7 @@
     <string name="reader_speech_no_text">Nothing readable to speak yet</string>
     <string name="reader_speech_voice_settings">Voice settings</string>
     <string name="reader_speech_unavailable">This device has no speech engine installed</string>
-    <string name="reader_speech_no_engine">Reading aloud needs a speech engine, and the desktop app has none.</string>
+    <string name="reader_speech_no_engine">This copy of the desktop app can't read aloud: it came without the voice engine that runs downloaded voices. The release tarball and the Arch package include it.</string>
     <string name="reader_speech_voices_only">The desktop app reads aloud with downloaded voices: download one for each language you read.</string>
     <string name="reader_speech_no_voice">No downloaded voice can read this</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS is not installed yet</string>

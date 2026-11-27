@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Pakul niama tekstu dla ahučvannia</string>
     <string name="reader_speech_voice_settings">Nalady hołasu</string>
     <string name="reader_speech_unavailable">Na hetaj pryladzie niama ruchavika maŭliennia</string>
-    <string name="reader_speech_no_engine">Dla čytannia ŭsłych patrebny ruchavik maŭliennia, a ŭ prahramy dla kampjutara jaho niama.</string>
+    <string name="reader_speech_no_engine">Hetaja kopija prahramy dla kampjutara nie moža čytać usłych: u joj niama hałasavoha ruchavika, jaki zapuskaje spampavanyja hałasy. Jon jość u archivie vypusku i ŭ pakiecie dla Arch.</string>
     <string name="reader_speech_voices_only">Prahrama dla kampjutara čytaje ŭsłych spampavanymi hałasami: spampujcie hołas dla kožnaj movy, na jakoj čytajecie.</string>
     <string name="reader_speech_no_voice">Nivodzin spampavany hołas nie moža heta pračytać</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS jašče nie ŭstalavany</string>

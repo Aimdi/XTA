@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Zatím není co číst nahlas</string>
     <string name="reader_speech_voice_settings">Nastavení hlasu</string>
     <string name="reader_speech_unavailable">V tomto zařízení není žádný hlasový modul</string>
-    <string name="reader_speech_no_engine">Čtení nahlas potřebuje hlasový modul a aplikace pro počítač žádný nemá.</string>
+    <string name="reader_speech_no_engine">Tato kopie aplikace pro počítač neumí číst nahlas: chybí jí hlasový modul, který spouští stažené hlasy. Archiv vydání a balíček pro Arch ho obsahují.</string>
     <string name="reader_speech_voices_only">Aplikace pro počítač čte nahlas staženými hlasy: stáhněte si hlas pro každý jazyk, ve kterém čtete.</string>
     <string name="reader_speech_no_voice">Žádný stažený hlas tohle nepřečte</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS ještě není nainstalovaný</string>

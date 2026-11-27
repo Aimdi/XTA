@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Encara no hi ha text llegible per escoltar</string>
     <string name="reader_speech_voice_settings">Ajustos de veu</string>
     <string name="reader_speech_unavailable">Aquest dispositiu no té cap motor de veu</string>
-    <string name="reader_speech_no_engine">Llegir en veu alta necessita un motor de veu, i l'aplicació d'escriptori no en té cap.</string>
+    <string name="reader_speech_no_engine">Aquesta còpia de l'aplicació d'escriptori no pot llegir en veu alta: no inclou el motor de veu que fa funcionar les veus baixades. L'arxiu de la versió i el paquet d'Arch sí que l'inclouen.</string>
     <string name="reader_speech_voices_only">L'aplicació d'escriptori llegeix en veu alta amb veus descarregades: descarrega'n una per a cada llengua que llegeixis.</string>
     <string name="reader_speech_no_voice">Cap veu descarregada no pot llegir això</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS encara no està instal·lat</string>

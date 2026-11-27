@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Todavía no hay texto legible para leer en voz alta</string>
     <string name="reader_speech_voice_settings">Ajustes de voz</string>
     <string name="reader_speech_unavailable">Este dispositivo no tiene ningún motor de voz</string>
-    <string name="reader_speech_no_engine">Leer en voz alta necesita un motor de voz, y la aplicación de escritorio no tiene ninguno.</string>
+    <string name="reader_speech_no_engine">Esta copia de la aplicación de escritorio no puede leer en voz alta: no incluye el motor de voz que ejecuta las voces descargadas. El archivo de la versión y el paquete de Arch sí lo incluyen.</string>
     <string name="reader_speech_voices_only">La aplicación de escritorio lee en voz alta con voces descargadas: descarga una para cada idioma que leas.</string>
     <string name="reader_speech_no_voice">Ninguna voz descargada puede leer esto</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS aún no está instalado</string>

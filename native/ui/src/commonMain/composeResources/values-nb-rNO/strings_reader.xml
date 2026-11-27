@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Ingenting lesbart å lese opp ennå</string>
     <string name="reader_speech_voice_settings">Stemmeinnstillinger</string>
     <string name="reader_speech_unavailable">Ingen talemotor er installert på denne enheten</string>
-    <string name="reader_speech_no_engine">Opplesning krever en talemotor, og skrivebordsappen har ingen.</string>
+    <string name="reader_speech_no_engine">Denne kopien av skrivebordsappen kan ikke lese opp: den mangler stemmemotoren som kjører nedlastede stemmer. Utgivelsesarkivet og Arch-pakken inneholder den.</string>
     <string name="reader_speech_voices_only">Skrivebordsappen leser høyt med nedlastede stemmer: last ned én for hvert språk du leser.</string>
     <string name="reader_speech_no_voice">Ingen nedlastet stemme kan lese dette</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS er ikke installert ennå</string>

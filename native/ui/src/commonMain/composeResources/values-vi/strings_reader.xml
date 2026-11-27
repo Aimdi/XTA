@@ -46,7 +46,7 @@
     <string name="reader_speech_no_text">Chưa có nội dung nào để đọc</string>
     <string name="reader_speech_voice_settings">Cài đặt giọng đọc</string>
     <string name="reader_speech_unavailable">Thiết bị này chưa cài bộ đọc nào</string>
-    <string name="reader_speech_no_engine">Đọc to cần một bộ đọc, và ứng dụng máy tính không có bộ đọc nào.</string>
+    <string name="reader_speech_no_engine">Bản ứng dụng máy tính này không thể đọc to: nó không kèm công cụ giọng nói dùng để chạy các giọng đã tải xuống. Tệp nén bản phát hành và gói Arch có kèm công cụ này.</string>
     <string name="reader_speech_voices_only">Ứng dụng máy tính đọc to bằng giọng đã tải xuống: hãy tải một giọng cho mỗi ngôn ngữ bạn đọc.</string>
     <string name="reader_speech_no_voice">Không có giọng đã tải xuống nào đọc được nội dung này</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS chưa được cài đặt</string>
