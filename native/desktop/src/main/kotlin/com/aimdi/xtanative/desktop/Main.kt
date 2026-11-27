@@ -46,6 +46,7 @@ import com.aimdi.xtanative.ui.appImageLoader
 import com.aimdi.xtanative.ui.appName
 import com.aimdi.xtanative.ui.chrome.AppLog
 import com.aimdi.xtanative.ui.chrome.AppQuit
+import com.aimdi.xtanative.ui.chrome.ClosingWrites
 import com.aimdi.xtanative.ui.chrome.CommandLine
 import com.aimdi.xtanative.ui.chrome.Diagnostics
 import com.aimdi.xtanative.ui.chrome.InstanceMessage
@@ -136,10 +137,15 @@ fun main(args: Array<String>) {
     val windowFile = SavedWindowFile(File(files, "window.ini"))
     // Back where it was left, while a screen still shows enough of it there; else where the desktop puts a new window.
     val saved = windowFile.read().placedOn(screenAreas())
-    var kept = saved
+    val kept = AtomicReference(saved)
     // The app is made and started on a thread of its own while the window's toolkit starts on this one: neither waits for the other.
     val starting = FutureTask { desktopApp(files).also { it.start() } }
     Thread(starting, "app-start").start()
+    // The window's place and the writes under way (the reading place), once the app ends: quit, or SIGTERM at logout while in the tray.
+    val closing = ClosingWrites {
+        windowFile.write(kept.get())
+        if (starting.isDone) runBlocking { withTimeoutOrNull(2_000) { starting.started().graph.awaitWrites() } }
+    }.onShutdown()
     SingletonImageLoader.setSafe { context -> appImageLoader(context) }
     // The process waits for the writes the closing window asked for (the reading place) before it ends.
     application(exitProcessOnExit = false) {
@@ -162,7 +168,7 @@ fun main(args: Array<String>) {
         // Each raise counted, so the window comes in front once it is on screen.
         var fronts by remember { mutableStateOf(0) }
         val quit = {
-            windowFile.write(kept)
+            windowFile.write(kept.get())
             exitApplication()
         }
         // A window that breaks is written down as a crash and quits the app ([WindowCrash]), not hidden to the tray behind Swing's dialog.
@@ -243,7 +249,7 @@ fun main(args: Array<String>) {
                     snapshotFlow { Triple(state.placement, state.size, state.position) }
                         .map { (placement, size, position) ->
                             val (x, y) = if (position.isSpecified) position.x.value.roundToInt() to position.y.value.roundToInt() else null to null
-                            kept.after(placement, size.width.value.roundToInt(), size.height.value.roundToInt(), x, y).also { kept = it }
+                            kept.get().after(placement, size.width.value.roundToInt(), size.height.value.roundToInt(), x, y).also(kept::set)
                         }
                         .distinctUntilChanged()
                         .debounce(500)
@@ -286,7 +292,8 @@ fun main(args: Array<String>) {
             }
         }
     }
-    runBlocking { withTimeoutOrNull(2_000) { starting.started().graph.awaitWrites() } }
+    starting.started()
+    closing.run()
     instance.close()
     exitProcess(0)
 }
