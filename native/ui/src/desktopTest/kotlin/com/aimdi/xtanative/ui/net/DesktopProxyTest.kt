@@ -216,6 +216,46 @@ class DesktopProxyTest {
     }
 
     @Test
+    fun aBusNotYetUpAtLoginIsNoAnswerKeptForMinutes() {
+        val (daemon, socket) = privateBus() ?: return println("no dbus-daemon: skipped")
+        try {
+            val fake = assertNotNull(DBusConnection.connect(socket))
+            fake.onCall = { call -> if (call.member == "Lookup") fake.reply(call, "as", listOf(listOf("http://portal.lan:3128"))) }
+            fake.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "RequestName", "su", listOf(PortalProxyPolicy.PORTAL, 4L))
+            var now = 0L
+            val up = AtomicBoolean(false)
+            val policy = PortalProxyPolicy({ if (up.get()) DBusConnection.connect(socket) else null }, clock = { now })
+            policy.warm()
+            assertEquals(ProxyRoute.Direct, policy.route("https", "x.com", 443), "no bus yet: straight, for now")
+            var onWindowThread: ProxyRoute? = null
+            java.awt.EventQueue.invokeAndWait { onWindowThread = policy.route("https", "pbs.twimg.com", 443) }
+            assertEquals(ProxyRoute.Unusable, onWindowThread, "no bus is no answer the window's thread goes by")
+            up.set(true)
+            now += PortalProxyPolicy.RETRY_MS
+            val via = ProxyRoute.Via(ProxyKind.HTTP, "portal.lan", 3128)
+            assertEquals(via, policy.route("https", "x.com", 443), "the bus is asked again within seconds, not minutes")
+            fake.close()
+        } finally {
+            daemon.destroy()
+            daemon.waitFor(5, TimeUnit.SECONDS)
+        }
+    }
+
+    @Test
+    fun noSessionBusAtAllIsAnAnswer() {
+        var now = 0L
+        val connects = AtomicInteger()
+        val policy = PortalProxyPolicy({ connects.incrementAndGet(); null }, clock = { now }, hasBus = { false })
+        assertEquals(ProxyRoute.Direct, policy.route("https", "x.com", 443))
+        now += PortalProxyPolicy.RETRY_MS
+        assertEquals(ProxyRoute.Direct, policy.route("https", "x.com", 443))
+        var onWindowThread: ProxyRoute? = null
+        java.awt.EventQueue.invokeAndWait { onWindowThread = policy.route("https", "pbs.twimg.com", 443) }
+        assertEquals(ProxyRoute.Direct, onWindowThread, "straight, as it always was")
+        assertEquals(1, connects.get(), "kept as an answer")
+    }
+
+    @Test
     fun onlyTheNoPortalErrorsCountAsAnAnswer() {
         fun error(name: String) = DBusMessage(DBusType.ERROR, errorName = name)
         assertEquals(ProxyRoute.Direct, PortalProxyPolicy.routeOf(error("org.freedesktop.DBus.Error.ServiceUnknown")))

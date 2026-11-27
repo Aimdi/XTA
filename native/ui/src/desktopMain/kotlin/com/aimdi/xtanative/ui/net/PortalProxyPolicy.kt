@@ -7,6 +7,7 @@ import com.aimdi.xtanative.ui.media.mpris.DBusConnection
 import com.aimdi.xtanative.ui.media.mpris.DBusMessage
 import com.aimdi.xtanative.ui.media.mpris.DBusType
 import java.awt.EventQueue
+import java.io.File
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -16,8 +17,9 @@ import kotlin.concurrent.thread
 /**
  * The desktop's proxy settings, as its portal (org.freedesktop.portal.ProxyResolver)
  * answers them. It is only told "scheme://host:port", never a path. Its
- * answers are kept [cacheMs]; so is "there is no portal on this bus", which
- * goes straight, as it always did. Of the proxies it lists, the first the
+ * answers are kept [cacheMs]; so are "there is no portal on this bus" and
+ * "this session has no bus at all" ([hasBus] false), which go straight, as
+ * they always did. Of the proxies it lists, the first the
  * app can use is taken ("direct://" too); a list of none it can use is
  * [ProxyRoute.Unusable].
  *
@@ -25,8 +27,10 @@ import kotlin.concurrent.thread
  * stuck) is asked again after [retryMs], and meanwhile its last answer for
  * that address (else for any) stands. When it has never answered, requests
  * fail ([ProxyRoute.Unusable]) for the first [graceMs] rather than slip past
- * a proxy the desktop may set, then go straight. A bus that cannot be
- * reached is tried again later, ever less often, never given up on.
+ * a proxy the desktop may set, then go straight. A bus the session names
+ * but that cannot be reached (not up yet at login) is no answer: its
+ * requests go straight for [retryMs] only, the bus is tried again later,
+ * ever less often, never given up on, and nothing else goes by it.
  *
  * [warm] asks once at start, off every request's thread, waiting the whole
  * grace: while it waits, a request (never one on the window's thread, which
@@ -40,8 +44,21 @@ class PortalProxyPolicy(
     private val clock: () -> Long = System::currentTimeMillis,
     private val retryMs: Long = RETRY_MS,
     private val graceMs: Long = GRACE_MS,
+    private val hasBus: () -> Boolean = { true },
 ) : ProxyPolicy {
     private data class Kept(val route: ProxyRoute, val until: Long)
+
+    /** What asking the portal gave. */
+    private sealed interface Lookup {
+        /** The portal's answer, or the session's lack of any bus. */
+        data class Answer(val route: ProxyRoute) : Lookup
+
+        /** A bus the session names is out of reach for now. */
+        data object NoBus : Lookup
+
+        /** The portal gave nothing to go by (no answer in time, an unrelated error). */
+        data object Nothing : Lookup
+    }
 
     private val kept = ConcurrentHashMap<String, Kept>()
     private val answered = ConcurrentHashMap<String, ProxyRoute>()
@@ -67,7 +84,11 @@ class PortalProxyPolicy(
         val now = clock()
         kept[key]?.takeIf { now < it.until }?.let { return it.route }
         if (EventQueue.isDispatchThread()) return answered[key] ?: lastAnswer ?: unknown(key, now)
-        val (route, keepMs) = lookup(key, now)?.let { answer(key, it) to cacheMs } ?: (unknown(key, now) to retryMs)
+        val (route, keepMs) = when (val found = lookup(key, now)) {
+            is Lookup.Answer -> answer(key, found.route) to cacheMs
+            Lookup.NoBus -> ProxyRoute.Direct to retryMs
+            Lookup.Nothing -> unknown(key, now) to retryMs
+        }
         if (kept.size > MAX_KEPT) kept.clear()
         kept[key] = Kept(route, now + keepMs)
         return route
@@ -82,7 +103,7 @@ class PortalProxyPolicy(
         if (lastAnswer != null || !warming.compareAndSet(false, true)) return
         thread(isDaemon = true, name = "xta-proxy-portal") {
             try {
-                lookup(key, clock(), graceMs)?.let { answer(key, it) }
+                (lookup(key, clock(), graceMs) as? Lookup.Answer)?.let { answer(key, it.route) }
             } finally {
                 warming.set(false)
                 firstAnswer.complete(lastAnswer ?: ProxyRoute.Unusable)
@@ -90,11 +111,11 @@ class PortalProxyPolicy(
         }
     }
 
-    /** The portal's route for [uri]; null when it gave no answer to go by. */
-    private fun lookup(uri: String, now: Long, waitMs: Long = timeoutMs): ProxyRoute? {
-        val connection = connection(now) ?: return ProxyRoute.Direct
-        val reply = connection.call(PORTAL, PATH, IFACE, "Lookup", "s", listOf(uri), waitMs) ?: return null
-        return routeOf(reply)
+    /** What the portal says of [uri]. */
+    private fun lookup(uri: String, now: Long, waitMs: Long = timeoutMs): Lookup {
+        val connection = connection(now) ?: return if (hasBus()) Lookup.NoBus else Lookup.Answer(ProxyRoute.Direct)
+        val reply = connection.call(PORTAL, PATH, IFACE, "Lookup", "s", listOf(uri), waitMs) ?: return Lookup.Nothing
+        return routeOf(reply)?.let(Lookup::Answer) ?: Lookup.Nothing
     }
 
     private fun answer(key: String, route: ProxyRoute): ProxyRoute {
@@ -117,7 +138,7 @@ class PortalProxyPolicy(
         return ProxyRoute.Unusable
     }
 
-    /** No bus in reach goes straight; it is tried again after a wait that doubles up to [cacheMs]. */
+    /** The bus, or null while none is in reach; it is tried again after a wait that doubles up to [MAX_CONNECT_WAIT_MS], as its requests go straight meanwhile. */
     private fun connection(now: Long): DBusConnection? = synchronized(connecting) {
         bus?.takeIf { it.open }?.let { return it }
         if (now < nextConnect) return null
@@ -125,7 +146,7 @@ class PortalProxyPolicy(
         bus = fresh
         if (fresh == null) {
             nextConnect = now + connectWait
-            connectWait = (connectWait * 2).coerceAtMost(cacheMs)
+            connectWait = (connectWait * 2).coerceAtMost(MAX_CONNECT_WAIT_MS)
         } else {
             connectWait = retryMs
         }
@@ -140,6 +161,7 @@ class PortalProxyPolicy(
         const val TIMEOUT_MS = 1_000L
         const val RETRY_MS = 5_000L
         const val GRACE_MS = 30_000L
+        const val MAX_CONNECT_WAIT_MS = 30_000L
         private const val MAX_KEPT = 512
 
         /** Errors that mean this bus has no proxy portal at all, which is an answer: straight. */
@@ -152,7 +174,11 @@ class PortalProxyPolicy(
         )
 
         /** The desktop's own, on its session bus. */
-        val desktop: PortalProxyPolicy by lazy { PortalProxyPolicy(DBusConnection::session) }
+        val desktop: PortalProxyPolicy by lazy { PortalProxyPolicy(DBusConnection::session, hasBus = ::sessionHasBus) }
+
+        /** Whether the session names a bus at all: $DBUS_SESSION_BUS_ADDRESS, or a bus socket in $XDG_RUNTIME_DIR. */
+        fun sessionHasBus(env: Map<String, String> = System.getenv()): Boolean =
+            !env["DBUS_SESSION_BUS_ADDRESS"].isNullOrBlank() || env["XDG_RUNTIME_DIR"]?.takeIf { it.isNotBlank() }?.let { File(it, "bus").exists() } == true
 
         /** The route [reply] gives; null for an error that says nothing of the desktop's proxy. */
         fun routeOf(reply: DBusMessage): ProxyRoute? = when (reply.type) {
