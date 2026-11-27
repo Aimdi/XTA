@@ -18,6 +18,8 @@ import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.group.ReadMarks
 import java.time.Duration
 import java.time.Instant
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /** The XTA backup against the app's stores: what an export reads and where a restore writes each section. */
 class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant = Instant::now) {
@@ -54,7 +56,10 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
     }
 
     /** The document an export of [choice] writes, as JSON. */
-    suspend fun export(choice: ExportChoice): String = BackupExport.document(read(), choice, graph.version, clock()).encode()
+    suspend fun export(choice: ExportChoice): String {
+        val content = read()
+        return withContext(Dispatchers.Default) { BackupExport.document(content, choice, graph.version, clock()).encode() }
+    }
 
     /**
      * Writes every section of [document] into its store, as XTA's import does:

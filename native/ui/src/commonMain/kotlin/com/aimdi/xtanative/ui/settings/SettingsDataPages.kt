@@ -184,7 +184,7 @@ internal fun RestoreDialog(document: BackupDocument?, vm: SettingsViewModel, sna
     ImportPreviewDialog(document, onDismiss = onClose) { includeReadPositions ->
         onClose()
         scope.launch {
-            withContext(NonCancellable) {
+            withContext(NonCancellable + Dispatchers.Default) {
                 DeviceBackup(vm.graph).restore(document, includeReadPositions)
                 onRestored()
             }
@@ -204,7 +204,7 @@ internal fun DataSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
     val takeBackup: (suspend () -> String?) -> Unit = { read ->
         scope.launch {
             val text = withContext(Dispatchers.IO) { runCatching { read() }.getOrNull() }
-            when (val found = BackupRead.of(text)) {
+            when (val found = BackupRead.read(text)) {
                 is BackupRead.Ready -> offered = found.document
                 else -> problem = found
             }
@@ -374,8 +374,8 @@ internal fun SyncSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
         }
     }
 
-    fun offer(result: WebDavResult, acknowledge: Boolean) {
-        when (val read = BackupRead.of(result.body)) {
+    suspend fun offer(result: WebDavResult, acknowledge: Boolean) {
+        when (val read = BackupRead.read(result.body)) {
             is BackupRead.Ready -> offered = read.document to result.takeIf { acknowledge }
             else -> problem = read
         }
@@ -460,7 +460,7 @@ internal fun SyncSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
                     act {
                         val current = sync.download(config)
                         if (current.isSuccess) {
-                            versions = WebDavSync.versionsIn(current.body)
+                            versions = withContext(Dispatchers.Default) { WebDavSync.versionsIn(current.body) }
                             null
                         } else {
                             current

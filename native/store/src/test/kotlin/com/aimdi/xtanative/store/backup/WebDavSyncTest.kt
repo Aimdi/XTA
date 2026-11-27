@@ -17,6 +17,7 @@ private class FakeDav(var etags: Boolean = true, var reachable: Boolean = true) 
     val files = HashMap<String, String>()
     val folders = HashSet<String>()
     val requests = ArrayList<String>()
+    val threads = HashSet<Thread>()
 
     /** While set, a PUT to the document waits for it, as a slow upload does. */
     var mainPutGate: kotlinx.coroutines.CompletableDeferred<Unit>? = null
@@ -29,6 +30,7 @@ private class FakeDav(var etags: Boolean = true, var reachable: Boolean = true) 
     override suspend fun send(method: String, url: HttpUrl, headers: Map<String, String>, body: String?): WebDavResponse {
         if (!reachable) throw IOException("offline")
         requests += "$method ${url.encodedPath}"
+        threads += Thread.currentThread()
         if (headers["authorization"] != "Basic dXNlcjpwYXNz") return WebDavResponse(401)
         val path = url.encodedPath
         return when (method) {
@@ -159,6 +161,14 @@ class WebDavSyncTest {
         server.mainPutGate = null
         assertTrue(server.files["/xta/backup.json"]!!.contains("\"next\":1"))
         assertEquals(WebDavOutcome.SUCCESS, sync.upload(config, """{"next":2}""").outcome)
+    }
+
+    @Test
+    fun anUploadIsWorkedOffTheCallersThread(): Unit = runBlocking {
+        val server = FakeDav()
+        val sync = WebDavSync(server, MemoryBaselines()) { now }
+        assertEquals(WebDavOutcome.SUCCESS, sync.upload(config, """{"notes":["${"a".repeat(1000)}"]}""").outcome)
+        assertTrue(Thread.currentThread() !in server.threads)
     }
 
     @Test

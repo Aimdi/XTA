@@ -34,6 +34,8 @@ import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.PluginStorePrefs
 import com.aimdi.xtanative.store.settings.ReadingPrefs
 import com.aimdi.xtanative.ui.group.ReadMarks
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -60,6 +62,9 @@ sealed interface BackupRead {
                 else -> Ready(document)
             }
         }
+
+        /** [of], away from the caller's thread: a backup with pictures in its notes is megabytes of JSON. */
+        suspend fun read(text: String?): BackupRead = withContext(Dispatchers.Default) { of(text) }
     }
 }
 

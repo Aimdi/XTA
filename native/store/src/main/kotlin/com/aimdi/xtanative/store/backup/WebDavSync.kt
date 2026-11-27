@@ -87,9 +87,11 @@ class WebDavSync(
     /**
      * Once begun, an upload runs to its end even when its caller is gone: a
      * PUT that lands without its new validator kept would make every later
-     * upload of this device a conflict.
+     * upload of this device a conflict. Its JSON work, which a backup with
+     * pictures in its notes makes heavy, is kept off the caller's thread.
      */
-    suspend fun upload(config: WebDavConfig, body: String): WebDavResult = withContext(NonCancellable) { uploading(config, body) }
+    suspend fun upload(config: WebDavConfig, body: String): WebDavResult =
+        withContext(Dispatchers.Default + NonCancellable) { uploading(config, body) }
 
     private suspend fun uploading(config: WebDavConfig, body: String): WebDavResult {
         invalid(config)?.let { return it }
