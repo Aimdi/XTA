@@ -247,8 +247,9 @@ internal fun CleanupDialog(posts: List<SavedPost>, onDismiss: () -> Unit) {
         if (!scan.done) scan = scan.finished()
     }
     val done = scan.done
+    // Esc or a click beside it closes it as Cancel does: a scan still running stops, and nothing is removed.
     AlertDialog(
-        onDismissRequest = {},
+        onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.saved_find_deleted)) },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
@@ -278,13 +279,13 @@ internal fun CleanupDialog(posts: List<SavedPost>, onDismiss: () -> Unit) {
                     val ids = scan.broken.map { it.id }
                     keeper.keep { SavedUndo.offer(keeper.saved.removeTaking(ids), keeper.saved::putBack) }
                     onDismiss()
-                }) { Text("${stringResource(Res.string.saved_delete)} (${scan.broken.size})") }
+                }, colors = destructiveTextColors()) { Text("${stringResource(Res.string.saved_delete)} (${scan.broken.size})") }
             } else {
                 TextButton(onClick = onDismiss) { Text(stringResource(if (done) Res.string.close else Res.string.cancel)) }
             }
         },
         dismissButton = if (done && scan.broken.isNotEmpty()) {
-            { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel)) } }
+            { TextButton(onClick = onDismiss, modifier = Modifier.dialogDefault()) { Text(stringResource(Res.string.cancel)) } }
         } else {
             null
         },

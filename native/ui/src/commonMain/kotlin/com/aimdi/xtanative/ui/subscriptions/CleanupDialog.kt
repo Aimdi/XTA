@@ -26,6 +26,8 @@ import com.aimdi.xtanative.core.session.FollowCheck
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.destructiveTextColors
+import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -68,23 +70,29 @@ fun BrokenSubscriptionsDialog(onDismiss: () -> Unit) {
         state = CleanupScan.finished(state)
     }
 
+    var deleting by remember { mutableStateOf(false) }
+    // Esc or a click beside it closes it as Cancel does, but not while the removal runs: only Cancel stops that (its scope goes with the dialog).
     AlertDialog(
-        onDismissRequest = {},
+        onDismissRequest = { if (!deleting) onDismiss() },
         title = { Text(stringResource(Res.string.groups_find_broken)) },
         text = { if (state.done) Results(state) else Progress(state) },
         confirmButton = {
             if (state.done && state.broken.isNotEmpty()) {
                 TextButton(onClick = {
                     val ids = state.broken.map { it.first.id }.toSet()
+                    deleting = true
                     scope.launch {
                         Unfollowing.accounts(graph.sessions, ids)
                         onDismiss()
                     }
-                }) { Text(stringResource(Res.string.groups_delete) + " (${state.broken.size})") }
+                }, enabled = !deleting, colors = destructiveTextColors()) { Text(stringResource(Res.string.groups_delete) + " (${state.broken.size})") }
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(if (state.done && state.broken.isEmpty()) Res.string.close else Res.string.cancel)) }
+            val choosing = state.done && state.broken.isNotEmpty()
+            TextButton(onClick = onDismiss, modifier = if (choosing) Modifier.dialogDefault() else Modifier) {
+                Text(stringResource(if (state.done && state.broken.isEmpty()) Res.string.close else Res.string.cancel))
+            }
         },
     )
 }
