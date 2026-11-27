@@ -139,6 +139,7 @@
     <string name="offline_storage_limit">Lineaz kanpoko biltegiratzea %1$s-ra mugatuta dago. Fitxategi handiak edo onartzen ez diren korronteak erabilgarri egon gabe gera daitezke.</string>
     <string name="offline_storage_error">Ezin izan da lineaz kanpoko biltegiratzea irakurri edo eguneratu. Egiaztatu biltegiratze-leku librea eta saiatu berriro.</string>
     <string name="offline_empty">Gorde artikuluak edo gordetako argitalpenen multimedia-edukia lineaz kanpo, hemen aurkitzeko.</string>
+    <string name="offline_empty_title">Oraindik ez dago ezer lineaz kanpo</string>
     <string name="offline_remove">Kendu lineaz kanpoko kopia</string>
     <string name="offline_available">Lineaz kanpo erabilgarri</string>
     <string name="offline_partial">Zati bat lineaz kanpo erabilgarri</string>

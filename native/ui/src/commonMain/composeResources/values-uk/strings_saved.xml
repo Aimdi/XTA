@@ -145,6 +145,7 @@
     <string name="offline_storage_limit">Обсяг офлайн-сховища обмежено до %1$s. Великі файли або непідтримувані потоки можуть залишитися недоступними.</string>
     <string name="offline_storage_error">Не вдалося прочитати або оновити офлайн-сховище. Перевірте вільне місце й повторіть спробу.</string>
     <string name="offline_empty">Зберігайте статті або медіа зі збережених дописів офлайн, щоб знаходити їх тут.</string>
+    <string name="offline_empty_title">Поки нічого не збережено офлайн</string>
     <string name="offline_remove">Видалити офлайн-копію</string>
     <string name="offline_available">Доступно офлайн</string>
     <string name="offline_partial">Частково доступно офлайн</string>

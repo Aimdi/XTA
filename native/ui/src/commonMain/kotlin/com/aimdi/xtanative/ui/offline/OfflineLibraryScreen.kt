@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -42,7 +43,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,6 +51,8 @@ import com.aimdi.xtanative.store.offline.OfflineArticle
 import com.aimdi.xtanative.store.offline.OfflineEntry
 import com.aimdi.xtanative.store.offline.OfflineStore
 import com.aimdi.xtanative.ui.common.ColumnTopAppBar
+import com.aimdi.xtanative.ui.common.EmptyState
+import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.TipText
@@ -64,6 +66,7 @@ import com.aimdi.xtanative.ui.generated.resources.offline_clear
 import com.aimdi.xtanative.ui.generated.resources.offline_clear_description
 import com.aimdi.xtanative.ui.generated.resources.offline_clear_question
 import com.aimdi.xtanative.ui.generated.resources.offline_empty
+import com.aimdi.xtanative.ui.generated.resources.offline_empty_title
 import com.aimdi.xtanative.ui.generated.resources.offline_remove
 import com.aimdi.xtanative.ui.generated.resources.offline_sensitive_description
 import com.aimdi.xtanative.ui.generated.resources.offline_sensitive_open
@@ -134,19 +137,20 @@ fun OfflineLibraryScreen(onBack: () -> Unit, openMedia: (id: String) -> Unit, op
         },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            StorageHeader(state.bytes)
-            if (state.storageError) {
-                Text(stringResource(Res.string.offline_storage_error), color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(horizontal = 16.dp))
+            // In the reading column, as the rows under it; nothing to measure while nothing is kept.
+            if (OfflineRules.showsStorage(state)) Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+                Column(Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp).fillMaxWidth()) {
+                    StorageHeader(state.bytes)
+                    if (state.storageError) {
+                        Text(stringResource(Res.string.offline_storage_error), color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(horizontal = 16.dp))
+                    }
+                }
             }
             if (state.busy.isNotEmpty()) LinearProgressIndicator(Modifier.fillMaxWidth())
             Box(Modifier.weight(1f).fillMaxWidth()) {
                 when {
                     state.loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
-                    state.entries.isEmpty() -> Text(
-                        stringResource(Res.string.offline_empty),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.align(Alignment.Center).padding(24.dp),
-                    )
+                    state.entries.isEmpty() -> EmptyState(SavedIcons.OfflinePinOutline, stringResource(Res.string.offline_empty_title), body = stringResource(Res.string.offline_empty))
                     else -> rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 16.dp), readList) { column -> LazyColumn(state = readList, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                         items(state.entries, key = { it.id }) { entry ->
                             EntryRow(entry, onOpen = { open(entry) }, onRemove = { scope.launch { store.remove(entry.id) } })
@@ -187,7 +191,8 @@ private fun StorageHeader(bytes: Long) {
             stringResource(Res.string.offline_storage_used, OfflineRules.bytes(bytes, locale), OfflineRules.bytes(limit, locale)),
             style = MaterialTheme.typography.titleMedium,
         )
-        LinearProgressIndicator(progress = { OfflineRules.fullness(bytes, limit) }, modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
+        // No stop dot at the end: by an empty track it read as something kept far off at the limit.
+        LinearProgressIndicator(progress = { OfflineRules.fullness(bytes, limit) }, modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), drawStopIndicator = {})
         Text(stringResource(Res.string.offline_storage_limit, OfflineRules.bytes(limit, locale)), style = MaterialTheme.typography.bodySmall)
     }
 }

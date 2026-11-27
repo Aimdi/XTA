@@ -139,6 +139,7 @@
     <string name="offline_storage_limit">Çevrimdışı depolama %1$s ile sınırlıdır. Büyük dosyalar veya desteklenmeyen akışlar kullanılamayabilir.</string>
     <string name="offline_storage_error">Çevrimdışı depolama okunamadı veya güncellenemedi. Kullanılabilir depolama alanını kontrol edip tekrar deneyin.</string>
     <string name="offline_empty">Burada bulmak için makaleleri veya kayıtlı gönderilerin medyalarını çevrimdışı saklayın.</string>
+    <string name="offline_empty_title">Henüz çevrimdışı saklanan bir şey yok</string>
     <string name="offline_remove">Çevrimdışı kopyayı kaldır</string>
     <string name="offline_available">Çevrimdışı kullanılabilir</string>
     <string name="offline_partial">Kısmen çevrimdışı kullanılabilir</string>

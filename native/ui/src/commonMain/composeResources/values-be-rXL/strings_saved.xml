@@ -145,6 +145,7 @@
     <string name="offline_storage_limit">Pazasietkavaje schovišča abmiežavana da %1$s. Vialikija fajły abo patoki, jakija nie padtrymlivajucca, mohuć zastacca niedastupnymi.</string>
     <string name="offline_storage_error">Nie ŭdałosia pračytać abo abnavić pazasietkavaje schovišča. Praviercie volnaje miesca i paŭtarycie sprobu.</string>
     <string name="offline_empty">Zachoŭvajcie artykuły abo medyja z zachavanych publikacyj pazasietkava, kab znachodzić ich tut.</string>
+    <string name="offline_empty_title">Pakul ničoha nie zachavana pazasietkava</string>
     <string name="offline_remove">Vydalić pazasietkavuju kopiju</string>
     <string name="offline_available">Dastupna pazasietkava</string>
     <string name="offline_partial">Častkova dastupna pazasietkava</string>

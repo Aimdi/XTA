@@ -136,6 +136,7 @@
     <string name="offline_storage_limit">离线存储上限为 %1$s。大文件或不支持的流媒体可能仍无法使用。</string>
     <string name="offline_storage_error">无法读取或更新离线存储。请检查可用存储空间后重试。</string>
     <string name="offline_empty">离线保留文章或已保存帖子的媒体，即可在这里找到它们。</string>
+    <string name="offline_empty_title">尚未离线保留任何内容</string>
     <string name="offline_remove">移除离线副本</string>
     <string name="offline_available">可离线使用</string>
     <string name="offline_partial">部分可离线使用</string>

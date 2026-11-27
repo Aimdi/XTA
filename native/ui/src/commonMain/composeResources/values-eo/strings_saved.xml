@@ -139,6 +139,7 @@
     <string name="offline_storage_limit">Senkonekta stokspaco estas limigita al %1$s. Grandaj dosieroj aŭ nesubtenataj fluoj eble restos nedisponeblaj.</string>
     <string name="offline_storage_error">Ne eblis legi aŭ ĝisdatigi la senkonektan konservejon. Kontrolu la liberan stokspacon kaj reprovu.</string>
     <string name="offline_empty">Konservu artikolojn aŭ aŭdvidaĵojn de konservitaj afiŝoj senkonekte por trovi ilin ĉi tie.</string>
+    <string name="offline_empty_title">Ankoraŭ nenio konservita senkonekte</string>
     <string name="offline_remove">Forigi senkonektan kopion</string>
     <string name="offline_available">Disponebla senkonekte</string>
     <string name="offline_partial">Parte disponebla senkonekte</string>

@@ -142,6 +142,7 @@
     <string name="offline_storage_limit">Stocarea offline este limitată la %1$s. Fișierele mari sau fluxurile neacceptate pot rămâne indisponibile.</string>
     <string name="offline_storage_error">Stocarea offline nu a putut fi citită sau actualizată. Verifică spațiul disponibil și încearcă din nou.</string>
     <string name="offline_empty">Păstrează offline articole sau conținut media din postările salvate pentru a le găsi aici.</string>
+    <string name="offline_empty_title">Nimic păstrat offline încă</string>
     <string name="offline_remove">Elimină copia offline</string>
     <string name="offline_available">Disponibil offline</string>
     <string name="offline_partial">Disponibil parțial offline</string>

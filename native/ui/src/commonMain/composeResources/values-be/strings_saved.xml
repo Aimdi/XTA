@@ -145,6 +145,7 @@
     <string name="offline_storage_limit">Пазасеткавае сховішча абмежавана да %1$s. Вялікія файлы або патокі, якія не падтрымліваюцца, могуць застацца недаступнымі.</string>
     <string name="offline_storage_error">Не ўдалося прачытаць або абнавіць пазасеткавае сховішча. Праверце вольнае месца і паўтарыце спробу.</string>
     <string name="offline_empty">Захоўвайце артыкулы або медыя з захаваных публікацый пазасеткава, каб знаходзіць іх тут.</string>
+    <string name="offline_empty_title">Пакуль нічога не захавана пазасеткава</string>
     <string name="offline_remove">Выдаліць пазасеткавую копію</string>
     <string name="offline_available">Даступна пазасеткава</string>
     <string name="offline_partial">Часткова даступна пазасеткава</string>

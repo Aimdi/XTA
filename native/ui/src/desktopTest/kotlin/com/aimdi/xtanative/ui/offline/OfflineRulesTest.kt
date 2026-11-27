@@ -57,6 +57,14 @@ class OfflineRulesTest {
     }
 
     @Test
+    fun anEmptyLibraryShowsNoStorageBar() {
+        assertFalse(OfflineRules.showsStorage(OfflineState(loading = false)), "0 B of 500 MiB says nothing the empty page does not")
+        assertTrue(OfflineRules.showsStorage(OfflineState(entries = listOf(entry(OfflineKind.MEDIA)))))
+        assertTrue(OfflineRules.showsStorage(OfflineState(busy = setOf("x"))))
+        assertTrue(OfflineRules.showsStorage(OfflineState(storageError = true)), "the storage error stands under it")
+    }
+
+    @Test
     fun aSavedPostsRowSaysWhatItKeeps() {
         val tweet = SavedContent.of(
             J.parse(

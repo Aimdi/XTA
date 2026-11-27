@@ -139,6 +139,7 @@
     <string name="offline_storage_limit">Offline storage is limited to %1$s. Large files or unsupported streams may remain unavailable.</string>
     <string name="offline_storage_error">Offline storage could not be read or updated. Check available storage and try again.</string>
     <string name="offline_empty">Keep articles or saved post media offline to find them here.</string>
+    <string name="offline_empty_title">Nothing kept offline yet</string>
     <string name="offline_remove">Remove offline copy</string>
     <string name="offline_available">Available offline</string>
     <string name="offline_partial">Partly available offline</string>

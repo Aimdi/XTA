@@ -139,6 +139,7 @@
     <string name="offline_storage_limit">ऑफ़लाइन स्टोरेज की सीमा %1$s है। बड़ी फ़ाइलें या ऐसे स्ट्रीम जिनका समर्थन नहीं है, उपलब्ध नहीं हो सकते हैं।</string>
     <string name="offline_storage_error">ऑफ़लाइन स्टोरेज पढ़ा या अपडेट नहीं किया जा सका। खाली स्टोरेज जाँचें और फिर कोशिश करें।</string>
     <string name="offline_empty">लेख या सहेजी गई पोस्ट का मीडिया ऑफ़लाइन रखें ताकि वे यहाँ मिलें।</string>
+    <string name="offline_empty_title">अभी तक कुछ भी ऑफ़लाइन नहीं रखा गया</string>
     <string name="offline_remove">ऑफ़लाइन कॉपी हटाएँ</string>
     <string name="offline_available">ऑफ़लाइन उपलब्ध</string>
     <string name="offline_partial">कुछ हिस्सा ऑफ़लाइन उपलब्ध</string>

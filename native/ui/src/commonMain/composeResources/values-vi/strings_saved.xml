@@ -136,6 +136,7 @@
     <string name="offline_storage_limit">Bộ nhớ ngoại tuyến được giới hạn ở %1$s. Các tệp lớn hoặc luồng không được hỗ trợ có thể vẫn không khả dụng.</string>
     <string name="offline_storage_error">Không thể đọc hoặc cập nhật bộ nhớ ngoại tuyến. Hãy kiểm tra dung lượng trống rồi thử lại.</string>
     <string name="offline_empty">Giữ bài viết hoặc nội dung đa phương tiện của bài đăng đã lưu để dùng ngoại tuyến và tìm lại tại đây.</string>
+    <string name="offline_empty_title">Chưa có gì được giữ ngoại tuyến</string>
     <string name="offline_remove">Xóa bản sao ngoại tuyến</string>
     <string name="offline_available">Có thể dùng ngoại tuyến</string>
     <string name="offline_partial">Một phần có thể dùng ngoại tuyến</string>

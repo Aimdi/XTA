@@ -139,6 +139,7 @@
     <string name="offline_storage_limit">Le stockage hors ligne est limité à %1$s. Les fichiers volumineux ou les flux non pris en charge peuvent rester indisponibles.</string>
     <string name="offline_storage_error">Impossible de lire ou de mettre à jour le stockage hors ligne. Vérifiez l’espace disponible et réessayez.</string>
     <string name="offline_empty">Conservez des articles ou les médias de publications enregistrées hors ligne pour les retrouver ici.</string>
+    <string name="offline_empty_title">Rien n'est encore conservé hors ligne</string>
     <string name="offline_remove">Supprimer la copie hors ligne</string>
     <string name="offline_available">Disponible hors ligne</string>
     <string name="offline_partial">Partiellement disponible hors ligne</string>

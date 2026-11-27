@@ -139,6 +139,7 @@
     <string name="offline_storage_limit">L’emmagatzematge sense connexió està limitat a %1$s. Els fitxers grans o les transmissions no compatibles poden continuar sense estar disponibles.</string>
     <string name="offline_storage_error">No s’ha pogut llegir ni actualitzar l’emmagatzematge sense connexió. Comprova l’espai disponible i torna-ho a provar.</string>
     <string name="offline_empty">Conserva articles o contingut multimèdia de publicacions desades sense connexió per trobar-los aquí.</string>
+    <string name="offline_empty_title">Encara no hi ha res desat sense connexió</string>
     <string name="offline_remove">Elimina la còpia sense connexió</string>
     <string name="offline_available">Disponible sense connexió</string>
     <string name="offline_partial">Parcialment disponible sense connexió</string>

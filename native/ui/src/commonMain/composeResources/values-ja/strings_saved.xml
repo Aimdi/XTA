@@ -136,6 +136,7 @@
     <string name="offline_storage_limit">オフラインストレージの上限は%1$sです。大きなファイルや未対応のストリームは利用できない場合があります。</string>
     <string name="offline_storage_error">オフラインストレージを読み取りまたは更新できませんでした。空き容量を確認して、もう一度お試しください。</string>
     <string name="offline_empty">記事や保存した投稿のメディアをオフラインで保持すると、ここに表示されます。</string>
+    <string name="offline_empty_title">オフラインで保持しているものはまだありません</string>
     <string name="offline_remove">オフラインコピーを削除</string>
     <string name="offline_available">オフラインで利用可能</string>
     <string name="offline_partial">一部をオフラインで利用可能</string>

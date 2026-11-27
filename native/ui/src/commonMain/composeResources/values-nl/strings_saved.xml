@@ -139,6 +139,7 @@
     <string name="offline_storage_limit">Offlineopslag is beperkt tot %1$s. Grote bestanden of niet-ondersteunde streams blijven mogelijk onbeschikbaar.</string>
     <string name="offline_storage_error">De offlineopslag kon niet worden gelezen of bijgewerkt. Controleer de beschikbare opslagruimte en probeer het opnieuw.</string>
     <string name="offline_empty">Bewaar artikelen of media uit opgeslagen berichten offline om ze hier terug te vinden.</string>
+    <string name="offline_empty_title">Nog niets offline bewaard</string>
     <string name="offline_remove">Offlinekopie verwijderen</string>
     <string name="offline_available">Offline beschikbaar</string>
     <string name="offline_partial">Gedeeltelijk offline beschikbaar</string>

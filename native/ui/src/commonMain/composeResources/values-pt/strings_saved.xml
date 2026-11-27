@@ -139,6 +139,7 @@
     <string name="offline_storage_limit">O armazenamento offline está limitado a %1$s. Os ficheiros grandes ou as transmissões não suportadas podem continuar indisponíveis.</string>
     <string name="offline_storage_error">Não foi possível ler ou atualizar o armazenamento offline. Verifique o espaço disponível e tente novamente.</string>
     <string name="offline_empty">Mantenha artigos ou conteúdos multimédia de publicações guardadas offline para os encontrar aqui.</string>
+    <string name="offline_empty_title">Ainda nada guardado offline</string>
     <string name="offline_remove">Remover cópia offline</string>
     <string name="offline_available">Disponível offline</string>
     <string name="offline_partial">Parcialmente disponível offline</string>

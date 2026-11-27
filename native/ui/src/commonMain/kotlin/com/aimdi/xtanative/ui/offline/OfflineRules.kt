@@ -51,6 +51,9 @@ object OfflineRules {
         }
     }
 
+    /** The storage used is shown once anything is kept or it could not be read: an empty library says only that it is empty. */
+    fun showsStorage(state: OfflineState): Boolean = state.entries.isNotEmpty() || state.busy.isNotEmpty() || state.storageError
+
     /** Clear is offered while anything is kept or being kept. */
     fun canClear(state: OfflineState): Boolean = state.entries.isNotEmpty() || state.busy.isNotEmpty()
 

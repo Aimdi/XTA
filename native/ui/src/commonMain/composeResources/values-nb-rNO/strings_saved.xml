@@ -139,6 +139,7 @@
     <string name="offline_storage_limit">Frakoblet lagring er begrenset til %1$s. Store filer eller strømmer som ikke støttes, kan forbli utilgjengelige.</string>
     <string name="offline_storage_error">Kunne ikke lese eller oppdatere frakoblet lagring. Sjekk ledig lagringsplass og prøv på nytt.</string>
     <string name="offline_empty">Behold artikler eller medier fra lagrede innlegg frakoblet for å finne dem her.</string>
+    <string name="offline_empty_title">Ingenting er lagret frakoblet ennå</string>
     <string name="offline_remove">Fjern frakoblet kopi</string>
     <string name="offline_available">Tilgjengelig frakoblet</string>
     <string name="offline_partial">Delvis tilgjengelig frakoblet</string>

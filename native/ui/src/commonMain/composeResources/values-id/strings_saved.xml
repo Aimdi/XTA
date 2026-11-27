@@ -136,6 +136,7 @@
     <string name="offline_storage_limit">Penyimpanan offline dibatasi hingga %1$s. File besar atau aliran yang tidak didukung mungkin tetap tidak tersedia.</string>
     <string name="offline_storage_error">Penyimpanan offline tidak dapat dibaca atau diperbarui. Periksa ruang penyimpanan yang tersedia dan coba lagi.</string>
     <string name="offline_empty">Simpan artikel atau media dari postingan tersimpan untuk offline agar muncul di sini.</string>
+    <string name="offline_empty_title">Belum ada yang disimpan untuk offline</string>
     <string name="offline_remove">Hapus salinan offline</string>
     <string name="offline_available">Tersedia offline</string>
     <string name="offline_partial">Sebagian tersedia offline</string>

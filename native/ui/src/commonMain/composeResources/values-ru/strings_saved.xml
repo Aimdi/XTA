@@ -145,6 +145,7 @@
     <string name="offline_storage_limit">Офлайн-хранилище ограничено до %1$s. Большие файлы или неподдерживаемые потоки могут остаться недоступными.</string>
     <string name="offline_storage_error">Не удалось прочитать или обновить офлайн-хранилище. Проверьте свободное место и повторите попытку.</string>
     <string name="offline_empty">Сохраняйте статьи или медиа из сохранённых публикаций офлайн, чтобы находить их здесь.</string>
+    <string name="offline_empty_title">Пока ничего не сохранено офлайн</string>
     <string name="offline_remove">Удалить офлайн-копию</string>
     <string name="offline_available">Доступно офлайн</string>
     <string name="offline_partial">Частично доступно офлайн</string>

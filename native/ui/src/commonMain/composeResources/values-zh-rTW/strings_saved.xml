@@ -136,6 +136,7 @@
     <string name="offline_storage_limit">離線儲存空間上限為 %1$s。大型檔案或不支援的串流可能仍無法使用。</string>
     <string name="offline_storage_error">無法讀取或更新離線儲存空間。請檢查可用儲存空間後重試。</string>
     <string name="offline_empty">離線保留文章或已儲存貼文的媒體，即可在這裡找到它們。</string>
+    <string name="offline_empty_title">尚未離線保留任何內容</string>
     <string name="offline_remove">移除離線副本</string>
     <string name="offline_available">可離線使用</string>
     <string name="offline_partial">部分可離線使用</string>

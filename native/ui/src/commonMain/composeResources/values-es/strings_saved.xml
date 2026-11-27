@@ -139,6 +139,7 @@
     <string name="offline_storage_limit">El almacenamiento sin conexión está limitado a %1$s. Los archivos grandes o las transmisiones no compatibles pueden seguir sin estar disponibles.</string>
     <string name="offline_storage_error">No se ha podido leer ni actualizar el almacenamiento sin conexión. Comprueba el espacio disponible y vuelve a intentarlo.</string>
     <string name="offline_empty">Conserva artículos o contenido multimedia de publicaciones guardadas sin conexión para encontrarlos aquí.</string>
+    <string name="offline_empty_title">Aún no hay nada sin conexión</string>
     <string name="offline_remove">Eliminar copia sin conexión</string>
     <string name="offline_available">Disponible sin conexión</string>
     <string name="offline_partial">Parcialmente disponible sin conexión</string>

@@ -139,6 +139,7 @@
     <string name="offline_storage_limit">Lo spazio offline è limitato a %1$s. I file di grandi dimensioni o i flussi non supportati potrebbero restare non disponibili.</string>
     <string name="offline_storage_error">Impossibile leggere o aggiornare l’archivio offline. Controlla lo spazio disponibile e riprova.</string>
     <string name="offline_empty">Conserva offline articoli o contenuti multimediali dei post salvati per trovarli qui.</string>
+    <string name="offline_empty_title">Ancora niente offline</string>
     <string name="offline_remove">Rimuovi copia offline</string>
     <string name="offline_available">Disponibile offline</string>
     <string name="offline_partial">Parzialmente disponibile offline</string>

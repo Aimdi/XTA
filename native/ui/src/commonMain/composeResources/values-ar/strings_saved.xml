@@ -151,6 +151,7 @@
     <string name="offline_storage_limit">مساحة التخزين بلا اتصال محدودة بـ %1$s. قد تبقى الملفات الكبيرة أو التدفقات غير المدعومة غير متاحة.</string>
     <string name="offline_storage_error">تعذّرت قراءة التخزين بلا اتصال أو تحديثه. تحقق من مساحة التخزين المتاحة وحاول مجددًا.</string>
     <string name="offline_empty">احتفظ بالمقالات أو وسائط المنشورات المحفوظة بلا اتصال لتجدها هنا.</string>
+    <string name="offline_empty_title">لا شيء محفوظ بلا اتصال بعد</string>
     <string name="offline_remove">إزالة النسخة المحفوظة بلا اتصال</string>
     <string name="offline_available">متاح بلا اتصال</string>
     <string name="offline_partial">متاح جزئيًا بلا اتصال</string>

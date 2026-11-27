@@ -139,6 +139,7 @@
     <string name="offline_storage_limit">Võrguühenduseta salvestusruumi piirang on %1$s. Suured failid või toetamata vood võivad jääda kättesaamatuks.</string>
     <string name="offline_storage_error">Võrguühenduseta salvestusruumi ei saanud lugeda ega uuendada. Kontrolli vaba salvestusruumi ja proovi uuesti.</string>
     <string name="offline_empty">Säilita artikleid või salvestatud postituste meediat võrguühenduseta, et need siit leida.</string>
+    <string name="offline_empty_title">Võrguühenduseta pole veel midagi</string>
     <string name="offline_remove">Eemalda võrguühenduseta koopia</string>
     <string name="offline_available">Saadaval võrguühenduseta</string>
     <string name="offline_partial">Osaliselt saadaval võrguühenduseta</string>

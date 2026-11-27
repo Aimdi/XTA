@@ -139,6 +139,7 @@
     <string name="offline_storage_limit">Der Offline-Speicher ist auf %1$s begrenzt. Große Dateien oder nicht unterstützte Streams sind möglicherweise nicht verfügbar.</string>
     <string name="offline_storage_error">Der Offline-Speicher konnte nicht gelesen oder aktualisiert werden. Prüfe den freien Speicherplatz und versuche es erneut.</string>
     <string name="offline_empty">Behalte Artikel oder Medien aus gespeicherten Beiträgen offline, um sie hier zu finden.</string>
+    <string name="offline_empty_title">Noch nichts offline</string>
     <string name="offline_remove">Offline-Kopie entfernen</string>
     <string name="offline_available">Offline verfügbar</string>
     <string name="offline_partial">Teilweise offline verfügbar</string>

@@ -145,6 +145,7 @@
     <string name="offline_storage_limit">Pamięć offline jest ograniczona do %1$s. Duże pliki lub nieobsługiwane strumienie mogą pozostać niedostępne.</string>
     <string name="offline_storage_error">Nie udało się odczytać lub zaktualizować pamięci offline. Sprawdź ilość wolnego miejsca i spróbuj ponownie.</string>
     <string name="offline_empty">Zachowaj artykuły lub multimedia z zapisanych wpisów offline, aby znaleźć je tutaj.</string>
+    <string name="offline_empty_title">Nic jeszcze nie zachowano offline</string>
     <string name="offline_remove">Usuń kopię offline</string>
     <string name="offline_available">Dostępne offline</string>
     <string name="offline_partial">Częściowo dostępne offline</string>

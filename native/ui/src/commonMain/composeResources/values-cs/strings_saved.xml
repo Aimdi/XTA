@@ -145,6 +145,7 @@
     <string name="offline_storage_limit">Offline úložiště je omezeno na %1$s. Velké soubory nebo nepodporované streamy mohou zůstat nedostupné.</string>
     <string name="offline_storage_error">Offline úložiště se nepodařilo přečíst nebo aktualizovat. Zkontrolujte volné místo a zkuste to znovu.</string>
     <string name="offline_empty">Ponechte články nebo média z uložených příspěvků offline a najdete je zde.</string>
+    <string name="offline_empty_title">Zatím nic offline</string>
     <string name="offline_remove">Odstranit offline kopii</string>
     <string name="offline_available">Dostupné offline</string>
     <string name="offline_partial">Částečně dostupné offline</string>
