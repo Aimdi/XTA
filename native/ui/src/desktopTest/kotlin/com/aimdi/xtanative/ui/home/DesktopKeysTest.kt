@@ -1029,6 +1029,19 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun escFromAButtonReachedWithTabGoesBackAtOnce() {
+        fun esc(leavesFirst: Boolean, canGoBack: Boolean = true, open: Boolean = false) =
+            DesktopKeys.action(DeskKey.ESCAPE, alt = false, ctrl = false, focusInside = true, canGoBack = canGoBack, somethingOpen = open, leavesFirst = leavesFirst)
+        // The opened post's Back, reached with Tab: the first Esc goes back.
+        assertEquals(DeskAction.BACK, esc(leavesFirst = false))
+        assertEquals(DeskAction.CLOSE, esc(leavesFirst = false, open = true), "what is open closes first")
+        // Nowhere to go back to: the button is let go of, as before.
+        assertEquals(DeskAction.LEAVE_FIELD, esc(leavesFirst = false, canGoBack = false))
+        // A field being typed in, or the navigation beside the page: left first.
+        assertEquals(DeskAction.LEAVE_FIELD, esc(leavesFirst = true))
+    }
+
+    @Test
     fun theFirstJInAListAtItsStartMarksItsFirstPost() {
         fun item(index: Int, offset: Int, size: Int = 300) = DesktopKeys.ShownItem(index, offset, size)
         val start = listOf(item(0, 0), item(1, 300), item(2, 600))

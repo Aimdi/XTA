@@ -137,6 +137,9 @@ class DesktopActions(
         return true
     }
 
+    /** Whether something in the navigation beside the screens has the focus ([FrameRegion.holds]): Esc there goes back to the page first. */
+    fun inRegion(): Boolean = region?.holds?.invoke() == true
+
     /**
      * Tab from the window's frame: the keys into the page beside the
      * navigation ([FrameRegion.page]), not into the navigation, which stands

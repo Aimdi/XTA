@@ -301,6 +301,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         val action = DesktopKeys.action(
             key, event.isAltPressed, event.isCtrlPressed, DesktopKeys.keysInside(focusInside, typing[0] > 0, clicked), canGoBack, rtl, actions.somethingOpen(), event.isShiftPressed,
             selecting = actions.selecting(), openIsRead = actions.openIsRead(), focusHeld = focusInside, backOpen = actions.backOpen(),
+            // A button reached with Tab (the opened post's Back) lets Esc go back at once; a field or the navigation is left first.
+            leavesFirst = typing[0] > 0 || actions.inRegion(),
         )
         // A search field's first Esc drops the recent search it highlighted; the next leaves the field.
         if (action == DeskAction.LEAVE_FIELD && actions.escapeInField()) {

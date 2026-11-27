@@ -125,8 +125,10 @@ object DesktopKeys {
      * [key], with Alt or Ctrl held, while something inside the page has the
      * focus ([focusInside]: a text field, a button reached with Tab) or not,
      * and while the page has something open that going back closes
-     * ([somethingOpen]). Esc leaves the field first, then closes, then goes
-     * back; Alt+←, the Back key and the mouse's back button close or go back
+     * ([somethingOpen]). Esc leaves the field first ([leavesFirst]: a field
+     * being typed in, the navigation beside the page), then closes, then goes
+     * back; from a button reached with Tab it closes or goes back at once,
+     * leaving it only where there is nowhere to go back to; Alt+←, the Back key and the mouse's back button close or go back
      * from anywhere; F5 and Ctrl+R refresh; ← and → turn the page only when
      * nothing in it takes the arrows, in the reading direction ([rtl]).
      * ↑ ↓, Page Up and Down, Space (with Shift, up), Home and End move the
@@ -207,11 +209,12 @@ object DesktopKeys {
         openIsRead: Boolean = false,
         focusHeld: Boolean = focusInside,
         backOpen: Boolean = false,
+        leavesFirst: Boolean = focusInside,
     ): DeskAction {
         // Only what is open over the page stops the reading keys; a column opened beside it is read with them.
         val covered = somethingOpen && !openIsRead
         return when {
-            key == DeskKey.ESCAPE && focusInside -> DeskAction.LEAVE_FIELD
+            key == DeskKey.ESCAPE && focusInside && (leavesFirst || back(canGoBack, somethingOpen || backOpen) == DeskAction.NONE) -> DeskAction.LEAVE_FIELD
             key == DeskKey.ESCAPE && selecting && !somethingOpen -> DeskAction.LEAVE_SELECTION
             key == DeskKey.ESCAPE || key == DeskKey.BACK || (key == DeskKey.LEFT && alt) -> back(canGoBack, somethingOpen || backOpen)
             // Over an opened post (a card the page counts as open) too, as Alt+Home.
