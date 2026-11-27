@@ -49,6 +49,7 @@ install -m755 "$here/packaging/linux/xta-native-launch" "$stage/$name/bin/xta-na
 install -m644 "$root/LICENSE" "$stage/$name/"
 install -m755 "$here/packaging/linux/install.sh" "$stage/$name/"
 install -Dm644 "$here/packaging/linux/com.aimdi.xtanative.desktop" "$stage/$name/share/applications/com.aimdi.xtanative.desktop"
+install -Dm644 "$here/packaging/linux/com.aimdi.xtanative.mime.xml" "$stage/$name/share/mime/packages/com.aimdi.xtanative.xml"
 install -Dm644 "$here/packaging/linux/com.aimdi.xtanative.svg" "$stage/$name/share/icons/hicolor/scalable/apps/com.aimdi.xtanative.svg"
 install -Dm644 "$here/packaging/linux/com.aimdi.xtanative-symbolic.svg" "$stage/$name/share/icons/hicolor/symbolic/apps/com.aimdi.xtanative-symbolic.svg"
 # The same drawing in pixels (rendered once from the SVG, packaging/linux/icons/), for

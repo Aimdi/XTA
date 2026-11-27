@@ -57,6 +57,7 @@ import com.aimdi.xtanative.ui.chrome.SavedWindow
 import com.aimdi.xtanative.ui.chrome.SavedWindowFile
 import com.aimdi.xtanative.ui.chrome.ScreenArea
 import com.aimdi.xtanative.ui.chrome.SingleInstance
+import com.aimdi.xtanative.ui.links.OpenRequests
 import com.aimdi.xtanative.ui.chrome.WindowCrash
 import com.aimdi.xtanative.ui.chrome.WindowFullscreen
 import com.aimdi.xtanative.ui.chrome.tray.StatusNotifier
@@ -114,16 +115,24 @@ fun main(args: Array<String>) {
     }
     val files = dataFolder()
     val link = InstanceMessage.linkIn(args)
+    // A file named that is not there is no file to open: the start only raises the window, as before files were opened.
+    val file = CommandLine.filesIn(args).firstOrNull { File(it).isFile }
     val startHidden = "--minimized" in args
     // A start from the session's autostart leaves a copy already running as it is, shown or hidden in the tray.
-    val asked = link?.let(InstanceMessage::Open) ?: if (startHidden) InstanceMessage.Hello else InstanceMessage.Raise
+    val asked = file?.let(InstanceMessage::OpenFile)
+        ?: link?.let(InstanceMessage::Open)
+        ?: if (startHidden) InstanceMessage.Hello else InstanceMessage.Raise
     val instance = SingleInstance.claim(files, asked) ?: exitProcess(0)
     // What the app prints is kept in its log too, once this start is the one that runs: from the menu, nothing reads the terminal.
     AppLog.install()
     // `--verbose`: the system's facts and each request's line in the log as well.
     val verbose = "--verbose" in args
     if (verbose) Diagnostics.verbose()
-    link?.let(DesktopIncomingLinks::hand)
+    when (asked) {
+        is InstanceMessage.OpenFile -> OpenRequests.file(asked.path)
+        is InstanceMessage.Open -> DesktopIncomingLinks.hand(asked.url)
+        else -> Unit
+    }
     val raises = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val trayClicks = MutableSharedFlow<TrayAction>(extraBufferCapacity = 4)
     val tray = TrayService.desktop
@@ -135,7 +144,11 @@ fun main(args: Array<String>) {
     MprisSessions.service.onRaise = { raises.tryEmit(Unit) }
     DesktopNotifications.desktop.onActivate = { raises.tryEmit(Unit) }
     instance.listen { message ->
-        if (message is InstanceMessage.Open) DesktopIncomingLinks.hand(message.url)
+        when (message) {
+            is InstanceMessage.Open -> DesktopIncomingLinks.hand(message.url)
+            is InstanceMessage.OpenFile -> OpenRequests.file(message.path)
+            else -> Unit
+        }
         raises.tryEmit(Unit)
     }
     val windowFile = SavedWindowFile(File(files, "window.ini"))

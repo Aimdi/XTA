@@ -15,6 +15,10 @@ refresh_caches() {
   if [ -f "$data/applications/mimeinfo.cache" ] && command -v update-desktop-database >/dev/null 2>&1; then
     update-desktop-database -q "$data/applications" || true
   fi
+  # The backup's file type (share/mime/packages) is known only once the database is built again.
+  if [ -d "$data/mime/packages" ] && command -v update-mime-database >/dev/null 2>&1; then
+    update-mime-database "$data/mime" >/dev/null 2>&1 || true
+  fi
   if [ -f "$data/icons/hicolor/icon-theme.cache" ] && command -v gtk-update-icon-cache >/dev/null 2>&1; then
     gtk-update-icon-cache -q -t "$data/icons/hicolor" || true
   fi
@@ -41,7 +45,7 @@ install_entry() {
       *) printf '%s\n' "$line" ;;
     esac
   done <"$here/share/applications/$app.desktop" >"$data/applications/$app.desktop"
-  (cd "$here/share" && find icons metainfo -type f) | while IFS= read -r file; do
+  (cd "$here/share" && find icons metainfo mime -type f) | while IFS= read -r file; do
     mkdir -p "$data/$(dirname "$file")"
     cp "$here/share/$file" "$data/$file"
   done
@@ -50,7 +54,7 @@ install_entry() {
 }
 
 uninstall_entry() {
-  rm -f "$data/applications/$app.desktop" "$data/metainfo/$app.metainfo.xml"
+  rm -f "$data/applications/$app.desktop" "$data/metainfo/$app.metainfo.xml" "$data/mime/packages/$app.xml"
   # The SVG, the PNG of each size and the symbolic icon.
   for icon in "$data"/icons/hicolor/*/apps/"$app".svg "$data"/icons/hicolor/*/apps/"$app".png "$data"/icons/hicolor/*/apps/"$app"-symbolic.svg; do
     rm -f "$icon"

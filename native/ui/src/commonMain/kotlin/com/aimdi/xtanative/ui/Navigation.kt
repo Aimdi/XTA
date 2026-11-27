@@ -94,6 +94,7 @@ import com.aimdi.xtanative.ui.home.WideFrame
 import com.aimdi.xtanative.ui.home.frameNavigation
 import com.aimdi.xtanative.ui.home.rememberLeaveField
 import com.aimdi.xtanative.ui.importer.ImportScreen
+import com.aimdi.xtanative.ui.importer.OpenedFileDialogs
 import com.aimdi.xtanative.ui.intro.IntroFlow
 import com.aimdi.xtanative.ui.intro.IntroScreen
 import com.aimdi.xtanative.ui.links.BindLinkScreens
@@ -510,6 +511,8 @@ fun XtaNativeRoot() {
                 }
             }
         }
+        // A file opened with the app (a backup, an OPML list) is asked about first.
+        if (secondary == null && screensUp) OpenedFileDialogs()
         // Alt+Home goes back to Home, as a browser's goes to its home page, and to Home's start page there (not
         // Saved or another page last picked on its bar); nothing where Home is not below.
         val openHome = remember(nav) {

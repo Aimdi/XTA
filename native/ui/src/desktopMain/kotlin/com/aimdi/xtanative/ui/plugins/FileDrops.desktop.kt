@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.plugins
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -113,10 +114,12 @@ internal fun <T : Any> Modifier.takesFiles(enabled: Boolean = true, pick: (List<
     }
 }
 
-/** The files of a drop on the plugin's screen, those [accept] takes, up to [PluginDroppedFile.MAX_BYTES] each. */
+/** The files of a drop on the plugin's screen, those [accept] takes, up to [PluginDroppedFile.MAX_BYTES] each, and a file opened with the app for it. */
 @Composable
 actual fun Modifier.pluginFileDrop(accept: (name: String, mime: String) -> Boolean, onFiles: (List<PluginDroppedFile>) -> Unit): Modifier {
     val accepts by rememberUpdatedState(accept)
     val latest by rememberUpdatedState(onFiles)
+    // A file opened with the app for this plugin ([OpenedPluginFile]) comes as a drop would, once the screen shows.
+    LaunchedEffect(Unit) { OpenedPluginFile.take(accepts)?.let { latest(listOf(it)) } }
     return takesFiles(pick = { files -> DroppedFiles.forPlugin(files, accepts).takeIf { it.isNotEmpty() } }) { taken -> latest(taken) }
 }

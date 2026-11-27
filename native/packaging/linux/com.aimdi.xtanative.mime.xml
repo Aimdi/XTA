@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- An XTA backup is JSON, which the app does not claim as a whole: only the names its backups are given
+     (xta-2026-11-27.json, xta-auto-….json), which Qt's file managers tell from other JSON by the longer
+     pattern, and the content a sniffer reads (XTA Native's first key, XTA's format near the start).
+     GLib lets *.json win over both, so GNOME's file managers keep calling these JSON: there the app is
+     picked under "Open with another application", as for any JSON. -->
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-xta-backup">
+    <comment>XTA backup</comment>
+    <sub-class-of type="application/json"/>
+    <glob pattern="xta-*.json"/>
+    <magic priority="60">
+      <match type="string" value="{&quot;archiveAnnotations&quot;:" offset="0"/>
+      <match type="string" value="&quot;formatVersion&quot;" offset="0:256"/>
+    </magic>
+    <icon name="com.aimdi.xtanative"/>
+  </mime-type>
+</mime-info>

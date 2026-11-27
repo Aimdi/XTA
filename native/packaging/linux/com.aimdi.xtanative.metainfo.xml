@@ -59,6 +59,8 @@
   </developer>
   <provides>
     <binary>xta-native</binary>
+    <mediatype>application/x-xta-backup</mediatype>
+    <mediatype>text/x-opml</mediatype>
   </provides>
   <supports>
     <control>pointing</control>

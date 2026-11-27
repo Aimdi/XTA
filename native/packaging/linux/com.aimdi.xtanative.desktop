@@ -89,6 +89,9 @@ Keywords[uk]=X;Twitter;читалка;стрічка;новини;твіттер
 Keywords[vi]=X;Twitter;trình đọc;nguồn tin;tin tức;Bluesky;Mastodon;Reddit;RSS;
 Keywords[zh_CN]=X;Twitter;阅读器;订阅源;新闻;推特;Bluesky;Mastodon;Reddit;RSS;
 Keywords[zh_TW]=X;Twitter;閱讀器;訂閱源;新聞;推特;Bluesky;Mastodon;Reddit;RSS;
+# %U also brings the files a file manager opens with the app, as file: URIs: an XTA backup (its own type, see
+# com.aimdi.xtanative.mime.xml) to restore and an OPML list of feeds to follow, each asked about first.
+MimeType=application/x-xta-backup;text/x-opml+xml;text/x-opml;
 # %U: `xta-native <url>` opens an X link (or a page a plugin reads) in the app; a link router (handlr, junction)
 # can send x.com links here. XTA claims no web scheme: it is no browser, and a link it hands
 # back to the browser within seconds is not taken again, so a router cannot loop.
@@ -134,3 +137,4 @@ Name[vi]=Tìm kiếm mới
 Name[zh_CN]=新搜索
 Name[zh_TW]=新搜尋
 Exec=xta-native https://x.com/search
+

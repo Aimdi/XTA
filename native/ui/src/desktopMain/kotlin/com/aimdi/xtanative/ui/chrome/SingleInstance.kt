@@ -47,8 +47,17 @@ sealed interface InstanceMessage {
         override val line: String = "$OPEN$url"
     }
 
+    /** Ask the reader about the file at [path] (absolute): an XTA backup to restore, an OPML list to follow; and bring the window forward. */
+    data class OpenFile(val path: String) : InstanceMessage {
+        override val line: String = "$FILE$path"
+    }
+
+    /** Whether a copy too old to know this message is asked to raise its window instead: all but a [Hello], which leaves it alone. */
+    val raisesWhenUnknown: Boolean get() = this !is Hello && this !is Raise
+
     companion object {
         private const val OPEN = "open "
+        private const val FILE = "file "
 
         /** The longest link a later start hands over; anything longer is no link a reader typed or clicked. */
         const val MAX_URL = 4_096
@@ -60,6 +69,7 @@ sealed interface InstanceMessage {
                 text == Raise.line -> Raise
                 text == Hello.line -> Hello
                 text.startsWith(OPEN) -> link(text.removePrefix(OPEN))?.let(::Open)
+                text.startsWith(FILE) -> path(text.removePrefix(FILE))?.let(::OpenFile)
                 else -> null
             }
         }
@@ -70,6 +80,11 @@ sealed interface InstanceMessage {
          * when there is none, so a start without one only raises the window.
          */
         fun linkIn(args: Array<String>): String? = args.firstNotNullOfOrNull(::link)
+
+        /** [text] as a file's path to hand over: absolute, of no line breaks or control characters, else null. */
+        private fun path(text: String): String? = text.takeIf { path ->
+            path.length <= MAX_URL && path.startsWith("/") && path.none { it.isISOControl() }
+        }
 
         /** [text] as a link to hand over: one http(s) address of no spaces, else null. */
         private fun link(text: String): String? = text.trim().takeIf { url ->
@@ -232,7 +247,7 @@ class SingleInstance private constructor(
             when (tell(sockets, message)) {
                 Reply.HEARD -> return null
                 // A copy too old to open links raises its window instead; one too old for a hello is left alone.
-                Reply.IGNORED -> if (message !is InstanceMessage.Open || tell(sockets, InstanceMessage.Raise) != Reply.NONE) return null
+                Reply.IGNORED -> if (!message.raisesWhenUnknown || tell(sockets, InstanceMessage.Raise) != Reply.NONE) return null
                 Reply.NONE -> Unit
             }
             // Nobody answered: the copy holding the lock is ending. This start runs once it has.

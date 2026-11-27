@@ -38,3 +38,32 @@ class PluginDroppedFile internal constructor(
  */
 @Composable
 expect fun Modifier.pluginFileDrop(accept: (name: String, mime: String) -> Boolean, onFiles: (List<PluginDroppedFile>) -> Unit): Modifier
+
+/**
+ * A file the reader opened with the app (`xta-native feeds.opml`) for a
+ * plugin's screen to take as if it had been dropped there: the next
+ * [pluginFileDrop] shown whose `accept` takes it gets it, once, within
+ * [WAIT_MS] of the reader choosing the plugin.
+ */
+internal object OpenedPluginFile {
+    private const val WAIT_MS = 30_000L
+    private var waiting: Pair<PluginDroppedFile, Long>? = null
+
+    @Synchronized
+    fun offer(file: PluginDroppedFile, now: Long = System.currentTimeMillis()) {
+        waiting = file to now
+    }
+
+    /** The file waiting, when [accept] takes it; gone from here once taken. */
+    @Synchronized
+    fun take(accept: (name: String, mime: String) -> Boolean, now: Long = System.currentTimeMillis()): PluginDroppedFile? {
+        val (file, at) = waiting ?: return null
+        if (now - at > WAIT_MS) return null.also { waiting = null }
+        if (!runCatching { accept(file.name, file.mime) }.getOrDefault(false)) return null
+        waiting = null
+        return file
+    }
+
+    /** [bytes] as a file named [name] of type [mime], for [offer]. */
+    fun of(name: String, mime: String, bytes: ByteArray): PluginDroppedFile = PluginDroppedFile(name, mime, bytes.size.toLong()) { bytes }
+}
