@@ -155,6 +155,7 @@
     <string name="downloads_clear_finished">Borrar el historial de descargas completadas</string>
     <string name="downloads_history_unavailable">No se ha podido guardar el historial de descargas. Comprueba el espacio disponible y vuelve a intentarlo.</string>
     <string name="downloads_empty">Tus descargas aparecerán aquí. Guarda contenido multimedia de una publicación para empezar.</string>
+    <string name="downloads_empty_title">Aún no hay descargas</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Comprueba tu conexión y la carpeta de descargas y vuelve a intentarlo.</string>
     <string name="downloads_open_file">Abrir archivo</string>

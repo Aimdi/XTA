@@ -161,6 +161,7 @@
     <string name="downloads_clear_finished">Wyczyść historię ukończonych pobrań</string>
     <string name="downloads_history_unavailable">Nie udało się zapisać historii pobierania. Sprawdź ilość wolnego miejsca i spróbuj ponownie.</string>
     <string name="downloads_empty">Tutaj pojawią się pobrane pliki. Na początek zapisz multimedia z wpisu.</string>
+    <string name="downloads_empty_title">Nic jeszcze nie pobrano</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Sprawdź połączenie i folder pobierania, a następnie spróbuj ponownie.</string>
     <string name="downloads_open_file">Otwórz plik</string>

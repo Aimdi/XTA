@@ -152,6 +152,7 @@
     <string name="downloads_clear_finished">清除已完成的下載記錄</string>
     <string name="downloads_history_unavailable">無法儲存下載記錄。請檢查可用儲存空間後重試。</string>
     <string name="downloads_empty">下載的檔案將顯示在這裡。從貼文儲存媒體即可開始。</string>
+    <string name="downloads_empty_title">尚無下載</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">請檢查網路連線和下載資料夾後重試。</string>
     <string name="downloads_open_file">開啟檔案</string>

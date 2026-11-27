@@ -155,6 +155,7 @@
     <string name="downloads_clear_finished">Tamamlanan indirme geçmişini temizle</string>
     <string name="downloads_history_unavailable">İndirme geçmişi kaydedilemedi. Kullanılabilir depolama alanını kontrol edip tekrar deneyin.</string>
     <string name="downloads_empty">İndirilen dosyalarınız burada görünecek. Başlamak için bir gönderideki medyayı kaydedin.</string>
+    <string name="downloads_empty_title">Henüz indirme yok</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Bağlantınızı ve indirme klasörünü kontrol edip tekrar deneyin.</string>
     <string name="downloads_open_file">Dosyayı aç</string>

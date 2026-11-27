@@ -167,6 +167,7 @@
     <string name="downloads_clear_finished">مسح سجل التنزيلات المكتملة</string>
     <string name="downloads_history_unavailable">تعذّر حفظ سجل التنزيلات. تحقق من مساحة التخزين المتاحة وحاول مجددًا.</string>
     <string name="downloads_empty">ستظهر تنزيلاتك هنا. احفظ وسائط من منشور للبدء.</string>
+    <string name="downloads_empty_title">لا توجد تنزيلات بعد</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">تحقق من اتصالك ومجلد التنزيلات، ثم حاول مجددًا.</string>
     <string name="downloads_open_file">فتح الملف</string>

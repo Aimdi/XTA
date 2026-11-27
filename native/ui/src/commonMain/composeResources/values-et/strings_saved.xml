@@ -155,6 +155,7 @@
     <string name="downloads_clear_finished">Tühjenda lõpetatud allalaadimiste ajalugu</string>
     <string name="downloads_history_unavailable">Allalaadimiste ajalugu ei saanud salvestada. Kontrolli vaba salvestusruumi ja proovi uuesti.</string>
     <string name="downloads_empty">Sinu allalaadimised ilmuvad siia. Alustamiseks salvesta postitusest meedia.</string>
+    <string name="downloads_empty_title">Allalaadimisi veel pole</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Kontrolli ühendust ja allalaadimiskausta ning proovi uuesti.</string>
     <string name="downloads_open_file">Ava fail</string>

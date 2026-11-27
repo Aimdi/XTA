@@ -161,6 +161,7 @@
     <string name="downloads_clear_finished">Очистити історію завершених завантажень</string>
     <string name="downloads_history_unavailable">Не вдалося зберегти історію завантажень. Перевірте вільне місце й повторіть спробу.</string>
     <string name="downloads_empty">Тут з’являться ваші завантаження. Для початку збережіть медіа з допису.</string>
+    <string name="downloads_empty_title">Поки немає завантажень</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Перевірте з’єднання та папку завантажень, а потім повторіть спробу.</string>
     <string name="downloads_open_file">Відкрити файл</string>

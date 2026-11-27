@@ -161,6 +161,7 @@
     <string name="downloads_clear_finished">Очистить историю завершённых загрузок</string>
     <string name="downloads_history_unavailable">Не удалось сохранить историю загрузок. Проверьте свободное место и повторите попытку.</string>
     <string name="downloads_empty">Здесь появятся ваши загрузки. Для начала сохраните медиа из публикации.</string>
+    <string name="downloads_empty_title">Пока нет загрузок</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Проверьте подключение и папку загрузок, затем повторите попытку.</string>
     <string name="downloads_open_file">Открыть файл</string>

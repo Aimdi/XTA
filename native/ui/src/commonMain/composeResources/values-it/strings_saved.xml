@@ -155,6 +155,7 @@
     <string name="downloads_clear_finished">Cancella la cronologia dei download completati</string>
     <string name="downloads_history_unavailable">Impossibile salvare la cronologia dei download. Controlla lo spazio disponibile e riprova.</string>
     <string name="downloads_empty">I tuoi download appariranno qui. Salva un contenuto multimediale da un post per iniziare.</string>
+    <string name="downloads_empty_title">Ancora nessun download</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Controlla la connessione e la cartella dei download, poi riprova.</string>
     <string name="downloads_open_file">Apri file</string>

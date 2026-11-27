@@ -152,6 +152,7 @@
     <string name="downloads_clear_finished">Hapus riwayat unduhan selesai</string>
     <string name="downloads_history_unavailable">Riwayat unduhan tidak dapat disimpan. Periksa ruang penyimpanan yang tersedia dan coba lagi.</string>
     <string name="downloads_empty">Unduhan Anda akan muncul di sini. Simpan media dari postingan untuk memulai.</string>
+    <string name="downloads_empty_title">Belum ada unduhan</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Periksa koneksi dan folder unduhan Anda, lalu coba lagi.</string>
     <string name="downloads_open_file">Buka file</string>

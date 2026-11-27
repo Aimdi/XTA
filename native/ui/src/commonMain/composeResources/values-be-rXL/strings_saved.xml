@@ -161,6 +161,7 @@
     <string name="downloads_clear_finished">Ačyscić historyju zavieršanych spampovak</string>
     <string name="downloads_history_unavailable">Nie ŭdałosia zachavać historyju spampovak. Praviercie volnaje miesca i paŭtarycie sprobu.</string>
     <string name="downloads_empty">Tut buduć vašy spampoŭki. Dla pačatku zachavajcie medyja z publikacyi.</string>
+    <string name="downloads_empty_title">Pakul niama spampovak</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Praviercie złučennie i papku spampovak, zatym paŭtarycie sprobu.</string>
     <string name="downloads_open_file">Adkryć fajł</string>

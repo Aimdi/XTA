@@ -155,6 +155,7 @@
     <string name="downloads_clear_finished">Tøm historikken for fullførte nedlastinger</string>
     <string name="downloads_history_unavailable">Kunne ikke lagre nedlastingshistorikken. Sjekk ledig lagringsplass og prøv på nytt.</string>
     <string name="downloads_empty">Nedlastingene dine vises her. Lagre medier fra et innlegg for å komme i gang.</string>
+    <string name="downloads_empty_title">Ingen nedlastinger ennå</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Sjekk tilkoblingen og nedlastingsmappen, og prøv på nytt.</string>
     <string name="downloads_open_file">Åpne fil</string>

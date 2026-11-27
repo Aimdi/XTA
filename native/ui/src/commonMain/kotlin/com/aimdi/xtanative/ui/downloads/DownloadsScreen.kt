@@ -56,6 +56,7 @@ import com.aimdi.xtanative.ui.generated.resources.downloads_clear_finished
 import com.aimdi.xtanative.ui.generated.resources.downloads_completed
 import com.aimdi.xtanative.ui.generated.resources.downloads_downloading
 import com.aimdi.xtanative.ui.generated.resources.downloads_empty
+import com.aimdi.xtanative.ui.generated.resources.downloads_empty_title
 import com.aimdi.xtanative.ui.generated.resources.downloads_failed
 import com.aimdi.xtanative.ui.generated.resources.downloads_history_unavailable
 import com.aimdi.xtanative.ui.generated.resources.downloads_interrupted
@@ -119,7 +120,7 @@ fun DownloadsScreen(onBack: () -> Unit) {
             Box(Modifier.weight(1f).fillMaxWidth()) {
                 when {
                     !state.ready -> CircularProgressIndicator(Modifier.align(Alignment.Center))
-                    state.entries.isEmpty() -> EmptyState(SavedIcons.Download, stringResource(Res.string.downloads_empty))
+                    state.entries.isEmpty() -> EmptyState(SavedIcons.Download, stringResource(Res.string.downloads_empty_title), body = stringResource(Res.string.downloads_empty))
                     else -> rememberLazyListState().let { readList -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding() + 16.dp), readList) { column -> LazyColumn(state = readList, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                         items(state.shown, key = { it.id }) { entry ->
                             DownloadRowView(

@@ -155,6 +155,7 @@
     <string name="downloads_clear_finished">Garbitu amaitutako deskargen historia</string>
     <string name="downloads_history_unavailable">Ezin izan da deskargen historia gorde. Egiaztatu biltegiratze-leku librea eta saiatu berriro.</string>
     <string name="downloads_empty">Zure deskargak hemen agertuko dira. Hasteko, gorde argitalpen bateko multimedia-edukia.</string>
+    <string name="downloads_empty_title">Oraindik ez dago deskargarik</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Egiaztatu konexioa eta deskargen karpeta, eta saiatu berriro.</string>
     <string name="downloads_open_file">Ireki fitxategia</string>

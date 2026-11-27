@@ -152,6 +152,7 @@
     <string name="downloads_clear_finished">완료된 다운로드 기록 지우기</string>
     <string name="downloads_history_unavailable">다운로드 기록을 저장할 수 없습니다. 사용 가능한 저장 공간을 확인하고 다시 시도하세요.</string>
     <string name="downloads_empty">다운로드한 파일이 여기에 표시됩니다. 게시물에서 미디어를 저장하여 시작하세요.</string>
+    <string name="downloads_empty_title">아직 다운로드가 없습니다</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">연결과 다운로드 폴더를 확인한 후 다시 시도하세요.</string>
     <string name="downloads_open_file">파일 열기</string>

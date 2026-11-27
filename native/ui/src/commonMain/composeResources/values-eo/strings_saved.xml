@@ -155,6 +155,7 @@
     <string name="downloads_clear_finished">Viŝi la historion de finitaj elŝutoj</string>
     <string name="downloads_history_unavailable">Ne eblis konservi la elŝuthistorion. Kontrolu la liberan stokspacon kaj reprovu.</string>
     <string name="downloads_empty">Viaj elŝutoj aperos ĉi tie. Por komenci, konservu aŭdvidaĵon el afiŝo.</string>
+    <string name="downloads_empty_title">Ankoraŭ neniuj elŝutaĵoj</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Kontrolu vian konekton kaj la elŝutdosierujon, poste reprovu.</string>
     <string name="downloads_open_file">Malfermi dosieron</string>

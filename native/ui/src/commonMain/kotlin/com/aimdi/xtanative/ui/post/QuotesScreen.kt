@@ -2,7 +2,6 @@ package com.aimdi.xtanative.ui.post
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -29,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -45,9 +43,11 @@ import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.PostSkeleton
 import com.aimdi.xtanative.ui.common.RowSkeleton
+import com.aimdi.xtanative.ui.common.EmptyState
 import com.aimdi.xtanative.ui.common.ProblemRow
-import com.aimdi.xtanative.ui.common.WithReadingColumn
+import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.rememberReadRecovery
 import com.aimdi.xtanative.ui.feed.feedThreads
 import com.aimdi.xtanative.ui.feed.rememberFeedLayout
@@ -240,7 +240,7 @@ private fun QuotesList(state: QuotesUi, vm: QuotesViewModel, actions: PostAction
             item(key = "sort") {
                 SortChip(state.quoteSort, Sorts.X_QUOTES, { quoteSortLabel(it) }, ::quoteSortIcon, vm::selectQuotes, Modifier.padding(start = 4.dp))
             }
-            listState(quotes, { vm.loadQuotes() }, { quotes.cursor?.let(vm::loadQuotes) }, Res.string.posts_no_quotes, moreFailed = Res.string.posts_unable_to_load_the_next_page_of_replies, posts = true) {
+            listState(quotes, { vm.loadQuotes() }, { quotes.cursor?.let(vm::loadQuotes) }, Res.string.posts_no_quotes, PostIcons.Quote, moreFailed = Res.string.posts_unable_to_load_the_next_page_of_replies, posts = true) {
                 feedThreads(quotes.items, layout, actions, keyOf = { "quote-" + it.id })
             }
         }
@@ -266,6 +266,7 @@ private fun RepostersList(state: QuotesUi, vm: QuotesViewModel, actions: PostAct
             { vm.loadReposters() },
             { reposters.cursor?.let(vm::loadReposters) },
             Res.string.posts_no_retweets,
+            XIcons.Repost,
             failed = Res.string.posts_unable_to_load_who_retweeted,
             moreFailed = Res.string.posts_unable_to_load_more_retweets,
         ) {
@@ -284,6 +285,7 @@ private fun <T> androidx.compose.foundation.lazy.LazyListScope.listState(
     retry: () -> Unit,
     retryMore: () -> Unit,
     empty: org.jetbrains.compose.resources.StringResource,
+    emptyIcon: ImageVector,
     failed: org.jetbrains.compose.resources.StringResource? = null,
     moreFailed: org.jetbrains.compose.resources.StringResource? = null,
     posts: Boolean = false,
@@ -292,15 +294,9 @@ private fun <T> androidx.compose.foundation.lazy.LazyListScope.listState(
     val problem = paged.problem
     when {
         paged.loading -> item(key = "loading") { if (posts) FeedSkeleton(count = 4) else RowSkeleton() }
-        problem != null -> item(key = "problem") { ProblemRow(problem, retry, context = failed?.let { stringResource(it) }) }
-        paged.items.isEmpty() -> item(key = "empty") {
-            Text(
-                stringResource(empty),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().padding(32.dp),
-            )
-        }
+        // The first page's failure and an empty list as every page says them: the shared mark, title and words.
+        problem != null -> item(key = "problem") { ProblemView(problem, retry, context = failed?.let { stringResource(it) }) }
+        paged.items.isEmpty() -> item(key = "empty") { EmptyState(emptyIcon, stringResource(empty)) }
         else -> rows()
     }
     item(key = "more") {

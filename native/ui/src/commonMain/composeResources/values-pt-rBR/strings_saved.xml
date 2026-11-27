@@ -155,6 +155,7 @@
     <string name="downloads_clear_finished">Limpar o histórico de downloads concluídos</string>
     <string name="downloads_history_unavailable">Não foi possível salvar o histórico de downloads. Verifique o espaço disponível e tente novamente.</string>
     <string name="downloads_empty">Seus downloads aparecerão aqui. Salve uma mídia de uma publicação para começar.</string>
+    <string name="downloads_empty_title">Nenhum download ainda</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Verifique sua conexão e a pasta de downloads e tente novamente.</string>
     <string name="downloads_open_file">Abrir arquivo</string>

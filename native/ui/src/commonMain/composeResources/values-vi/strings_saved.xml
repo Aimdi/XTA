@@ -152,6 +152,7 @@
     <string name="downloads_clear_finished">Xóa lịch sử tải xuống đã hoàn tất</string>
     <string name="downloads_history_unavailable">Không thể lưu lịch sử tải xuống. Hãy kiểm tra dung lượng trống rồi thử lại.</string>
     <string name="downloads_empty">Các tệp tải xuống sẽ xuất hiện ở đây. Hãy lưu nội dung đa phương tiện từ một bài đăng để bắt đầu.</string>
+    <string name="downloads_empty_title">Chưa có lượt tải xuống nào</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Hãy kiểm tra kết nối và thư mục tải xuống rồi thử lại.</string>
     <string name="downloads_open_file">Mở tệp</string>

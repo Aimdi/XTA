@@ -155,6 +155,7 @@
     <string name="downloads_clear_finished">Clear completed history</string>
     <string name="downloads_history_unavailable">Download history could not be saved. Check available storage and try again.</string>
     <string name="downloads_empty">Your downloads will appear here. Save media from a post to get started.</string>
+    <string name="downloads_empty_title">No downloads yet</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Check your connection and download folder, then retry.</string>
     <string name="downloads_open_file">Open file</string>

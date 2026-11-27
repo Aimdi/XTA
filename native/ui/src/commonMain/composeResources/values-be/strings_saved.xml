@@ -161,6 +161,7 @@
     <string name="downloads_clear_finished">Ачысціць гісторыю завершаных спамповак</string>
     <string name="downloads_history_unavailable">Не ўдалося захаваць гісторыю спамповак. Праверце вольнае месца і паўтарыце спробу.</string>
     <string name="downloads_empty">Тут будуць вашы спампоўкі. Для пачатку захавайце медыя з публікацыі.</string>
+    <string name="downloads_empty_title">Пакуль няма спамповак</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Праверце злучэнне і папку спамповак, затым паўтарыце спробу.</string>
     <string name="downloads_open_file">Адкрыць файл</string>

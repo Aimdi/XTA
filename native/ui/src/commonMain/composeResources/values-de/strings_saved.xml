@@ -155,6 +155,7 @@
     <string name="downloads_clear_finished">Abgeschlossenen Verlauf leeren</string>
     <string name="downloads_history_unavailable">Der Downloadverlauf konnte nicht gespeichert werden. Prüfe den freien Speicherplatz und versuche es erneut.</string>
     <string name="downloads_empty">Hier erscheinen deine Downloads. Speichere Medien aus einem Beitrag, um loszulegen.</string>
+    <string name="downloads_empty_title">Noch keine Downloads</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Prüfe deine Verbindung und den Downloadordner und versuche es erneut.</string>
     <string name="downloads_open_file">Datei öffnen</string>

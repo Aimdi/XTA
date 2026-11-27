@@ -161,6 +161,7 @@
     <string name="downloads_clear_finished">Vymazat historii dokončených stahování</string>
     <string name="downloads_history_unavailable">Historii stahování se nepodařilo uložit. Zkontrolujte volné místo a zkuste to znovu.</string>
     <string name="downloads_empty">Zde se zobrazí vaše stažené soubory. Začněte uložením médií z příspěvku.</string>
+    <string name="downloads_empty_title">Zatím nic staženo</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Zkontrolujte připojení a složku pro stahování a zkuste to znovu.</string>
     <string name="downloads_open_file">Otevřít soubor</string>

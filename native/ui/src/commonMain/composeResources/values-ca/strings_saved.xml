@@ -155,6 +155,7 @@
     <string name="downloads_clear_finished">Esborra l’historial de baixades completades</string>
     <string name="downloads_history_unavailable">No s’ha pogut desar l’historial de baixades. Comprova l’espai disponible i torna-ho a provar.</string>
     <string name="downloads_empty">Les teves baixades apareixeran aquí. Desa contingut multimèdia d’una publicació per començar.</string>
+    <string name="downloads_empty_title">Encara no hi ha baixades</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Comprova la connexió i la carpeta de baixades i torna-ho a provar.</string>
     <string name="downloads_open_file">Obre el fitxer</string>

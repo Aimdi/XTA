@@ -155,6 +155,7 @@
     <string name="downloads_clear_finished">Effacer l’historique des téléchargements terminés</string>
     <string name="downloads_history_unavailable">Impossible d’enregistrer l’historique des téléchargements. Vérifiez l’espace de stockage disponible et réessayez.</string>
     <string name="downloads_empty">Vos téléchargements apparaîtront ici. Enregistrez un média depuis une publication pour commencer.</string>
+    <string name="downloads_empty_title">Aucun téléchargement pour l'instant</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Vérifiez votre connexion et le dossier de téléchargement, puis réessayez.</string>
     <string name="downloads_open_file">Ouvrir le fichier</string>

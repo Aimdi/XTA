@@ -158,6 +158,7 @@
     <string name="downloads_clear_finished">Șterge istoricul descărcărilor finalizate</string>
     <string name="downloads_history_unavailable">Istoricul descărcărilor nu a putut fi salvat. Verifică spațiul disponibil și încearcă din nou.</string>
     <string name="downloads_empty">Descărcările tale vor apărea aici. Salvează conținut media dintr-o postare pentru a începe.</string>
+    <string name="downloads_empty_title">Nicio descărcare încă</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Verifică conexiunea și folderul de descărcări, apoi încearcă din nou.</string>
     <string name="downloads_open_file">Deschide fișierul</string>

@@ -155,6 +155,7 @@
     <string name="downloads_clear_finished">Voltooide downloadgeschiedenis wissen</string>
     <string name="downloads_history_unavailable">De downloadgeschiedenis kon niet worden opgeslagen. Controleer de beschikbare opslagruimte en probeer het opnieuw.</string>
     <string name="downloads_empty">Je downloads verschijnen hier. Sla media uit een bericht op om te beginnen.</string>
+    <string name="downloads_empty_title">Nog geen downloads</string>
     <string name="downloads_progress">%1$s / %2$s</string>
     <string name="downloads_retry_hint">Controleer je verbinding en de downloadmap en probeer het opnieuw.</string>
     <string name="downloads_open_file">Bestand openen</string>
