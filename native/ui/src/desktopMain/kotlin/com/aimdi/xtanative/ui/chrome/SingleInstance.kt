@@ -13,6 +13,8 @@ import java.nio.channels.ServerSocketChannel
 import java.nio.channels.SocketChannel
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
+import java.nio.file.attribute.PosixFilePermissions
+import java.security.MessageDigest
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
@@ -81,7 +83,8 @@ sealed interface InstanceMessage {
 /**
  * One copy of the app at a time, as XTA is a unique GTK application: the
  * first start holds a lock in the data folder and listens on a local socket
- * beside it; a later start finds the lock taken, asks the first to raise its
+ * in `$XDG_RUNTIME_DIR/xta-native`, named after that folder (beside the lock
+ * where there is no runtime folder, or its path would be too long); a later start finds the lock taken, asks the first to raise its
  * window and ends once it answers, rather than opening a second window over
  * the same settings and database. A copy that is ending stops answering, and
  * a start that no copy answers waits for its lock and runs. Where the folder cannot be locked, each start runs
@@ -91,7 +94,7 @@ class SingleInstance private constructor(
     private val lockChannel: FileChannel?,
     private val lock: FileLock?,
     private val server: ServerSocketChannel?,
-    private val socket: File,
+    private val socket: File?,
 ) : AutoCloseable {
     /** Hands each message a later start sends to [onMessage], on a thread of its own, until [close]. */
     fun listen(onMessage: (InstanceMessage) -> Unit) {
@@ -112,22 +115,30 @@ class SingleInstance private constructor(
         }, "xta-native-instance").apply { isDaemon = true }.start()
     }
 
-    /** Stops answering later starts as soon as the app begins to end, before its window and writes are done. */
+    /** Stops answering later starts as soon as the app begins to end, before its window and writes are done; its socket goes with it, the lock still held. */
     private fun closeOnExit() {
         val server = server ?: return
-        runCatching { Runtime.getRuntime().addShutdownHook(Thread({ runCatching { server.close() } }, "xta-native-instance-exit")) }
+        runCatching { Runtime.getRuntime().addShutdownHook(Thread({ runCatching { server.close() }; socket?.delete() }, "xta-native-instance-exit")) }
     }
 
     override fun close() {
         runCatching { server?.close() }
-        if (server != null) socket.delete()
+        if (server != null) socket?.delete()
         runCatching { lock?.release() }
         runCatching { lockChannel?.close() }
     }
 
     companion object {
         private const val LOCK_FILE = "instance.lock"
-        private const val SOCKET_FILE = "instance.socket"
+
+        /** Where copies before the socket moved to the runtime folder listened, beside the lock; still asked, and served where no runtime folder will do. */
+        private const val OLD_SOCKET_FILE = "instance.socket"
+
+        /** The runtime folder's own subfolder for the app's sockets, the reader's alone (0700). */
+        private const val RUNTIME_FOLDER = "xta-native"
+
+        /** The longest path a socket may have: sun_path's 108 bytes, its ending zero among them. */
+        private const val MAX_SOCKET_PATH = 107
 
         /** How long a later start keeps trying to reach a first copy that is still starting up. */
         private const val REACH_MILLIS = 3_000L
@@ -141,35 +152,58 @@ class SingleInstance private constructor(
         /** The running copy's answer once it has done what it was asked (raised its window). */
         private const val HEARD = "raised"
 
+        /** `$XDG_RUNTIME_DIR`, where the session keeps sockets; null where it is unset or not an absolute folder. */
+        fun runtimeFolder(): File? = System.getenv("XDG_RUNTIME_DIR")?.takeIf { it.isNotBlank() }?.let(::File)?.takeIf { it.isAbsolute && it.isDirectory }
+
+        /**
+         * The sockets a copy on [folder] may listen on, the one to serve first:
+         * one in [runtime]'s own folder, named after [folder] (so copies on two
+         * data folders never take each other's), then the old one beside the
+         * lock. Only paths short enough for a socket count.
+         */
+        internal fun socketsFor(folder: File, runtime: File?): List<File> = listOfNotNull(
+            runtime?.let { File(File(it, RUNTIME_FOLDER), "instance-${folderKey(folder)}.socket") },
+            File(folder, OLD_SOCKET_FILE),
+        ).filter { it.path.toByteArray(Charsets.UTF_8).size <= MAX_SOCKET_PATH }
+
+        /** A short name for [folder]: the start of its full path's SHA-256, the same for each spelling of it. */
+        internal fun folderKey(folder: File): String {
+            val path = runCatching { folder.canonicalPath }.getOrDefault(folder.absolutePath)
+            return MessageDigest.getInstance("SHA-256").digest(path.toByteArray(Charsets.UTF_8)).take(8).joinToString("") { "%02x".format(it) }
+        }
+
         /**
          * This start's claim on [folder]: the running copy's when it is the
          * first, else null once the copy already running has been handed
          * [message] (raise its window, open a link and raise it, or only hear
          * that a start was made), and this start should end. A running copy too
          * old to open links is asked to raise its window instead; one too old to
-         * answer a hello is left alone.
+         * answer a hello is left alone. The socket lives in [runtime]
+         * (`$XDG_RUNTIME_DIR`), the lock in [folder].
          */
-        fun claim(folder: File, message: InstanceMessage = InstanceMessage.Raise): SingleInstance? {
-            val socket = File(folder, SOCKET_FILE)
-            val first = take(folder, socket)
+        fun claim(folder: File, message: InstanceMessage = InstanceMessage.Raise, runtime: File? = runtimeFolder()): SingleInstance? {
+            val sockets = socketsFor(folder, runtime)
+            if (sockets.isEmpty()) System.err.println("XTA Native: no socket path is short enough under ${runtime ?: folder}; a later start cannot reach this copy.")
+            val first = take(folder, sockets)
             if (first != null) return first
-            if (tell(socket, message)) return null
-            if (message is InstanceMessage.Open && tell(socket, InstanceMessage.Raise)) return null
+            if (tell(sockets, message)) return null
+            if (message is InstanceMessage.Open && tell(sockets, InstanceMessage.Raise)) return null
             // Nobody answered: the copy holding the lock is ending. This start runs once it has.
             val until = System.currentTimeMillis() + TAKE_OVER_MILLIS
             while (System.currentTimeMillis() < until) {
                 Thread.sleep(100)
-                take(folder, socket)?.let { return it }
+                take(folder, sockets)?.let { return it }
             }
+            System.err.println("XTA Native: another copy holds ${File(folder, LOCK_FILE)} but does not answer; this start ends.")
             return null
         }
 
         /** The lock on [folder] taken, and this copy listening; a copy without the lock where the folder cannot be locked at all; null while another copy holds it. */
-        private fun take(folder: File, socket: File): SingleInstance? {
+        private fun take(folder: File, sockets: List<File>): SingleInstance? {
             val channel = try {
                 FileChannel.open(File(folder, LOCK_FILE).toPath(), StandardOpenOption.CREATE, StandardOpenOption.WRITE)
             } catch (_: IOException) {
-                return SingleInstance(null, null, null, socket)
+                return SingleInstance(null, null, null, null)
             }
             val lock = try {
                 channel.tryLock()
@@ -177,26 +211,39 @@ class SingleInstance private constructor(
                 // Held in this very process (a test's second start).
                 null
             } catch (_: IOException) {
-                return SingleInstance(channel, null, null, socket)
+                return SingleInstance(channel, null, null, null)
             }
             if (lock == null) {
                 channel.close()
                 return null
             }
-            return SingleInstance(channel, lock, serve(socket), socket).also { it.closeOnExit() }
+            // With the lock held no copy listens on these: an old one left behind by a copy that crashed goes.
+            sockets.forEach { runCatching { Files.deleteIfExists(it.toPath()) } }
+            val served = sockets.firstNotNullOfOrNull { socket -> serve(socket)?.let { it to socket } }
+            return SingleInstance(channel, lock, served?.first, served?.second).also { it.closeOnExit() }
         }
 
-        /** The socket a later start reaches this copy on; null where it cannot be made (a path too long for one), and the copy is not reached. */
+        /** The socket a later start reaches this copy on; null where it cannot be made (its folder not made the reader's own), and the next is tried. */
         private fun serve(socket: File): ServerSocketChannel? = runCatching {
+            val parent = socket.parentFile
+            if (socket.name != OLD_SOCKET_FILE) ownFolder(parent)
             Files.deleteIfExists(socket.toPath())
             ServerSocketChannel.open(StandardProtocolFamily.UNIX).bind(UnixDomainSocketAddress.of(socket.toPath()))
         }.getOrNull()
 
-        /** Sends [message] to the copy listening on [socket], trying for a while in case it is still starting; true once it answered that it raised its window. */
-        private fun tell(socket: File, message: InstanceMessage): Boolean {
+        /** [folder] made, the reader's alone (0700), so no other user reaches the socket in it. */
+        private fun ownFolder(folder: File) {
+            val owner = PosixFilePermissions.fromString("rwx------")
+            if (!folder.isDirectory) Files.createDirectories(folder.toPath(), PosixFilePermissions.asFileAttribute(owner))
+            Files.setPosixFilePermissions(folder.toPath(), owner)
+        }
+
+        /** Sends [message] to a copy listening on one of [sockets], trying for a while in case it is still starting; true once one answered. */
+        private fun tell(sockets: List<File>, message: InstanceMessage): Boolean {
+            if (sockets.isEmpty()) return false
             val until = System.currentTimeMillis() + REACH_MILLIS
             while (true) {
-                val sent = ask(socket, message)
+                val sent = sockets.any { ask(it, message) }
                 if (sent || System.currentTimeMillis() >= until) return sent
                 Thread.sleep(100)
             }

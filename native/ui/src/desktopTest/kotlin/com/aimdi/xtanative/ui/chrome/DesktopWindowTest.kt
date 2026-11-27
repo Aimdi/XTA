@@ -2,11 +2,20 @@ package com.aimdi.xtanative.ui.chrome
 
 import androidx.compose.ui.window.WindowPlacement
 import java.io.File
+import java.net.StandardProtocolFamily
+import java.net.UnixDomainSocketAddress
+import java.nio.ByteBuffer
+import java.nio.channels.Channels
+import java.nio.channels.FileChannel
+import java.nio.channels.ServerSocketChannel
 import java.nio.file.Files
+import java.nio.file.StandardOpenOption
+import java.nio.file.attribute.PosixFilePermissions
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -140,11 +149,11 @@ class DesktopWindowTest {
     @Test
     fun aSecondStartHandsTheFirstItsLink() {
         val folder = Files.createTempDirectory("xta-instance").toFile()
-        val first = assertNotNull(SingleInstance.claim(folder))
+        val first = assertNotNull(claim(folder))
         val heard = LinkedBlockingQueue<InstanceMessage>()
         first.listen(heard::add)
         try {
-            assertNull(SingleInstance.claim(folder, InstanceMessage.Open("https://x.com/jack/status/20")))
+            assertNull(claim(folder, InstanceMessage.Open("https://x.com/jack/status/20")))
             assertEquals(InstanceMessage.Open("https://x.com/jack/status/20"), heard.poll(5, TimeUnit.SECONDS))
         } finally {
             first.close()
@@ -154,12 +163,12 @@ class DesktopWindowTest {
     @Test
     fun aCopyTooOldToOpenLinksIsAskedToRaiseItsWindow() {
         val folder = Files.createTempDirectory("xta-instance").toFile()
-        val first = assertNotNull(SingleInstance.claim(folder))
+        val first = assertNotNull(claim(folder))
         val heard = LinkedBlockingQueue<InstanceMessage>()
         // A copy from before links: it answers "raise" only, and ignores what it does not know.
         first.listen { message -> if (message == InstanceMessage.Raise) heard.add(message) else throw IllegalStateException("unknown line") }
         try {
-            assertNull(SingleInstance.claim(folder, InstanceMessage.Open("https://x.com/jack")))
+            assertNull(claim(folder, InstanceMessage.Open("https://x.com/jack")))
             assertEquals(InstanceMessage.Raise, heard.poll(10, TimeUnit.SECONDS))
         } finally {
             first.close()
@@ -169,11 +178,11 @@ class DesktopWindowTest {
     @Test
     fun aSecondStartAsksTheFirstToRaiseItsWindowAndEnds() {
         val folder = Files.createTempDirectory("xta-instance").toFile()
-        val first = assertNotNull(SingleInstance.claim(folder))
+        val first = assertNotNull(claim(folder))
         val heard = LinkedBlockingQueue<InstanceMessage>()
         first.listen(heard::add)
         try {
-            assertNull(SingleInstance.claim(folder))
+            assertNull(claim(folder))
             assertEquals(InstanceMessage.Raise, heard.poll(5, TimeUnit.SECONDS))
         } finally {
             first.close()
@@ -183,12 +192,12 @@ class DesktopWindowTest {
     @Test
     fun aMinimizedSecondStartEndsWithoutRaisingTheWindow() {
         val folder = Files.createTempDirectory("xta-instance").toFile()
-        val first = assertNotNull(SingleInstance.claim(folder))
+        val first = assertNotNull(claim(folder))
         val heard = LinkedBlockingQueue<InstanceMessage>()
         first.listen(heard::add)
         try {
             val started = System.currentTimeMillis()
-            assertNull(SingleInstance.claim(folder, InstanceMessage.Hello), "the autostart ends: a copy runs")
+            assertNull(claim(folder, InstanceMessage.Hello), "the autostart ends: a copy runs")
             assertTrue(System.currentTimeMillis() - started < 2_000, "answered at once, not waited out")
             assertNull(heard.poll(300, TimeUnit.MILLISECONDS), "the running window is left as it is")
         } finally {
@@ -197,12 +206,110 @@ class DesktopWindowTest {
     }
 
     @Test
+    fun theSocketLivesInTheRuntimeFolderNamedAfterTheDataFolder() {
+        val folder = Files.createTempDirectory("xta-instance").toFile()
+        val first = assertNotNull(claim(folder))
+        try {
+            val sockets = File(runtime, "xta-native")
+            assertEquals("rwx------", PosixFilePermissions.toString(Files.getPosixFilePermissions(sockets.toPath())))
+            assertEquals(listOf("instance-${SingleInstance.folderKey(folder)}.socket"), sockets.list()!!.filter { it.contains(SingleInstance.folderKey(folder)) })
+            assertFalse(File(folder, "instance.socket").exists(), "nothing listens in the data folder")
+        } finally {
+            first.close()
+        }
+        assertEquals(SingleInstance.folderKey(folder), SingleInstance.folderKey(File(folder, "../${folder.name}")), "one name for each spelling")
+    }
+
+    @Test
+    fun copiesOnTwoDataFoldersKeepTheirOwnSockets() {
+        val one = Files.createTempDirectory("xta-instance").toFile()
+        val other = Files.createTempDirectory("xta-instance").toFile()
+        val first = assertNotNull(claim(one))
+        val heard = LinkedBlockingQueue<InstanceMessage>()
+        first.listen(heard::add)
+        try {
+            val second = assertNotNull(claim(other), "another data folder is another copy")
+            try {
+                // The second copy's start did not take the first one's socket away.
+                assertNull(claim(one))
+                assertEquals(InstanceMessage.Raise, heard.poll(5, TimeUnit.SECONDS))
+            } finally {
+                second.close()
+            }
+        } finally {
+            first.close()
+        }
+    }
+
+    @Test
+    fun aDataFolderTooDeepForASocketIsStillReached() {
+        val deep = File(Files.createTempDirectory("xta-instance").toFile(), "d".repeat(60) + "/" + "e".repeat(60)).apply { mkdirs() }
+        val first = assertNotNull(claim(deep))
+        val heard = LinkedBlockingQueue<InstanceMessage>()
+        first.listen(heard::add)
+        try {
+            assertNull(claim(deep))
+            assertEquals(InstanceMessage.Raise, heard.poll(5, TimeUnit.SECONDS))
+        } finally {
+            first.close()
+        }
+        assertTrue(SingleInstance.socketsFor(deep, null).isEmpty(), "too long beside the lock")
+    }
+
+    @Test
+    fun aCopyFromBeforeTheMoveIsReachedBesideItsLock() {
+        val folder = Files.createTempDirectory("xta-instance").toFile()
+        val heard = LinkedBlockingQueue<String>()
+        oldCopy(folder, heard).use {
+            assertNull(claim(folder, InstanceMessage.Open("https://x.com/jack")))
+            assertTrue("raise" in heard, "asked to raise after the link it does not know")
+            assertTrue(heard.all { it == "raise" || it == "open https://x.com/jack" })
+        }
+    }
+
+    @Test
+    fun aMinimizedStartLeavesACopyTooOldForAHelloAlone() {
+        val folder = Files.createTempDirectory("xta-instance").toFile()
+        val heard = LinkedBlockingQueue<String>()
+        oldCopy(folder, heard).use {
+            assertNull(claim(folder, InstanceMessage.Hello), "ends: the lock is held")
+            assertTrue(heard.none { it == "raise" }, "never asked to raise")
+        }
+    }
+
+    private val runtime: File = Files.createTempDirectory("xta-run").toFile()
+
+    private fun claim(folder: File, message: InstanceMessage = InstanceMessage.Raise) = SingleInstance.claim(folder, message, runtime)
+
+    /** A copy from before the socket moved: the lock held, listening beside it, answering "raise" alone. */
+    private fun oldCopy(folder: File, heard: LinkedBlockingQueue<String>): AutoCloseable {
+        val lockChannel = FileChannel.open(File(folder, "instance.lock").toPath(), StandardOpenOption.CREATE, StandardOpenOption.WRITE)
+        val lock = lockChannel.lock()
+        val server = ServerSocketChannel.open(StandardProtocolFamily.UNIX).bind(UnixDomainSocketAddress.of(File(folder, "instance.socket").toPath()))
+        Thread {
+            while (server.isOpen) {
+                val client = runCatching { server.accept() }.getOrNull() ?: break
+                client.use { channel ->
+                    val line = Channels.newReader(channel, Charsets.UTF_8).buffered().readLine()?.trim().orEmpty()
+                    heard.add(line)
+                    if (line == "raise") channel.write(ByteBuffer.wrap("raised\n".toByteArray()))
+                }
+            }
+        }.apply { isDaemon = true }.start()
+        return AutoCloseable {
+            server.close()
+            lock.release()
+            lockChannel.close()
+        }
+    }
+
+    @Test
     fun aStartThatTheEndingCopyDoesNotAnswerRunsOnceItHasEnded() {
         val folder = Files.createTempDirectory("xta-instance").toFile()
-        val ending = assertNotNull(SingleInstance.claim(folder))
+        val ending = assertNotNull(claim(folder))
         // The first copy never answers (it is ending) and lets go of its lock a moment later.
         Thread { Thread.sleep(500); ending.close() }.start()
-        val next = assertNotNull(SingleInstance.claim(folder), "the start runs once the ending copy is gone")
+        val next = assertNotNull(claim(folder), "the start runs once the ending copy is gone")
         next.close()
     }
 }
