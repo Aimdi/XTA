@@ -53,6 +53,21 @@ class PublishedDocumentTest {
     }
 
     @Test
+    fun aPageThatIsNotTheFileKeepsTheCopyAndIsAskedAgain() = runBlocking {
+        registry { XResponse(200, file("tiktok.aid" to "2000")) }.refresh()
+        now += PublishedDocument.DAY_MILLIS
+        val portal = registry { XResponse(200, "<html><body>Sign in to the hotel Wi-Fi</body></html>") }
+        portal.applyKept()
+
+        assertNull(portal.refresh())
+        assertEquals(mapOf("tiktok.aid" to "2000"), portal.published.value)
+        assertEquals(mapOf("tiktok.aid" to "2000"), registry { error("not asked") }.also { it.applyKept() }.published.value)
+
+        now += 60_000
+        assertEquals(1, registry { XResponse(200, file("tiktok.aid" to "2001")) }.refresh(), "not taken as read today")
+    }
+
+    @Test
     fun whatIsInForceStaysWhenTheFileCannotBeRead() = runBlocking {
         registry { XResponse(200, file("tiktok.aid" to "2000")) }.refresh()
         now += PublishedDocument.DAY_MILLIS

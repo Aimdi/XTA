@@ -114,6 +114,19 @@ class XGuestAndRegistryTest {
     }
 
     @Test
+    fun aPageThatIsNotTheRegistryLeavesTheIdsAsTheyWere() = runBlocking {
+        val file = """{"version":1,"endpoints":{"TweetDetail":"AAAAAAAAAAAAAAAAAAAAAA"}}"""
+        val reader = client(Answering { XResponse(200, file) })
+        reader.refreshEndpoints()
+        val portal = client(Answering { XResponse(200, "<html><body>Sign in to the hotel Wi-Fi</body></html>") })
+        portal.endpoints.applyOverrides(J.parse(file))
+
+        assertNull(portal.refreshEndpoints())
+        assertEquals("AAAAAAAAAAAAAAAAAAAAAA", portal.endpoints.queryId(XEndpoints.TWEET_DETAIL))
+        assertTrue(XEndpoints.isDocument(J.parse("""{"endpoints":{}}""")), "a file with no override is still the file")
+    }
+
+    @Test
     fun aRegistryIsOnlyReadOverHttpsAndOnlyFromAnAnswer() = runBlocking {
         var asked = 0
         val reader = client(Answering { asked++; XResponse(404, "{}") })

@@ -533,7 +533,10 @@ class XClient(
         val registry = url.trim().toHttpUrlOrNull()?.takeIf { it.isHttps } ?: return null
         return try {
             val response = withRequestBudget(XRequestBudget.REGISTRY_MILLIS, "endpoint registry") { http.get(registry, emptyMap(), followRedirects = true) }
-            response.body.takeIf { response.isSuccessful }?.also { endpoints.applyOverrides(J.parse(it)) }
+            val registryBody = response.body.takeIf { response.isSuccessful } ?: return null
+            val parsed = J.parse(registryBody).takeIf { XEndpoints.isDocument(it) } ?: return null
+            endpoints.applyOverrides(parsed)
+            registryBody
         } catch (error: CancellationException) {
             throw error
         } catch (_: Exception) {

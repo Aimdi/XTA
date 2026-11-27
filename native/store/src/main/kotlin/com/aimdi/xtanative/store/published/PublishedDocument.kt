@@ -33,9 +33,11 @@ class PublishedDocument(
     /**
      * Reads the document again when the last read is [intervalMillis] old or
      * more, and keeps it. The body read; null when nothing new was: too soon,
-     * no answer, or an answer other than 200.
+     * no answer, an answer other than 200, or a body that is not the document
+     * ([accepts]: a captive portal's page, say), which leaves the copy kept
+     * and is asked for again next time.
      */
-    suspend fun refresh(): String? {
+    suspend fun refresh(accepts: (String) -> Boolean = { true }): String? {
         val now = clock()
         stored()?.readAt?.let { if (now - it < intervalMillis) return null }
         val response = try {
@@ -45,7 +47,7 @@ class PublishedDocument(
         } catch (e: IOException) {
             return null
         }
-        if (response.code != 200) return null
+        if (response.code != 200 || !accepts(response.body)) return null
         file.write(buildJsonObject { put("readAt", now); put("body", response.body) }.toString())
         return response.body
     }
@@ -78,7 +80,7 @@ class RepairsRegistry(private val document: PublishedDocument) {
     suspend fun applyKept(): Int = apply(document.kept().orEmpty())
 
     /** Reads the file again when it is due and puts it in force; null when nothing new was read, so what is in force stays. */
-    suspend fun refresh(): Int? = document.refresh()?.let(::apply)
+    suspend fun refresh(): Int? = document.refresh(Repairs::isDocument)?.let(::apply)
 
     private fun apply(body: String): Int = Repairs.parse(body).also { state.value = it }.size
 }

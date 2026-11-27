@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.core.x
 
 import com.aimdi.xtanative.core.json.J
+import kotlinx.serialization.json.JsonObject
 import okhttp3.HttpUrl
 
 /**
@@ -83,6 +84,9 @@ class XEndpoints {
         const val OVERRIDES_URL = "https://raw.githubusercontent.com/Aimdi/XTA/HEAD/endpoints.json"
 
         private val queryIdPattern = Regex("^[A-Za-z0-9_-]{16,32}$")
+
+        /** Whether [body] is a published `endpoints.json` at all, not some other page answered with a 200. */
+        fun isDocument(body: J): Boolean = body["endpoints"].raw is JsonObject
 
         /** Whether [id] is shaped like a query id: what an override must be. */
         fun isQueryId(id: String): Boolean = queryIdPattern.matches(id)

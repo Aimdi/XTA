@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.core.repairs
 
 import com.aimdi.xtanative.core.json.J
+import kotlinx.serialization.json.JsonObject
 
 /**
  * What a repaired value may look like (XTA's RepairKind). No kind can hold
@@ -43,6 +44,9 @@ data class RepairSlot(val key: String, val shipped: String, val kind: RepairKind
  * nothing.
  */
 object Repairs {
+    /** Whether [body] is the published file at all, not a captive portal's or proxy's page answered with a 200. */
+    fun isDocument(body: String): Boolean = J.parse(body)["repairs"].raw is JsonObject
+
     /** The entries of [body], a published repairs file; none when it does not read as one. */
     fun parse(body: String): Map<String, String> {
         val repairs = J.parse(body)["repairs"]

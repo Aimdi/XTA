@@ -5,6 +5,7 @@ import com.aimdi.xtanative.core.feed.ReadPosition
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.XClient
+import com.aimdi.xtanative.core.x.XEndpoints
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.store.backup.BackupDocument
@@ -177,7 +178,7 @@ object SettingsStart {
         if (!current[DataPrefs.endpointRegistryEnabled]) return
         val fetchedAt = XtaTime.parse(current[DataPrefs.endpointRegistryFetchedAt])
         if (fetchedAt != null && Duration.between(fetchedAt, now()) < ENDPOINTS_EVERY) return
-        val body = fetch(current[DataPrefs.endpointRegistryUrl]) ?: return
+        val body = fetch(current[DataPrefs.endpointRegistryUrl])?.takeIf { XEndpoints.isDocument(J.parse(it)) } ?: return
         apply(client, body)
         settings.update { it.with(DataPrefs.endpointRegistryCache, body).with(DataPrefs.endpointRegistryFetchedAt, XtaTime.iso(now())) }
     }

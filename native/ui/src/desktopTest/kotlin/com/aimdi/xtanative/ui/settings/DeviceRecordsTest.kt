@@ -158,6 +158,20 @@ class SettingsStartTest {
     private fun registry(id: String) = """{"endpoints":{"${XEndpoints.SEARCH}":"$id"}}"""
 
     @Test
+    fun aPageThatIsNotThePublishedEndpointsKeepsTheCopyAndItsTime(): Unit = runBlocking {
+        val settings = SettingsStore(StoreDir(File(dir, "store")))
+        val now = Instant.parse("2026-11-05T12:00:00Z")
+        SettingsStart.refreshEndpoints(settings, client(), { now }) { registry("Fresh_Id_123456789012") }
+        val stamped = settings.get(DataPrefs.endpointRegistryFetchedAt)
+
+        val later = client()
+        SettingsStart.refreshEndpoints(settings, later, { now.plusSeconds(25 * 3_600) }) { "<html><body>Sign in to the hotel Wi-Fi</body></html>" }
+        assertEquals("Fresh_Id_123456789012", later.endpoints.queryId(XEndpoints.SEARCH))
+        assertEquals(registry("Fresh_Id_123456789012"), settings.get(DataPrefs.endpointRegistryCache))
+        assertEquals(stamped, settings.get(DataPrefs.endpointRegistryFetchedAt))
+    }
+
+    @Test
     fun theKeptEndpointsApplyFirstAndThePublishedOnesAreReadOnceADayAndKept(): Unit = runBlocking {
         val settings = SettingsStore(StoreDir(File(dir, "store")))
         val now = Instant.parse("2026-11-05T12:00:00Z")
