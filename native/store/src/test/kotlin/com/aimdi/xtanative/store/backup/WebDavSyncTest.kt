@@ -16,6 +16,9 @@ private class FakeDav(var etags: Boolean = true, var reachable: Boolean = true) 
     val files = HashMap<String, String>()
     val folders = HashSet<String>()
     val requests = ArrayList<String>()
+
+    /** How a PUT to the document fails, when it should. */
+    var mainPut: PutFailure? = null
     private val revisions = HashMap<String, Int>()
     private var revision = 0
 
@@ -26,7 +29,12 @@ private class FakeDav(var etags: Boolean = true, var reachable: Boolean = true) 
         val path = url.encodedPath
         return when (method) {
             "GET" -> files[path]?.let { WebDavResponse(200, it, tag(path)) } ?: WebDavResponse(404)
-            "PUT" -> put(path, headers, body.orEmpty())
+            "PUT" -> when (mainPut.takeIf { path == "/xta/backup.json" }) {
+                PutFailure.REFUSED -> WebDavResponse(507)
+                PutFailure.LOST -> throw IOException("reset")
+                PutFailure.ANSWER_LOST -> put(path, headers, body.orEmpty()).let { throw IOException("reset after write") }
+                null -> put(path, headers, body.orEmpty())
+            }
             "MKCOL" -> WebDavResponse(if (folders.add(path)) 201 else 405)
             "DELETE" -> WebDavResponse(if (files.remove(path) != null) 204 else 404)
             else -> WebDavResponse(405)
@@ -45,6 +53,8 @@ private class FakeDav(var etags: Boolean = true, var reachable: Boolean = true) 
 
     private fun tag(path: String): String? = if (etags && path in files) "\"${revisions[path]}\"" else null
 }
+
+private enum class PutFailure { REFUSED, LOST, ANSWER_LOST }
 
 private class MemoryBaselines : WebDavBaselines {
     val kept = HashMap<String, String>()
@@ -98,6 +108,41 @@ class WebDavSyncTest {
         theirs.acknowledge(config, theirs.download(config))
         assertEquals(WebDavOutcome.SUCCESS, theirs.upload(config, """{"other":true}""").outcome)
         assertEquals(WebDavOutcome.CONFLICT, mine.upload(config, "{}").outcome)
+    }
+
+    @Test
+    fun aReplacementThatFailedLeavesNoKeptCopyBehind(): Unit = runBlocking {
+        for (failure in listOf(PutFailure.REFUSED, PutFailure.LOST)) {
+            val server = FakeDav()
+            val sync = WebDavSync(server, MemoryBaselines()) { now }
+            assertEquals(WebDavOutcome.SUCCESS, sync.upload(config, "{}").outcome)
+            server.mainPut = failure
+            assertTrue(!sync.upload(config, """{"next":1}""").isSuccess)
+            assertEquals(listOf("/xta/backup.json"), server.files.keys.toList(), "$failure")
+            server.mainPut = null
+            assertEquals(WebDavOutcome.SUCCESS, sync.upload(config, """{"next":2}""").outcome)
+        }
+    }
+
+    @Test
+    fun aReplacementWhoseAnswerWasLostStillCountsAndKeepsItsCopy(): Unit = runBlocking {
+        val server = FakeDav()
+        val sync = WebDavSync(server, MemoryBaselines()) { now }
+        assertEquals(WebDavOutcome.SUCCESS, sync.upload(config, "{}").outcome)
+        server.mainPut = PutFailure.ANSWER_LOST
+        assertEquals(WebDavOutcome.SUCCESS, sync.upload(config, """{"next":1}""").outcome)
+        val versions = WebDavSync.versionsIn(server.files["/xta/backup.json"])
+        assertTrue(server.files.containsKey("/xta/backup.json.versions/" + versions.single().file))
+        server.mainPut = null
+        // The baseline moved with it, so the next upload is no conflict.
+        assertEquals(WebDavOutcome.SUCCESS, sync.upload(config, """{"next":2}""").outcome)
+    }
+
+    @Test
+    fun aLongTransferIsNotCutOffWhileItMoves() {
+        val client = OkHttpWebDav(okhttp3.OkHttpClient()).client
+        assertEquals(0, client.callTimeoutMillis)
+        assertTrue(client.readTimeoutMillis > 0 && client.writeTimeoutMillis > 0)
     }
 
     @Test

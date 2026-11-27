@@ -90,6 +90,7 @@ class WebDavSync(
             val remote = download(config)
             if (!remote.isSuccess && remote.outcome != WebDavOutcome.NOT_FOUND) return remote
             val versions = ArrayList<WebDavVersion>()
+            var archivedFile: String? = null
             if (remote.isSuccess) {
                 val etag = remote.etag ?: return WebDavResult(WebDavOutcome.UNSAFE_SERVER)
                 if (baselines.read(baselineKey(config)) != etag) return WebDavResult(WebDavOutcome.CONFLICT)
@@ -98,6 +99,7 @@ class WebDavSync(
                 val file = "${now.epochSecond * 1_000_000 + now.nano / 1_000}-${sha256(previous)}.json"
                 val archived = put(config, versionAddress(config, file), previous, mapOf("if-none-match" to "*"))
                 if (!archived.isSuccess) return archived
+                archivedFile = file
                 versions += WebDavVersion(file, XtaTime.iso(now))
                 versions += versionsIn(previous)
             }
@@ -105,8 +107,13 @@ class WebDavSync(
                 data - BackupKeys.WEBDAV_HISTORY + (BackupKeys.WEBDAV_HISTORY to JsonArray(versions.take(VERSIONS).map { it.toJson() })),
             ).toString()
             val condition = if (remote.isSuccess) mapOf("if-match" to remote.etag!!) else mapOf("if-none-match" to "*")
-            val result = put(config, config.address!!, payload, condition)
-            if (!result.isSuccess) return result
+            val sent = put(config, config.address!!, payload, condition)
+            val result = if (sent.isSuccess) sent else landed(config, sent, payload)
+            if (result == null) {
+                // The copy kept for a replacement that never happened would only pile up on the server.
+                archivedFile?.let { file -> runCatching { http.send("DELETE", versionAddress(config, file), config.authHeaders, null) } }
+                return sent
+            }
             // A lost validator must never become permission to overwrite on a retry.
             val verified = if (result.etag != null) result else download(config)
             if (!verified.isSuccess || verified.etag == null) return WebDavResult(WebDavOutcome.UNSAFE_SERVER)
@@ -121,6 +128,12 @@ class WebDavSync(
         } catch (_: Exception) {
             WebDavResult(WebDavOutcome.NETWORK_ERROR)
         }
+    }
+
+    /** The document as the server holds it when a PUT that got no answer ([sent]) still landed; else null. */
+    private suspend fun landed(config: WebDavConfig, sent: WebDavResult, payload: String): WebDavResult? {
+        if (sent.outcome != WebDavOutcome.NETWORK_ERROR) return null
+        return download(config).takeIf { it.isSuccess && it.etag != null && it.body == payload }
     }
 
     private fun invalid(config: WebDavConfig): WebDavResult? = when {
@@ -214,9 +227,18 @@ class StoredWebDavBaselines(dir: StoreDir) : WebDavBaselines {
     }
 }
 
-/** The requests over OkHttp, each given up after 30 seconds. */
+/**
+ * The requests over OkHttp, each given up once the server stays silent (or
+ * stops taking the body) for 30 seconds, never for its length alone: a
+ * backup with pictures in its notes can take minutes on a slow uplink.
+ */
 class OkHttpWebDav(client: OkHttpClient = AppProxy.client) : WebDavHttp {
-    private val client = client.newBuilder().callTimeout(30, TimeUnit.SECONDS).build()
+    internal val client = client.newBuilder()
+        .callTimeout(0, TimeUnit.MILLISECONDS)
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build()
 
     override suspend fun send(method: String, url: HttpUrl, headers: Map<String, String>, body: String?): WebDavResponse =
         withContext(Dispatchers.IO) {
