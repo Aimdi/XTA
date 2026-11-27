@@ -20,6 +20,9 @@ import java.util.WeakHashMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /**
@@ -96,7 +99,7 @@ class SpeechParts private constructor(settings: SettingsStore, platform: SpeechP
     }
 
     val speech: AppSpeech = run {
-        val offline = synthesis?.let { offlineEngine(settings, it) }
+        val offline = synthesis?.let { offlineEngine(settings, it) }?.also { releasedWhenTurnedOff(it, settings) }
         val engines = listOfNotNull(offline, platform.engine)
         AppSpeech(SpeechReader(engines, platform.session), settings, scope, hasEngine = engines.isNotEmpty(), voicesOnly = platform.engine == null && offline != null)
     }
@@ -111,6 +114,13 @@ class SpeechParts private constructor(settings: SettingsStore, platform: SpeechP
         scope = scope,
         appLanguage = { Locale.getDefault().language.ifEmpty { null } },
     )
+
+    /** Turning offline voices off lets go of the loaded voice now, not at the next reading. */
+    private fun releasedWhenTurnedOff(engine: OfflineSpeechEngine, settings: SettingsStore) {
+        scope.launch {
+            settings.state.map { it?.get(SpeechPrefs.offlineVoice) ?: true }.distinctUntilChanged().filter { !it }.collect { engine.release() }
+        }
+    }
 
     companion object {
         private val made = WeakHashMap<SettingsStore, SpeechParts>()

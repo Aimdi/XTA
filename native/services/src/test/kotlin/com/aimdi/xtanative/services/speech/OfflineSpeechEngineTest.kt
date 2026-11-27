@@ -4,6 +4,7 @@ import java.io.File
 import java.util.Collections
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -71,7 +72,7 @@ class OfflineSpeechEngineTest {
         override suspend fun stop() {}
     }
 
-    private fun CoroutineScope.engine() = OfflineSpeechEngine(
+    private fun CoroutineScope.engine(idleUnloadMillis: Long? = null) = OfflineSpeechEngine(
         voiceFor = { language -> OfflineVoices.pick(installed, language)?.let { InstalledVoice(it, File("/voices/${it.id}")) } },
         enabled = { enabled },
         load = { voice ->
@@ -83,6 +84,7 @@ class OfflineSpeechEngineTest {
         discard = { discarded += it },
         scope = this,
         appLanguage = { "en" },
+        idleUnloadMillis = idleUnloadMillis,
     )
 
     private val germanText = "Das ist der erste Satz, und er ist nicht sehr lang. " +
@@ -196,5 +198,46 @@ class OfflineSpeechEngineTest {
     fun theSpeechRateBecomesSherpaSpeed() = runBlocking {
         SpeechReader(listOf(engine())).speak("Post", germanText, TtsChoice(rate = 0.6))
         assertEquals(1.2, synthesizers.single().speeds.distinct().single(), 1e-9)
+    }
+
+    @Test
+    fun aVoiceLeftUnusedIsLetGoAndLoadedAgainForTheNextReading() = runBlocking {
+        val short = germanText.substringBefore(". ") + "."
+        val offline = engine(idleUnloadMillis = 100)
+        SpeechReader(listOf(offline)).speak("Post", short, TtsChoice())
+        assertFalse(synthesizers.single().disposed, "kept right after reading")
+        delay(400)
+        assertTrue(synthesizers.single().disposed, "let go after the idle time")
+        SpeechReader(listOf(offline)).speak("Post", short, TtsChoice())
+        assertEquals(2, loaded.size)
+        assertEquals(2, log.count { it.startsWith("play:") })
+    }
+
+    @Test
+    fun readingAgainBeforeTheIdleTimeKeepsTheVoice() = runBlocking {
+        val short = germanText.substringBefore(". ") + "."
+        val offline = engine(idleUnloadMillis = 300)
+        repeat(4) {
+            SpeechReader(listOf(offline)).speak("Post", short, TtsChoice())
+            delay(150)
+        }
+        assertEquals(1, loaded.size)
+        assertFalse(synthesizers.single().disposed)
+        offline.release()
+    }
+
+    @Test
+    fun turningOfflineVoicesOffLetsTheVoiceGoAtOnce() = runBlocking {
+        val offline = engine()
+        assertTrue(offline.prepare(TtsChoice(), "de"))
+        enabled = false
+        assertFalse(offline.prepare(TtsChoice(), "de"))
+        assertTrue(synthesizers.single().disposed)
+
+        enabled = true
+        assertTrue(offline.prepare(TtsChoice(), "de"))
+        offline.release()
+        assertTrue(synthesizers.last().disposed)
+        assertEquals(2, loaded.size)
     }
 }
