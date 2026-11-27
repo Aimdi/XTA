@@ -46,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
@@ -422,17 +423,21 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 if (PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.weight(1f, fill = false)) {
-                            AuthorHoverCard(shown.author, shown.author.largeAvatarUrl, { actions.openUser(shown.author.screenName, shown.author.id) }) {
-                                TipText(shown.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    val openAuthor = { actions.openUser(shown.author.screenName, shown.author.id) }
+                    // The name and @handle open the profile, as the picture beside them does; the keyboard reaches it on the picture.
+                    Column(Modifier.focusProperties { canFocus = false }.clickable(onClick = openAuthor)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(Modifier.weight(1f, fill = false)) {
+                                AuthorHoverCard(shown.author, shown.author.largeAvatarUrl, openAuthor) {
+                                    TipText(shown.author.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                }
+                            }
+                            if (shown.author.verified) {
+                                Icon(XIcons.Verified, null, tint = Color.Unspecified, modifier = Modifier.padding(start = 2.dp).size(18.dp))
                             }
                         }
-                        if (shown.author.verified) {
-                            Icon(XIcons.Verified, null, tint = Color.Unspecified, modifier = Modifier.padding(start = 2.dp).size(18.dp))
-                        }
+                        Text("@" + shown.author.screenName, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
-                    Text("@" + shown.author.screenName, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
             translation?.let { TranslateButton(it, scope, glyphTop = false) }
