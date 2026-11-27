@@ -84,7 +84,7 @@ class AppGraph(
     val platformFiles: PlatformFiles = PlatformFiles.Unavailable,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private val writes = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val writes = CoroutineScope(SupervisorJob() + Dispatchers.IO + keptWriteFailures())
 
     val sessions = SessionStore(File(files, "session.json"), initial = if (mockX == null) Session() else MockX.session)
     private val feedCaches = HashMap<String, FeedCache>()
@@ -215,7 +215,8 @@ class AppGraph(
 
     /**
      * Runs [write] to its end even when the screen that asked for it goes
-     * away: the reading place, kept as the app stops or a window closes.
+     * away: the reading place, kept as the app stops or a window closes. One
+     * that fails tells the reader so ([keptWriteFailures]).
      */
     fun keep(write: suspend () -> Unit) {
         writes.launch { write() }
