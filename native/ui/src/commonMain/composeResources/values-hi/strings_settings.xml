@@ -405,4 +405,6 @@
     <string name="settings_proxy_port">पोर्ट</string>
     <string name="settings_proxy_bypass">इनके लिए प्रॉक्सी नहीं</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">विंडो के बाहर अपठित संख्या</string>
+    <string name="settings_unread_outside_description">विंडो का शीर्षक, ट्रे आइकन और लॉन्चर दिखाते हैं कि कितनी पोस्ट अपठित हैं, उनमें क्या लिखा है यह कभी नहीं</string>
 </resources>

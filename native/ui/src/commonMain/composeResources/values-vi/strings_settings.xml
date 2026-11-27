@@ -403,4 +403,6 @@
     <string name="settings_proxy_port">Cổng</string>
     <string name="settings_proxy_bypass">Không dùng proxy cho</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Số chưa đọc bên ngoài cửa sổ</string>
+    <string name="settings_unread_outside_description">Tiêu đề cửa sổ, biểu tượng khay hệ thống và trình khởi chạy cho biết có bao nhiêu bài chưa đọc, không bao giờ hiện nội dung</string>
 </resources>

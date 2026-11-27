@@ -405,4 +405,6 @@
     <string name="settings_proxy_port">Port</string>
     <string name="settings_proxy_bypass">Ingen mellomtjener for</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Antall uleste utenfor vinduet</string>
+    <string name="settings_unread_outside_description">Vindustittelen, ikonet i systemstatusfeltet og programstarteren viser hvor mange innlegg som er uleste, aldri hva de sier</string>
 </resources>

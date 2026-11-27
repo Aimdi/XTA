@@ -403,4 +403,6 @@
     <string name="settings_proxy_port">포트</string>
     <string name="settings_proxy_bypass">프록시 제외 대상</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">창 밖에 읽지 않은 수 표시</string>
+    <string name="settings_unread_outside_description">창 제목, 트레이 아이콘, 런처에 읽지 않은 게시물 수를 표시하며 내용은 절대 표시하지 않습니다</string>
 </resources>

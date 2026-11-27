@@ -409,4 +409,6 @@
     <string name="settings_proxy_port">Port</string>
     <string name="settings_proxy_bypass">Biez proksi dla</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Kolkasć niepračytanaha pa-za aknom</string>
+    <string name="settings_unread_outside_description">Zahalovak akna, značok u trei i panel zapusku pakazvajuć, kolki dopisaŭ nie pračytana, ale nikoli nie toje, što ŭ ich napisana</string>
 </resources>

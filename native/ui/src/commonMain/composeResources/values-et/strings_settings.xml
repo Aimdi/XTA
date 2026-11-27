@@ -405,4 +405,6 @@
     <string name="settings_proxy_port">Port</string>
     <string name="settings_proxy_bypass">Puhverserverita aadressid</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Lugemata postituste arv väljaspool akent</string>
+    <string name="settings_unread_outside_description">Akna pealkiri, salve ikoon ja käivitaja näitavad, mitu postitust on lugemata, kuid mitte kunagi nende sisu</string>
 </resources>

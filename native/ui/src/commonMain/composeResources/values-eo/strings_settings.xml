@@ -405,4 +405,6 @@
     <string name="settings_proxy_port">Pordo</string>
     <string name="settings_proxy_bypass">Sen prokurilo por</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Nombro de nelegitaj ekster la fenestro</string>
+    <string name="settings_unread_outside_description">La titolo de la fenestro, la piktogramo en la sistempleto kaj la lanĉilo montras kiom da afiŝoj estas nelegitaj, neniam kion ili diras</string>
 </resources>

@@ -407,4 +407,6 @@
     <string name="settings_proxy_port">Porta</string>
     <string name="settings_proxy_bypass">Nessun proxy per</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Numero di non letti fuori dalla finestra</string>
+    <string name="settings_unread_outside_description">Il titolo della finestra, l\'icona nell\'area di notifica e il launcher mostrano quanti post non hai letto, mai cosa dicono</string>
 </resources>

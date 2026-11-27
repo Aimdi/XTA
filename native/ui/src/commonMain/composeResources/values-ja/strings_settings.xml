@@ -403,4 +403,6 @@
     <string name="settings_proxy_port">ポート</string>
     <string name="settings_proxy_bypass">プロキシを使わない宛先</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">ウィンドウの外に未読数を表示</string>
+    <string name="settings_unread_outside_description">ウィンドウのタイトル、トレイのアイコン、ランチャーに未読の投稿数を表示します。内容は表示しません</string>
 </resources>

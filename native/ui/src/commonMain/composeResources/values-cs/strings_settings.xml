@@ -409,4 +409,6 @@
     <string name="settings_proxy_port">Port</string>
     <string name="settings_proxy_bypass">Bez proxy pro</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Počet nepřečtených mimo okno</string>
+    <string name="settings_unread_outside_description">Název okna, ikona v oznamovací oblasti a spouštěč ukazují, kolik příspěvků je nepřečtených, nikdy ne jejich obsah</string>
 </resources>

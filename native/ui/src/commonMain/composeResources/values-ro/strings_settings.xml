@@ -407,4 +407,6 @@
     <string name="settings_proxy_port">Port</string>
     <string name="settings_proxy_bypass">Fără proxy pentru</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Numărul de necitite în afara ferestrei</string>
+    <string name="settings_unread_outside_description">Titlul ferestrei, pictograma din zona de notificare și lansatorul arată câte postări sunt necitite, niciodată ce scrie în ele</string>
 </resources>

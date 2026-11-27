@@ -405,4 +405,6 @@
     <string name="settings_proxy_port">Port</string>
     <string name="settings_proxy_bypass">No proxy for</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Unread count outside the window</string>
+    <string name="settings_unread_outside_description">The window\'s title, the tray icon and the launcher show how many posts are unread, never what they say</string>
 </resources>

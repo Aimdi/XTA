@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.savedstate.read
@@ -17,6 +18,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.post
 import com.aimdi.xtanative.ui.generated.resources.search
 import com.aimdi.xtanative.ui.generated.resources.settings_title
+import com.aimdi.xtanative.ui.group.ReadMarks
 import com.aimdi.xtanative.ui.pluginstore.PluginRoutes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -76,18 +78,50 @@ object WindowTitles {
         else -> NAMED[route]?.let(TitlePart::Named)
     }
 
-    /** The whole title: [part] before [app], or [app] alone. */
-    fun title(part: String?, app: String): String = part?.let { "$it – $app" } ?: app
+    /**
+     * The whole title: [part] before [app], or [app] alone; a part that is
+     * only a count of unread posts ([counted]) goes before [app] with no dash.
+     */
+    fun title(part: String?, app: String): String = when {
+        part == null -> app
+        COUNT_ALONE.matches(part) -> "$part $app"
+        else -> "$part – $app"
+    }
+
+    /** [part] with [unread] posts counted before it, "(12) Search"; [part] alone for none. */
+    fun counted(part: String?, unread: Int): String? {
+        if (unread <= 0) return part
+        val count = "(" + ReadMarks.label(unread) + ")"
+        return part?.let { "$count $it" } ?: count
+    }
+
+    private val COUNT_ALONE = Regex("""\(\d+\+?\)""")
 }
 
-/** The window's title part, as the screens shown name it; the window reads it. */
+/**
+ * The window's title part, as the screens shown name it, with the count of
+ * unread posts before it while the window is not the one in use
+ * ([DesktopAttention]); the window reads it.
+ */
 object DesktopWindowTitle {
     private val shown = MutableStateFlow<String?>(null)
+    private var screen: String? = null
+    private var unread = 0
+    private var focused = true
 
     val part: StateFlow<String?> = shown
 
-    internal fun show(part: String?) {
-        shown.value = part
+    internal fun show(part: String?) = change { screen = part }
+
+    /** How many posts are unread; 0 says nothing. */
+    fun unread(count: Int) = change { unread = count }
+
+    /** Whether the main window is the one in use, where the count is not needed. */
+    internal fun focused(inUse: Boolean) = change { focused = inUse }
+
+    private fun change(how: () -> Unit) = synchronized(this) {
+        how()
+        shown.value = WindowTitles.counted(screen, if (focused) 0 else unread)
     }
 }
 
@@ -103,4 +137,6 @@ internal actual fun WindowTitleFollows(nav: NavHostController) {
     }
     val secondary = LocalSecondaryWindow.current
     LaunchedEffect(text, secondary) { if (secondary != null) secondary.showTitle(text) else DesktopWindowTitle.show(text) }
+    val focused = LocalWindowInfo.current.isWindowFocused
+    LaunchedEffect(focused, secondary) { if (secondary == null) DesktopWindowTitle.focused(focused) }
 }

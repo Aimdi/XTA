@@ -6,6 +6,7 @@ import com.aimdi.xtanative.ui.media.mpris.DBusType
 import com.aimdi.xtanative.ui.media.mpris.Variant
 import java.awt.Color
 import java.awt.RenderingHints
+import java.awt.geom.Ellipse2D
 import java.awt.geom.Path2D
 import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
@@ -31,6 +32,7 @@ class TrayService(
     private val onMain: (() -> Unit) -> Unit = { SwingUtilities.invokeLater(it) },
     private val iconName: String = installedIconName(),
     private val pixmaps: List<List<Any>> = TrayIcon.pixmaps(),
+    private val attention: List<List<Any>> = TrayIcon.pixmaps(attention = true),
     private val pid: Long = ProcessHandle.current().pid(),
 ) {
     /** What a click in the tray asks. */
@@ -62,6 +64,9 @@ class TrayService(
     /** What the menu's media item offers now; none takes it away. */
     fun media(media: TrayMedia?) = change { it.copy(media = media) }
 
+    /** How many posts are unread: the icon asks for attention and its tooltip says how many while there are some. */
+    fun unread(count: Int) = change { it.copy(unread = count.coerceAtLeast(0)) }
+
     private fun change(how: (TrayNow) -> TrayNow) {
         val (before, after) = synchronized(lock) {
             val before = now
@@ -76,6 +81,13 @@ class TrayService(
                 bus.signal(StatusNotifier.MENU_PATH, StatusNotifier.MENU, "LayoutUpdated", "ui", listOf(after.revision, StatusNotifier.ROOT_ID))
                 if (before.words.title != after.words.title) {
                     bus.signal(StatusNotifier.ITEM_PATH, StatusNotifier.ITEM, "NewTitle", "", emptyList())
+                    bus.signal(StatusNotifier.ITEM_PATH, StatusNotifier.ITEM, "NewToolTip", "", emptyList())
+                }
+                if (before.unread != after.unread) {
+                    if (StatusNotifier.status(before) != StatusNotifier.status(after)) {
+                        bus.signal(StatusNotifier.ITEM_PATH, StatusNotifier.ITEM, "NewStatus", "s", listOf(StatusNotifier.status(after)))
+                        bus.signal(StatusNotifier.ITEM_PATH, StatusNotifier.ITEM, "NewAttentionIcon", "", emptyList())
+                    }
                     bus.signal(StatusNotifier.ITEM_PATH, StatusNotifier.ITEM, "NewToolTip", "", emptyList())
                 }
             }
@@ -137,7 +149,7 @@ class TrayService(
     private fun answer(call: DBusMessage) {
         val bus = connection ?: return
         val state = synchronized(lock) { now }
-        val answer = StatusNotifier.answer(call, state, iconName, pixmaps)
+        val answer = StatusNotifier.answer(call, state, iconName, pixmaps, attention)
         answer.error?.let { return bus.fail(call, it, call.member.orEmpty()) }
         bus.reply(call, answer.signature, answer.body)
         answer.action?.let { action -> onAction?.let { act -> onMain { act(action) } } }
@@ -170,10 +182,14 @@ class TrayService(
 object TrayIcon {
     private val SIZES = listOf(16, 22, 24, 32, 48, 64)
 
-    /** One (width, height, pixels) per size; pixels ARGB32 in network byte order, as the specification asks. */
-    fun pixmaps(): List<List<Any>> = SIZES.map { size -> listOf(size, size, argb(draw(size))) }
+    /**
+     * One (width, height, pixels) per size; pixels ARGB32 in network byte
+     * order, as the specification asks. The [attention] icon carries a dot
+     * at its corner: posts are unread.
+     */
+    fun pixmaps(attention: Boolean = false): List<List<Any>> = SIZES.map { size -> listOf(size, size, argb(draw(size, attention))) }
 
-    fun draw(size: Int): BufferedImage {
+    fun draw(size: Int, attention: Boolean = false): BufferedImage {
         val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
         val g = image.createGraphics()
         try {
@@ -185,6 +201,12 @@ object TrayIcon {
             g.fill(stroke(20.0, 18.0, 28.0, 18.0, 52.0, 54.0, 44.0, 54.0))
             g.color = Color(0x1D, 0x9B, 0xF0)
             g.fill(stroke(44.0, 18.0, 52.0, 18.0, 28.0, 54.0, 20.0, 54.0))
+            if (attention) {
+                g.color = Color.BLACK
+                g.fill(Ellipse2D.Double(40.0, 0.0, 32.0, 32.0))
+                g.color = Color(0xF4, 0x21, 0x2E)
+                g.fill(Ellipse2D.Double(44.0, 4.0, 24.0, 24.0))
+            }
         } finally {
             g.dispose()
         }

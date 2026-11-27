@@ -405,4 +405,6 @@
     <string name="settings_proxy_port">Port</string>
     <string name="settings_proxy_bypass">Kein Proxy für</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Ungelesene außerhalb des Fensters zählen</string>
+    <string name="settings_unread_outside_description">Fenstertitel, Symbol in der Leiste und Starter zeigen, wie viele Beiträge ungelesen sind, nie ihren Inhalt</string>
 </resources>

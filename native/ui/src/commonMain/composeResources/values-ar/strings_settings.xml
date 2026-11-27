@@ -413,4 +413,6 @@
     <string name="settings_proxy_port">المنفذ</string>
     <string name="settings_proxy_bypass">بلا وكيل لـ</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">عدد غير المقروء خارج النافذة</string>
+    <string name="settings_unread_outside_description">يعرض عنوان النافذة وأيقونة شريط النظام والمشغّل عدد المنشورات غير المقروءة، ولا يعرض محتواها أبدًا</string>
 </resources>

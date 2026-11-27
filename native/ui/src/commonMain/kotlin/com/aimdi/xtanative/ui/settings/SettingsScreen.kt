@@ -289,6 +289,7 @@ private val INDEX = listOf(
     Indexed(SettingsSection.GENERAL, GeneralPrefs.checkForUpdates.key, Res.string.settings_update_check, Res.string.settings_update_check_description),
     Indexed(SettingsSection.GENERAL, GeneralPrefs.confirmClose.key, Res.string.settings_confirm_close, Res.string.settings_confirm_close_description),
     Indexed(SettingsSection.GENERAL, DesktopPrefs.notifications.key, Res.string.settings_desktop_notifications, Res.string.settings_desktop_notifications_description),
+    Indexed(SettingsSection.GENERAL, DesktopPrefs.unreadOutside.key, Res.string.settings_unread_outside, Res.string.settings_unread_outside_description),
     Indexed(SettingsSection.GENERAL, DesktopPrefs.mediaDetails.key, Res.string.settings_media_details, Res.string.settings_media_details_description),
     Indexed(SettingsSection.GENERAL, DesktopPrefs.closeToTray.key, Res.string.settings_close_to_tray, Res.string.settings_close_to_tray_description),
     Indexed(SettingsSection.GENERAL, START_AT_LOGIN_KEY, Res.string.settings_start_at_login, Res.string.settings_start_at_login_description),

@@ -409,4 +409,6 @@
     <string name="settings_proxy_port">Порт</string>
     <string name="settings_proxy_bypass">Без проксі для</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Кількість непрочитаного поза вікном</string>
+    <string name="settings_unread_outside_description">Заголовок вікна, значок у треї та панель запуску показують, скільки дописів не прочитано, але ніколи — що в них написано</string>
 </resources>

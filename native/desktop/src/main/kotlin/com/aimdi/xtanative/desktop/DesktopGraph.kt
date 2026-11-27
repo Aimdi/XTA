@@ -5,6 +5,7 @@ import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.pluginhost.HostPlatform
 import com.aimdi.xtanative.store.settings.DesktopPrefs
+import com.aimdi.xtanative.ui.chrome.DesktopAttention
 import com.aimdi.xtanative.ui.common.XdgFolders
 import com.aimdi.xtanative.ui.downloads.DesktopFiles
 import com.aimdi.xtanative.ui.media.MpvEngine
@@ -73,7 +74,11 @@ private fun DesktopApp.seedInterfaceSize() {
     }
 }
 
-/** Starts the graph and the plugins, and does what CI's check asks of the store; the proxy the reader set is in place before anything is requested. */
+/**
+ * Starts the graph and the plugins, and does what CI's check asks of the
+ * store; the proxy the reader set is in place before anything is requested.
+ * The unread count is said outside the window from then on ([DesktopAttention]).
+ */
 internal fun DesktopApp.start() {
     DesktopProxy.follow(graph.settings)
     seedInterfaceSize()
@@ -83,6 +88,7 @@ internal fun DesktopApp.start() {
     if (env("XTA_NATIVE_VOICE_CHECK") != null) VoiceCheck.ask()
     env("XTA_NATIVE_VIDEO_CHECK")?.let(VideoCheck::ask)
     MpvEngine.warmUp()
+    DesktopAttention.follow(graph)
 }
 
 /** Whether there is a connection: the desktop's word, except against XTA's stand-in for X, which is always there. */

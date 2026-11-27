@@ -409,4 +409,6 @@
     <string name="settings_proxy_port">Port</string>
     <string name="settings_proxy_bypass">Bez proxy dla</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Liczba nieprzeczytanych poza oknem</string>
+    <string name="settings_unread_outside_description">Tytuł okna, ikona w zasobniku i program uruchamiający pokazują, ile wpisów jest nieprzeczytanych, nigdy ich treści</string>
 </resources>

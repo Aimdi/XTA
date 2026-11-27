@@ -256,6 +256,9 @@ object DesktopPrefs : PrefSection() {
     /** The desktop's own notification tells of a finished download while another window is in use. */
     val notifications = flag("desktop.notifications", true, seeded = false)
 
+    /** The window's title, the tray's icon and the launcher say how many posts are unread while the window is not in use: the count alone, never what they say. */
+    val unreadOutside = flag("desktop.unread_outside", true, seeded = false)
+
     /** The desktop's media controls (lock screen, media widget, a phone linked to it) are told what plays: its author, words and poster. */
     val mediaDetails = flag("desktop.media_details", true, seeded = false)
 

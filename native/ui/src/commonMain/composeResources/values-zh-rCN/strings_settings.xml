@@ -403,4 +403,6 @@
     <string name="settings_proxy_port">端口</string>
     <string name="settings_proxy_bypass">不使用代理的地址</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">在窗口外显示未读数</string>
+    <string name="settings_unread_outside_description">窗口标题、托盘图标和启动器显示有多少帖子未读，从不显示其内容</string>
 </resources>

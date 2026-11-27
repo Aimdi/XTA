@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.chrome.tray
 
 import androidx.compose.runtime.Composable
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.home_unread_count
 import com.aimdi.xtanative.ui.generated.resources.keys_quit
 import com.aimdi.xtanative.ui.generated.resources.reader_media_pause
 import com.aimdi.xtanative.ui.generated.resources.reader_media_play
@@ -25,8 +26,18 @@ data class TrayWords(
     val newSearch: String = "New search",
     val play: String = "Play",
     val pause: String = "Pause",
+    /** The tooltip's count of unread posts, [UNREAD_COUNT] standing for the number. */
+    val unread: String = "$UNREAD_COUNT unread",
     val rtl: Boolean = false,
-)
+) {
+    /** The tooltip's words for [count] unread posts. */
+    fun unread(count: Int): String = unread.replace(UNREAD_COUNT, count.toString())
+
+    companion object {
+        /** Where the number goes in [unread]. */
+        const val UNREAD_COUNT = "{count}"
+    }
+}
 
 /** The tray's words in the reader's language, under the app's name [title]. */
 @Composable
@@ -38,6 +49,7 @@ fun trayWords(title: String): TrayWords = TrayWords(
     newSearch = stringResource(Res.string.tray_new_search),
     play = stringResource(Res.string.reader_media_play),
     pause = stringResource(Res.string.reader_media_pause),
+    unread = stringResource(Res.string.home_unread_count, TrayWords.UNREAD_COUNT),
     rtl = StatusNotifier.rightToLeft(Locale.getDefault().language),
 )
 
@@ -49,6 +61,8 @@ data class TrayNow(
     val words: TrayWords = TrayWords(),
     val windowShown: Boolean = true,
     val media: TrayMedia? = null,
+    /** How many posts are unread (0: none, or not to be said): the icon asks for attention while there are some. */
+    val unread: Int = 0,
     /** The menu's revision, which goes up each time its items change. */
     val revision: Long = 1,
 )
@@ -148,11 +162,11 @@ object StatusNotifier {
      * height and its ARGB32 pixels), named [iconName] too where the
      * package installed it in the icon theme.
      */
-    fun itemProperties(now: TrayNow, iconName: String, pixmaps: List<List<Any>>): Map<String, Variant> = mapOf(
+    fun itemProperties(now: TrayNow, iconName: String, pixmaps: List<List<Any>>, attention: List<List<Any>> = pixmaps): Map<String, Variant> = mapOf(
         "Category" to Variant("s", "ApplicationStatus"),
         "Id" to Variant("s", "xta-native"),
         "Title" to Variant("s", now.words.title),
-        "Status" to Variant("s", "Active"),
+        "Status" to Variant("s", status(now)),
         "WindowId" to Variant("i", 0),
         "IconName" to Variant("s", iconName),
         "IconPixmap" to Variant("a(iiay)", pixmaps),
@@ -160,12 +174,15 @@ object StatusNotifier {
         "OverlayIconName" to Variant("s", ""),
         "OverlayIconPixmap" to Variant("a(iiay)", emptyList<Any>()),
         "AttentionIconName" to Variant("s", ""),
-        "AttentionIconPixmap" to Variant("a(iiay)", emptyList<Any>()),
+        "AttentionIconPixmap" to Variant("a(iiay)", attention),
         "AttentionMovieName" to Variant("s", ""),
-        "ToolTip" to Variant("(sa(iiay)ss)", listOf(iconName, emptyList<Any>(), now.words.title, "")),
+        "ToolTip" to Variant("(sa(iiay)ss)", listOf(iconName, emptyList<Any>(), now.words.title, if (now.unread > 0) now.words.unread(now.unread) else "")),
         "ItemIsMenu" to Variant("b", false),
         "Menu" to Variant("o", ObjectPath(MENU_PATH)),
     )
+
+    /** The item's Status: NeedsAttention while posts are unread, which bars show with the attention icon. */
+    fun status(now: TrayNow): String = if (now.unread > 0) "NeedsAttention" else "Active"
 
     fun menuProperties(now: TrayNow): Map<String, Variant> = mapOf(
         "Version" to Variant("u", 3L),
@@ -212,7 +229,7 @@ object StatusNotifier {
     }
 
     /** The answer to [call] at the item's or the menu's path, while [now] stands; the icon [iconName] and [pixmaps]. */
-    fun answer(call: DBusMessage, now: TrayNow, iconName: String, pixmaps: List<List<Any>>): TrayAnswer {
+    fun answer(call: DBusMessage, now: TrayNow, iconName: String, pixmaps: List<List<Any>>, attention: List<List<Any>> = pixmaps): TrayAnswer {
         val args = call.body
         val path = call.path
         if (call.iface == PEER && call.member == "Ping") return TrayAnswer()
@@ -226,7 +243,7 @@ object StatusNotifier {
         }
         if (call.iface == PROPERTIES) {
             val all = when (args.getOrNull(0) as? String) {
-                ITEM -> itemProperties(now, iconName, pixmaps).takeIf { path == ITEM_PATH }
+                ITEM -> itemProperties(now, iconName, pixmaps, attention).takeIf { path == ITEM_PATH }
                 MENU -> menuProperties(now).takeIf { path == MENU_PATH }
                 else -> null
             }

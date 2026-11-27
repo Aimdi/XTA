@@ -405,4 +405,6 @@
     <string name="settings_proxy_port">Bağlantı noktası</string>
     <string name="settings_proxy_bypass">Proxy kullanılmayacaklar</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Pencere dışında okunmamış sayısı</string>
+    <string name="settings_unread_outside_description">Pencere başlığı, tepsi simgesi ve başlatıcı kaç gönderinin okunmadığını gösterir, ne yazdıklarını asla göstermez</string>
 </resources>

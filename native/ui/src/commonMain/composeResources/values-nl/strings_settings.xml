@@ -405,4 +405,6 @@
     <string name="settings_proxy_port">Poort</string>
     <string name="settings_proxy_bypass">Geen proxy voor</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Aantal ongelezen buiten het venster</string>
+    <string name="settings_unread_outside_description">De venstertitel, het pictogram in het systeemvak en de starter tonen hoeveel berichten ongelezen zijn, nooit wat erin staat</string>
 </resources>

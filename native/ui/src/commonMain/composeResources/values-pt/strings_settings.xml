@@ -407,4 +407,6 @@
     <string name="settings_proxy_port">Porta</string>
     <string name="settings_proxy_bypass">Sem proxy para</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Número de não lidas fora da janela</string>
+    <string name="settings_unread_outside_description">O título da janela, o ícone da área de notificação e o lançador mostram quantas publicações estão por ler, nunca o que dizem</string>
 </resources>

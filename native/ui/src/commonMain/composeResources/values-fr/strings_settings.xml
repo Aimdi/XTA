@@ -407,4 +407,6 @@
     <string name="settings_proxy_port">Port</string>
     <string name="settings_proxy_bypass">Pas de proxy pour</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">Nombre de non-lus hors de la fenêtre</string>
+    <string name="settings_unread_outside_description">Le titre de la fenêtre, l\'icône de la zone de notification et le lanceur indiquent combien de publications sont non lues, jamais leur contenu</string>
 </resources>

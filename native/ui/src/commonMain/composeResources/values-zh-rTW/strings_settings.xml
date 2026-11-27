@@ -403,4 +403,6 @@
     <string name="settings_proxy_port">連接埠</string>
     <string name="settings_proxy_bypass">不使用代理伺服器的位址</string>
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
+    <string name="settings_unread_outside">在視窗外顯示未讀數</string>
+    <string name="settings_unread_outside_description">視窗標題、系統匣圖示與啟動器顯示有多少貼文未讀，絕不顯示其內容</string>
 </resources>
