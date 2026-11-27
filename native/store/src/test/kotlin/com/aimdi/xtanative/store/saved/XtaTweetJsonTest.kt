@@ -89,10 +89,20 @@ class XtaTweetJsonTest {
             viewCount = 77,
             replyToScreenName = "bob",
             conversationId = "40",
+            lang = "en",
         )
         assertEquals(post, XtaTweetJson.decode(J(XtaTweetJson.encode(post))))
         val likedOnX = post.copy(likedOnX = true)
         assertEquals(likedOnX, XtaTweetJson.decode(J(XtaTweetJson.encode(likedOnX))), "X's word that the reader liked it is kept")
+    }
+
+    @Test
+    fun aKeptPostKeepsTheLanguageXDetectedAndAnOldOneWithoutItReadsAsUnknown() {
+        val post = XPost("43", XUser("7", "amy", "Amy"), null, "Bonjour", lang = "fr", reposted = XPost("44", XUser("9", "dan", "Dan"), null, "Hallo", lang = "de"))
+        val back = XtaTweetJson.decode(J(XtaTweetJson.encode(post)))!!
+        assertEquals("fr", back.lang)
+        assertEquals("de", back.reposted?.lang)
+        assertNull(XtaTweetJson.decode(J(json("""{"id_str":"5","full_text":"old","user":{"id_str":"1","screen_name":"a","name":"A"}}""")))?.lang)
     }
 
     @Test

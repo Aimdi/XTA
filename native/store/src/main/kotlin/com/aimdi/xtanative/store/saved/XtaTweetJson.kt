@@ -35,6 +35,8 @@ object XtaTweetJson {
         put("id_str", post.id)
         post.createdAt?.let { put("created_at", it.toString()) }
         put("full_text", post.text)
+        // X's own field, which XTA's tweet JSON keeps too: without it a kept post offers translation even in the reader's language.
+        post.lang?.let { put("lang", it) }
         put("display_text_range", JsonArray(listOf(JsonPrimitive(post.displayStart), JsonPrimitive(post.displayEnd ?: post.text.codePointCount(0, post.text.length)))))
         put("user", user(post.author))
         put("entities", entities(post.entities))
