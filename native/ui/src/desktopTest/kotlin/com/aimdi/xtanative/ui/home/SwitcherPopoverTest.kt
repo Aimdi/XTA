@@ -21,6 +21,14 @@ class SwitcherPopoverTest {
     }
 
     @Test
+    fun underAButtonAtABarsEndItEndsOnTheButtonsEndEdge() {
+        // The deck's + at 1190..1238: the list opens back across the page, its right edge on the +'s.
+        assertEquals(878f, SwitcherPopoverPlace.x(1190f, 1238f, 360f, 1600f, 8f, rtl = false, atEnd = true))
+        // Right to left the bar's end is its left: the list opens rightwards from the button's left edge.
+        assertEquals(362f, SwitcherPopoverPlace.x(362f, 410f, 360f, 1600f, 8f, rtl = true, atEnd = true))
+    }
+
+    @Test
     fun itStaysInsideTheWindow() {
         assertEquals(1232f, SwitcherPopoverPlace.x(1500f, 1548f, 360f, 1600f, 8f, rtl = false))
         assertEquals(8f, SwitcherPopoverPlace.x(0f, 48f, 360f, 1600f, 8f, rtl = true))

@@ -168,9 +168,14 @@ internal object SwitcherPopoverPlace {
     const val GAP = 4
     const val MARGIN = 8
 
-    /** The start edge, in px from the window's left: on the button's start edge (its right one right to left), kept [margin] inside the window. */
-    fun x(anchorLeft: Float, anchorRight: Float, width: Float, windowWidth: Float, margin: Float, rtl: Boolean): Float {
-        val wanted = if (rtl) anchorRight - width else anchorLeft
+    /**
+     * The left edge, in px from the window's left: on the button's start edge
+     * (its right one right to left), or on its end edge for a button at the
+     * end of a bar ([atEnd]), the panel opening back across the page; kept
+     * [margin] inside the window.
+     */
+    fun x(anchorLeft: Float, anchorRight: Float, width: Float, windowWidth: Float, margin: Float, rtl: Boolean, atEnd: Boolean = false): Float {
+        val wanted = if (rtl != atEnd) anchorRight - width else anchorLeft
         return wanted.coerceIn(margin, (windowWidth - width - margin).coerceAtLeast(margin))
     }
 
@@ -211,7 +216,7 @@ internal object SwitcherPopoverPlace {
  * once, after it has gone, however often it is clicked meanwhile.
  */
 @Composable
-internal fun SwitcherPopover(anchor: SwitcherAnchor, button: SwitcherButton, onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+internal fun SwitcherPopover(anchor: SwitcherAnchor, button: SwitcherButton, onDismiss: () -> Unit, atEnd: Boolean = false, content: @Composable ColumnScope.() -> Unit) {
     val reduced = LocalReducedMotion.current
     val visible = remember { MutableTransitionState(false).apply { targetState = true } }
     val scope = rememberCoroutineScope()
@@ -240,12 +245,12 @@ internal fun SwitcherPopover(anchor: SwitcherAnchor, button: SwitcherButton, onD
                 val margin = SwitcherPopoverPlace.MARGIN.dp.toPx()
                 val top = SwitcherPopoverPlace.y(at.bottom, SwitcherPopoverPlace.GAP.dp.toPx(), margin)
                 Triple(
-                    SwitcherPopoverPlace.x(at.left, at.right, width, constraints.maxWidth.toFloat(), margin, rtl),
+                    SwitcherPopoverPlace.x(at.left, at.right, width, constraints.maxWidth.toFloat(), margin, rtl, atEnd),
                     top,
                     SwitcherPopoverPlace.maxHeight(top, constraints.maxHeight.toFloat(), margin, 160.dp.toPx()).toDp(),
                 )
             }
-            val corner = TransformOrigin(if (rtl) 1f else 0f, 0f)
+            val corner = TransformOrigin(if (rtl != atEnd) 1f else 0f, 0f)
             AnimatedVisibility(
                 visibleState = visible,
                 modifier = Modifier.offset { IntOffset(if (rtl) (constraints.maxWidth - x - SwitcherPopoverPlace.WIDTH.dp.toPx()).toInt() else x.toInt(), y.toInt()) },

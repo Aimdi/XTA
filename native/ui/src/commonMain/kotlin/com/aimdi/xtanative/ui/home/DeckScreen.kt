@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -62,6 +64,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -109,6 +114,8 @@ import com.aimdi.xtanative.ui.plugins.PluginClientBar
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ShellFeedRow
 import com.aimdi.xtanative.ui.plugins.pluginAccent
+import com.aimdi.xtanative.ui.post.LocalMenuRowMetrics
+import com.aimdi.xtanative.ui.post.MenuRowMetrics
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostScreen
 import com.aimdi.xtanative.ui.profile.ProfileScreen
@@ -152,8 +159,12 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     val toTop = remember { mutableStateMapOf<String, Int>() }
     var refreshedAll by remember { mutableIntStateOf(0) }
     var adding by remember { mutableStateOf(false) }
-    // Ctrl+N adds a column, as the bar's + does.
-    CreatesWithKeys { (!adding).also { if (it) adding = true } }
+    // The desktop's Add column drops down under the + (or the empty deck's button) that opened it, as Home's switcher does.
+    val addAnchor = remember(scope) { SwitcherAnchor(scope) }
+    val barAdd = addAnchor.button(ADD_IN_BAR)
+    val openAdd: (SwitcherButton) -> Unit = { button -> addAnchor.claim(button); adding = true }
+    // Ctrl+N adds a column, as the bar's + does, dropping down under it.
+    CreatesWithKeys { (!adding).also { if (it) openAdd(barAdd) } }
     // The detail beside the columns closes first at Esc, but covers nothing: the reading keys move it, and Ctrl+→ reaches it.
     DesktopShortcuts(refresh = { refreshedAll++ }, turn = {}, isOpen = { detail.open }, close = { detail.back() }, readsOpen = { detail.open })
     ReadColumns(columns.map { it.id } + listOfNotNull(DetailColumn.takeIf { detail.open }))
@@ -173,7 +184,7 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
                     TopBarBack(onBack)
                 },
                 actions = {
-                    IconTip(stringResource(Res.string.home_deck_add)) { IconButton(onClick = { adding = true }) { Icon(Icons.Filled.Add, stringResource(Res.string.home_deck_add)) } }
+                    IconTip(stringResource(Res.string.home_deck_add)) { IconButton(onClick = { openAdd(barAdd) }, modifier = Modifier.anchoring(barAdd)) { Icon(Icons.Filled.Add, stringResource(Res.string.home_deck_add)) } }
                     WidthMenu(width) { chosen -> scope.launch { settings.set(HomePrefs.deckColumnWidth, chosen) } }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -183,7 +194,8 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
         Row(Modifier.fillMaxSize().padding(padding)) {
             BoxWithConstraints(Modifier.weight(1f).fillMaxHeight()) {
                 if (columns.isEmpty()) {
-                    EmptyDeck { adding = true }
+                    val emptyAdd = addAnchor.button(ADD_IN_EMPTY)
+                    EmptyDeck(Modifier.anchoring(emptyAdd)) { openAdd(emptyAdd) }
                 } else {
                     val each = DeckColumns.width(maxWidth.value, columns.size, width.dp.toFloat()).dp
                     val scroll = rememberScrollState()
@@ -228,7 +240,7 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
         }
     }
     if (adding) {
-        AddColumnSheet(addable(columns, groups, available), networks, onDismiss = { adding = false }) { column ->
+        AddColumnSheet(addable(columns, groups, available), networks, addAnchor, onDismiss = { adding = false }) { column ->
             adding = false
             edit { DeckColumns.added(it, column) }
         }
@@ -434,9 +446,9 @@ private fun widthLabel(width: DeckWidth): StringResource = when (width) {
 
 /** No columns yet: what the deck is for, and Add column. */
 @Composable
-private fun EmptyDeck(onAdd: () -> Unit) {
+private fun EmptyDeck(button: Modifier, onAdd: () -> Unit) {
     EmptyState(HomeIcons.ViewColumnOutlined, stringResource(Res.string.home_deck_empty)) {
-        Button(onClick = onAdd) {
+        Button(onClick = onAdd, modifier = button) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.home_deck_add), modifier = Modifier.padding(start = 8.dp))
         }
@@ -460,35 +472,72 @@ private fun addable(columns: List<DeckColumn>, groups: List<FollowGroup>, availa
     return all.filterNot { it in columns }
 }
 
+/** The Add column buttons, by the part of the deck they stand in: the top bar's +, and the empty deck's. */
+private const val ADD_IN_BAR = "bar"
+private const val ADD_IN_EMPTY = "empty"
+
+/** [button]'s place followed, and its focus, for the drop-down it opens ([SwitcherButton]). */
+private fun Modifier.anchoring(button: SwitcherButton): Modifier =
+    onGloballyPositioned { button.bounds = it.boundsInWindow() }.focusRequester(button.focus)
+
+/**
+ * Add column's choices: in the desktop's wide frame a drop-down under the
+ * button that opened it ([SwitcherPopover]), its rows a pointer menu's;
+ * elsewhere (a phone, a narrow window) the sheet.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AddColumnSheet(choices: List<DeckColumn>, networks: HomeNetworks, onDismiss: () -> Unit, onPick: (DeckColumn) -> Unit) {
-    val session by LocalGraph.current.sessions.state.collectAsStateWithLifecycle()
-    val available by networks.available.collectAsStateWithLifecycle()
-    val groups = session?.groups.orEmpty()
+private fun AddColumnSheet(choices: List<DeckColumn>, networks: HomeNetworks, anchor: SwitcherAnchor, onDismiss: () -> Unit, onPick: (DeckColumn) -> Unit) {
+    val frame = LocalWideFrame.current
+    // Taken once, whether or not it drops down, as the switcher takes its button.
+    val button = remember { anchor.take()?.takeIf { frame != null && it.bounds != null } }
+    if (button != null) {
+        // The bar's + stands at its end: the list opens back across the page, its end under the +.
+        SwitcherPopover(anchor, button, onDismiss = onDismiss, atEnd = button === anchor.button(ADD_IN_BAR)) {
+            Text(
+                stringResource(Res.string.home_deck_add),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp),
+            )
+            choices.forEach { column -> key(column.id) { AddColumnRow(column, networks, onPick) } }
+            Spacer(Modifier.height(6.dp))
+        }
+        return
+    }
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Text(
             stringResource(Res.string.home_deck_add),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
         )
-        val closer = LocalSheetCloser.current
         LazyColumn(Modifier.fillMaxWidth().navigationBarsPadding(), state = rememberSheetList()) {
-            items(choices, key = { it.id }) { column ->
-                Row(
-                    Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable { closer.close { onPick(column) } }.padding(horizontal = 24.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                    // Each choice led by the mark its column's head will show: a group's emoji, else its people.
-                    val (emoji, name) = ColumnTitle.of(column, labelOf(column, groups, available))
-                    Box(Modifier.size(24.dp), contentAlignment = Alignment.Center) {
-                        if (emoji != null) Text(emoji, fontSize = 18.sp, maxLines = 1) else ColumnMark(column)
-                    }
-                    TipText(name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                }
-            }
+            items(choices, key = { it.id }) { column -> AddColumnRow(column, networks, onPick) }
         }
+    }
+}
+
+/** One of Add column's choices, led by the mark its column's head will show: a group's emoji, else its people; denser in a pointer's menu. */
+@Composable
+private fun AddColumnRow(column: DeckColumn, networks: HomeNetworks, onPick: (DeckColumn) -> Unit) {
+    val session by LocalGraph.current.sessions.state.collectAsStateWithLifecycle()
+    val available by networks.available.collectAsStateWithLifecycle()
+    val groups = session?.groups.orEmpty()
+    val closer = LocalSheetCloser.current
+    val metrics = LocalMenuRowMetrics.current
+    val pointer = metrics == MenuRowMetrics.Pointer
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = if (pointer) metrics.minHeight else 56.dp)
+            .clickable { closer.close { onPick(column) } }
+            .padding(horizontal = if (pointer) metrics.padding else 24.dp, vertical = metrics.verticalPadding),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(if (pointer) metrics.gap else 16.dp),
+    ) {
+        val (emoji, name) = ColumnTitle.of(column, labelOf(column, groups, available))
+        Box(Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+            if (emoji != null) Text(emoji, fontSize = 18.sp, maxLines = 1) else ColumnMark(column)
+        }
+        TipText(name, style = if (pointer) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 
