@@ -1029,6 +1029,18 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun slashAndCtrlCommaOpenTheirScreenAsTheColumnsRowDoes() {
+        val opens = com.aimdi.xtanative.ui.FrameOpens()
+        val done = mutableListOf<String>()
+        // No column beside the screens (a narrow window, a post's own window): over the screen shown.
+        opens.open(HomeDestination.SEARCH.route) { done += "pushed" }
+        // Beside the column: its own way, which leaves no Back beside the screen.
+        opens.screen = { route -> done += "column $route" }
+        opens.open(HomeDestination.SETTINGS.route) { done += "pushed" }
+        assertEquals(listOf("pushed", "column settings"), done)
+    }
+
+    @Test
     fun escFromAButtonReachedWithTabGoesBackAtOnce() {
         fun esc(leavesFirst: Boolean, canGoBack: Boolean = true, open: Boolean = false) =
             DesktopKeys.action(DeskKey.ESCAPE, alt = false, ctrl = false, focusInside = true, canGoBack = canGoBack, somethingOpen = open, leavesFirst = leavesFirst)

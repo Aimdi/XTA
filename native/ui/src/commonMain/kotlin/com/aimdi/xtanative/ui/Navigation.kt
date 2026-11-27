@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
@@ -76,6 +77,7 @@ import com.aimdi.xtanative.ui.home.FramedRail
 import com.aimdi.xtanative.ui.home.FramedSidebar
 import com.aimdi.xtanative.ui.home.FullWindow
 import com.aimdi.xtanative.ui.home.HomeBarScreens
+import com.aimdi.xtanative.ui.home.HomeDestination
 import com.aimdi.xtanative.ui.home.HomeRequests
 import com.aimdi.xtanative.ui.home.HomeRoutes
 import com.aimdi.xtanative.ui.home.HomeScreen
@@ -485,14 +487,24 @@ fun XtaNativeRoot() {
         LocalLivePlayer provides livePlayer,
         LocalPostWindows provides postWindows,
     ) {
+        // Beside the wide frame's column, / and Ctrl+, open Search and Settings as its rows do ([FrameOpens]).
+        val frameOpens = remember(nav) { FrameOpens() }
         // Ctrl+F and / on a screen with no search of its own open the search, its field ready: not over the
         // intro, the sign-in or an import, not over a plugin's pages (they keep their own keys), and not a
         // second search over one still opening.
-        val openSearch = remember(nav) { { if (SearchKeys.opensSearchOver(nav.currentDestination?.route)) nav.push(Routes.search(null)) } }
+        val openSearch = remember(nav, frameOpens) {
+            {
+                if (SearchKeys.opensSearchOver(nav.currentDestination?.route)) frameOpens.open(HomeDestination.SEARCH.route) { nav.push(Routes.search(null)) }
+            }
+        }
         // Ctrl+, goes back to the settings where they are open below (Read aloud, the licences, the plugin store),
         // else opens them, unless a screen that must be finished first is shown.
-        val openSettings = remember(nav) {
-            { if (!nav.popBackStack(Routes.SETTINGS, inclusive = false) && SearchKeys.opensSettingsOver(nav.currentDestination?.route)) nav.push(Routes.SETTINGS) }
+        val openSettings = remember(nav, frameOpens) {
+            {
+                if (!nav.popBackStack(Routes.SETTINGS, inclusive = false) && SearchKeys.opensSettingsOver(nav.currentDestination?.route)) {
+                    frameOpens.open(HomeDestination.SETTINGS.route) { nav.push(Routes.SETTINGS) }
+                }
+            }
         }
         // Alt+Home goes back to Home, as a browser's goes to its home page, and to Home's start page there (not
         // Saved or another page last picked on its bar); nothing where Home is not below.
@@ -522,7 +534,7 @@ fun XtaNativeRoot() {
                 } ?: false
             }
         }
-        DesktopNavigation(nav, openSearch, openSettings, openHome, goForward) { OfflineFrame { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) } }
+        DesktopNavigation(nav, openSearch, openSettings, openHome, goForward) { OfflineFrame { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards, frameOpens)) } }
     }
     if (askSignIn) {
         NotLoggedInDialog(onImportBackup = { nav.push(Routes.IMPORT) }, onLogin = { nav.push(Routes.SIGN_IN) }, onDismiss = { askSignIn = false })
@@ -568,7 +580,15 @@ private fun ShowWhenPluginSheetOpens(shown: () -> Unit) {
 }
 
 /** What the screens are given to reach one another, and the pictures the opened posts are dragged off. */
-private class ScreenActions(val posts: PostActions, val search: SearchActions, val trends: TrendsActions, val home: HomeRoutes, val backs: CardBacks, val pluginCards: PluginCards)
+private class ScreenActions(
+    val posts: PostActions,
+    val search: SearchActions,
+    val trends: TrendsActions,
+    val home: HomeRoutes,
+    val backs: CardBacks,
+    val pluginCards: PluginCards,
+    val frameOpens: FrameOpens,
+)
 
 /** Every screen, by route; [start] is the first. */
 @Composable
@@ -576,7 +596,7 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
     val reduced = rememberUpdatedState(LocalReducedMotion.current)
     val motion = remember(reduced) { ScreenMotion(reduced) }
     // In a wide desktop window the navigation column stands beside every screen; only the screens are pictured under a card.
-    WideFramed(nav, all.home) {
+    WideFramed(nav, all.home, all.frameOpens) {
         all.backs.Recorded { ScreenHost(nav, start, all, motion) }
         // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved):
         // beside the screens, so a notice centres under the reading column, not under the navigation too.
@@ -937,7 +957,7 @@ private val FULL_WINDOW = setOf(Routes.MEDIA, Routes.GALLERY, Routes.IMAGE, Plug
  * still, the screens alone, as before.
  */
 @Composable
-private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Composable () -> Unit) {
+private fun WideFramed(nav: NavHostController, routes: HomeRoutes, opens: FrameOpens, content: @Composable () -> Unit) {
     if (!isDesktop || LocalSecondaryWindow.current != null) return content()
     val frame = remember { WideFrame() }
     val focus = remember(frame) { FrameFocus(frame.pageBar) }
@@ -959,9 +979,11 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, content: @Com
         SideEffect {
             frame.inset = HomeWide.inset(kind)
             frame.openMenu = if (kind == FrameKind.RAIL) ({ menu = true }) else null
+            opens.screen = calls.screen.takeIf { kind != FrameKind.NONE }
             // Read now, not as collected: a place the column has just opened is in the navigation already.
             opened.keep((nav.currentBackStack.value + nav.visibleEntries.value).map { it.id })
         }
+        DisposableEffect(opens) { onDispose { opens.screen = null } }
         // A menu open over a rail is closed once the window has the column, or nothing beside its screens.
         LaunchedEffect(kind) { if (kind != FrameKind.RAIL) menu = false }
         if (kind != FrameKind.NONE) ReachedByF6(focus.region)
@@ -1115,6 +1137,22 @@ private fun savedLinks(nav: NavHostController) = SavedLinks(
     openSettings = { nav.push(Routes.SETTINGS) },
     searchLibrary = { nav.push(Routes.library(null)) },
 )
+
+/**
+ * How the keys that open a screen of the wide frame's column (/ for Search,
+ * Ctrl+, for Settings) open it: as its row does ([screen], what was over Home
+ * closed and no Back beside the screen) while the window has the column or
+ * rail; otherwise over the screen shown.
+ */
+internal class FrameOpens {
+    /** The column's own way to open a screen by its route; null where the window has none. */
+    var screen: ((String) -> Unit)? = null
+
+    /** [route] opened as the column's row opens it, or by [otherwise] where there is no column. */
+    fun open(route: String, otherwise: () -> Unit) {
+        screen?.invoke(route) ?: otherwise()
+    }
+}
 
 /** Where Ctrl+F and / open the app's search, on a screen with no search field of its own. */
 internal object SearchKeys {
