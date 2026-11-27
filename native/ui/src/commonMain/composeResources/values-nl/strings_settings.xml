@@ -37,6 +37,7 @@
     <string name="settings_language">Taal</string>
     <string name="settings_language_subtitle">Vereist opnieuw opstarten</string>
     <string name="settings_system">Systeem</string>
+    <string name="settings_system_language">Systeem (%1$s)</string>
     <string name="settings_update_check">Controleren op updates</string>
     <string name="settings_update_check_description">Controleren op updates wanneer XTA start</string>
     <string name="settings_confirm_close">Sluiten bevestigen</string>

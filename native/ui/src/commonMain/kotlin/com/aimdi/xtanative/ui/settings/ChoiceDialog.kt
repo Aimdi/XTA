@@ -57,6 +57,12 @@ internal object ChoiceList {
         return labels.indices.filter { wanted.isEmpty() || labels[it].contains(wanted, ignoreCase = true) }
     }
 
+    /** The indices of the options whose [terms] (each option's names) [query] matches: in any case, anywhere in one name; all for a blank query. */
+    fun matchingAny(terms: List<List<String>>, query: String): List<Int> {
+        val wanted = query.trim()
+        return terms.indices.filter { at -> wanted.isEmpty() || terms[at].any { it.contains(wanted, ignoreCase = true) } }
+    }
+
     /** The option Enter in the filter picks: the one match left of [shown] (indices), none while several or none are. */
     fun picked(shown: List<Int>): Int? = shown.singleOrNull()
 }

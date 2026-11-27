@@ -37,6 +37,7 @@
     <string name="settings_language">Jazyk</string>
     <string name="settings_language_subtitle">Vyžaduje restart</string>
     <string name="settings_system">Systémové</string>
+    <string name="settings_system_language">Systémové (%1$s)</string>
     <string name="settings_update_check">Zkontrolovat aktualizace</string>
     <string name="settings_update_check_description">Zkontrolovat aktualizace při spuštění Quackeru</string>
     <string name="settings_confirm_close">Potvrdit zavření</string>

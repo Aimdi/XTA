@@ -89,12 +89,35 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.theme.systemLocale
+import com.aimdi.xtanative.ui.common.currentLocale
 
 /** A switch bound to [pref]; [focus] is the control the search opened the page for. */
 @Composable
 private fun PrefSwitch(settings: Settings, pref: Pref<Boolean>, title: String, description: String?, vm: SettingsViewModel, focus: String?, enabled: Boolean = true) {
     if (!shownHere(pref.key)) return
     SwitchRow(title, description, settings[pref], enabled, focus == pref.key) { vm.set(pref, it) }
+}
+
+/** A language's name in the language list; "System" says which language that is, "System (Deutsch)". */
+@Composable
+private fun languageLabel(code: String): String =
+    if (code == SettingsChoices.SYSTEM_LANGUAGE) {
+        val shown = SettingsChoices.shownLanguage(systemLocale())
+        stringResource(Res.string.settings_system_language, SettingsChoices.languageName(shown) ?: shown)
+    } else {
+        SettingsChoices.languageName(code) ?: code
+    }
+
+/** What finds [code] in the language list's filter; "System" is found by its own name and by the language it is. */
+@Composable
+private fun languageSearchTerms(code: String): List<String> {
+    val reader = currentLocale()
+    return if (code == SettingsChoices.SYSTEM_LANGUAGE) {
+        listOf(stringResource(Res.string.settings_system)) + SettingsChoices.languageTerms(SettingsChoices.shownLanguage(systemLocale()), reader)
+    } else {
+        SettingsChoices.languageTerms(code, reader)
+    }
 }
 
 // ---- General (_general.dart, _browser_picker.dart, _crash_reports.dart) ----
@@ -112,8 +135,9 @@ internal fun GeneralSettings(title: String, vm: SettingsViewModel, focus: String
                 stringResource(Res.string.settings_language_subtitle),
                 languages,
                 language,
-                label = { code -> if (code == SettingsChoices.SYSTEM_LANGUAGE) stringResource(Res.string.settings_system) else SettingsChoices.languageName(code) ?: code },
+                label = { code -> languageLabel(code) },
                 focused = focus == GeneralPrefs.locale.key,
+                terms = { code -> languageSearchTerms(code) },
             ) { vm.set(GeneralPrefs.locale, it) }
             PrefSwitch(settings, GeneralPrefs.checkForUpdates, stringResource(Res.string.settings_update_check), stringResource(Res.string.settings_update_check_description), vm, focus)
             PrefSwitch(settings, GeneralPrefs.confirmClose, stringResource(Res.string.settings_confirm_close), stringResource(Res.string.settings_confirm_close_description), vm, focus)

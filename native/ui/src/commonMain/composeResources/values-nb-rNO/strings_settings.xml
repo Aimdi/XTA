@@ -37,6 +37,7 @@
     <string name="settings_language">Språk</string>
     <string name="settings_language_subtitle">Krever omstart</string>
     <string name="settings_system">System</string>
+    <string name="settings_system_language">System (%1$s)</string>
     <string name="settings_update_check">Se etter oppdateringer</string>
     <string name="settings_update_check_description">Sjekk automatisk om det finnes oppdateringer</string>
     <string name="settings_confirm_close">Bekreft lukking</string>

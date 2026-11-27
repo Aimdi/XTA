@@ -37,6 +37,7 @@
     <string name="settings_language">Dil</string>
     <string name="settings_language_subtitle">Yeniden başlatma gerektirir</string>
     <string name="settings_system">Sistem</string>
+    <string name="settings_system_language">Sistem (%1$s)</string>
     <string name="settings_update_check">Güncellemeleri denetle</string>
     <string name="settings_update_check_description">XTA başladığında güncellemeleri denetle</string>
     <string name="settings_confirm_close">Kapatmayı onayla</string>

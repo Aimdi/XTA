@@ -37,6 +37,7 @@
     <string name="settings_language">Bahasa</string>
     <string name="settings_language_subtitle">Memerlukan pemulaian ulang</string>
     <string name="settings_system">Sistem</string>
+    <string name="settings_system_language">Sistem (%1$s)</string>
     <string name="settings_update_check">Periksa pembaruan</string>
     <string name="settings_update_check_description">Periksa pembaruan ketika XTA dimulai</string>
     <string name="settings_confirm_close">Konfirmasi penutupan</string>

@@ -37,6 +37,7 @@
     <string name="settings_language">Lingvo</string>
     <string name="settings_language_subtitle">Bezonas rekomencon</string>
     <string name="settings_system">Sistema</string>
+    <string name="settings_system_language">Sistema (%1$s)</string>
     <string name="settings_update_check">Kontroli por ĝisdatigoj</string>
     <string name="settings_update_check_description">Kontroli por ĝisdatigoj kiam XTA komenciĝus</string>
     <string name="settings_confirm_close">Konfirmi fermon</string>

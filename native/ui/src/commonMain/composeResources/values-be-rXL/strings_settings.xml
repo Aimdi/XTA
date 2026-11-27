@@ -37,6 +37,7 @@
     <string name="settings_language">Mova</string>
     <string name="settings_language_subtitle">Patrabuje pierazapusku</string>
     <string name="settings_system">Sistemnaja</string>
+    <string name="settings_system_language">Sistemnaja (%1$s)</string>
     <string name="settings_update_check">Pravieryć abnaŭlennia</string>
     <string name="settings_update_check_description">Praviarać najaŭnasć abnaŭlenniaŭ pry zapusku</string>
     <string name="settings_confirm_close">Paćvierdzić zakryccio</string>

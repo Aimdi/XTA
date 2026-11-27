@@ -80,6 +80,9 @@ import com.aimdi.xtanative.ui.generated.resources.settings_cancel
 import com.aimdi.xtanative.ui.generated.resources.settings_save
 import com.aimdi.xtanative.ui.theme.xSwitchColors
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.withFrameNanos
+import kotlinx.coroutines.launch
 
 /** A settings page: its title, Back, and what it holds, on the page's own background, no wider than [SETTINGS_MAX_WIDTH]. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -259,7 +262,9 @@ internal fun ValueRow(title: String, value: String) {
 
 /**
  * A choice among a few values, as XTA's PrefDropdown: the row shows the one
- * chosen and opens the list.
+ * chosen and opens the list, on the desktop as a drop-down under the value
+ * ([ChoiceDropdown]) whose filter matches each option's [terms] (its label
+ * where there are none), the focus going back to the row once it closes.
  */
 @Composable
 internal fun <T> ChoiceRow(
@@ -270,21 +275,42 @@ internal fun <T> ChoiceRow(
     label: @Composable (T) -> String,
     enabled: Boolean = true,
     focused: Boolean = false,
+    terms: (@Composable (T) -> List<String>)? = null,
     onSelect: (T) -> Unit,
 ) {
     var open by remember { mutableStateOf(false) }
+    val row = remember { FocusRequester() }
+    val scope = rememberCoroutineScope()
+    val close = {
+        open = false
+        scope.launch {
+            withFrameNanos {}
+            withFrameNanos {}
+            runCatching { row.requestFocus() }
+        }
+    }
     Row(
-        Modifier.fillMaxWidth().focusedSetting(focused).clickable(enabled = enabled) { open = true }.padding(horizontal = 16.dp, vertical = 10.dp),
+        Modifier.fillMaxWidth().focusedSetting(focused).focusRequester(row).clickable(enabled = enabled) { open = true }.padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RowText(title, description, enabled, Modifier.weight(1f).padding(end = 12.dp))
         if (isDesktop) {
-            DropdownValue(label(selected), enabled)
+            Box {
+                DropdownValue(label(selected), enabled)
+                if (open) {
+                    val labels = options.map { label(it) }
+                    val names = options.mapIndexed { at, option -> terms?.invoke(option) ?: listOf(labels[at]) }
+                    ChoiceDropdown(options, selected, labels, names, onDismiss = { close() }) { choice ->
+                        close()
+                        onSelect(choice)
+                    }
+                }
+            }
         } else {
             Text(label(selected), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
         }
     }
-    if (open) {
+    if (open && !isDesktop) {
         ChoiceDialog(title, options, selected, label, onDismiss = { open = false }) { choice ->
             open = false
             onSelect(choice)

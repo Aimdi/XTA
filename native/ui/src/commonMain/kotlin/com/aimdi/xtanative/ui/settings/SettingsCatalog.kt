@@ -14,6 +14,7 @@ import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import com.aimdi.xtanative.store.settings.XtaPrefs
+import java.util.Locale
 
 /** The sections of XTA's settings, each a screen at `settings/<id>`. */
 enum class SettingsSection(val id: String) {
@@ -169,6 +170,40 @@ object SettingsChoices {
 
     /** The name [code] is shown under; null for the system's choice or a code this build has no language for. */
     fun languageName(code: String): String? = languages.firstOrNull { it.code == code }?.name
+
+    /**
+     * What finds language [code] in the language list's filter: the name it
+     * calls itself, its code, its name in English and in [reader]'s
+     * language, so "arab", "Arabisch" and "ar" all find العربية.
+     */
+    fun languageTerms(code: String, reader: Locale): List<String> {
+        val locale = Locale.forLanguageTag(languageTag(code) ?: return emptyList())
+        return listOfNotNull(
+            languageName(code), code,
+            locale.getDisplayName(Locale.ENGLISH), locale.getDisplayLanguage(Locale.ENGLISH),
+            locale.getDisplayName(reader), locale.getDisplayLanguage(reader),
+        ).distinct()
+    }
+
+    /**
+     * The code of the language the app shows for the system's [locale]: its
+     * own where the app has it (the script or region picking Chinese,
+     * Belarusian and Portuguese), English, the resources' fallback, where not.
+     */
+    fun shownLanguage(locale: Locale): String {
+        val code = when (val language = locale.language) {
+            "zh" -> if (locale.script == "Hant" || locale.country in TRADITIONAL_CHINESE) "zh_Hant" else "zh_Hans"
+            "be" -> if (locale.script == "Latn" || locale.country == LATIN_BELARUSIAN_REGION) "be_Latn" else "be"
+            "pt" -> if (locale.country == "BR") "pt_BR" else "pt"
+            "nb", "no", "nn" -> "nb_NO"
+            "in" -> "id"
+            else -> language
+        }
+        return code.takeIf { wanted -> languages.any { it.code == wanted } } ?: "en"
+    }
+
+    /** The regions whose Chinese is written in traditional characters. */
+    private val TRADITIONAL_CHINESE = setOf("TW", "HK", "MO")
 
     /**
      * [code] as a BCP 47 tag the platforms know (`pt-BR`, `zh-Hans`), or null

@@ -37,6 +37,7 @@
     <string name="settings_language">Lingua</string>
     <string name="settings_language_subtitle">Richiede un riavvio</string>
     <string name="settings_system">Sistema</string>
+    <string name="settings_system_language">Sistema (%1$s)</string>
     <string name="settings_update_check">Controlla gli aggiornamenti</string>
     <string name="settings_update_check_description">Controlla gli aggiornamenti all'avvio di XTA</string>
     <string name="settings_confirm_close">Conferma chiusura</string>

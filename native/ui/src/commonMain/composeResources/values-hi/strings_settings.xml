@@ -37,6 +37,7 @@
     <string name="settings_language">भाषा</string>
     <string name="settings_language_subtitle">पुनः आरंभ करने की आवश्यकता है</string>
     <string name="settings_system">सिस्टम</string>
+    <string name="settings_system_language">सिस्टम (%1$s)</string>
     <string name="settings_update_check">अपडेट जाँचें</string>
     <string name="settings_update_check_description">XTA शुरू होने पर अपडेट जाँचें</string>
     <string name="settings_confirm_close">बंद करने की पुष्टि करें</string>

@@ -37,6 +37,7 @@
     <string name="settings_language">Keel</string>
     <string name="settings_language_subtitle">Eeldab rakenduse uuesti käivitamist</string>
     <string name="settings_system">Süsteemi keel</string>
+    <string name="settings_system_language">Süsteemi keel (%1$s)</string>
     <string name="settings_update_check">Kontrolli uuendusi</string>
     <string name="settings_update_check_description">XTA'i käivitumisel kontrolli uuenduste olemasolu</string>
     <string name="settings_confirm_close">Kinnita sulgemine</string>

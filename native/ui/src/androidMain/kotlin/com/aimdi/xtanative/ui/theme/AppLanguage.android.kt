@@ -27,3 +27,5 @@ actual fun ProvideAppLanguage(language: Pair<String, String>?, content: @Composa
     context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
     CompositionLocalProvider(LocalConfiguration provides configuration, content = content)
 }
+
+internal actual fun systemLocale(): Locale = Resources.getSystem().configuration.locales[0] ?: Locale.getDefault()

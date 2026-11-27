@@ -37,6 +37,7 @@
     <string name="settings_language">Language</string>
     <string name="settings_language_subtitle">Requires a restart</string>
     <string name="settings_system">System</string>
+    <string name="settings_system_language">System (%1$s)</string>
     <string name="settings_update_check">Check for updates</string>
     <string name="settings_update_check_description">Check for updates when XTA starts</string>
     <string name="settings_confirm_close">Confirm close</string>

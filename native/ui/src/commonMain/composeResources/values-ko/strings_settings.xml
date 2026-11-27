@@ -37,6 +37,7 @@
     <string name="settings_language">언어</string>
     <string name="settings_language_subtitle">재시작이 필요합니다</string>
     <string name="settings_system">시스템</string>
+    <string name="settings_system_language">시스템 (%1$s)</string>
     <string name="settings_update_check">업데이트 확인</string>
     <string name="settings_update_check_description">XTA 시작 시 업데이트 확인</string>
     <string name="settings_confirm_close">닫기 확인</string>

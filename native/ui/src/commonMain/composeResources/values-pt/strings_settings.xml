@@ -37,6 +37,7 @@
     <string name="settings_language">Idioma</string>
     <string name="settings_language_subtitle">Requer um reinício</string>
     <string name="settings_system">Sistema</string>
+    <string name="settings_system_language">Sistema (%1$s)</string>
     <string name="settings_update_check">Verificar se há atualizações</string>
     <string name="settings_update_check_description">Verificar se há atualizações quando o XTA iniciar</string>
     <string name="settings_confirm_close">Confirmar encerramento</string>

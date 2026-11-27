@@ -37,6 +37,7 @@
     <string name="settings_language">Мова</string>
     <string name="settings_language_subtitle">Потрібен перезапуск</string>
     <string name="settings_system">Система</string>
+    <string name="settings_system_language">Система (%1$s)</string>
     <string name="settings_update_check">Перевіряти наявність оновлень</string>
     <string name="settings_update_check_description">Перевіряти наявність оновлень при запуску XTA</string>
     <string name="settings_confirm_close">Підтвердити закриття</string>

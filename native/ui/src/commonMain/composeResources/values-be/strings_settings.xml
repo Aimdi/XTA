@@ -37,6 +37,7 @@
     <string name="settings_language">Мова</string>
     <string name="settings_language_subtitle">Неабходны перазапуск</string>
     <string name="settings_system">Сістэмная</string>
+    <string name="settings_system_language">Сістэмная (%1$s)</string>
     <string name="settings_update_check">Праверыць абнаўлення</string>
     <string name="settings_update_check_description">Правяраць наяўнасць абнаўленняў пры запуску</string>
     <string name="settings_confirm_close">Пацвердзіць закрыццё</string>

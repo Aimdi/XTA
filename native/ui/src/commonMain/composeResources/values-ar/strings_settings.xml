@@ -37,6 +37,7 @@
     <string name="settings_language">اللغات</string>
     <string name="settings_language_subtitle">يتطلب إعادة تشغيل</string>
     <string name="settings_system">النظام</string>
+    <string name="settings_system_language">النظام (%1$s)</string>
     <string name="settings_update_check">التحقق من وجود تحديثات</string>
     <string name="settings_update_check_description">تحقق من وجود تحديثات عندما يبدأ XTA</string>
     <string name="settings_confirm_close">تأكيد الإغلاق</string>

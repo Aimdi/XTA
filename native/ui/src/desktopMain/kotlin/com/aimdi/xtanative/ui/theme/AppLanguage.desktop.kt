@@ -45,6 +45,8 @@ internal object SystemLocale {
 /** The language the app started in, which "System" goes back to. */
 private val startLocale: Locale = SystemLocale.of(System::getenv, Locale.getDefault())
 
+internal actual fun systemLocale(): Locale = startLocale
+
 /**
  * The screen's density, a new one for each language: Compose Multiplatform's
  * resources read the density where they read the locale, so every word on

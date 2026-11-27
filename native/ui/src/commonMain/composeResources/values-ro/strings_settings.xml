@@ -37,6 +37,7 @@
     <string name="settings_language">Limbă</string>
     <string name="settings_language_subtitle">Necesită repornire</string>
     <string name="settings_system">Sistem</string>
+    <string name="settings_system_language">Sistem (%1$s)</string>
     <string name="settings_update_check">Verificați actualizările</string>
     <string name="settings_update_check_description">Verificați actualizările când pornește XTA</string>
     <string name="settings_confirm_close">Confirmați închiderea</string>

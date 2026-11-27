@@ -37,6 +37,7 @@
     <string name="settings_language">Langue</string>
     <string name="settings_language_subtitle">Nécessite un redémarrage</string>
     <string name="settings_system">Système</string>
+    <string name="settings_system_language">Système (%1$s)</string>
     <string name="settings_update_check">Vérifier les mises à jour</string>
     <string name="settings_update_check_description">Vérifier les mises à jour au démarrage de XTA</string>
     <string name="settings_confirm_close">Confirmation de fermeture</string>

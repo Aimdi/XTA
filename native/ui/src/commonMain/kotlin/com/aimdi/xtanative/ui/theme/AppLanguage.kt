@@ -47,3 +47,6 @@ object AppLocale {
 /** The screens below in [language] (`language` and `region`, as [AppLocale.of] gives them), or the system's for null. */
 @Composable
 expect fun ProvideAppLanguage(language: Pair<String, String>?, content: @Composable () -> Unit)
+
+/** The system's own language, which "System" shows the app in where the app has it. */
+internal expect fun systemLocale(): java.util.Locale

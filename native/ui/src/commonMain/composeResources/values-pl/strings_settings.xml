@@ -37,6 +37,7 @@
     <string name="settings_language">Język</string>
     <string name="settings_language_subtitle">Wymaga ponownego uruchomienia</string>
     <string name="settings_system">Systemowy</string>
+    <string name="settings_system_language">Systemowy (%1$s)</string>
     <string name="settings_update_check">Sprawdzaj aktualizacje</string>
     <string name="settings_update_check_description">Sprawdzaj aktualizacje po uruchomieniu Quackera</string>
     <string name="settings_confirm_close">Potwierdź zamknięcie</string>

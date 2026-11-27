@@ -37,6 +37,7 @@
     <string name="settings_language">语言</string>
     <string name="settings_language_subtitle">需要重启应用</string>
     <string name="settings_system">跟随系统</string>
+    <string name="settings_system_language">跟随系统（%1$s）</string>
     <string name="settings_update_check">检查更新</string>
     <string name="settings_update_check_description">XTA 启动时检查更新</string>
     <string name="settings_confirm_close">确认关闭</string>

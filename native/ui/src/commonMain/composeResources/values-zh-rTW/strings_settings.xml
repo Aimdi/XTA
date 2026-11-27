@@ -37,6 +37,7 @@
     <string name="settings_language">語言</string>
     <string name="settings_language_subtitle">需要重新啟動</string>
     <string name="settings_system">系統</string>
+    <string name="settings_system_language">系統（%1$s）</string>
     <string name="settings_update_check">檢查更新</string>
     <string name="settings_update_check_description">XTA 啟動時檢查更新</string>
     <string name="settings_confirm_close">確認關閉</string>

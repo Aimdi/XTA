@@ -37,6 +37,7 @@
     <string name="settings_language">言語</string>
     <string name="settings_language_subtitle">再起動が必要</string>
     <string name="settings_system">システム</string>
+    <string name="settings_system_language">システム（%1$s）</string>
     <string name="settings_update_check">更新を確認</string>
     <string name="settings_update_check_description">Quacker開始時に更新を確認する</string>
     <string name="settings_confirm_close">確認して閉じる</string>

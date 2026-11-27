@@ -37,6 +37,7 @@
     <string name="settings_language">Ngôn ngữ</string>
     <string name="settings_language_subtitle">Yêu cầu khởi động lại</string>
     <string name="settings_system">Theo hệ thống</string>
+    <string name="settings_system_language">Theo hệ thống (%1$s)</string>
     <string name="settings_update_check">Kiểm tra cập nhật</string>
     <string name="settings_update_check_description">Kiểm tra cập nhật XTA mỗi khi mở ứng dụng</string>
     <string name="settings_confirm_close">Đóng ứng dụng</string>
