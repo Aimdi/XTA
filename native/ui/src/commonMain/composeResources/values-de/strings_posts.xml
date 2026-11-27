@@ -68,7 +68,6 @@
     <string name="posts_reposted">Repost von %1$s %2$s</string>
     <string name="posts_reposted_by">Geteilt von</string>
     <string name="posts_retry">Erneut versuchen</string>
-    <string name="posts_retweets">Reposts</string>
     <string name="posts_scroll_to_top">Nach oben scrollen</string>
     <string name="posts_sensitive_always">Sensible Medien immer anzeigen</string>
     <string name="posts_sensitive_show">Anzeigen</string>

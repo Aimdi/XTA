@@ -62,12 +62,12 @@
     <string name="settings_page_discover">Discover</string>
     <string name="settings_profile_replies">Replies</string>
     <string name="settings_absolute_timestamp">Use absolute timestamp</string>
-    <string name="settings_absolute_timestamp_description">Display absolute timestamp on tweet</string>
+    <string name="settings_absolute_timestamp_description">Display absolute timestamps on posts</string>
     <string name="settings_hide_sensitive">Hide sensitive posts</string>
     <string name="settings_hide_sensitive_description">Whether to hide posts marked as sensitive</string>
     <string name="settings_always_show_sensitive">Always show sensitive media</string>
-    <string name="settings_full_contents">Always show full tweet contents</string>
-    <string name="settings_full_contents_description">Always show the full contents of a tweet, even if it's long, without the "Show more" button</string>
+    <string name="settings_full_contents">Always show full post contents</string>
+    <string name="settings_full_contents_description">Always show the full contents of a post, even if it's long, without the "Show more" button</string>
     <string name="settings_non_confirmation">Activate non-confirmation bias mode</string>
     <string name="settings_non_confirmation_description">Hide post authors. Avoid confirmation bias based on authoritative arguments.</string>
     <string name="settings_unrelated_warnings">Disable warnings for unrelated posts in feed</string>
@@ -156,7 +156,7 @@
     <string name="settings_light">Light</string>
     <string name="settings_dim">Dim</string>
     <string name="settings_lights_out">Lights out</string>
-    <string name="settings_accent">Accent colour</string>
+    <string name="settings_accent">Accent color</string>
     <string name="settings_accent_description">Used for links, buttons and the selected tab</string>
     <string name="settings_colour_blue">Blue</string>
     <string name="settings_colour_yellow">Yellow</string>
@@ -344,8 +344,8 @@
     <string name="intro_device_body">Subscriptions, groups, likes and saved posts live only on this phone — no trackers.</string>
     <string name="intro_device_body_desktop">Subscriptions, groups, likes and saved posts live only on this computer — no trackers.</string>
     <string name="intro_appearance_title">Pick a look</string>
-    <string name="intro_appearance_body">Light, Dim or Lights out, plus an accent colour. System follows your phone. Change it any time in Settings.</string>
-    <string name="intro_appearance_body_desktop">Light, Dim or Lights out, plus an accent colour. System follows your desktop. Change it any time in Settings.</string>
+    <string name="intro_appearance_body">Light, Dim or Lights out, plus an accent color. System follows your phone. Change it any time in Settings.</string>
+    <string name="intro_appearance_body_desktop">Light, Dim or Lights out, plus an accent color. System follows your desktop. Change it any time in Settings.</string>
     <string name="intro_account_title">Add an X account</string>
     <string name="intro_account_caption">Without an account X refuses most requests, so expect errors more often than posts.</string>
     <string name="intro_not_now">Not now</string>

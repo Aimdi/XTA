@@ -68,7 +68,6 @@
     <string name="posts_reposted">%1$s أعاد تغريد %2$s</string>
     <string name="posts_reposted_by">أعاد نشره</string>
     <string name="posts_retry">إعادة المحاولة</string>
-    <string name="posts_retweets">إعادة التغريد</string>
     <string name="posts_scroll_to_top">التمرير إلى الأعلى</string>
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>

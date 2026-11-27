@@ -68,7 +68,6 @@
     <string name="posts_reposted">%1$s ने %2$s रिपोस्ट किया</string>
     <string name="posts_reposted_by">इन्होंने फिर से साझा किया</string>
     <string name="posts_retry">पुनः प्रयास करें</string>
-    <string name="posts_retweets">रीट्वीट</string>
     <string name="posts_scroll_to_top">ऊपर स्क्रॉल करें</string>
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>

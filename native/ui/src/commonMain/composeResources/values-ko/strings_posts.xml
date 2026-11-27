@@ -68,7 +68,6 @@
     <string name="posts_reposted">%1$s이(가) %2$s에 리포스트</string>
     <string name="posts_reposted_by">재게시한 사용자</string>
     <string name="posts_retry">재시도</string>
-    <string name="posts_retweets">리트윗</string>
     <string name="posts_scroll_to_top">맨 위로 스크롤</string>
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>

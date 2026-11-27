@@ -68,7 +68,6 @@
     <string name="posts_reposted">%1$s retweetado %2$s</string>
     <string name="posts_reposted_by">Republicado por</string>
     <string name="posts_retry">Tentar novamente</string>
-    <string name="posts_retweets">Retweets</string>
     <string name="posts_scroll_to_top">Rolar para o topo</string>
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>

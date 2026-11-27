@@ -52,7 +52,7 @@
     <string name="discover_only_links">Only links</string>
     <string name="discover_hide_links">Hide links</string>
     <string name="discover_include_reposts">Include reposts</string>
-    <string name="discover_hide_retweets">Hide retweets</string>
+    <string name="discover_hide_retweets">Hide reposts</string>
     <string name="discover_filters">Filters</string>
     <string name="discover_minimum_replies">Minimum replies</string>
     <string name="discover_minimum_likes">Minimum likes</string>

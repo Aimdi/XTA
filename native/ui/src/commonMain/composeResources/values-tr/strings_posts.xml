@@ -68,7 +68,6 @@
     <string name="posts_reposted">%1$s %2$s retweet'ledi</string>
     <string name="posts_reposted_by">Yeniden paylaşanlar</string>
     <string name="posts_retry">Yeniden dene</string>
-    <string name="posts_retweets">Retweetler</string>
     <string name="posts_scroll_to_top">En üste kaydır</string>
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>

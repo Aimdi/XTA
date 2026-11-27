@@ -5,7 +5,7 @@
     <string name="posts_share_content">Share post content</string>
     <string name="posts_share_article_link">Share article link</string>
     <string name="posts_share_content_and_link">Share post content and link</string>
-    <string name="posts_share_image">Share tweet as image</string>
+    <string name="posts_share_image">Share post as image</string>
     <string name="posts_share_article_image">Share article as image</string>
     <string name="posts_copied">Copied to clipboard</string>
     <string name="posts_reply_not_found">Sorry, the replied post could not be found!</string>

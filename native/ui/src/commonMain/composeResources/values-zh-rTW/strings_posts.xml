@@ -68,7 +68,6 @@
     <string name="posts_reposted">%1$s 在 %2$s 轉貼</string>
     <string name="posts_reposted_by">轉發者</string>
     <string name="posts_retry">重試</string>
-    <string name="posts_retweets">轉推</string>
     <string name="posts_scroll_to_top">捲動到頂端</string>
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>

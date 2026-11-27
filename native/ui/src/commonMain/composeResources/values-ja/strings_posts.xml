@@ -68,7 +68,6 @@
     <string name="posts_reposted">%1$sがリツイート %2$s</string>
     <string name="posts_reposted_by">リポストした人</string>
     <string name="posts_retry">再試行</string>
-    <string name="posts_retweets">リツイート</string>
     <string name="posts_scroll_to_top">一番上までスクロール</string>
     <string name="posts_sensitive_always">センシティブなメディアを常に表示</string>
     <string name="posts_sensitive_show">表示</string>

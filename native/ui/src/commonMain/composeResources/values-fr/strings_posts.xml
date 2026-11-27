@@ -68,7 +68,6 @@
     <string name="posts_reposted">%1$s a retweeté %2$s</string>
     <string name="posts_reposted_by">Repartagé par</string>
     <string name="posts_retry">Réessayer</string>
-    <string name="posts_retweets">Retweets</string>
     <string name="posts_scroll_to_top">Retour en haut</string>
     <string name="posts_sensitive_always">Toujours afficher les médias sensibles</string>
     <string name="posts_sensitive_show">Afficher</string>

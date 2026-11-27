@@ -56,7 +56,7 @@ import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.posts_no_quotes
 import com.aimdi.xtanative.ui.generated.resources.posts_no_retweets
 import com.aimdi.xtanative.ui.generated.resources.posts_quotes
-import com.aimdi.xtanative.ui.generated.resources.posts_retweets
+import com.aimdi.xtanative.ui.generated.resources.posts_reposted_by
 import com.aimdi.xtanative.ui.generated.resources.posts_sort_most_followers
 import com.aimdi.xtanative.ui.generated.resources.posts_sort_most_liked
 import com.aimdi.xtanative.ui.generated.resources.posts_sort_oldest
@@ -202,7 +202,7 @@ fun QuotesScreen(id: String, reposters: Boolean, actions: PostActions, onBack: (
             ColumnTopAppBar(
                 title = {
                     TabRow(selectedTabIndex = pager.currentPage, containerColor = MaterialTheme.colorScheme.background, divider = {}) {
-                        listOf(Res.string.posts_quotes, Res.string.posts_retweets).forEachIndexed { index, label ->
+                        listOf(Res.string.posts_quotes, Res.string.posts_reposted_by).forEachIndexed { index, label ->
                             XtaTab(
                                 selected = pager.currentPage == index,
                                 onClick = { scope.launch { pager.animateScrollToPage(index) } },

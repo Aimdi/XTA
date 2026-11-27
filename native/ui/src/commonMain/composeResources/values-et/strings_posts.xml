@@ -68,7 +68,6 @@
     <string name="posts_reposted">%1$s kirjutas %2$s eest kordussäutsu</string>
     <string name="posts_reposted_by">Edasi jaganud</string>
     <string name="posts_retry">Proovi uuesti</string>
-    <string name="posts_retweets">Kordussäutsud</string>
     <string name="posts_scroll_to_top">Keri üles</string>
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>

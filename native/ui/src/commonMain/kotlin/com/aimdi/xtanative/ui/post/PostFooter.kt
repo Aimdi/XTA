@@ -75,7 +75,7 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_add_to_group
 import com.aimdi.xtanative.ui.generated.resources.posts_open_post
 import com.aimdi.xtanative.ui.generated.resources.posts_quotes
-import com.aimdi.xtanative.ui.generated.resources.posts_retweets
+import com.aimdi.xtanative.ui.generated.resources.posts_reposted_by
 import com.aimdi.xtanative.ui.generated.resources.posts_share
 import com.aimdi.xtanative.ui.generated.resources.posts_show_original
 import com.aimdi.xtanative.ui.generated.resources.posts_subscribe
@@ -272,7 +272,7 @@ internal val REPOST_GREEN = Color(0xFF00BA7C)
 @Composable
 private fun QuoteMenu(open: Boolean, onDismiss: () -> Unit, onQuotes: () -> Unit, onRetweets: () -> Unit, onNote: () -> Unit) {
     DropdownMenu(expanded = open, onDismissRequest = onDismiss) {
-        listOf(Res.string.posts_quotes to onQuotes, Res.string.posts_retweets to onRetweets, Res.string.saved_note_quote to onNote).forEach { (label, action) ->
+        listOf(Res.string.posts_quotes to onQuotes, Res.string.posts_reposted_by to onRetweets, Res.string.saved_note_quote to onNote).forEach { (label, action) ->
             DropdownMenuItem(text = { Text(stringResource(label)) }, onClick = {
                 onDismiss()
                 action()

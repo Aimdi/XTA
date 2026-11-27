@@ -68,7 +68,6 @@
     <string name="posts_reposted">%1$s retuiteó %2$s</string>
     <string name="posts_reposted_by">Compartido por</string>
     <string name="posts_retry">Reintentar</string>
-    <string name="posts_retweets">Retweets</string>
     <string name="posts_scroll_to_top">Ir arriba</string>
     <string name="posts_sensitive_always">Mostrar siempre el contenido sensible</string>
     <string name="posts_sensitive_show">Mostrar</string>

@@ -68,7 +68,6 @@
     <string name="posts_reposted">%1$s heeft opnieuw geplaatst %2$s</string>
     <string name="posts_reposted_by">Opnieuw gedeeld door</string>
     <string name="posts_retry">Opnieuw</string>
-    <string name="posts_retweets">Retweets</string>
     <string name="posts_scroll_to_top">Naar boven scrollen</string>
     <string name="posts_sensitive_always">Always show sensitive media</string>
     <string name="posts_sensitive_show">Show</string>
