@@ -9,6 +9,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class DesktopWindowTest {
     @Test
@@ -110,6 +111,7 @@ class DesktopWindowTest {
         assertEquals(InstanceMessage.Raise, InstanceMessage.parse("raise"))
         assertEquals(InstanceMessage.Raise, InstanceMessage.parse(" raise\n"))
         assertNull(InstanceMessage.parse("RAISE"))
+        assertEquals(InstanceMessage.Hello, InstanceMessage.parse("hello\n"))
         assertEquals(InstanceMessage.Open("https://x.com/a/status/1"), InstanceMessage.parse("open https://x.com/a/status/1\n"))
         assertNull(InstanceMessage.parse("open file:///etc/passwd"))
         assertNull(InstanceMessage.parse("open https://x.com/a b"))
@@ -123,6 +125,7 @@ class DesktopWindowTest {
         val open = InstanceMessage.Open("https://twitter.com/jack")
         assertEquals(open, InstanceMessage.parse(open.line))
         assertEquals(InstanceMessage.Raise, InstanceMessage.parse(InstanceMessage.Raise.line))
+        assertEquals(InstanceMessage.Hello, InstanceMessage.parse(InstanceMessage.Hello.line))
     }
 
     @Test
@@ -172,6 +175,22 @@ class DesktopWindowTest {
         try {
             assertNull(SingleInstance.claim(folder))
             assertEquals(InstanceMessage.Raise, heard.poll(5, TimeUnit.SECONDS))
+        } finally {
+            first.close()
+        }
+    }
+
+    @Test
+    fun aMinimizedSecondStartEndsWithoutRaisingTheWindow() {
+        val folder = Files.createTempDirectory("xta-instance").toFile()
+        val first = assertNotNull(SingleInstance.claim(folder))
+        val heard = LinkedBlockingQueue<InstanceMessage>()
+        first.listen(heard::add)
+        try {
+            val started = System.currentTimeMillis()
+            assertNull(SingleInstance.claim(folder, InstanceMessage.Hello), "the autostart ends: a copy runs")
+            assertTrue(System.currentTimeMillis() - started < 2_000, "answered at once, not waited out")
+            assertNull(heard.poll(300, TimeUnit.MILLISECONDS), "the running window is left as it is")
         } finally {
             first.close()
         }

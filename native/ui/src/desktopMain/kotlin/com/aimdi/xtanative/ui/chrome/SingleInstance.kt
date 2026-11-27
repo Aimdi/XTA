@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 /**
  * What a later start of the app asks of the copy already running, one line
  * over its socket. A copy that does not know a line ignores it and gives no
- * answer, so a later start can fall back to [Raise].
+ * answer, so a later start with a link can fall back to [Raise].
  */
 sealed interface InstanceMessage {
     /** The line this message travels as. */
@@ -28,6 +28,16 @@ sealed interface InstanceMessage {
     /** Bring the window forward: XTA's second start presents the running window. */
     data object Raise : InstanceMessage {
         override val line: String = "raise"
+    }
+
+    /**
+     * Only make sure a copy runs, its window left as it is: what a start from
+     * the session's autostart (`--minimized`) asks, so a copy already open, or
+     * hidden in the tray, is not brought up at login. A copy too old to know
+     * it gives no answer, and is left alone.
+     */
+    data object Hello : InstanceMessage {
+        override val line: String = "hello"
     }
 
     /** Open [url] (an X link, or any page a plugin reads), as a link another app opens here, and bring the window forward. */
@@ -46,6 +56,7 @@ sealed interface InstanceMessage {
             val text = line?.trim() ?: return null
             return when {
                 text == Raise.line -> Raise
+                text == Hello.line -> Hello
                 text.startsWith(OPEN) -> link(text.removePrefix(OPEN))?.let(::Open)
                 else -> null
             }
@@ -91,7 +102,8 @@ class SingleInstance private constructor(
                 runCatching {
                     client.use { channel ->
                         val message = InstanceMessage.parse(Channels.newReader(channel, Charsets.UTF_8).buffered().readLine())
-                        message?.let(onMessage)
+                        // A hello asks nothing of the app: it is answered here, the window left as it is.
+                        if (message != null && message != InstanceMessage.Hello) onMessage(message)
                         // The later start ends only on this answer: a copy that is closing has stopped listening, and gives none.
                         if (message != null) channel.write(ByteBuffer.wrap("$HEARD\n".toByteArray(Charsets.UTF_8)))
                     }
@@ -132,16 +144,17 @@ class SingleInstance private constructor(
         /**
          * This start's claim on [folder]: the running copy's when it is the
          * first, else null once the copy already running has been handed
-         * [message] (raise its window, or open a link and raise it), and this
-         * start should end. A running copy too old to open links is asked to
-         * raise its window instead.
+         * [message] (raise its window, open a link and raise it, or only hear
+         * that a start was made), and this start should end. A running copy too
+         * old to open links is asked to raise its window instead; one too old to
+         * answer a hello is left alone.
          */
         fun claim(folder: File, message: InstanceMessage = InstanceMessage.Raise): SingleInstance? {
             val socket = File(folder, SOCKET_FILE)
             val first = take(folder, socket)
             if (first != null) return first
             if (tell(socket, message)) return null
-            if (message != InstanceMessage.Raise && tell(socket, InstanceMessage.Raise)) return null
+            if (message is InstanceMessage.Open && tell(socket, InstanceMessage.Raise)) return null
             // Nobody answered: the copy holding the lock is ending. This start runs once it has.
             val until = System.currentTimeMillis() + TAKE_OVER_MILLIS
             while (System.currentTimeMillis() < until) {

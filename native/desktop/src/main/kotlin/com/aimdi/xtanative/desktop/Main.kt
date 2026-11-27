@@ -109,7 +109,10 @@ fun main(args: Array<String>) {
     }
     val files = dataFolder()
     val link = InstanceMessage.linkIn(args)
-    val instance = SingleInstance.claim(files, link?.let(InstanceMessage::Open) ?: InstanceMessage.Raise) ?: exitProcess(0)
+    val startHidden = "--minimized" in args
+    // A start from the session's autostart leaves a copy already running as it is, shown or hidden in the tray.
+    val asked = link?.let(InstanceMessage::Open) ?: if (startHidden) InstanceMessage.Hello else InstanceMessage.Raise
+    val instance = SingleInstance.claim(files, asked) ?: exitProcess(0)
     // What the app prints is kept in its log too, once this start is the one that runs: from the menu, nothing reads the terminal.
     AppLog.install()
     // `--verbose`: the system's facts and each request's line in the log as well.
@@ -122,7 +125,6 @@ fun main(args: Array<String>) {
     tray.onAction = { action -> if (action == TrayAction.SHOW) raises.tryEmit(Unit) else trayClicks.tryEmit(action) }
     // The main window and its state once it is made, for the icon's click to ask whether it is minimized or in use.
     val mainWindow = AtomicReference<Pair<WindowState, ComposeWindow>?>(null)
-    val startHidden = "--minimized" in args
     // The desktop's dark or light is asked while the window starts, so "System" opens in it.
     DesktopColorScheme.desktop.start()
     MprisSessions.service.onRaise = { raises.tryEmit(Unit) }
