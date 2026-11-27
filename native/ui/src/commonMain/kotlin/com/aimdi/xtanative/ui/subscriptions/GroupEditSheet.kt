@@ -30,6 +30,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -192,10 +193,7 @@ fun GroupEditSheet(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalArrangement = Arrangement.Center,
             ) {
-                TextButton(onClick = { picker = EditPicker.ADD }) {
-                    Icon(GroupIcons.PersonAdd, contentDescription = null, modifier = Modifier.size(18.dp))
-                    TipText(stringResource(Res.string.groups_add_to_group), maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 8.dp))
-                }
+                Discreet(GroupIcons.PersonAdd, Res.string.groups_add_to_group, accent = true) { picker = EditPicker.ADD }
                 Discreet(GroupIcons.Checklist, Res.string.groups_toggle_all) { draft = draft.toggledAll(rows.map { it.id }) }
                 if (existing != null) {
                     GroupActionsRow(existing, session, actions, onMerge = {
@@ -233,10 +231,12 @@ fun GroupEditSheet(
                 }
             }
             Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = { picker = EditPicker.DELETE }, enabled = existing != null) { Text(stringResource(Res.string.groups_delete)) }
+                // Delete reads apart from the answers beside it; OK is the one filled button, as a dialog's default is.
+                if (existing != null) TextButton(onClick = { picker = EditPicker.DELETE }, colors = destructiveTextColors()) { Text(stringResource(Res.string.groups_delete)) }
                 Spacer(Modifier.weight(1f))
                 TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel)) }
-                TextButton(onClick = ::save) { Text(stringResource(Res.string.groups_ok)) }
+                Spacer(Modifier.width(8.dp))
+                Button(onClick = ::save) { Text(stringResource(Res.string.groups_ok)) }
             }
         }
     }
@@ -318,17 +318,22 @@ private fun GroupActionsRow(group: FollowGroup, session: Session, actions: Group
     Discreet(if (decked) GroupIcons.ViewColumn else GroupIcons.ViewColumnOutlined, if (decked) Res.string.groups_deck_unpin else Res.string.groups_deck_pin) {
         actions.toggleDeck(group.id)
     }
-    Discreet(GroupIcons.UploadOutlined, Res.string.groups_pack_export, onExport)
-    Discreet(GroupIcons.Merge, Res.string.groups_merge_into, onMerge)
-    Discreet(GroupIcons.FolderOutlined, Res.string.groups_nest_inside, onNest)
+    Discreet(GroupIcons.UploadOutlined, Res.string.groups_pack_export, onClick = onExport)
+    Discreet(GroupIcons.Merge, Res.string.groups_merge_into, onClick = onMerge)
+    Discreet(GroupIcons.FolderOutlined, Res.string.groups_nest_inside, onClick = onNest)
 }
 
-/** A small, low-contrast action, as XTA styles the sheet's secondary ones. */
+/**
+ * A small, low-contrast action, as XTA styles the sheet's secondary ones;
+ * [accent] the one that leads them (Add to group), the same size in the
+ * accent's colour.
+ */
 @Composable
-private fun Discreet(icon: ImageVector, label: StringResource, onClick: () -> Unit) {
+private fun Discreet(icon: ImageVector, label: StringResource, accent: Boolean = false, onClick: () -> Unit) {
+    val color = if (accent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
     TextButton(onClick = onClick) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
-        Text(stringResource(label), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 6.dp))
+        Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(18.dp))
+        TipText(stringResource(label), style = MaterialTheme.typography.bodySmall, color = color, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 6.dp))
     }
 }
 

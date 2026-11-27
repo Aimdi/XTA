@@ -175,7 +175,7 @@
     <string name="groups_subscriptions">Abonelikler</string>
     <string name="groups_switch_group">Grup değiştir</string>
     <string name="groups_threshold_off">Kapalı</string>
-    <string name="groups_toggle_all">Tümünü Aç/Kapat</string>
+    <string name="groups_toggle_all">Tümünü aç/kapat</string>
     <string name="groups_unable_to_import">İçe aktarılamıyor</string>
     <string name="groups_undo">Geri al</string>
     <string name="groups_unmark_nsfw">NSFW işaretini kaldır</string>
