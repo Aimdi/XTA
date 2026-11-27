@@ -55,4 +55,8 @@
     <string name="keys_menu">Меню</string>
     <string name="keys_find_in_page">Поиск в посте или статье, которые вы читаете</string>
     <string name="keys_find_match">Следующее или предыдущее совпадение в строке поиска</string>
+    <string name="keys_post_author">Открыть профиль автора этого поста</string>
+    <string name="keys_post_window">Открыть этот пост в новом окне</string>
+    <string name="keys_post_media">Открыть первое фото или видео этого поста</string>
+    <string name="keys_post_translate">Перевести этот пост или показать оригинал</string>
 </resources>

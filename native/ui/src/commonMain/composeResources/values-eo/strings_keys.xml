@@ -55,4 +55,8 @@
     <string name="keys_menu">Menuo</string>
     <string name="keys_find_in_page">Serĉi en la afiŝo aŭ artikolo, kiun vi legas</string>
     <string name="keys_find_match">Sekva aŭ antaŭa trafo en la serĉbreto</string>
+    <string name="keys_post_author">Malfermi la profilon de la aŭtoro de tiu afiŝo</string>
+    <string name="keys_post_window">Malfermi tiun afiŝon en nova fenestro</string>
+    <string name="keys_post_media">Malfermi la unuan bildon aŭ videon de tiu afiŝo</string>
+    <string name="keys_post_translate">Traduki tiun afiŝon aŭ montri la originalon</string>
 </resources>

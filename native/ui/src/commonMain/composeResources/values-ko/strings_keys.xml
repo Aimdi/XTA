@@ -55,4 +55,8 @@
     <string name="keys_menu">메뉴</string>
     <string name="keys_find_in_page">읽고 있는 게시물이나 기사에서 찾기</string>
     <string name="keys_find_match">찾기 막대에서 다음 또는 이전 결과</string>
+    <string name="keys_post_author">그 게시물 작성자의 프로필 열기</string>
+    <string name="keys_post_window">그 게시물을 새 창에서 열기</string>
+    <string name="keys_post_media">그 게시물의 첫 사진이나 동영상 열기</string>
+    <string name="keys_post_translate">그 게시물 번역 또는 원본 보기</string>
 </resources>

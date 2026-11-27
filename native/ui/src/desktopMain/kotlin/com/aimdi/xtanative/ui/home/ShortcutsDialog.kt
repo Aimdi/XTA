@@ -70,10 +70,14 @@ import com.aimdi.xtanative.ui.generated.resources.keys_pages
 import com.aimdi.xtanative.ui.generated.resources.keys_photo_move
 import com.aimdi.xtanative.ui.generated.resources.keys_photo_zoom
 import com.aimdi.xtanative.ui.generated.resources.keys_post_like
+import com.aimdi.xtanative.ui.generated.resources.keys_post_author
 import com.aimdi.xtanative.ui.generated.resources.keys_post_link
+import com.aimdi.xtanative.ui.generated.resources.keys_post_media
 import com.aimdi.xtanative.ui.generated.resources.keys_post_menu
 import com.aimdi.xtanative.ui.generated.resources.keys_post_open
 import com.aimdi.xtanative.ui.generated.resources.keys_post_save
+import com.aimdi.xtanative.ui.generated.resources.keys_post_translate
+import com.aimdi.xtanative.ui.generated.resources.keys_post_window
 import com.aimdi.xtanative.ui.generated.resources.keys_quit
 import com.aimdi.xtanative.ui.generated.resources.keys_recent_searches
 import com.aimdi.xtanative.ui.generated.resources.keys_refresh
@@ -169,6 +173,10 @@ object DesktopShortcuts {
             listOf(
                 Shortcut(Res.string.keys_next_post, listOf(listOf(sign("J")), listOf(sign("K")))),
                 Shortcut(Res.string.keys_post_open, listOf(listOf(sign("↵")), listOf(sign("O")))),
+                Shortcut(Res.string.keys_post_window, listOf(listOf(shift, sign("↵")), listOf(ctrl, sign("↵")))),
+                Shortcut(Res.string.keys_post_author, listOf(listOf(sign("U")))),
+                Shortcut(Res.string.keys_post_media, listOf(listOf(sign("M")), listOf(sign("V")))),
+                Shortcut(Res.string.keys_post_translate, listOf(listOf(sign("T")))),
                 Shortcut(Res.string.keys_post_like, listOf(listOf(sign("L")))),
                 Shortcut(Res.string.keys_post_save, listOf(listOf(sign("B")))),
                 Shortcut(Res.string.keys_post_link, listOf(listOf(ctrl, shift, sign("C")))),

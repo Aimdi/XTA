@@ -404,7 +404,7 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
     // Opened from the keyboard: at the post, not at the pointer.
     var menuAtPost by remember(shown.id) { mutableStateOf(false) }
     // The desktop's keys act on it as on a reply (l, b, Ctrl+Shift+C, the Menu key); it is open already, so Enter leaves it.
-    val keys = rememberPostKeys(post, actions, openable = false) {
+    val keys = rememberPostKeys(post, actions, openable = false, translation = translation) {
         menuAtPost = true
         menu = true
     }

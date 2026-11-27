@@ -55,4 +55,8 @@
     <string name="keys_menu">選單</string>
     <string name="keys_find_in_page">在正在閱讀的貼文或文章中尋找</string>
     <string name="keys_find_match">尋找列中的下一個或上一個符合項目</string>
+    <string name="keys_post_author">開啟該貼文作者的個人檔案</string>
+    <string name="keys_post_window">在新視窗中開啟該貼文</string>
+    <string name="keys_post_media">開啟該貼文的第一張圖片或第一部影片</string>
+    <string name="keys_post_translate">翻譯該貼文，或顯示原文</string>
 </resources>

@@ -55,4 +55,8 @@
     <string name="keys_menu">メニュー</string>
     <string name="keys_find_in_page">読んでいるポストや記事の中を検索</string>
     <string name="keys_find_match">検索バーで次または前の一致へ</string>
+    <string name="keys_post_author">その投稿の投稿者のプロフィールを開く</string>
+    <string name="keys_post_window">その投稿を新しいウィンドウで開く</string>
+    <string name="keys_post_media">その投稿の最初の画像か動画を開く</string>
+    <string name="keys_post_translate">その投稿を翻訳、または元に戻す</string>
 </resources>

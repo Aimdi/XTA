@@ -55,4 +55,8 @@
     <string name="keys_menu">Menu</string>
     <string name="keys_find_in_page">Tìm trong bài đăng hoặc bài viết bạn đang đọc</string>
     <string name="keys_find_match">Kết quả tiếp theo hoặc trước đó trong thanh tìm kiếm</string>
+    <string name="keys_post_author">Mở hồ sơ của tác giả bài đăng đó</string>
+    <string name="keys_post_window">Mở bài đăng đó trong cửa sổ mới</string>
+    <string name="keys_post_media">Mở ảnh hoặc video đầu tiên của bài đăng đó</string>
+    <string name="keys_post_translate">Dịch bài đăng đó, hoặc hiện bản gốc</string>
 </resources>

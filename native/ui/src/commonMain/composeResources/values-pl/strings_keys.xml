@@ -55,4 +55,8 @@
     <string name="keys_menu">Menu</string>
     <string name="keys_find_in_page">Szukaj w czytanym wpisie lub artykule</string>
     <string name="keys_find_match">Następne lub poprzednie wystąpienie na pasku wyszukiwania</string>
+    <string name="keys_post_author">Otwórz profil autora tego wpisu</string>
+    <string name="keys_post_window">Otwórz ten wpis w nowym oknie</string>
+    <string name="keys_post_media">Otwórz pierwsze zdjęcie lub wideo tego wpisu</string>
+    <string name="keys_post_translate">Przetłumacz ten wpis lub pokaż oryginał</string>
 </resources>

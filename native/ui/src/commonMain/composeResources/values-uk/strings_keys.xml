@@ -55,4 +55,8 @@
     <string name="keys_menu">Меню</string>
     <string name="keys_find_in_page">Пошук у дописі чи статті, яку ви читаєте</string>
     <string name="keys_find_match">Наступний або попередній збіг у рядку пошуку</string>
+    <string name="keys_post_author">Відкрити профіль автора цього допису</string>
+    <string name="keys_post_window">Відкрити цей допис у новому вікні</string>
+    <string name="keys_post_media">Відкрити перше фото або відео цього допису</string>
+    <string name="keys_post_translate">Перекласти цей допис або показати оригінал</string>
 </resources>

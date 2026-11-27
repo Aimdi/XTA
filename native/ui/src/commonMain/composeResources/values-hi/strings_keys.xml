@@ -55,4 +55,8 @@
     <string name="keys_menu">मेनू</string>
     <string name="keys_find_in_page">जो पोस्ट या लेख आप पढ़ रहे हैं, उसमें खोजें</string>
     <string name="keys_find_match">खोज पट्टी में अगला या पिछला मिलान</string>
+    <string name="keys_post_author">उस पोस्ट के लेखक की प्रोफ़ाइल खोलें</string>
+    <string name="keys_post_window">उस पोस्ट को नई विंडो में खोलें</string>
+    <string name="keys_post_media">उस पोस्ट की पहली तस्वीर या वीडियो खोलें</string>
+    <string name="keys_post_translate">उस पोस्ट का अनुवाद करें या मूल दिखाएँ</string>
 </resources>

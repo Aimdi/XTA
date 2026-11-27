@@ -651,7 +651,8 @@ class DesktopKeysTest {
         assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.V, alt = false, ctrl = true, focusInside = true, canGoBack = false))
         assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.V, alt = false, ctrl = true, focusInside = false, canGoBack = false, somethingOpen = true))
         assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.V, alt = false, ctrl = true, focusInside = false, canGoBack = false, shift = true))
-        assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.V, alt = false, ctrl = false, focusInside = false, canGoBack = false))
+        // Plain v is the reading keys' own: the marked post's media.
+        assertEquals(DeskAction.POST_MEDIA, DesktopKeys.action(DeskKey.V, alt = false, ctrl = false, focusInside = false, canGoBack = false))
     }
 
     @Test
@@ -950,6 +951,30 @@ class DesktopKeysTest {
         val clicked = DesktopKeys.keysInside(focusInside = true, typing = false, clicked = true)
         assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.ENTER, alt = false, ctrl = false, focusInside = clicked, canGoBack = true, focusHeld = true))
         assertEquals(DeskAction.LIKE_POST, DesktopKeys.action(DeskKey.L, alt = false, ctrl = false, focusInside = clicked, canGoBack = true, focusHeld = true))
+    }
+
+    @Test
+    fun theReadingKeysOpenTheAuthorTheMediaAWindowAndTranslate() {
+        assertEquals(DeskAction.POST_AUTHOR, action(DeskKey.U))
+        assertEquals(DeskAction.POST_MEDIA, action(DeskKey.M))
+        assertEquals(DeskAction.POST_MEDIA, action(DeskKey.V))
+        assertEquals(DeskAction.TRANSLATE_POST, action(DeskKey.T))
+        assertEquals(DeskAction.POST_IN_WINDOW, action(DeskKey.ENTER, shift = true))
+        assertEquals(DeskAction.POST_IN_WINDOW, action(DeskKey.ENTER, ctrl = true))
+        assertEquals(DeskAction.OPEN_PASTED_LINK, action(DeskKey.V, ctrl = true), "Ctrl+V stays the pasted link's")
+        assertEquals(DeskAction.NONE, action(DeskKey.ENTER, ctrl = true, shift = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.ENTER, alt = true, shift = true))
+        listOf(DeskKey.U, DeskKey.M, DeskKey.V, DeskKey.T).forEach { key ->
+            assertEquals(DeskAction.NONE, action(key, focusInside = true), "$key typed in a field")
+            assertEquals(DeskAction.NONE, action(key, open = true), "$key under a sheet")
+            assertEquals(DeskAction.NONE, action(key, shift = true), "Shift+$key")
+            assertEquals(DeskAction.NONE, action(key, alt = true), "Alt+$key")
+        }
+        assertEquals(DeskAction.NONE, action(DeskKey.ENTER, shift = true, focusInside = true), "a field keeps Shift+Enter")
+        assertEquals(DeskAction.NONE, action(DeskKey.ENTER, ctrl = true, open = true))
+        assertEquals(DeskAction.POST_IN_WINDOW, action(DeskKey.ENTER, shift = true, open = true, openIsRead = true))
+        // A button the mouse clicked keeps Enter with Shift or Ctrl too.
+        assertEquals(DeskAction.NONE, DesktopKeys.action(DeskKey.ENTER, alt = false, ctrl = true, focusInside = false, canGoBack = true, focusHeld = true))
     }
 
     @Test

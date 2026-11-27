@@ -55,4 +55,8 @@
     <string name="keys_menu">Menú</string>
     <string name="keys_find_in_page">Cerca a la publicació o l’article que llegeixes</string>
     <string name="keys_find_match">Coincidència següent o anterior a la barra de cerca</string>
+    <string name="keys_post_author">Obre el perfil de l'autor d'aquesta publicació</string>
+    <string name="keys_post_window">Obre aquesta publicació en una finestra nova</string>
+    <string name="keys_post_media">Obre la primera imatge o el primer vídeo d'aquesta publicació</string>
+    <string name="keys_post_translate">Tradueix aquesta publicació o mostra l'original</string>
 </resources>

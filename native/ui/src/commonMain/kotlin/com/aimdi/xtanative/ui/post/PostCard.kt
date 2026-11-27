@@ -167,7 +167,7 @@ fun PostCard(
     var menu by rememberSaveable(shown.id) { mutableStateOf(false) }
     // Opened from the keyboard: at the post, not at the pointer.
     var menuAtPost by remember(shown.id) { mutableStateOf(false) }
-    val keys = rememberPostKeys(post, actions) {
+    val keys = rememberPostKeys(post, actions, translation = translation) {
         menuAtPost = true
         menu = true
     }

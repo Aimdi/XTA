@@ -26,7 +26,9 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 /**
  * What the desktop's keys do to the post they are on ([DesktopKeys.action]):
  * Enter and o [open] it, l [like]s it, b [save]s it, Ctrl+Shift+C copies
- * its link ([copyLink]), the Menu key and Shift+F10 open its ⋯ [menu].
+ * its link ([copyLink]), the Menu key and Shift+F10 open its ⋯ [menu], u its
+ * [author]'s profile, Shift+Enter and Ctrl+Enter open it [inWindow], m and v
+ * its first picture or video ([media]), t [translate]s it or back.
  */
 class PostKeys(
     val open: () -> Unit,
@@ -34,6 +36,10 @@ class PostKeys(
     val save: () -> Unit,
     val copyLink: () -> Unit,
     val menu: () -> Unit,
+    val author: () -> Unit = {},
+    val inWindow: () -> Unit = {},
+    val media: () -> Unit = {},
+    val translate: () -> Unit = {},
 )
 
 /**

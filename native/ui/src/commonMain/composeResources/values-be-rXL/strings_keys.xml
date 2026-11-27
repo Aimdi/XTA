@@ -55,4 +55,8 @@
     <string name="keys_menu">Mieniu</string>
     <string name="keys_find_in_page">Pošuk u dopisie abo artykule, jaki vy čytajecie</string>
     <string name="keys_find_match">Nastupny abo papiaredni vynik u radku pošuku</string>
+    <string name="keys_post_author">Adkryć profil aŭtara hetaha dopisu</string>
+    <string name="keys_post_window">Adkryć hety dopis u novym aknie</string>
+    <string name="keys_post_media">Adkryć pieršy zdymak abo videa hetaha dopisu</string>
+    <string name="keys_post_translate">Pierakłaści hety dopis abo pakazać aryhinal</string>
 </resources>

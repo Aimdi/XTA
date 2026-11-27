@@ -55,4 +55,8 @@
     <string name="keys_menu">Menu</string>
     <string name="keys_find_in_page">Localizar no post ou artigo que você está lendo</string>
     <string name="keys_find_match">Próximo resultado ou anterior na barra de busca</string>
+    <string name="keys_post_author">Abrir o perfil do autor desse post</string>
+    <string name="keys_post_window">Abrir esse post em nova janela</string>
+    <string name="keys_post_media">Abrir a primeira imagem ou vídeo desse post</string>
+    <string name="keys_post_translate">Traduzir esse post ou mostrar o original</string>
 </resources>

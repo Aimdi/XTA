@@ -56,4 +56,8 @@
     <string name="keys_menu">Menu</string>
     <string name="keys_find_in_page">Find in the post or article you are reading</string>
     <string name="keys_find_match">Next or previous match in the find bar</string>
+    <string name="keys_post_author">Open the profile of that post's author</string>
+    <string name="keys_post_window">Open that post in a new window</string>
+    <string name="keys_post_media">Open the first picture or video of that post</string>
+    <string name="keys_post_translate">Translate that post, or show the original</string>
 </resources>

@@ -4,7 +4,7 @@ import androidx.compose.ui.geometry.Offset
 import kotlin.math.abs
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, N, Z, F3, F6, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, N, Z, F3, F6, U, T, M, P, OTHER }
 
 /** A mouse's side buttons: back and forward, as in a browser. */
 enum class SideButton { BACK, FORWARD }
@@ -116,6 +116,18 @@ enum class DeskAction {
 
     /** That post's ⋯ menu opens, at the post, as the Menu key opens a desktop app's context menu. */
     POST_MENU,
+
+    /** That post's author's profile opens, as a click on the name does. */
+    POST_AUTHOR,
+
+    /** That post opens in a window of its own, as a Ctrl+click on it does. */
+    POST_IN_WINDOW,
+
+    /** That post's first picture or video opens in the media viewer, as a click on it does. */
+    POST_MEDIA,
+
+    /** That post is translated, or shown in its own words again, as its translate button does. */
+    TRANSLATE_POST,
     NONE,
 }
 
@@ -181,7 +193,11 @@ object DesktopKeys {
      * acted on as on X's site, while nothing is being typed in and nothing is
      * open over the page: Enter and o open it, l likes it on this device (or
      * no longer), b saves it on this device (or no longer), Ctrl+Shift+C
-     * copies its link, and the Menu key and Shift+F10 open its ⋯ menu. Enter
+     * copies its link, and the Menu key and Shift+F10 open its ⋯ menu; u
+     * opens its author's profile, m and v its first picture or video in the
+     * viewer, t translates it (or shows it untranslated again), and
+     * Shift+Enter or Ctrl+Enter open it in a window of its own, as a
+     * browser's open a link in a new window or tab. Enter
      * leaves a button or tab that has the focus to press ([focusHeld]: one
      * the mouse clicked too), as in a browser.
      * Ctrl+N, while nothing is being typed in and nothing is open over the
@@ -258,6 +274,7 @@ object DesktopKeys {
                 else -> DeskAction.MOVE_ROW_DOWN
             }
             key == DeskKey.C && ctrl && shift && !alt && !focusInside -> if (covered) DeskAction.NONE else DeskAction.COPY_POST_LINK
+            key == DeskKey.ENTER && !alt && !focusInside && ctrl != shift -> if (covered || focusHeld) DeskAction.NONE else DeskAction.POST_IN_WINDOW
             focusInside || alt || ctrl -> DeskAction.NONE
             (key == DeskKey.MENU && !shift) || (key == DeskKey.F10 && shift) -> if (covered) DeskAction.NONE else DeskAction.POST_MENU
             key in POST_KEYS && !shift -> when {
@@ -353,6 +370,10 @@ object DesktopKeys {
         DeskKey.O to DeskAction.OPEN_POST,
         DeskKey.L to DeskAction.LIKE_POST,
         DeskKey.B to DeskAction.SAVE_POST,
+        DeskKey.U to DeskAction.POST_AUTHOR,
+        DeskKey.M to DeskAction.POST_MEDIA,
+        DeskKey.V to DeskAction.POST_MEDIA,
+        DeskKey.T to DeskAction.TRANSLATE_POST,
     )
 
     /** The letters Ctrl takes to the search: F as a desktop app's find, K and L as a browser's search and address bar. */

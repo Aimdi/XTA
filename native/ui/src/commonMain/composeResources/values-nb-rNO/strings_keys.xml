@@ -55,4 +55,8 @@
     <string name="keys_menu">Meny</string>
     <string name="keys_find_in_page">Søk i innlegget eller artikkelen du leser</string>
     <string name="keys_find_match">Neste eller forrige treff i søkefeltet</string>
+    <string name="keys_post_author">Åpne profilen til forfatteren av det innlegget</string>
+    <string name="keys_post_window">Åpne det innlegget i nytt vindu</string>
+    <string name="keys_post_media">Åpne det første bildet eller videoen i det innlegget</string>
+    <string name="keys_post_translate">Oversett det innlegget, eller vis originalen</string>
 </resources>

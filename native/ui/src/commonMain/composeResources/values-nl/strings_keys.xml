@@ -55,4 +55,8 @@
     <string name="keys_menu">Menu</string>
     <string name="keys_find_in_page">Zoeken in het bericht of artikel dat je leest</string>
     <string name="keys_find_match">Volgende of vorige overeenkomst in de zoekbalk</string>
+    <string name="keys_post_author">Het profiel van de schrijver van die post openen</string>
+    <string name="keys_post_window">Die post in een nieuw venster openen</string>
+    <string name="keys_post_media">De eerste afbeelding of video van die post openen</string>
+    <string name="keys_post_translate">Die post vertalen, of het origineel tonen</string>
 </resources>

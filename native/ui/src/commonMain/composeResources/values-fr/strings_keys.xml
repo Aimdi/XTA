@@ -55,4 +55,8 @@
     <string name="keys_menu">Menu</string>
     <string name="keys_find_in_page">Rechercher dans la publication ou l’article que vous lisez</string>
     <string name="keys_find_match">Résultat suivant ou précédent dans la barre de recherche</string>
+    <string name="keys_post_author">Ouvrir le profil de l'auteur de cette publication</string>
+    <string name="keys_post_window">Ouvrir cette publication dans une nouvelle fenêtre</string>
+    <string name="keys_post_media">Ouvrir la première image ou vidéo de cette publication</string>
+    <string name="keys_post_translate">Traduire cette publication ou afficher l'original</string>
 </resources>

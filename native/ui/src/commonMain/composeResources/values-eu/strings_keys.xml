@@ -55,4 +55,8 @@
     <string name="keys_menu">Menua</string>
     <string name="keys_find_in_page">Bilatu irakurtzen ari zaren argitalpenean edo artikuluan</string>
     <string name="keys_find_match">Bilaketa-barrako hurrengo edo aurreko bat-etortzea</string>
+    <string name="keys_post_author">Ireki argitalpen horren egilearen profila</string>
+    <string name="keys_post_window">Ireki argitalpen hori leiho berrian</string>
+    <string name="keys_post_media">Ireki argitalpen horren lehen irudia edo bideoa</string>
+    <string name="keys_post_translate">Itzuli argitalpen hori edo erakutsi jatorrizkoa</string>
 </resources>

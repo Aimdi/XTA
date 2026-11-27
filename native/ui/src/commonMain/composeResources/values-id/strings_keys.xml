@@ -55,4 +55,8 @@
     <string name="keys_menu">Menu</string>
     <string name="keys_find_in_page">Cari di postingan atau artikel yang sedang dibaca</string>
     <string name="keys_find_match">Kecocokan berikutnya atau sebelumnya di bilah pencarian</string>
+    <string name="keys_post_author">Buka profil penulis postingan itu</string>
+    <string name="keys_post_window">Buka postingan itu di jendela baru</string>
+    <string name="keys_post_media">Buka gambar atau video pertama postingan itu</string>
+    <string name="keys_post_translate">Terjemahkan postingan itu, atau tampilkan aslinya</string>
 </resources>

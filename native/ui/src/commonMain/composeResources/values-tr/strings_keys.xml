@@ -55,4 +55,8 @@
     <string name="keys_menu">Menü</string>
     <string name="keys_find_in_page">Okuduğunuz gönderide veya makalede bul</string>
     <string name="keys_find_match">Bulma çubuğunda sonraki veya önceki eşleşme</string>
+    <string name="keys_post_author">O gönderinin yazarının profilini aç</string>
+    <string name="keys_post_window">O gönderiyi yeni pencerede aç</string>
+    <string name="keys_post_media">O gönderinin ilk resmini veya videosunu aç</string>
+    <string name="keys_post_translate">O gönderiyi çevir veya özgününü göster</string>
 </resources>

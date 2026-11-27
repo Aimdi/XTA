@@ -55,4 +55,8 @@
     <string name="keys_menu">Nabídka</string>
     <string name="keys_find_in_page">Hledat v příspěvku nebo článku, který čtete</string>
     <string name="keys_find_match">Další nebo předchozí shoda v liště hledání</string>
+    <string name="keys_post_author">Otevřít profil autora příspěvku</string>
+    <string name="keys_post_window">Otevřít příspěvek v novém okně</string>
+    <string name="keys_post_media">Otevřít první obrázek nebo video příspěvku</string>
+    <string name="keys_post_translate">Přeložit příspěvek, nebo zobrazit původní</string>
 </resources>

@@ -55,4 +55,8 @@
     <string name="keys_menu">Menüü</string>
     <string name="keys_find_in_page">Otsi postitusest või artiklist, mida loed</string>
     <string name="keys_find_match">Järgmine või eelmine vaste otsinguribal</string>
+    <string name="keys_post_author">Ava selle postituse autori profiil</string>
+    <string name="keys_post_window">Ava see postitus uues aknas</string>
+    <string name="keys_post_media">Ava selle postituse esimene pilt või video</string>
+    <string name="keys_post_translate">Tõlgi see postitus või näita algset</string>
 </resources>

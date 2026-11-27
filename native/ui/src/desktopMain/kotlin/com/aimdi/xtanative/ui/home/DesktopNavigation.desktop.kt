@@ -223,13 +223,18 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                 else -> false
             }
         // Not past a sheet open over the page, which holds no keys of its own.
-        DeskAction.OPEN_POST, DeskAction.LIKE_POST, DeskAction.SAVE_POST, DeskAction.COPY_POST_LINK, DeskAction.POST_MENU ->
+        DeskAction.OPEN_POST, DeskAction.LIKE_POST, DeskAction.SAVE_POST, DeskAction.COPY_POST_LINK, DeskAction.POST_MENU,
+        DeskAction.POST_AUTHOR, DeskAction.POST_IN_WINDOW, DeskAction.POST_MEDIA, DeskAction.TRANSLATE_POST ->
             !actions.sheetOpen() && actions.onPost { keys ->
                 when (action) {
                     DeskAction.OPEN_POST -> keys.open()
                     DeskAction.LIKE_POST -> keys.like()
                     DeskAction.SAVE_POST -> keys.save()
                     DeskAction.COPY_POST_LINK -> keys.copyLink()
+                    DeskAction.POST_AUTHOR -> keys.author()
+                    DeskAction.POST_IN_WINDOW -> keys.inWindow()
+                    DeskAction.POST_MEDIA -> keys.media()
+                    DeskAction.TRANSLATE_POST -> keys.translate()
                     else -> keys.menu()
                 }
             }
@@ -545,6 +550,10 @@ internal fun deskKey(key: Key): DeskKey = when (key) {
     Key.F10 -> DeskKey.F10
     Key.N -> DeskKey.N
     Key.Z -> DeskKey.Z
+    Key.U -> DeskKey.U
+    Key.T -> DeskKey.T
+    Key.M -> DeskKey.M
+    Key.P -> DeskKey.P
     ContextMenuKey -> DeskKey.MENU
     Key.Plus, Key.Equals, Key.NumPadAdd -> DeskKey.PLUS
     Key.Minus, Key.NumPadSubtract -> DeskKey.MINUS

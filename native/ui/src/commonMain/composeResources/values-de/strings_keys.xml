@@ -55,4 +55,8 @@
     <string name="keys_menu">Menü</string>
     <string name="keys_find_in_page">Im gerade gelesenen Beitrag oder Artikel suchen</string>
     <string name="keys_find_match">Nächster oder vorheriger Treffer in der Suchleiste</string>
+    <string name="keys_post_author">Profil des Verfassers dieses Beitrags öffnen</string>
+    <string name="keys_post_window">Diesen Beitrag in neuem Fenster öffnen</string>
+    <string name="keys_post_media">Erstes Bild oder Video dieses Beitrags öffnen</string>
+    <string name="keys_post_translate">Diesen Beitrag übersetzen oder das Original zeigen</string>
 </resources>

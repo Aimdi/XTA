@@ -55,4 +55,8 @@
     <string name="keys_menu">Meniu</string>
     <string name="keys_find_in_page">Caută în postarea sau articolul pe care îl citești</string>
     <string name="keys_find_match">Potrivirea următoare sau anterioară din bara de căutare</string>
+    <string name="keys_post_author">Deschide profilul autorului acelei postări</string>
+    <string name="keys_post_window">Deschide acea postare într-o fereastră nouă</string>
+    <string name="keys_post_media">Deschide prima imagine sau primul videoclip al acelei postări</string>
+    <string name="keys_post_translate">Tradu acea postare sau arată originalul</string>
 </resources>
