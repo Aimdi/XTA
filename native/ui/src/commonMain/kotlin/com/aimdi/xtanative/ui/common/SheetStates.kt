@@ -66,6 +66,14 @@ import org.jetbrains.compose.resources.stringResource
 internal expect val SheetsOpenFull: Boolean
 
 /**
+ * Whether a [KeyedSheet] is drawn as a dialog centred over the window
+ * ([SheetDialog]) rather than a sheet rising from its bottom edge: on the
+ * desktop, where a form or a pick reads as a dialog and a sheet across a
+ * wide window's whole width does not. A phone keeps Material's sheets.
+ */
+internal expect val SheetsAsDialogs: Boolean
+
+/**
  * A sheet's state that opens it as the platform does ([SheetsOpenFull]), or
  * all the way on every platform with [alwaysFull] (a sheet that is never
  * half useful, such as one with a field or a long pick).
@@ -98,6 +106,9 @@ internal fun rememberSheetState(alwaysFull: Boolean = false): SheetState {
  * there, takes none, or the navigation bar's strip would show through it) and
  * draws the drag handle with its screen-reader actions ([HandleWithActions]).
  * Without [dragHandle] the sheet has none (one whose own header starts it).
+ *
+ * On the desktop ([SheetsAsDialogs]) the same content is a dialog centred
+ * over the window instead ([SheetDialog]), with the same keys and closer.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -112,6 +123,7 @@ internal fun KeyedSheet(
     dragHandle: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    if (SheetsAsDialogs) return SheetDialog(onDismissRequest, modifier, containerColor, tonalElevation, border, dragHandle, content)
     val keys = rememberSheetKeys()
     val scope = rememberCoroutineScope()
     val dismiss by rememberUpdatedState(onDismissRequest)
