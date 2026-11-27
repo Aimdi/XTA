@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aimdi.xtanative.ui.common.SteadyChipLabel
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.core.feed.ContentFilter
 import com.aimdi.xtanative.core.feed.FeedSort
@@ -305,7 +306,7 @@ private fun DiscoverChip(selected: Boolean, onClick: () -> Unit) {
     FlatFilterChip(
         selected = selected,
         onClick = onClick,
-        label = { Text(stringResource(Res.string.groups_discover), fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium) },
+        label = { SteadyChipLabel(stringResource(Res.string.groups_discover), selected) },
         leadingIcon = { Icon(if (selected) DiscoveryIcons.Explore else DiscoveryIcons.ExploreOutlined, contentDescription = null, modifier = Modifier.size(18.dp)) },
         trailingIcon = if (selected) {
             { Icon(Icons.Filled.Close, stringResource(Res.string.close), modifier = Modifier.size(18.dp)) }
@@ -321,7 +322,7 @@ private fun MediaChip(selected: Boolean, onClick: () -> Unit) {
     FlatFilterChip(
         selected = selected,
         onClick = onClick,
-        label = { Text(stringResource(Res.string.groups_media), fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium) },
+        label = { SteadyChipLabel(stringResource(Res.string.groups_media), selected) },
         leadingIcon = { Icon(if (selected) DiscoveryIcons.PhotoLibrary else GroupIcons.PhotoLibraryOutlined, contentDescription = null, modifier = Modifier.size(18.dp)) },
     )
 }
@@ -331,7 +332,7 @@ private fun OrderChip(label: String, selected: Boolean, onClick: () -> Unit) {
     FlatFilterChip(
         selected = selected,
         onClick = onClick,
-        label = { Text(label, fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium) },
+        label = { SteadyChipLabel(label, selected) },
     )
 }
 

@@ -57,6 +57,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.aimdi.xtanative.ui.common.SteadyChipLabel
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.feed.ContentFilter
@@ -227,7 +228,7 @@ private fun ChoicePill(label: String, selected: Boolean, onClick: () -> Unit) {
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, fontSize = 13.sp, fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium, color = if (selected) accent else MaterialTheme.colorScheme.onSurface)
+        SteadyChipLabel(label, selected, color = if (selected) accent else MaterialTheme.colorScheme.onSurface, fontSize = 13.sp)
     }
 }
 
