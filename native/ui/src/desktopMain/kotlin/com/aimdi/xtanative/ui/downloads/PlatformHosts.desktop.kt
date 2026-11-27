@@ -51,11 +51,15 @@ internal fun read(file: File): PickedFile {
     return PickedFile(file.name, LocalPosts.inferMime(file.name, null), file.readBytes())
 }
 
-/** The files of a drop the picker would take ([accepts]); none for a drop of anything else. */
-internal fun droppedFiles(transfer: Transferable): List<File> = runCatching {
-    if (!transfer.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) return emptyList()
-    (transfer.getTransferData(DataFlavor.javaFileListFlavor) as? List<*>).orEmpty().filterIsInstance<File>().filter { it.isFile && accepts(it.name, images = false) }
-}.getOrDefault(emptyList())
+/**
+ * The files of a drop the picker would take by their names ([accepts]); none
+ * for a drop of anything else. None is looked at on disk, so a drop does not
+ * keep the window waiting on a slow mount: [readDropped] does that.
+ */
+internal fun droppedFiles(transfer: Transferable): List<File> = DroppedFiles.files(transfer).filter { accepts(it.name, images = false) }
+
+/** A dropped [file] read off the window's thread; null for one that is not a regular file (a folder named like a picture). */
+internal suspend fun readDropped(file: File): PickedFile? = withContext(Dispatchers.IO) { if (file.isFile) read(file) else null }
 
 // Compose's desktop drag data (awtTransferable) still carries @ExperimentalComposeUiApi; the drop target @ExperimentalFoundationApi.
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
@@ -67,7 +71,7 @@ internal actual fun Modifier.takesDroppedFiles(enabled: Boolean, onDropped: (Lis
         object : DragAndDropTarget {
             override fun onDrop(event: DragAndDropEvent): Boolean {
                 val files = droppedFiles(event.awtTransferable).takeIf { it.isNotEmpty() } ?: return false
-                latest(files.map { file -> suspend { withContext(Dispatchers.IO) { read(file) } } })
+                latest(files.map { file -> suspend { readDropped(file) } })
                 return true
             }
         }
