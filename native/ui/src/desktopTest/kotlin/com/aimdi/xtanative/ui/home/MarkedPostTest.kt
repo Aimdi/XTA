@@ -7,6 +7,7 @@ import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.unit.IntSize
 import kotlin.test.Test
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 
@@ -85,5 +86,14 @@ class MarkedPostTest {
         val (actions, lists, _) = columns()
         actions.point(lists.second, Offset(10f, 10f))
         assertNull(actions.markedPost)
+    }
+
+    @Test
+    fun tabGoesToTheMarkedPostOnlyInTheListTheKeysMove() {
+        val (actions, _, _) = columns()
+        actions.stepColumn(1)
+        assertFalse(actions.tabToMarked(), "nothing marked in the right column: Tab goes to the page's top")
+        val fresh = DesktopActions()
+        assertFalse(fresh.tabToMarked(), "no mark at all")
     }
 }

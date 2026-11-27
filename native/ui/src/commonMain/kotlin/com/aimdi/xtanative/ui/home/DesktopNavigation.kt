@@ -15,6 +15,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
@@ -403,6 +404,17 @@ class DesktopActions(
     /** The keyboard or the mouse moved the list some other way: no post is marked. */
     internal fun unmarkPost() {
         markedPost = null
+    }
+
+    /**
+     * Tab from the window's frame while j or k has marked a post in the list
+     * the keys move: the focus onto that post, so Tab goes on from where the
+     * reader is rather than from the page's top; false where none is marked
+     * or it took no focus.
+     */
+    internal fun tabToMarked(): Boolean {
+        val post = markedIn(readList()) ?: return false
+        return runCatching { post.focus.requestFocus(FocusDirection.Enter) }.getOrDefault(false)
     }
 
     /** [act] done to the post the reading keys are on; false when there is none. */

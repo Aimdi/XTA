@@ -12,6 +12,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.LayoutCoordinates
@@ -37,6 +39,9 @@ class PostKeys(
 class KeyedPost internal constructor(internal val list: LazyListState, keys: () -> PostKeys) {
     private val latest = keys
     internal var place: LayoutCoordinates? = null
+
+    /** Where Tab from the window's frame goes while the post is marked ([DesktopActions.tabToMarked]). */
+    internal val focus = FocusRequester()
 
     /** What the keys do to it now. */
     val keys: PostKeys get() = latest()
@@ -70,7 +75,7 @@ fun Modifier.keyedPost(keys: PostKeys): Modifier {
     val marked by remember(actions, post) { derivedStateOf { actions.markedPost === post } }
     val tint = MaterialTheme.colorScheme.primary
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
-    return onGloballyPositioned { post.place = it }.drawBehind {
+    return onGloballyPositioned { post.place = it }.focusRequester(post.focus).drawBehind {
         if (!marked) return@drawBehind
         drawRect(tint.copy(alpha = MARK_ALPHA))
         val bar = MARK_BAR.toPx()
