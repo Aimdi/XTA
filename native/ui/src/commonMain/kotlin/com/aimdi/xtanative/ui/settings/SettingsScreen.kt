@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -108,7 +109,14 @@ fun SettingsScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onIntroAgain: (
     var query by rememberSaveable { mutableStateOf("") }
     val snackbar = remember { SnackbarHostState() }
     BoxWithConstraints {
-        if (SettingsPanes.twoPanes(isDesktop, maxWidth.value)) {
+        val two = SettingsPanes.twoPanes(isDesktop, maxWidth.value)
+        var wasTwo by remember { mutableStateOf(two) }
+        LaunchedEffect(two) {
+            if (wasTwo && !two) SettingsPanes.folded(SettingsPanes.shown(SettingsPanes.last), SettingsPanes.changing)?.let(onOpen)
+            SettingsPanes.changing = null
+            wasTwo = two
+        }
+        if (two) {
             SettingsTwoPanes(vm, query, { query = it }, onBack, onOpen, onIntroAgain, onStartOver)
         } else {
             SettingsOnePane(vm, query, { query = it }, snackbar, onBack, onOpen, onIntroAgain)

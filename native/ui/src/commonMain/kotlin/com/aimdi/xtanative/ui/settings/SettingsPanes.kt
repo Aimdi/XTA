@@ -65,6 +65,25 @@ object SettingsPanes {
      */
     var last: String? = null
 
+    /**
+     * The control last changed beside the list that can fold it away (the
+     * interface size, which narrows the place in dp): it keeps the keys on
+     * the page shown on its own ([folded]).
+     */
+    var changing: String? = null
+
+    /**
+     * Where Settings goes as its two panes fold to one (a larger interface
+     * size, a narrower window): the page [shown] beside the list, on a screen
+     * of its own, with [control] at hand, rather than the list, where the
+     * reader would lose their place. Null for a page that is no section (App
+     * info, the plugin store): the list then.
+     */
+    fun folded(shown: String?, control: String?): String? {
+        val section = shown?.let(SettingsSection::of) ?: return null
+        return if (section == SettingsSection.SPEECH) SettingsRoutes.SPEECH else SettingsRoutes.section(section.id, control)
+    }
+
     /** The page and control a route opens beside the list ([SettingsRoutes.section], Read aloud's); null for a screen of its own. */
     fun target(route: String): PaneTarget? {
         if (route == SettingsRoutes.SPEECH) return PaneTarget(SettingsSection.SPEECH.id, null)

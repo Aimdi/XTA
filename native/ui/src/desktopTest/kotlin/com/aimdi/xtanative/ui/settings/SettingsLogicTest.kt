@@ -244,6 +244,15 @@ class SettingsPanesTest {
     }
 
     @Test
+    fun foldingToOnePaneKeepsThePageShownWithItsControl() {
+        assertEquals("settings/accessibility?focus=desktop.ui_scale", SettingsPanes.folded(SettingsSection.ACCESSIBILITY.id, "desktop.ui_scale"))
+        assertEquals(SettingsRoutes.section(SettingsSection.THEME.id), SettingsPanes.folded(SettingsSection.THEME.id, null))
+        assertEquals(SettingsRoutes.SPEECH, SettingsPanes.folded(SettingsSection.SPEECH.id, null))
+        assertEquals(null, SettingsPanes.folded(SettingsPanes.ABOUT, null), "App info is no section: the list")
+        assertEquals(null, SettingsPanes.folded(SettingsPanes.PLUGIN_STORE, null))
+    }
+
+    @Test
     fun aSectionsRouteOpensBesideTheListWithItsControl() {
         assertEquals(PaneTarget(SettingsSection.MEDIA.id, "media.mute"), SettingsPanes.target(SettingsRoutes.section(SettingsSection.MEDIA.id, "media.mute")))
         assertEquals(PaneTarget(SettingsSection.SYNC.id, null), SettingsPanes.target(SettingsRoutes.section(SettingsSection.SYNC.id)))

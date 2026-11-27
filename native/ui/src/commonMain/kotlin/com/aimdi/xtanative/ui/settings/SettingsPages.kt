@@ -620,7 +620,10 @@ internal fun AccessibilitySettings(title: String, vm: SettingsViewModel, focus: 
                     settings[DesktopPrefs.uiScale],
                     label = { SettingsChoices.percent(it, locale) },
                     focused = focus == DesktopPrefs.uiScale.key,
-                ) { vm.set(DesktopPrefs.uiScale, it) }
+                ) {
+                    SettingsPanes.changing = DesktopPrefs.uiScale.key
+                    vm.set(DesktopPrefs.uiScale, it)
+                }
             }
             PrefSwitch(settings, AccessibilityPrefs.disableAnimations, stringResource(Res.string.settings_disable_animations), stringResource(Res.string.settings_disable_animations_description), vm, focus)
             if (!isDesktop) {
