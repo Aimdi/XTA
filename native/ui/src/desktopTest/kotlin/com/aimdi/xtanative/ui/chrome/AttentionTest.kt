@@ -12,7 +12,7 @@ import com.aimdi.xtanative.ui.media.mpris.DBusMessage
 import com.aimdi.xtanative.ui.media.mpris.Variant
 import java.io.File
 import java.nio.file.Files
-import java.util.Collections
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -94,7 +94,8 @@ class AttentionTest {
 
     private fun listener(socket: File, rule: String): Pair<DBusConnection, MutableList<DBusMessage>> {
         val bus = assertNotNull(DBusConnection.connect(socket))
-        val heard = Collections.synchronizedList(mutableListOf<DBusMessage>())
+        // Read while the bus's thread adds to it: a copy-on-write list never throws mid-iteration.
+        val heard = CopyOnWriteArrayList<DBusMessage>()
         bus.onSignal = { heard += it }
         bus.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "AddMatch", "s", listOf(rule))
         return bus to heard
