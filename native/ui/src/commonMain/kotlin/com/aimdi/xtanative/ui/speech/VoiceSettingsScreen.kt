@@ -28,7 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
+import com.aimdi.xtanative.ui.common.Scaffold
 import com.aimdi.xtanative.ui.common.TopBarBack
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch

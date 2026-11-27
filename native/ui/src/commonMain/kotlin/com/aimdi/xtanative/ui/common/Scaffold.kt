@@ -1,0 +1,103 @@
+package com.aimdi.xtanative.ui.common
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.contentColorFor
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.home.LocalWideFrame
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
+import androidx.compose.material3.Scaffold as MaterialScaffold
+
+/**
+ * Material's [MaterialScaffold], with its [topBar] first in Tab's order on
+ * the desktop. Compose walks Tab in the order things are placed, and
+ * Material places a scaffold's page before its bar (so the bar draws over
+ * it): Tab went from the bar out of the page (beside the window's sidebar,
+ * into the sidebar's rows) and reached the page only after them. Here the
+ * bar is placed first and still drawn over the page, which lies under it as
+ * in Material's, padded by the bar's height: Tab goes bar, then page, top to
+ * bottom as the eye reads, and the sidebar after the page. Off the desktop,
+ * Material's scaffold as it is.
+ */
+@Composable
+fun Scaffold(
+    modifier: Modifier = Modifier,
+    topBar: @Composable () -> Unit = {},
+    bottomBar: @Composable () -> Unit = {},
+    snackbarHost: @Composable () -> Unit = {},
+    floatingActionButton: @Composable () -> Unit = {},
+    floatingActionButtonPosition: FabPosition = FabPosition.End,
+    containerColor: Color = MaterialTheme.colorScheme.background,
+    contentColor: Color = contentColorFor(containerColor),
+    contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
+    content: @Composable (PaddingValues) -> Unit,
+) {
+    if (!PluginPlatform.isDesktop) {
+        MaterialScaffold(modifier, topBar, bottomBar, snackbarHost, floatingActionButton, floatingActionButtonPosition, containerColor, contentColor, contentWindowInsets, content)
+        return
+    }
+    // Beside the desktop frame's navigation, Tab from the window's frame comes into the bar (WideFrame.pageBar).
+    val frame = LocalWideFrame.current
+    val bar = remember { BarHeight() }
+    Layout(
+        modifier = modifier,
+        content = {
+            Box(if (frame != null) Modifier.focusRequester(frame.pageBar) else Modifier) { topBar() }
+            MaterialScaffold(
+                bottomBar = bottomBar,
+                snackbarHost = snackbarHost,
+                floatingActionButton = floatingActionButton,
+                floatingActionButtonPosition = floatingActionButtonPosition,
+                containerColor = containerColor,
+                contentColor = contentColor,
+                contentWindowInsets = contentWindowInsets,
+            ) { inner -> content(remember(inner) { UnderBar(inner, bar) }) }
+        },
+    ) { (top, page), constraints ->
+        val placedBar = top.measure(constraints.copy(minWidth = 0, minHeight = 0))
+        bar.height = placedBar.height.toDp()
+        val placedPage = page.measure(constraints)
+        layout(placedPage.width, placedPage.height) {
+            // Placed first for Tab's order, drawn last over the page.
+            placedBar.place(0, 0, zIndex = 1f)
+            placedPage.place(0, 0)
+        }
+    }
+}
+
+/** The height of a [Scaffold]'s bar, as last measured. */
+@Stable
+internal class BarHeight {
+    var height by mutableStateOf(0.dp)
+}
+
+/**
+ * The padding Material's scaffold gives its page ([inner]), the bar's height
+ * at the top where there is a bar (as Material's own, which then leaves the
+ * window's top inset to the bar).
+ */
+internal class UnderBar(private val inner: PaddingValues, private val bar: BarHeight) : PaddingValues {
+    override fun calculateTopPadding(): Dp = bar.height.takeIf { it > 0.dp } ?: inner.calculateTopPadding()
+
+    override fun calculateBottomPadding(): Dp = inner.calculateBottomPadding()
+
+    override fun calculateLeftPadding(layoutDirection: LayoutDirection): Dp = inner.calculateLeftPadding(layoutDirection)
+
+    override fun calculateRightPadding(layoutDirection: LayoutDirection): Dp = inner.calculateRightPadding(layoutDirection)
+}
