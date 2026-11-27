@@ -304,6 +304,39 @@ class DesktopWindowTest {
     }
 
     @Test
+    fun aQuitCopysLastStepLeavesTheSocketOfTheCopyThatTookOver() {
+        val folder = Files.createTempDirectory("xta-instance").toFile()
+        val quitting = assertNotNull(claim(folder))
+        // Main's order on a quit: close() (socket gone, lock let go), then exitProcess runs the hook.
+        quitting.close()
+        val next = assertNotNull(claim(folder), "the next start takes over in the gap")
+        val heard = LinkedBlockingQueue<InstanceMessage>()
+        next.listen(heard::add)
+        try {
+            quitting.endOnExit()
+            assertNull(claim(folder))
+            assertEquals(InstanceMessage.Raise, heard.poll(5, TimeUnit.SECONDS), "a third start still reaches the copy that took over")
+        } finally {
+            next.close()
+        }
+    }
+
+    @Test
+    fun aCopyEndedBySignalStopsAnsweringAtOnce() {
+        val folder = Files.createTempDirectory("xta-instance").toFile()
+        val ending = assertNotNull(claim(folder))
+        ending.listen { }
+        val socket = File(File(runtime, "xta-native"), "instance-${SingleInstance.folderKey(folder)}.socket")
+        assertTrue(socket.exists())
+        // SIGTERM: the hook runs before close(), the lock still held, and the socket goes with the server.
+        ending.endOnExit()
+        assertFalse(socket.exists())
+        ending.close()
+        val next = assertNotNull(claim(folder))
+        next.close()
+    }
+
+    @Test
     fun aStartThatTheEndingCopyDoesNotAnswerRunsOnceItHasEnded() {
         val folder = Files.createTempDirectory("xta-instance").toFile()
         val ending = assertNotNull(claim(folder))

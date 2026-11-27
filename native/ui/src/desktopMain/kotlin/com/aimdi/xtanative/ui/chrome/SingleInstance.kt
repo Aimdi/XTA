@@ -115,15 +115,41 @@ class SingleInstance private constructor(
         }, "xta-native-instance").apply { isDaemon = true }.start()
     }
 
+    /** Whether [close] ran: the lock is let go, and the socket paths may already be another copy's. */
+    private var closed = false
+
+    /** Whether the socket is still open and its file in place; both go once. */
+    private var serving = true
+
     /** Stops answering later starts as soon as the app begins to end, before its window and writes are done; its socket goes with it, the lock still held. */
     private fun closeOnExit() {
-        val server = server ?: return
-        runCatching { Runtime.getRuntime().addShutdownHook(Thread({ runCatching { server.close() }; socket?.delete() }, "xta-native-instance-exit")) }
+        if (server == null) return
+        runCatching { Runtime.getRuntime().addShutdownHook(Thread(::endOnExit, "xta-native-instance-exit")) }
     }
 
-    override fun close() {
+    /**
+     * The shutdown hook's step: stop serving while the lock is still held. A
+     * no-op once [close] ran, as Main's quit does before `exitProcess`: by
+     * then a copy that took over may have bound its socket at the same path.
+     */
+    @Synchronized
+    internal fun endOnExit() {
+        if (!closed) stopServing()
+    }
+
+    /** Closes the socket and deletes its file, once, only ever with the lock held. */
+    private fun stopServing() {
+        if (!serving) return
+        serving = false
         runCatching { server?.close() }
         if (server != null) socket?.delete()
+    }
+
+    @Synchronized
+    override fun close() {
+        if (closed) return
+        stopServing()
+        closed = true
         runCatching { lock?.release() }
         runCatching { lockChannel?.close() }
     }
