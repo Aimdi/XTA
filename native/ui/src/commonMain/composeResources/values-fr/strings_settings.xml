@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Un lecteur pour X et d'autres sources. XTA ne fait que lire : rien n'est publié, aimé ni partagé en votre nom.</string>
     <string name="intro_device_title">Reste sur cet appareil</string>
     <string name="intro_device_body">Abonnements, groupes, mentions J'aime et publications enregistrées ne vivent que dans une base de données sur ce téléphone. Aucun traqueur.</string>
+    <string name="intro_device_body_desktop">Abonnements, groupes, mentions J'aime et publications enregistrées ne vivent que dans une base de données sur cet ordinateur. Aucun traqueur.</string>
     <string name="intro_appearance_title">Choisissez un style</string>
     <string name="intro_appearance_body">Clair, tamisé ou noir total, plus une couleur d'accent. « Système » suit votre téléphone. Modifiable à tout moment dans les paramètres.</string>
+    <string name="intro_appearance_body_desktop">Clair, tamisé ou noir total, plus une couleur d'accent. « Système » suit votre bureau. Modifiable à tout moment dans les paramètres.</string>
     <string name="intro_account_title">Ajouter un compte X</string>
     <string name="intro_account_caption">Sans compte, X refuse la plupart des requêtes : attendez-vous à plus d'erreurs que de publications.</string>
     <string name="intro_not_now">Pas maintenant</string>
@@ -375,7 +377,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Logos de sources en orbite autour de la marque XTA</string>
     <string name="intro_illustration_phone">Publications, J'aime et éléments enregistrés dans un téléphone</string>
+    <string name="intro_illustration_phone_desktop">Publications, J'aime et éléments enregistrés sur cet ordinateur</string>
     <string name="intro_illustration_flow">Les publications vont de X vers votre téléphone, jamais dans l'autre sens</string>
+    <string name="intro_illustration_flow_desktop">Les publications vont de X vers votre ordinateur, jamais dans l'autre sens</string>
     <string name="intro_page_of">Page %1$d sur %2$d</string>
     <string name="settings_desktop_notifications">Notifications du bureau</string>
     <string name="settings_desktop_notifications_description">Prévenir quand un téléchargement se termine pendant que vous êtes dans une autre fenêtre</string>

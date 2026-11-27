@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Читач для X та інших джерел. XTA лише читає — від вашого імені нічого не публікується, не вподобується й не поширюється.</string>
     <string name="intro_device_title">Залишається на цьому пристрої</string>
     <string name="intro_device_body">Підписки, групи, вподобання та збережені дописи зберігаються лише в базі даних на цьому телефоні. Жодних трекерів.</string>
+    <string name="intro_device_body_desktop">Підписки, групи, вподобання та збережені дописи зберігаються лише в базі даних на цьому комп’ютері. Жодних трекерів.</string>
     <string name="intro_appearance_title">Оберіть вигляд</string>
     <string name="intro_appearance_body">Світла, приглушена або повністю чорна тема плюс акцентний колір. «Система» слідує за телефоном. Змінити можна будь-коли в налаштуваннях.</string>
+    <string name="intro_appearance_body_desktop">Світла, приглушена або повністю чорна тема плюс акцентний колір. «Система» слідує за робочим столом. Змінити можна будь-коли в налаштуваннях.</string>
     <string name="intro_account_title">Додати обліковий запис X</string>
     <string name="intro_account_caption">Без облікового запису X відхиляє більшість запитів, тож помилок буде більше, ніж дописів.</string>
     <string name="intro_not_now">Не зараз</string>
@@ -377,7 +379,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Логотипи джерел обертаються навколо знака XTA</string>
     <string name="intro_illustration_phone">Дописи, вподобання та збережене всередині телефона</string>
+    <string name="intro_illustration_phone_desktop">Дописи, вподобання та збережене на цьому комп’ютері</string>
     <string name="intro_illustration_flow">Дописи йдуть з X на ваш телефон і ніколи назад</string>
+    <string name="intro_illustration_flow_desktop">Дописи йдуть з X на ваш комп’ютер і ніколи назад</string>
     <string name="intro_page_of">Сторінка %1$d з %2$d</string>
     <string name="settings_desktop_notifications">Сповіщення на робочому столі</string>
     <string name="settings_desktop_notifications_description">Повідомляти про завершення завантаження, поки ви в іншому вікні</string>

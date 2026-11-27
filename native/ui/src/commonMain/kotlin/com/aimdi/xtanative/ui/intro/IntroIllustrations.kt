@@ -70,9 +70,7 @@ import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.intro_illustration_flow
 import com.aimdi.xtanative.ui.generated.resources.intro_illustration_orbit
-import com.aimdi.xtanative.ui.generated.resources.intro_illustration_phone
 import com.aimdi.xtanative.ui.generated.resources.intro_page_of
 import com.aimdi.xtanative.ui.home.HomeIcons
 import com.aimdi.xtanative.ui.media.ReaderIcons
@@ -192,7 +190,7 @@ private fun SourceChip(id: String, brand: Color, size: Dp, modifier: Modifier = 
  */
 @Composable
 internal fun PhoneIllustration() {
-    val label = stringResource(Res.string.intro_illustration_phone)
+    val label = stringResource(IntroWording.phonePicture)
     BoxWithConstraints(Modifier.fillMaxWidth().height(LocalDrawingHeight.current).picture(label), contentAlignment = Alignment.Center) {
         val height = maxHeight * 0.82f
         val width = min(maxWidth * 0.44f, height / 1.75f)
@@ -294,7 +292,7 @@ private fun rememberPulse(on: Boolean): Float {
  */
 @Composable
 internal fun FlowIllustration(accounts: List<String>, height: Dp = LocalDrawingHeight.current) {
-    val label = stringResource(Res.string.intro_illustration_flow)
+    val label = stringResource(IntroWording.flowPicture)
     BoxWithConstraints(Modifier.fillMaxWidth().height(height).picture(label)) {
         val chip = (min(maxWidth, maxHeight) * 0.26f).coerceIn(48.dp, 72.dp)
         val phoneWidth = maxWidth * 0.32f

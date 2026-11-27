@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Trình đọc cho X và các nguồn khác. XTA chỉ đọc — không đăng, thích hay chia sẻ bất cứ gì dưới tên bạn.</string>
     <string name="intro_device_title">Ở lại trên thiết bị này</string>
     <string name="intro_device_body">Đăng ký, nhóm, lượt thích và bài đã lưu chỉ nằm trong cơ sở dữ liệu trên điện thoại này. Không có trình theo dõi.</string>
+    <string name="intro_device_body_desktop">Đăng ký, nhóm, lượt thích và bài đã lưu chỉ nằm trong cơ sở dữ liệu trên máy tính này. Không có trình theo dõi.</string>
     <string name="intro_appearance_title">Chọn giao diện</string>
     <string name="intro_appearance_body">Sáng, mờ hoặc tắt đèn, cùng một màu nhấn. «Theo hệ thống» đi theo điện thoại của bạn. Có thể đổi bất cứ lúc nào trong Cài đặt.</string>
+    <string name="intro_appearance_body_desktop">Sáng, mờ hoặc tắt đèn, cùng một màu nhấn. «Theo hệ thống» đi theo màn hình nền của bạn. Có thể đổi bất cứ lúc nào trong Cài đặt.</string>
     <string name="intro_account_title">Thêm tài khoản X</string>
     <string name="intro_account_caption">Không có tài khoản, X từ chối hầu hết yêu cầu, nên lỗi sẽ xuất hiện nhiều hơn bài viết.</string>
     <string name="intro_not_now">Để sau</string>
@@ -371,7 +373,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Logo các nguồn xoay quanh biểu tượng XTA</string>
     <string name="intro_illustration_phone">Bài viết, lượt thích và mục đã lưu bên trong một chiếc điện thoại</string>
+    <string name="intro_illustration_phone_desktop">Bài viết, lượt thích và mục đã lưu trên máy tính này</string>
     <string name="intro_illustration_flow">Bài viết đi từ X đến điện thoại của bạn, không bao giờ ngược lại</string>
+    <string name="intro_illustration_flow_desktop">Bài viết đi từ X đến máy tính của bạn, không bao giờ ngược lại</string>
     <string name="intro_page_of">Trang %1$d / %2$d</string>
     <string name="settings_desktop_notifications">Thông báo trên màn hình</string>
     <string name="settings_desktop_notifications_description">Báo khi một tệp tải xuống xong trong lúc bạn đang ở cửa sổ khác</string>

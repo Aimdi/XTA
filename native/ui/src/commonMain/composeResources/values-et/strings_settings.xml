@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Lugeja X-i ja teiste allikate jaoks. XTA ainult loeb — sinu nimel ei postitata, meeldivaks ei märgita ega jagata midagi.</string>
     <string name="intro_device_title">Jääb sellesse seadmesse</string>
     <string name="intro_device_body">Tellimused, grupid, meeldimised ja salvestatud postitused on ainult selle telefoni andmebaasis. Ei mingeid jälgijaid.</string>
+    <string name="intro_device_body_desktop">Tellimused, grupid, meeldimised ja salvestatud postitused on ainult selle arvuti andmebaasis. Ei mingeid jälgijaid.</string>
     <string name="intro_appearance_title">Vali välimus</string>
     <string name="intro_appearance_body">Hele, tuhm või tuled kustus, pluss rõhuvärv. „Süsteemi“ järgib sinu telefoni. Muuda seda igal ajal seadetes.</string>
+    <string name="intro_appearance_body_desktop">Hele, tuhm või tuled kustus, pluss rõhuvärv. „Süsteemi“ järgib sinu töölauda. Muuda seda igal ajal seadetes.</string>
     <string name="intro_account_title">Lisa X-i konto</string>
     <string name="intro_account_caption">Ilma kontota keeldub X enamikust päringutest, nii et vigu tuleb rohkem kui postitusi.</string>
     <string name="intro_not_now">Mitte praegu</string>
@@ -373,7 +375,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Allikate logod tiirlevad ümber XTA märgi</string>
     <string name="intro_illustration_phone">Postitused, meeldimised ja salvestatud üksused telefonis</string>
+    <string name="intro_illustration_phone_desktop">Postitused, meeldimised ja salvestatud üksused selles arvutis</string>
     <string name="intro_illustration_flow">Postitused liiguvad X-ist sinu telefoni, mitte kunagi tagasi</string>
+    <string name="intro_illustration_flow_desktop">Postitused liiguvad X-ist sinu arvutisse, mitte kunagi tagasi</string>
     <string name="intro_page_of">Leht %1$d / %2$d</string>
     <string name="settings_desktop_notifications">Töölauateated</string>
     <string name="settings_desktop_notifications_description">Teata allalaadimise lõppemisest, kui oled teises aknas</string>

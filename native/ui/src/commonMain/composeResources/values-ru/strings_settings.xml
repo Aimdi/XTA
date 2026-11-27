@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Читалка для X и других источников. XTA только читает — от вашего имени ничего не публикуется, не лайкается и не рассылается.</string>
     <string name="intro_device_title">Остаётся на этом устройстве</string>
     <string name="intro_device_body">Подписки, группы, лайки и сохранённые посты хранятся только в базе данных на этом телефоне. Никаких трекеров.</string>
+    <string name="intro_device_body_desktop">Подписки, группы, лайки и сохранённые посты хранятся только в базе данных на этом компьютере. Никаких трекеров.</string>
     <string name="intro_appearance_title">Выберите оформление</string>
     <string name="intro_appearance_body">Светлая, приглушённая или полностью чёрная тема плюс акцентный цвет. «Системная» следует за телефоном. Изменить можно в любой момент в настройках.</string>
+    <string name="intro_appearance_body_desktop">Светлая, приглушённая или полностью чёрная тема плюс акцентный цвет. «Системная» следует за рабочим столом. Изменить можно в любой момент в настройках.</string>
     <string name="intro_account_title">Добавить аккаунт X</string>
     <string name="intro_account_caption">Без аккаунта X отклоняет большинство запросов, так что ошибок будет больше, чем постов.</string>
     <string name="intro_not_now">Не сейчас</string>
@@ -377,7 +379,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Логотипы источников вращаются вокруг знака XTA</string>
     <string name="intro_illustration_phone">Посты, лайки и сохранённое внутри телефона</string>
+    <string name="intro_illustration_phone_desktop">Посты, лайки и сохранённое на этом компьютере</string>
     <string name="intro_illustration_flow">Посты идут из X на ваш телефон и никогда обратно</string>
+    <string name="intro_illustration_flow_desktop">Посты идут из X на ваш компьютер и никогда обратно</string>
     <string name="intro_page_of">Страница %1$d из %2$d</string>
     <string name="settings_desktop_notifications">Уведомления на рабочем столе</string>
     <string name="settings_desktop_notifications_description">Сообщать о завершении загрузки, пока вы в другом окне</string>

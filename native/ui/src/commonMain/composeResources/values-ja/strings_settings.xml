@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">X やその他のソースのためのリーダーです。XTA は読むだけ — あなたの名前で投稿、いいね、共有されることはありません。</string>
     <string name="intro_device_title">この端末にとどまります</string>
     <string name="intro_device_body">登録アカウント、グループ、いいね、保存した投稿は、この端末内のデータベースにのみ保存されます。トラッカーはありません。</string>
+    <string name="intro_device_body_desktop">登録アカウント、グループ、いいね、保存した投稿は、このコンピューター内のデータベースにのみ保存されます。トラッカーはありません。</string>
     <string name="intro_appearance_title">外観を選ぶ</string>
     <string name="intro_appearance_body">ライト、ダーク、ブラックのいずれかと、アクセントカラーを選べます。「システム」は端末の設定に従います。設定からいつでも変更できます。</string>
+    <string name="intro_appearance_body_desktop">ライト、ダーク、ブラックのいずれかと、アクセントカラーを選べます。「システム」はデスクトップの設定に従います。設定からいつでも変更できます。</string>
     <string name="intro_account_title">X アカウントを追加</string>
     <string name="intro_account_caption">アカウントなしでは X はほとんどのリクエストを拒否するため、投稿よりエラーの方が多くなります。</string>
     <string name="intro_not_now">今はしない</string>
@@ -371,7 +373,9 @@
     </plurals>
     <string name="intro_illustration_orbit">XTA のマークの周りを回るソースのロゴ</string>
     <string name="intro_illustration_phone">端末の中にある投稿、いいね、保存した項目</string>
+    <string name="intro_illustration_phone_desktop">このコンピューターにある投稿、いいね、保存した項目</string>
     <string name="intro_illustration_flow">投稿は X から端末へ流れ、戻ることはありません</string>
+    <string name="intro_illustration_flow_desktop">投稿は X からコンピューターへ流れ、戻ることはありません</string>
     <string name="intro_page_of">%2$d ページ中 %1$d ページ目</string>
     <string name="settings_desktop_notifications">デスクトップ通知</string>
     <string name="settings_desktop_notifications_description">別のウィンドウを使っている間にダウンロードが終わったら知らせる</string>

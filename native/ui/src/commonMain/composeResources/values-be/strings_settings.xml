@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Чытач для X і іншых крыніц. XTA толькі чытае — нічога не публікуецца, не лайкаецца і не рассылаецца ад вашага імя.</string>
     <string name="intro_device_title">Застаецца на гэтай прыладзе</string>
     <string name="intro_device_body">Падпіскі, групы, лайкі і захаваныя допісы захоўваюцца толькі ў базе даных на гэтым тэлефоне. Ніякіх трэкераў.</string>
+    <string name="intro_device_body_desktop">Падпіскі, групы, лайкі і захаваныя допісы захоўваюцца толькі ў базе даных на гэтым камп’ютары. Ніякіх трэкераў.</string>
     <string name="intro_appearance_title">Выберыце выгляд</string>
     <string name="intro_appearance_body">Светлая, прыглушаная або цалкам чорная, плюс акцэнтны колер. «Сістэмная» ідзе за тэлефонам. Змяніць можна ў любы момант у наладах.</string>
+    <string name="intro_appearance_body_desktop">Светлая, прыглушаная або цалкам чорная, плюс акцэнтны колер. «Сістэмная» ідзе за працоўным сталом. Змяніць можна ў любы момант у наладах.</string>
     <string name="intro_account_title">Дадаць уліковы запіс X</string>
     <string name="intro_account_caption">Без уліковага запісу X адхіляе большасць запытаў, таму памылак будзе больш, чым допісаў.</string>
     <string name="intro_not_now">Не зараз</string>
@@ -377,7 +379,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Знакі крыніц кружаць вакол знака XTA</string>
     <string name="intro_illustration_phone">Допісы, лайкі і захаванае ўнутры тэлефона</string>
+    <string name="intro_illustration_phone_desktop">Допісы, лайкі і захаванае на гэтым камп’ютары</string>
     <string name="intro_illustration_flow">Допісы ідуць з X на ваш тэлефон і ніколі назад</string>
+    <string name="intro_illustration_flow_desktop">Допісы ідуць з X на ваш камп’ютар і ніколі назад</string>
     <string name="intro_page_of">Старонка %1$d з %2$d</string>
     <string name="settings_desktop_notifications">Апавяшчэнні на працоўным стале</string>
     <string name="settings_desktop_notifications_description">Паведамляць пра канец спампоўкі, пакуль вы ў іншым акне</string>

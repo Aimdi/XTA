@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Een lezer voor X en andere bronnen. XTA leest alleen — er wordt niets geplaatst, geliket of gedeeld uit jouw naam.</string>
     <string name="intro_device_title">Blijft op dit apparaat</string>
     <string name="intro_device_body">Abonnementen, groepen, likes en opgeslagen berichten staan alleen in een database op deze telefoon. Geen trackers.</string>
+    <string name="intro_device_body_desktop">Abonnementen, groepen, likes en opgeslagen berichten staan alleen in een database op deze computer. Geen trackers.</string>
     <string name="intro_appearance_title">Kies een uiterlijk</string>
     <string name="intro_appearance_body">Licht, gedimd of licht uit, plus een accentkleur. 'Systeem' volgt je telefoon. Je kunt het altijd aanpassen in de instellingen.</string>
+    <string name="intro_appearance_body_desktop">Licht, gedimd of licht uit, plus een accentkleur. 'Systeem' volgt je bureaublad. Je kunt het altijd aanpassen in de instellingen.</string>
     <string name="intro_account_title">Een X-account toevoegen</string>
     <string name="intro_account_caption">Zonder account weigert X de meeste verzoeken, dus verwacht vaker fouten dan berichten.</string>
     <string name="intro_not_now">Niet nu</string>
@@ -373,7 +375,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Bronlogo's die om het XTA-merk draaien</string>
     <string name="intro_illustration_phone">Berichten, likes en opgeslagen items in een telefoon</string>
+    <string name="intro_illustration_phone_desktop">Berichten, likes en opgeslagen items op deze computer</string>
     <string name="intro_illustration_flow">Berichten gaan van X naar je telefoon, nooit terug</string>
+    <string name="intro_illustration_flow_desktop">Berichten gaan van X naar je computer, nooit terug</string>
     <string name="intro_page_of">Pagina %1$d van %2$d</string>
     <string name="settings_desktop_notifications">Bureaubladmeldingen</string>
     <string name="settings_desktop_notifications_description">Melden wanneer een download klaar is terwijl je in een ander venster bent</string>

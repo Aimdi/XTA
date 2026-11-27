@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Un cititor pentru X și alte surse. XTA doar citește — nimic nu este publicat, apreciat sau distribuit în numele tău.</string>
     <string name="intro_device_title">Rămâne pe acest dispozitiv</string>
     <string name="intro_device_body">Abonamentele, grupurile, aprecierile și postările salvate există doar într-o bază de date de pe acest telefon. Fără trackere.</string>
+    <string name="intro_device_body_desktop">Abonamentele, grupurile, aprecierile și postările salvate există doar într-o bază de date de pe acest computer. Fără trackere.</string>
     <string name="intro_appearance_title">Alege un aspect</string>
     <string name="intro_appearance_body">Luminos, estompat sau lumini stinse, plus o culoare de accent. „Sistem” urmează telefonul. Poți schimba oricând din setări.</string>
+    <string name="intro_appearance_body_desktop">Luminos, estompat sau lumini stinse, plus o culoare de accent. „Sistem” urmează desktopul. Poți schimba oricând din setări.</string>
     <string name="intro_account_title">Adaugă un cont X</string>
     <string name="intro_account_caption">Fără cont, X refuză majoritatea cererilor, așa că te poți aștepta la mai multe erori decât postări.</string>
     <string name="intro_not_now">Nu acum</string>
@@ -375,7 +377,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Siglele surselor orbitând în jurul mărcii XTA</string>
     <string name="intro_illustration_phone">Postări, aprecieri și elemente salvate într-un telefon</string>
+    <string name="intro_illustration_phone_desktop">Postări, aprecieri și elemente salvate pe acest computer</string>
     <string name="intro_illustration_flow">Postările curg de la X spre telefonul tău, niciodată înapoi</string>
+    <string name="intro_illustration_flow_desktop">Postările curg de la X spre computerul tău, niciodată înapoi</string>
     <string name="intro_page_of">Pagina %1$d din %2$d</string>
     <string name="settings_desktop_notifications">Notificări pe desktop</string>
     <string name="settings_desktop_notifications_description">Anunță când se termină o descărcare cât timp ești în altă fereastră</string>

@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">一個用於 X 和其他來源的閱讀器。XTA 只讀不寫——不會以你的名義發文、按讚或分享任何內容。</string>
     <string name="intro_device_title">只留在這台裝置上</string>
     <string name="intro_device_body">訂閱、群組、按讚和已儲存的貼文只保存在這支手機的資料庫裡。沒有追蹤器。</string>
+    <string name="intro_device_body_desktop">訂閱、群組、按讚和已儲存的貼文只保存在這台電腦的資料庫裡。沒有追蹤器。</string>
     <string name="intro_appearance_title">選擇外觀</string>
     <string name="intro_appearance_body">淺色、暗色或純黑，再加一種強調色。「系統」會跟隨手機設定。隨時可以在設定中更改。</string>
+    <string name="intro_appearance_body_desktop">淺色、暗色或純黑，再加一種強調色。「系統」會跟隨桌面設定。隨時可以在設定中更改。</string>
     <string name="intro_account_title">新增 X 帳號</string>
     <string name="intro_account_caption">沒有帳號時 X 會拒絕大多數請求，出錯會比看到貼文更常見。</string>
     <string name="intro_not_now">暫時不要</string>
@@ -371,7 +373,9 @@
     </plurals>
     <string name="intro_illustration_orbit">來源圖示環繞 XTA 標誌</string>
     <string name="intro_illustration_phone">手機裡的貼文、按讚和已儲存項目</string>
+    <string name="intro_illustration_phone_desktop">這台電腦裡的貼文、按讚和已儲存項目</string>
     <string name="intro_illustration_flow">貼文從 X 流向你的手機，從不回傳</string>
+    <string name="intro_illustration_flow_desktop">貼文從 X 流向你的電腦，從不回傳</string>
     <string name="intro_page_of">第 %1$d 頁，共 %2$d 頁</string>
     <string name="settings_desktop_notifications">桌面通知</string>
     <string name="settings_desktop_notifications_description">在其他視窗中時，下載完成後發出通知</string>

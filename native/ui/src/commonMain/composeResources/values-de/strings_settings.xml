@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Ein Reader für X und andere Quellen. XTA liest nur — es postet, liked und teilt nichts in deinem Namen.</string>
     <string name="intro_device_title">Bleibt auf diesem Gerät</string>
     <string name="intro_device_body">Abos, Gruppen, Likes und gespeicherte Beiträge liegen nur auf diesem Handy – keine Tracker.</string>
+    <string name="intro_device_body_desktop">Abos, Gruppen, Likes und gespeicherte Beiträge liegen nur auf diesem Computer – keine Tracker.</string>
     <string name="intro_appearance_title">Wähle ein Design</string>
     <string name="intro_appearance_body">Hell, Gedimmt oder Lichter aus, dazu eine Akzentfarbe. System folgt deinem Handy. Jederzeit in den Einstellungen änderbar.</string>
+    <string name="intro_appearance_body_desktop">Hell, Gedimmt oder Lichter aus, dazu eine Akzentfarbe. System folgt deinem Desktop. Jederzeit in den Einstellungen änderbar.</string>
     <string name="intro_account_title">X-Konto hinzufügen</string>
     <string name="intro_account_caption">Ohne Konto weist X die meisten Anfragen ab – rechne eher mit Fehlern als mit Beiträgen.</string>
     <string name="intro_not_now">Jetzt nicht</string>
@@ -373,7 +375,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Quellen-Logos kreisen um das XTA-Zeichen</string>
     <string name="intro_illustration_phone">Beiträge, Likes und Gespeichertes in einem Handy</string>
+    <string name="intro_illustration_phone_desktop">Beiträge, Likes und Gespeichertes auf diesem Computer</string>
     <string name="intro_illustration_flow">Beiträge fließen von X auf dein Handy, nie zurück</string>
+    <string name="intro_illustration_flow_desktop">Beiträge fließen von X auf deinen Computer, nie zurück</string>
     <string name="intro_page_of">Seite %1$d von %2$d</string>
     <string name="settings_desktop_notifications">Desktop-Benachrichtigungen</string>
     <string name="settings_desktop_notifications_description">Melden, wenn ein Download fertig ist, während du in einem anderen Fenster bist</string>

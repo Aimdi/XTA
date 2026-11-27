@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Un lettore per X e altre fonti. XTA legge soltanto: non pubblica, non mette Mi piace e non condivide nulla a tuo nome.</string>
     <string name="intro_device_title">Resta su questo dispositivo</string>
     <string name="intro_device_body">Iscrizioni, gruppi, Mi piace e post salvati vivono solo in un database su questo telefono. Nessun tracker.</string>
+    <string name="intro_device_body_desktop">Iscrizioni, gruppi, Mi piace e post salvati vivono solo in un database su questo computer. Nessun tracker.</string>
     <string name="intro_appearance_title">Scegli un aspetto</string>
     <string name="intro_appearance_body">Chiaro, attenuato o luci spente, più un colore principale. «Sistema» segue il telefono. Puoi cambiarlo quando vuoi nelle impostazioni.</string>
+    <string name="intro_appearance_body_desktop">Chiaro, attenuato o luci spente, più un colore principale. «Sistema» segue il desktop. Puoi cambiarlo quando vuoi nelle impostazioni.</string>
     <string name="intro_account_title">Aggiungi un account X</string>
     <string name="intro_account_caption">Senza un account X rifiuta la maggior parte delle richieste: aspettati più errori che post.</string>
     <string name="intro_not_now">Non ora</string>
@@ -375,7 +377,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Loghi delle fonti in orbita attorno al marchio XTA</string>
     <string name="intro_illustration_phone">Post, Mi piace ed elementi salvati dentro un telefono</string>
+    <string name="intro_illustration_phone_desktop">Post, Mi piace ed elementi salvati su questo computer</string>
     <string name="intro_illustration_flow">I post vanno da X al tuo telefono, mai indietro</string>
+    <string name="intro_illustration_flow_desktop">I post vanno da X al tuo computer, mai indietro</string>
     <string name="intro_page_of">Pagina %1$d di %2$d</string>
     <string name="settings_desktop_notifications">Notifiche del desktop</string>
     <string name="settings_desktop_notifications_description">Avvisa quando un download finisce mentre sei in un’altra finestra</string>

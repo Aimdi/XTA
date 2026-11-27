@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">قارئ لـ X ومصادر أخرى. XTA يقرأ فقط — لا يُنشر أو يُعجب أو يُشارك أي شيء باسمك.</string>
     <string name="intro_device_title">يبقى على هذا الجهاز</string>
     <string name="intro_device_body">الاشتراكات والمجموعات والإعجابات والمنشورات المحفوظة تُخزَّن فقط في قاعدة بيانات على هذا الهاتف. لا متتبّعات.</string>
+    <string name="intro_device_body_desktop">الاشتراكات والمجموعات والإعجابات والمنشورات المحفوظة تُخزَّن فقط في قاعدة بيانات على هذا الحاسوب. لا متتبّعات.</string>
     <string name="intro_appearance_title">اختر مظهرًا</string>
     <string name="intro_appearance_body">فاتح أو خافت أو إطفاء الأضواء، مع لون تمييز. «النظام» يتبع هاتفك. يمكنك تغييره في أي وقت من الإعدادات.</string>
+    <string name="intro_appearance_body_desktop">فاتح أو خافت أو إطفاء الأضواء، مع لون تمييز. «النظام» يتبع سطح المكتب لديك. يمكنك تغييره في أي وقت من الإعدادات.</string>
     <string name="intro_account_title">إضافة حساب X</string>
     <string name="intro_account_caption">بدون حساب يرفض X معظم الطلبات، فتوقّع أخطاء أكثر من المنشورات.</string>
     <string name="intro_not_now">ليس الآن</string>
@@ -381,7 +383,9 @@
     </plurals>
     <string name="intro_illustration_orbit">شعارات المصادر تدور حول علامة XTA</string>
     <string name="intro_illustration_phone">منشورات وإعجابات وعناصر محفوظة داخل هاتف</string>
+    <string name="intro_illustration_phone_desktop">منشورات وإعجابات وعناصر محفوظة على هذا الحاسوب</string>
     <string name="intro_illustration_flow">المنشورات تتدفق من X إلى هاتفك، ولا تعود أبدًا</string>
+    <string name="intro_illustration_flow_desktop">المنشورات تتدفق من X إلى حاسوبك، ولا تعود أبدًا</string>
     <string name="intro_page_of">الصفحة %1$d من %2$d</string>
     <string name="settings_desktop_notifications">إشعارات سطح المكتب</string>
     <string name="settings_desktop_notifications_description">الإعلام عند اكتمال تنزيل بينما تكون في نافذة أخرى</string>

@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">一个用于 X 和其他来源的阅读器。XTA 只读不写——不会以你的名义发帖、点赞或分享任何内容。</string>
     <string name="intro_device_title">只留在这台设备上</string>
     <string name="intro_device_body">订阅、订阅组、点赞和书签只保存在这部手机的数据库里。没有跟踪器。</string>
+    <string name="intro_device_body_desktop">订阅、订阅组、点赞和书签只保存在这台电脑的数据库里。没有跟踪器。</string>
     <string name="intro_appearance_title">选择外观</string>
     <string name="intro_appearance_body">亮色、暗色或纯黑，再加一种强调色。「跟随系统」会跟随手机设置。随时可以在设置中更改。</string>
+    <string name="intro_appearance_body_desktop">亮色、暗色或纯黑，再加一种强调色。「跟随系统」会跟随桌面设置。随时可以在设置中更改。</string>
     <string name="intro_account_title">添加 X 账号</string>
     <string name="intro_account_caption">没有账号时 X 会拒绝大多数请求，出错会比看到帖子更常见。</string>
     <string name="intro_not_now">暂不</string>
@@ -371,7 +373,9 @@
     </plurals>
     <string name="intro_illustration_orbit">来源图标环绕 XTA 标志</string>
     <string name="intro_illustration_phone">手机里的帖子、点赞和书签</string>
+    <string name="intro_illustration_phone_desktop">这台电脑里的帖子、点赞和书签</string>
     <string name="intro_illustration_flow">帖子从 X 流向你的手机，从不回传</string>
+    <string name="intro_illustration_flow_desktop">帖子从 X 流向你的电脑，从不回传</string>
     <string name="intro_page_of">第 %1$d 页，共 %2$d 页</string>
     <string name="settings_desktop_notifications">桌面通知</string>
     <string name="settings_desktop_notifications_description">在其他窗口中时，下载完成后发出通知</string>

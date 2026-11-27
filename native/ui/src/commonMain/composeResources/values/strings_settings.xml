@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">A reader for X and other sources. XTA only reads — nothing is posted, liked or shared in your name.</string>
     <string name="intro_device_title">Stays on this device</string>
     <string name="intro_device_body">Subscriptions, groups, likes and saved posts live only on this phone — no trackers.</string>
+    <string name="intro_device_body_desktop">Subscriptions, groups, likes and saved posts live only on this computer — no trackers.</string>
     <string name="intro_appearance_title">Pick a look</string>
     <string name="intro_appearance_body">Light, Dim or Lights out, plus an accent colour. System follows your phone. Change it any time in Settings.</string>
+    <string name="intro_appearance_body_desktop">Light, Dim or Lights out, plus an accent colour. System follows your desktop. Change it any time in Settings.</string>
     <string name="intro_account_title">Add an X account</string>
     <string name="intro_account_caption">Without an account X refuses most requests, so expect errors more often than posts.</string>
     <string name="intro_not_now">Not now</string>
@@ -373,7 +375,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Source marks orbiting the XTA mark</string>
     <string name="intro_illustration_phone">Posts, likes and saved items inside a phone</string>
+    <string name="intro_illustration_phone_desktop">Posts, likes and saved items kept on this computer</string>
     <string name="intro_illustration_flow">Posts flow from X to your phone, never back</string>
+    <string name="intro_illustration_flow_desktop">Posts flow from X to your computer, never back</string>
     <string name="intro_page_of">Page %1$d of %2$d</string>
     <string name="settings_desktop_notifications">Desktop notifications</string>
     <string name="settings_desktop_notifications_description">Say when a download finishes while you are in another window</string>

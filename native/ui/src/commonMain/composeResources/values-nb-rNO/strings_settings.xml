@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">En leser for X og andre kilder. XTA bare leser — ingenting blir publisert, likt eller delt i ditt navn.</string>
     <string name="intro_device_title">Blir på denne enheten</string>
     <string name="intro_device_body">Abonnementer, grupper, likes og lagrede innlegg finnes bare i en database på denne telefonen. Ingen sporere.</string>
+    <string name="intro_device_body_desktop">Abonnementer, grupper, likes og lagrede innlegg finnes bare i en database på denne datamaskinen. Ingen sporere.</string>
     <string name="intro_appearance_title">Velg et utseende</string>
     <string name="intro_appearance_body">Lys, dempet eller lyset av, pluss en aksentfarge. «System» følger telefonen. Endre det når som helst i innstillingene.</string>
+    <string name="intro_appearance_body_desktop">Lys, dempet eller lyset av, pluss en aksentfarge. «System» følger skrivebordet. Endre det når som helst i innstillingene.</string>
     <string name="intro_account_title">Legg til en X-konto</string>
     <string name="intro_account_caption">Uten konto avviser X de fleste forespørsler, så regn med flere feil enn innlegg.</string>
     <string name="intro_not_now">Ikke nå</string>
@@ -373,7 +375,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Kildelogoer i bane rundt XTA-merket</string>
     <string name="intro_illustration_phone">Innlegg, likes og lagrede elementer inne i en telefon</string>
+    <string name="intro_illustration_phone_desktop">Innlegg, likes og lagrede elementer på denne datamaskinen</string>
     <string name="intro_illustration_flow">Innlegg går fra X til telefonen din, aldri tilbake</string>
+    <string name="intro_illustration_flow_desktop">Innlegg går fra X til datamaskinen din, aldri tilbake</string>
     <string name="intro_page_of">Side %1$d av %2$d</string>
     <string name="settings_desktop_notifications">Skrivebordsvarsler</string>
     <string name="settings_desktop_notifications_description">Si fra når en nedlasting er ferdig mens du er i et annet vindu</string>

@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Čytač dla X i inšych krynic. XTA tolki čytaje — ničoha nie publikujecca, nie łajkajecca i nie rassyłajecca ad vašaha imia.</string>
     <string name="intro_device_title">Zastajecca na hetaj pryladzie</string>
     <string name="intro_device_body">Padpiski, hrupy, lajki i zachavanyja dopisy zachoŭvajucca tolki ŭ bazie danych na hetym telefonie. Nijakich trekieraŭ.</string>
+    <string name="intro_device_body_desktop">Padpiski, hrupy, lajki i zachavanyja dopisy zachoŭvajucca tolki ŭ bazie danych na hetym kampjutary. Nijakich trekieraŭ.</string>
     <string name="intro_appearance_title">Vybierycie vyhlad</string>
     <string name="intro_appearance_body">Śvietłaja, pryhlušanaja abo całkam čornaja, plus akcentny kolier. «Sistemnaja» idzie za telefonam. Zmianić možna ŭ luby momant u naladach.</string>
+    <string name="intro_appearance_body_desktop">Śvietłaja, pryhlušanaja abo całkam čornaja, plus akcentny kolier. «Sistemnaja» idzie za pracoŭnym stałom. Zmianić možna ŭ luby momant u naladach.</string>
     <string name="intro_account_title">Dadać ulikovy zapis X</string>
     <string name="intro_account_caption">Biez ulikovaha zapisu X adchilaje bolšasć zapytaŭ, tamu pamyłak budzie bolš, čym dopisaŭ.</string>
     <string name="intro_not_now">Nie zaraz</string>
@@ -377,7 +379,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Znaki krynic kružać vakoł znaka XTA</string>
     <string name="intro_illustration_phone">Dopisy, lajki i zachavanaje ŭnutry telefona</string>
+    <string name="intro_illustration_phone_desktop">Dopisy, lajki i zachavanaje na hetym kampjutary</string>
     <string name="intro_illustration_flow">Dopisy iduć z X na vaš telefon i nikoli nazad</string>
+    <string name="intro_illustration_flow_desktop">Dopisy iduć z X na vaš kampjutar i nikoli nazad</string>
     <string name="intro_page_of">Staronka %1$d z %2$d</string>
     <string name="settings_desktop_notifications">Apaviaščenni na pracoŭnym stale</string>
     <string name="settings_desktop_notifications_description">Paviedamlać pra kaniec spampoŭki, pakul vy ŭ inšym aknie</string>

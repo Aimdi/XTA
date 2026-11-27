@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">X와 다른 소스를 위한 리더입니다. XTA는 읽기만 합니다 — 내 이름으로 게시, 좋아요, 공유되는 것은 없습니다.</string>
     <string name="intro_device_title">이 기기에만 저장됩니다</string>
     <string name="intro_device_body">구독, 그룹, 좋아요, 저장한 게시물은 이 휴대폰의 데이터베이스에만 있습니다. 추적기는 없습니다.</string>
+    <string name="intro_device_body_desktop">구독, 그룹, 좋아요, 저장한 게시물은 이 컴퓨터의 데이터베이스에만 있습니다. 추적기는 없습니다.</string>
     <string name="intro_appearance_title">모양 선택</string>
     <string name="intro_appearance_body">밝음, 딤, 라이트 아웃 중 하나와 강조 색상을 고르세요. «시스템»은 휴대폰 설정을 따릅니다. 설정에서 언제든 바꿀 수 있습니다.</string>
+    <string name="intro_appearance_body_desktop">밝음, 딤, 라이트 아웃 중 하나와 강조 색상을 고르세요. «시스템»은 데스크톱 설정을 따릅니다. 설정에서 언제든 바꿀 수 있습니다.</string>
     <string name="intro_account_title">X 계정 추가</string>
     <string name="intro_account_caption">계정이 없으면 X가 대부분의 요청을 거부하므로 게시물보다 오류가 더 자주 표시됩니다.</string>
     <string name="intro_not_now">나중에</string>
@@ -371,7 +373,9 @@
     </plurals>
     <string name="intro_illustration_orbit">XTA 마크 주위를 도는 소스 로고</string>
     <string name="intro_illustration_phone">휴대폰 안의 게시물, 좋아요, 저장한 항목</string>
+    <string name="intro_illustration_phone_desktop">이 컴퓨터에 있는 게시물, 좋아요, 저장한 항목</string>
     <string name="intro_illustration_flow">게시물은 X에서 휴대폰으로만 흐르고, 되돌아가지 않습니다</string>
+    <string name="intro_illustration_flow_desktop">게시물은 X에서 컴퓨터로만 흐르고, 되돌아가지 않습니다</string>
     <string name="intro_page_of">%2$d페이지 중 %1$d페이지</string>
     <string name="settings_desktop_notifications">데스크톱 알림</string>
     <string name="settings_desktop_notifications_description">다른 창에 있는 동안 다운로드가 끝나면 알림</string>

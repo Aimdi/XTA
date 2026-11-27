@@ -90,6 +90,7 @@ import com.aimdi.xtanative.ui.settings.networkName
 import com.aimdi.xtanative.ui.settings.pluginIds
 import com.aimdi.xtanative.ui.theme.edgeColor
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -193,12 +194,12 @@ private fun CardOf(page: IntroPage, settings: Settings, accounts: List<String>, 
         }
         IntroPage.DEVICE -> Card(
             stringResource(Res.string.intro_device_title),
-            stringResource(Res.string.intro_device_body),
+            stringResource(IntroWording.deviceBody),
             stringResource(Res.string.intro_device_footnote),
         ) { PhoneIllustration() }
         IntroPage.APPEARANCE -> Card(
             stringResource(Res.string.intro_appearance_title),
-            stringResource(Res.string.intro_appearance_body),
+            stringResource(IntroWording.appearanceBody),
             label = stringResource(Res.string.intro_looks),
         ) {
             Column(Modifier.fillMaxWidth()) {
@@ -404,3 +405,12 @@ private fun IntroTextButton(text: String, modifier: Modifier = Modifier, onClick
 /** How far outside a button its keyboard ring is drawn. */
 private val RING_GAP = 3.dp
 
+/** The intro's words that name the device: this computer on the desktop, this phone on Android. */
+internal object IntroWording {
+    val deviceBody = pick(Res.string.intro_device_body, Res.string.intro_device_body_desktop)
+    val appearanceBody = pick(Res.string.intro_appearance_body, Res.string.intro_appearance_body_desktop)
+    val phonePicture = pick(Res.string.intro_illustration_phone, Res.string.intro_illustration_phone_desktop)
+    val flowPicture = pick(Res.string.intro_illustration_flow, Res.string.intro_illustration_flow_desktop)
+
+    private fun pick(phone: StringResource, desktop: StringResource) = if (isDesktop) desktop else phone
+}

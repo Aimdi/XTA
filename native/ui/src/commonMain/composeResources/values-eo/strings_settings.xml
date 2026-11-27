@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Legilo por X kaj aliaj fontoj. XTA nur legas — nenio estas afiŝata, ŝatata aŭ kundividata en via nomo.</string>
     <string name="intro_device_title">Restas en ĉi tiu aparato</string>
     <string name="intro_device_body">Abonoj, grupoj, ŝatoj kaj konservitaj afiŝoj vivas nur en datumbazo en ĉi tiu telefono. Neniuj spuriloj.</string>
+    <string name="intro_device_body_desktop">Abonoj, grupoj, ŝatoj kaj konservitaj afiŝoj vivas nur en datumbazo en ĉi tiu komputilo. Neniuj spuriloj.</string>
     <string name="intro_appearance_title">Elektu aspekton</string>
     <string name="intro_appearance_body">Hela, malhelega aŭ lumoj for, plus akcenta koloro. „Sistema“ sekvas vian telefonon. Ŝanĝu ĝin iam ajn en la agordoj.</string>
+    <string name="intro_appearance_body_desktop">Hela, malhelega aŭ lumoj for, plus akcenta koloro. „Sistema“ sekvas vian labortablon. Ŝanĝu ĝin iam ajn en la agordoj.</string>
     <string name="intro_account_title">Aldoni X-konton</string>
     <string name="intro_account_caption">Sen konto X rifuzas la plimulton de petoj, do atendu pli da eraroj ol da afiŝoj.</string>
     <string name="intro_not_now">Ne nun</string>
@@ -373,7 +375,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Fontaj markoj orbitantaj ĉirkaŭ la XTA-marko</string>
     <string name="intro_illustration_phone">Afiŝoj, ŝatoj kaj konservitaĵoj en telefono</string>
+    <string name="intro_illustration_phone_desktop">Afiŝoj, ŝatoj kaj konservitaĵoj en ĉi tiu komputilo</string>
     <string name="intro_illustration_flow">Afiŝoj fluas de X al via telefono, neniam reen</string>
+    <string name="intro_illustration_flow_desktop">Afiŝoj fluas de X al via komputilo, neniam reen</string>
     <string name="intro_page_of">Paĝo %1$d el %2$d</string>
     <string name="settings_desktop_notifications">Labortablaj sciigoj</string>
     <string name="settings_desktop_notifications_description">Sciigi, kiam elŝuto finiĝas dum vi estas en alia fenestro</string>

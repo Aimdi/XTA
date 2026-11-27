@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Czytnik dla X i innych źródeł. XTA tylko czyta — nic nie jest publikowane, lajkowane ani udostępniane w twoim imieniu.</string>
     <string name="intro_device_title">Zostaje na tym urządzeniu</string>
     <string name="intro_device_body">Subskrypcje, grupy, polubienia i zapisane wpisy są tylko w bazie danych na tym telefonie. Żadnych trackerów.</string>
+    <string name="intro_device_body_desktop">Subskrypcje, grupy, polubienia i zapisane wpisy są tylko w bazie danych na tym komputerze. Żadnych trackerów.</string>
     <string name="intro_appearance_title">Wybierz wygląd</string>
     <string name="intro_appearance_body">Jasny, przyciemniony lub zgaszone światła, plus kolor akcentu. „Systemowy” podąża za telefonem. Zmienisz to w każdej chwili w ustawieniach.</string>
+    <string name="intro_appearance_body_desktop">Jasny, przyciemniony lub zgaszone światła, plus kolor akcentu. „Systemowy” podąża za pulpitem. Zmienisz to w każdej chwili w ustawieniach.</string>
     <string name="intro_account_title">Dodaj konto X</string>
     <string name="intro_account_caption">Bez konta X odrzuca większość żądań, więc spodziewaj się raczej błędów niż wpisów.</string>
     <string name="intro_not_now">Nie teraz</string>
@@ -377,7 +379,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Logotypy źródeł krążące wokół znaku XTA</string>
     <string name="intro_illustration_phone">Wpisy, polubienia i zapisane elementy wewnątrz telefonu</string>
+    <string name="intro_illustration_phone_desktop">Wpisy, polubienia i zapisane elementy na tym komputerze</string>
     <string name="intro_illustration_flow">Wpisy płyną z X do twojego telefonu, nigdy z powrotem</string>
+    <string name="intro_illustration_flow_desktop">Wpisy płyną z X do twojego komputera, nigdy z powrotem</string>
     <string name="intro_page_of">Strona %1$d z %2$d</string>
     <string name="settings_desktop_notifications">Powiadomienia pulpitu</string>
     <string name="settings_desktop_notifications_description">Informuj o zakończonym pobieraniu, gdy jesteś w innym oknie</string>

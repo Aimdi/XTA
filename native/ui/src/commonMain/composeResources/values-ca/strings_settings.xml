@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Un lector per a X i altres fonts. XTA només llegeix: no publica, no posa m'agrada ni comparteix res en nom teu.</string>
     <string name="intro_device_title">Es queda en aquest dispositiu</string>
     <string name="intro_device_body">Les subscripcions, els grups, els m'agrada i les publicacions desades només viuen en una base de dades d'aquest telèfon. Sense rastrejadors.</string>
+    <string name="intro_device_body_desktop">Les subscripcions, els grups, els m'agrada i les publicacions desades només viuen en una base de dades d'aquest ordinador. Sense rastrejadors.</string>
     <string name="intro_appearance_title">Tria un aspecte</string>
     <string name="intro_appearance_body">Clar, atenuat o llums apagats, més un color d'accent. «Sistema» segueix el telèfon. Pots canviar-ho quan vulguis a la configuració.</string>
+    <string name="intro_appearance_body_desktop">Clar, atenuat o llums apagats, més un color d'accent. «Sistema» segueix l'escriptori. Pots canviar-ho quan vulguis a la configuració.</string>
     <string name="intro_account_title">Afegeix un compte d'X</string>
     <string name="intro_account_caption">Sense compte, X rebutja la majoria de peticions: espera més errors que publicacions.</string>
     <string name="intro_not_now">Ara no</string>
@@ -375,7 +377,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Logotips de fonts orbitant al voltant de la marca XTA</string>
     <string name="intro_illustration_phone">Publicacions, m'agrada i elements desats dins d'un telèfon</string>
+    <string name="intro_illustration_phone_desktop">Publicacions, m'agrada i elements desats en aquest ordinador</string>
     <string name="intro_illustration_flow">Les publicacions van d'X al teu telèfon, mai al revés</string>
+    <string name="intro_illustration_flow_desktop">Les publicacions van d'X al teu ordinador, mai al revés</string>
     <string name="intro_page_of">Pàgina %1$d de %2$d</string>
     <string name="settings_desktop_notifications">Notificacions de l’escriptori</string>
     <string name="settings_desktop_notifications_description">Avisa quan acabi una baixada mentre ets en una altra finestra</string>

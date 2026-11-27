@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Um leitor para o X e outras fontes. O XTA só lê: nada é publicado, curtido ou compartilhado em seu nome.</string>
     <string name="intro_device_title">Fica neste dispositivo</string>
     <string name="intro_device_body">Inscrições, grupos, curtidas e publicações salvas vivem só em um banco de dados neste celular. Sem rastreadores.</string>
+    <string name="intro_device_body_desktop">Inscrições, grupos, curtidas e publicações salvas vivem só em um banco de dados neste computador. Sem rastreadores.</string>
     <string name="intro_appearance_title">Escolha um visual</string>
     <string name="intro_appearance_body">Claro, escurecido ou luzes apagadas, mais uma cor de destaque. «Sistema» segue o celular. Mude quando quiser nas configurações.</string>
+    <string name="intro_appearance_body_desktop">Claro, escurecido ou luzes apagadas, mais uma cor de destaque. «Sistema» segue a área de trabalho. Mude quando quiser nas configurações.</string>
     <string name="intro_account_title">Adicionar uma conta do X</string>
     <string name="intro_account_caption">Sem conta, o X recusa a maioria das solicitações: espere mais erros do que publicações.</string>
     <string name="intro_not_now">Agora não</string>
@@ -375,7 +377,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Logotipos de fontes orbitando a marca XTA</string>
     <string name="intro_illustration_phone">Publicações, curtidas e itens salvos dentro de um celular</string>
+    <string name="intro_illustration_phone_desktop">Publicações, curtidas e itens salvos neste computador</string>
     <string name="intro_illustration_flow">As publicações vão do X para o seu celular, nunca o contrário</string>
+    <string name="intro_illustration_flow_desktop">As publicações vão do X para o seu computador, nunca o contrário</string>
     <string name="intro_page_of">Página %1$d de %2$d</string>
     <string name="settings_desktop_notifications">Notificações da área de trabalho</string>
     <string name="settings_desktop_notifications_description">Avisar quando um download terminar enquanto você estiver em outra janela</string>

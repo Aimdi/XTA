@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">Čtečka pro X a další zdroje. XTA jen čte — vaším jménem nic nezveřejňuje, nelajkuje ani nesdílí.</string>
     <string name="intro_device_title">Zůstává v tomto zařízení</string>
     <string name="intro_device_body">Odběry, skupiny, lajky a uložené příspěvky žijí jen v databázi v tomto telefonu. Žádné sledovací nástroje.</string>
+    <string name="intro_device_body_desktop">Odběry, skupiny, lajky a uložené příspěvky žijí jen v databázi v tomto počítači. Žádné sledovací nástroje.</string>
     <string name="intro_appearance_title">Vyberte si vzhled</string>
     <string name="intro_appearance_body">Světlý, ztlumený nebo zhasnutý, plus barva zvýraznění. „Systémové“ se řídí telefonem. Kdykoli to změníte v nastavení.</string>
+    <string name="intro_appearance_body_desktop">Světlý, ztlumený nebo zhasnutý, plus barva zvýraznění. „Systémové“ se řídí pracovním prostředím. Kdykoli to změníte v nastavení.</string>
     <string name="intro_account_title">Přidat účet X</string>
     <string name="intro_account_caption">Bez účtu X většinu požadavků odmítne, takže čekej spíš chyby než příspěvky.</string>
     <string name="intro_not_now">Teď ne</string>
@@ -377,7 +379,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Loga zdrojů obíhající kolem značky XTA</string>
     <string name="intro_illustration_phone">Příspěvky, lajky a uložené položky v telefonu</string>
+    <string name="intro_illustration_phone_desktop">Příspěvky, lajky a uložené položky v tomto počítači</string>
     <string name="intro_illustration_flow">Příspěvky proudí z X do vašeho telefonu, nikdy zpět</string>
+    <string name="intro_illustration_flow_desktop">Příspěvky proudí z X do vašeho počítače, nikdy zpět</string>
     <string name="intro_page_of">Stránka %1$d z %2$d</string>
     <string name="settings_desktop_notifications">Oznámení na ploše</string>
     <string name="settings_desktop_notifications_description">Upozornit na dokončené stahování, když jste v jiném okně</string>

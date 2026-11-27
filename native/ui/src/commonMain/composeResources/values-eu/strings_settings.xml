@@ -340,8 +340,10 @@
     <string name="intro_welcome_body">X eta beste iturri batzuetarako irakurgailua. XTAk irakurri baino ez du egiten — ez du ezer argitaratzen, atsegin dut ematen edo partekatzen zure izenean.</string>
     <string name="intro_device_title">Gailu honetan geratzen da</string>
     <string name="intro_device_body">Harpidetzak, taldeak, atsegin dut-ak eta gordetako argitalpenak telefono honetako datu-base batean baino ez daude. Jarraitzailerik ez.</string>
+    <string name="intro_device_body_desktop">Harpidetzak, taldeak, atsegin dut-ak eta gordetako argitalpenak ordenagailu honetako datu-base batean baino ez daude. Jarraitzailerik ez.</string>
     <string name="intro_appearance_title">Aukeratu itxura bat</string>
     <string name="intro_appearance_body">Argia, ilundua edo argirik gabe, azentu-kolore batekin. «Sistema» zure telefonoari jarraitzen dio. Aldatu noiznahi ezarpenetan.</string>
+    <string name="intro_appearance_body_desktop">Argia, ilundua edo argirik gabe, azentu-kolore batekin. «Sistema» zure mahaigainari jarraitzen dio. Aldatu noiznahi ezarpenetan.</string>
     <string name="intro_account_title">Gehitu X kontu bat</string>
     <string name="intro_account_caption">Konturik gabe X-ek eskaera gehienak baztertzen ditu; argitalpenak baino errore gehiago espero.</string>
     <string name="intro_not_now">Orain ez</string>
@@ -373,7 +375,9 @@
     </plurals>
     <string name="intro_illustration_orbit">Iturrien logoak XTA markaren inguruan biraka</string>
     <string name="intro_illustration_phone">Argitalpenak, atsegin dut-ak eta gordetako elementuak telefono baten barruan</string>
+    <string name="intro_illustration_phone_desktop">Argitalpenak, atsegin dut-ak eta gordetako elementuak ordenagailu honetan</string>
     <string name="intro_illustration_flow">Argitalpenak X-etik zure telefonora doaz, inoiz ez atzera</string>
+    <string name="intro_illustration_flow_desktop">Argitalpenak X-etik zure ordenagailura doaz, inoiz ez atzera</string>
     <string name="intro_page_of">Orria %1$d / %2$d</string>
     <string name="settings_desktop_notifications">Mahaigaineko jakinarazpenak</string>
     <string name="settings_desktop_notifications_description">Jakinarazi deskarga bat amaitzen denean beste leiho batean zaudenean</string>
