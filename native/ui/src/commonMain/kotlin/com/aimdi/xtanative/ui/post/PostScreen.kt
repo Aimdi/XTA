@@ -410,7 +410,7 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
     }
     val article = remember(shown) { ArticleLayout.fullArticle(shown) }
     val picture = rememberPostPicture()
-    Column(Modifier.fillMaxWidth().keyedPost(keys).recordedIn(picture).padding(horizontal = 16.dp, vertical = 12.dp)) {
+    Column(Modifier.fillMaxWidth().keyedPost(keys, shown.id).recordedIn(picture).padding(horizontal = 16.dp, vertical = 12.dp)) {
         // A right-click on the author line opens the ⋯ menu; the text under it keeps the desktop's own copy menu.
         Row(
             Modifier.onSecondaryClick {

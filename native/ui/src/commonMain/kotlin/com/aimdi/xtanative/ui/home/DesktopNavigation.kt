@@ -320,19 +320,41 @@ class DesktopActions(
 
     internal fun addPost(post: KeyedPost) {
         posts += post
+        if (lostMark != null && post.spot == lostMark) markedPost = post
     }
 
     internal fun removePost(post: KeyedPost) {
         posts -= post
-        if (markedPost === post) markedPost = null
+        if (markedPost === post) loseMark()
     }
+
+    private var mark: KeyedPost? by mutableStateOf(null)
 
     /**
      * The post a step of j or k landed on, marked while the keyboard reads
      * the list; null once the pointer moves or the list moves otherwise.
      */
-    var markedPost: KeyedPost? by mutableStateOf(null)
-        private set
+    var markedPost: KeyedPost?
+        get() = mark
+        private set(value) {
+            mark = value
+            lostMark = null
+        }
+
+    /**
+     * Where the post marked was ([KeyedPost.spot]) when its screen went away
+     * under another (a post opened from it): drawn there again on the way
+     * back, it is marked again, as the list is back where it was. Forgotten
+     * once anything else is marked or unmarked.
+     */
+    private var lostMark: Any? = null
+
+    /** The marked post's screen going: unmarked, but marked again when it comes back ([lostMark]). */
+    private fun loseMark() {
+        val spot = markedPost?.spot
+        markedPost = null
+        lostMark = spot
+    }
 
     /**
      * The post the reading keys are on: the one j or k last landed on while
@@ -455,6 +477,8 @@ class DesktopActions(
     internal fun takeColumns(owner: Any, order: () -> List<Any>) {
         columnsOwner = owner
         columnOrder = order
+        // Back on a page whose posts stayed drawn while it was covered: the one marked before is marked again.
+        lostMark?.let { spot -> posts.firstOrNull { it.spot == spot }?.let { markedPost = it } }
     }
 
     internal fun releaseColumns(owner: Any) {
@@ -463,7 +487,7 @@ class DesktopActions(
         columnOrder = { emptyList() }
         chosenColumn = null
         opened = null
-        markedPost = null
+        loseMark()
     }
 
     /** The column just opened beside the others ([readOpened]); null once the pointer or Ctrl+← and Ctrl+→ go elsewhere. */
@@ -645,7 +669,7 @@ private fun Modifier.keyMoved(list: ScrollableState): Modifier {
 }
 
 /** The column of a page of columns ([ReadColumn]) that what is drawn here is in; null outside one. */
-private val LocalReadColumn = staticCompositionLocalOf<Any?> { null }
+internal val LocalReadColumn = staticCompositionLocalOf<Any?> { null }
 
 /**
  * [content] as the column [key] of a page of columns side by side

@@ -96,4 +96,59 @@ class MarkedPostTest {
         val fresh = DesktopActions()
         assertFalse(fresh.tabToMarked(), "no mark at all")
     }
+
+    @Test
+    fun theMarkIsBackOnThePostOnceItsScreenComesBack() {
+        val actions = DesktopActions()
+        val list = LazyListState()
+        actions.addList(list)
+        val page = Any()
+        actions.takeColumns(page) { emptyList() }
+        val marked = KeyedPost(list, "home/7") { keys }.also { it.place = Drawn }
+        actions.addPost(marked)
+        actions.markPost(marked)
+        // A post opened over Home: Home goes, its posts with it.
+        actions.releaseColumns(page)
+        actions.removePost(marked)
+        assertNull(actions.markedPost)
+        // Back: another post comes first, then the one marked, drawn anew.
+        actions.addPost(KeyedPost(list, "home/8") { keys }.also { it.place = Drawn })
+        assertNull(actions.markedPost)
+        val again = KeyedPost(list, "home/7") { keys }.also { it.place = Drawn }
+        actions.addPost(again)
+        assertSame(again, actions.markedPost)
+    }
+
+    @Test
+    fun aPageThatStayedDrawnGetsItsMarkBackAsItResumes() {
+        val (actions, _, marked) = columns()
+        val spotted = KeyedPost(marked.list, "deck/1") { keys }.also { it.place = Drawn }
+        actions.addPost(spotted)
+        actions.markPost(spotted)
+        val page = Any()
+        actions.takeColumns(page) { listOf("left", "right") }
+        actions.releaseColumns(page)
+        assertNull(actions.markedPost)
+        actions.takeColumns(page) { listOf("left", "right") }
+        assertSame(spotted, actions.markedPost)
+    }
+
+    @Test
+    fun aMarkMadeElsewhereMeanwhileIsNotUndone() {
+        val actions = DesktopActions()
+        val list = LazyListState()
+        val page = Any()
+        actions.takeColumns(page) { emptyList() }
+        val marked = KeyedPost(list, "home/7") { keys }.also { it.place = Drawn }
+        actions.addPost(marked)
+        actions.markPost(marked)
+        actions.releaseColumns(page)
+        // On the opened post, j marked a reply: the way back marks nothing of Home's.
+        val reply = KeyedPost(list, "post/9") { keys }.also { it.place = Drawn }
+        actions.addPost(reply)
+        actions.markPost(reply)
+        actions.removePost(reply)
+        actions.addPost(KeyedPost(list, "home/7") { keys }.also { it.place = Drawn })
+        assertNull(actions.markedPost)
+    }
 }

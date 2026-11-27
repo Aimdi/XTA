@@ -21,6 +21,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 
 /**
  * What the desktop's keys do to the post they are on ([DesktopKeys.action]):
@@ -35,8 +36,12 @@ class PostKeys(
     val menu: () -> Unit,
 )
 
-/** A post drawn in [list], where it is laid out ([place]) and what the keys do to it ([keys]). */
-class KeyedPost internal constructor(internal val list: LazyListState, keys: () -> PostKeys) {
+/**
+ * A post drawn in [list], where it is laid out ([place]) and what the keys do
+ * to it ([keys]); [spot] names it on its screen and in its column, so the
+ * same post drawn there anew (back from a post opened over it) is known again.
+ */
+class KeyedPost internal constructor(internal val list: LazyListState, internal val spot: Any? = null, keys: () -> PostKeys) {
     private val latest = keys
     internal var place: LayoutCoordinates? = null
 
@@ -57,17 +62,18 @@ fun ReadList(list: LazyListState, content: @Composable () -> Unit) {
 }
 
 /**
- * Lets the desktop's keys act on the post drawn here with [keys] once the
- * reading keys are on it ([DesktopActions.currentPost]), and marks it,
+ * Lets the desktop's keys act on the post [id] drawn here with [keys] once
+ * the reading keys are on it ([DesktopActions.currentPost]), and marks it,
  * faintly, after j or k land on it. Nothing off the desktop, or outside a
  * list the keys move ([ReadList]).
  */
 @Composable
-fun Modifier.keyedPost(keys: PostKeys): Modifier {
+fun Modifier.keyedPost(keys: PostKeys, id: String): Modifier {
     val actions = LocalDesktopActions.current ?: return this
     val list = LocalReadList.current ?: return this
     val latest by rememberUpdatedState(keys)
-    val post = remember(list) { KeyedPost(list) { latest } }
+    val spot = listOf(LocalViewModelStoreOwner.current, LocalReadColumn.current, id)
+    val post = remember(list, spot) { KeyedPost(list, spot) { latest } }
     DisposableEffect(actions, post) {
         actions.addPost(post)
         onDispose { actions.removePost(post) }

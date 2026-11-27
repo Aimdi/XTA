@@ -178,7 +178,7 @@ fun PostCard(
     Column(
         modifier
             .fillMaxWidth()
-            .keyedPost(keys)
+            .keyedPost(keys, shown.id)
             .onSecondaryClick {
                 menuAtPost = false
                 menu = true
