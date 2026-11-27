@@ -98,8 +98,10 @@ data class SavedWindow(val width: Int, val height: Int, val maximized: Boolean =
         private const val GROUP = "window"
 
         /** The window [text] keeps; a size missing or out of range is [FIRST]'s, and an unreadable file is [FIRST]. */
-        fun parse(text: String?): SavedWindow {
-            val values = text?.let(::windowGroup) ?: return FIRST
+        fun parse(text: String?): SavedWindow = text?.let { groups(it)[GROUP] }?.let(::of) ?: FIRST
+
+        /** The window a key file's group of [values] keeps, as [parse] reads one. */
+        fun of(values: Map<String, String>): SavedWindow {
             val width = values["width"]?.toIntOrNull()
             val height = values["height"]?.toIntOrNull()
             val sized = width != null && height != null && width in 1..MAX_SIDE && height in 1..MAX_SIDE
@@ -115,16 +117,18 @@ data class SavedWindow(val width: Int, val height: Int, val maximized: Boolean =
             )
         }
 
-        private fun windowGroup(text: String): Map<String, String> {
+        /** Each group of a key file's [text] by its name, with its keys and values; lines outside a group are skipped. */
+        fun groups(text: String): Map<String, Map<String, String>> {
             var group: String? = null
-            val values = HashMap<String, String>()
+            val groups = LinkedHashMap<String, HashMap<String, String>>()
             text.lineSequence().map { it.trim() }.forEach { line ->
+                val current = group
                 when {
-                    line.startsWith("[") && line.endsWith("]") -> group = line.substring(1, line.length - 1)
-                    group == GROUP && '=' in line -> values[line.substringBefore('=').trim()] = line.substringAfter('=').trim()
+                    line.startsWith("[") && line.endsWith("]") -> group = line.substring(1, line.length - 1).also { groups.getOrPut(it) { HashMap() } }
+                    current != null && '=' in line -> groups.getValue(current)[line.substringBefore('=').trim()] = line.substringAfter('=').trim()
                 }
             }
-            return values
+            return groups
         }
     }
 }

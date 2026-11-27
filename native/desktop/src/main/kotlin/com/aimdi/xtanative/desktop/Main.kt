@@ -17,9 +17,11 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isAltPressed
 import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalUriHandler
@@ -50,6 +52,7 @@ import com.aimdi.xtanative.ui.chrome.ClosingWrites
 import com.aimdi.xtanative.ui.chrome.CommandLine
 import com.aimdi.xtanative.ui.chrome.Diagnostics
 import com.aimdi.xtanative.ui.chrome.InstanceMessage
+import com.aimdi.xtanative.ui.chrome.KeptWindowsFile
 import com.aimdi.xtanative.ui.chrome.SavedWindow
 import com.aimdi.xtanative.ui.chrome.SavedWindowFile
 import com.aimdi.xtanative.ui.chrome.ScreenArea
@@ -139,12 +142,17 @@ fun main(args: Array<String>) {
     // Back where it was left, while a screen still shows enough of it there; else where the desktop puts a new window.
     val saved = windowFile.read().placedOn(screenAreas())
     val kept = AtomicReference(saved)
+    // The windows left open beside it at the last quit, opened again once the main window shows (not while it starts in the tray).
+    val keptWindows = KeptWindowsFile(File(files, "windows.ini"))
+    val unopened = AtomicReference(keptWindows.read())
+    val keepWindows = { keptWindows.write(DesktopWindows.keptOpen() + unopened.get()) }
     // The app is made and started on a thread of its own while the window's toolkit starts on this one: neither waits for the other.
     val starting = FutureTask { desktopApp(files).also { it.start() } }
     Thread(starting, "app-start").start()
     // The window's place and the writes under way (the reading place), once the app ends: quit, or SIGTERM at logout while in the tray.
     val closing = ClosingWrites {
         windowFile.write(kept.get())
+        keepWindows()
         if (starting.isDone) runBlocking { withTimeoutOrNull(2_000) { starting.started().graph.awaitWrites() } }
     }.onShutdown()
     SingletonImageLoader.setSafe { context -> appImageLoader(context) }
@@ -171,6 +179,7 @@ fun main(args: Array<String>) {
         var fronts by remember { mutableStateOf(0) }
         val quit = {
             windowFile.write(kept.get())
+            keepWindows()
             exitApplication()
         }
         // A window that breaks is written down as a crash and quits the app ([WindowCrash]), not hidden to the tray behind Swing's dialog.
@@ -183,6 +192,11 @@ fun main(args: Array<String>) {
             }
         }
         LaunchedEffect(visible) { tray.windowShown(visible) }
+        LaunchedEffect(visible) {
+            if (!visible) return@LaunchedEffect
+            val areas = screenAreas()
+            DesktopWindows.restore(unopened.getAndSet(emptyList()).map { it.copy(bounds = it.bounds?.placedOn(areas)) })
+        }
         LaunchedEffect(Unit) {
             trayClicks.collect { action ->
                 when {
@@ -235,6 +249,7 @@ fun main(args: Array<String>) {
                 onPreviewKeyEvent = { event ->
                     // Esc while a list's item is dragged puts it back, before anything else hears it ([ReorderDrags]).
                     if (event.type == KeyEventType.KeyDown && event.key == Key.Escape && ReorderDrags.escape()) return@Window true
+                    if (event.reopensWindow()) return@Window true.also { DesktopWindows.reopen() }
                     val f11 = event.type == KeyEventType.KeyDown && event.key == Key.F11 && !event.isAltPressed && !event.isCtrlPressed
                     if (f11) {
                         val (placement, back) = WindowFullscreen.toggled(state.placement, beforeFullscreen)
@@ -312,7 +327,13 @@ fun main(args: Array<String>) {
 private fun ApplicationScope.RouteWindow(opened: OpenedWindow, app: DesktopApp, name: String, uiScale: Double, quit: () -> Unit, onQuitKey: () -> Unit) {
     val secondary = remember(opened) { SecondaryWindow(opened.route) { DesktopWindows.close(opened) } }
     val part by secondary.titlePart.collectAsState()
-    val state = rememberWindowState(size = remember { postWindowSize(uiScale) })
+    // Where it was left, when it comes back (Ctrl+Shift+T, or at start); else a reading column's size where the desktop puts it.
+    val bounds = opened.bounds
+    val state = rememberWindowState(
+        placement = if (bounds?.maximized == true) WindowPlacement.Maximized else WindowPlacement.Floating,
+        size = remember { bounds?.let { DpSize(it.width.dp, it.height.dp) } ?: postWindowSize(uiScale) },
+        position = bounds?.let(::savedPosition) ?: WindowPosition.PlatformDefault,
+    )
     Window(
         onCloseRequest = { if (AppQuit.taken()) quit() else secondary.close() },
         title = WindowTitles.title(part, name),
@@ -320,16 +341,29 @@ private fun ApplicationScope.RouteWindow(opened: OpenedWindow, app: DesktopApp, 
         state = state,
         onPreviewKeyEvent = { event ->
             if (event.type == KeyEventType.KeyDown && event.key == Key.Q && event.isCtrlPressed && !event.isAltPressed) onQuitKey()
+            if (event.reopensWindow()) return@Window true.also { DesktopWindows.reopen() }
             false
         },
     ) {
         LaunchedEffect(uiScale) { window.minimumSize = minimumSize(uiScale) }
+        // Its size and place as they change, for Ctrl+Shift+T and the next start to open it there again.
+        LaunchedEffect(state) {
+            var placed = bounds ?: SavedWindow(state.size.width.value.roundToInt(), state.size.height.value.roundToInt())
+            snapshotFlow { Triple(state.placement, state.size, state.position) }.collect { (placement, size, position) ->
+                val (x, y) = if (position.isSpecified) position.x.value.roundToInt() to position.y.value.roundToInt() else null to null
+                placed = placed.after(placement, size.width.value.roundToInt(), size.height.value.roundToInt(), x, y)
+                DesktopWindows.placed(opened, placed)
+            }
+        }
         CompositionLocalProvider(LocalUriHandler provides SystemBrowser) {
             XtaNativeContent(app.graph, app.plugins, secondary)
             WindowCrash.TestCrash("post")
         }
     }
 }
+
+/** Ctrl+Shift+T: the window closed last opens again, as a browser's closed tab does. */
+private fun KeyEvent.reopensWindow(): Boolean = type == KeyEventType.KeyDown && key == Key.T && isCtrlPressed && isShiftPressed && !isAltPressed
 
 /** A post window's size at the interface size [scale] ([SavedWindow.postWindow]), on the primary screen's work area. */
 private fun postWindowSize(scale: Double): DpSize {
