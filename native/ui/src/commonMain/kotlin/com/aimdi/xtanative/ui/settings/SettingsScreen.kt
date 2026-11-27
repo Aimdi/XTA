@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
+import com.aimdi.xtanative.store.settings.StocksPrefs
 import com.aimdi.xtanative.store.settings.DesktopPrefs
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.MediaPrefs
@@ -310,6 +311,7 @@ private val INDEX = listOf(
     Indexed(SettingsSection.POSTS, PostsPrefs.includeReplies.key, Res.string.settings_include_replies, Res.string.settings_feed_default_description),
     Indexed(SettingsSection.POSTS, PostsPrefs.includeReposts.key, Res.string.settings_include_reposts, Res.string.settings_feed_default_description),
     Indexed(SettingsSection.POSTS, PostsPrefs.threadedReplies.key, Res.string.settings_threaded_replies, Res.string.settings_threaded_replies_description),
+    Indexed(SettingsSection.POSTS, StocksPrefs.tickerChart.key, Res.string.settings_ticker_chart, Res.string.settings_ticker_chart_description),
     Indexed(SettingsSection.POSTS, PostsPrefs.collapseReposts.key, Res.string.settings_collapse_boosts, Res.string.settings_collapse_boosts_description),
     Indexed(SettingsSection.POSTS, PostsPrefs.zenMode.key, Res.string.settings_zen_mode, GestureWording.zenModeDescription),
     Indexed(SettingsSection.POSTS, PostsPrefs.calmMode.key, Res.string.settings_calm_mode, Res.string.settings_calm_mode_description),
@@ -339,7 +341,6 @@ private val INDEX = listOf(
     Indexed(SettingsSection.ACCESSIBILITY, DesktopPrefs.uiScale.key, Res.string.settings_interface_scale, Res.string.settings_interface_scale_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.disableAnimations.key, Res.string.settings_disable_animations, Res.string.settings_disable_animations_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.haptics.key, Res.string.settings_haptics, Res.string.settings_haptics_description),
-    Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.tickerChart.key, Res.string.settings_ticker_chart, Res.string.settings_ticker_chart_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.doubleTapLike.key, GestureWording.doubleTapLike, GestureWording.doubleTapLikeDescription),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.swipeBackAnywhere.key, GestureWording.swipeBackAnywhere, GestureWording.swipeBackAnywhereDescription),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.swipeBackTilt.key, GestureWording.swipeBackTilt, GestureWording.swipeBackTiltDescription),

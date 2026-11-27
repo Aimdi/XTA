@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -62,9 +61,11 @@ import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.ProfileTab
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.store.settings.StocksPrefs
 import com.aimdi.xtanative.store.settings.ThemeAccent
 import com.aimdi.xtanative.store.settings.ThemeBackground
 import com.aimdi.xtanative.store.settings.ThemePrefs
+import com.aimdi.xtanative.ui.media.ReaderIcons
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login
@@ -76,7 +77,6 @@ import com.aimdi.xtanative.ui.theme.Contrast
 import com.aimdi.xtanative.ui.theme.XLook
 import com.aimdi.xtanative.ui.theme.XLookTokens
 import com.aimdi.xtanative.ui.theme.systemAccent
-import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
@@ -282,6 +282,8 @@ internal fun PostsSettings(title: String, vm: SettingsViewModel, focus: String?,
             PrefSwitch(settings, PostsPrefs.hideUnrelatedPostWarnings, stringResource(Res.string.settings_unrelated_warnings), stringResource(Res.string.settings_unrelated_warnings_description), vm, focus)
             PrefSwitch(settings, PostsPrefs.subscribeBadge, stringResource(Res.string.settings_subscribe_badge), stringResource(Res.string.settings_subscribe_badge_description), vm, focus)
             PrefSwitch(settings, PostsPrefs.threadedReplies, stringResource(Res.string.settings_threaded_replies), stringResource(Res.string.settings_threaded_replies_description), vm, focus)
+            // A cashtag's ticker opens from a post: its chart is the posts' setting, not an accessibility one.
+            PrefSwitch(settings, StocksPrefs.tickerChart, stringResource(Res.string.settings_ticker_chart), stringResource(Res.string.settings_ticker_chart_description), vm, focus)
 
             SettingsHeader(stringResource(Res.string.settings_layout_feed))
             PrefSwitch(settings, PostsPrefs.collapseReposts, stringResource(Res.string.settings_collapse_boosts), stringResource(Res.string.settings_collapse_boosts_description), vm, focus)
@@ -595,25 +597,25 @@ internal fun AccessibilitySettings(title: String, vm: SettingsViewModel, focus: 
     var voices by rememberSaveable { mutableStateOf(false) }
     SettingsPage(title, onBack) { padding ->
         SettingsList(padding) {
+            // Both sizes as the reader's language writes a percentage, the text's from the interface's smallest.
+            val locale = Locale.forLanguageTag(currentLanguage())
             SliderRow(
                 stringResource(Res.string.settings_text_scale),
                 stringResource(Res.string.settings_text_scale_description),
                 settings[AccessibilityPrefs.textScale].toFloat(),
                 SettingsChoices.TEXT_SCALE_MIN..SettingsChoices.TEXT_SCALE_MAX,
                 SettingsChoices.TEXT_SCALE_STEPS,
-                label = { String.format(Locale.ROOT, "%.2f", it) },
+                label = { SettingsChoices.percent(it.toDouble(), locale) },
                 focused = focus == AccessibilityPrefs.textScale.key,
             ) { vm.set(AccessibilityPrefs.textScale, (it * 100).roundToInt() / 100.0) }
             if (isDesktop) {
                 // As a browser's zoom: everything in the windows, text included, a preset larger or smaller (Ctrl+Alt with + − 0).
-                val language = currentLanguage()
-                val percent = remember(language) { NumberFormat.getPercentInstance(Locale.forLanguageTag(language)) }
                 ChoiceRow(
                     stringResource(Res.string.settings_interface_scale),
                     stringResource(Res.string.settings_interface_scale_description),
                     DesktopPrefs.UI_SCALES,
                     settings[DesktopPrefs.uiScale],
-                    label = { percent.format(it) },
+                    label = { SettingsChoices.percent(it, locale) },
                     focused = focus == DesktopPrefs.uiScale.key,
                 ) { vm.set(DesktopPrefs.uiScale, it) }
             }
@@ -621,7 +623,6 @@ internal fun AccessibilitySettings(title: String, vm: SettingsViewModel, focus: 
             if (!isDesktop) {
                 PrefSwitch(settings, AccessibilityPrefs.haptics, stringResource(Res.string.settings_haptics), stringResource(Res.string.settings_haptics_description), vm, focus)
             }
-            PrefSwitch(settings, AccessibilityPrefs.tickerChart, stringResource(Res.string.settings_ticker_chart), stringResource(Res.string.settings_ticker_chart_description), vm, focus)
             PrefSwitch(settings, AccessibilityPrefs.doubleTapLike, stringResource(GestureWording.doubleTapLike), stringResource(GestureWording.doubleTapLikeDescription), vm, focus)
             PrefSwitch(settings, AccessibilityPrefs.swipeBackAnywhere, stringResource(GestureWording.swipeBackAnywhere), stringResource(GestureWording.swipeBackAnywhereDescription), vm, focus)
             PrefSwitch(settings, AccessibilityPrefs.swipeBackTilt, stringResource(GestureWording.swipeBackTilt), stringResource(GestureWording.swipeBackTiltDescription), vm, focus)
@@ -629,7 +630,7 @@ internal fun AccessibilitySettings(title: String, vm: SettingsViewModel, focus: 
             NavigationRow(
                 stringResource(Res.string.settings_speech),
                 stringResource(Res.string.settings_speech_description),
-                Icons.Outlined.Notifications,
+                ReaderIcons.RecordVoiceOverOutlined,
             ) { voices = true }
         }
     }

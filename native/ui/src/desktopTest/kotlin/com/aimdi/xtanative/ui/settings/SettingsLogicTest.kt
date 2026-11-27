@@ -277,3 +277,17 @@ class PlatformSettingsTest {
         assertTrue(PlatformSettings.shown(ThemePrefs.hideNavigationOnScroll.key, desktop = true, framed = true))
     }
 }
+
+class TextSizeTest {
+    @Test
+    fun textSizeReadsAsTheInterfaceScaleDoesAndStartsWhereItStarts() {
+        assertEquals("100 %", SettingsChoices.percent(1.0, java.util.Locale.GERMAN).replace(' ', ' '), "German writes a space, not 1.00")
+        assertEquals("125%", SettingsChoices.percent(1.25, java.util.Locale.ENGLISH))
+        assertEquals("85%", SettingsChoices.percent(0.85f.toDouble(), java.util.Locale.ENGLISH), "a float step still reads whole")
+        assertEquals(com.aimdi.xtanative.store.settings.DesktopPrefs.UI_SCALES.first().toFloat(), SettingsChoices.TEXT_SCALE_MIN)
+        val steps = Math.round((SettingsChoices.TEXT_SCALE_MAX - SettingsChoices.TEXT_SCALE_MIN) / 0.05f) - 1
+        assertEquals(steps, SettingsChoices.TEXT_SCALE_STEPS, "stops every 5 %")
+        val stored = Settings().with(com.aimdi.xtanative.store.settings.AccessibilityPrefs.textScale, 0.8)
+        assertEquals(0.8, stored[com.aimdi.xtanative.store.settings.AccessibilityPrefs.textScale], "the store keeps the slider's smallest")
+    }
+}

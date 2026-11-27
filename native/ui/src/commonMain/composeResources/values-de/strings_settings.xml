@@ -168,7 +168,7 @@
     <string name="settings_hide_navigation">Leisten oben und unten beim Scrollen ausblenden</string>
     <string name="settings_hide_status_bar">Statusleiste ausblenden</string>
     <string name="settings_hide_status_bar_description">Den ganzen Bildschirm nutzen: Uhrzeit, Akku und Empfang oben werden ausgeblendet. Vom oberen Rand nach unten wischen, um sie kurz zu sehen.</string>
-    <string name="settings_text_scale">Textskalierungsfaktor</string>
+    <string name="settings_text_scale">Textgröße</string>
     <string name="settings_text_scale_description">Schriftgröße in der App anpassen</string>
     <string name="settings_interface_scale">Größe der Oberfläche</string>
     <string name="settings_interface_scale_description">Text, Schaltflächen und Bilder gemeinsam vergrößern oder verkleinern</string>

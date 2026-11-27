@@ -210,11 +210,11 @@ object MediaPrefs : PrefSection() {
 
 /** Settings › Accessibility, gestures among them. */
 object AccessibilityPrefs : PrefSection() {
-    val textScale = real("accessibility.text_scale_factor", 1.0, range = 1.0..1.5)
+    val textScale = real("accessibility.text_scale_factor", 1.0, range = 0.8..1.5)
     val disableAnimations = flag("accessibility.disable_animations", false)
     val haptics = flag("accessibility.haptic_feedback", true)
 
-    /** The chart on a ticker screen, which Settings › Accessibility also offers: Stocks' own ([StocksPrefs.tickerChart]). */
+    /** The chart on a ticker screen, which Settings › Posts also offers: Stocks' own ([StocksPrefs.tickerChart]). */
     val tickerChart: Pref<Boolean> get() = StocksPrefs.tickerChart
 
     /** Off by default: a double-tap handler makes every single tap wait for a second. */

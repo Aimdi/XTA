@@ -14,6 +14,7 @@ import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import com.aimdi.xtanative.store.settings.XtaPrefs
+import java.text.NumberFormat
 import java.util.Locale
 
 /** The sections of XTA's settings, each a screen at `settings/<id>`. */
@@ -136,10 +137,13 @@ object SettingsChoices {
     val prefetchSeconds = listOf(0, 1, 5, 15, 30, 60)
     val downloadConcurrency = listOf(1, 2, 3, 4)
 
-    /** The text size slider: 1.0 to 1.5 in ten steps. */
-    const val TEXT_SCALE_MIN = 1.0f
+    /** The text size slider: 80 % to 150 % in steps of 5 %, from the interface scale's smallest ([com.aimdi.xtanative.store.settings.DesktopPrefs.UI_SCALES]). */
+    const val TEXT_SCALE_MIN = 0.8f
     const val TEXT_SCALE_MAX = 1.5f
-    const val TEXT_SCALE_STEPS = 9
+    const val TEXT_SCALE_STEPS = 13
+
+    /** A scale (1.0, 1.25) as [locale] writes a percentage ("100 %" in German, "125%" in English), as the text and interface sizes are shown. */
+    fun percent(scale: Double, locale: Locale): String = NumberFormat.getPercentInstance(locale).format(scale)
 
     /**
      * The feeds the Default feed tab offers: Following, For you, then the
