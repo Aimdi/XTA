@@ -151,4 +151,31 @@ class SearchDatesTest {
         assertEquals(2, AdvancedSearchLayout.columns(AdvancedSearchLayout.TWO_COLUMNS_FROM.toFloat()))
         assertEquals(2, AdvancedSearchLayout.columns(AdvancedSearchLayout.MAX_WIDTH.toFloat()))
     }
+
+    @Test
+    fun theKeysStepThroughTheDaysAsACalendarDoes() {
+        val today = LocalDate.of(2026, 11, 27)
+        val day = LocalDate.of(2026, 3, 31)
+        fun moved(step: SearchDates.Step) = SearchDates.moved(day, step, today)
+        assertEquals(LocalDate.of(2026, 3, 30), moved(SearchDates.Step.PREVIOUS_DAY))
+        assertEquals(LocalDate.of(2026, 4, 1), moved(SearchDates.Step.NEXT_DAY))
+        assertEquals(LocalDate.of(2026, 3, 24), moved(SearchDates.Step.PREVIOUS_WEEK))
+        assertEquals(LocalDate.of(2026, 4, 7), moved(SearchDates.Step.NEXT_WEEK))
+        assertEquals(LocalDate.of(2026, 2, 28), moved(SearchDates.Step.PREVIOUS_MONTH), "to the shorter month's last day")
+        assertEquals(LocalDate.of(2026, 4, 30), moved(SearchDates.Step.NEXT_MONTH))
+        assertEquals(LocalDate.of(2025, 3, 31), moved(SearchDates.Step.PREVIOUS_YEAR))
+        assertEquals(LocalDate.of(2026, 3, 1), moved(SearchDates.Step.MONTH_START))
+        assertEquals(day, moved(SearchDates.Step.MONTH_END))
+        assertEquals(SearchDates.millisOf(LocalDate.of(2026, 3, 1)), SearchDates.monthOf(day))
+    }
+
+    @Test
+    fun theKeysStopAtTheDaysThePickerOffers() {
+        val today = LocalDate.of(2026, 11, 27)
+        assertEquals(today, SearchDates.moved(today, SearchDates.Step.NEXT_DAY, today), "no day after today")
+        assertEquals(today, SearchDates.moved(today.minusDays(3), SearchDates.Step.NEXT_WEEK, today))
+        assertEquals(today, SearchDates.moved(today, SearchDates.Step.MONTH_END, today))
+        assertEquals(SearchDates.FIRST, SearchDates.moved(SearchDates.FIRST, SearchDates.Step.PREVIOUS_DAY, today), "none before X's first")
+        assertEquals(SearchDates.FIRST, SearchDates.moved(SearchDates.FIRST.plusMonths(2), SearchDates.Step.PREVIOUS_YEAR, today))
+    }
 }

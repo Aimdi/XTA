@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.search
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -55,13 +56,34 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.foundation.focusGroup
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isAltPressed
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.isMetaPressed
+import androidx.compose.ui.input.key.isShiftPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -533,6 +555,15 @@ private fun DateRow(label: String, value: LocalDate?, onChange: (LocalDate?) -> 
     }
 }
 
+/**
+ * The picker of a day, worked by the keys as a desktop's calendar is: the
+ * days take the keyboard as it opens, ← → move the picked day by one, ↑ ↓
+ * by a week, Page Up and Down by a month (with Shift a year), Home and End
+ * to the month's ends ([SearchDates.moved]), the month shown following;
+ * Enter takes the day. The days are one stop of Tab, marked by the
+ * keyboard's ring, then Cancel and OK; the month's arrows and the year list
+ * are the pointer's.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DayPicker(value: LocalDate?, onPick: (LocalDate) -> Unit, onDismiss: () -> Unit) {
@@ -548,16 +579,89 @@ private fun DayPicker(value: LocalDate?, onPick: (LocalDate) -> Unit, onDismiss:
             }
         },
     )
+    val pick = { state.selectedDateMillis?.let { onPick(SearchDates.dayOf(it)) } ?: onDismiss() }
+    val days = remember { FocusRequester() }
+    val cancel = remember { FocusRequester() }
+    val confirm = remember { FocusRequester() }
+    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    var daysFocused by remember { mutableStateOf(false) }
+    val ring = MaterialTheme.colorScheme.primary
     DatePickerDialog(
         onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = { state.selectedDateMillis?.let { onPick(SearchDates.dayOf(it)) } ?: onDismiss() }) {
-                Text(stringResource(Res.string.discover_ok))
-            }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.discover_cancel)) } },
+        confirmButton = { TextButton(onClick = pick, modifier = Modifier.focusRequester(confirm)) { Text(stringResource(Res.string.discover_ok)) } },
+        dismissButton = { TextButton(onClick = onDismiss, modifier = Modifier.focusRequester(cancel)) { Text(stringResource(Res.string.discover_cancel)) } },
     ) {
-        DatePicker(state = state)
+        Box(
+            Modifier
+                .focusRequester(days)
+                .dialogDefault()
+                .onFocusChanged { daysFocused = it.isFocused }
+                .onPreviewKeyEvent { event ->
+                    val step = dayStep(event, rtl)
+                    when {
+                        step != null -> {
+                            if (event.type == KeyEventType.KeyDown) {
+                                val moved = SearchDates.moved(state.selectedDateMillis?.let(SearchDates::dayOf) ?: today, step, today)
+                                state.selectedDateMillis = SearchDates.millisOf(moved)
+                                state.displayedMonthMillis = SearchDates.monthOf(moved)
+                            }
+                            true
+                        }
+                        event.key == Key.Enter || event.key == Key.NumPadEnter -> {
+                            if (event.type == KeyEventType.KeyDown) pick()
+                            true
+                        }
+                        // Tab leaves the days for the buttons rather than stepping through each day.
+                        event.key == Key.Tab -> {
+                            if (event.type == KeyEventType.KeyDown) runCatching { (if (event.isShiftPressed) confirm else cancel).requestFocus() }
+                            true
+                        }
+                        else -> false
+                    }
+                }
+                .focusable()
+                .drawWithContent {
+                    drawContent()
+                    if (daysFocused) {
+                        val inset = DAYS_RING_INSET.toPx()
+                        val radius = DAYS_RING_RADIUS.toPx()
+                        drawRoundRect(
+                            ring,
+                            Offset(inset, inset),
+                            Size(size.width - 2 * inset, size.height - 2 * inset),
+                            CornerRadius(radius, radius),
+                            style = Stroke(DAYS_RING_WIDTH.toPx()),
+                        )
+                    }
+                },
+        ) {
+            // Tab or Shift+Tab coming back from the buttons lands on the days as a whole, not on one day's button.
+            Box(Modifier.focusProperties { onEnter = { runCatching { days.requestFocus() } } }.focusGroup()) {
+                DatePicker(state = state)
+            }
+        }
+    }
+}
+
+private val DAYS_RING_INSET = 6.dp
+private val DAYS_RING_RADIUS = 20.dp
+private val DAYS_RING_WIDTH = 2.dp
+
+/** The step through the days [event]'s key takes ([SearchDates.Step]); ← and → swapped in a right-to-left language. Null for any other key. */
+private fun dayStep(event: KeyEvent, rtl: Boolean): SearchDates.Step? {
+    if (event.isAltPressed || event.isCtrlPressed || event.isMetaPressed) return null
+    val back = if (rtl) SearchDates.Step.NEXT_DAY else SearchDates.Step.PREVIOUS_DAY
+    val on = if (rtl) SearchDates.Step.PREVIOUS_DAY else SearchDates.Step.NEXT_DAY
+    return when (event.key) {
+        Key.DirectionLeft -> back
+        Key.DirectionRight -> on
+        Key.DirectionUp -> SearchDates.Step.PREVIOUS_WEEK
+        Key.DirectionDown -> SearchDates.Step.NEXT_WEEK
+        Key.PageUp -> if (event.isShiftPressed) SearchDates.Step.PREVIOUS_YEAR else SearchDates.Step.PREVIOUS_MONTH
+        Key.PageDown -> if (event.isShiftPressed) SearchDates.Step.NEXT_YEAR else SearchDates.Step.NEXT_MONTH
+        Key.MoveHome -> SearchDates.Step.MONTH_START
+        Key.MoveEnd -> SearchDates.Step.MONTH_END
+        else -> null
     }
 }
 
