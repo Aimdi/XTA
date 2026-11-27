@@ -58,6 +58,9 @@ import com.aimdi.xtanative.ui.theme.MouseRipples
 private val MenuMinWidth = 200.dp
 private val MenuMaxWidth = 360.dp
 
+/** Where a menu stands when its caller places it (the video's ⋮ menu, over its button); null for the pointer or the post. */
+internal val LocalMenuPosition = androidx.compose.runtime.staticCompositionLocalOf<PopupPositionProvider?> { null }
+
 /**
  * A menu the keyboard opened: at the top of the post's end, where its ⋯ is,
  * kept [margin] inside the window.
@@ -89,7 +92,7 @@ internal actual fun PostMenuSurface(onDismiss: () -> Unit, content: @Composable 
     val focus = remember { arrayOfNulls<FocusManager>(1) }
     val modes = remember { arrayOfNulls<InputModeManager>(1) }
     Popup(
-        popupPositionProvider = if (LocalMenuAtPost.current) atPost else atPointer,
+        popupPositionProvider = LocalMenuPosition.current ?: if (LocalMenuAtPost.current) atPost else atPointer,
         onDismissRequest = onDismiss,
         properties = PopupProperties(focusable = true),
         onKeyEvent = { event ->

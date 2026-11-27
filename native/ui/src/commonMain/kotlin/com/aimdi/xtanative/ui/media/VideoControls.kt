@@ -14,6 +14,11 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.text.TextStyle
+import com.aimdi.xtanative.ui.post.LocalMenuRowMetrics
+import com.aimdi.xtanative.ui.post.MenuRowMetrics
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +29,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,7 +38,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
@@ -85,11 +88,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.ui.common.IconTip
-import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.RingedFocus
 import com.aimdi.xtanative.ui.common.keyboardFocusRing
-import com.aimdi.xtanative.ui.common.LocalSheetCloser
-import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
 import com.aimdi.xtanative.ui.generated.resources.reader_download
@@ -109,7 +109,6 @@ import com.aimdi.xtanative.ui.generated.resources.video_fullscreen
 import com.aimdi.xtanative.ui.generated.resources.video_fullscreen_exit
 import com.aimdi.xtanative.ui.generated.resources.video_picture_in_picture
 import com.aimdi.xtanative.ui.generated.resources.video_rotate
-import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.theme.keyboardFocusShown
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
@@ -248,7 +247,9 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
                     touch()
                     playback.playOrPause()
                 }
-                BottomBar(state, playback, chrome, touch, onMenu = { sheet = VideoSheet.MORE }, modifier = Modifier.align(Alignment.BottomCenter))
+                BottomBar(state, playback, chrome, touch, onMenu = { sheet = VideoSheet.MORE }, modifier = Modifier.align(Alignment.BottomCenter)) {
+                    VideoMenu(sheet, state, playback, chrome) { sheet = it }
+                }
                 chrome.onClose?.let { close ->
                     Box(Modifier.align(Alignment.TopStart).padding(4.dp)) { ControlButton(Icons.Filled.Close, stringResource(Res.string.close), close) }
                 }
@@ -259,7 +260,6 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
         if (state.qualityFailed) QualityFailed(playback, Modifier.align(Alignment.TopCenter))
         if (state.failed) FailedOverlay(playback)
     }
-    VideoSheets(sheet, state, playback, chrome) { sheet = it }
 }
 
 /** The viewer's controls as they were before full screen came: the mute button in the bar and fit or fill in the menu, clear of the navigation bar. */
@@ -267,9 +267,9 @@ internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifie
 internal fun VideoControls(playback: VideoPlayback, fill: Boolean, onToggleFill: () -> Unit, onDownload: (() -> Unit)?, modifier: Modifier = Modifier) =
     VideoControls(playback, VideoChrome(fullscreen = true, fill = fill, onToggleFill = onToggleFill, onDownload = onDownload), modifier.navigationBarsPadding())
 
-/** The time, then the buttons, over the seek bar; in place, the bar stops short of the mute corner. */
+/** The time, then the buttons, over the seek bar, the ⋮ [menu] at its button; in place, the bar stops short of the mute corner. */
 @Composable
-private fun BottomBar(state: VideoState, playback: VideoPlayback, chrome: VideoChrome, touch: () -> Unit, onMenu: () -> Unit, modifier: Modifier) {
+private fun BottomBar(state: VideoState, playback: VideoPlayback, chrome: VideoChrome, touch: () -> Unit, onMenu: () -> Unit, modifier: Modifier, menu: @Composable () -> Unit) {
     Column(modifier.fillMaxWidth()) {
         Row(Modifier.fillMaxWidth().padding(start = 14.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             PositionText(state)
@@ -287,7 +287,11 @@ private fun BottomBar(state: VideoState, playback: VideoPlayback, chrome: VideoC
                 }
             }
             chrome.onPictureInPicture?.let { enter -> ControlButton(ReaderIcons.PictureInPicture, stringResource(Res.string.video_picture_in_picture), enter) }
-            ControlButton(Icons.Filled.MoreVert, stringResource(Res.string.reader_more_options), onMenu)
+            // The menu stands at its button where it is a pointer's menu (the desktop).
+            Box {
+                ControlButton(Icons.Filled.MoreVert, stringResource(Res.string.reader_more_options), onMenu)
+                menu()
+            }
             chrome.onFullscreen?.let { toggle ->
                 if (chrome.fullscreen) {
                     ControlButton(ReaderIcons.FullscreenExit, stringResource(Res.string.video_fullscreen_exit), toggle)
@@ -535,71 +539,90 @@ private fun FailedOverlay(playback: VideoPlayback) {
     }
 }
 
-/** The ⋮ menu, and the speed and quality lists it leads to. */
-@OptIn(ExperimentalMaterial3Api::class)
+/** The ⋮ menu, and the speed and quality lists it leads to, in the platform's [VideoMenuSurface]. */
 @Composable
-private fun VideoSheets(sheet: VideoSheet?, state: VideoState, playback: VideoPlayback, chrome: VideoChrome, show: (VideoSheet?) -> Unit) {
+private fun VideoMenu(sheet: VideoSheet?, state: VideoState, playback: VideoPlayback, chrome: VideoChrome, show: (VideoSheet?) -> Unit) {
     sheet ?: return
-    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = { show(null) }) {
-        val closer = LocalSheetCloser.current
-        Column(Modifier.verticalScrollByKeys(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) {
-            when (sheet) {
-                VideoSheet.MORE -> MoreRows(state, playback, chrome, show)
-                VideoSheet.SPEED -> VideoRules.SPEEDS.reversed().forEach { speed ->
-                    CheckRow(stringResource(Res.string.reader_video_speed_value, VideoRules.speedText(speed)), kotlin.math.abs(speed - state.speed) < 0.01) {
-                        playback.setSpeed(speed)
-                        closer.close()
-                    }
+    VideoMenuSurface(onDismiss = { show(null) }) { close ->
+        when (sheet) {
+            VideoSheet.MORE -> MoreRows(state, playback, chrome, show, close)
+            VideoSheet.SPEED -> VideoRules.SPEEDS.reversed().forEach { speed ->
+                CheckRow(stringResource(Res.string.reader_video_speed_value, VideoRules.speedText(speed)), kotlin.math.abs(speed - state.speed) < 0.01) {
+                    close { playback.setSpeed(speed) }
                 }
-                VideoSheet.QUALITY -> state.qualities.forEach { quality ->
-                    CheckRow(quality.label, quality.url == state.url) {
-                        playback.setQuality(quality.url)
-                        closer.close()
-                    }
+            }
+            VideoSheet.QUALITY -> state.qualities.forEach { quality ->
+                CheckRow(quality.label, quality.url == state.url) {
+                    close { playback.setQuality(quality.url) }
                 }
             }
         }
     }
 }
 
+/**
+ * Where the video's ⋮ menu shows its rows ([content]): on a phone, a sheet
+ * rising from the foot of the screen; on the desktop, a dark menu standing
+ * at the ⋮ button over the video, as a desktop player's settings menu does.
+ * Composed beside the button. [content]'s `close` closes it, then does what
+ * it is given.
+ */
+@Composable
+internal expect fun VideoMenuSurface(onDismiss: () -> Unit, content: @Composable ColumnScope.(close: (then: () -> Unit) -> Unit) -> Unit)
+
 /** The ⋮ menu's rows, in XTA's order: speed, quality, subtitles, fit or fill, download. */
 @Composable
-private fun MoreRows(state: VideoState, playback: VideoPlayback, chrome: VideoChrome, show: (VideoSheet?) -> Unit) {
-    val closer = LocalSheetCloser.current
+private fun MoreRows(state: VideoState, playback: VideoPlayback, chrome: VideoChrome, show: (VideoSheet?) -> Unit, close: (then: () -> Unit) -> Unit) {
     SheetRow(ReaderIcons.Speed, stringResource(Res.string.reader_video_speed)) { show(VideoSheet.SPEED) }
     if (state.qualities.size > 1) SheetRow(ReaderIcons.HighQuality, stringResource(Res.string.reader_video_quality)) { show(VideoSheet.QUALITY) }
     if (state.hasSubtitles) {
         SheetRow(if (state.subtitles) ReaderIcons.ClosedCaption else ReaderIcons.ClosedCaptionOff, stringResource(Res.string.reader_video_subtitles), checked = state.subtitles) {
-            playback.setSubtitles(!state.subtitles)
-            closer.close()
+            close { playback.setSubtitles(!state.subtitles) }
         }
     }
     chrome.onToggleFill?.let { toggle ->
         SheetRow(if (chrome.fill) ReaderIcons.FullscreenExit else ReaderIcons.AspectRatio, stringResource(if (chrome.fill) Res.string.reader_video_fit else Res.string.reader_video_fill)) {
-            toggle()
-            closer.close()
+            close(toggle)
         }
     }
     chrome.onDownload?.let { download ->
         SheetRow(ReaderIcons.Download, stringResource(Res.string.reader_download)) {
-            closer.close(download)
+            close(download)
         }
     }
 }
 
 @Composable
 private fun SheetRow(icon: ImageVector, label: String, checked: Boolean = false, onClick: () -> Unit) {
-    Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, contentDescription = null)
-        Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f).padding(start = 16.dp))
-        if (checked) Icon(Icons.Filled.Check, contentDescription = null)
+    val look = VideoMenuRowLook.of(LocalMenuRowMetrics.current)
+    Row(look.row(onClick), verticalAlignment = Alignment.CenterVertically) {
+        Icon(icon, contentDescription = null, modifier = Modifier.size(look.icon))
+        Text(label, style = look.text(), modifier = Modifier.weight(1f).padding(start = look.gap))
+        if (checked) Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(look.icon))
     }
 }
 
 @Composable
 private fun CheckRow(label: String, selected: Boolean, onClick: () -> Unit) {
-    Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
-        if (selected) Icon(Icons.Filled.Check, contentDescription = null) else Spacer(Modifier.width(24.dp))
-        Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(start = 16.dp))
+    val look = VideoMenuRowLook.of(LocalMenuRowMetrics.current)
+    Row(look.row(onClick), verticalAlignment = Alignment.CenterVertically) {
+        if (selected) Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(look.icon)) else Spacer(Modifier.width(look.icon))
+        Text(label, style = look.text(), modifier = Modifier.padding(start = look.gap))
+    }
+}
+
+/** A row of the video's menu: a sheet's roomy one, or a pointer menu's denser one ([MenuRowMetrics.Pointer]). */
+private class VideoMenuRowLook(val vertical: Dp, val icon: Dp, val gap: Dp, val minHeight: Dp, val pointer: Boolean) {
+    fun row(onClick: () -> Unit): Modifier =
+        Modifier.fillMaxWidth().heightIn(min = minHeight).clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = vertical)
+
+    @Composable
+    fun text(): TextStyle = if (pointer) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge
+
+    companion object {
+        private val Sheet = VideoMenuRowLook(vertical = 14.dp, icon = 24.dp, gap = 16.dp, minHeight = 0.dp, pointer = false)
+
+        fun of(metrics: MenuRowMetrics): VideoMenuRowLook =
+            if (metrics == MenuRowMetrics.Pointer) VideoMenuRowLook(metrics.verticalPadding, metrics.iconSize, metrics.gap, metrics.minHeight, pointer = true) else Sheet
     }
 }

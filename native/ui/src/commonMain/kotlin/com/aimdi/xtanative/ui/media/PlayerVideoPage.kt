@@ -18,6 +18,7 @@ import com.aimdi.xtanative.core.x.model.PhotoSize
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.photoUrl
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.settings.isDesktop
 
 /** What the viewer's page shown names its video by ([VideoCredit]): its post's, where the viewer knows it. */
 internal val LocalVideoCredit = androidx.compose.runtime.staticCompositionLocalOf<VideoCredit?> { null }
@@ -90,7 +91,8 @@ internal fun SourceVideoPage(
         if (fullscreen?.shows(player) == true) return@Box poster()
         player.Picture(fill = false, Modifier.fillMaxSize())
         if (!gif) {
-            VideoControls(player, VideoChrome(onFullscreen = open, onDownload = download), Modifier.fillMaxSize())
+            // On the desktop the viewer's bar above already saves it.
+            VideoControls(player, VideoChrome(onFullscreen = open, onDownload = if (isDesktop) null else download), Modifier.fillMaxSize())
         }
         // Over the player: a surface of its own lies behind the window, and would clear a poster drawn under it.
         PosterUntilStarted(state, Modifier.fillMaxSize(), poster = poster)
