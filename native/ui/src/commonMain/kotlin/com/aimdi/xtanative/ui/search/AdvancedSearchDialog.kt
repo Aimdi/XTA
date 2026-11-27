@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
@@ -52,6 +53,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
@@ -187,19 +189,19 @@ internal fun AdvancedSearchDialog(
                 Column(Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp).fillMaxSize().verticalScroll(rememberScrollState())) {
                     Section(DiscoverIcons.TextFields, Res.string.discover_search_term) {
                         listOf(Filter.ALL_WORDS, Filter.EXACT_PHRASE, Filter.ANY_WORDS, Filter.NONE_WORDS, Filter.HASHTAGS).forEach { filter ->
-                            TextFilter(filters, filter, onChange)
+                            TextFilter(filters, filter, onChange, onApply)
                         }
                         LanguageField(filters.language) { code -> onChange { it.copy(language = code) } }
                     }
                     Section(DiscoverIcons.AlternateEmail, Res.string.discover_accounts) {
                         listOf(Filter.FROM_ACCOUNTS, Filter.TO_ACCOUNTS, Filter.MENTIONING_ACCOUNTS).forEach { filter ->
-                            TextFilter(filters, filter, onChange)
+                            TextFilter(filters, filter, onChange, onApply)
                         }
                     }
                     Section(DiscoverIcons.PermMedia, Res.string.discover_content_filter) { ContentFilters(filters, onChange) }
                     Section(DiscoverIcons.Tune, Res.string.discover_filters) {
                         listOf(Filter.MIN_REPLIES, Filter.MIN_LIKES, Filter.MIN_RETWEETS).forEach { filter ->
-                            TextFilter(filters, filter, onChange, number = true)
+                            TextFilter(filters, filter, onChange, onApply, number = true)
                         }
                         DateRow(stringResource(Res.string.discover_since), filters.since) { day -> onChange { it.copy(since = day) } }
                         DateRow(stringResource(Res.string.discover_until), filters.until) { day -> onChange { it.copy(until = day) } }
@@ -246,9 +248,21 @@ private fun Section(icon: ImageVector, title: StringResource, content: @Composab
     }
 }
 
-/** A filter typed in, with a cross that empties it; the minimums take digits only. */
+/**
+ * A filter typed in, with a cross that empties it; the minimums take digits
+ * only. Enter searches with the filters as they are ([onApply]), as Enter in
+ * a search field does; Tab goes on to the next field. The cross is the
+ * pointer's: neither Tab nor Enter stops on it, so Enter never erases what
+ * was typed.
+ */
 @Composable
-private fun TextFilter(filters: XAdvancedSearch, filter: Filter, onChange: ((XAdvancedSearch) -> XAdvancedSearch) -> Unit, number: Boolean = false) {
+private fun TextFilter(
+    filters: XAdvancedSearch,
+    filter: Filter,
+    onChange: ((XAdvancedSearch) -> XAdvancedSearch) -> Unit,
+    onApply: () -> Unit,
+    number: Boolean = false,
+) {
     val value = filters.textOf(filter)
     OutlinedTextField(
         value = value,
@@ -256,9 +270,16 @@ private fun TextFilter(filters: XAdvancedSearch, filter: Filter, onChange: ((XAd
         label = { Text(filterLabel(SearchFilters.labelOf(filter, filters))) },
         singleLine = true,
         trailingIcon = if (value.isEmpty()) null else {
-            { IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = { onChange { it.cleared(filter) } }) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } } }
+            {
+                IconTip(stringResource(Res.string.discover_clear)) {
+                    IconButton(onClick = { onChange { it.cleared(filter) } }, modifier = Modifier.focusProperties { canFocus = false }) {
+                        Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear))
+                    }
+                }
+            }
         },
-        keyboardOptions = KeyboardOptions(keyboardType = if (number) KeyboardType.Number else KeyboardType.Text, imeAction = ImeAction.Next),
+        keyboardOptions = KeyboardOptions(keyboardType = if (number) KeyboardType.Number else KeyboardType.Text, imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = { onApply() }),
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
     )
