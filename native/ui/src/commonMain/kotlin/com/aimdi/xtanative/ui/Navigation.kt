@@ -424,10 +424,13 @@ fun XtaNativeRoot() {
             openLibrary = { query -> nav.push(Routes.library(query)) },
         )
     }
-    val trendsActions = remember(nav) {
+    // Beside the wide frame's column, the screens its rows lead to open as those rows open them ([FrameOpens]).
+    val frameOpens = remember(nav) { FrameOpens() }
+    val trendsActions = remember(nav, frameOpens) {
         TrendsActions(
             openSearch = { query -> nav.push(Routes.search(query)) },
-            openPeople = { nav.push(Routes.search(null, SearchTab.PEOPLE.routeName)) },
+            // Discover's "Find people" is Search on its Accounts tab, opened as the column's Search row opens it: no Back.
+            openPeople = { Routes.search(null, SearchTab.PEOPLE.routeName).let { route -> frameOpens.open(route) { nav.push(route) } } },
             openAntennas = { nav.push(Routes.ANTENNAS) },
             openLibrary = { query -> nav.push(Routes.library(query)) },
         )
@@ -489,7 +492,6 @@ fun XtaNativeRoot() {
         LocalWindowOpens provides postWindows,
     ) {
         // Beside the wide frame's column, / and Ctrl+, open Search and Settings as its rows do ([FrameOpens]).
-        val frameOpens = remember(nav) { FrameOpens() }
         // Ctrl+F and / on a screen with no search of its own open the search, its field ready: not over the
         // intro, the sign-in or an import, not over a plugin's pages (they keep their own keys), and not a
         // second search over one still opening.

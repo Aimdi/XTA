@@ -21,6 +21,12 @@ enum class SearchTab(
     }
 }
 
+/** What the search says before anything is searched. */
+object SearchStart {
+    /** Whether [tab] waits to find people (Accounts, where Discover's "Find people" leads) rather than posts. */
+    fun findsPeople(tab: SearchTab): Boolean = tab == SearchTab.PEOPLE
+}
+
 /** Typing and searching, as XTA times them. */
 object SearchTiming {
     /** A pause in typing this long searches what was typed. */

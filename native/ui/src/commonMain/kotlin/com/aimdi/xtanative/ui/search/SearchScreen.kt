@@ -81,6 +81,7 @@ import com.aimdi.xtanative.ui.generated.resources.discover_antennas
 import com.aimdi.xtanative.ui.generated.resources.discover_clear
 import com.aimdi.xtanative.ui.generated.resources.discover_communities
 import com.aimdi.xtanative.ui.generated.resources.discover_filter_value
+import com.aimdi.xtanative.ui.generated.resources.discover_find_people
 import com.aimdi.xtanative.ui.generated.resources.discover_go_to
 import com.aimdi.xtanative.ui.generated.resources.discover_media
 import com.aimdi.xtanative.ui.generated.resources.discover_no_results
@@ -192,7 +193,7 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
                     onClear = vm::clearRecent,
                     highlighted = pick.of(recent),
                 )
-                StartState()
+                StartState(state.tab)
             } else {
                 FilterStrip(SearchFilters.chips(state.view.advanced)) { filter ->
                     vm.clearFilter(filter)
@@ -464,17 +465,18 @@ private fun chipText(chip: FilterChip): String {
     return if (chip.value.isEmpty()) label else stringResource(Res.string.discover_filter_value, label, chip.value)
 }
 
-/** Nothing searched yet. */
+/** Nothing searched yet: what the tab shown finds, people on Accounts (Discover's "Find people"), else posts on X. */
 @Composable
-private fun StartState() {
+private fun StartState(tab: SearchTab) {
+    val people = SearchStart.findsPeople(tab)
     Column(
         Modifier.fillMaxSize().padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Icon(Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(48.dp))
+        Icon(if (people) DiscoverIcons.PersonSearch else Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(48.dp))
         Text(
-            stringResource(Res.string.discover_search_x),
+            stringResource(if (people) Res.string.discover_find_people else Res.string.discover_search_x),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 16.dp),

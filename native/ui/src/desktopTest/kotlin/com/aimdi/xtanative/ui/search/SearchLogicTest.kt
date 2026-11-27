@@ -137,4 +137,10 @@ class SearchDatesTest {
         assertEquals(today, SearchDates.opening(null, today))
         assertEquals(SearchDates.FIRST, SearchDates.opening(SearchDates.FIRST, today))
     }
+
+    @Test
+    fun onlyTheAccountsTabWaitsToFindPeople() {
+        assertTrue(SearchStart.findsPeople(SearchTab.PEOPLE), "Discover's Find people opens here")
+        SearchTab.entries.filter { it != SearchTab.PEOPLE }.forEach { assertFalse(SearchStart.findsPeople(it), it.name) }
+    }
 }
