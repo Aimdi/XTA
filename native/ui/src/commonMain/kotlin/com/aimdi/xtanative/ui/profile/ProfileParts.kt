@@ -1,5 +1,12 @@
 package com.aimdi.xtanative.ui.profile
 
+import com.aimdi.xtanative.ui.generated.resources.saved_note_hint
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSheetCloser
 import com.aimdi.xtanative.ui.common.TipText
@@ -171,21 +178,25 @@ private fun RowScope.NoteInline(note: String, onEdit: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun NoteSheet(note: String, onSave: (String) -> Unit, onDismiss: () -> Unit) {
-    var text by rememberSaveable { mutableStateOf(note) }
+    // The caret after the note kept, ready to add to it.
+    var text by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(note, TextRange(note.length))) }
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        // The field has the keys as the editor opens: it is all there is to do in it.
+        val field = remember { FocusRequester() }
+        LaunchedEffect(field) { runCatching { field.requestFocus() } }
         Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(stringResource(Res.string.posts_profile_note_title), style = MaterialTheme.typography.titleMedium)
             Text(stringResource(Res.string.posts_profile_note_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
-                placeholder = { Text(stringResource(Res.string.posts_profile_note_hint)) },
+                placeholder = { Text(stringResource(Res.string.saved_note_hint)) },
                 minLines = 3,
                 maxLines = 8,
-                modifier = Modifier.fillMaxWidth().tabLeavesField(),
+                modifier = Modifier.fillMaxWidth().focusRequester(field).tabLeavesField(),
             )
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                Button(onClick = { onSave(text) }) { Text(stringResource(Res.string.posts_profile_note_save)) }
+                Button(onClick = { onSave(text.text) }) { Text(stringResource(Res.string.posts_profile_note_save)) }
             }
         }
     }
