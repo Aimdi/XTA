@@ -21,6 +21,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -47,6 +48,14 @@ class OfflineStore(
     private val queue = Mutex()
     private val loadLock = Mutex()
     private val generations = ConcurrentHashMap<String, Int>()
+
+    /**
+     * The manifest's rows this build refused (written by a newer one, or
+     * damaged), as they were: written back with every change, and the folders
+     * they name kept, so a downgrade loses no copy.
+     */
+    @Volatile
+    private var refused: List<JsonObject> = emptyList()
 
     @Volatile
     private var loaded = false
@@ -84,7 +93,7 @@ class OfflineStore(
                 check(loaded) { "Offline storage unavailable" }
                 deleteFolder(entry)
                 val next = current.value.entries.filterNot { it.id == id }
-                writeManifest(next)
+                writeManifest(next, refused.filterNot { J(it)["id"].string == id })
                 current.update { it.copy(entries = next) }
             } catch (e: CancellationException) {
                 throw e
@@ -103,7 +112,7 @@ class OfflineStore(
                 load()
                 check(loaded) { "Offline storage unavailable" }
                 current.value.entries.forEach { deleteFolder(it) }
-                writeManifest(emptyList())
+                writeManifest(emptyList(), emptyList())
                 cleanOrphans(emptyList())
                 current.update { it.copy(entries = emptyList(), storageError = false) }
             } catch (e: CancellationException) {
@@ -170,7 +179,7 @@ class OfflineStore(
                 val state = current.value
                 if (state.storageError || !loaded) throw IOException("Offline storage unavailable")
                 if (cancelled(id, generation)) return@withLock
-                if ((state.entries.size >= MAX_ITEMS && state.entry(id) == null) || media.size > MAX_TOTAL_MEDIA) throw IOException("Offline library full")
+                if ((state.entries.size + refused.size >= MAX_ITEMS && state.entry(id) == null) || media.size > MAX_TOTAL_MEDIA) throw IOException("Offline library full")
                 val name = "${sha256(id)}-${micros()}"
                 staging = File(root, "$name.tmp").also { withContext(Dispatchers.IO) { if (!it.mkdir()) throw IOException("No staging folder") } }
                 val available = storageLimit - state.bytes
@@ -237,8 +246,9 @@ class OfflineStore(
     private suspend fun read() {
         try {
             withContext(Dispatchers.IO) { root.mkdirs() }
-            val entries = manifest.read()?.let { parseManifest(it) }.orEmpty()
-            withContext(Dispatchers.IO) { cleanOrphans(entries) }
+            val (entries, unread) = manifest.read()?.let { parseManifest(it) } ?: (emptyList<OfflineEntry>() to emptyList())
+            withContext(Dispatchers.IO) { cleanOrphans(entries.map { it.directory } + unread.mapNotNull(::keptDirectory)) }
+            refused = unread
             loaded = true
             current.update { it.copy(entries = entries, loading = false, storageError = false) }
         } catch (e: CancellationException) {
@@ -248,20 +258,25 @@ class OfflineStore(
         }
     }
 
-    /** The manifest's entries that are safe to follow, each verified on disk; a damaged row hides no other. */
-    private suspend fun parseManifest(text: String): List<OfflineEntry> {
+    /** The manifest's entries that are safe to follow, each verified on disk, and the rows refused; a damaged row hides no other. */
+    private suspend fun parseManifest(text: String): Pair<List<OfflineEntry>, List<JsonObject>> {
         if (text.toByteArray().size > MAX_MANIFEST_BYTES) throw IOException("Oversized manifest")
         val root = J.parse(text)
         if (root["version"].int != 1 || root["entries"].raw !is JsonArray) throw IOException("Invalid manifest")
         val rows = root["entries"].list
         if (rows.size > MAX_ITEMS) throw IOException("Too many entries")
-        val entries = rows.mapNotNull(OfflineEntry::fromJson).filter(::safe).distinctBy { it.id }
-        return withContext(Dispatchers.IO) { entries.map(::verify) }
+        val read = rows.map { it to OfflineEntry.fromJson(it)?.takeIf(::safe) }
+        val entries = read.mapNotNull { it.second }.distinctBy { it.id }
+        val unread = read.filter { it.second == null }.mapNotNull { it.first.raw as? JsonObject }
+        return withContext(Dispatchers.IO) { entries.map(::verify) } to unread
     }
+
+    /** The folder a refused [row] names, when its name is one this library makes (so it cannot point outside it). */
+    private fun keptDirectory(row: JsonObject): String? = J(row)["directory"].string?.takeIf { it.matches(directoryName) }
 
     /** An entry whose folder and file names cannot point outside the library, and whose sizes are within the limits. */
     private fun safe(entry: OfflineEntry): Boolean =
-        entry.directory.matches(Regex("^[a-f0-9]{64}-[0-9]+$")) &&
+        entry.directory.matches(directoryName) &&
             entry.id.isNotEmpty() && entry.id.length < 8192 &&
             entry.files.size <= MAX_MEDIA &&
             entry.totalMedia >= entry.files.size && entry.totalMedia <= MAX_TOTAL_MEDIA &&
@@ -282,9 +297,9 @@ class OfflineStore(
         OfflineArticle.fromJson(J.parse(file.readText()))?.takeIf { it.id == entry.id && it.bodyHtml.isNotBlank() }
     }.getOrNull()
 
-    /** Folders no entry names and staging left by a crash, the manifest's half-written copies too; the manifest itself is left alone. */
-    private fun cleanOrphans(entries: List<OfflineEntry>) {
-        val kept = entries.mapTo(HashSet()) { it.directory }
+    /** Folders no row names and staging left by a crash, the manifest's half-written copies too; the manifest itself is left alone. */
+    private fun cleanOrphans(directories: List<String>) {
+        val kept = directories.toHashSet()
         root.listFiles()?.forEach { item ->
             when {
                 item.isDirectory && item.name !in kept -> item.deleteRecursively()
@@ -294,13 +309,16 @@ class OfflineStore(
         }
     }
 
-    private suspend fun writeManifest(entries: List<OfflineEntry>) {
+    private suspend fun writeManifest(entries: List<OfflineEntry>, unread: List<JsonObject> = refused) {
+        val ids = entries.mapTo(HashSet()) { it.id }
+        val carried = unread.filterNot { J(it)["id"].string in ids }
         val text = buildJsonObject {
             put("version", 1)
-            put("entries", JsonArray(entries.map { it.toJson() }))
+            put("entries", JsonArray(entries.map { it.toJson() } + carried))
         }.toString()
         if (text.toByteArray().size > MAX_MANIFEST_BYTES) throw IOException("Offline index full")
         manifest.write(text)
+        refused = carried
     }
 
     private suspend fun deleteFolder(entry: OfflineEntry) = withContext(Dispatchers.IO) { File(root, entry.directory).deleteRecursively() }
@@ -329,5 +347,6 @@ class OfflineStore(
         const val MAX_MANIFEST_BYTES = 1024 * 1024
         const val DEFAULT_STORAGE_LIMIT = 500L * 1024 * 1024
         private const val ARTICLE_FILE = "article.json"
+        private val directoryName = Regex("^[a-f0-9]{64}-[0-9]+$")
     }
 }

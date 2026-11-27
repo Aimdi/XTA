@@ -276,4 +276,39 @@ class OfflineStoreTest {
         assertEquals("image/png", entry.files.single().mime)
         assertContentEquals(png, cold.mediaFile(entry, entry.files.single())!!.readBytes())
     }
+
+    @Test
+    fun aRowThisBuildCannotReadKeepsItsFolderAndRowThroughLaterChanges() = timed {
+        store().keepMedia("saved:1", "Photo", "Maya", photo)
+        val manifest = File(library, "manifest.json")
+        val newer = buildJsonObject {
+            put("id", "saved:2")
+            put("directory", "${"a".repeat(64)}-1")
+            put("kind", "hologram")
+            put("comesFrom", "a newer build")
+        }
+        val unsafe = buildJsonObject { put("id", "saved:3"); put("directory", "../../outside") }
+        val root = J.parse(manifest.readText())
+        manifest.writeText(
+            buildJsonObject {
+                put("version", 1)
+                put("entries", kotlinx.serialization.json.JsonArray(root["entries"].list.mapNotNull { it.raw } + newer + unsafe))
+            }.toString(),
+        )
+        val folder = File(library, "${"a".repeat(64)}-1").apply { mkdirs(); File(this, "media-0").writeBytes(png) }
+        val orphan = File(library, "${"b".repeat(64)}-1").apply { mkdirs() }
+
+        val cold = store()
+        cold.load()
+        assertEquals(listOf("saved:1"), cold.state.value.entries.map { it.id })
+        assertTrue(folder.isDirectory, "a copy this build cannot read is not deleted")
+        assertFalse(orphan.exists(), "a folder no row names still goes")
+
+        cold.keepMedia("saved:4", "Other", "Maya", photo)
+        val rows = J.parse(manifest.readText())["entries"].list
+        assertEquals(listOf("saved:4", "saved:1", "saved:2", "saved:3"), rows.map { it["id"].string })
+        assertEquals("a newer build", rows.first { it["id"].string == "saved:2" }["comesFrom"].string, "its row is written back as it was")
+        store().load()
+        assertTrue(folder.isDirectory)
+    }
 }
