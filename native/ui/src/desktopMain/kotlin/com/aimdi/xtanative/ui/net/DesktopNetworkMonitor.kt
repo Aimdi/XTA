@@ -22,7 +22,9 @@ import kotlinx.coroutines.flow.transformLatest
  * (org.freedesktop.portal.NetworkMonitor, which every desktop's portal
  * answers and signals `changed` on); where there is no portal, whether the
  * kernel has a default route, looked at every [pollMs]. Online until told
- * otherwise: where nothing can tell, the app reads as it always did.
+ * otherwise: where nothing can tell, the app reads as it always did. The
+ * portal also says whether the connection is [metered] (a phone's tether),
+ * which the app's data saver follows, as Android's Data Saver.
  *
  * The portal's `changed` comes on the connection's reader thread, which also
  * delivers the answers to calls: asking there would wait for an answer only
@@ -37,6 +39,10 @@ class DesktopNetworkMonitor(
 
     /** Whether there is a connection, undebounced; true where nothing says. */
     val online: StateFlow<Boolean> = mutable.asStateFlow()
+    private val meteredNow = MutableStateFlow(false)
+
+    /** Whether the connection is metered, as the portal says; false where it does not say, or there is no portal. */
+    val metered: StateFlow<Boolean> = meteredNow.asStateFlow()
     private val started = AtomicBoolean(false)
     private val polling = AtomicBoolean(false)
     private val asking = Executors.newSingleThreadExecutor { Thread(it, "xta-native-network").apply { isDaemon = true } }
@@ -86,6 +92,9 @@ class DesktopNetworkMonitor(
         val connectivity = bus.call(PortalNetwork.PORTAL, PortalNetwork.PATH, PortalNetwork.IFACE, "GetConnectivity")
             ?.takeIf { it.type == DBusType.METHOD_RETURN }?.body?.firstOrNull()
         mutable.value = PortalNetwork.online(available, PortalNetwork.number(connectivity))
+        val metered = bus.call(PortalNetwork.PORTAL, PortalNetwork.PATH, PortalNetwork.IFACE, "GetMetered")
+            ?.takeIf { it.type == DBusType.METHOD_RETURN }?.body?.firstOrNull()
+        meteredNow.value = PortalNetwork.metered(metered)
         return true
     }
 
@@ -137,6 +146,12 @@ object PortalNetwork {
      * as a read may get through, and so does an unknown [connectivity].
      */
     fun online(available: Boolean, connectivity: Long?): Boolean = available && connectivity != LOCAL_ONLY
+
+    /** GetMetered's answer: metered only when it says so plainly. */
+    tailrec fun metered(value: Any?): Boolean = when (value) {
+        is Variant -> metered(value.value)
+        else -> value == true
+    }
 
     /** Whether [signal] is the portal's `changed`. */
     fun isChanged(signal: DBusMessage): Boolean = signal.iface == IFACE && signal.member == "changed"

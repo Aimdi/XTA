@@ -1,8 +1,11 @@
 package com.aimdi.xtanative.ui.media
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.aimdi.xtanative.ui.net.DesktopNetworkMonitor
 
 /**
  * libmpv's players, where the desktop has it ([MpvEngine]), as XTA's
@@ -13,8 +16,17 @@ import androidx.compose.ui.Modifier
 @Composable
 internal actual fun rememberVideoPlayers(): VideoPlayers? = remember { if (MpvEngine.ready) VideoPlayers { options -> MpvVideoPlayer(options) } else null }
 
+/**
+ * The desktop's data saver: on while the connection is metered, as the
+ * network portal says ([DesktopNetworkMonitor.metered]), so videos stop
+ * playing by themselves on a phone's tether as they do under Android's Data Saver.
+ */
 @Composable
-internal actual fun rememberDataSaver(): Boolean = false
+internal actual fun rememberDataSaver(): Boolean {
+    val monitor = DesktopNetworkMonitor.desktop
+    LaunchedEffect(monitor) { monitor.start() }
+    return monitor.metered.collectAsState().value
+}
 
 /** libmpv under XTA's controls ([MpvVideoCore]), its picture drawn by [MpvFrames] where it was put on screen last. */
 internal class MpvVideoPlayer private constructor(private val core: MpvVideoCore<MpvFrames>) : VideoPlayer, PlayerCore by core {

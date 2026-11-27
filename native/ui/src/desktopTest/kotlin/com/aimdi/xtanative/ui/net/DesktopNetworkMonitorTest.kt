@@ -169,6 +169,45 @@ class DesktopNetworkMonitorTest {
     }
 
     @Test
+    fun meteredIsThePortalsWordAndNothingElse() {
+        assertTrue(PortalNetwork.metered(true))
+        assertTrue(PortalNetwork.metered(Variant("b", true)))
+        assertFalse(PortalNetwork.metered(false))
+        assertFalse(PortalNetwork.metered(null), "GetMetered refused: not metered")
+        assertFalse(PortalNetwork.metered("yes"))
+    }
+
+    @Test
+    fun theMonitorFollowsThePortalsMetered() {
+        val (daemon, socket) = privateBus() ?: return println("no dbus-daemon: skipped")
+        try {
+            val metered = AtomicBoolean(false)
+            val portal = assertNotNull(DBusConnection.connect(socket))
+            portal.onCall = { call ->
+                when (call.member) {
+                    "GetAvailable" -> portal.reply(call, "b", listOf(true))
+                    "GetConnectivity" -> portal.reply(call, "u", listOf(4L))
+                    "GetMetered" -> portal.reply(call, "b", listOf(metered.get()))
+                    else -> portal.fail(call, DBusConnection.UNKNOWN_METHOD, "no")
+                }
+            }
+            portal.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "RequestName", "su", listOf(PortalNetwork.PORTAL, 4L))
+            val monitor = DesktopNetworkMonitor({ DBusConnection.connect(socket) }, routes = { true })
+            monitor.followNow()
+            assertFalse(monitor.metered.value)
+            metered.set(true)
+            portal.signal(PortalNetwork.PATH, PortalNetwork.IFACE, "changed", "", emptyList())
+            runBlocking { withTimeout(5_000) { monitor.metered.first { it } } }
+            assertTrue(monitor.online.value, "a metered connection is still one")
+            monitor.close()
+            portal.close()
+        } finally {
+            daemon.destroy()
+            daemon.waitFor(5, TimeUnit.SECONDS)
+        }
+    }
+
+    @Test
     fun aBusWithoutThePortalFallsBackToTheRouteTable() {
         val (daemon, socket) = privateBus() ?: return println("no dbus-daemon: skipped")
         try {
