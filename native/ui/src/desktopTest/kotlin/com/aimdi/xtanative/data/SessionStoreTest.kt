@@ -4,6 +4,7 @@ import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.session.Session
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.attribute.PosixFilePermissions
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -62,7 +63,8 @@ class SessionStoreTest {
         val store = SessionStore(file)
         store.load()
         store.update { it.copy(following = listOf(nasa)) }
-        assertEquals("{written by a newer build", File(file.parentFile, "session.json.unreadable").readText(), "the follows it held are not lost")
+        val aside = file.parentFile.listFiles { f -> f.name.startsWith("session.json.unreadable-") }.orEmpty().single()
+        assertEquals("{written by a newer build", aside.readText(), "the follows it held are not lost")
         assertEquals(listOf(nasa), Session.decode(file.readText())?.following)
     }
 
@@ -84,5 +86,43 @@ class SessionStoreTest {
         assertNotNull(store.failure.value)
         store.update { it.copy(following = listOf(nasa)) }
         assertNull(store.failure.value)
+    }
+
+    @Test
+    fun aChangeBeforeTheFirstReadIsMadeToWhatTheFileHolds() = withFile { file ->
+        file.writeText(Session.encode(Session(following = listOf(nasa))))
+        val store = SessionStore(file)
+        store.update { it.copy(includeReposts = false) }
+        assertEquals(listOf(nasa), Session.decode(file.readText())?.following, "a plugin's uninstall racing the load erases no follow")
+    }
+
+    @Test
+    fun aFileThatCannotBeOpenedIsNeverWrittenOver() = withFile { file ->
+        file.writeText(Session.encode(Session(following = listOf(nasa))))
+        Files.setPosixFilePermissions(file.toPath(), PosixFilePermissions.fromString("---------"))
+        try {
+            if (file.canRead()) return@withFile // run as root: nothing to test
+            val store = SessionStore(file)
+            store.load()
+            assertNotNull(store.failure.value)
+            store.update { it.copy(includeReposts = false) }
+            assertEquals(false, store.state.value?.includeReposts, "the change stays for this run")
+            assertNotNull(store.failure.value)
+        } finally {
+            Files.setPosixFilePermissions(file.toPath(), PosixFilePermissions.fromString("rw-------"))
+        }
+        assertEquals(listOf(nasa), Session.decode(file.readText())?.following)
+    }
+
+    @Test
+    fun eachUnreadableFileIsKeptAsideBesideTheEarlierOnes() = withFile { file ->
+        file.writeText("{first")
+        SessionStore(file).load()
+        file.writeText("{second")
+        SessionStore(file).load()
+        SessionStore(file).apply { load(); retry() }
+        val asides = file.parentFile.listFiles { f -> f.name.startsWith("session.json.unreadable-") }.orEmpty()
+        assertEquals(setOf("{first", "{second"), asides.map { it.readText() }.toSet())
+        assertEquals(2, asides.size)
     }
 }

@@ -149,3 +149,28 @@ private fun File.sweepStagedOnce() {
     val prefix = ".${target.name}."
     stale.filter { it.name.startsWith(prefix) && it.name.removePrefix(prefix).removeSuffix(".part").all(Char::isDigit) }.forEach { it.delete() }
 }
+
+/**
+ * A copy of this file's bytes beside it as `<name>.unreadable-<millis>`, for a
+ * file this build cannot read, before anything may replace it. It never
+ * replaces an earlier copy; one already holding the same bytes is answered
+ * instead of a second.
+ */
+fun File.keepUnreadable(now: Long = System.currentTimeMillis()): File {
+    val bytes = readBytes()
+    val folder = absoluteFile.parentFile
+    val prefix = "$name.unreadable-"
+    folder.listFiles { f -> f.name.startsWith(prefix) && f.length() == bytes.size.toLong() }
+        ?.firstOrNull { runCatching { it.readBytes().contentEquals(bytes) }.getOrDefault(false) }
+        ?.let { return it }
+    var stamp = now
+    while (!File(folder, "$prefix$stamp").createNewFile()) stamp++
+    val aside = File(folder, "$prefix$stamp")
+    try {
+        aside.replaceWith(bytes)
+    } catch (failure: Throwable) {
+        aside.delete()
+        throw failure
+    }
+    return aside
+}
