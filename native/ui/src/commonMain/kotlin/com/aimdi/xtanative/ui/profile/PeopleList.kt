@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.ui.profile
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,8 +17,10 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.post.LocalWindowOpens
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.VerifiedBadges
+import com.aimdi.xtanative.ui.post.clickableOrWindow
 import com.aimdi.xtanative.ui.search.FollowMenu
 import com.aimdi.xtanative.ui.search.FollowTarget
 
@@ -31,8 +32,10 @@ import com.aimdi.xtanative.ui.search.FollowTarget
  */
 @Composable
 fun UserRow(user: XUser, actions: PostActions) {
+    // Ctrl+click and a middle click open the profile in a window of its own, on the desktop.
+    val windows = LocalWindowOpens.current
     Row(
-        Modifier.fillMaxWidth().clickable { actions.openUser(user.screenName, user.id) }.padding(start = 16.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
+        Modifier.fillMaxWidth().clickableOrWindow(windows?.let { open -> { open.profile(user.screenName, user.id) } }) { actions.openUser(user.screenName, user.id) }.padding(start = 16.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Avatar(user.largeAvatarUrl, 40.dp)

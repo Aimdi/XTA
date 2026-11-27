@@ -117,7 +117,7 @@ import com.aimdi.xtanative.ui.pluginstore.PluginCards
 import com.aimdi.xtanative.ui.pluginstore.PluginRoutes
 import com.aimdi.xtanative.ui.pluginstore.PluginSheetHost
 import com.aimdi.xtanative.ui.pluginstore.pluginScreens
-import com.aimdi.xtanative.ui.post.LocalPostWindows
+import com.aimdi.xtanative.ui.post.LocalWindowOpens
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostScreen
 import com.aimdi.xtanative.ui.post.QuotesScreen
@@ -465,8 +465,9 @@ fun XtaNativeRoot() {
         OpenVoiceSettingsWhenAsked(nav, showMain)
         ShowWhenPluginSheetOpens(showMain)
     }
-    // Ctrl+click and a middle click on a post, and its menu's Open in new window, open it in a window of its own.
-    val postWindows = remember { windowOpener()?.let { open -> { id: String -> open(Routes.post(id)) } } }
+    // Ctrl+click and a middle click on a post, an author's picture, a person or a link to an X screen, and the menus'
+    // Open in new window, open it in a window of its own.
+    val postWindows = remember(links) { windowOpener()?.let { open -> WindowRoutes.opens(open) { url -> links?.xScreenOf(url) } } }
 
     // A grid's tiles open the viewer over everything it has loaded (media_grid_lightbox.dart).
     // Its route names the gallery by a new key each time; a double-tap is known by the page it opens on.
@@ -485,7 +486,7 @@ fun XtaNativeRoot() {
         LocalGalleryOpener provides galleries,
         LocalProblemActions provides problems,
         LocalLivePlayer provides livePlayer,
-        LocalPostWindows provides postWindows,
+        LocalWindowOpens provides postWindows,
     ) {
         // Beside the wide frame's column, / and Ctrl+, open Search and Settings as its rows do ([FrameOpens]).
         val frameOpens = remember(nav) { FrameOpens() }

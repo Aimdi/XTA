@@ -287,10 +287,10 @@ fun main(args: Array<String>) {
                     }
                 }
             }
-            // The posts opened in windows of their own (Ctrl+click, a middle click, the post menu's Open in new window).
+            // The posts, profiles, searches and communities opened in windows of their own (Ctrl+click, a middle click, the post menu's Open in new window).
             val others by DesktopWindows.opened.collectAsState()
             for (opened in others) {
-                key(opened.serial) { PostWindow(opened, app, name, uiScale, quit, onQuitKey = { raises.tryEmit(Unit) }) }
+                key(opened.serial) { RouteWindow(opened, app, name, uiScale, quit, onQuitKey = { raises.tryEmit(Unit) }) }
             }
         }
     }
@@ -301,14 +301,15 @@ fun main(args: Array<String>) {
 }
 
 /**
- * A window of the app's own beside the main one, [opened] on a post, about
- * as wide as the reading column at the interface size [uiScale]: closing it closes it alone, unless the app
+ * A window of the app's own beside the main one, [opened] on a post, a
+ * profile, a search or a community (a reading column each), about as wide
+ * as the reading column at the interface size [uiScale]: closing it closes it alone, unless the app
  * was asked to quit from it (Ctrl+Q, [onQuitKey] bringing the main window up
  * to ask), and only the main window keeps its size, the tray and the title
  * the bar shows for the app.
  */
 @Composable
-private fun ApplicationScope.PostWindow(opened: OpenedWindow, app: DesktopApp, name: String, uiScale: Double, quit: () -> Unit, onQuitKey: () -> Unit) {
+private fun ApplicationScope.RouteWindow(opened: OpenedWindow, app: DesktopApp, name: String, uiScale: Double, quit: () -> Unit, onQuitKey: () -> Unit) {
     val secondary = remember(opened) { SecondaryWindow(opened.route) { DesktopWindows.close(opened) } }
     val part by secondary.titlePart.collectAsState()
     val state = rememberWindowState(size = remember { postWindowSize(uiScale) })

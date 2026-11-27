@@ -81,8 +81,10 @@ import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_twe
 import com.aimdi.xtanative.ui.home.DesktopKeys
 import com.aimdi.xtanative.ui.home.DesktopShortcuts
 import com.aimdi.xtanative.ui.post.LocalCommunityPage
+import com.aimdi.xtanative.ui.post.LocalWindowOpens
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
+import com.aimdi.xtanative.ui.post.clickableOrWindow
 import com.aimdi.xtanative.ui.search.DiscoverIcons
 import com.aimdi.xtanative.ui.search.LoadMoreNearEnd
 import com.aimdi.xtanative.ui.search.PageRows
@@ -200,8 +202,10 @@ fun CommunityMembersScreen(id: String, actions: PostActions, onBack: () -> Unit)
 /** A community in a list, as XTA's community tile: its banner, name and member count. */
 @Composable
 fun CommunityRow(community: XCommunity, onOpen: () -> Unit) {
+    // Ctrl+click and a middle click open the community in a window of its own, on the desktop.
+    val windows = LocalWindowOpens.current
     Row(
-        Modifier.fillMaxWidth().clickable(onClick = onOpen).padding(horizontal = 16.dp, vertical = 8.dp),
+        Modifier.fillMaxWidth().clickableOrWindow(windows?.let { open -> { open.community(community.id) } }, onOpen).padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // A banner is about three times as wide as it is tall: shown in that shape, not cut to a square.

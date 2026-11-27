@@ -77,8 +77,8 @@ private fun MenuSheet(post: XPost, actions: PostActions, onDismiss: () -> Unit, 
     val openAuthor = remember(shown, actions) {
         if (shown.author.screenName.isEmpty()) null else { { actions.openUser(shown.author.screenName, shown.author.id) } }
     }
-    val windows = LocalPostWindows.current
-    val inWindow = remember(windows, shown.id) { windows?.let { open -> { open(shown.id) } } }
+    val windows = LocalWindowOpens.current
+    val inWindow = remember(windows, shown.id) { windows?.let { open -> { open.post(shown.id) } } }
     PostMenuSurface(onDismiss) {
         PostMenuRows(menu, saved, handlers, onDone = { onStep(MenuStep.CLOSED) }, newWindow = inWindow, hints = true, openAuthor = openAuthor, copyText = copyText)
     }

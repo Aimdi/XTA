@@ -334,6 +334,16 @@ class LinkOpener(
         }
     }
 
+    /**
+     * The X screen of the app [url] opens on (a post, a profile, a community
+     * or a list), for a window of its own; null for a link that leaves the
+     * app, or opens a network's screen or the live player.
+     */
+    fun xScreenOf(url: String): XLink? {
+        val link = (LinkSteps.route(router(settings()), url) as? NativeRoute.X)?.link ?: return null
+        return link.takeIf { it is XLink.Post || it is XLink.Profile || it is XLink.Community || it is XLink.XList }
+    }
+
     /** Opens [url] on a network's screen when one is on and reads it, answering whether one did. */
     fun openOnNetwork(url: String): Boolean {
         val screens = screens ?: return false

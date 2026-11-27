@@ -172,9 +172,15 @@ fun PostCard(
         menu = true
     }
     // Ctrl+click and a middle click open the post in a window of its own, on the desktop.
-    val windows = LocalPostWindows.current
-    val inWindow = windows?.let { open -> { open(shown.id) } }
+    val windows = LocalWindowOpens.current
+    val inWindow = windows?.let { open -> { open.post(shown.id) } }
     val presses = remember { CardPresses() }
+    // The author's picture the same way, to their profile.
+    val authorPresses = remember { CardPresses() }
+    val authorInWindow = windows?.let { open -> { open.profile(shown.author.screenName, shown.author.id) } }
+    val openAuthor = {
+        if (authorPresses.take() == PostPress.TAP_IN_WINDOW && authorInWindow != null) authorInWindow() else actions.openUser(shown.author.screenName, shown.author.id)
+    }
     Column(
         modifier
             .fillMaxWidth()
@@ -209,14 +215,15 @@ fun PostCard(
                         .offset(-inset, -inset)
                         .size(PostGeometry.TOUCH_TARGET.dp)
                         .keyboardFocusRing(outset = -AvatarRingGap)
+                        .opensInWindow(authorInWindow.takeIf { PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName) }, authorPresses)
                         // An unbounded ripple, not a clip: a clip would cut the follow badge on the avatar's rim.
                         .clickable(
                             interactionSource = null,
                             indication = ripple(bounded = false, radius = (PostGeometry.TOUCH_TARGET / 2).dp),
                             enabled = PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName),
-                        ) { actions.openUser(shown.author.screenName, shown.author.id) },
+                        ) { openAuthor() },
                     contentAlignment = Alignment.Center,
-                ) { UnringedFocus { PostAvatar(shown, scope, actions, AvatarSize, inTarget = true) } }
+                ) { UnringedFocus { PostAvatar(shown, scope, actions, AvatarSize, inTarget = true, onOpen = openAuthor) } }
             }
             Spacer(Modifier.width((PostGeometry.COLUMN_START - PostGeometry.AVATAR_START - PostGeometry.TOUCH_TARGET).dp))
             val buttons = if (translation != null) 2 else 1
@@ -293,14 +300,15 @@ private fun ContextLines(post: XPost, actions: PostActions, pinned: Boolean, fir
 /**
  * The author's picture, opening the profile, with the author's card where the pointer rests on it; a plain face in non-confirmation-bias mode; XTA's follow badge on it.
  * [inTarget] where a 48 dp target round it opens the author too: that target is Tab's stop, not the picture again.
+ * [onOpen], where given, opens the author in place of a plain tap: the target round it, which opens them in a window of its own on a Ctrl+click.
  */
 @Composable
-internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, size: Dp, inTarget: Boolean = false) {
+internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, size: Dp, inTarget: Boolean = false, onOpen: (() -> Unit)? = null) {
     if (!PostView.showsAuthor(post, scope.prefs, scope.profileScreenName)) {
         Icon(Icons.Filled.AccountCircle, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(size))
         return
     }
-    val open = { actions.openUser(post.author.screenName, post.author.id) }
+    val open = onOpen ?: { actions.openUser(post.author.screenName, post.author.id) }
     val picture = if (inTarget) Modifier.focusProperties { canFocus = false } else Modifier
     AuthorHoverCard(post.author, post.author.largeAvatarUrl, open) {
         if (scope.prefs.followBadge) {

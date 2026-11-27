@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.post
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventType
@@ -35,39 +36,54 @@ internal object MiddleClickLinks {
 
 /**
  * A middle click on a link in [text], laid out as [layout] holds it, opens
- * its web address ([MiddleClickLinks]) with [openInBrowser]; a click off a
- * link, and every other button, is left to what is under it.
+ * what it leads to in a window of its own where the app has a screen for it
+ * (a mention, a tag, a post's or a profile's link: [LocalWindowOpens]), as a
+ * middle click on a post does; a page on the web opens its address
+ * ([MiddleClickLinks]) with [openInBrowser]. A click off a link, and every
+ * other button, is left to what is under it.
  */
 @Composable
 internal fun Modifier.linkMiddleClicks(text: AnnotatedString, layout: TextLayoutHolder, openInBrowser: (String) -> Unit): Modifier {
-    val open by rememberUpdatedState(openInBrowser)
+    val open = rememberMiddleClickOpen(openInBrowser)
     return pointerInput(text, layout) {
         awaitPointerEventScope {
             while (true) {
                 val event = awaitPointerEvent()
                 if (event.type != PointerEventType.Press || !event.buttons.isTertiaryPressed) continue
                 val change = event.changes.firstOrNull() ?: continue
-                val address = tagAt(text, layout.result, change.position) { MiddleClickLinks.webAddressOf(it) != null }?.let(MiddleClickLinks::webAddressOf) ?: continue
+                val tag = tagAt(text, layout.result, change.position) { MiddleClickLinks.webAddressOf(it) != null } ?: continue
                 change.consume()
-                open(address)
+                open(tag)
             }
         }
     }
 }
 
-/** A middle click anywhere on this opens [url] (a web address, see [MiddleClickLinks]) with [openInBrowser]; nothing without one. */
+/** A middle click anywhere on this opens [url] in a window of its own or the browser, as [linkMiddleClicks] opens a link; nothing without one. */
 @Composable
 internal fun Modifier.middleClickOpens(url: String?, openInBrowser: (String) -> Unit): Modifier {
-    val address = MiddleClickLinks.webAddressOf(url) ?: return this
-    val open by rememberUpdatedState(openInBrowser)
-    return pointerInput(address) {
+    if (MiddleClickLinks.webAddressOf(url) == null) return this
+    val open = rememberMiddleClickOpen(openInBrowser)
+    return pointerInput(url) {
         awaitPointerEventScope {
             while (true) {
                 val event = awaitPointerEvent()
                 if (event.type != PointerEventType.Press || !event.buttons.isTertiaryPressed) continue
                 event.changes.forEach { it.consume() }
-                open(address)
+                url?.let(open)
             }
+        }
+    }
+}
+
+/** What a middle click on a link's [tag] does: a window of its own where the app has a screen for it, else the browser at its web address. */
+@Composable
+private fun rememberMiddleClickOpen(openInBrowser: (String) -> Unit): (String) -> Unit {
+    val windows by rememberUpdatedState(LocalWindowOpens.current)
+    val browser by rememberUpdatedState(openInBrowser)
+    return remember {
+        { tag ->
+            windows?.link?.invoke(tag)?.invoke() ?: MiddleClickLinks.webAddressOf(tag)?.let(browser)
         }
     }
 }

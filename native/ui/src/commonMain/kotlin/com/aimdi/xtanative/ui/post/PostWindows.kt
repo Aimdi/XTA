@@ -1,7 +1,9 @@
 package com.aimdi.xtanative.ui.post
 
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
@@ -19,11 +21,21 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 
 /**
- * Opens a post, by its id, in a window of its own beside the app's, as a
- * browser opens a link in a new window; null where the app has the one
- * window (Android), and outside the app's screens.
+ * What opens in a window of its own beside the app's, as a browser opens a
+ * link in a new window: a post by its id, a profile, a community, or what a link,
+ * mention, hashtag or cashtag of a post's text leads to ([link], by its tag:
+ * what opens it, or null for a page on the web, which stays the
+ * browser's). Bound by the app's navigation, which knows the screens.
  */
-internal val LocalPostWindows = staticCompositionLocalOf<((postId: String) -> Unit)?> { null }
+internal class WindowOpens(
+    val post: (id: String) -> Unit,
+    val profile: (screenName: String, userId: String?) -> Unit,
+    val community: (id: String) -> Unit,
+    val link: (tag: String) -> (() -> Unit)?,
+)
+
+/** The [WindowOpens] of the app's screens; null where the app has the one window (Android), and outside its screens. */
+internal val LocalWindowOpens = staticCompositionLocalOf<WindowOpens?> { null }
 
 /** What a mouse press on a post card does about a window of its own. */
 internal enum class PostPress {
@@ -61,8 +73,8 @@ internal class CardPresses {
 /**
  * A middle click on this opens [open] (the post in a window of its own),
  * and a click with Ctrl held is marked in [presses] for the card's tap to
- * read. A middle click on a link inside is the link's (it opens in the
- * browser); touches are left alone. Nothing without [open].
+ * read. A middle click on a link inside is the link's (it opens in a
+ * window of its own, or the browser); touches are left alone. Nothing without [open].
  */
 @Composable
 internal fun Modifier.opensInWindow(open: (() -> Unit)?, presses: CardPresses): Modifier {
@@ -87,6 +99,21 @@ internal fun Modifier.opensInWindow(open: (() -> Unit)?, presses: CardPresses): 
                 }
             }
         }
+    }
+}
+
+/**
+ * A click on this does [onClick]; a click with Ctrl held, or a middle click,
+ * does [inWindow] instead (what it opens, in a window of its own), as a post
+ * card's own do. Without [inWindow], a plain click.
+ */
+@Composable
+internal fun Modifier.clickableOrWindow(inWindow: (() -> Unit)?, onClick: () -> Unit): Modifier {
+    val presses = remember { CardPresses() }
+    val latest by rememberUpdatedState(inWindow)
+    return opensInWindow(inWindow, presses).clickable {
+        val window = latest
+        if (presses.take() == PostPress.TAP_IN_WINDOW && window != null) window() else onClick()
     }
 }
 
