@@ -1,14 +1,10 @@
 package com.aimdi.xtanative.ui.links
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draganddrop.DragAndDropEvent
-import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.draganddrop.awtTransferable
+import com.aimdi.xtanative.ui.common.showingDropTarget
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import kotlinx.coroutines.Dispatchers
@@ -68,23 +64,17 @@ internal object DraggedText {
         listOfNotNull(URI_LIST, DataFlavor.stringFlavor).filter { flavor -> runCatching { transfer.isDataFlavorSupported(flavor) }.getOrDefault(false) }
 }
 
-// Compose's desktop drag data (awtTransferable) still carries @ExperimentalComposeUiApi; the drop target @ExperimentalFoundationApi.
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
+// Compose's desktop drag data (awtTransferable) still carries @ExperimentalComposeUiApi.
+// The window lights up while a link is dragged over it; other text and files do not open anything here.
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-internal fun Modifier.takesDroppedLinks(): Modifier {
-    val target = remember {
-        object : DragAndDropTarget {
-            override fun onDrop(event: DragAndDropEvent): Boolean {
-                val link = DroppedLinks.linkIn(DraggedText.read(event.awtTransferable)) ?: return false
-                DesktopIncomingLinks.hand(link, byReader = true)
-                return true
-            }
-        }
-    }
-    return dragAndDropTarget(
-        shouldStartDragAndDrop = { event -> DraggedText.offered(event.awtTransferable) },
-        target = target,
-    )
+internal fun Modifier.takesDroppedLinks(): Modifier = showingDropTarget(
+    offered = { event -> DraggedText.offered(event.awtTransferable) },
+    takes = { event -> DroppedLinks.linkIn(DraggedText.read(event.awtTransferable)) != null },
+) { event ->
+    val link = DroppedLinks.linkIn(DraggedText.read(event.awtTransferable))
+    link?.let { DesktopIncomingLinks.hand(it, byReader = true) }
+    link != null
 }
 
 /**

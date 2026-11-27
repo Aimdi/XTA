@@ -1,16 +1,13 @@
 package com.aimdi.xtanative.ui.downloads
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draganddrop.DragAndDropEvent
-import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.draganddrop.awtTransferable
+import com.aimdi.xtanative.ui.common.showingDropTarget
 import com.aimdi.xtanative.store.saved.LocalPosts
 import com.aimdi.xtanative.ui.common.FileChoosers
 import com.aimdi.xtanative.ui.common.FileFilter
@@ -61,22 +58,20 @@ internal fun droppedFiles(transfer: Transferable): List<File> = DroppedFiles.fil
 /** A dropped [file] read off the window's thread; null for one that is not a regular file (a folder named like a picture). */
 internal suspend fun readDropped(file: File): PickedFile? = withContext(Dispatchers.IO) { if (file.isFile) read(file) else null }
 
-// Compose's desktop drag data (awtTransferable) still carries @ExperimentalComposeUiApi; the drop target @ExperimentalFoundationApi.
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
+// Compose's desktop drag data (awtTransferable) still carries @ExperimentalComposeUiApi.
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 internal actual fun Modifier.takesDroppedFiles(enabled: Boolean, onDropped: (List<suspend () -> PickedFile?>) -> Unit): Modifier {
     if (!enabled) return this
     val latest by rememberUpdatedState(onDropped)
-    val target = remember {
-        object : DragAndDropTarget {
-            override fun onDrop(event: DragAndDropEvent): Boolean {
-                val files = droppedFiles(event.awtTransferable).takeIf { it.isNotEmpty() } ?: return false
-                latest(files.map { file -> suspend { readDropped(file) } })
-                return true
-            }
-        }
+    return showingDropTarget(
+        offered = { event -> DroppedFiles.offered(event.awtTransferable) },
+        takes = { event -> droppedFiles(event.awtTransferable).isNotEmpty() },
+    ) { event ->
+        val files = droppedFiles(event.awtTransferable).takeIf { it.isNotEmpty() }
+        files?.let { latest(it.map { file -> suspend { readDropped(file) } }) }
+        files != null
     }
-    return dragAndDropTarget(shouldStartDragAndDrop = { event -> DroppedFiles.offered(event.awtTransferable) }, target = target)
 }
 
 @Composable

@@ -1,17 +1,13 @@
 package com.aimdi.xtanative.ui.plugins
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draganddrop.DragAndDropEvent
-import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.draganddrop.awtTransferable
+import com.aimdi.xtanative.ui.common.showingDropTarget
 import com.aimdi.xtanative.store.saved.LocalPosts
 import com.aimdi.xtanative.ui.links.DraggedText
 import java.awt.datatransfer.DataFlavor
@@ -93,29 +89,28 @@ internal object DroppedFiles {
  * [DroppedFiles.offered]) is left to what is under it (the window's dropped
  * links). Off while not [enabled].
  */
-// Compose's desktop drag data (awtTransferable) still carries @ExperimentalComposeUiApi; the drop target @ExperimentalFoundationApi.
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
+// Compose's desktop drag data (awtTransferable) still carries @ExperimentalComposeUiApi.
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 internal fun <T : Any> Modifier.takesFiles(enabled: Boolean = true, pick: (List<File>) -> T?, onDrop: (T) -> Unit): Modifier {
     val picks by rememberUpdatedState(pick)
     val latest by rememberUpdatedState(onDrop)
     val on by rememberUpdatedState(enabled)
     val scope = rememberCoroutineScope()
-    val target = remember {
-        object : DragAndDropTarget {
-            override fun onDrop(event: DragAndDropEvent): Boolean {
-                if (!on) return false
-                val files = DroppedFiles.files(event.awtTransferable).takeIf { it.isNotEmpty() } ?: return false
-                val choose = picks
-                scope.launch {
-                    val picked = withContext(Dispatchers.IO) { runCatching { choose(DroppedFiles.regular(files)) }.getOrNull() } ?: return@launch
-                    if (on) latest(picked)
-                }
-                return true
+    return showingDropTarget(
+        offered = { event -> on && DroppedFiles.offered(event.awtTransferable) },
+        takes = { event -> on && DroppedFiles.files(event.awtTransferable).isNotEmpty() },
+    ) { event ->
+        val files = DroppedFiles.files(event.awtTransferable).takeIf { on && it.isNotEmpty() }
+        files?.let {
+            val choose = picks
+            scope.launch {
+                val picked = withContext(Dispatchers.IO) { runCatching { choose(DroppedFiles.regular(it)) }.getOrNull() } ?: return@launch
+                if (on) latest(picked)
             }
         }
+        files != null
     }
-    return dragAndDropTarget(shouldStartDragAndDrop = { event -> on && DroppedFiles.offered(event.awtTransferable) }, target = target)
 }
 
 /** The files of a drop on the plugin's screen, those [accept] takes, up to [PluginDroppedFile.MAX_BYTES] each. */
