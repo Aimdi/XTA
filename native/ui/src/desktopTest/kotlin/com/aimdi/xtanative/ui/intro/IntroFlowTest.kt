@@ -110,4 +110,20 @@ class IntroFlowTest {
         assertEquals(IntroPage.WELCOME, IntroKeys.turned(IntroPage.DEVICE, towardsRight = true, rtl = true))
     }
 
+    @Test
+    fun aWideWindowWidensTheColumnSoTheAccentsStandInOneRow() {
+        assertEquals(IntroLayout.COLUMN, IntroLayout.columnWidth(600f))
+        assertEquals(IntroLayout.WIDE_COLUMN, IntroLayout.columnWidth(1600f))
+        // Seven 64 dp accents, six 4 dp gaps and the picker's 12 dp edges, in the column less its 24 dp margins and the card's 16 dp padding.
+        assertTrue(7 * 64 + 6 * 4 + 2 * 12 <= IntroLayout.WIDE_COLUMN - 2 * 24 - 2 * 16)
+    }
+
+    @Test
+    fun theDrawingGrowsWithATallWideWindowOnly() {
+        assertEquals(IntroLayout.DRAWING, IntroLayout.drawingHeight(600f, 900f))
+        assertEquals(IntroLayout.DRAWING, IntroLayout.drawingHeight(1600f, 600f))
+        assertEquals(IntroLayout.TALL_DRAWING, IntroLayout.drawingHeight(1600f, 1000f))
+        val between = IntroLayout.drawingHeight(1600f, 770f)
+        assertTrue(between > IntroLayout.DRAWING && between < IntroLayout.TALL_DRAWING)
+    }
 }

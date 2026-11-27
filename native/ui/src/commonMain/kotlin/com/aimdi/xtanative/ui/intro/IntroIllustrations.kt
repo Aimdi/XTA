@@ -30,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -81,8 +82,8 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 import org.jetbrains.compose.resources.stringResource
 
-/** How tall a card's drawing stands. */
-private val DRAWING_HEIGHT = 200.dp
+/** How tall a card's drawing stands: taller on a desktop's big window ([IntroLayout.drawingHeight]). */
+internal val LocalDrawingHeight = compositionLocalOf { IntroLayout.DRAWING.dp }
 
 /** One picture for a screen reader: [label], and nothing of what it is drawn with. */
 private fun Modifier.picture(label: String): Modifier = clearAndSetSemantics {
@@ -91,7 +92,7 @@ private fun Modifier.picture(label: String): Modifier = clearAndSetSemantics {
 }
 
 /** The intro's colours, as XTA's introTokens names them for these drawings. */
-private class DrawingColours(val ink: Color, val secondary: Color, val accent: Color, val surface: Color, val hairline: Color) {
+private class DrawingColours(val ink: Color, val secondary: Color, val accent: Color, val surface: Color, val hairline: Color, val chip: Color) {
     /** A placeholder's bone, lifted from the surface it sits on (introBoneColor). */
     val bone: Color get() = ink.copy(alpha = 0.16f).compositeOver(surface)
 }
@@ -99,7 +100,8 @@ private class DrawingColours(val ink: Color, val secondary: Color, val accent: C
 @Composable
 private fun drawingColours(): DrawingColours {
     val scheme = MaterialTheme.colorScheme
-    return DrawingColours(scheme.onBackground, scheme.onSurfaceVariant, scheme.primary, scheme.surface, scheme.outlineVariant)
+    // A source's disc is a shade off the page, so a white disc never vanishes into a white page.
+    return DrawingColours(scheme.onBackground, scheme.onSurfaceVariant, scheme.primary, scheme.surface, scheme.outlineVariant, scheme.surfaceContainerHigh)
 }
 
 /** The launcher mark (XtaMarkPainter): two congruent ellipses crossed at ±45°, stroked with one even width. */
@@ -149,9 +151,9 @@ internal fun OrbitIllustration() {
         val transition = rememberInfiniteTransition(label = "orbit")
         transition.animateFloat(0f, 1f, infiniteRepeatable(tween(6_000, easing = LinearEasing)), label = "drift").value
     }
-    BoxWithConstraints(Modifier.fillMaxWidth().height(DRAWING_HEIGHT).picture(label), contentAlignment = Alignment.Center) {
+    BoxWithConstraints(Modifier.fillMaxWidth().height(LocalDrawingHeight.current).picture(label), contentAlignment = Alignment.Center) {
         val mark = min(maxWidth, maxHeight) * 0.62f
-        val chip = 44.dp
+        val chip = (mark * 0.36f).coerceIn(44.dp, 64.dp)
         XtaMark(mark)
         ORBIT.forEach { slot ->
             val t = slot.t + DRIFT_TURNS * sin(2 * PI * drift)
@@ -172,7 +174,7 @@ private fun SourceChip(id: String, brand: Color, size: Dp, modifier: Modifier = 
     val plugins by LocalPlugins.current.running.collectAsState()
     val running = plugins.firstOrNull { it.plugin.id == id }?.plugin
     Box(
-        modifier.size(size).clip(CircleShape).background(colours.surface).border(1.dp, colours.hairline, CircleShape),
+        modifier.size(size).clip(CircleShape).background(colours.chip).border(1.dp, colours.hairline, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         when {
@@ -191,7 +193,7 @@ private fun SourceChip(id: String, brand: Color, size: Dp, modifier: Modifier = 
 @Composable
 internal fun PhoneIllustration() {
     val label = stringResource(Res.string.intro_illustration_phone)
-    BoxWithConstraints(Modifier.fillMaxWidth().height(DRAWING_HEIGHT).picture(label), contentAlignment = Alignment.Center) {
+    BoxWithConstraints(Modifier.fillMaxWidth().height(LocalDrawingHeight.current).picture(label), contentAlignment = Alignment.Center) {
         val height = maxHeight * 0.82f
         val width = min(maxWidth * 0.44f, height / 1.75f)
         val rows = IntroDrawing.phoneRows(width.value.toDouble(), height.value.toDouble())
@@ -291,7 +293,7 @@ private fun rememberPulse(on: Boolean): Float {
  * initials, up to three, overlapping.
  */
 @Composable
-internal fun FlowIllustration(accounts: List<String>, height: Dp = DRAWING_HEIGHT) {
+internal fun FlowIllustration(accounts: List<String>, height: Dp = LocalDrawingHeight.current) {
     val label = stringResource(Res.string.intro_illustration_flow)
     BoxWithConstraints(Modifier.fillMaxWidth().height(height).picture(label)) {
         val chip = (min(maxWidth, maxHeight) * 0.26f).coerceIn(48.dp, 72.dp)

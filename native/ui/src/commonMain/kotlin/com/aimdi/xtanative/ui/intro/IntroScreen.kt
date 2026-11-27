@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -35,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.LaunchedEffect
@@ -64,6 +66,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.data.LocalGraph
@@ -121,28 +124,35 @@ fun IntroScreen(onFinished: () -> Unit, onImport: () -> Unit, onOpen: (String) -
     val primary = remember { FocusRequester() }
     // On the desktop the keys have a place from the start: Enter goes on, the arrows turn the cards.
     if (isDesktop) LaunchedEffect(Unit) { runCatching { primary.requestFocus() } }
-    Column(
-        Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).safeDrawingPadding()
-            .onKeyEvent { event -> event.type == KeyEventType.KeyDown && turnByKey(event, IntroPage.entries[pager.targetPage], rtl, show) },
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(horizontal = 12.dp, vertical = 6.dp), horizontalArrangement = Arrangement.End) {
-            if (shown != IntroPage.SOURCES) IntroTextButton(stringResource(Res.string.intro_skip), onClick = finish)
+    BoxWithConstraints(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+        val column = IntroLayout.columnWidth(maxWidth.value).dp
+        val drawing = IntroLayout.drawingHeight(maxWidth.value, maxHeight.value).dp
+        Column(
+            Modifier.fillMaxSize().safeDrawingPadding()
+                .onKeyEvent { event -> event.type == KeyEventType.KeyDown && turnByKey(event, IntroPage.entries[pager.targetPage], rtl, show) },
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(horizontal = 12.dp, vertical = 6.dp), horizontalArrangement = Arrangement.End) {
+                if (shown != IntroPage.SOURCES) IntroTextButton(stringResource(Res.string.intro_skip), onClick = finish)
+            }
+            HorizontalPager(pager, Modifier.weight(1f).fillMaxWidth()) { index ->
+                val page = IntroPage.entries[index]
+                CompositionLocalProvider(LocalDrawingHeight provides drawing) {
+                    IntroCard(column) { CardOf(page, settings, accounts.map { it.screenName.orEmpty() }, change, onOpen) }
+                }
+            }
+            // Under the cards rather than on each, so the button the keys are on stays theirs as the cards turn.
+            Footer(
+                shown,
+                column,
+                noAccount = accounts.isEmpty(),
+                primary = primary,
+                onNext = { shown.next?.let(show) ?: finish() },
+                onSignIn = { onOpen(SettingsRoutes.SIGN_IN) },
+                onImport = onImport,
+                onFinish = finish,
+            )
         }
-        HorizontalPager(pager, Modifier.weight(1f).fillMaxWidth()) { index ->
-            val page = IntroPage.entries[index]
-            IntroCard { CardOf(page, settings, accounts.map { it.screenName.orEmpty() }, change, onOpen) }
-        }
-        // Under the cards rather than on each, so the button the keys are on stays theirs as the cards turn.
-        Footer(
-            shown,
-            noAccount = accounts.isEmpty(),
-            primary = primary,
-            onNext = { shown.next?.let(show) ?: finish() },
-            onSignIn = { onOpen(SettingsRoutes.SIGN_IN) },
-            onImport = onImport,
-            onFinish = finish,
-        )
     }
 }
 
@@ -158,14 +168,20 @@ private fun turnByKey(event: KeyEvent, from: IntroPage, rtl: Boolean, show: (Int
     return true
 }
 
-/** One card, as XTA's IntroPageFrame lays it out, scrolling when it must. */
+/**
+ * One card, as XTA's IntroPageFrame lays it out, scrolling when it must; in
+ * the middle of the room it has, [column] wide at most.
+ */
 @Composable
-private fun IntroCard(card: @Composable () -> Unit) {
-    Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Column(
-            Modifier.weight(1f).widthIn(max = 560.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) { card() }
+private fun IntroCard(column: Dp, card: @Composable () -> Unit) {
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val room = maxHeight
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                Modifier.heightIn(min = room).widthIn(max = column).fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+            ) { card() }
+        }
     }
 }
 
@@ -351,6 +367,7 @@ private fun Tile(
 @Composable
 private fun Footer(
     page: IntroPage,
+    column: Dp,
     noAccount: Boolean,
     primary: FocusRequester,
     onNext: () -> Unit,
@@ -364,7 +381,7 @@ private fun Footer(
         signIn -> stringResource(Res.string.signin_add_account) to onSignIn
         else -> stringResource(Res.string.intro_next) to onNext
     }
-    Column(Modifier.widthIn(max = 560.dp).fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(Modifier.widthIn(max = column).fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         PageIndicator(page.ordinal, IntroPage.entries.size)
         RingedFocus {
             Button(onClick = action, modifier = Modifier.fillMaxWidth().focusRequester(primary).keyboardFocusRing(outset = RING_GAP)) { Text(label) }

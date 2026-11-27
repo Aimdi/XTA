@@ -138,3 +138,32 @@ object IntroKeys {
         if (towardsRight != rtl) page.next else page.previous
 }
 
+/**
+ * How the cards use a window's room, in dp: a phone's column on a narrow
+ * one; on a desktop's wide one a wider column, so the accent picker's seven
+ * colours stand in one row, and taller drawings, the card standing in the
+ * middle of the window rather than at its top.
+ */
+object IntroLayout {
+    /** At least this wide, and the column widens to [WIDE_COLUMN]. */
+    const val WIDE_FROM = 840f
+    const val COLUMN = 560f
+    const val WIDE_COLUMN = 680f
+
+    /** The drawings' height on a window of no height to spare, and at most. */
+    const val DRAWING = 200f
+    const val TALL_DRAWING = 320f
+
+    /** The window height the drawing grows from, and the one it is tallest at. */
+    private const val GROWS_FROM = 640f
+    private const val TALLEST_AT = 900f
+
+    fun columnWidth(windowWidth: Float): Float = if (windowWidth >= WIDE_FROM) WIDE_COLUMN else COLUMN
+
+    /** The drawing's height: [DRAWING] up to [GROWS_FROM] tall, growing with the window's height to [TALL_DRAWING] on a wide one. */
+    fun drawingHeight(windowWidth: Float, windowHeight: Float): Float {
+        if (windowWidth < WIDE_FROM || windowHeight <= GROWS_FROM) return DRAWING
+        val share = ((windowHeight - GROWS_FROM) / (TALLEST_AT - GROWS_FROM)).coerceIn(0f, 1f)
+        return DRAWING + (TALL_DRAWING - DRAWING) * share
+    }
+}
