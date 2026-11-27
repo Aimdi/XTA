@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.ui.theme
 
-import androidx.compose.foundation.DefaultContextMenuRepresentation
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalContextMenuRepresentation
 import androidx.compose.foundation.LocalIndication
@@ -19,6 +18,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import com.aimdi.xtanative.ui.common.RowIndication
 import com.aimdi.xtanative.ui.common.SelectingTextMenu
+import com.aimdi.xtanative.ui.post.AppContextMenu
 
 /** How strongly an entry under the pointer is lit, as Material's hovered state lights it. */
 private const val HOVER_ALPHA = 0.08f
@@ -68,20 +68,14 @@ internal val AppRipples = LocalRippleConfiguration providesComputed { if (Keyboa
 internal actual fun ProvidePlatformLook(content: @Composable () -> Unit) {
     KeyboardFocusLook.start()
     val colors = MaterialTheme.colorScheme
-    val menus = remember(colors.surfaceContainer, colors.onSurface) {
-        DefaultContextMenuRepresentation(
-            backgroundColor = colors.surfaceContainer,
-            textColor = colors.onSurface,
-            itemHoverColor = colors.onSurface.copy(alpha = HOVER_ALPHA),
-        )
-    }
     // Read when a row draws, not here: a key or a click turning the mode recomposes nothing above the rows.
     val keyboard = remember { derivedStateOf { KeyboardFocusLook.keyboard } }
     val rows = remember(colors.onSurface, colors.primary) { RowIndication(colors.onSurface, colors.primary, keyboard) }
     val textMenu = LocalTextContextMenu.current
     val selecting = remember(textMenu) { if (textMenu is SelectingTextMenu) textMenu else SelectingTextMenu(textMenu) }
     CompositionLocalProvider(
-        LocalContextMenuRepresentation provides menus,
+        // Selected text's menu (Copy, Select all) drawn as the app's own pointer menus are.
+        LocalContextMenuRepresentation provides AppContextMenu,
         LocalTextContextMenu provides selecting,
         // Plain clickable rows (settings, dialog options, tabs) lit as rounded inset blocks with the keyboard's ring.
         LocalIndication provides rows,
