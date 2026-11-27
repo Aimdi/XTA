@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -492,16 +493,17 @@ private fun Modifier.badgePresses(badge: BadgePresses, indication: Indication?):
 /**
  * A touch's 48 dp target round the badge, under the avatar: a tap past the
  * avatar's rim near the badge follows, one on the face opens the profile. No
- * focus stop or second button for a screen reader: the disc is both.
+ * focus stop or second button for a screen reader: the disc is both. It
+ * reaches past the avatar's box, which would otherwise squeeze it to its own size.
  */
 @Composable
 private fun BadgeTouchTarget(avatar: Dp, badge: BadgePresses) {
-    val target = PostGeometry.followBadgeTouchTarget(isDesktop)?.dp ?: return
-    val at = PostGeometry.followBadgeCenter(avatar.value).dp - target / 2
+    val target = PostGeometry.followBadgeTouchTarget(isDesktop) ?: return
     Box(
         Modifier
-            .offset(at, at)
-            .size(target)
+            .offset(PostGeometry.followBadgeTouchLeft(avatar.value, target).dp, PostGeometry.followBadgeTouchTop(avatar.value, target).dp)
+            .wrapContentSize(Alignment.TopStart, unbounded = true)
+            .size(target.dp)
             .focusProperties { canFocus = false }
             .clearAndSetSemantics { }
             .badgePresses(badge, indication = null),

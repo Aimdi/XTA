@@ -125,4 +125,24 @@ class AuthorLineLayoutTest {
         assertEquals(disc, PostGeometry.followBadgeDiscHit(disc, pointer = false))
         assertEquals(PostGeometry.TOUCH_TARGET, PostGeometry.followBadgeTouchTarget(pointer = false))
     }
+
+    @Test
+    fun aTouchsBadgeTargetIsAWhole48DpRoundTheDiscAndOffTheText() {
+        val avatar = PostGeometry.AVATAR_SIZE
+        val target = PostGeometry.followBadgeTouchTarget(pointer = false)!!
+        val left = PostGeometry.followBadgeTouchLeft(avatar, target)
+        val top = PostGeometry.followBadgeTouchTop(avatar, target)
+        val center = PostGeometry.followBadgeCenter(avatar)
+        val radius = PostGeometry.followBadgeSize(avatar) / 2
+        // The whole disc lies in it.
+        assertTrue(left <= center - radius && center + radius <= left + target)
+        assertTrue(top <= center - radius && center + radius <= top + target)
+        // It reaches past the avatar's box, so that box must not bound it (it would squeeze it to 40 dp).
+        assertTrue(left + target > avatar && top + target > avatar)
+        assertTrue(target > avatar)
+        // It ends where the text column starts: a tap on the text is never a follow.
+        assertEquals(PostGeometry.COLUMN_START, PostGeometry.AVATAR_START + left + target)
+        // The face's centre is under it, where the avatar above takes the tap; its top-left stays clear of it.
+        assertTrue(left > 0f && top > 0f)
+    }
 }

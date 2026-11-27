@@ -75,4 +75,10 @@ object PostGeometry {
      * none for a pointer, which aims at the disc.
      */
     fun followBadgeTouchTarget(pointer: Boolean): Float? = if (pointer) null else TOUCH_TARGET
+
+    /** The top of a touch's badge target [target] wide, from the avatar's top: centred on the badge. */
+    fun followBadgeTouchTop(avatar: Float, target: Float): Float = followBadgeCenter(avatar) - target / 2
+
+    /** Its left: centred on the badge, but drawn back so it ends where the text column starts and takes no tap on the text. */
+    fun followBadgeTouchLeft(avatar: Float, target: Float): Float = minOf(followBadgeCenter(avatar) - target / 2, avatar + AVATAR_GAP - target)
 }
