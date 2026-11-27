@@ -63,13 +63,6 @@ object SavedIcons {
                 "M7,15h10v2H7zM10.3,11.2L8.4,9.3 7,10.7l3.3,3.3L17,7.3 15.6,5.9z",
         )
     }
-    val Tune by lazy {
-        icon(
-            "Tune",
-            "M3,17v2h6v-2L3,17zM3,5v2h10L13,5L3,5zM13,21v-2h8v-2h-8v-2h-2v6h2zM7,9v2L3,11v2h4v2h2L9,9L7,9zM21,13v-2L11,11v2h10z" +
-                "M15,9h2L17,7h4L21,5h-4L17,3h-2v6z",
-        )
-    }
     val Checklist by lazy {
         icon(
             "Checklist",

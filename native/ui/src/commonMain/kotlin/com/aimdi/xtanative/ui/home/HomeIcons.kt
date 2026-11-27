@@ -96,7 +96,6 @@ internal object HomeIcons {
                 "M4,12H2v7c0,1.1 0.9,2 2,2h9v-2H4V12z",
         )
     }
-    val FilterList: ImageVector by lazy { icon("FilterList", "M10,18h4v-2h-4v2zM3,6v2h18L21,6L3,6zM6,13h12v-2L6,11v2z") }
     val ManageAccounts: ImageVector by lazy {
         icon(
             "ManageAccounts",

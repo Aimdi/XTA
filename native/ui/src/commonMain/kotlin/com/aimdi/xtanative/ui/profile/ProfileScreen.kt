@@ -510,7 +510,7 @@ private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actio
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (user != null && state.complete) {
-                IconTip(stringResource(Res.string.posts_filters)) { IconButton(onClick = { onSheet(ProfileSheet.FILTERS) }) { Icon(PostIcons.Tune, stringResource(Res.string.posts_filters)) } }
+                IconTip(stringResource(Res.string.posts_filters)) { IconButton(onClick = { onSheet(ProfileSheet.FILTERS) }) { Icon(XIcons.Filter, stringResource(Res.string.posts_filters)) } }
                 ProfileFollowButton(user)
             }
         }

@@ -87,6 +87,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Content
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Filter
@@ -228,7 +229,7 @@ private fun formSections(filters: XAdvancedSearch, onChange: ((XAdvancedSearch) 
         },
         content = { Section(DiscoverIcons.PermMedia, Res.string.discover_content_filter) { ContentFilters(filters, onChange) } },
         numbers = {
-            Section(DiscoverIcons.Tune, Res.string.discover_filters) {
+            Section(XIcons.Filter, Res.string.discover_filters) {
                 listOf(Filter.MIN_REPLIES, Filter.MIN_LIKES, Filter.MIN_RETWEETS).forEach { filter ->
                     TextFilter(filters, filter, onChange, onApply, number = true)
                 }

@@ -57,6 +57,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.feed.ContentFilter
 import com.aimdi.xtanative.core.feed.KeywordAction
@@ -127,7 +128,7 @@ fun CustomSettingsScreen(state: GroupFeedUi, actions: GroupSettingsActions, onBa
     ) { padding ->
         rememberLazyListState().let { readList -> WithReadingColumn(padding, readList) { column -> LazyColumn(state = readList, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             item(key = "content") {
-                Section(GroupIcons.FilterAltOutlined, Res.string.groups_content_filter, Res.string.groups_content_filter_description) {
+                Section(XIcons.Filter, Res.string.groups_content_filter, Res.string.groups_content_filter_description) {
                     ContentFilterRow(state.settings.rules.contentFilter, actions::setContentFilter)
                 }
             }

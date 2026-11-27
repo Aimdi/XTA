@@ -68,6 +68,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
@@ -276,7 +277,7 @@ private fun FilterButton(filter: ShellFilter, color: Color) {
     val label = stringResource(if (filter.active) Res.string.home_sort_filter_on else Res.string.home_sort_filter)
     IconTip(label) { IconButton(onClick = filter.onOpen) {
         Box {
-            Icon(PostIcons.Tune, label, tint = if (filter.active) color else MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp))
+            Icon(XIcons.SortAndFilter, label, tint = if (filter.active) color else MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp))
             if (filter.active) Box(Modifier.align(Alignment.TopEnd).size(6.dp).background(color, CircleShape))
         }
     } }

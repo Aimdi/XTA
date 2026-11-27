@@ -56,6 +56,14 @@ object XIcons {
 
     private fun nodes(path: String) = PathParser().parsePathString(path).toNodes()
 
+    /** Filter, wherever the reader narrows what is shown (Material's FilterAlt, outlined). */
+    val Filter: ImageVector by lazy {
+        icon("Filter", "M7 6h10l-5.01 6.3L7 6zm-2.75-.39C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04c-.83 0-1.3.95-.79 1.61z")
+    }
+
+    /** Sort and filter in one button or menu (Material's FilterList). */
+    val SortAndFilter: ImageVector by lazy { icon("SortAndFilter", "M10,18h4v-2h-4v2zM3,6v2h18L21,6L3,6zM6,13h12v-2L6,11v2z") }
+
     private fun icon(name: String, path: String): ImageVector =
         ImageVector.Builder(name = name, defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f).addPath(pathData = nodes(path), fill = SolidColor(Color.Black)).build()
 }
