@@ -73,7 +73,7 @@ class SavedViewModel(private val graph: AppGraph) : ViewModel() {
             body = body,
             visible = visibleIds(body),
         )
-    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SavedUi())
+    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000, replayExpirationMillis = KEPT_LINGER_MS), SavedUi())
 
     init {
         viewModelScope.launch {
@@ -162,5 +162,8 @@ class SavedViewModel(private val graph: AppGraph) : ViewModel() {
 
     private companion object {
         const val SEARCH_PAUSE_MS = 200L
+
+        /** Left unwatched this long, the saved posts are let go by their store; the screen lets go of its copy with them. */
+        const val KEPT_LINGER_MS = 60_000L
     }
 }

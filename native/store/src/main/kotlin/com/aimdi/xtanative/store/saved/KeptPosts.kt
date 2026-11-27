@@ -7,10 +7,17 @@ import java.io.File
 import java.io.FileOutputStream
 import java.nio.channels.FileChannel
 import java.nio.file.StandardOpenOption
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -72,12 +79,21 @@ internal class Edit<T, R>(val next: T, val result: R, val fresh: String? = null,
  * index found beside it: only an older build can have written it since.
  *
  * [bare] is read at launch and holds no content; [whole] reads every
- * content file the first time a screen asks, and both follow each change. A
+ * content file the first time a screen asks, and both follow each change.
+ * Given a [scope], [whole] lets go of the content once nothing has watched
+ * it for [releaseAfterMillis], and reads it again as soon as something
+ * watches it again (null in between, as before the first read). A
  * change is on the disk before it is shown, and a failed write leaves both
  * as they were. An index that cannot be read is kept aside with its
  * contents (`.unreadable`) before anything replaces it.
  */
-internal class KeptPosts<T : Any, P : Any, X>(dir: StoreDir, private val name: String, private val shape: KeptShape<T, P, X>) {
+internal class KeptPosts<T : Any, P : Any, X>(
+    dir: StoreDir,
+    private val name: String,
+    private val shape: KeptShape<T, P, X>,
+    scope: CoroutineScope? = null,
+    private val releaseAfterMillis: Long = RELEASE_AFTER_MILLIS,
+) {
     private class Kept<P, X>(val posts: List<P>, val extra: X, val stored: Set<String>)
 
     private sealed interface Op<out P, out X> {
@@ -109,8 +125,41 @@ internal class KeptPosts<T : Any, P : Any, X>(dir: StoreDir, private val name: S
     /** Every post without its content; null until first read. */
     val bare: StateFlow<T?> = bareState.asStateFlow()
 
-    /** Every post with its content; null until [whole] first reads them. */
+    /** Every post with its content; null until [whole] first reads them, and while let go unwatched. */
     val whole: StateFlow<T?> = wholeState.asStateFlow()
+
+    /** [whole] was let go while unwatched: the next watcher has it read again. */
+    @Volatile
+    private var released = false
+
+    init {
+        scope?.launch { releaseWhileUnwatched() }
+    }
+
+    private suspend fun releaseWhileUnwatched() {
+        wholeState.subscriptionCount.map { it > 0 }.distinctUntilChanged().collectLatest { watched ->
+            when {
+                !watched -> {
+                    delay(releaseAfterMillis)
+                    locked { release() }
+                }
+                released -> try {
+                    whole()
+                } catch (error: CancellationException) {
+                    throw error
+                } catch (_: Exception) {
+                    // Unreadable now: the watcher sees null, as before a first read.
+                }
+            }
+        }
+    }
+
+    /** Drops the content, unless the earlier build's file is still the only copy of it. */
+    private fun release() {
+        if (legacyPending || wholeState.value == null) return
+        released = true
+        wholeState.value = null
+    }
 
     suspend fun bare(): T = locked { loaded(); bareState.value!! }
 
@@ -212,7 +261,10 @@ internal class KeptPosts<T : Any, P : Any, X>(dir: StoreDir, private val name: S
 
     private fun wholeNow(): T {
         val now = loaded()
-        return wholeState.value ?: wholeOf(now).also { wholeState.value = it }
+        return wholeState.value ?: wholeOf(now).also {
+            released = false
+            wholeState.value = it
+        }
     }
 
     private fun wholeOf(state: Kept<P, X>): T =
@@ -443,6 +495,9 @@ internal class KeptPosts<T : Any, P : Any, X>(dir: StoreDir, private val name: S
     private companion object {
         const val INDEX_VERSION = 2
         const val HAS_CONTENT = "c"
+
+        /** A minute: long enough to go to a post and come back, short enough not to keep every saved post in memory in the tray. */
+        const val RELEASE_AFTER_MILLIS = 60_000L
         const val PART = ".part"
 
         /** How many changes the log takes before the index is written whole again. */

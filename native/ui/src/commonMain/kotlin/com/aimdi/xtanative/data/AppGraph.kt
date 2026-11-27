@@ -97,8 +97,8 @@ class AppGraph(
     /** The store's files found unreadable, which nothing writes over meanwhile (Settings › Data names them). */
     val unreadableFiles: StateFlow<Set<String>> get() = store.unreadable
     val recentSearches = RecentSearches(settings)
-    val saved = SavedStore(store)
-    val likes = LikesStore(store)
+    val saved = SavedStore(store, scope = scope)
+    val likes = LikesStore(store, scope = scope)
     val localPosts = LocalPostsStore(store)
     val archiveNotes = ArchiveNotesStore(store)
     /** The reader's private notes on profiles, and the profiles whose reposts or replies the feeds hide. */

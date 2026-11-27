@@ -2,6 +2,7 @@ package com.aimdi.xtanative.store.saved
 
 import com.aimdi.xtanative.store.StoreDir
 import java.util.UUID
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.json.JsonElement
 
@@ -16,10 +17,15 @@ class SavedStore(
     dir: StoreDir,
     private val clock: () -> Long = System::currentTimeMillis,
     private val newId: () -> String = { UUID.randomUUID().toString() },
+    scope: CoroutineScope? = null,
 ) {
-    private val kept = KeptPosts(dir, "library", SavedShape)
+    private val kept = KeptPosts(dir, "library", SavedShape, scope)
 
-    /** The library with what was kept of each post; null before [library] first reads it. */
+    /**
+     * The library with what was kept of each post; null before [library]
+     * first reads it, and, given a [scope], while let go after a minute
+     * unwatched (read again as soon as it is watched again).
+     */
     val state: StateFlow<SavedLibrary?> = kept.whole
 
     /**

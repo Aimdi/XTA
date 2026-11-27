@@ -2,6 +2,7 @@ package com.aimdi.xtanative.store.saved
 
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.store.StoreDir
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.json.JsonElement
 
@@ -10,10 +11,14 @@ import kotlinx.serialization.json.JsonElement
  * `saved/likes`: a like writes that one post, not every like. A like is the
  * heart remembering: no network is ever told.
  */
-class LikesStore(dir: StoreDir, private val clock: () -> Long = System::currentTimeMillis) {
-    private val kept = KeptPosts(dir, "likes", LikesShape)
+class LikesStore(dir: StoreDir, scope: CoroutineScope? = null, private val clock: () -> Long = System::currentTimeMillis) {
+    private val kept = KeptPosts(dir, "likes", LikesShape, scope)
 
-    /** The likes with what was kept of each post, newest first; null before [likes] first reads them. */
+    /**
+     * The likes with what was kept of each post, newest first; null before
+     * [likes] first reads them, and, given a [scope], while let go after a
+     * minute unwatched (read again as soon as they are watched again).
+     */
     val state: StateFlow<List<LikedPost>?> = kept.whole
 
     /**

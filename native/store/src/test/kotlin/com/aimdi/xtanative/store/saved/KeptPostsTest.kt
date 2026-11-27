@@ -9,6 +9,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 /** How Saved and the likes are kept on the disk: one post's worth of writing per change, and nothing lost on the way there. */
@@ -395,5 +401,28 @@ class KeptPostsTest {
         assertEquals(listOf("2", "1"), read.map { it.id })
         assertTrue(read.all { it.content == null })
         assertTrue(J.parse(File(folder, "likes.index.json").readText()).raw != null)
+    }
+
+    @Test
+    fun theContentIsLetGoUnwatchedAndReadAgainWhenWatchedAgain() = timed {
+        val watching = CoroutineScope(Dispatchers.Default + SupervisorJob())
+        try {
+            val kept = KeptPosts(dir, "likes", LikesShape, watching, releaseAfterMillis = 100)
+            kept.edit { Edit(listOf(LikedPost("1", "u1", content("1"), 10)), Unit, fresh = "1") }
+            kept.whole()
+            val screen = watching.launch { kept.whole.collect {} }
+            delay(300)
+            assertEquals(content("1"), kept.whole.value?.single()?.content, "kept while watched")
+            screen.cancel()
+            waitUntil { kept.whole.value == null }
+            assertEquals(listOf("1"), kept.bare.value?.map { it.id }, "the index stays")
+
+            val again = watching.launch { kept.whole.collect {} }
+            waitUntil { kept.whole.value != null }
+            assertEquals(content("1"), kept.whole.value?.single()?.content)
+            again.cancel()
+        } finally {
+            watching.cancel()
+        }
     }
 }
