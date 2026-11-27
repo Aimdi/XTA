@@ -384,6 +384,8 @@
     <string name="intro_page_of">Pagina %1$d di %2$d</string>
     <string name="settings_desktop_notifications">Notifiche del desktop</string>
     <string name="settings_desktop_notifications_description">Avvisa quando un download finisce mentre sei in un’altra finestra</string>
+    <string name="settings_media_details">Mostra cosa è in riproduzione nei controlli multimediali</string>
+    <string name="settings_media_details_description">La schermata di blocco e i widget multimediali vedono autore, testo e immagine del post. Se disattivato, vedono solo che qualcosa è in riproduzione</string>
     <string name="settings_close_to_tray">Chiudi nell’area di notifica</string>
     <string name="settings_close_to_tray_description">Chiudendo la finestra l’app resta attiva nell’area di notifica; esci dal menu della sua icona</string>
     <string name="settings_start_at_login">Avvia all’accesso</string>

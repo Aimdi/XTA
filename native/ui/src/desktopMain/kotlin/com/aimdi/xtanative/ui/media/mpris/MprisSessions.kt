@@ -26,6 +26,15 @@ class MprisService(
     @Volatile
     var identity: String = "XTA Native"
 
+    /** What the controls are told instead of what plays; null tells them its title, author and picture. */
+    @Volatile
+    var plain: MprisPlain? = null
+        set(value) {
+            if (field == value) return
+            field = value
+            schedule()
+        }
+
     /** Brings the window forward, when a control asks to. */
     @Volatile
     var onRaise: (() -> Unit)? = null
@@ -73,11 +82,11 @@ class MprisService(
     override fun bind(title: String, artist: String?, binding: AudioSessionBinding) = bind(null, title, artist, binding)
 
     /** Binds [binding] for [owner], whose later [update] and [clear] reach it while nothing else was bound since. */
-    fun bind(owner: Any?, title: String, artist: String?, binding: AudioSessionBinding, artUrl: String? = null) {
+    fun bind(owner: Any?, title: String, artist: String?, binding: AudioSessionBinding, artUrl: String? = null, reading: Boolean = false) {
         synchronized(lock) {
             this.owner = owner
             this.binding = binding
-            now = Mpris.offered(MprisNow(track = ++tracks, title = title, artist = artist, artUrl = artUrl), binding)
+            now = Mpris.offered(MprisNow(track = ++tracks, title = title, artist = artist, artUrl = artUrl, reading = reading), binding)
             reportedAt = null
             seekedTo = null
         }
@@ -133,14 +142,17 @@ class MprisService(
         bus.submit {}.get(5, TimeUnit.SECONDS)
     }
 
+    /** Under [lock]: what the controls are told of [now]. */
+    private fun shown(): MprisNow = Mpris.shown(now, plain)
+
     private fun schedule() {
-        sessionNow.value = synchronized(lock) { now.takeIf { binding != null } }
+        sessionNow.value = synchronized(lock) { shown().takeIf { binding != null } }
         runCatching { bus.execute(::reconcile) }
     }
 
     /** On the bus's thread: the bus told what is bound now: the name taken or given back, and what changed. */
     private fun reconcile() {
-        val (bound, state, seeked) = synchronized(lock) { Triple(binding != null, now, seekedTo).also { seekedTo = null } }
+        val (bound, state, seeked) = synchronized(lock) { Triple(binding != null, shown(), seekedTo).also { seekedTo = null } }
         if (!bound && !named) return
         val bus = connected() ?: return
         when {
@@ -183,7 +195,7 @@ class MprisService(
     private fun answer(call: DBusMessage) {
         val bus = connection ?: return
         if (call.path != Mpris.PATH) return bus.fail(call, DBusConnection.UNKNOWN_METHOD, "No object at ${call.path}")
-        val (state, bound) = synchronized(lock) { now to binding }
+        val (state, bound) = synchronized(lock) { shown() to binding }
         val answer = Mpris.answer(call, state, identity)
         answer.error?.let { return bus.fail(call, it, call.member.orEmpty()) }
         bus.reply(call, answer.signature, answer.body)

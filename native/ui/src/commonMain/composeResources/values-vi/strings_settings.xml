@@ -380,6 +380,8 @@
     <string name="intro_page_of">Trang %1$d / %2$d</string>
     <string name="settings_desktop_notifications">Thông báo trên màn hình</string>
     <string name="settings_desktop_notifications_description">Báo khi một tệp tải xuống xong trong lúc bạn đang ở cửa sổ khác</string>
+    <string name="settings_media_details">Hiện nội dung đang phát trong điều khiển đa phương tiện</string>
+    <string name="settings_media_details_description">Màn hình khóa và tiện ích đa phương tiện thấy tác giả, nội dung và hình ảnh của bài đăng. Khi tắt, chúng chỉ thấy có thứ gì đó đang phát</string>
     <string name="settings_close_to_tray">Đóng xuống khay hệ thống</string>
     <string name="settings_close_to_tray_description">Khi đóng cửa sổ, ứng dụng vẫn chạy trong khay hệ thống; thoát từ menu của biểu tượng</string>
     <string name="settings_start_at_login">Khởi động khi đăng nhập</string>

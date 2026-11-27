@@ -384,6 +384,8 @@
     <string name="intro_page_of">Página %1$d de %2$d</string>
     <string name="settings_desktop_notifications">Notificações da área de trabalho</string>
     <string name="settings_desktop_notifications_description">Avisar quando um download terminar enquanto você estiver em outra janela</string>
+    <string name="settings_media_details">Mostrar o que está tocando nos controles de mídia</string>
+    <string name="settings_media_details_description">A tela de bloqueio e os widgets de mídia veem o autor, o texto e a imagem da publicação. Desligado, só veem que algo está tocando</string>
     <string name="settings_close_to_tray">Fechar para a bandeja</string>
     <string name="settings_close_to_tray_description">Fechar a janela mantém o app rodando na bandeja do sistema; saia pelo menu do ícone</string>
     <string name="settings_start_at_login">Iniciar ao fazer login</string>

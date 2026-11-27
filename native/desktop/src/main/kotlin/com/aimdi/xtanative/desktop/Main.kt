@@ -63,6 +63,7 @@ import com.aimdi.xtanative.ui.chrome.tray.trayWords
 import com.aimdi.xtanative.ui.home.ReorderDrags
 import com.aimdi.xtanative.ui.links.DesktopIncomingLinks
 import com.aimdi.xtanative.ui.media.VideoCheck
+import com.aimdi.xtanative.ui.media.mpris.MediaControlsPlainWords
 import com.aimdi.xtanative.ui.media.mpris.MprisSessions
 import com.aimdi.xtanative.ui.saved.DesktopNotices
 import com.aimdi.xtanative.ui.saved.DesktopNotifications
@@ -154,6 +155,7 @@ fun main(args: Array<String>) {
         val graph = app.graph
         val name = appName()
         LaunchedEffect(name) { MprisSessions.service.identity = name }
+        MediaControlsPlainWords(graph.settings, name)
         val words = trayWords(name)
         LaunchedEffect(words) {
             tray.words(words)

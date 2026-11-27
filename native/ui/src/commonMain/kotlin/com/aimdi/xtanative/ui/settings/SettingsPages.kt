@@ -143,6 +143,7 @@ internal fun GeneralSettings(title: String, vm: SettingsViewModel, focus: String
             PrefSwitch(settings, GeneralPrefs.confirmClose, stringResource(Res.string.settings_confirm_close), stringResource(Res.string.settings_confirm_close_description), vm, focus)
             if (isDesktop) {
                 PrefSwitch(settings, DesktopPrefs.notifications, stringResource(Res.string.settings_desktop_notifications), stringResource(Res.string.settings_desktop_notifications_description), vm, focus)
+                PrefSwitch(settings, DesktopPrefs.mediaDetails, stringResource(Res.string.settings_media_details), stringResource(Res.string.settings_media_details_description), vm, focus)
                 PrefSwitch(settings, DesktopPrefs.closeToTray, stringResource(Res.string.settings_close_to_tray), stringResource(Res.string.settings_close_to_tray_description), vm, focus)
                 rememberLoginStart()?.let { login ->
                     // Read from the desktop each time the page opens: the entry may have been changed outside the app.

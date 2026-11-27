@@ -15,9 +15,14 @@ data class MprisNow(
     val canSeek: Boolean = false,
     /** A picture of it on disk (file://), for the controls' artwork. */
     val artUrl: String? = null,
+    /** A reading aloud rather than a video, for the plain words [MprisPlain] shows of it. */
+    val reading: Boolean = false,
 ) {
     val status: String get() = if (playing) "Playing" else "Paused"
 }
+
+/** What the controls are told instead of what plays, while the reader keeps that to the app: a plain [video] or [reading] by [by]. */
+data class MprisPlain(val video: String, val reading: String, val by: String)
 
 /** What a call from the media controls asks of what is bound. */
 sealed interface MprisAction {
@@ -172,6 +177,10 @@ object Mpris {
         val end = now.durationMs
         return if (end != null && end > 0 && positionMs > end) null else MprisAction.Seek(positionMs)
     }
+
+    /** [now] as the controls see it under [plain]: no title, author or picture of what plays, only what kind it is. */
+    fun shown(now: MprisNow, plain: MprisPlain?): MprisNow =
+        if (plain == null || now.track == 0L) now else now.copy(title = if (now.reading) plain.reading else plain.video, artist = plain.by, artUrl = null)
 
     /** What [binding] offers the controls. */
     fun offered(now: MprisNow, binding: AudioSessionBinding): MprisNow =

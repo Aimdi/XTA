@@ -382,6 +382,8 @@
     <string name="intro_page_of">Paĝo %1$d el %2$d</string>
     <string name="settings_desktop_notifications">Labortablaj sciigoj</string>
     <string name="settings_desktop_notifications_description">Sciigi, kiam elŝuto finiĝas dum vi estas en alia fenestro</string>
+    <string name="settings_media_details">Montri, kio ludas, en la aŭdvidaj regiloj</string>
+    <string name="settings_media_details_description">La ŝlosita ekrano kaj aŭdvidaj fenestraĵoj vidas la aŭtoron, tekston kaj bildon de la afiŝo. Malŝaltite, ili vidas nur, ke io ludas</string>
     <string name="settings_close_to_tray">Fermi al la pleto</string>
     <string name="settings_close_to_tray_description">Fermi la fenestron lasas la apon funkcii en la sistempleto; ĉesu ĝin per la menuo de ĝia piktogramo</string>
     <string name="settings_start_at_login">Lanĉi ĉe ensaluto</string>

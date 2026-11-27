@@ -380,6 +380,8 @@
     <string name="intro_page_of">%2$d페이지 중 %1$d페이지</string>
     <string name="settings_desktop_notifications">데스크톱 알림</string>
     <string name="settings_desktop_notifications_description">다른 창에 있는 동안 다운로드가 끝나면 알림</string>
+    <string name="settings_media_details">미디어 컨트롤에 재생 중인 내용 표시</string>
+    <string name="settings_media_details_description">잠금 화면과 미디어 위젯에 게시물의 작성자, 텍스트, 이미지가 보입니다. 끄면 무언가 재생 중이라는 것만 보입니다</string>
     <string name="settings_close_to_tray">닫으면 트레이로</string>
     <string name="settings_close_to_tray_description">창을 닫아도 앱이 시스템 트레이에서 계속 실행됩니다. 종료는 트레이 아이콘 메뉴에서 하세요</string>
     <string name="settings_start_at_login">로그인할 때 시작</string>

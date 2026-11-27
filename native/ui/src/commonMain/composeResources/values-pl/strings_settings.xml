@@ -386,6 +386,8 @@
     <string name="intro_page_of">Strona %1$d z %2$d</string>
     <string name="settings_desktop_notifications">Powiadomienia pulpitu</string>
     <string name="settings_desktop_notifications_description">Informuj o zakończonym pobieraniu, gdy jesteś w innym oknie</string>
+    <string name="settings_media_details">Pokazuj, co jest odtwarzane, w sterowaniu multimediami</string>
+    <string name="settings_media_details_description">Ekran blokady i widżety multimediów widzą autora, tekst i obraz wpisu. Po wyłączeniu widzą tylko, że coś jest odtwarzane</string>
     <string name="settings_close_to_tray">Zamykaj do zasobnika</string>
     <string name="settings_close_to_tray_description">Po zamknięciu okna aplikacja działa dalej w zasobniku systemowym; zakończ ją z menu jej ikony</string>
     <string name="settings_start_at_login">Uruchamiaj po zalogowaniu</string>

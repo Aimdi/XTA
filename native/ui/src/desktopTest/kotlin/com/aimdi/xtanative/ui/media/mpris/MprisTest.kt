@@ -206,6 +206,52 @@ class MprisTest {
         }
     }
 
+    private val plain = MprisPlain(video = "Video", reading = "Reading aloud", by = "XTA Native")
+
+    @Test
+    fun plainWordsTellOnlyWhatKindPlays() {
+        val art = MprisNow(track = 3, title = "Async validation", artist = "Kamil", artUrl = "file:/tmp/a.jpg")
+        val shown = Mpris.metadata(Mpris.shown(art, plain))
+        assertEquals(Variant("s", "Video"), shown["xesam:title"])
+        assertEquals(Variant("as", listOf("XTA Native")), shown["xesam:artist"])
+        assertNull(shown["mpris:artUrl"])
+        assertEquals(Variant("s", "Reading aloud"), Mpris.metadata(Mpris.shown(reading.copy(reading = true), plain))["xesam:title"])
+        assertEquals(art, Mpris.shown(art, null))
+        assertEquals(MprisNow(), Mpris.shown(MprisNow(), plain), "nothing bound stays nothing")
+    }
+
+    @Test
+    fun plainWordsReachTheControlsOnABusAtOnce() {
+        val (daemon, socket) = privateBus() ?: return println("no dbus-daemon: skipped")
+        try {
+            val service = MprisService({ DBusConnection.connect(socket) }, onMain = { it() })
+            val client = assertNotNull(DBusConnection.connect(socket))
+            val changed = java.util.concurrent.LinkedBlockingQueue<Map<*, *>>()
+            client.onSignal = { if (it.member == "PropertiesChanged") changed += it.body[1] as Map<*, *> }
+            client.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "AddMatch", "s", listOf("type='signal',interface='${Mpris.PROPERTIES}'"))
+            fun title() = ((client.call(Mpris.NAME, Mpris.PATH, Mpris.PROPERTIES, "Get", "ss", listOf(Mpris.PLAYER, "Metadata"))?.body?.single() as Variant).value as Map<*, *>)["xesam:title"]
+            service.bind("video", title = "Someone's words", artist = "someone", binding = AudioSessionBinding(onStop = {}), artUrl = "file:/tmp/a.jpg")
+            service.update("video", playing = true, positionMs = 0, durationMs = 10_000)
+            service.settle()
+            changed.clear()
+            assertEquals(Variant("s", "Someone's words"), title())
+            service.plain = plain
+            service.settle()
+            val metadata = (assertNotNull(changed.poll(3, TimeUnit.SECONDS))["Metadata"] as Variant).value as Map<*, *>
+            assertEquals(Variant("s", "Video"), metadata["xesam:title"])
+            assertNull(metadata["mpris:artUrl"])
+            assertEquals(Variant("s", "Video"), title())
+            assertEquals("Video", service.session.value?.title, "the tray's words too")
+            service.plain = null
+            service.settle()
+            assertEquals(Variant("s", "Someone's words"), title())
+            client.close()
+        } finally {
+            daemon.destroy()
+            daemon.waitFor(5, TimeUnit.SECONDS)
+        }
+    }
+
     @Test
     fun eachClearsOnlyWhatItBound() {
         val service = MprisService({ null }, onMain = { it() })

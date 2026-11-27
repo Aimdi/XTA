@@ -386,6 +386,8 @@
     <string name="intro_page_of">Stránka %1$d z %2$d</string>
     <string name="settings_desktop_notifications">Oznámení na ploše</string>
     <string name="settings_desktop_notifications_description">Upozornit na dokončené stahování, když jste v jiném okně</string>
+    <string name="settings_media_details">Ukazovat, co hraje, v ovládání médií</string>
+    <string name="settings_media_details_description">Zamykací obrazovka a mediální widgety vidí autora, text a obrázek příspěvku. Když je vypnuto, vidí jen, že něco hraje</string>
     <string name="settings_close_to_tray">Zavírat do oznamovací oblasti</string>
     <string name="settings_close_to_tray_description">Po zavření okna aplikace běží dál v oznamovací oblasti; ukončíte ji z nabídky její ikony</string>
     <string name="settings_start_at_login">Spustit po přihlášení</string>

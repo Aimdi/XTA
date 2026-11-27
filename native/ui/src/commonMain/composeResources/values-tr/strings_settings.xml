@@ -382,6 +382,8 @@
     <string name="intro_page_of">Sayfa %1$d / %2$d</string>
     <string name="settings_desktop_notifications">Masaüstü bildirimleri</string>
     <string name="settings_desktop_notifications_description">Başka bir penceredeyken bir indirme bittiğinde haber ver</string>
+    <string name="settings_media_details">Medya denetimlerinde neyin çaldığını göster</string>
+    <string name="settings_media_details_description">Kilit ekranı ve medya widget'ları gönderinin yazarını, metnini ve görselini görür. Kapalıyken yalnızca bir şeyin çaldığını görürler</string>
     <string name="settings_close_to_tray">Sistem tepsisine kapat</string>
     <string name="settings_close_to_tray_description">Pencereyi kapatınca uygulama sistem tepsisinde çalışmaya devam eder; simgesinin menüsünden çıkın</string>
     <string name="settings_start_at_login">Oturum açılınca başlat</string>

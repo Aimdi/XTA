@@ -386,6 +386,8 @@
     <string name="intro_page_of">Staronka %1$d z %2$d</string>
     <string name="settings_desktop_notifications">Apaviaščenni na pracoŭnym stale</string>
     <string name="settings_desktop_notifications_description">Paviedamlać pra kaniec spampoŭki, pakul vy ŭ inšym aknie</string>
+    <string name="settings_media_details">Pakazvać, što hraje, u kiravanni medyja</string>
+    <string name="settings_media_details_description">Ekran błakiroŭki i miedyjavidžety bačać aŭtara dopisu, tekst i vyjavu. Kali vyklučana, jany bačać tolki, što nešta hraje</string>
     <string name="settings_close_to_tray">Zhortvać u trej</string>
     <string name="settings_close_to_tray_description">Pasla zakryccia akna prahrama pracuje dalej u trei; vyjsci možna z mieniu jaje značka</string>
     <string name="settings_start_at_login">Zapuskać pry ŭvachodzie</string>

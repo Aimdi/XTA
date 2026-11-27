@@ -382,6 +382,8 @@
     <string name="intro_page_of">Seite %1$d von %2$d</string>
     <string name="settings_desktop_notifications">Desktop-Benachrichtigungen</string>
     <string name="settings_desktop_notifications_description">Melden, wenn ein Download fertig ist, während du in einem anderen Fenster bist</string>
+    <string name="settings_media_details">In der Mediensteuerung zeigen, was läuft</string>
+    <string name="settings_media_details_description">Sperrbildschirm und Medien-Widgets sehen Autor, Text und Bild des Beitrags. Aus: Sie sehen nur, dass etwas läuft</string>
     <string name="settings_close_to_tray">In den Tray schließen</string>
     <string name="settings_close_to_tray_description">Beim Schließen des Fensters läuft die App im Tray weiter; beenden über das Menü des Tray-Symbols</string>
     <string name="settings_start_at_login">Beim Anmelden starten</string>

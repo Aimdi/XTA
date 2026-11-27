@@ -384,6 +384,8 @@
     <string name="intro_page_of">Página %1$d de %2$d</string>
     <string name="settings_desktop_notifications">Notificações do ambiente de trabalho</string>
     <string name="settings_desktop_notifications_description">Avisar quando uma transferência terminar enquanto está noutra janela</string>
+    <string name="settings_media_details">Mostrar o que está a tocar nos controlos multimédia</string>
+    <string name="settings_media_details_description">O ecrã de bloqueio e os widgets multimédia veem o autor, o texto e a imagem da publicação. Desligado, só veem que algo está a tocar</string>
     <string name="settings_close_to_tray">Fechar para a área de notificação</string>
     <string name="settings_close_to_tray_description">Fechar a janela mantém a app a correr na área de notificação; saia pelo menu do ícone</string>
     <string name="settings_start_at_login">Iniciar ao iniciar sessão</string>

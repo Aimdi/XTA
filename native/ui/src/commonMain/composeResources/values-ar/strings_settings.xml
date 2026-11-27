@@ -390,6 +390,8 @@
     <string name="intro_page_of">الصفحة %1$d من %2$d</string>
     <string name="settings_desktop_notifications">إشعارات سطح المكتب</string>
     <string name="settings_desktop_notifications_description">الإعلام عند اكتمال تنزيل بينما تكون في نافذة أخرى</string>
+    <string name="settings_media_details">إظهار ما يُشغَّل في عناصر التحكم بالوسائط</string>
+    <string name="settings_media_details_description">ترى شاشة القفل وأدوات الوسائط كاتب المنشور ونصه وصورته. عند الإيقاف، ترى فقط أن شيئًا ما قيد التشغيل</string>
     <string name="settings_close_to_tray">الإغلاق إلى علبة النظام</string>
     <string name="settings_close_to_tray_description">عند إغلاق النافذة يبقى التطبيق يعمل في علبة النظام؛ اخرج منه عبر قائمة أيقونته</string>
     <string name="settings_start_at_login">التشغيل عند تسجيل الدخول</string>

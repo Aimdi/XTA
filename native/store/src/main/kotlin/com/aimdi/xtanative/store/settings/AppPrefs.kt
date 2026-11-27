@@ -256,6 +256,9 @@ object DesktopPrefs : PrefSection() {
     /** The desktop's own notification tells of a finished download while another window is in use. */
     val notifications = flag("desktop.notifications", true, seeded = false)
 
+    /** The desktop's media controls (lock screen, media widget, a phone linked to it) are told what plays: its author, words and poster. */
+    val mediaDetails = flag("desktop.media_details", true, seeded = false)
+
     /** Closing the window hides it to the tray's icon, while a tray shows it, instead of quitting. */
     val closeToTray = flag("desktop.close_to_tray", false, seeded = false)
 

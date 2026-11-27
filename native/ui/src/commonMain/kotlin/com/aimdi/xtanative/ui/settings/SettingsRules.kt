@@ -96,7 +96,7 @@ object PlatformSettings {
     )
 
     val DESKTOP_ONLY: Set<String> = setOf(
-        DesktopPrefs.notifications.key, DesktopPrefs.closeToTray.key, START_AT_LOGIN_KEY, DesktopPrefs.uiScale.key, DesktopPrefs.proxyMode.key,
+        DesktopPrefs.notifications.key, DesktopPrefs.mediaDetails.key, DesktopPrefs.closeToTray.key, START_AT_LOGIN_KEY, DesktopPrefs.uiScale.key, DesktopPrefs.proxyMode.key,
     )
 
     /** The settings of the bottom bar alone, which a desktop window beside the frame's navigation does not have. */

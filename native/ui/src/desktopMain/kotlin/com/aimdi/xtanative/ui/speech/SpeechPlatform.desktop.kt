@@ -60,7 +60,7 @@ private object DesktopSpeechSession : SpeechSession {
 
     override fun bind(title: String, stop: suspend () -> Unit) {
         val sessions = MprisSessions.service
-        sessions.bind(this, title, artist = null, binding = AudioSessionBinding(onStop = { scope.launch { stop() } }))
+        sessions.bind(this, title, artist = null, binding = AudioSessionBinding(onStop = { scope.launch { stop() } }), reading = true)
         sessions.update(this, playing = true, positionMs = 0, durationMs = null)
     }
 
