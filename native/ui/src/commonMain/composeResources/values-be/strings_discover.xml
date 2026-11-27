@@ -97,6 +97,8 @@
     <string name="discover_antenna_exclude">Выключаць словы</string>
     <string name="discover_antenna_scope_search">Увесь пошук</string>
     <string name="discover_antenna_scope_following">Толькі акаўнты, якія вы чытаеце</string>
+    <string name="discover_antenna_about">Антэна сочыць у X за словамі, якія вы выбіраеце, і збірае найноўшыя допісы з імі.</string>
+    <string name="discover_antenna_terms_hint">Раздзяляйце словы коскамі. Допіс з'явіцца, калі ў ім ёсць любое ўключанае слова і няма ніводнага выключанага.</string>
     <string name="discover_are_you_sure">Вы ўпэўнены?</string>
     <string name="discover_show_menu">Паказаць меню</string>
     <string name="discover_no_posts_match">Няма пастоў, якія адпавядаюць вашаму запыту</string>

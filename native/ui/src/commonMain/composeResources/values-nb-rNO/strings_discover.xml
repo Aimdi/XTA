@@ -93,6 +93,8 @@
     <string name="discover_antenna_exclude">Utelat ord</string>
     <string name="discover_antenna_scope_search">Hele søket</string>
     <string name="discover_antenna_scope_following">Bare kontoer du følger</string>
+    <string name="discover_antenna_about">En antenne holder øye med ordene du velger på X, og samler de nyeste innleggene som nevner dem.</string>
+    <string name="discover_antenna_terms_hint">Skill ordene med komma. Et innlegg vises når det har et av de inkluderte ordene og ingen av de ekskluderte.</string>
     <string name="discover_are_you_sure">Er du sikker?</string>
     <string name="discover_show_menu">Vis meny</string>
     <string name="discover_no_posts_match">Ingen innlegg samsvarer med søket ditt</string>

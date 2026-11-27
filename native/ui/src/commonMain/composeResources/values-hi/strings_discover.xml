@@ -93,6 +93,8 @@
     <string name="discover_antenna_exclude">बाहर रखे जाने वाले शब्द</string>
     <string name="discover_antenna_scope_search">पूरी खोज</string>
     <string name="discover_antenna_scope_following">केवल वे खाते जिन्हें आप फ़ॉलो करते हैं</string>
+    <string name="discover_antenna_about">एंटीना X पर आपके चुने हुए शब्दों पर नज़र रखता है और उनका ज़िक्र करने वाली सबसे नई पोस्ट इकट्ठा करता है।</string>
+    <string name="discover_antenna_terms_hint">शब्दों को अल्पविराम से अलग करें। कोई पोस्ट तब दिखती है जब उसमें शामिल शब्दों में से कोई हो और बाहर रखे गए शब्दों में से कोई न हो।</string>
     <string name="discover_are_you_sure">क्या आप सुनिश्चित हैं?</string>
     <string name="discover_show_menu">मेन्यू दिखाएं</string>
     <string name="discover_no_posts_match">आपकी खोज से मेल खाती कोई पोस्ट नहीं है</string>

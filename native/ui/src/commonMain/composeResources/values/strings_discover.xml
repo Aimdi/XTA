@@ -106,6 +106,8 @@
     <string name="discover_antenna_exclude">Exclude terms</string>
     <string name="discover_antenna_scope_search">All of search</string>
     <string name="discover_antenna_scope_following">Only accounts you follow</string>
+    <string name="discover_antenna_about">An antenna watches X for the words you choose and gathers the newest posts that mention them.</string>
+    <string name="discover_antenna_terms_hint">Separate terms with commas. A post shows up when it has any included term and none of the excluded ones.</string>
     <string name="discover_are_you_sure">Are you sure?</string>
     <string name="discover_show_menu">Show menu</string>
     <string name="discover_no_posts_match">No posts match your search</string>

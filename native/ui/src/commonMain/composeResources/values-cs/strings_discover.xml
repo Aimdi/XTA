@@ -97,6 +97,8 @@
     <string name="discover_antenna_exclude">Vyloučit výrazy</string>
     <string name="discover_antenna_scope_search">Celé vyhledávání</string>
     <string name="discover_antenna_scope_following">Jen účty, které sledujete</string>
+    <string name="discover_antenna_about">Anténa hlídá na X slova, která si zvolíte, a sbírá nejnovější příspěvky, které je zmiňují.</string>
+    <string name="discover_antenna_terms_hint">Výrazy oddělujte čárkami. Příspěvek se zobrazí, když obsahuje kterýkoli zahrnutý výraz a žádný vyloučený.</string>
     <string name="discover_are_you_sure">Opravdu?</string>
     <string name="discover_show_menu">Zobrazit nabídku</string>
     <string name="discover_no_posts_match">Vašemu hledání neodpovídají žádné příspěvky</string>

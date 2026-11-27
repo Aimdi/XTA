@@ -93,6 +93,8 @@
     <string name="discover_antenna_exclude">Hariç tutulacak terimler</string>
     <string name="discover_antenna_scope_search">Tüm arama</string>
     <string name="discover_antenna_scope_following">Yalnızca takip ettiğin hesaplar</string>
+    <string name="discover_antenna_about">Anten, X'te seçtiğin kelimeleri izler ve onlardan bahseden en yeni gönderileri toplar.</string>
+    <string name="discover_antenna_terms_hint">Terimleri virgülle ayır. Bir gönderi, dahil edilen terimlerden birini içerdiğinde ve hariç tutulanların hiçbirini içermediğinde görünür.</string>
     <string name="discover_are_you_sure">Emin misiniz?</string>
     <string name="discover_show_menu">Menüyü göster</string>
     <string name="discover_no_posts_match">Aramanızla eşleşen gönderi yok</string>

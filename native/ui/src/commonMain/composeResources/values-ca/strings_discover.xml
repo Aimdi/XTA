@@ -93,6 +93,8 @@
     <string name="discover_antenna_exclude">Termes exclosos</string>
     <string name="discover_antenna_scope_search">Tota la cerca</string>
     <string name="discover_antenna_scope_following">Només els comptes que segueixes</string>
+    <string name="discover_antenna_about">Una antena vigila X a la recerca de les paraules que triïs i recull les publicacions més noves que les mencionen.</string>
+    <string name="discover_antenna_terms_hint">Separa els termes amb comes. Una publicació apareix si té algun terme inclòs i cap dels exclosos.</string>
     <string name="discover_are_you_sure">N'estàs segur?</string>
     <string name="discover_show_menu">Mostra el menú</string>
     <string name="discover_no_posts_match">Cap publicació coincideix amb la cerca</string>

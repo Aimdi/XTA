@@ -93,6 +93,8 @@
     <string name="discover_antenna_exclude">Ekskludotaj vortoj</string>
     <string name="discover_antenna_scope_search">La tuta serĉo</string>
     <string name="discover_antenna_scope_following">Nur kontoj, kiujn vi sekvas</string>
+    <string name="discover_antenna_about">Anteno observas X por la vortoj, kiujn vi elektas, kaj kolektas la plej novajn afiŝojn, kiuj mencias ilin.</string>
+    <string name="discover_antenna_terms_hint">Disigu terminojn per komoj. Afiŝo aperas, kiam ĝi havas iun ajn inkluzivitan terminon kaj neniun el la ekskluzivitaj.</string>
     <string name="discover_are_you_sure">Ĉu vi certas?</string>
     <string name="discover_show_menu">Montri menuon</string>
     <string name="discover_no_posts_match">Neniu afiŝo kongruas kun via serĉo</string>

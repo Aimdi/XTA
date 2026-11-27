@@ -91,6 +91,8 @@
     <string name="discover_antenna_exclude">Istilah yang dikecualikan</string>
     <string name="discover_antenna_scope_search">Seluruh pencarian</string>
     <string name="discover_antenna_scope_following">Hanya akun yang Anda ikuti</string>
+    <string name="discover_antenna_about">Antena memantau X untuk kata-kata yang Anda pilih dan mengumpulkan postingan terbaru yang menyebutkannya.</string>
+    <string name="discover_antenna_terms_hint">Pisahkan istilah dengan koma. Postingan muncul jika memuat salah satu istilah yang disertakan dan tidak memuat istilah yang dikecualikan.</string>
     <string name="discover_are_you_sure">Apakah Anda yakin?</string>
     <string name="discover_show_menu">Tampilkan menu</string>
     <string name="discover_no_posts_match">Tidak ada postingan yang cocok dengan pencarian Anda</string>

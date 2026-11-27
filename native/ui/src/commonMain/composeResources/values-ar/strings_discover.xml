@@ -101,6 +101,8 @@
     <string name="discover_antenna_exclude">الكلمات المستبعدة</string>
     <string name="discover_antenna_scope_search">كل البحث</string>
     <string name="discover_antenna_scope_following">الحسابات التي تتابعها فقط</string>
+    <string name="discover_antenna_about">الهوائي يراقب X بحثًا عن الكلمات التي تختارها ويجمع أحدث المنشورات التي تذكرها.</string>
+    <string name="discover_antenna_terms_hint">افصل بين الكلمات بفواصل. يظهر المنشور إذا احتوى على أي كلمة مضمّنة ولم يحتوِ على أي كلمة مستبعدة.</string>
     <string name="discover_are_you_sure">هل أنت متأكد؟</string>
     <string name="discover_show_menu">عرض القائمة</string>
     <string name="discover_no_posts_match">لا توجد منشورات مطابقة لبحثك</string>

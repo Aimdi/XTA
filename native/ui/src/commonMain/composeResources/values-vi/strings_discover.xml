@@ -91,6 +91,8 @@
     <string name="discover_antenna_exclude">Từ cần loại trừ</string>
     <string name="discover_antenna_scope_search">Toàn bộ tìm kiếm</string>
     <string name="discover_antenna_scope_following">Chỉ tài khoản bạn theo dõi</string>
+    <string name="discover_antenna_about">Ăng-ten theo dõi trên X những từ bạn chọn và gom các bài đăng mới nhất nhắc đến chúng.</string>
+    <string name="discover_antenna_terms_hint">Phân tách các từ bằng dấu phẩy. Bài đăng sẽ hiện khi có bất kỳ từ nào được bao gồm và không có từ nào bị loại trừ.</string>
     <string name="discover_are_you_sure">Bạn có chắc không </string>
     <string name="discover_show_menu">Hiển thị menu</string>
     <string name="discover_no_posts_match">Không có bài đăng nào khớp với tìm kiếm của bạn</string>

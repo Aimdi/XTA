@@ -93,6 +93,8 @@
     <string name="discover_antenna_exclude">Ausschließen</string>
     <string name="discover_antenna_scope_search">Gesamte Suche</string>
     <string name="discover_antenna_scope_following">Nur gefolgte Konten</string>
+    <string name="discover_antenna_about">Eine Antenne hält auf X nach Wörtern Ausschau, die du wählst, und sammelt die neuesten Beiträge, die sie nennen.</string>
+    <string name="discover_antenna_terms_hint">Begriffe mit Kommas trennen. Ein Beitrag erscheint, wenn er einen der eingeschlossenen Begriffe enthält und keinen der ausgeschlossenen.</string>
     <string name="discover_are_you_sure">Bist du dir sicher?</string>
     <string name="discover_show_menu">Menü anzeigen</string>
     <string name="discover_no_posts_match">Keine Beiträge entsprechen deiner Suche</string>

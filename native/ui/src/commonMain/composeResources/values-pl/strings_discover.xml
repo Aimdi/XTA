@@ -97,6 +97,8 @@
     <string name="discover_antenna_exclude">Wyklucz wyrażenia</string>
     <string name="discover_antenna_scope_search">Całe wyszukiwanie</string>
     <string name="discover_antenna_scope_following">Tylko obserwowane konta</string>
+    <string name="discover_antenna_about">Antena wypatruje na X wybranych przez Ciebie słów i zbiera najnowsze wpisy, które je zawierają.</string>
+    <string name="discover_antenna_terms_hint">Oddzielaj słowa przecinkami. Wpis się pojawi, gdy zawiera którekolwiek z uwzględnionych słów i żadnego z wykluczonych.</string>
     <string name="discover_are_you_sure">Czy na pewno?</string>
     <string name="discover_show_menu">Pokaż menu</string>
     <string name="discover_no_posts_match">Żadne wpisy nie pasują do wyszukiwania</string>

@@ -93,6 +93,8 @@
     <string name="discover_antenna_exclude">Termini esclusi</string>
     <string name="discover_antenna_scope_search">Tutta la ricerca</string>
     <string name="discover_antenna_scope_following">Solo gli account che segui</string>
+    <string name="discover_antenna_about">Un'antenna tiene d'occhio X per le parole che scegli e raccoglie i post più recenti che le citano.</string>
+    <string name="discover_antenna_terms_hint">Separa i termini con virgole. Un post compare se contiene uno dei termini inclusi e nessuno di quelli esclusi.</string>
     <string name="discover_are_you_sure">Sei sicuro?</string>
     <string name="discover_show_menu">Mostra il menu</string>
     <string name="discover_no_posts_match">Nessun post corrisponde alla tua ricerca</string>

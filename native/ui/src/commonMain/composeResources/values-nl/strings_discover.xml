@@ -93,6 +93,8 @@
     <string name="discover_antenna_exclude">Woorden uitsluiten</string>
     <string name="discover_antenna_scope_search">Alle zoekresultaten</string>
     <string name="discover_antenna_scope_following">Alleen accounts die je volgt</string>
+    <string name="discover_antenna_about">Een antenne houdt X in de gaten voor de woorden die je kiest en verzamelt de nieuwste berichten die ze noemen.</string>
+    <string name="discover_antenna_terms_hint">Scheid termen met komma's. Een bericht verschijnt als het een van de opgenomen termen bevat en geen van de uitgesloten.</string>
     <string name="discover_are_you_sure">Weet je het zeker?</string>
     <string name="discover_show_menu">Menu tonen</string>
     <string name="discover_no_posts_match">Geen berichten komen overeen met je zoekopdracht</string>

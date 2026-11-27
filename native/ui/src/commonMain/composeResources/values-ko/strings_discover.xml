@@ -91,6 +91,8 @@
     <string name="discover_antenna_exclude">제외할 단어</string>
     <string name="discover_antenna_scope_search">전체 검색</string>
     <string name="discover_antenna_scope_following">팔로우하는 계정만</string>
+    <string name="discover_antenna_about">안테나는 X에서 고른 단어를 지켜보고 그 단어가 들어간 최신 게시물을 모읍니다.</string>
+    <string name="discover_antenna_terms_hint">단어는 쉼표로 구분하세요. 포함할 단어 중 하나가 있고 제외할 단어가 없는 게시물이 표시됩니다.</string>
     <string name="discover_are_you_sure">확실합니까?</string>
     <string name="discover_show_menu">메뉴 표시</string>
     <string name="discover_no_posts_match">검색과 일치하는 게시물이 없습니다</string>

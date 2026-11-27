@@ -97,6 +97,8 @@
     <string name="discover_antenna_exclude">Исключать слова</string>
     <string name="discover_antenna_scope_search">Весь поиск</string>
     <string name="discover_antenna_scope_following">Только аккаунты, которые вы читаете</string>
+    <string name="discover_antenna_about">Антенна следит в X за выбранными вами словами и собирает самые новые посты с ними.</string>
+    <string name="discover_antenna_terms_hint">Разделяйте слова запятыми. Пост появится, если в нём есть любое из включённых слов и нет ни одного исключённого.</string>
     <string name="discover_are_you_sure">Вы уверены?</string>
     <string name="discover_show_menu">Показать меню</string>
     <string name="discover_no_posts_match">Нет постов, соответствующих вашему запросу</string>

@@ -93,6 +93,8 @@
     <string name="discover_antenna_exclude">Termes exclus</string>
     <string name="discover_antenna_scope_search">Toute la recherche</string>
     <string name="discover_antenna_scope_following">Uniquement les comptes suivis</string>
+    <string name="discover_antenna_about">Une antenne guette sur X les mots que vous choisissez et rassemble les publications les plus récentes qui les mentionnent.</string>
+    <string name="discover_antenna_terms_hint">Séparez les termes par des virgules. Une publication apparaît si elle contient un des termes inclus et aucun des termes exclus.</string>
     <string name="discover_are_you_sure">Êtes-vous sûr ?</string>
     <string name="discover_show_menu">Afficher le menu</string>
     <string name="discover_no_posts_match">Aucune publication ne correspond à votre recherche</string>

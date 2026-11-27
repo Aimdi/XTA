@@ -35,12 +35,27 @@ data class AntennaDraft(
         /** Whether the scopes sit side by side: on a wide enough editor at ordinary text sizes; at 200 % they stack. */
         fun scopesSideBySide(widthDp: Float, fontScale: Float): Boolean = widthDp >= SEGMENTED_FROM_DP && fontScale < STACKED_FROM_FONT_SCALE
 
+        /**
+         * What Enter does in one of the editor's fields, as a desktop form's
+         * default button: it saves ([SAVE]) once the antenna can be saved
+         * ([canSave]); before that a plain Enter goes on to the next field and
+         * Ctrl+Enter does nothing.
+         */
+        fun enter(canSave: Boolean, ctrl: Boolean): EditorEnter = when {
+            canSave -> EditorEnter.SAVE
+            ctrl -> EditorEnter.NOTHING
+            else -> EditorEnter.NEXT_FIELD
+        }
+
         /** The editor for [antenna], or an empty one for a new antenna. */
         fun of(antenna: Antenna?): AntennaDraft = antenna?.let {
             AntennaDraft(it.id, it.name, Antenna.typed(it.includeTerms), Antenna.typed(it.excludeTerms), it.scope)
         } ?: AntennaDraft()
     }
 }
+
+/** What Enter does in the antenna editor ([AntennaDraft.enter]). */
+enum class EditorEnter { SAVE, NEXT_FIELD, NOTHING }
 
 /** An antenna's feed: one search of its terms, newest first, and for a following antenna only followed accounts' posts. */
 object AntennaFeed {

@@ -93,6 +93,8 @@
     <string name="discover_antenna_exclude">Excluir términos</string>
     <string name="discover_antenna_scope_search">Toda la búsqueda</string>
     <string name="discover_antenna_scope_following">Solo cuentas que sigues</string>
+    <string name="discover_antenna_about">Una antena vigila X en busca de las palabras que elijas y reúne las publicaciones más recientes que las mencionan.</string>
+    <string name="discover_antenna_terms_hint">Separa los términos con comas. Una publicación aparece si tiene alguno de los términos incluidos y ninguno de los excluidos.</string>
     <string name="discover_are_you_sure">¿Estás seguro?</string>
     <string name="discover_show_menu">Mostrar menú</string>
     <string name="discover_no_posts_match">Ninguna publicación coincide con tu búsqueda</string>

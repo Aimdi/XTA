@@ -1,5 +1,19 @@
 package com.aimdi.xtanative.ui.antenna
 
+import com.aimdi.xtanative.ui.generated.resources.saved_save
+import com.aimdi.xtanative.ui.generated.resources.saved_create
+import com.aimdi.xtanative.ui.generated.resources.discover_antenna_terms_hint
+import com.aimdi.xtanative.ui.generated.resources.discover_antenna_about
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.isShiftPressed
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.isAltPressed
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
 import com.aimdi.xtanative.ui.post.PostMenuSurface
 import com.aimdi.xtanative.ui.post.MenuRow
 import com.aimdi.xtanative.ui.common.onSecondaryClick
@@ -96,7 +110,6 @@ import com.aimdi.xtanative.ui.generated.resources.discover_antennas
 import com.aimdi.xtanative.ui.generated.resources.discover_are_you_sure
 import com.aimdi.xtanative.ui.generated.resources.discover_cancel
 import com.aimdi.xtanative.ui.generated.resources.discover_delete
-import com.aimdi.xtanative.ui.generated.resources.discover_ok
 import com.aimdi.xtanative.ui.generated.resources.discover_settings
 import com.aimdi.xtanative.ui.generated.resources.discover_show_menu
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
@@ -238,7 +251,7 @@ private fun AntennaRow(antenna: Antenna, onOpen: () -> Unit, onSettings: () -> U
 
 @Composable
 private fun EmptyAntennas(onNew: () -> Unit) {
-    EmptyState(DiscoverIcons.Sensors, stringResource(Res.string.discover_antenna_empty)) {
+    EmptyState(DiscoverIcons.Sensors, stringResource(Res.string.discover_antenna_empty), body = stringResource(Res.string.discover_antenna_about)) {
         Button(onClick = onNew, modifier = Modifier.heightIn(min = 48.dp)) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.discover_antenna_new), modifier = Modifier.padding(start = 8.dp))
@@ -262,7 +275,12 @@ private fun DeleteDialog(antenna: Antenna, onDelete: () -> Unit, onDismiss: () -
     )
 }
 
-/** XTA's antenna editor: a name, the terms to listen for and to leave out, whose posts, and OK. */
+/**
+ * XTA's antenna editor: a name, the terms to listen for and to leave out
+ * (how they are written said under them), whose posts, and Create (Save for
+ * one being changed). Enter in a field, or Ctrl+Enter, saves once it can
+ * ([AntennaDraft.enter]).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AntennaEditor(draft: AntennaDraft, onChange: (AntennaDraft) -> Unit, onSave: () -> Unit, onDismiss: () -> Unit) {
@@ -270,6 +288,14 @@ private fun AntennaEditor(draft: AntennaDraft, onChange: (AntennaDraft) -> Unit,
     val nameFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) { if (draft.isNew) runCatching { nameFocus.requestFocus() } }
     KeyedSheet(onDismissRequest = onDismiss, sheetState = rememberSheetState(alwaysFull = true)) {
+        val focus = LocalFocusManager.current
+        val enter: (Boolean) -> Unit = { ctrl ->
+            when (AntennaDraft.enter(draft.canSave, ctrl)) {
+                EditorEnter.SAVE -> onSave()
+                EditorEnter.NEXT_FIELD -> focus.moveFocus(FocusDirection.Next).let { }
+                EditorEnter.NOTHING -> Unit
+            }
+        }
         Column(
             // Above the keyboard, as XTA lifts its editor.
             Modifier.widthIn(max = ContentWidth).fillMaxWidth().align(Alignment.CenterHorizontally).imePadding()
@@ -281,14 +307,20 @@ private fun AntennaEditor(draft: AntennaDraft, onChange: (AntennaDraft) -> Unit,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 4.dp),
             )
-            EditorField(draft.name, Res.string.discover_antenna_name, modifier = Modifier.focusRequester(nameFocus)) { onChange(draft.copy(name = it)) }
-            EditorField(draft.include, Res.string.discover_antenna_include) { onChange(draft.copy(include = it)) }
-            EditorField(draft.exclude, Res.string.discover_antenna_exclude, last = true, onDone = { if (draft.canSave) onSave() }) {
+            EditorField(draft.name, Res.string.discover_antenna_name, onEnter = enter, modifier = Modifier.focusRequester(nameFocus)) { onChange(draft.copy(name = it)) }
+            EditorField(draft.include, Res.string.discover_antenna_include, onEnter = enter) { onChange(draft.copy(include = it)) }
+            EditorField(draft.exclude, Res.string.discover_antenna_exclude, last = true, onDone = { if (draft.canSave) onSave() }, onEnter = enter) {
                 onChange(draft.copy(exclude = it))
             }
+            Text(
+                stringResource(Res.string.discover_antenna_terms_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 4.dp),
+            )
             ScopeChoice(draft.scope) { onChange(draft.copy(scope = it)) }
             Button(onClick = onSave, enabled = draft.canSave, modifier = Modifier.fillMaxWidth().padding(top = 8.dp).heightIn(min = 48.dp)) {
-                Text(stringResource(Res.string.discover_ok))
+                Text(stringResource(if (draft.isNew) Res.string.saved_create else Res.string.saved_save))
             }
         }
     }
@@ -300,6 +332,7 @@ private fun EditorField(
     label: StringResource,
     last: Boolean = false,
     onDone: () -> Unit = {},
+    onEnter: (ctrl: Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
 ) {
@@ -310,7 +343,11 @@ private fun EditorField(
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = if (last) ImeAction.Done else ImeAction.Next),
         keyboardActions = KeyboardActions(onDone = { onDone() }),
-        modifier = modifier.fillMaxWidth(),
+        // The hardware keyboard's Enter (Ctrl+Enter too) as a desktop form's: the editor decides ([AntennaDraft.enter]).
+        modifier = modifier.fillMaxWidth().onPreviewKeyEvent { event ->
+            val enter = event.key == Key.Enter || event.key == Key.NumPadEnter
+            (event.type == KeyEventType.KeyDown && enter && !event.isShiftPressed && !event.isAltPressed).also { if (it) onEnter(event.isCtrlPressed) }
+        },
     )
 }
 

@@ -95,6 +95,8 @@
     <string name="discover_antenna_exclude">Termeni excluși</string>
     <string name="discover_antenna_scope_search">Toată căutarea</string>
     <string name="discover_antenna_scope_following">Doar conturile pe care le urmărești</string>
+    <string name="discover_antenna_about">O antenă urmărește pe X cuvintele pe care le alegi și adună cele mai noi postări care le menționează.</string>
+    <string name="discover_antenna_terms_hint">Separă termenii prin virgule. O postare apare când conține oricare dintre termenii incluși și niciunul dintre cei excluși.</string>
     <string name="discover_are_you_sure">Ești sigur?</string>
     <string name="discover_show_menu">Afișează meniul</string>
     <string name="discover_no_posts_match">Nicio postare nu corespunde căutării tale</string>

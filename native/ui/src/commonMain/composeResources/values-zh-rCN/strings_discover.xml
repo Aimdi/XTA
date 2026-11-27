@@ -91,6 +91,8 @@
     <string name="discover_antenna_exclude">排除词</string>
     <string name="discover_antenna_scope_search">全部搜索</string>
     <string name="discover_antenna_scope_following">仅关注的账号</string>
+    <string name="discover_antenna_about">天线会在 X 上留意你选择的词语，并收集提到它们的最新帖子。</string>
+    <string name="discover_antenna_terms_hint">用逗号分隔词语。帖子含有任一包含的词语、且不含任何排除的词语时才会出现。</string>
     <string name="discover_are_you_sure">你确定吗？</string>
     <string name="discover_show_menu">显示菜单</string>
     <string name="discover_no_posts_match">没有与搜索匹配的帖子</string>

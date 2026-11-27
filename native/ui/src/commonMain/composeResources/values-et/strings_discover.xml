@@ -93,6 +93,8 @@
     <string name="discover_antenna_exclude">Välistatavad sõnad</string>
     <string name="discover_antenna_scope_search">Kogu otsing</string>
     <string name="discover_antenna_scope_following">Ainult kontod, mida jälgid</string>
+    <string name="discover_antenna_about">Antenn jälgib X-is sinu valitud sõnu ja kogub uusimad postitused, mis neid mainivad.</string>
+    <string name="discover_antenna_terms_hint">Eralda terminid komadega. Postitus ilmub, kui selles on mõni kaasatud termin ja mitte ühtegi välistatud.</string>
     <string name="discover_are_you_sure">Kas sa oled kindel?</string>
     <string name="discover_show_menu">Kuva menüü</string>
     <string name="discover_no_posts_match">Ükski postitus ei vasta otsingule</string>

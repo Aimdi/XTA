@@ -58,4 +58,13 @@ class AntennaDraftTest {
         assertEquals(listOf(fromMaya, fromJo), AntennaFeed.kept(everyone, listOf(fromMaya, fromJo), emptySet()))
         assertEquals(emptySet(), AntennaFeed.followedIds(null))
     }
+
+    @Test
+    fun enterSavesOnceTheAntennaCanBeSaved() {
+        assertEquals(EditorEnter.SAVE, AntennaDraft.enter(canSave = true, ctrl = false))
+        assertEquals(EditorEnter.SAVE, AntennaDraft.enter(canSave = true, ctrl = true))
+        // Before that Enter goes on to the next field, and Ctrl+Enter waits.
+        assertEquals(EditorEnter.NEXT_FIELD, AntennaDraft.enter(canSave = false, ctrl = false))
+        assertEquals(EditorEnter.NOTHING, AntennaDraft.enter(canSave = false, ctrl = true))
+    }
 }

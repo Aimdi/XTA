@@ -93,6 +93,8 @@
     <string name="discover_antenna_exclude">Baztertu beharreko hitzak</string>
     <string name="discover_antenna_scope_search">Bilaketa osoa</string>
     <string name="discover_antenna_scope_following">Jarraitzen dituzun kontuak soilik</string>
+    <string name="discover_antenna_about">Antena batek X zaintzen du zuk aukeratutako hitzen bila, eta haiek aipatzen dituzten argitalpen berrienak biltzen ditu.</string>
+    <string name="discover_antenna_terms_hint">Bereizi terminoak komaz. Argitalpen bat agertzen da sartutako terminoren bat duenean eta baztertutakorik ez duenean.</string>
     <string name="discover_are_you_sure">Ziur zaude?</string>
     <string name="discover_show_menu">Erakutsi menua</string>
     <string name="discover_no_posts_match">Ez dago zure bilaketarekin bat datorren argitalpenik</string>

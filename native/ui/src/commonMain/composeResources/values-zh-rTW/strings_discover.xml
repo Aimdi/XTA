@@ -91,6 +91,8 @@
     <string name="discover_antenna_exclude">排除字詞</string>
     <string name="discover_antenna_scope_search">全部搜尋</string>
     <string name="discover_antenna_scope_following">僅限追蹤的帳號</string>
+    <string name="discover_antenna_about">天線會在 X 上留意你選擇的詞語，並收集提到它們的最新貼文。</string>
+    <string name="discover_antenna_terms_hint">用逗號分隔詞語。貼文含有任一包含的詞語、且不含任何排除的詞語時才會出現。</string>
     <string name="discover_are_you_sure">您確定嗎？</string>
     <string name="discover_show_menu">顯示選單</string>
     <string name="discover_no_posts_match">沒有符合搜尋的貼文</string>

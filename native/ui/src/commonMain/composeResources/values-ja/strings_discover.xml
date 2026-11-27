@@ -91,6 +91,8 @@
     <string name="discover_antenna_exclude">除外する語</string>
     <string name="discover_antenna_scope_search">検索全体</string>
     <string name="discover_antenna_scope_following">フォロー中のみ</string>
+    <string name="discover_antenna_about">アンテナは選んだ語句を X で見張り、それに触れた最新の投稿を集めます。</string>
+    <string name="discover_antenna_terms_hint">語句はカンマで区切ります。含める語句のどれかがあり、除外する語句がない投稿が表示されます。</string>
     <string name="discover_are_you_sure">確認</string>
     <string name="discover_show_menu">メニューを表示</string>
     <string name="discover_no_posts_match">検索に一致する投稿はありません</string>
