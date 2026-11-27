@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.plugins
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import com.aimdi.xtanative.store.saveChosen
 import com.aimdi.xtanative.ui.common.FileChoosers
 import com.aimdi.xtanative.ui.common.FileFilter
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -39,7 +40,7 @@ actual fun rememberTextFileSaver(title: String, mime: String, onSaved: (String?)
         { fileName, text ->
             FileChoosers.launch {
                 val file = FileChoosers.save(title, fileName)
-                saved.value(file?.takeIf { written(it, text) }?.path)
+                saved.value(file?.takeIf { writtenText(it, text) }?.path)
             }
         }
     }
@@ -54,10 +55,12 @@ actual fun rememberTextFileSaver(title: String, mime: String, onSaved: (String) 
         { fileName, text ->
             FileChoosers.launch {
                 val file = FileChoosers.save(title, fileName)
-                textSaveEnded(file != null, file?.takeIf { written(it, text) }?.path, saved.value, failed.value)
+                textSaveEnded(file != null, file?.takeIf { writtenText(it, text) }?.path, saved.value, failed.value)
             }
         }
     }
 }
 
-private suspend fun written(file: File, text: String): Boolean = withContext(Dispatchers.IO) { runCatching { file.writeText(text) }.isSuccess }
+/** Whether [text] went whole into [file], the one the reader chose; a failed write leaves a file already there as it was. */
+internal suspend fun writtenText(file: File, text: String): Boolean =
+    withContext(Dispatchers.IO) { runCatching { file.saveChosen { it.write(text.toByteArray()) } }.isSuccess }

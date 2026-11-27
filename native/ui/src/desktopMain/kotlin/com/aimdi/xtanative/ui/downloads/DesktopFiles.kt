@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.downloads
 import com.aimdi.xtanative.store.downloads.DownloadCancellation
 import com.aimdi.xtanative.store.downloads.DownloadEntry
 import com.aimdi.xtanative.store.downloads.SharedDownloadFolder
+import com.aimdi.xtanative.store.saveChosen
 import com.aimdi.xtanative.ui.common.ChildProcess
 import com.aimdi.xtanative.ui.common.FileChoosers
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -31,12 +32,12 @@ class DesktopFiles(
         val folder = when {
             tree != null -> DesktopFolders.localFolder(tree) ?: shared
             entry.background -> shared
-            else -> return ask(entry.fileName)?.let { target -> withContext(Dispatchers.IO) { write(file, target, cancellation) } }
+            else -> return ask(entry.fileName)?.let { target -> withContext(Dispatchers.IO) { writeSaved(file, target, cancellation) } }
         }
         return withContext(Dispatchers.IO) {
             val dir = entry.subfolder?.let { File(folder, it) } ?: folder
             if (!dir.isDirectory && !dir.mkdirs()) throw IOException("Cannot make $dir")
-            write(file, DesktopFolders.unique(dir, entry.fileName), cancellation)
+            writeSaved(file, DesktopFolders.unique(dir, entry.fileName), cancellation)
         }
     }
 
@@ -64,14 +65,10 @@ class DesktopFiles(
     /** The desktop's save dialog, opening in the downloads folder with [name] filled in; null when the reader backs out. */
     private suspend fun ask(name: String): File? =
         FileChoosers.save(getString(Res.string.downloads_choose_location), name, DesktopFolders.downloads(home, env))
+}
 
-    private fun write(file: File, target: File, cancellation: DownloadCancellation): String {
-        try {
-            target.outputStream().use { copyCancellable(file, it, cancellation) }
-        } catch (e: Exception) {
-            target.delete()
-            throw e
-        }
-        return target.toURI().toString()
-    }
+/** [file] saved as [target]: one already there is replaced only once the copy is whole, so a failed or cancelled save leaves it as it was. */
+internal fun writeSaved(file: File, target: File, cancellation: DownloadCancellation): String {
+    target.saveChosen { copyCancellable(file, it, cancellation) }
+    return target.toURI().toString()
 }

@@ -2,6 +2,8 @@ package com.aimdi.xtanative.store
 
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
+import java.io.OutputStream
 import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -63,10 +65,46 @@ fun File.replaceWith(bytes: ByteArray) = replaceThrough { it.write(bytes) }
 /** [replaceWith] by a copy of [source]'s bytes, streamed rather than held whole. */
 fun File.replaceWithCopyOf(source: File) = replaceThrough { out -> source.inputStream().use { it.copyTo(out) } }
 
+/**
+ * Writes this file, one the reader chose in a save dialog, through [write].
+ * One already there is replaced as [replaceWith] does but keeps its
+ * permissions, so a write that fails or is cancelled leaves it as it was and
+ * only the staging file goes. A new file, or one whose folder takes no file
+ * beside it, is written in place and removed when the write fails. A file
+ * its owner made read-only is refused, as writing into it would be.
+ */
+fun File.saveChosen(write: (OutputStream) -> Unit) {
+    val target = canonicalFile
+    if (target.isFile && !target.canWrite()) throw AccessDeniedException(target, reason = "read-only")
+    val staged = if (target.isFile) target.stagedBeside() else null
+    if (staged == null) return target.writeInPlace(write)
+    runCatching { Files.setPosixFilePermissions(staged, Files.getPosixFilePermissions(target.toPath())) }
+    target.replaceFrom(staged, write)
+}
+
+private fun File.stagedBeside(): Path? = try {
+    sweepStagedOnce()
+    Files.createTempFile(absoluteFile.parentFile.toPath(), ".$name.", ".part")
+} catch (_: IOException) {
+    null
+}
+
+private fun File.writeInPlace(write: (OutputStream) -> Unit) {
+    try {
+        FileOutputStream(this).use(write)
+    } catch (failure: Throwable) {
+        delete()
+        throw failure
+    }
+}
+
 private fun File.replaceThrough(write: (FileOutputStream) -> Unit) {
     val folder = absoluteFile.parentFile.apply { mkdirs() }
     sweepStagedOnce()
-    val partial = Files.createTempFile(folder.toPath(), ".$name.", ".part")
+    replaceFrom(Files.createTempFile(folder.toPath(), ".$name.", ".part"), write)
+}
+
+private fun File.replaceFrom(partial: Path, write: (FileOutputStream) -> Unit) {
     try {
         FileOutputStream(partial.toFile()).use {
             write(it)
