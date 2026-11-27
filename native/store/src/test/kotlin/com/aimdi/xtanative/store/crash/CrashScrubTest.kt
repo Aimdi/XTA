@@ -35,6 +35,20 @@ class CrashScrubTest {
     }
 
     @Test
+    fun annotationsAndFramesInCrashTextStay() {
+        val compose = "java.lang.IllegalStateException: @Composable invocations can only happen from the context of a @Composable function"
+        assertEquals(compose, scrubbed(compose))
+        val optIn = "needs @OptIn(ExperimentalFoundationApi::class) or @ExperimentalFoundationApi"
+        assertEquals(optIn, scrubbed(optIn))
+        val qualified = "@kotlin.Metadata(mv={2, 1}) on @androidx.compose.runtime.Composable"
+        assertEquals(qualified, scrubbed(qualified))
+        val frames = "\tat androidx.compose.runtime.ComposerImpl.start(Composer.kt:1)\n\tat java.base@17.0.21/java.lang.Thread.run(Thread.java:840)\n" +
+            "\tat com.aimdi.xtanative.ui.ComposableSingletons\$HomeKt\$lambda-1\$1.invoke(Home.kt:9)"
+        assertEquals(frames, scrubbed(frames))
+        assertEquals("for @[handle] and @[handle]", scrubbed("for @Composer and @dave.bsky.social"), "a handle that is no annotation still goes")
+    }
+
+    @Test
     fun addressesKeepOnlyTheirHost() {
         assertEquals(
             "failed: https://x.com/[path] and http://example.org",
