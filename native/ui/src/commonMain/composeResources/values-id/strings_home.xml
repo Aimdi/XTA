@@ -3,6 +3,7 @@
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
     <string name="home_x">X</string>
+    <string name="home_column_for_you">Untuk Anda</string>
     <string name="home_search_in">Cari di %1$s</string>
     <string name="home_open_menu">Buka menu navigasi</string>
     <string name="home_add_timeline">Tambah timeline</string>

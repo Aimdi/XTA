@@ -87,6 +87,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_saved
 import com.aimdi.xtanative.ui.generated.resources.home_search_in
 import com.aimdi.xtanative.ui.generated.resources.home_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.home_unread
+import com.aimdi.xtanative.ui.generated.resources.home_column_for_you
 import com.aimdi.xtanative.ui.generated.resources.home_x
 import com.aimdi.xtanative.ui.generated.resources.home_xta_settings
 import com.aimdi.xtanative.ui.group.GroupFeedBody
@@ -175,7 +176,7 @@ internal fun HomeFeedPage(
                         ReadColumn(tab.key) {
                             DeckColumnView(
                                 columnOf(tab),
-                                tabLabel(tab, ui),
+                                columnLabel(tab, ui),
                                 ColumnPlace(first = false, last = false),
                                 ColumnCalls(onTitle = { calls.onTab(ui.tabs.indexOf(tab)) }, menu = false),
                                 toTop = 0,
@@ -405,6 +406,11 @@ internal fun TimelineMark(tab: HomeTab, networks: HomeNetworks, size: Dp) {
         is HomeTab.Group -> Unit
     }
 }
+
+/** What a timeline's column beside the one shown calls it: as the deck's columns do, X's For you by that name beside X's mark. */
+@Composable
+private fun columnLabel(tab: HomeTab, ui: HomeUi): String =
+    if (tab == HomeTab.ForYou) stringResource(Res.string.home_column_for_you) else tabLabel(tab, ui)
 
 /** What the strip, the picker and the menus call a timeline: Following, X, a network by its title. */
 @Composable

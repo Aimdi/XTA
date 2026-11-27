@@ -105,7 +105,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_deck_width_narrow
 import com.aimdi.xtanative.ui.generated.resources.home_deck_width_wide
 import com.aimdi.xtanative.ui.generated.resources.home_more_options
 import com.aimdi.xtanative.ui.generated.resources.home_refresh
-import com.aimdi.xtanative.ui.generated.resources.home_x
+import com.aimdi.xtanative.ui.generated.resources.home_column_for_you
 import com.aimdi.xtanative.ui.group.GroupFeedBody
 import com.aimdi.xtanative.ui.group.groupFeedViewModel
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
@@ -455,11 +455,12 @@ private fun EmptyDeck(button: Modifier, onAdd: () -> Unit) {
     }
 }
 
-/** A column's name: Following, For you, the network's, or the group's with its emoji. */
+/** A column's name: Following, For you (X's), the network's, or the group's with its emoji. */
 @Composable
 private fun labelOf(column: DeckColumn, groups: List<FollowGroup>, available: List<StripNetwork>): String = when (column) {
     DeckColumn.Following -> stringResource(Res.string.following)
-    DeckColumn.ForYou -> stringResource(Res.string.home_x)
+    // Named as X names that timeline, the X mark beside it: an X mark beside "X" read as a close button.
+    DeckColumn.ForYou -> stringResource(Res.string.home_column_for_you)
     is DeckColumn.Network -> available.firstOrNull { it.id == column.networkId }?.title ?: column.networkId
     is DeckColumn.Group -> groups.firstOrNull { it.id == column.groupId }?.let(HomeStrip::groupLabel) ?: column.groupId
 }

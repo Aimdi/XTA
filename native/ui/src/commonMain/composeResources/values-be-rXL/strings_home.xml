@@ -3,6 +3,7 @@
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
     <string name="home_x">X</string>
+    <string name="home_column_for_you">Dla vas</string>
     <string name="home_search_in">Pošuk u %1$s</string>
     <string name="home_open_menu">Adkryć mieniu navihacyi</string>
     <string name="home_add_timeline">Dadać stužku</string>

@@ -3,6 +3,7 @@
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
     <string name="home_x">X</string>
+    <string name="home_column_for_you">For you</string>
     <string name="home_search_in">%1$sを検索</string>
     <string name="home_open_menu">ナビゲーション メニューを開く</string>
     <string name="home_add_timeline">タイムラインを追加</string>

@@ -3,6 +3,7 @@
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
     <string name="home_x">X</string>
+    <string name="home_column_for_you">Dành cho bạn</string>
     <string name="home_search_in">Tìm trong %1$s</string>
     <string name="home_open_menu">Mở menu điều hướng</string>
     <string name="home_add_timeline">Thêm dòng thời gian</string>
