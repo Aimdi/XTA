@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -26,9 +27,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.SnackbarHost
@@ -69,6 +72,9 @@ import com.aimdi.xtanative.ui.downloads.MediaSharing
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_open_post
 import com.aimdi.xtanative.ui.generated.resources.reader_back
+import com.aimdi.xtanative.ui.generated.resources.reader_close
+import androidx.compose.ui.text.style.TextOverflow
+import com.aimdi.xtanative.ui.settings.isDesktop
 import com.aimdi.xtanative.ui.generated.resources.reader_download
 import com.aimdi.xtanative.ui.generated.resources.reader_link_copied
 import com.aimdi.xtanative.ui.generated.resources.reader_link_share
@@ -267,6 +273,9 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
                         }
                     }
                     if (viewerPageButtons && items.size > 1) PageButtons(pager, items.size, ::turn)
+                    // On the desktop the picture's description (its alt text) reads under it while it is not zoomed in.
+                    val alt = items.getOrNull(pager.currentPage)?.alt?.takeIf { it.isNotBlank() }
+                    if (isDesktop && alt != null && zoomedPages[pager.currentPage] != true) AltCaption(alt, Modifier.align(Alignment.BottomCenter))
                 }
             }
         }
@@ -274,6 +283,22 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     }
     fileMenu?.Menu()
 }
+
+/** A picture's description over its foot, white on a dark band, a few lines at most. */
+@Composable
+private fun AltCaption(alt: String, modifier: Modifier) {
+    Text(
+        alt,
+        color = Color.White,
+        style = MaterialTheme.typography.bodyMedium,
+        maxLines = ALT_LINES,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0.6f)).padding(horizontal = 24.dp, vertical = 12.dp),
+    )
+}
+
+/** The most lines of a picture's description the viewer shows. */
+private const val ALT_LINES = 4
 
 /** The black bar over the pages: back, "2 / 4" rolling with the page, and [actions] for the page shown. */
 @Composable
@@ -283,7 +308,8 @@ private fun ViewerBar(pager: PagerState, count: Int, backdrop: Float, onClose: (
         Modifier.fillMaxWidth().background(Color.Black.copy(alpha = backdrop)).statusBarsPadding().heightIn(min = 56.dp).padding(end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconTip(stringResource(Res.string.reader_back)) { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.reader_back), tint = Color.White) } }
+        // A phone's viewer goes back from its start; a desktop's closes with ✕ at its end, as a window does.
+        if (isDesktop) Spacer(Modifier.width(12.dp)) else IconTip(stringResource(Res.string.reader_back)) { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.reader_back), tint = Color.White) } }
         if (count > 1) {
             val page = pager.currentPage + 1
             Row(Modifier.padding(start = 8.dp).semantics { contentDescription = "$media $page/$count" }) {
@@ -299,6 +325,7 @@ private fun ViewerBar(pager: PagerState, count: Int, backdrop: Float, onClose: (
         }
         Spacer(Modifier.weight(1f))
         actions()
+        if (isDesktop) IconTip(stringResource(Res.string.reader_close)) { IconButton(onClick = onClose) { Icon(Icons.Filled.Close, stringResource(Res.string.reader_close), tint = Color.White) } }
     }
 }
 
