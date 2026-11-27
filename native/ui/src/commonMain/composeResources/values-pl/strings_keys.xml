@@ -60,4 +60,5 @@
     <string name="keys_post_media">Otwórz pierwsze zdjęcie lub wideo tego wpisu</string>
     <string name="keys_post_translate">Przetłumacz ten wpis lub pokaż oryginał</string>
     <string name="keys_quick_switch">Przejdź do ekranu, osi czasu, grupy lub ustawienia</string>
+    <string name="keys_reopen_window">Otwórz ponownie ostatnio zamknięte okno</string>
 </resources>

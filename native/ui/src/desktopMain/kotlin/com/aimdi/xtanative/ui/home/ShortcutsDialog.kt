@@ -84,6 +84,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_recent_searches
 import com.aimdi.xtanative.ui.generated.resources.keys_refresh
 import com.aimdi.xtanative.ui.generated.resources.keys_regions
 import com.aimdi.xtanative.ui.generated.resources.keys_remove_selected
+import com.aimdi.xtanative.ui.generated.resources.keys_reopen_window
 import com.aimdi.xtanative.ui.generated.resources.keys_scroll_ends
 import com.aimdi.xtanative.ui.generated.resources.keys_scroll_line
 import com.aimdi.xtanative.ui.generated.resources.keys_scroll_screen
@@ -156,6 +157,7 @@ object DesktopShortcuts {
                 Shortcut(Res.string.keys_move_row, listOf(listOf(alt, sign("↑")), listOf(alt, sign("↓")))),
                 Shortcut(Res.string.keys_undo, listOf(listOf(ctrl, sign("Z")))),
                 Shortcut(Res.string.keys_full_screen, listOf(listOf(sign("F11")))),
+                Shortcut(Res.string.keys_reopen_window, listOf(listOf(ctrl, shift, sign("T")))),
                 Shortcut(Res.string.settings_title, listOf(listOf(ctrl, sign(",")))),
                 Shortcut(Res.string.keys_quit, listOf(listOf(ctrl, sign("Q")))),
             ),

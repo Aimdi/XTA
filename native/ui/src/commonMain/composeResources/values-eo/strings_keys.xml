@@ -60,4 +60,5 @@
     <string name="keys_post_media">Malfermi la unuan bildon aŭ videon de tiu afiŝo</string>
     <string name="keys_post_translate">Traduki tiun afiŝon aŭ montri la originalon</string>
     <string name="keys_quick_switch">Iri al ekrano, tempolinio, grupo aŭ agordo</string>
+    <string name="keys_reopen_window">Remalfermi la laste fermitan fenestron</string>
 </resources>

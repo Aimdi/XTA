@@ -60,4 +60,5 @@
     <string name="keys_post_media">打开该帖子的第一张图片或第一个视频</string>
     <string name="keys_post_translate">翻译该帖子，或显示原文</string>
     <string name="keys_quick_switch">转到屏幕、时间线、分组或设置</string>
+    <string name="keys_reopen_window">重新打开最近关闭的窗口</string>
 </resources>

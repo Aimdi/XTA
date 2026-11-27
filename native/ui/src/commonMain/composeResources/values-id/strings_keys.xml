@@ -60,4 +60,5 @@
     <string name="keys_post_media">Buka gambar atau video pertama postingan itu</string>
     <string name="keys_post_translate">Terjemahkan postingan itu, atau tampilkan aslinya</string>
     <string name="keys_quick_switch">Buka layar, linimasa, grup, atau pengaturan</string>
+    <string name="keys_reopen_window">Buka lagi jendela yang terakhir ditutup</string>
 </resources>

@@ -60,4 +60,5 @@
     <string name="keys_post_media">Åpne det første bildet eller videoen i det innlegget</string>
     <string name="keys_post_translate">Oversett det innlegget, eller vis originalen</string>
     <string name="keys_quick_switch">Gå til en skjerm, tidslinje, gruppe eller innstilling</string>
+    <string name="keys_reopen_window">Åpne det sist lukkede vinduet igjen</string>
 </resources>

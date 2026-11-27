@@ -60,4 +60,5 @@
     <string name="keys_post_media">De eerste afbeelding of video van die post openen</string>
     <string name="keys_post_translate">Die post vertalen, of het origineel tonen</string>
     <string name="keys_quick_switch">Naar een scherm, tijdlijn, groep of instelling gaan</string>
+    <string name="keys_reopen_window">Het laatst gesloten venster opnieuw openen</string>
 </resources>

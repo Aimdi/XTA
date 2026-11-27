@@ -60,4 +60,5 @@
     <string name="keys_post_media">Abrir a primeira imagem ou vídeo desse post</string>
     <string name="keys_post_translate">Traduzir esse post ou mostrar o original</string>
     <string name="keys_quick_switch">Ir para uma tela, linha do tempo, grupo ou configuração</string>
+    <string name="keys_reopen_window">Reabrir a última janela fechada</string>
 </resources>

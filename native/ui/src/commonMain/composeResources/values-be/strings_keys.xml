@@ -60,4 +60,5 @@
     <string name="keys_post_media">Адкрыць першы здымак або відэа гэтага допісу</string>
     <string name="keys_post_translate">Перакласці гэты допіс або паказаць арыгінал</string>
     <string name="keys_quick_switch">Перайсці да экрана, стужкі, групы або налады</string>
+    <string name="keys_reopen_window">Зноў адкрыць апошняе закрытае акно</string>
 </resources>

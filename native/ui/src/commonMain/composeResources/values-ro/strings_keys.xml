@@ -60,4 +60,5 @@
     <string name="keys_post_media">Deschide prima imagine sau primul videoclip al acelei postări</string>
     <string name="keys_post_translate">Tradu acea postare sau arată originalul</string>
     <string name="keys_quick_switch">Mergi la un ecran, o cronologie, un grup sau o setare</string>
+    <string name="keys_reopen_window">Redeschide ultima fereastră închisă</string>
 </resources>

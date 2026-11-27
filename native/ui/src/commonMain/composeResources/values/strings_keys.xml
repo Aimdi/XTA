@@ -61,4 +61,5 @@
     <string name="keys_post_media">Open the first picture or video of that post</string>
     <string name="keys_post_translate">Translate that post, or show the original</string>
     <string name="keys_quick_switch">Go to a screen, timeline, group or setting</string>
+    <string name="keys_reopen_window">Reopen the last closed window</string>
 </resources>

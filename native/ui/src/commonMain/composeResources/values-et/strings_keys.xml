@@ -60,4 +60,5 @@
     <string name="keys_post_media">Ava selle postituse esimene pilt või video</string>
     <string name="keys_post_translate">Tõlgi see postitus või näita algset</string>
     <string name="keys_quick_switch">Mine kuvale, ajajoonele, rühma või seadistusse</string>
+    <string name="keys_reopen_window">Ava uuesti viimati suletud aken</string>
 </resources>

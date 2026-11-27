@@ -60,4 +60,5 @@
     <string name="keys_post_media">開啟該貼文的第一張圖片或第一部影片</string>
     <string name="keys_post_translate">翻譯該貼文，或顯示原文</string>
     <string name="keys_quick_switch">前往畫面、時間軸、群組或設定</string>
+    <string name="keys_reopen_window">重新開啟最近關閉的視窗</string>
 </resources>

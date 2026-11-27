@@ -60,4 +60,5 @@
     <string name="keys_post_media">Otevřít první obrázek nebo video příspěvku</string>
     <string name="keys_post_translate">Přeložit příspěvek, nebo zobrazit původní</string>
     <string name="keys_quick_switch">Přejít na obrazovku, časovou osu, skupinu nebo nastavení</string>
+    <string name="keys_reopen_window">Znovu otevřít naposledy zavřené okno</string>
 </resources>

@@ -60,4 +60,5 @@
     <string name="keys_post_media">Mở ảnh hoặc video đầu tiên của bài đăng đó</string>
     <string name="keys_post_translate">Dịch bài đăng đó, hoặc hiện bản gốc</string>
     <string name="keys_quick_switch">Đi tới màn hình, dòng thời gian, nhóm hoặc cài đặt</string>
+    <string name="keys_reopen_window">Mở lại cửa sổ vừa đóng gần nhất</string>
 </resources>

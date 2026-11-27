@@ -60,4 +60,5 @@
     <string name="keys_post_media">Открыть первое фото или видео этого поста</string>
     <string name="keys_post_translate">Перевести этот пост или показать оригинал</string>
     <string name="keys_quick_switch">Перейти к экрану, ленте, группе или настройке</string>
+    <string name="keys_reopen_window">Снова открыть последнее закрытое окно</string>
 </resources>

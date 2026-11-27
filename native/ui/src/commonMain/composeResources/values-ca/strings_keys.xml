@@ -60,4 +60,5 @@
     <string name="keys_post_media">Obre la primera imatge o el primer vídeo d'aquesta publicació</string>
     <string name="keys_post_translate">Tradueix aquesta publicació o mostra l'original</string>
     <string name="keys_quick_switch">Ves a una pantalla, cronologia, grup o opció</string>
+    <string name="keys_reopen_window">Torna a obrir l'última finestra tancada</string>
 </resources>
