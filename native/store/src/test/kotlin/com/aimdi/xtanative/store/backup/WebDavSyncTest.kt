@@ -8,6 +8,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 
@@ -16,6 +17,9 @@ private class FakeDav(var etags: Boolean = true, var reachable: Boolean = true) 
     val files = HashMap<String, String>()
     val folders = HashSet<String>()
     val requests = ArrayList<String>()
+
+    /** While set, a PUT to the document waits for it, as a slow upload does. */
+    var mainPutGate: kotlinx.coroutines.CompletableDeferred<Unit>? = null
 
     /** How a PUT to the document fails, when it should. */
     var mainPut: PutFailure? = null
@@ -29,7 +33,7 @@ private class FakeDav(var etags: Boolean = true, var reachable: Boolean = true) 
         val path = url.encodedPath
         return when (method) {
             "GET" -> files[path]?.let { WebDavResponse(200, it, tag(path)) } ?: WebDavResponse(404)
-            "PUT" -> when (mainPut.takeIf { path == "/xta/backup.json" }) {
+            "PUT" -> when (mainPut.also { if (path == "/xta/backup.json") mainPutGate?.await() }.takeIf { path == "/xta/backup.json" }) {
                 PutFailure.REFUSED -> WebDavResponse(507)
                 PutFailure.LOST -> throw IOException("reset")
                 PutFailure.ANSWER_LOST -> put(path, headers, body.orEmpty()).let { throw IOException("reset after write") }
@@ -135,6 +139,25 @@ class WebDavSyncTest {
         assertTrue(server.files.containsKey("/xta/backup.json.versions/" + versions.single().file))
         server.mainPut = null
         // The baseline moved with it, so the next upload is no conflict.
+        assertEquals(WebDavOutcome.SUCCESS, sync.upload(config, """{"next":2}""").outcome)
+    }
+
+    @Test
+    fun anUploadLeftWhileItRunsStillKeepsItsBaseline(): Unit = runBlocking {
+        val server = FakeDav()
+        val sync = WebDavSync(server, MemoryBaselines()) { now }
+        assertEquals(WebDavOutcome.SUCCESS, sync.upload(config, "{}").outcome)
+        val gate = kotlinx.coroutines.CompletableDeferred<Unit>()
+        server.mainPutGate = gate
+        fun puts() = server.requests.count { it == "PUT /xta/backup.json" }
+        val before = puts()
+        val leaving = launch { sync.upload(config, """{"next":1}""") }
+        while (puts() == before) kotlinx.coroutines.yield()
+        leaving.cancel()
+        gate.complete(Unit)
+        leaving.join()
+        server.mainPutGate = null
+        assertTrue(server.files["/xta/backup.json"]!!.contains("\"next\":1"))
         assertEquals(WebDavOutcome.SUCCESS, sync.upload(config, """{"next":2}""").outcome)
     }
 

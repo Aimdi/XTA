@@ -9,6 +9,7 @@ import java.util.Base64
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -83,7 +84,14 @@ class WebDavSync(
         return get(config, versionAddress(config, version.file))
     }
 
-    suspend fun upload(config: WebDavConfig, body: String): WebDavResult {
+    /**
+     * Once begun, an upload runs to its end even when its caller is gone: a
+     * PUT that lands without its new validator kept would make every later
+     * upload of this device a conflict.
+     */
+    suspend fun upload(config: WebDavConfig, body: String): WebDavResult = withContext(NonCancellable) { uploading(config, body) }
+
+    private suspend fun uploading(config: WebDavConfig, body: String): WebDavResult {
         invalid(config)?.let { return it }
         return try {
             val data = runCatching { Json.parseToJsonElement(body) }.getOrNull() as? JsonObject ?: return WebDavResult(WebDavOutcome.SERVER_ERROR)

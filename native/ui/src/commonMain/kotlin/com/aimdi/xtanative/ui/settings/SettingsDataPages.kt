@@ -173,20 +173,22 @@ internal fun ImportPreviewDialog(document: BackupDocument, onDismiss: () -> Unit
 
 /**
  * A backup the reader chose, previewed and, once they agree, restored into
- * every store; [onDone] hears whether it was. The restore runs to its end
- * even when the screen goes away.
+ * every store, then [onRestored]. Both run to their end even when the
+ * screen goes away.
  */
 @Composable
-internal fun RestoreDialog(document: BackupDocument?, vm: SettingsViewModel, snackbar: SnackbarHostState?, onClose: () -> Unit, onDone: (Boolean) -> Unit = {}) {
+internal fun RestoreDialog(document: BackupDocument?, vm: SettingsViewModel, snackbar: SnackbarHostState?, onClose: () -> Unit, onRestored: suspend () -> Unit = {}) {
     if (document == null) return
     val scope = rememberCoroutineScope()
     val imported = stringResource(Res.string.settings_imported)
-    ImportPreviewDialog(document, onDismiss = { onClose(); onDone(false) }) { includeReadPositions ->
+    ImportPreviewDialog(document, onDismiss = onClose) { includeReadPositions ->
         onClose()
         scope.launch {
-            withContext(NonCancellable) { DeviceBackup(vm.graph).restore(document, includeReadPositions) }
+            withContext(NonCancellable) {
+                DeviceBackup(vm.graph).restore(document, includeReadPositions)
+                onRestored()
+            }
             snackbar?.showSnackbar(imported)
-            onDone(true)
         }
     }
 }
@@ -432,8 +434,11 @@ internal fun SyncSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
                     Button(onClick = {
                         act {
                             val body = DeviceBackup(vm.graph).export(ExportChoice.everything(includeAccounts = settings[DataPrefs.webDavIncludeAccounts]))
-                            sync.upload(config, body).also { result ->
-                                if (result.isSuccess) vm.set(DataPrefs.webDavLastSyncAt, XtaTime.iso(Instant.now()))
+                            // Leaving the page must not drop the new baseline of an upload already sent.
+                            withContext(NonCancellable) {
+                                sync.upload(config, body).also { result ->
+                                    if (result.isSuccess) vm.set(DataPrefs.webDavLastSyncAt, XtaTime.iso(Instant.now()))
+                                }
                             }
                         }
                     }, modifier = Modifier.weight(1f)) { Text(stringResource(Res.string.settings_sync_upload)) }
@@ -498,9 +503,9 @@ internal fun SyncSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
     }
 
     offered?.let { (document, downloaded) ->
-        RestoreDialog(document, vm, snackbar, onClose = { offered = null }) { restored ->
+        RestoreDialog(document, vm, snackbar, onClose = { offered = null }) {
             // Only a confirmed restore becomes the baseline the next upload is checked against.
-            if (restored && downloaded != null) scope.launch { sync.acknowledge(config, downloaded) }
+            if (downloaded != null) sync.acknowledge(config, downloaded)
         }
     }
 }
