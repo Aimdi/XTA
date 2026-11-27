@@ -81,6 +81,19 @@ class XLookTest {
     }
 
     @Test
+    fun aDiscShowsTheAccentAsThePageUsesIt() {
+        val light = XLook.tokens(settings(ThemeBackground.LIGHT, ThemeAccent.YELLOW), systemDark = false)
+        val yellow = XLook.accentSwatch(ThemeAccent.YELLOW, null, light).single()
+        assertNotEquals(ThemeAccent.YELLOW.argb, yellow, "yellow does not read on white: the disc shows what the app uses")
+        assertEquals(XLook.scheme(light).primary, yellow, "the colour of Light's links, tabs and switches")
+        val blue = XLook.tokens(settings(ThemeBackground.LIGHT, ThemeAccent.BLUE), systemDark = false)
+        assertEquals(XLook.scheme(blue).primary, XLook.accentSwatch(ThemeAccent.BLUE, null, blue).single())
+        val dark = XLook.tokens(settings(ThemeBackground.LIGHTS_OUT, ThemeAccent.YELLOW), systemDark = true)
+        assertEquals(listOf(ThemeAccent.YELLOW.argb), XLook.accentSwatch(ThemeAccent.YELLOW, null, dark), "on black it reads as it is")
+        assertEquals(6, XLook.accentSwatch(ThemeAccent.SYSTEM, null, light).size, "System's disc still shows every accent")
+    }
+
+    @Test
     fun anAccentThatDoesNotReadOnThePageIsCorrected() {
         val scheme = XLook.scheme(XLook.tokens(settings(ThemeBackground.LIGHT, ThemeAccent.YELLOW), systemDark = false))
         assertNotEquals(ThemeAccent.YELLOW.argb, scheme.primary)

@@ -74,6 +74,7 @@ import com.aimdi.xtanative.ui.links.BrowserPickerRow
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.speech.VoiceSettingsSheet
 import com.aimdi.xtanative.ui.theme.Contrast
+import com.aimdi.xtanative.ui.theme.LocalXLook
 import com.aimdi.xtanative.ui.theme.XLook
 import com.aimdi.xtanative.ui.theme.XLookTokens
 import com.aimdi.xtanative.ui.theme.systemAccent
@@ -554,11 +555,13 @@ internal fun BackgroundPicker(selected: ThemeBackground, modifier: Modifier = Mo
 @Composable
 internal fun AccentPicker(selected: ThemeAccent, modifier: Modifier = Modifier, onSelect: (ThemeAccent) -> Unit) {
     val desktopAccent = systemAccent()
+    // Each disc in the colour the app gives that accent on this page, as its links and switches show it.
+    val tokens = LocalXLook.current.tokens
     FlowRow(modifier.fillMaxWidth().padding(horizontal = PICKER_EDGE, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(PICKER_GAP)) {
         XLook.offeredAccents(isDesktop, selected).forEach { accent ->
             val chosen = accent == selected
-            val argb = XLook.accentArgb(accent, desktopAccent)
-            val swatch = XLook.accentSwatch(accent, desktopAccent).map(::Color)
+            val argb = XLook.readable(XLook.accentArgb(accent, desktopAccent), tokens)
+            val swatch = XLook.accentSwatch(accent, desktopAccent, tokens).map(::Color)
             Column(
                 Modifier.width(ACCENT_TILE).clip(RoundedCornerShape(12.dp)).clickable { onSelect(accent) }.padding(vertical = 6.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,

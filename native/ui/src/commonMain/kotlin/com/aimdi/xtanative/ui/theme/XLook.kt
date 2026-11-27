@@ -134,6 +134,17 @@ object XLook {
         else listOf(accentArgb(accent, systemAccent))
 
     /**
+     * [accentSwatch] as the app paints that accent on [tokens]' page: each
+     * colour made [readable] there, so Light's yellow shows the olive its
+     * links, tabs and switches get, not the yellow they cannot use on white.
+     */
+    fun accentSwatch(accent: ThemeAccent, systemAccent: Long?, tokens: XLookTokens): List<Long> =
+        accentSwatch(accent, systemAccent).map { readable(it, tokens) }
+
+    /** [accent] where the app uses it as text and controls on [tokens]' page: darkened or lightened until it reads on the page and on what floats over it. */
+    fun readable(accent: Long, tokens: XLookTokens): Long = Contrast.ensure(Contrast.ensure(accent, tokens.background), floatingSurface(tokens))
+
+    /**
      * The accents a picker offers: all of them on the desktop, whose settings
      * portal gives an accent colour; elsewhere System only while it is the
      * [selected] one (a backup from the desktop), as it would be X's blue.
@@ -205,7 +216,7 @@ object XLook {
         val floating = floatingSurface(tokens)
         val inset = insetSurface(tokens)
         val lightsOut = isLightsOut(tokens)
-        val readableAccent = Contrast.ensure(Contrast.ensure(tokens.accent, tokens.background), floating)
+        val readableAccent = readable(tokens.accent, tokens)
         val error = Contrast.ensure(Contrast.ensure(ERROR_RED, tokens.background), floating)
         val errorContainer = Contrast.alphaBlend(Contrast.withAlpha(error, 0.14), tokens.background)
         val field = Contrast.alphaBlend(Contrast.withAlpha(tokens.onBackground, FIELD), tokens.background)
