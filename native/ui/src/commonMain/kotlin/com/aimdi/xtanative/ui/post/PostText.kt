@@ -108,9 +108,11 @@ fun RunsText(
     val layout = remember { TextLayoutHolder() }
     var topic by remember { mutableStateOf<String?>(null) }
     topic?.let { TopicSheet(it) { topic = null } }
+    val linkMenu = remember { LinkMenuState() }
+    linkMenu.Shown()
     Text(
         text,
-        modifier = modifier.tagPresses(text, layout) { topic = it }.linkMiddleClicks(text, layout, actions.openInBrowser).linkDrags(text, layout),
+        modifier = modifier.tagPresses(text, layout) { topic = it }.linkMiddleClicks(text, layout, actions.openInBrowser).linkMenus(text, layout, linkMenu).linkDrags(text, layout),
         style = style,
         color = MaterialTheme.colorScheme.onSurface,
         maxLines = maxLines,
@@ -158,6 +160,8 @@ fun ExpandablePostText(
     val laidOut = remember { TextLayoutHolder() }
     var topic by remember { mutableStateOf<String?>(null) }
     topic?.let { TopicSheet(it) { topic = null } }
+    val linkMenu = remember { LinkMenuState() }
+    linkMenu.Shown()
     val resizes = ShowMore.resizes(LocalReducedMotion.current, folds, clipped, unfolding)
     val settled = remember { { _: IntSize, _: IntSize -> unfolding = false } }
     Column(modifier.then(if (resizes) Modifier.animateContentSize(tween(Motion.STANDARD_MS), finishedListener = settled) else Modifier)) {
@@ -173,7 +177,7 @@ fun ExpandablePostText(
                     found.laidOut(layout)
                     folds = ShowMore.folds(folds, clipped, layout.hasVisualOverflow)
                 },
-                modifier = (if (clipped && folds) Modifier.fadingBottom() else Modifier).tagPresses(text, laidOut) { topic = it }.linkMiddleClicks(text, laidOut, actions.openInBrowser).linkDrags(text, laidOut).then(found.modifier),
+                modifier = (if (clipped && folds) Modifier.fadingBottom() else Modifier).tagPresses(text, laidOut) { topic = it }.linkMiddleClicks(text, laidOut, actions.openInBrowser).linkMenus(text, laidOut, linkMenu).linkDrags(text, laidOut).then(found.modifier),
             )
         }
         if (selectable) SelectionContainer(Modifier.pointerOnlyFocus()) { drawn() } else drawn()

@@ -43,12 +43,16 @@ internal fun Modifier.tagPresses(text: AnnotatedString, layout: TextLayoutHolder
 }
 
 /** The tag of the link of [text] under [position] that [accepts] takes, laid out as [layout]; null where the press is off one. */
-internal fun tagAt(text: AnnotatedString, layout: TextLayoutResult?, position: Offset, accepts: (String?) -> Boolean): String? {
+internal fun tagAt(text: AnnotatedString, layout: TextLayoutResult?, position: Offset, accepts: (String?) -> Boolean): String? =
+    linkAt(text, layout, position, accepts)?.tag
+
+/** The link of [text] under [position] whose tag [accepts] takes, laid out as [layout]; null where the press is off one. */
+internal fun linkAt(text: AnnotatedString, layout: TextLayoutResult?, position: Offset, accepts: (String?) -> Boolean): LinkAnnotation.Clickable? {
     if (layout == null || text.isEmpty()) return null
     val offset = layout.getOffsetForPosition(position).coerceIn(0, text.length - 1)
     val link = text.getLinkAnnotations(offset, offset + 1).firstOrNull { accepts(tagOf(it.item)) } ?: return null
     if (!layout.getPathForRange(link.start, link.end).getBounds().contains(position)) return null
-    return tagOf(link.item)
+    return link.item as? LinkAnnotation.Clickable
 }
 
 private fun tagOf(link: LinkAnnotation): String? = (link as? LinkAnnotation.Clickable)?.tag
