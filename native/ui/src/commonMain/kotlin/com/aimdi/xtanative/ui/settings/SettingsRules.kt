@@ -88,8 +88,8 @@ object LanguagePicks {
     /** Every two-letter language code there is a name for. */
     val known: List<String> by lazy { Locale.getISOLanguages().toList() }
 
-    /** The codes [saved] keeps, each once. */
-    fun chosen(saved: String): List<String> = LanguageFilter.parseLanguages(saved).distinctBy { it.lowercase() }
+    /** The codes [saved] keeps, each once (an old code and its new one being one: `iw`, `he`). */
+    fun chosen(saved: String): List<String> = LanguageFilter.parseLanguages(saved).distinctBy(LanguageFilter::canonical)
 
     /** What [chosen] is saved as. */
     fun saved(chosen: List<String>): String = chosen.joinToString(",")
@@ -108,7 +108,7 @@ object LanguagePicks {
     /** The list's order: [chosen] first as picked, then every other of [known] by its name for the [reader]. */
     fun options(chosen: List<String>, reader: Locale, known: List<String> = this.known): List<String> {
         val byName = Collator.getInstance(reader)
-        return chosen + known.filter { code -> chosen.none { it.equals(code, ignoreCase = true) } }.sortedWith(compareBy(byName) { name(it, reader) })
+        return chosen + known.filter { code -> chosen.none { LanguageFilter.canonical(it) == LanguageFilter.canonical(code) } }.sortedWith(compareBy(byName) { name(it, reader) })
     }
 }
 

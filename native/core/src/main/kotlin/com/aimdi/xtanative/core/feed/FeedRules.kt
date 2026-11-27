@@ -272,11 +272,21 @@ data class LanguageFilter(val allowed: List<String> = emptyList(), val action: L
 
     private fun isAllowed(language: String?): Boolean {
         if (language.isNullOrEmpty()) return true
-        val lowered = language.lowercase()
-        return allowed.any { prefix -> prefix.trim().lowercase().let { it.isNotEmpty() && lowered.startsWith(it) } }
+        val lowered = canonical(language)
+        return allowed.any { prefix -> canonical(prefix).let { it.isNotEmpty() && lowered.startsWith(it) } }
     }
 
     companion object {
+        /** The old ISO 639 codes X and older lists still use, by the code they became. */
+        private val RENAMED = mapOf("iw" to "he", "in" to "id", "ji" to "yi")
+
+        /** [code] trimmed, in lower case, an old code (`iw`, `in`, `ji`) as its new one, so either finds the other. */
+        fun canonical(code: String): String {
+            val lowered = code.trim().lowercase()
+            val language = lowered.substringBefore('-').substringBefore('_')
+            return RENAMED[language]?.let { it + lowered.substring(language.length) } ?: lowered
+        }
+
         /** XTA's setting: comma-separated language prefixes (`en,fr,ja`). */
         fun parseLanguages(raw: String?): List<String> = raw.orEmpty().split(',').map { it.trim() }.filter { it.isNotEmpty() }
     }

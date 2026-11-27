@@ -141,6 +141,8 @@ class SettingsRulesTest {
         assertEquals("en,fr", LanguagePicks.saved(listOf("en", "fr")))
         assertEquals("Englisch", LanguagePicks.name("en", german))
         assertEquals("qme", LanguagePicks.name("qme", german))
+        assertEquals(listOf("iw"), LanguagePicks.chosen("iw,he"))
+        assertEquals(listOf("iw", "en"), LanguagePicks.options(listOf("iw"), german, known = listOf("he", "en")))
         assertTrue("Japanisch" in LanguagePicks.terms("ja", german) && "Japanese" in LanguagePicks.terms("ja", german) && "ja" in LanguagePicks.terms("ja", german))
         assertTrue(LanguagePicks.known.containsAll(listOf("en", "de", "ja", "zh")))
         val options = LanguagePicks.options(listOf("qme", "fr"), german, known = listOf("fr", "en", "de", "ar"))

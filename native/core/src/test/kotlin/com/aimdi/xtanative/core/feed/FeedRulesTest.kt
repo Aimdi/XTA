@@ -147,6 +147,18 @@ class FeedRulesTest {
     }
 
     @Test
+    fun oldLanguageCodesMatchTheirNewOnesBothWays() {
+        assertEquals("he", LanguageFilter.canonical(" IW "))
+        assertEquals("id-id", LanguageFilter.canonical("in-ID"))
+        assertEquals("yi", LanguageFilter.canonical("ji"))
+        assertEquals("ind", LanguageFilter.canonical("ind"))
+        assertEquals("en", LanguageFilter.canonical("en"))
+        val facts = Facts(languages = mapOf("1" to "iw", "2" to "id", "3" to "en"))
+        val threads = listOf(thread(1), thread(2), thread(3))
+        assertEquals(listOf("1", "2"), Posts.ids(LanguageFilter(listOf("he", "in"), LanguageAction.HIDE).apply(threads, facts = facts).threads))
+    }
+
+    @Test
     fun theLanguageFilterIsOffHidesOrFoldsAndKeepsEarlierFolds() {
         val facts = Facts(languages = mapOf("1" to "en", "2" to "de"))
         val threads = listOf(thread(1), thread(2), thread(3))
