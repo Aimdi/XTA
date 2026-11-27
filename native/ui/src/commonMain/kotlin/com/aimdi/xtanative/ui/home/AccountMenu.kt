@@ -4,7 +4,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,17 +19,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -39,6 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.x.XAccount
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.SearchField
@@ -54,6 +62,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_discover
 import com.aimdi.xtanative.ui.generated.resources.home_downloads
 import com.aimdi.xtanative.ui.generated.resources.home_group_members
 import com.aimdi.xtanative.ui.generated.resources.home_groups
+import com.aimdi.xtanative.ui.generated.resources.home_mark_all_read
 import com.aimdi.xtanative.ui.generated.resources.home_no_groups
 import com.aimdi.xtanative.ui.generated.resources.home_no_results
 import com.aimdi.xtanative.ui.generated.resources.home_plugin_store
@@ -212,27 +221,70 @@ private fun GroupsHeader(count: Int, query: String, onQuery: (String) -> Unit) {
     }
 }
 
-/** A group: its mark (with the unread dot), name and size; pinned groups say so. */
+/**
+ * A group: its mark (with the unread dot, or how many posts are unread),
+ * name and size; pinned groups say so. A right click offers Mark all as read
+ * while it has unread posts.
+ */
 @Composable
 private fun GroupRow(group: FollowGroup, unread: Boolean, selected: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val compact = LocalNavCompact.current
-    NavRowFrame(selected = selected, onClick = onClick, shape = NavRowTallShape, minHeight = NavRowSizes.groupRow(compact), modifier = Modifier.padding(vertical = if (compact) 1.dp else 2.dp).then(modifier)) {
-        UnreadDot(unread) { GroupMark(group, NavRowSizes.groupMark(compact)) }
-        Column(Modifier.weight(1f)) {
-            TipText(group.name, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
-            Text(
-                pluralStringResource(Res.plurals.home_group_members, group.memberIds.size, group.memberIds.size),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-            )
+    val tally = LocalGraph.current.unread
+    val now by tally.now.collectAsState()
+    val tab = HomeTab.Group(group.id, group.name)
+    var menu by remember { mutableStateOf(false) }
+    Box {
+        NavRowFrame(
+            selected = selected,
+            onClick = onClick,
+            shape = NavRowTallShape,
+            minHeight = NavRowSizes.groupRow(compact),
+            modifier = Modifier.padding(vertical = if (compact) 1.dp else 2.dp).onSecondaryClick { if (unread) menu = true }.then(modifier),
+        ) {
+            UnreadDot(unread, now.count(tab.key)) { GroupMark(group, NavRowSizes.groupMark(compact)) }
+            GroupRowText(group)
         }
-        if (group.pinned) {
-            Icon(XIcons.Pin, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-        } else {
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        MarkReadMenu(menu, onDismiss = { menu = false }) { tally.markRead(tab) }
+    }
+}
+
+@Composable
+private fun RowScope.GroupRowText(group: FollowGroup) {
+    Column(Modifier.weight(1f)) {
+        TipText(group.name, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+        Text(
+            pluralStringResource(Res.plurals.home_group_members, group.memberIds.size, group.memberIds.size),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+        )
+    }
+    if (group.pinned) {
+        Icon(XIcons.Pin, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+    } else {
+        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+/** A menu of one item, Mark all as read, which [onMark] does. */
+@Composable
+internal fun MarkReadMenu(expanded: Boolean, onDismiss: () -> Unit, onMark: () -> Unit) {
+    DropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
+        MarkReadItem {
+            onDismiss()
+            onMark()
         }
     }
+}
+
+/** Mark all as read, as a menu's row. */
+@Composable
+internal fun MarkReadItem(onClick: () -> Unit) {
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.home_mark_all_read)) },
+        leadingIcon = { Icon(Icons.Filled.Done, contentDescription = null) },
+        onClick = onClick,
+    )
 }
 
 /** A menu entry's icon: outlined, as every icon of the menu is, and filled while its screen is shown ([selected]), as the bar's pages are. */

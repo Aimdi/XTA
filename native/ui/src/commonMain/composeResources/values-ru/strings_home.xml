@@ -92,4 +92,5 @@
     <string name="home_plugin_settings">Настройки %1$s</string>
     <string name="home_switch_account">Сменить аккаунт</string>
     <string name="home_unread_count">Непрочитанные: %1$d</string>
+    <string name="home_mark_all_read">Отметить всё прочитанным</string>
 </resources>

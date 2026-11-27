@@ -91,4 +91,5 @@
     <string name="home_plugin_settings">Setări %1$s</string>
     <string name="home_switch_account">Schimbă contul</string>
     <string name="home_unread_count">Necitite: %1$d</string>
+    <string name="home_mark_all_read">Marchează totul ca citit</string>
 </resources>

@@ -90,4 +90,5 @@
     <string name="home_plugin_settings">%1$s settings</string>
     <string name="home_switch_account">Switch account</string>
     <string name="home_unread_count">%1$d unread</string>
+    <string name="home_mark_all_read">Mark all as read</string>
 </resources>

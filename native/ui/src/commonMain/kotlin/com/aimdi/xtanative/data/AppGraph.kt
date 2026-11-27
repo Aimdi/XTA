@@ -43,6 +43,7 @@ import com.aimdi.xtanative.store.settings.CrashReportPrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.downloads.Downloading
 import com.aimdi.xtanative.ui.downloads.PlatformFiles
+import com.aimdi.xtanative.ui.home.UnreadTally
 import com.aimdi.xtanative.ui.saved.Keeper
 import com.aimdi.xtanative.ui.settings.ChromeAvatar
 import com.aimdi.xtanative.ui.settings.DeviceBackup
@@ -169,6 +170,9 @@ class AppGraph(
 
     /** Why the device's data could not be opened at start (XTA's failed database migrations); null while it opened. */
     val startFailure: StateFlow<Throwable?> = startFailed.asStateFlow()
+
+    /** Which home feeds have unread posts, and how many: Home's dots, and the title, tray and launcher on the desktop. */
+    val unread: UnreadTally by lazy { UnreadTally(this, scope) }
 
     /** Whether there is a connection, as it changes: the present state first. */
     val online: SharedFlow<Boolean> = connection.shareIn(scope, SharingStarted.WhileSubscribed(5_000), replay = 1)

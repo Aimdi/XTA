@@ -92,4 +92,5 @@
     <string name="home_plugin_settings">Nastavení %1$s</string>
     <string name="home_switch_account">Přepnout účet</string>
     <string name="home_unread_count">Nepřečteno: %1$d</string>
+    <string name="home_mark_all_read">Označit vše jako přečtené</string>
 </resources>

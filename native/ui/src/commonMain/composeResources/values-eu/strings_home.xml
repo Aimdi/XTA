@@ -90,4 +90,5 @@
     <string name="home_plugin_settings">%1$s ezarpenak</string>
     <string name="home_switch_account">Aldatu kontua</string>
     <string name="home_unread_count">Irakurri gabeak: %1$d</string>
+    <string name="home_mark_all_read">Markatu dena irakurrita</string>
 </resources>

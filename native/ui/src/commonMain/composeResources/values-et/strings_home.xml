@@ -90,4 +90,5 @@
     <string name="home_plugin_settings">%1$s seaded</string>
     <string name="home_switch_account">Vaheta kontot</string>
     <string name="home_unread_count">Lugemata: %1$d</string>
+    <string name="home_mark_all_read">Märgi kõik loetuks</string>
 </resources>

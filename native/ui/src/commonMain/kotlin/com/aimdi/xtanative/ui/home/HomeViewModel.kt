@@ -11,17 +11,15 @@ import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.ThemePrefs
-import com.aimdi.xtanative.ui.group.ReadMarks
 import com.aimdi.xtanative.ui.settings.HomePages
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -72,11 +70,9 @@ class HomeViewModel(
     missing: StateFlow<Set<String>> = MutableStateFlow(emptySet()),
 ) : ViewModel() {
     private var opening: Pair<Int, Int>? = null
-    private val unreadKeys = MutableStateFlow<Set<String>>(emptySet())
-    private var unreadJob: Job? = null
 
-    /** The keys of the feeds with unread posts ([HomeTab.key]): Following, For you and the groups. */
-    val unread: StateFlow<Set<String>> = unreadKeys.asStateFlow()
+    /** The keys of the feeds with unread posts ([HomeTab.key]): Following, For you and the groups ([UnreadTally]). */
+    val unread: StateFlow<Set<String>> = graph.unread.now.map { it.lit }.stateIn(viewModelScope, SharingStarted.Eagerly, graph.unread.now.value.lit)
 
     private val failed = MutableStateFlow<Throwable?>(null)
 
@@ -174,18 +170,10 @@ class HomeViewModel(
      * as XTA's unread store reloads: a moment after a timeline is shown, and
      * as Home comes back into view.
      */
-    fun reloadUnread() {
-        unreadJob?.cancel()
-        unreadJob = viewModelScope.launch {
-            delay(UNREAD_AFTER_MILLIS)
-            val session = graph.sessions.state.value ?: return@launch
-            val reading = graph.settings.load()[PostsPrefs.rememberReadingPosition]
-            unreadKeys.value = HomeUnread.feeds(session).filter { tab ->
-                val key = HomeUnread.feedKey(tab) ?: return@filter false
-                ReadMarks(graph.feedCache(ReadMarks.key(key))).unread(HomeUnread.tracks(session, tab, reading))
-            }.mapTo(HashSet()) { it.key }
-        }
-    }
+    fun reloadUnread() = graph.unread.reload()
+
+    /** Everything [tab]'s feed read counts as read (its menu's Mark all as read). */
+    fun markRead(tab: HomeTab) = graph.unread.markRead(tab)
 
     /** Home's pages back to its four, as XTA's Reset pages to default puts them. */
     fun resetPages() {
@@ -203,10 +191,5 @@ class HomeViewModel(
             graph.settings.update { HomeFilter.applied(it, draft) }
             graph.sessions.update { HomeFilter.applied(it, draft) }
         }
-    }
-
-    private companion object {
-        /** Timelines turned in quick succession read the marks once (XTA's 200 ms). */
-        const val UNREAD_AFTER_MILLIS = 200L
     }
 }

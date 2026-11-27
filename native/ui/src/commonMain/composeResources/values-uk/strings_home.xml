@@ -92,4 +92,5 @@
     <string name="home_plugin_settings">Налаштування %1$s</string>
     <string name="home_switch_account">Змінити обліковий запис</string>
     <string name="home_unread_count">Непрочитані: %1$d</string>
+    <string name="home_mark_all_read">Позначити все як прочитане</string>
 </resources>

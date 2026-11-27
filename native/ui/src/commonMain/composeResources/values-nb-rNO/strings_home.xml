@@ -90,4 +90,5 @@
     <string name="home_plugin_settings">%1$s-innstillinger</string>
     <string name="home_switch_account">Bytt konto</string>
     <string name="home_unread_count">%1$d uleste</string>
+    <string name="home_mark_all_read">Merk alt som lest</string>
 </resources>

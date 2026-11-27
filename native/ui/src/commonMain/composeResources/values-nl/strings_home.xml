@@ -90,4 +90,5 @@
     <string name="home_plugin_settings">%1$s-instellingen</string>
     <string name="home_switch_account">Account wisselen</string>
     <string name="home_unread_count">%1$d ongelezen</string>
+    <string name="home_mark_all_read">Alles als gelezen markeren</string>
 </resources>

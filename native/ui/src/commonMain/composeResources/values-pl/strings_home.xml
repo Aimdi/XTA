@@ -92,4 +92,5 @@
     <string name="home_plugin_settings">Ustawienia %1$s</string>
     <string name="home_switch_account">Przełącz konto</string>
     <string name="home_unread_count">Nieprzeczytane: %1$d</string>
+    <string name="home_mark_all_read">Oznacz wszystko jako przeczytane</string>
 </resources>

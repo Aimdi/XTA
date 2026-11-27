@@ -37,6 +37,8 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.AccountPrefs
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_unread
+import com.aimdi.xtanative.ui.generated.resources.home_unread_count
+import com.aimdi.xtanative.ui.group.ReadMarks
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -102,13 +104,23 @@ internal fun OffDot(off: Int, content: @Composable () -> Unit) {
     BadgedBox(badge = { Badge(Modifier.semantics { contentDescription = count }) }) { content() }
 }
 
-/** [content] with the unread dot at its corner when [unread], said as "Unread". */
+/**
+ * [content] with the unread dot at its corner when [unread], said as
+ * "Unread"; with [count], how many posts are unread on it instead ("99+" past 99).
+ */
 @Composable
-internal fun UnreadDot(unread: Boolean, content: @Composable () -> Unit) {
+internal fun UnreadDot(unread: Boolean, count: Int? = null, content: @Composable () -> Unit) {
     if (!unread) {
         content()
         return
     }
-    val label = stringResource(Res.string.home_unread)
-    BadgedBox(badge = { Badge(Modifier.semantics { contentDescription = label }) }) { content() }
+    val label = unreadLabel(count)
+    BadgedBox(badge = {
+        Badge(Modifier.semantics { contentDescription = label }) { if (count != null) Text(ReadMarks.label(count)) }
+    }) { content() }
 }
+
+/** How a feed's unread mark is said: "12 unread", or "Unread" where it keeps no count. */
+@Composable
+internal fun unreadLabel(count: Int?): String =
+    if (count == null) stringResource(Res.string.home_unread) else stringResource(Res.string.home_unread_count, count)

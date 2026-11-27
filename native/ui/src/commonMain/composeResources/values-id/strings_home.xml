@@ -89,4 +89,5 @@
     <string name="home_plugin_settings">Pengaturan %1$s</string>
     <string name="home_switch_account">Ganti akun</string>
     <string name="home_unread_count">%1$d belum dibaca</string>
+    <string name="home_mark_all_read">Tandai semua sudah dibaca</string>
 </resources>

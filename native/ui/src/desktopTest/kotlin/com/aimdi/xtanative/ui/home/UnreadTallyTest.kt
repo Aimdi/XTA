@@ -1,0 +1,35 @@
+package com.aimdi.xtanative.ui.home
+
+import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.core.session.DeckColumn
+import com.aimdi.xtanative.core.session.Session
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+
+class UnreadTallyTest {
+    @Test
+    fun theTotalCountsAFeedWithNoCountOnce() {
+        val now = UnreadNow(lit = setOf("following", "for_you", "group:g1"), counts = mapOf("following" to 12, "group:g1" to 3, "group:g2" to 5))
+        assertEquals(16, now.total, "For you keeps no posts: one; g2 is not lit")
+        assertEquals(12, now.count("following"))
+        assertNull(now.count("for_you"))
+        assertNull(now.count("group:g2"))
+        assertEquals(0, UnreadNow().total)
+    }
+
+    @Test
+    fun aDeckColumnSharesItsHomeTimelinesMarks() {
+        assertEquals(HomeTab.Following, UnreadTally.tabOf(DeckColumn.Following))
+        assertEquals(HomeTab.ForYou, UnreadTally.tabOf(DeckColumn.ForYou))
+        assertEquals("g1", HomeUnread.feedKey(UnreadTally.tabOf(DeckColumn.Group("g1"))!!))
+        assertNull(UnreadTally.tabOf(DeckColumn.Network("rss")))
+    }
+
+    @Test
+    fun markingAllReadMarksTheLitFeedsOnly() {
+        val session = Session(groups = listOf(FollowGroup("g1", "One", emptyList()), FollowGroup("g2", "Two", emptyList())))
+        val lit = setOf(HomeTab.Following.key, HomeTab.Group("g2", "").key)
+        assertEquals(listOf("following", "g2"), UnreadTally.unreadFeeds(session, lit))
+    }
+}

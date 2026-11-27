@@ -90,4 +90,5 @@
     <string name="home_plugin_settings">Paramètres de %1$s</string>
     <string name="home_switch_account">Changer de compte</string>
     <string name="home_unread_count">Non lus : %1$d</string>
+    <string name="home_mark_all_read">Tout marquer comme lu</string>
 </resources>

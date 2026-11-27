@@ -92,4 +92,5 @@
     <string name="home_plugin_settings">Nalady %1$s</string>
     <string name="home_switch_account">Zmianić ulikovy zapis</string>
     <string name="home_unread_count">Niepračytanyja: %1$d</string>
+    <string name="home_mark_all_read">Paznačyć usio jak pračytanaje</string>
 </resources>

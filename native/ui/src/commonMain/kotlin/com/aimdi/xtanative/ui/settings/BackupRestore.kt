@@ -10,9 +10,7 @@ import com.aimdi.xtanative.core.session.SavedSearch
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.core.x.XAccountHealth
-import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
-import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.store.antenna.Antenna
 import com.aimdi.xtanative.store.antenna.AntennaScope
 import com.aimdi.xtanative.store.backup.AccountRow
@@ -35,6 +33,7 @@ import com.aimdi.xtanative.store.saved.XtaRows
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.PluginStorePrefs
 import com.aimdi.xtanative.store.settings.ReadingPrefs
+import com.aimdi.xtanative.ui.group.ReadMarks
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -178,8 +177,7 @@ object BackupRestore {
      * A thread standing for [position] in a feed's read marks, which keep the
      * last read thread: its id, and a first post carrying the time.
      */
-    fun markedThread(position: ReadPosition): XThread =
-        XThread(position.threadId, listOf(XPost(id = position.threadId, author = XUser("", "", ""), createdAt = position.createdAt, text = "")))
+    fun markedThread(position: ReadPosition): XThread = ReadMarks.marked(position)
 
     /** The backup's members added to their groups, its accounts' as XTA Native's groups name them; its searches as they are. */
     private fun withMembers(session: Session, document: BackupDocument, accounts: List<NetworkAccount>): Session {

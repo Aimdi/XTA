@@ -197,6 +197,7 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
                     val emptyAdd = addAnchor.button(ADD_IN_EMPTY)
                     EmptyDeck(Modifier.anchoring(emptyAdd)) { openAdd(emptyAdd) }
                 } else {
+                    val tally = graph.unread
                     val each = DeckColumns.width(maxWidth.value, columns.size, width.dp.toFloat()).dp
                     val scroll = rememberScrollState()
                     // A column's header dragged with the mouse moves it, the deck scrolling at its edges and Esc putting it back.
@@ -216,6 +217,7 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
                                     onMove = { by -> edit { DeckColumns.moved(it, index, by) } },
                                     onRemove = { edit { ids -> ids - column.id } },
                                     handle = handle,
+                                    onMarkRead = UnreadTally.tabOf(column)?.let { tab -> { tally.markRead(tab) } },
                                 )
                                 Row(Modifier.fillMaxHeight().dragSlot(slots, column.id, MaterialTheme.colorScheme.primary).background(background)) {
                                     if (index > 0) VerticalDivider()
@@ -275,7 +277,15 @@ internal class ColumnPlace(val first: Boolean, val last: Boolean)
  * and the mouse dragging it by the header to another place ([handle]).
  * Home's own columns ([HomeWide]) follow its timelines and have no such [menu].
  */
-internal class ColumnCalls(val onTitle: () -> Unit, val onMove: (by: Int) -> Unit = {}, val onRemove: () -> Unit = {}, val menu: Boolean = true, val handle: Modifier = Modifier)
+internal class ColumnCalls(
+    val onTitle: () -> Unit,
+    val onMove: (by: Int) -> Unit = {},
+    val onRemove: () -> Unit = {},
+    val menu: Boolean = true,
+    val handle: Modifier = Modifier,
+    /** The column's Mark all as read; null for a network's, whose read marks are its plugin's. */
+    val onMarkRead: (() -> Unit)? = null,
+)
 
 /** A column of the deck: its header over its timeline, read again on its own and with every column ([refreshedAll]). */
 @Composable
@@ -410,6 +420,13 @@ private fun ColumnMenu(place: ColumnPlace, calls: ColumnCalls) {
                 onClick = { open = false; calls.onMove(1) },
             )
             DropdownMenuItem(text = { Text(stringResource(Res.string.home_deck_remove)) }, onClick = { open = false; calls.onRemove() })
+            calls.onMarkRead?.let { mark ->
+                HorizontalDivider()
+                MarkReadItem {
+                    open = false
+                    mark()
+                }
+            }
         }
     }
 }

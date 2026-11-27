@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Badge
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -33,7 +34,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +56,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
 import com.aimdi.xtanative.ui.common.LocalSheetCloser
@@ -58,6 +64,7 @@ import com.aimdi.xtanative.ui.common.RowHighlight
 import com.aimdi.xtanative.ui.common.SheetCloser
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.longPressOver
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.rememberSheetState
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
@@ -70,6 +77,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_unread
 import com.aimdi.xtanative.ui.generated.resources.home_xta_settings
 import com.aimdi.xtanative.ui.generated.resources.settings
 import com.aimdi.xtanative.ui.generated.resources.settings_avatar_title
+import com.aimdi.xtanative.ui.group.ReadMarks
 import com.aimdi.xtanative.ui.plugins.ShellSubtitleContent
 import com.aimdi.xtanative.ui.settings.isDesktop
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -312,24 +320,34 @@ private fun MenuRow(onMenu: () -> Unit, onAvatar: () -> Unit) {
 private fun TimelineWords(ui: HomeUi, shown: HomeTab?, unread: Set<String>, calls: SwitcherCalls) {
     val timelines = remember(ui.tabs) { PluginSwitcher.timelines(ui.tabs) }
     val groups = remember(ui.session.groups) { DrawerGroups.matching(ui.session.groups, "") }
+    val tally = LocalGraph.current.unread
+    val now by tally.now.collectAsState()
     Row(Modifier.padding(start = 6.dp), verticalAlignment = Alignment.CenterVertically) {
         Row(Modifier.weight(1f).horizontalScroll(rememberScrollState())) {
-            timelines.forEach { tab -> Word(tabLabel(tab, ui), picked = tab == shown, lit = tab.key in unread) { calls.onTimeline(tab) } }
-            groups.forEach { group -> Word(group.name, picked = false, lit = HomeTab.Group(group.id, group.name).key in unread) { calls.onGroup(group) } }
+            timelines.forEach { tab -> Word(tabLabel(tab, ui), picked = tab == shown, lit = tab.key in unread, now.count(tab.key), { tally.markRead(tab) }) { calls.onTimeline(tab) } }
+            groups.forEach { group ->
+                val tab = HomeTab.Group(group.id, group.name)
+                Word(group.name, picked = false, lit = tab.key in unread, now.count(tab.key), { tally.markRead(tab) }) { calls.onGroup(group) }
+            }
         }
         IconTip(stringResource(Res.string.home_add_timeline)) { IconButton(onClick = calls.onAdd) { Icon(Icons.Filled.Add, stringResource(Res.string.home_add_timeline), tint = MaterialTheme.colorScheme.primary) } }
     }
 }
 
 @Composable
-private fun Word(label: String, picked: Boolean, lit: Boolean, onClick: () -> Unit) {
-    val unread = stringResource(Res.string.home_unread)
-    // The dot's meaning under the pointer, as the screen reader says it.
-    if (lit) IconTip(unread) { WordRow(label, picked, lit, unread, onClick) } else WordRow(label, picked, lit, unread, onClick)
+private fun Word(label: String, picked: Boolean, lit: Boolean, count: Int?, onMarkRead: () -> Unit, onClick: () -> Unit) {
+    val unread = unreadLabel(count)
+    var menu by remember { mutableStateOf(false) }
+    // A right click on an unread one offers Mark all as read.
+    Box(Modifier.onSecondaryClick { if (lit) menu = true }) {
+        // The dot's meaning under the pointer, as the screen reader says it.
+        if (lit) IconTip(unread) { WordRow(label, picked, lit, count, unread, onClick) } else WordRow(label, picked, lit, count, unread, onClick)
+        MarkReadMenu(menu, onDismiss = { menu = false }, onMark = onMarkRead)
+    }
 }
 
 @Composable
-private fun WordRow(label: String, picked: Boolean, lit: Boolean, unread: String, onClick: () -> Unit) {
+private fun WordRow(label: String, picked: Boolean, lit: Boolean, count: Int?, unread: String, onClick: () -> Unit) {
     val said = listOfNotNull(label, unread.takeIf { lit }).joinToString(", ")
     Row(
         Modifier
@@ -354,7 +372,11 @@ private fun WordRow(label: String, picked: Boolean, lit: Boolean, unread: String
             color = if (picked) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
         )
-        if (lit) Box(Modifier.size(7.dp).background(MaterialTheme.colorScheme.error, CircleShape))
+        when {
+            !lit -> Unit
+            count != null -> Badge { Text(ReadMarks.label(count)) }
+            else -> Box(Modifier.size(7.dp).background(MaterialTheme.colorScheme.error, CircleShape))
+        }
     }
 }
 

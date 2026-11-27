@@ -89,4 +89,5 @@
     <string name="home_plugin_settings">Cài đặt %1$s</string>
     <string name="home_switch_account">Đổi tài khoản</string>
     <string name="home_unread_count">%1$d chưa đọc</string>
+    <string name="home_mark_all_read">Đánh dấu tất cả đã đọc</string>
 </resources>

@@ -90,4 +90,5 @@
     <string name="home_plugin_settings">%1$s सेटिंग्स</string>
     <string name="home_switch_account">खाता बदलें</string>
     <string name="home_unread_count">अपठित: %1$d</string>
+    <string name="home_mark_all_read">सभी को पढ़ा हुआ चिह्नित करें</string>
 </resources>

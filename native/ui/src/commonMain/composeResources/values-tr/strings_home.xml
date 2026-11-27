@@ -90,4 +90,5 @@
     <string name="home_plugin_settings">%1$s ayarları</string>
     <string name="home_switch_account">Hesap değiştir</string>
     <string name="home_unread_count">%1$d okunmamış</string>
+    <string name="home_mark_all_read">Tümünü okundu işaretle</string>
 </resources>
