@@ -510,11 +510,13 @@ object DesktopKeys {
      * or its start, steps to the next drawn post, or the one before, so every
      * post there is reached one by one while the list moves as far as it can.
      * Null where there is nowhere to go: the mark stays. Without a mark, the
-     * step goes from the list's place ([itemStep]).
+     * step goes from the list's place ([itemStep]), except that j in a list
+     * still at its start marks its first post ([firstPost]) rather than pass
+     * it by, as nothing in it has been read yet.
      */
     fun keyStep(shown: List<ShownItem>, count: Int, tops: List<Int>, marked: Int?, forward: Boolean): KeyStep? {
         val item = itemStep(shown, count, forward)?.let { (index, offset) -> KeyStep.ToItem(index, offset) }
-        val top = marked?.let(tops::getOrNull) ?: return item
+        val top = marked?.let(tops::getOrNull) ?: return (if (forward) firstPost(shown, tops) else null) ?: item
         val items = shown.sortedBy { it.index }
         val line = pinnedOf(items)?.let { it.offset + it.size } ?: 0
         val target = tops.withIndex().let { all ->
@@ -530,6 +532,21 @@ object DesktopKeys {
         // An item step that would take the mark back the way it came (the list at its end) is none.
         if (!atLine && home != null && (if (forward) item.index <= home else item.index >= home)) return null
         return item
+    }
+
+    /**
+     * The first post of a list at its start (its first item in view, not
+     * scrolled into), among those drawn at [tops], and how far the list moves
+     * to bring it to the line under any pinned header; null where the list
+     * has been scrolled, or shows no post.
+     */
+    fun firstPost(shown: List<ShownItem>, tops: List<Int>): KeyStep.ToPost? {
+        val items = shown.sortedBy { it.index }
+        val first = items.firstOrNull() ?: return null
+        if (first.index != 0 || first.offset < -SLACK) return null
+        val line = pinnedOf(items)?.let { it.offset + it.size } ?: 0
+        val post = tops.withIndex().filter { it.value >= line - SLACK }.minByOrNull { it.value } ?: return null
+        return KeyStep.ToPost(post.index, post.value - line)
     }
 
     /**

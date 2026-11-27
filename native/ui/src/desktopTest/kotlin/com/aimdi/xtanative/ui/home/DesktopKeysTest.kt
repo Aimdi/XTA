@@ -1029,6 +1029,23 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun theFirstJInAListAtItsStartMarksItsFirstPost() {
+        fun item(index: Int, offset: Int, size: Int = 300) = DesktopKeys.ShownItem(index, offset, size)
+        val start = listOf(item(0, 0), item(1, 300), item(2, 600))
+        val tops = listOf(0, 300, 600)
+        // Nothing marked yet, Home just shown: its first post, not the second.
+        assertEquals(DesktopKeys.KeyStep.ToPost(0, 0), DesktopKeys.keyStep(start, 9, tops, marked = null, forward = true))
+        // k there has nowhere to go.
+        assertNull(DesktopKeys.keyStep(start, 9, tops, marked = null, forward = false))
+        // Once marked, j goes on to the next.
+        assertEquals(DesktopKeys.KeyStep.ToItem(1, 0), DesktopKeys.keyStep(start, 9, tops, marked = 0, forward = true))
+        // A row with no post at the top (a notice): to the first post under it.
+        assertEquals(DesktopKeys.KeyStep.ToPost(0, 60), DesktopKeys.keyStep(listOf(item(0, 0, 60), item(1, 60)), 9, listOf(60), marked = null, forward = true))
+        // Scrolled into, even a little: from the list's place, as before.
+        assertEquals(DesktopKeys.KeyStep.ToItem(1, 0), DesktopKeys.keyStep(listOf(item(0, -40), item(1, 260)), 9, listOf(-40, 260), marked = null, forward = true))
+    }
+
+    @Test
     fun aPostWindowClosesWithCtrlWAndEscOnItsFirstScreen() {
         val escAtRoot = action(DeskKey.ESCAPE, canGoBack = false)
         assertTrue(DesktopKeys.closesWindow(DeskKey.ESCAPE, alt = false, ctrl = false, shift = false, action = escAtRoot))
