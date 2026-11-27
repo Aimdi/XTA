@@ -1,5 +1,8 @@
 package com.aimdi.xtanative.ui.net
 
+import com.aimdi.xtanative.store.settings.SettingsStore
+import java.nio.file.attribute.PosixFilePermissions
+import com.aimdi.xtanative.store.StoreDir
 import com.aimdi.xtanative.core.net.AppProxy
 import com.aimdi.xtanative.core.net.ProxyCredentials
 import com.aimdi.xtanative.core.net.ProxyKind
@@ -281,5 +284,21 @@ class DesktopProxyTest {
         }
         daemon.destroy()
         return null
+    }
+
+    @Test
+    fun settingsThatCannotBeReadSendNothingAroundTheProxyTheyMayName() {
+        val root = Files.createTempDirectory("proxy-settings").toFile()
+        val file = File(root, "settings.json").apply { writeText("{}") }
+        // Left behind by a run as root: the reader cannot open it.
+        Files.setPosixFilePermissions(file.toPath(), PosixFilePermissions.fromString("---------"))
+        try {
+            if (file.canRead()) return
+            DesktopProxy.follow(SettingsStore(StoreDir(root)), env = emptyMap(), portal = null)
+            assertEquals(ProxyRoute.Unusable, AppProxy.policy.route("https", "x.com", 443))
+        } finally {
+            AppProxy.use(AppProxy.PLATFORM)
+            root.deleteRecursively()
+        }
     }
 }

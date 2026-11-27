@@ -7,6 +7,7 @@ import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.ui.group.XDiscovery
 import com.aimdi.xtanative.ui.group.ReadMarks
+import java.io.IOException
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
@@ -56,7 +57,13 @@ class UnreadTally(private val graph: AppGraph, private val scope: CoroutineScope
         val reading = graph.settings.settings.map { it[PostsPrefs.rememberReadingPosition] }
         merge(asked, ReadMarks.changes, graph.sessions.state, reading)
             .debounce(AFTER_MILLIS)
-            .collectLatest { state.value = read() }
+            .collectLatest {
+                // While the settings cannot be read the count stays as it was; the start says why.
+                try {
+                    state.value = read()
+                } catch (_: IOException) {
+                }
+            }
     }
 
     /** The marks as they are now. */

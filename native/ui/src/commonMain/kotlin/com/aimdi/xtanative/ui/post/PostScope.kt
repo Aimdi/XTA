@@ -24,6 +24,7 @@ import com.aimdi.xtanative.ui.common.LocalSessions
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.rememberLoadsManually
 import com.aimdi.xtanative.ui.saved.SharedKeep
+import java.io.IOException
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -107,7 +108,7 @@ private val LocalSharedReads = staticCompositionLocalOf<SharedReads?> { null }
 internal fun SharedPostPrefs(content: @Composable () -> Unit) {
     val store = LocalSettingsStore.current
     val settings = store.state.collectAsStateWithLifecycle()
-    LaunchedEffect(store) { store.load() }
+    LaunchedEffect(store) { store.loadUnlessUnreadable() }
     val now = settings.value
     val prefs = remember(now) { now?.let(PostPrefs::of) ?: PostPrefs() }
     val sessions = LocalSessions.current
@@ -155,12 +156,20 @@ internal fun loadsManually(): Boolean {
     return if (shared != null) shared.value?.get(MediaPrefs.loadManually) == true else rememberLoadsManually()
 }
 
+/** Reads the settings; ones that cannot be read leave the defaults, while the start-failure screen says why. */
+private suspend fun SettingsStore.loadUnlessUnreadable() {
+    try {
+        load()
+    } catch (_: IOException) {
+    }
+}
+
 /** The reader's settings for the post screens, read and then followed as they change. */
 @Composable
 fun rememberPostPrefs(): PostPrefs {
     val store = LocalSettingsStore.current
     val settings by store.state.collectAsStateWithLifecycle()
-    LaunchedEffect(store) { store.load() }
+    LaunchedEffect(store) { store.loadUnlessUnreadable() }
     return remember(settings) { settings?.let(PostPrefs::of) ?: PostPrefs() }
 }
 

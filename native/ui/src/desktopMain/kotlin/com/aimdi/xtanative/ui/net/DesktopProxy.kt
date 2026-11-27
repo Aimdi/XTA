@@ -45,11 +45,20 @@ object DesktopProxy {
      */
     fun follow(settings: SettingsStore, env: Map<String, String> = System.getenv(), portal: ProxyPolicy? = PortalProxyPolicy.desktop) {
         Authenticator.setDefault(AppProxy.socksAuthenticator)
-        AppProxy.use(policy(runBlocking { settings.load() }, env, portal).warmed())
+        // Settings that cannot be read may name a proxy: nothing goes out around it, while the start says why.
+        val loaded = try {
+            runBlocking { settings.load() }
+        } catch (_: Exception) {
+            null
+        }
+        AppProxy.use(loaded?.let { policy(it, env, portal).warmed() } ?: UNREAD)
         settings.settings.map(::choice).distinctUntilChanged().drop(1)
             .onEach { AppProxy.use(policy(it, env, portal).warmed()) }
             .launchIn(scope)
     }
+
+    /** Every request fails: the settings that would say the route could not be read. */
+    private val UNREAD = ProxyPolicy { _, _, _ -> ProxyRoute.Unusable }
 
     /** A portal's first answer asked for off the window's thread now, so requests wait for it rather than for a miss. */
     private fun ProxyPolicy.warmed(): ProxyPolicy = also { (it as? PortalProxyPolicy)?.warm() }

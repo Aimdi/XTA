@@ -36,9 +36,16 @@ class SettingsStore(private val dir: StoreDir) {
     /** Null until the file has been read. */
     val state: StateFlow<Settings?> = current.asStateFlow()
 
-    /** The settings, read on first collection, then each change. */
+    /**
+     * The settings, read on first collection, then each change. While the
+     * file cannot be read it gives nothing rather than ending its collector:
+     * the start says why ([load] throws).
+     */
     val settings: Flow<Settings> = flow {
-        load()
+        try {
+            load()
+        } catch (_: IOException) {
+        }
         emitAll(current.filterNotNull())
     }
 
@@ -84,7 +91,13 @@ class SettingsStore(private val dir: StoreDir) {
         val stored = withContext(Dispatchers.Default) { text?.let(::decode) }
         if (text != null && stored == null) dir.file("$FILE.unreadable").write(text)
         val migrated = SettingsMigrations.apply(stored ?: Settings(), firstLaunch = text == null)
-        if (migrated != stored) file.write(encode(migrated))
+        // Like [save]: what cannot be written (a full disk, a folder the reader cannot write) is kept for this run.
+        if (migrated != stored) {
+            try {
+                file.write(encode(migrated))
+            } catch (_: IOException) {
+            }
+        }
         current.value = migrated
         return migrated
     }

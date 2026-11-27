@@ -1,5 +1,10 @@
 package com.aimdi.xtanative.store.settings
 
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.flow.first
+import kotlin.test.assertFailsWith
+import java.nio.file.attribute.PosixFilePermissions
+import java.io.IOException
 import com.aimdi.xtanative.store.StoreDir
 import java.io.File
 import java.nio.file.Files
@@ -106,5 +111,32 @@ class SettingsStoreTest {
         } finally {
             window.shutdown()
         }
+    }
+
+    @Test
+    fun launchStepsThatCannotBeWrittenKeepTheSettingsForThisRun() = runBlocking {
+        // A file where the store's folder should be: nothing can be written under it, as on a full disk or a read-only folder.
+        val blocked = File(root, "blocked").apply { writeText("") }
+        val store = SettingsStore(StoreDir(blocked))
+        assertTrue(store.load()[MediaPrefs.qualitySplitMigrated], "XTA's launch steps ran, in memory")
+        store.set(PostsPrefs.calmMode, true)
+        assertTrue(store.get(PostsPrefs.calmMode))
+    }
+
+    @Test
+    fun settingsThatCannotBeOpenedFailTheLoadButNoObserverAndAreLeftAsTheyAre() = runBlocking {
+        val file = File(root, "settings.json").apply { writeText(SettingsStore.encode(Settings().with(PostsPrefs.calmMode, true))) }
+        val text = file.readText()
+        Files.setPosixFilePermissions(file.toPath(), PosixFilePermissions.fromString("---------"))
+        try {
+            if (file.canRead()) return@runBlocking // run as root: nothing to test
+            val store = SettingsStore(StoreDir(root))
+            assertFailsWith<IOException> { store.load() }
+            assertNull(withTimeoutOrNull(300) { store.observe(PostsPrefs.calmMode).first() }, "an observer waits rather than breaks")
+            assertFailsWith<IOException> { store.set(PostsPrefs.calmMode, false) }
+        } finally {
+            Files.setPosixFilePermissions(file.toPath(), PosixFilePermissions.fromString("rw-------"))
+        }
+        assertEquals(text, file.readText())
     }
 }

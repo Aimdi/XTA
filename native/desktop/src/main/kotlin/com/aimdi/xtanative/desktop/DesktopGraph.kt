@@ -15,6 +15,7 @@ import com.aimdi.xtanative.ui.net.DesktopProxy
 import com.aimdi.xtanative.ui.speech.VoiceCheck
 import com.aimdi.xtanative.ui.theme.DesktopScale
 import java.io.File
+import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermissions
 import kotlinx.coroutines.flow.Flow
@@ -65,10 +66,18 @@ internal fun desktopApp(files: File = dataFolder()): DesktopApp {
     return DesktopApp(graph, plugins)
 }
 
-/** A first start's interface size from the desktop's text dpi ([DesktopScale]), asked only while the reader has chosen none. */
+/**
+ * A first start's interface size from the desktop's text dpi ([DesktopScale]), asked only while the reader has chosen
+ * none; none at all while the settings cannot be read, which the start then says.
+ */
 private fun DesktopApp.seedInterfaceSize() {
     runBlocking {
-        if (graph.settings.load().isSet(DesktopPrefs.uiScale)) return@runBlocking
+        val settings = try {
+            graph.settings.load()
+        } catch (_: IOException) {
+            return@runBlocking
+        }
+        if (settings.isSet(DesktopPrefs.uiScale)) return@runBlocking
         val size = DesktopScale.detected() ?: return@runBlocking
         graph.settings.update { settings -> DesktopScale.seeded(settings) { size } }
     }
