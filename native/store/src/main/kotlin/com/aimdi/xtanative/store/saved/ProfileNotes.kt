@@ -40,14 +40,25 @@ class ProfileNotesStore(dir: StoreDir, private val clock: () -> Long = System::c
     }
 
     /** Every note, for the backup, as XTA's rows. */
-    suspend fun content(): List<ProfileNoteRow> = stored.get().values.map { ProfileNoteRow(it.profileId, it.note, isoTime(it.updatedAt)) }
+    suspend fun content(): List<ProfileNoteRow> = rows(stored.get())
 
-    /** Every note replaced with [rows], as a restored backup does; a blank one is dropped. */
-    suspend fun replace(rows: List<ProfileNoteRow>) {
-        val notes = rows.filter { it.note.isNotBlank() }
-            .associate { it.profileId to ProfileNote(it.profileId, it.note.trim(), parseTime(it.updatedAt) ?: clock()) }
-        stored.update { notes }
+    private fun rows(notes: Map<String, ProfileNote>) = notes.values.map { ProfileNoteRow(it.profileId, it.note, isoTime(it.updatedAt)) }
+
+    /**
+     * The notes [merge] makes of the ones kept, as XTA's rows, as a restored
+     * backup does: merged under the store's lock, so a note written meanwhile
+     * is never lost; null changes nothing, and a blank row is dropped.
+     */
+    suspend fun restore(merge: (List<ProfileNoteRow>) -> List<ProfileNoteRow>?) {
+        stored.update { notes ->
+            merge(rows(notes))?.filter { it.note.isNotBlank() }
+                ?.associate { it.profileId to ProfileNote(it.profileId, it.note.trim(), parseTime(it.updatedAt) ?: clock()) }
+                ?: notes
+        }
     }
+
+    /** Every note replaced with [rows]. */
+    suspend fun replace(rows: List<ProfileNoteRow>) = restore { rows }
 
     private companion object {
         const val VERSION = 1
@@ -113,10 +124,19 @@ class ProfileFiltersStore(dir: StoreDir) {
     suspend fun content(): Pair<List<FeedFilterRow>, List<FeedFilterRow>> =
         stored.get().let { filters -> rows(filters.hiddenReposts) to rows(filters.hiddenReplies) }
 
-    /** Both filters replaced with a backup's rows. */
-    suspend fun replace(reposts: List<FeedFilterRow>, replies: List<FeedFilterRow>) {
-        stored.update { ProfileFilters(byId(reposts), byId(replies)) }
+    /**
+     * Both filters as [merge] makes them of the rows kept, as a restored
+     * backup does, under the store's lock; null changes nothing.
+     */
+    suspend fun restore(merge: (Pair<List<FeedFilterRow>, List<FeedFilterRow>>) -> Pair<List<FeedFilterRow>, List<FeedFilterRow>>?) {
+        stored.update { filters ->
+            merge(rows(filters.hiddenReposts) to rows(filters.hiddenReplies))?.let { (reposts, replies) -> ProfileFilters(byId(reposts), byId(replies)).orSame(filters) }
+                ?: filters
+        }
     }
+
+    /** Both filters replaced with a backup's rows. */
+    suspend fun replace(reposts: List<FeedFilterRow>, replies: List<FeedFilterRow>) = restore { reposts to replies }
 
     private companion object {
         const val VERSION = 1

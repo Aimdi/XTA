@@ -129,22 +129,31 @@ class LocalPostsStore(
     }
 
     /**
-     * Replaces every note with [posts], as a restored backup does: the bytes
-     * they carry become files again, and the files of the notes it no longer
-     * keeps are deleted. Files of no note kept before are left: they are a
-     * draft's ([NoteDrafts]), attached before its note was saved. A damaged
-     * file in the backup is skipped, not the import.
+     * The notes [merge] makes of the ones kept, as a restored backup does,
+     * merged under the store's lock so a note written meanwhile is never
+     * lost; null from [merge] changes nothing. The bytes the notes carry
+     * become files again, and the files of the notes no longer kept are
+     * deleted. Files of no note kept before are left: they are a draft's
+     * ([NoteDrafts]), attached before its note was saved. A damaged file in
+     * the backup is skipped, not the import.
      */
-    suspend fun replace(posts: List<LocalPost>) {
-        val kept = posts.distinctBy { it.id }
-        val before = notes().mapTo(HashSet()) { safeName(it.id) }
-        withContext(Dispatchers.IO) {
-            kept.forEach(::materialize)
-            val folders = kept.mapTo(HashSet()) { safeName(it.id) }
-            mediaRoot.listFiles()?.filter { it.name in before && it.name !in folders }?.forEach { it.deleteRecursively() }
+    suspend fun restore(merge: (List<LocalPost>) -> List<LocalPost>?) {
+        val dropped = withContext(Dispatchers.IO) {
+            stored.updateWith { notes ->
+                val kept = merge(notes)?.distinctBy { it.id } ?: return@updateWith notes to emptySet()
+                kept.forEach(::materialize)
+                val folders = kept.mapTo(HashSet()) { safeName(it.id) }
+                kept.map { post -> post.copy(media = post.media.map { it.copy(data = null) }) } to
+                    notes.mapTo(HashSet()) { safeName(it.id) }.filterNotTo(HashSet()) { it in folders }
+            }
         }
-        stored.update { kept.map { post -> post.copy(media = post.media.map { it.copy(data = null) }) } }
+        if (dropped.isEmpty()) return
+        val listed = notes().mapTo(HashSet()) { safeName(it.id) }
+        withContext(Dispatchers.IO) { dropped.filterNot { it in listed }.forEach { File(mediaRoot, it).deleteRecursively() } }
     }
+
+    /** Every note replaced with [posts]: [restore] of a backup that keeps nothing else. */
+    suspend fun replace(posts: List<LocalPost>) = restore { posts }
 
     /** Moves [folder] aside under [undoRoot]; null when it holds nothing. */
     private fun park(folder: File): File? {

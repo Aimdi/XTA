@@ -38,6 +38,19 @@ class ProfileNotesTest {
     }
 
     @Test
+    fun aNoteOrFilterWrittenWhileARestoreMergesStays() {
+        val notes = ProfileNotesStore(dir) { time }
+        raced({ hold -> notes.restore { rows -> hold(); rows + ProfileNoteRow("1", "restored", null) } }) { notes.set("2", "meanwhile") }
+        timed { assertEquals(setOf("1", "2"), notes.content().map { it.profileId }.toSet()) }
+
+        val filters = ProfileFiltersStore(dir)
+        raced({ hold -> filters.restore { (reposts, replies) -> hold(); reposts + FeedFilterRow("1", "ann") to replies } }) {
+            filters.setRepliesHidden("2", "Maya", true)
+        }
+        timed { assertEquals(listOf(FeedFilterRow("1", "ann")) to listOf(FeedFilterRow("2", "maya")), filters.content()) }
+    }
+
+    @Test
     fun hiddenRepostsAndRepliesAreKeptByIdAndMatchedByLowerCaseHandle(): Unit = runBlocking {
         val filters = ProfileFiltersStore(dir)
         filters.setRepostsHidden("1", "Tommy", true)

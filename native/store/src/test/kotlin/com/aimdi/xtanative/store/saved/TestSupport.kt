@@ -8,6 +8,9 @@ import java.io.InputStream
 import java.nio.file.Files
 import java.util.concurrent.LinkedBlockingQueue
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -21,6 +24,27 @@ fun json(text: String): JsonElement = J.parse(text).raw ?: error("Not JSON: $tex
 
 /** Runs a test that waits on other coroutines, failing it rather than hanging when what it waits for never comes. */
 fun timed(block: suspend CoroutineScope.() -> Unit) = runBlocking { withTimeout(120_000) { block() } }
+
+/**
+ * Runs [restore], whose merge calls the hold it is handed, and [meanwhile]
+ * once that merge holds the store: the write a reader makes while a restore
+ * runs, queued behind it until the merge goes on.
+ */
+fun raced(restore: suspend (hold: () -> Unit) -> Unit, meanwhile: suspend () -> Unit) = timed {
+    val merging = java.util.concurrent.CountDownLatch(1)
+    val release = java.util.concurrent.CountDownLatch(1)
+    val restoring = launch(Dispatchers.Default) {
+        restore {
+            merging.countDown()
+            release.await(5, java.util.concurrent.TimeUnit.SECONDS)
+        }
+    }
+    merging.await(5, java.util.concurrent.TimeUnit.SECONDS)
+    val writing = launch(Dispatchers.Default) { meanwhile() }
+    delay(200)
+    release.countDown()
+    joinAll(restoring, writing)
+}
 
 /** Waits until [condition] holds, failing after [timeoutMs]. */
 suspend fun waitUntil(timeoutMs: Long = 30_000, condition: () -> Boolean) {

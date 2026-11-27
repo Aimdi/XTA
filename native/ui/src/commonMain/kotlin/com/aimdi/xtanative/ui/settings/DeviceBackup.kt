@@ -87,7 +87,7 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
         // Merged under each store's lock: a post saved or liked while the restore runs stays.
         graph.saved.restore { BackupRestore.library(it, restoring, now) }
         graph.likes.restore { BackupRestore.likes(it, restoring, now) }
-        BackupRestore.localPosts(graph.localPosts.notes(), restoring, now)?.let { graph.localPosts.replace(it) }
+        graph.localPosts.restore { BackupRestore.localPosts(it, restoring, now) }
         BackupRestore.annotations(restoring)?.let { graph.archiveNotes.merge(it) }
         BackupRestore.antennas(restoring, now)?.let { graph.antennas.merge(it) }
         BackupRestore.journal(restoring)?.let { graph.readingJournal.merge(it) }
@@ -127,8 +127,8 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
     }
 
     private suspend fun restoreProfiles(document: BackupDocument) {
-        BackupRestore.profileNotes(graph.profileNotes.content(), document)?.let { graph.profileNotes.replace(it) }
-        BackupRestore.profileFilters(graph.profileFilters.content(), document)?.let { (reposts, replies) -> graph.profileFilters.replace(reposts, replies) }
+        graph.profileNotes.restore { BackupRestore.profileNotes(it, document) }
+        graph.profileFilters.restore { BackupRestore.profileFilters(it, document) }
     }
 }
 

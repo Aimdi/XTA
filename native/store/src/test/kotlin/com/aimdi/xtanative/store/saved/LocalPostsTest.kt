@@ -66,6 +66,14 @@ class LocalPostsTest {
     private fun store() = LocalPostsStore(dir, clock = { time++ }, newId = { "note-${ids++}" })
 
     @Test
+    fun aNoteWrittenWhileARestoreMergesStays() {
+        val notes = store()
+        timed { notes.save("before") }
+        raced({ hold -> notes.restore { kept -> hold(); kept + LocalPost("restored", "from the backup", 1, 1) } }) { notes.save("meanwhile") }
+        timed { assertEquals(setOf("before", "meanwhile", "from the backup"), notes.notes().map { it.body }.toSet()) }
+    }
+
+    @Test
     fun aRewriteKeepsWhenItWasWrittenWhatItQuotesAndWhatItAnswers() = runBlocking {
         val notes = store()
         assertNull(notes.save("   "))
