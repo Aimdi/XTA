@@ -39,6 +39,10 @@ class TrayService(
     @Volatile
     var onAction: ((TrayAction) -> Unit)? = null
 
+    /** What a click asks of the app rather than the window ([TrayAction.ofApp]): Refresh, Mark all as read. */
+    @Volatile
+    var onAppAction: ((TrayAction) -> Unit)? = null
+
     private val _shown = MutableStateFlow(false)
 
     /** Whether a tray took the icon (a watcher registered it and a host shows its items). */
@@ -152,7 +156,7 @@ class TrayService(
         val answer = StatusNotifier.answer(call, state, iconName, pixmaps, attention)
         answer.error?.let { return bus.fail(call, it, call.member.orEmpty()) }
         bus.reply(call, answer.signature, answer.body)
-        answer.action?.let { action -> onAction?.let { act -> onMain { act(action) } } }
+        answer.action?.let { action -> (if (action.ofApp) onAppAction else onAction)?.let { act -> onMain { act(action) } } }
     }
 
     companion object {

@@ -2,6 +2,8 @@ package com.aimdi.xtanative.ui.chrome.tray
 
 import androidx.compose.runtime.Composable
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.home_mark_all_read
+import com.aimdi.xtanative.ui.generated.resources.home_refresh
 import com.aimdi.xtanative.ui.generated.resources.home_unread_count
 import com.aimdi.xtanative.ui.generated.resources.keys_quit
 import com.aimdi.xtanative.ui.generated.resources.reader_media_pause
@@ -26,6 +28,8 @@ data class TrayWords(
     val newSearch: String = "New search",
     val play: String = "Play",
     val pause: String = "Pause",
+    val refresh: String = "Refresh",
+    val markAllRead: String = "Mark all as read",
     /** The tooltip's count of unread posts, [UNREAD_COUNT] standing for the number. */
     val unread: String = "$UNREAD_COUNT unread",
     val rtl: Boolean = false,
@@ -49,6 +53,8 @@ fun trayWords(title: String): TrayWords = TrayWords(
     newSearch = stringResource(Res.string.tray_new_search),
     play = stringResource(Res.string.reader_media_play),
     pause = stringResource(Res.string.reader_media_pause),
+    refresh = stringResource(Res.string.home_refresh),
+    markAllRead = stringResource(Res.string.home_mark_all_read),
     unread = stringResource(Res.string.home_unread_count, TrayWords.UNREAD_COUNT),
     rtl = StatusNotifier.rightToLeft(Locale.getDefault().language),
 )
@@ -86,6 +92,16 @@ enum class TrayAction {
 
     /** The menu's Play or Pause, of what plays in the app now. */
     PLAY_PAUSE,
+
+    /** The menu's Refresh: the screen shown reads again, as F5 does. */
+    REFRESH,
+
+    /** The menu's Mark all as read: every home feed's posts count as read. */
+    MARK_ALL_READ,
+    ;
+
+    /** Whether the app's graph answers it ([TrayService.onAppAction]) rather than the window. */
+    val ofApp: Boolean get() = this == REFRESH || this == MARK_ALL_READ
 }
 
 /** The answer to one call: its reply's signature and body, or an error; with the [action] it asks for. */
@@ -101,7 +117,8 @@ data class TrayAnswer(
  * freedesktop/KDE tray specification Waybar, quickshell's bar, KDE and
  * GNOME's AppIndicator extension show) at [ITEM_PATH] and its
  * com.canonical.dbusmenu menu at [MENU_PATH]: Show or Hide, New search,
- * Play or Pause while something plays in the app, then Quit; laid out right
+ * Refresh, Mark all as read (greyed while nothing is unread), Play or Pause
+ * while something plays in the app, then Quit; laid out right
  * to left in a language written so.
  * Each property and each call's answer is decided here; [TrayService]
  * carries them over the bus.
@@ -128,9 +145,12 @@ object StatusNotifier {
     const val QUIT_ID = 3
     const val SEARCH_ID = 4
     const val MEDIA_ID = 5
+    const val REFRESH_ID = 6
+    const val MARK_READ_ID = 7
 
     /** The items shown while [now] stands, in order: the media item only while there is a session. */
-    fun items(now: TrayNow): List<Int> = listOfNotNull(TOGGLE_ID, SEARCH_ID, MEDIA_ID.takeIf { now.media != null }, LINE_ID, QUIT_ID)
+    fun items(now: TrayNow): List<Int> =
+        listOfNotNull(TOGGLE_ID, SEARCH_ID, REFRESH_ID, MARK_READ_ID, MEDIA_ID.takeIf { now.media != null }, LINE_ID, QUIT_ID)
 
     /** The app's languages written right to left (of those it ships: Arabic; Hebrew, Persian and Urdu as well, should they come). */
     private val RIGHT_TO_LEFT = setOf("ar", "he", "iw", "fa", "ur")
@@ -201,6 +221,8 @@ object StatusNotifier {
         LINE_ID -> mapOf("type" to Variant("s", "separator"))
         QUIT_ID -> mapOf("label" to Variant("s", label(now.words.quit)))
         SEARCH_ID -> mapOf("label" to Variant("s", label(now.words.newSearch)))
+        REFRESH_ID -> mapOf("label" to Variant("s", label(now.words.refresh)))
+        MARK_READ_ID -> mapOf("label" to Variant("s", label(now.words.markAllRead)), "enabled" to Variant("b", now.unread > 0))
         MEDIA_ID -> when (now.media) {
             null -> null
             TrayMedia.PLAY -> mapOf("label" to Variant("s", label(now.words.play)))
@@ -224,6 +246,8 @@ object StatusNotifier {
         TOGGLE_ID -> TrayAction.TOGGLE
         QUIT_ID -> TrayAction.QUIT
         SEARCH_ID -> TrayAction.NEW_SEARCH
+        REFRESH_ID -> TrayAction.REFRESH
+        MARK_READ_ID -> TrayAction.MARK_ALL_READ.takeIf { now.unread > 0 }
         MEDIA_ID -> TrayAction.PLAY_PAUSE.takeIf { now.media != null }
         else -> null
     }

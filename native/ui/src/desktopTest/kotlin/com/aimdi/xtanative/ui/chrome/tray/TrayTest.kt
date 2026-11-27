@@ -37,8 +37,11 @@ class TrayTest {
         val labels = (children as List<*>).map { ((it as Variant).value as List<*>)[1] as Map<*, *> }
         assertEquals(Variant("s", "Hide window"), labels[0]["label"])
         assertEquals(Variant("s", "New search"), labels[1]["label"])
-        assertEquals(Variant("s", "separator"), labels[2]["type"])
-        assertEquals(Variant("s", "Quit XTA"), labels[3]["label"])
+        assertEquals(Variant("s", "Refresh"), labels[2]["label"])
+        assertEquals(Variant("s", "Mark all as read"), labels[3]["label"])
+        assertEquals(Variant("b", false), labels[3]["enabled"], "greyed while nothing is unread")
+        assertEquals(Variant("s", "separator"), labels[4]["type"])
+        assertEquals(Variant("s", "Quit XTA"), labels[5]["label"])
         val hidden = StatusNotifier.answer(menu("GetProperty", "is", StatusNotifier.TOGGLE_ID, "label"), shown.copy(windowShown = false), "", pixmaps)
         assertEquals(listOf(Variant("s", "Show window")), hidden.body)
         // Depth 0: the root alone.
@@ -57,6 +60,12 @@ class TrayTest {
         assertEquals(TrayAction.PLAY_PAUSE, StatusNotifier.answer(menu("Event", "isvu", StatusNotifier.MEDIA_ID, "clicked", Variant("i", 0), 0L), playing, "", pixmaps).action)
         assertNull(StatusNotifier.answer(menu("Event", "isvu", 3, "hovered", Variant("i", 0), 0L), shown, "", pixmaps).action)
         assertNull(StatusNotifier.answer(menu("Event", "isvu", 2, "clicked", Variant("i", 0), 0L), shown, "", pixmaps).action)
+        assertEquals(TrayAction.REFRESH, StatusNotifier.answer(menu("Event", "isvu", StatusNotifier.REFRESH_ID, "clicked", Variant("i", 0), 0L), shown, "", pixmaps).action)
+        // Mark all as read answers only while something is unread; both are the app's, not the window's.
+        assertNull(StatusNotifier.answer(menu("Event", "isvu", StatusNotifier.MARK_READ_ID, "clicked", Variant("i", 0), 0L), shown, "", pixmaps).action)
+        val unread = shown.copy(unread = 2)
+        assertEquals(TrayAction.MARK_ALL_READ, StatusNotifier.answer(menu("Event", "isvu", StatusNotifier.MARK_READ_ID, "clicked", Variant("i", 0), 0L), unread, "", pixmaps).action)
+        assertTrue(TrayAction.REFRESH.ofApp && TrayAction.MARK_ALL_READ.ofApp && !TrayAction.TOGGLE.ofApp && !TrayAction.QUIT.ofApp)
         val group = StatusNotifier.answer(menu("EventGroup", "a(isvu)", listOf(listOf(9, "clicked", Variant("i", 0), 0L), listOf(1, "clicked", Variant("i", 0), 0L))), shown, "", pixmaps)
         assertEquals(TrayAction.TOGGLE, group.action)
         assertEquals(listOf(listOf(9)), group.body)
@@ -240,10 +249,10 @@ class TrayTest {
 
     @Test
     fun theMediaItemPlaysOrPausesWhileTheAppHasASession() {
-        assertEquals(4, labels(shown).size)
-        assertEquals(Variant("s", "Pause"), labels(shown.copy(media = TrayMedia.PAUSE))[2])
-        assertEquals(Variant("s", "Play"), labels(shown.copy(media = TrayMedia.PLAY))[2])
-        assertEquals(Variant("s", "separator"), labels(shown.copy(media = TrayMedia.PLAY))[3])
+        assertEquals(6, labels(shown).size)
+        assertEquals(Variant("s", "Pause"), labels(shown.copy(media = TrayMedia.PAUSE))[4])
+        assertEquals(Variant("s", "Play"), labels(shown.copy(media = TrayMedia.PLAY))[4])
+        assertEquals(Variant("s", "separator"), labels(shown.copy(media = TrayMedia.PLAY))[5])
         assertNull(StatusNotifier.media(null))
         assertEquals(TrayMedia.PAUSE, StatusNotifier.media(MprisNow(playing = true, canPlay = true, canPause = true)))
         assertEquals(TrayMedia.PLAY, StatusNotifier.media(MprisNow(playing = false, canPlay = true, canPause = true)))

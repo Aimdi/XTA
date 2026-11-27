@@ -18,6 +18,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.post
 import com.aimdi.xtanative.ui.generated.resources.search
 import com.aimdi.xtanative.ui.generated.resources.settings_title
+import com.aimdi.xtanative.ui.chrome.TrayRefreshFollows
 import com.aimdi.xtanative.ui.group.ReadMarks
 import com.aimdi.xtanative.ui.pluginstore.PluginRoutes
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -139,4 +140,5 @@ internal actual fun WindowTitleFollows(nav: NavHostController) {
     LaunchedEffect(text, secondary) { if (secondary != null) secondary.showTitle(text) else DesktopWindowTitle.show(text) }
     val focused = LocalWindowInfo.current.isWindowFocused
     LaunchedEffect(focused, secondary) { if (secondary == null) DesktopWindowTitle.focused(focused) }
+    if (secondary == null) TrayRefreshFollows()
 }
