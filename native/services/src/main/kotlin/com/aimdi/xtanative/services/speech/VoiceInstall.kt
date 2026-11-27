@@ -54,6 +54,9 @@ class VoiceDownloadCancelled : Exception("cancelled")
  */
 fun interface VoiceTransfer {
     suspend fun download(url: String, progress: (received: Long, total: Long?) -> Unit, cancelled: () -> Boolean): File
+
+    /** Removes the downloads a run that stopped mid-way left in the staging place, those older than [before]. Blocking. */
+    fun clearStale(before: Long) {}
 }
 
 /**

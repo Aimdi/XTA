@@ -287,6 +287,31 @@ class VoicesTest {
     }
 
     @Test
+    fun theFirstLoadClearsWhatACrashLeftHalfInstalledButNotWhatThisRunUnpacks() = runBlocking {
+        val hour = 60L * 60 * 1000
+        fun staged(folder: File, age: Long) = folder.apply { mkdirs(); File(this, "tokens.txt").writeText("half"); setLastModified(System.currentTimeMillis() - age) }
+        val crashedVoice = staged(File(voices, ".xx-test.partial"), hour)
+        val unpacking = staged(File(voices, ".de-thorsten-emotional.partial"), -hour)
+        val installedVoice = staged(File(voices, "en-libritts-r"), hour)
+        val crashedEngine = staged(File(engineRoot, "sherpa-onnx-${VoiceEngines.VERSION}/arm64-v8a.partial"), hour)
+        val swept = ArrayList<Long>()
+        val transfer = object : VoiceTransfer by FakeTransfer(emptyMap(), staging) {
+            override fun clearStale(before: Long) {
+                swept += before
+            }
+        }
+        val store = VoiceDownloadStore(androidEngine(FakeTransfer(emptyMap(), staging)), voices, transfer, FakeTar.reader, listOf(voice))
+        store.ensureLoaded()
+        assertFalse(crashedVoice.exists())
+        assertFalse(crashedEngine.exists())
+        assertTrue(unpacking.exists())
+        assertTrue(installedVoice.exists())
+        assertEquals(listOf(VoiceArchives.thisRunStarted), swept)
+        store.ensureLoaded()
+        assertEquals(1, swept.size, "only the first load looks")
+    }
+
+    @Test
     fun aDeletedVoiceIsGoneAndAnInstalledOneIsFoundNextTime() = runBlocking {
         downloads(FakeTransfer(mapOf(voice.url to soundArchive), staging)).download(voice)
         val later = downloads(FakeTransfer(emptyMap(), staging))

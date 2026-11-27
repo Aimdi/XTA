@@ -38,6 +38,23 @@ fun interface ArchiveReader {
  * installed. Blocking: run it off the main thread.
  */
 object VoiceArchives {
+    /** Later than any staging an earlier run left, earlier than any this run makes; the slack covers coarse file times. */
+    val thisRunStarted: Long = System.currentTimeMillis() - 2_000
+
+    /**
+     * Removes the staging folders [install] and [installEngine] leave when a
+     * run stops mid-install, in [root] or up to [depth] folders below it; only
+     * those older than [before], so one this run is unpacking stays.
+     */
+    fun clearStaleStaging(root: File, depth: Int, before: Long = thisRunStarted) {
+        root.walkTopDown().maxDepth(depth)
+            .filter { it != root && it.isDirectory && it.name.endsWith(PARTIAL) && it.lastModified() < before }
+            .toList()
+            .forEach { it.deleteRecursively() }
+    }
+
+    private const val PARTIAL = ".partial"
+
     /** Where [voice] lives once installed under [root]. */
     fun voiceDirectory(root: File, voice: OfflineVoice): File = File(root, voice.id)
 
@@ -88,7 +105,7 @@ object VoiceArchives {
     fun install(archive: File, voice: OfflineVoice, root: File, reader: ArchiveReader) {
         val expected = voice.sha256
         if (expected != null && sha256(archive) != expected) throw VoiceChecksumMismatch()
-        val staging = File(root, ".${voice.id}.partial")
+        val staging = File(root, ".${voice.id}$PARTIAL")
         try {
             staging.deleteRecursively()
             staging.mkdirs()
@@ -139,7 +156,7 @@ object VoiceArchives {
      */
     fun installEngine(archive: File, engine: VoiceEnginePackage, root: File, reader: ArchiveReader) {
         val target = VoiceEngines.directory(root, engine)
-        val staging = File(target.path + ".partial")
+        val staging = File(target.path + PARTIAL)
         try {
             staging.deleteRecursively()
             staging.mkdirs()

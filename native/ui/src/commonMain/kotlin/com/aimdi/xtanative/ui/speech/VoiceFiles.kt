@@ -5,6 +5,7 @@ import com.aimdi.xtanative.services.speech.VoiceTransfer
 import com.aimdi.xtanative.store.downloads.MediaHttp
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
@@ -19,7 +20,7 @@ class MediaVoiceTransfer(private val http: MediaHttp, private val staging: File)
     override suspend fun download(url: String, progress: (received: Long, total: Long?) -> Unit, cancelled: () -> Boolean): File =
         withContext(Dispatchers.IO) {
             staging.mkdirs()
-            val file = File.createTempFile("voice-", ".part", staging)
+            val file = File.createTempFile(PREFIX, SUFFIX, staging)
             try {
                 http.get(url, emptyMap()).use { response ->
                     if (response.code !in 200..299) throw IOException("HTTP ${response.code}")
@@ -46,4 +47,17 @@ class MediaVoiceTransfer(private val http: MediaHttp, private val staging: File)
                 throw error
             }
         }
+
+    override fun clearStale(before: Long) {
+        if (!swept.compareAndSet(false, true)) return
+        staging.listFiles { file -> file.name.startsWith(PREFIX) && file.name.endsWith(SUFFIX) && file.isFile && file.lastModified() < before }
+            ?.forEach { it.delete() }
+    }
+
+    private val swept = AtomicBoolean(false)
+
+    private companion object {
+        const val PREFIX = "voice-"
+        const val SUFFIX = ".part"
+    }
 }

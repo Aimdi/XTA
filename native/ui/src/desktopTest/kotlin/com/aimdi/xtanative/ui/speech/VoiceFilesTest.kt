@@ -46,4 +46,20 @@ class VoiceFilesTest {
         }
         assertEquals(0, staging.listFiles()!!.size)
     }
+
+    @Test
+    fun onlyTheDownloadsAnEarlierRunLeftAreCleared() {
+        val staging = folder()
+        val now = System.currentTimeMillis()
+        fun file(name: String, modified: Long) = File(staging, name).apply { writeText("x"); setLastModified(modified) }
+        val crashed = file("voice-123.part", now - 60_000)
+        val writing = file("voice-456.part", now + 60_000)
+        val other = file("notes.part", now - 60_000)
+        val transfer = MediaVoiceTransfer(http(200, ByteArray(0)), staging)
+        transfer.clearStale(now)
+        assertEquals(setOf(writing.name, other.name), staging.list()!!.toSet())
+        file(crashed.name, now - 60_000)
+        transfer.clearStale(now)
+        assertTrue(crashed.exists(), "a transfer looks once")
+    }
 }

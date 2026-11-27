@@ -53,6 +53,7 @@ class VoiceEngineStore(
     suspend fun ensureLoaded() = lock.withLock {
         if (loaded) return@withLock
         loaded = true
+        withContext(Dispatchers.IO) { clearStale() }
         val engine = engine ?: return@withLock
         if (bundled) return@withLock
         if (current.value is VoiceInstall.Absent && withContext(Dispatchers.IO) { VoiceArchives.engineFilesPresent(root, engine) }) {
@@ -116,6 +117,12 @@ class VoiceEngineStore(
         }
     }
 
+    /** What a run that stopped mid-download or mid-install left: the engine is unpacked a folder below [root]. */
+    private fun clearStale() {
+        transfer.clearStale(VoiceArchives.thisRunStarted)
+        VoiceArchives.clearStaleStaging(root, depth = 2)
+    }
+
     private fun installed(engine: VoiceEnginePackage): VoiceInstall.Ready? =
         if (VoiceArchives.engineFilesPresent(root, engine)) VoiceInstall.Ready(VoiceEngines.directory(root, engine), engine.installedBytes) else null
 
@@ -159,7 +166,11 @@ class VoiceDownloadStore(
         lock.withLock {
             if (!loaded) {
                 loaded = true
-                val found = withContext(Dispatchers.IO) { catalog.mapNotNull { voice -> installed(voice)?.let { voice.id to it } }.toMap() }
+                val found = withContext(Dispatchers.IO) {
+                    transfer.clearStale(VoiceArchives.thisRunStarted)
+                    VoiceArchives.clearStaleStaging(root, depth = 1)
+                    catalog.mapNotNull { voice -> installed(voice)?.let { voice.id to it } }.toMap()
+                }
                 current.update { found + it }
             }
         }
