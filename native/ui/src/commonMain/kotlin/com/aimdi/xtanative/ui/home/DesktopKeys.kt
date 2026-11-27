@@ -77,6 +77,9 @@ enum class DeskAction {
     /** The list of the desktop's keys opens ([DesktopShortcuts]). */
     SHOW_KEYS,
 
+    /** The quick switcher opens: a field that goes to one of the reader's own places by its name (QuickSwitch). */
+    QUICK_SWITCH,
+
     /** The keys go from the page to the navigation beside it, or back, as a browser's F6 moves between its bars and its page ([DesktopActions.otherRegion]). */
     OTHER_REGION,
 
@@ -154,8 +157,9 @@ object DesktopKeys {
      * where Tab and Shift+Tab then go on from one to the next. Ctrl+F, even
      * from a field, and / while nothing is being typed in, go to the search,
      * as a desktop app's do: the page's own field, else the app's search;
-     * Ctrl+K and Ctrl+L, as a browser's go to its search and address bar,
-     * do the same. On a page with a find bar (an opened post, an article)
+     * Ctrl+L, as a browser's goes to its address bar, does the same; Ctrl+P
+     * and Ctrl+K, as an editor's and a chat app's, open the quick switcher
+     * over the reader's own places, from a field too. On a page with a find bar (an opened post, an article)
      * Ctrl+F opens it instead, as a browser finds in its page, over the
      * opened post's card too; F3 and Shift+F3 go to its next match and the
      * one before.
@@ -258,6 +262,7 @@ object DesktopKeys {
             }
             (key in FIND_KEYS && ctrl && !alt && !shift) || (key == DeskKey.SLASH && !focusInside && !alt && !ctrl) ->
                 if (somethingOpen) DeskAction.NONE else DeskAction.FIND
+            key in SWITCH_KEYS && ctrl && !alt && !shift -> if (somethingOpen) DeskAction.NONE else DeskAction.QUICK_SWITCH
             ctrl && !alt && !shift && !focusInside && (key == DeskKey.LEFT || key == DeskKey.RIGHT) -> when {
                 covered -> DeskAction.NONE
                 (key == DeskKey.RIGHT) != rtl -> DeskAction.NEXT_COLUMN
@@ -376,8 +381,11 @@ object DesktopKeys {
         DeskKey.T to DeskAction.TRANSLATE_POST,
     )
 
-    /** The letters Ctrl takes to the search: F as a desktop app's find, K and L as a browser's search and address bar. */
-    private val FIND_KEYS = setOf(DeskKey.K, DeskKey.L)
+    /** The letter Ctrl takes to the search, besides F as a desktop app's find: L as a browser's address bar. */
+    private val FIND_KEYS = setOf(DeskKey.L)
+
+    /** The letters Ctrl takes to the quick switcher: P as an editor's, K as a chat app's. */
+    private val SWITCH_KEYS = setOf(DeskKey.P, DeskKey.K)
 
     private val TAB_KEYS = setOf(DeskKey.TAB, DeskKey.PAGE_UP, DeskKey.PAGE_DOWN)
 

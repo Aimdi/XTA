@@ -78,6 +78,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_post_open
 import com.aimdi.xtanative.ui.generated.resources.keys_post_save
 import com.aimdi.xtanative.ui.generated.resources.keys_post_translate
 import com.aimdi.xtanative.ui.generated.resources.keys_post_window
+import com.aimdi.xtanative.ui.generated.resources.keys_quick_switch
 import com.aimdi.xtanative.ui.generated.resources.keys_quit
 import com.aimdi.xtanative.ui.generated.resources.keys_recent_searches
 import com.aimdi.xtanative.ui.generated.resources.keys_refresh
@@ -162,7 +163,8 @@ object DesktopShortcuts {
         ShortcutSection(
             Res.string.search,
             listOf(
-                Shortcut(Res.string.keys_search, listOf(listOf(ctrl, sign("F")), listOf(sign("/")), listOf(ctrl, sign("K")), listOf(ctrl, sign("L")))),
+                Shortcut(Res.string.keys_search, listOf(listOf(ctrl, sign("F")), listOf(sign("/")), listOf(ctrl, sign("L")))),
+                Shortcut(Res.string.keys_quick_switch, listOf(listOf(ctrl, sign("P")), listOf(ctrl, sign("K")))),
                 Shortcut(Res.string.keys_find_in_page, listOf(listOf(ctrl, sign("F")))),
                 Shortcut(Res.string.keys_find_match, listOf(listOf(sign("F3")), listOf(shift, sign("F3")), listOf(sign("↵")), listOf(shift, sign("↵")))),
                 Shortcut(Res.string.keys_recent_searches, listOf(listOf(sign("↓")), listOf(sign("↑")))),

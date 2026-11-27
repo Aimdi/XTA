@@ -59,4 +59,5 @@
     <string name="keys_post_window">在新視窗中開啟該貼文</string>
     <string name="keys_post_media">開啟該貼文的第一張圖片或第一部影片</string>
     <string name="keys_post_translate">翻譯該貼文，或顯示原文</string>
+    <string name="keys_quick_switch">前往畫面、時間軸、群組或設定</string>
 </resources>

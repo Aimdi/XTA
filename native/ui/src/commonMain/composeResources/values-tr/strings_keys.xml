@@ -59,4 +59,5 @@
     <string name="keys_post_window">O gönderiyi yeni pencerede aç</string>
     <string name="keys_post_media">O gönderinin ilk resmini veya videosunu aç</string>
     <string name="keys_post_translate">O gönderiyi çevir veya özgününü göster</string>
+    <string name="keys_quick_switch">Bir ekrana, zaman akışına, gruba veya ayara git</string>
 </resources>

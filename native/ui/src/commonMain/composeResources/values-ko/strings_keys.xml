@@ -59,4 +59,5 @@
     <string name="keys_post_window">그 게시물을 새 창에서 열기</string>
     <string name="keys_post_media">그 게시물의 첫 사진이나 동영상 열기</string>
     <string name="keys_post_translate">그 게시물 번역 또는 원본 보기</string>
+    <string name="keys_quick_switch">화면, 타임라인, 그룹, 설정으로 이동</string>
 </resources>

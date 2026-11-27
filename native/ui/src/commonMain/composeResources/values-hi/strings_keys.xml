@@ -59,4 +59,5 @@
     <string name="keys_post_window">उस पोस्ट को नई विंडो में खोलें</string>
     <string name="keys_post_media">उस पोस्ट की पहली तस्वीर या वीडियो खोलें</string>
     <string name="keys_post_translate">उस पोस्ट का अनुवाद करें या मूल दिखाएँ</string>
+    <string name="keys_quick_switch">किसी स्क्रीन, टाइमलाइन, समूह या सेटिंग पर जाएँ</string>
 </resources>

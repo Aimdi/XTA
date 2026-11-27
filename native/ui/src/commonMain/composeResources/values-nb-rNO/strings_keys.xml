@@ -59,4 +59,5 @@
     <string name="keys_post_window">Åpne det innlegget i nytt vindu</string>
     <string name="keys_post_media">Åpne det første bildet eller videoen i det innlegget</string>
     <string name="keys_post_translate">Oversett det innlegget, eller vis originalen</string>
+    <string name="keys_quick_switch">Gå til en skjerm, tidslinje, gruppe eller innstilling</string>
 </resources>

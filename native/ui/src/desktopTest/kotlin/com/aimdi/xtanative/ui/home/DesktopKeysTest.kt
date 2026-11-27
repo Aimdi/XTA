@@ -376,10 +376,11 @@ class DesktopKeysTest {
     }
 
     @Test
-    fun ctrlKAndCtrlLGoToTheSearchAsABrowsersDo() {
-        for (key in listOf(DeskKey.K, DeskKey.L)) {
-            assertEquals(DeskAction.FIND, action(key, ctrl = true), "$key")
-            assertEquals(DeskAction.FIND, action(key, ctrl = true, focusInside = true), "$key from a field, as Ctrl+F")
+    fun ctrlLGoesToTheSearchAndCtrlKToTheQuickSwitcher() {
+        for (key in listOf(DeskKey.K, DeskKey.L, DeskKey.P)) {
+            val does = if (key == DeskKey.L) DeskAction.FIND else DeskAction.QUICK_SWITCH
+            assertEquals(does, action(key, ctrl = true), "$key")
+            assertEquals(does, action(key, ctrl = true, focusInside = true), "$key from a field, as Ctrl+F")
             assertEquals(DeskAction.NONE, action(key, ctrl = true, open = true), "$key not under what is open")
             assertEquals(DeskAction.NONE, action(key, ctrl = true, shift = true), "$key with Shift")
             assertEquals(DeskAction.NONE, action(key, ctrl = true, alt = true), "$key with Alt")

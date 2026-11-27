@@ -59,4 +59,5 @@
     <string name="keys_post_window">Открыть этот пост в новом окне</string>
     <string name="keys_post_media">Открыть первое фото или видео этого поста</string>
     <string name="keys_post_translate">Перевести этот пост или показать оригинал</string>
+    <string name="keys_quick_switch">Перейти к экрану, ленте, группе или настройке</string>
 </resources>

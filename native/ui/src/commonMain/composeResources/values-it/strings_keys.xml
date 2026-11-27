@@ -59,4 +59,5 @@
     <string name="keys_post_window">Apri quel post in una nuova finestra</string>
     <string name="keys_post_media">Apri la prima immagine o il primo video di quel post</string>
     <string name="keys_post_translate">Traduci quel post o mostra l'originale</string>
+    <string name="keys_quick_switch">Vai a una schermata, timeline, gruppo o impostazione</string>
 </resources>

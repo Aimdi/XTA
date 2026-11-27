@@ -59,4 +59,5 @@
     <string name="keys_post_window">Відкрити цей допис у новому вікні</string>
     <string name="keys_post_media">Відкрити перше фото або відео цього допису</string>
     <string name="keys_post_translate">Перекласти цей допис або показати оригінал</string>
+    <string name="keys_quick_switch">Перейти до екрана, стрічки, групи чи налаштування</string>
 </resources>

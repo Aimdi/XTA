@@ -30,6 +30,7 @@ import com.aimdi.xtanative.ui.common.LocalOnline
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.chrome_offline_bar
+import com.aimdi.xtanative.ui.home.QuickSwitchHost
 import com.aimdi.xtanative.ui.settings.isDesktop
 import org.jetbrains.compose.resources.stringResource
 
@@ -42,6 +43,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun OfflineFrame(content: @Composable () -> Unit) {
     if (!isDesktop) return content()
+    // The frame of every window's screens draws the desktop's quick switcher too: it reads the places they lead to.
+    QuickSwitchHost()
     val flow = LocalOnline.current
     val online by produceState(true, flow) { flow.collect { value = it } }
     val reduced = LocalReducedMotion.current

@@ -59,4 +59,5 @@
     <string name="keys_post_window">Адкрыць гэты допіс у новым акне</string>
     <string name="keys_post_media">Адкрыць першы здымак або відэа гэтага допісу</string>
     <string name="keys_post_translate">Перакласці гэты допіс або паказаць арыгінал</string>
+    <string name="keys_quick_switch">Перайсці да экрана, стужкі, групы або налады</string>
 </resources>

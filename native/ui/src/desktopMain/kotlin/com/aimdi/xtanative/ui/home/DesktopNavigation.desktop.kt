@@ -138,6 +138,8 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     // A window of its own beside the main one closes with Ctrl+W, Esc and the back button on its first screen; the main window asks to quit.
     val closeWindow = LocalSecondaryWindow.current?.close
     val line = with(LocalDensity.current) { LINE.toPx() }
+    // Drawn by the screens' frame ([QuickSwitchHost]), which knows the places it leads to.
+    val switcher = remember(nav, actions) { QuickSwitchRequest(nav) { actions.keysToFrame() } }
 
     fun act(action: DeskAction): Boolean = when (action) {
         DeskAction.LEAVE_FIELD -> {
@@ -257,6 +259,10 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             showKeys = true
             true
         }
+        DeskAction.QUICK_SWITCH -> {
+            switcher.show()
+            true
+        }
         // From the navigation beside the screens back to the page: the frame takes the keys, its reading keys at work at once.
         DeskAction.OTHER_REGION -> actions.otherRegion { focus.requestFocus() }
         DeskAction.CREATE -> actions.create()
@@ -355,7 +361,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
     val frameOrigin = remember { arrayOf(Offset.Zero) }
     // This window's link under the pointer, its address shown in a pill at the frame's foot.
     val linkHover = remember { LinkHover() }
-    CompositionLocalProvider(LocalDesktopActions provides actions, LocalLinkHover provides linkHover) {
+    CompositionLocalProvider(LocalDesktopActions provides actions, LocalLinkHover provides linkHover, LocalQuickSwitch provides switcher) {
         Box(
             Modifier
                 .fillMaxSize()
@@ -456,6 +462,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
             actions.keysToFrame()
         })
     }
+
     // The frame takes the focus when nothing has it: at the start, and once the screen that had it is gone.
     // Only after the screens change, so a sheet's own field is never robbed of it.
     LaunchedEffect(nav) {

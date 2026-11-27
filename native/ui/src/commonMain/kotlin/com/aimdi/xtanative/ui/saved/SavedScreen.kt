@@ -45,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -185,6 +186,12 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
         remove = { (dialog == null && view.removableByKeys).also { if (it) dialog = SavedDialog.RemoveSelected } },
         leave = { (dialog == null && view.selecting).also { if (it) vm.finishSelection() } },
     )
+    // A folder another part of the app asked for (the desktop's quick switcher).
+    val asked by SavedRequests.tab.collectAsStateWithLifecycle()
+    LaunchedEffect(asked) {
+        val tab = asked ?: return@LaunchedEffect
+        if (SavedRequests.taken(tab)) vm.select(tab)
+    }
     // Ctrl+N writes a note, as the round button does; not while selecting, where the button is put away.
     CreatesWithKeys { (dialog == null && !view.selecting).also { if (it) dialog = SavedDialog.Compose(NoteTarget.Note()) } }
 

@@ -59,4 +59,5 @@
     <string name="keys_post_window">在新窗口中打开该帖子</string>
     <string name="keys_post_media">打开该帖子的第一张图片或第一个视频</string>
     <string name="keys_post_translate">翻译该帖子，或显示原文</string>
+    <string name="keys_quick_switch">转到屏幕、时间线、分组或设置</string>
 </resources>

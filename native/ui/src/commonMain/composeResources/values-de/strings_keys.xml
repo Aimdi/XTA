@@ -59,4 +59,5 @@
     <string name="keys_post_window">Diesen Beitrag in neuem Fenster öffnen</string>
     <string name="keys_post_media">Erstes Bild oder Video dieses Beitrags öffnen</string>
     <string name="keys_post_translate">Diesen Beitrag übersetzen oder das Original zeigen</string>
+    <string name="keys_quick_switch">Zu Ansicht, Zeitleiste, Gruppe oder Einstellung springen</string>
 </resources>

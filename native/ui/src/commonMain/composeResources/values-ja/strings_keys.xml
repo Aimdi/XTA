@@ -59,4 +59,5 @@
     <string name="keys_post_window">その投稿を新しいウィンドウで開く</string>
     <string name="keys_post_media">その投稿の最初の画像か動画を開く</string>
     <string name="keys_post_translate">その投稿を翻訳、または元に戻す</string>
+    <string name="keys_quick_switch">画面、タイムライン、グループ、設定に移動</string>
 </resources>
