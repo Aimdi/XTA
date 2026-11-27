@@ -97,5 +97,6 @@
     <string name="discover_show_menu">Kuva menüü</string>
     <string name="discover_no_posts_match">Ükski postitus ei vasta otsingule</string>
     <string name="discover_trends_unable">Ei õnnestu laadida hetkel populaarsemaid viiteid ja otsinguid riigile või piirkonnale: %1$s</string>
+    <string name="discover_trends_worldwide">Kogu maailm</string>
     <string name="discover_trends_none">Päringu vastuses polnud andmeid hetkel populaarsemate viidete ja otsingute kohta. Seda ei oleks nüüd küll pidanud juhtuma! Kui võimalik siis palun saada meile veateade.</string>
 </resources>

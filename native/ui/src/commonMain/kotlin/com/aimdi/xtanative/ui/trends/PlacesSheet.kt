@@ -112,7 +112,7 @@ private fun PlaceItem(place: XTrendPlace, shown: Boolean, indent: Boolean = fals
             .heightIn(min = 48.dp)
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
-        TipText(place.name, color = if (shown) colors.onPrimary else colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        TipText(placeName(place), color = if (shown) colors.onPrimary else colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
         if (place.isCountry) {
             Text(
                 stringResource(Res.string.discover_country),

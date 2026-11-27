@@ -39,4 +39,10 @@ class TrendPlacesLogicTest {
         assertTrue(TrendPlacesLogic.isShown(places, berlin))
         assertFalse(TrendPlacesLogic.isShown(places, XTrendPlace.WORLDWIDE))
     }
+
+    @Test
+    fun theWorldIsNamedByTheAppNotByX() {
+        assertTrue(TrendPlacesLogic.isWorld(XTrendPlace("Worldwide", 1)))
+        assertFalse(TrendPlacesLogic.isWorld(XTrendPlace("Berlin", 638242)))
+    }
 }

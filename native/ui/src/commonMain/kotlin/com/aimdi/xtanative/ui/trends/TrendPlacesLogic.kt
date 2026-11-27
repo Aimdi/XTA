@@ -30,6 +30,9 @@ object TrendPlacesLogic {
     /** Whether a place's tab offers Delete: every place but the world, which is always kept. */
     fun canRemove(place: XTrendPlace): Boolean = place.woeid != XTrendPlace.WORLDWIDE.woeid
 
+    /** Whether [place] is the whole world, which the app names in the reader's language; X names it in English. */
+    fun isWorld(place: XTrendPlace): Boolean = place.woeid == XTrendPlace.WORLDWIDE.woeid
+
     /** Whether [place] is the one whose trends are shown. */
     fun isShown(places: XTrendPlaces, place: XTrendPlace): Boolean = places.active.woeid == place.woeid
 }

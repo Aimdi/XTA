@@ -101,5 +101,6 @@
     <string name="discover_show_menu">Pokaż menu</string>
     <string name="discover_no_posts_match">Żadne wpisy nie pasują do wyszukiwania</string>
     <string name="discover_trends_unable">Nie można załadować trendów dla %1$s</string>
+    <string name="discover_trends_worldwide">Cały świat</string>
     <string name="discover_trends_none">Nie zwrócono żadnych trendów. To nieoczekiwane! Jeśli to możliwe, zgłoś błąd.</string>
 </resources>

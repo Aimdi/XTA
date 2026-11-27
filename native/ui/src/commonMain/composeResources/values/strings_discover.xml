@@ -69,6 +69,7 @@
     <string name="discover_country">Country</string>
     <string name="discover_trends_empty">Nothing trending for this place yet. Search above, or add another location.</string>
     <string name="discover_trends_unable">Unable to load the trends for %1$s</string>
+    <string name="discover_trends_worldwide">Worldwide</string>
     <string name="discover_trends_none">There were no trends returned. This is unexpected! Please report as a bug, if possible.</string>
     <string name="discover_plugin_empty">Search %1$s for posts, people, and communities.</string>
     <plurals name="discover_trend_posts">

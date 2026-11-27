@@ -334,7 +334,7 @@ private fun PlaceTab(place: XTrendPlace, selected: Boolean, onShow: (XTrendPlace
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            place.name,
+            placeName(place),
             style = MaterialTheme.typography.titleSmall,
             color = if (selected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
@@ -380,7 +380,7 @@ private fun TrendsBody(state: TrendsUi, list: LazyListState, onRefresh: () -> Un
     PullToRefreshBox(isRefreshing = state.loading && state.loaded, onRefresh = onRefresh, modifier = Modifier.fillMaxSize()) {
         when {
             problem != null -> Whole {
-                ProblemView(problem, onRefresh, context = stringResource(Res.string.discover_trends_unable, state.places.active.name))
+                ProblemView(problem, onRefresh, context = stringResource(Res.string.discover_trends_unable, placeName(state.places.active)))
             }
             !state.loaded -> Whole { LoadingRow() }
             state.trends.isEmpty() -> Whole { EmptyTrends(onAddLocation) }
