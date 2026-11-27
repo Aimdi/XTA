@@ -198,15 +198,19 @@ private fun SwitcherBody(ui: HomeUi, networks: HomeNetworks, shown: HomeTab?, un
     val close = remember(closer) { { closer.close() } }
     val title = stringResource(Res.string.home_switcher_title)
     Column(if (compact) Modifier.semantics { paneTitle = title } else Modifier) {
-        if (compact) CompactHead(shown, ui, networks, plugin) else SheetHead(shown, ui, networks, plugin)
-        Column(Modifier.padding(horizontal = 4.dp, vertical = if (compact) 2.dp else 6.dp)) {
-            if (plugin != null) {
-                plugin.items?.invoke(this, close)
-                plugin.appEntries(this, close)
+        // The drop-down hangs under the button that names the timeline shown: a head saying it again, with nothing of
+        // a plugin's beside it, is left out, as is the empty row of entries under it.
+        if (!(compact && plugin == null && calls.onMenu == null)) {
+            if (compact) CompactHead(shown, ui, networks, plugin) else SheetHead(shown, ui, networks, plugin)
+            Column(Modifier.padding(horizontal = 4.dp, vertical = if (compact) 2.dp else 6.dp)) {
+                if (plugin != null) {
+                    plugin.items?.invoke(this, close)
+                    plugin.appEntries(this, close)
+                }
+                calls.onMenu?.let { MenuRow(it, calls.onAvatar) }
             }
-            calls.onMenu?.let { MenuRow(it, calls.onAvatar) }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         TimelineWords(ui, shown, unread, calls)
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         if (ids.isNotEmpty()) {
@@ -319,7 +323,14 @@ private fun TimelineWords(ui: HomeUi, shown: HomeTab?, unread: Set<String>, call
 
 @Composable
 private fun Word(label: String, picked: Boolean, lit: Boolean, onClick: () -> Unit) {
-    val said = listOfNotNull(label, stringResource(Res.string.home_unread).takeIf { lit }).joinToString(", ")
+    val unread = stringResource(Res.string.home_unread)
+    // The dot's meaning under the pointer, as the screen reader says it.
+    if (lit) IconTip(unread) { WordRow(label, picked, lit, unread, onClick) } else WordRow(label, picked, lit, unread, onClick)
+}
+
+@Composable
+private fun WordRow(label: String, picked: Boolean, lit: Boolean, unread: String, onClick: () -> Unit) {
+    val said = listOfNotNull(label, unread.takeIf { lit }).joinToString(", ")
     Row(
         Modifier
             .heightIn(min = 48.dp)
