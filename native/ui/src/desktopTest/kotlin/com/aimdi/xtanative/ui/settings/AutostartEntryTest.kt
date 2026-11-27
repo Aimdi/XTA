@@ -35,6 +35,24 @@ class AutostartEntryTest {
     }
 
     @Test
+    fun aTarballsEntryRunsTheLauncherThatGivesTheClassDataArchive() {
+        val app = Files.createTempDirectory("xta-native").toFile()
+        try {
+            val bin = File(app, "bin").apply { mkdirs() }
+            val main = File(bin, "xta-native").apply { writeText("#!/bin/sh\n"); setExecutable(true) }
+            val launch = File(bin, "xta-native-launch").apply { writeText("#!/bin/sh\n"); setExecutable(true) }
+            assertEquals("\"${launch.path}\"", AutostartEntry.execFor(main.path, "/nowhere", "/home/me"))
+            // Not executable (a copy that lost its mode): the app itself.
+            launch.setExecutable(false)
+            assertEquals("\"${main.path}\"", AutostartEntry.execFor(main.path, "/nowhere", "/home/me"))
+            launch.delete()
+            assertEquals("\"${main.path}\"", AutostartEntry.execFor(main.path, "/nowhere", "/home/me"))
+        } finally {
+            app.deleteRecursively()
+        }
+    }
+
+    @Test
     fun theEntryRunsThePackagesCommandOrTheLaunchersPath() {
         val dir = Files.createTempDirectory("bin").toFile()
         try {

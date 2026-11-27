@@ -55,15 +55,21 @@ internal class AutostartEntry(private val folder: File, private val exec: String
          * What the entry runs for [launcher]: the bare `xta-native` where the
          * package put one on [path] and the app runs from a system folder (it
          * keeps working across updates), else the launcher's own path, quoted
-         * as the desktop entry spec asks. Null with no launcher (a run from Gradle).
+         * as the desktop entry spec asks: `xta-native-launch` beside it where
+         * the tarball has it (as install.sh's menu entry), so a start at login
+         * gets its class-data archive too. Null with no launcher (a run from Gradle).
          */
         fun execFor(launcher: String?, path: String?, home: String?): String? {
             val app = launcher?.takeIf { it.isNotBlank() } ?: return null
             val onPath = path.orEmpty().split(File.pathSeparatorChar).filter { it.isNotBlank() }.any { File(it, "xta-native").let { bin -> bin.isFile && bin.canExecute() } }
             val system = home.isNullOrBlank() || !File(app).absolutePath.startsWith(File(home).absolutePath + File.separator)
             if (onPath && system) return "xta-native"
-            return quoted(app)
+            val withArchive = File(File(app).parentFile, LAUNCH_SCRIPT).takeIf { it.isFile && it.canExecute() }
+            return quoted(withArchive?.path ?: app)
         }
+
+        /** The tarball's script that starts the app with its class-data archive (packaging/linux/xta-native-launch). */
+        private const val LAUNCH_SCRIPT = "xta-native-launch"
 
         private val OFF_LINES = setOf("hidden=true", "x-gnome-autostart-enabled=false")
 
