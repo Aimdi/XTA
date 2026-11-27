@@ -74,6 +74,17 @@
     <color type="primary" scheme_preference="light">#8ecdf8</color>
     <color type="primary" scheme_preference="dark">#0f3d5c</color>
   </branding>
-  <!-- native/tool/package_desktop.sh puts this build's <releases> here, from the version it packs. -->
-  <!-- @RELEASES@ -->
+  <!-- What a software centre shows of the app: none of the repository's files is a picture of it yet.
+       TODO: once screenshots are in the repository, list them here by their raw.githubusercontent.com/Aimdi/XTA/HEAD/…
+       address (the main window first, as <screenshot type="default">), each with a <caption>. -->
+  <!-- The releases, newest first: native/tool/package_desktop.sh puts the build it packs at @RELEASE@ (taking out
+       a line below of the same version), and the last releases stay listed below it. Add a line here for each release. -->
+  <releases>
+    <!-- @RELEASE@ -->
+    <release version="1.0.17" date="2026-11-26" type="stable"><url type="details">https://github.com/Aimdi/XTA/releases/tag/v1.0.17</url></release>
+    <release version="1.0.16" date="2026-11-24" type="stable"><url type="details">https://github.com/Aimdi/XTA/releases/tag/v1.0.16</url></release>
+    <release version="1.0.15" date="2026-11-23" type="stable"><url type="details">https://github.com/Aimdi/XTA/releases/tag/v1.0.15</url></release>
+    <release version="1.0.14" date="2026-11-22" type="stable"><url type="details">https://github.com/Aimdi/XTA/releases/tag/v1.0.14</url></release>
+    <release version="1.0.13" date="2026-11-20" type="stable"><url type="details">https://github.com/Aimdi/XTA/releases/tag/v1.0.13</url></release>
+  </releases>
 </component>

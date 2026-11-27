@@ -69,23 +69,30 @@ if [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
 else
   tag=native-$version release_type=development
 fi
-# The AppStream data names this build's version and day in its <releases>, so it never
-# has to be kept up to date by hand.
-releases="  <releases>
-    <release version=\"$version\" date=\"$(date -u -d "@$epoch" +%F)\" type=\"$release_type\">
-      <url type=\"details\">https://github.com/$repo/releases/tag/$tag</url>
-    </release>
-  </releases>"
+# The AppStream data names this build's version and day first in its <releases>, before the
+# releases listed in the file (one line each), of which one of the same version goes.
+release="    <release version=\"$version\" date=\"$(date -u -d "@$epoch" +%F)\" type=\"$release_type\"><url type=\"details\">https://github.com/$repo/releases/tag/$tag</url></release>"
 metainfo="$stage/$name/share/metainfo/com.aimdi.xtanative.metainfo.xml"
 mkdir -p "$(dirname "$metainfo")"
-grep -q '^  <!-- @RELEASES@ -->$' "$here/packaging/linux/com.aimdi.xtanative.metainfo.xml" || {
-  echo "error: com.aimdi.xtanative.metainfo.xml has no <!-- @RELEASES@ --> line for the releases" >&2
+grep -q '^    <!-- @RELEASE@ -->$' "$here/packaging/linux/com.aimdi.xtanative.metainfo.xml" || {
+  echo "error: com.aimdi.xtanative.metainfo.xml has no <!-- @RELEASE@ --> line for this build's release" >&2
   exit 1
 }
 while IFS= read -r line; do
-  if [[ "$line" == '  <!-- @RELEASES@ -->' ]]; then printf '%s\n' "$releases"; else printf '%s\n' "$line"; fi
+  if [[ "$line" == '    <!-- @RELEASE@ -->' ]]; then
+    printf '%s\n' "$release"
+  elif [[ "$line" != *"<release version=\"$version\""* ]]; then
+    printf '%s\n' "$line"
+  fi
 done <"$here/packaging/linux/com.aimdi.xtanative.metainfo.xml" >"$metainfo"
 chmod 644 "$metainfo"
+# Where the tools are installed, what software centres and menus read is checked before it is packed.
+if command -v appstreamcli >/dev/null 2>&1; then
+  appstreamcli validate --no-net --explain "$metainfo" || { echo "error: $metainfo is not valid AppStream data" >&2; exit 1; }
+fi
+if command -v desktop-file-validate >/dev/null 2>&1; then
+  desktop-file-validate "$stage/$name/share/applications/com.aimdi.xtanative.desktop" || { echo "error: the desktop entry is not valid" >&2; exit 1; }
+fi
 
 tarball="$out/$name.tar.gz"
 tar --sort=name --owner=0 --group=0 --numeric-owner --mtime="@$epoch" \
