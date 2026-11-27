@@ -2,6 +2,7 @@ package com.aimdi.xtanative.store.follows
 
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.store.StoreDir
+import com.aimdi.xtanative.store.StoreFile
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference
@@ -38,7 +39,8 @@ data class FollowsRead(val follows: Map<String, List<KnownFollow>>, val error: T
  * file per account under `follows/`. A group's Discover reads a list again
  * once it is older than [ttlMillis]; "Followed by" on a profile trusts one
  * for [retentionMillis], since a following list barely changes in a month.
- * A file that cannot be read is a list never read.
+ * A file that cannot be read is a list never read; one that is not a list,
+ * or is older than [retentionMillis], is deleted as the lists are first read.
  */
 class FollowsCache(
     private val dir: StoreDir,
@@ -107,12 +109,24 @@ class FollowsCache(
             if (restored) return
             val files = withContext(Dispatchers.IO) { File(dir.root, FOLDER).listFiles { file -> file.name.endsWith(SUFFIX) }.orEmpty().toList() }
             val now = clock()
-            files.forEach { file ->
-                val text = dir.file(FOLDER + "/" + file.name).read() ?: return@forEach
-                val (member, entry) = decode(J.parse(text)) ?: return@forEach
-                if (now - entry.at <= retentionMillis) memory.putIfAbsent(member, entry)
-            }
+            files.forEach { file -> restoreOne(dir.file(FOLDER + "/" + file.name), now) }
             restored = true
+        }
+    }
+
+    /** Keeps one file's list in memory; a list past [retentionMillis], or a file that is not one, is deleted. */
+    private suspend fun restoreOne(stored: StoreFile, now: Long) {
+        val text = try {
+            stored.read() ?: return
+        } catch (error: CancellationException) {
+            throw error
+        } catch (_: Exception) {
+            return
+        }
+        val decoded = decode(J.parse(text))
+        when {
+            decoded == null || now - decoded.second.at > retentionMillis -> runCatching { stored.delete() }
+            else -> memory.putIfAbsent(decoded.first, decoded.second)
         }
     }
 

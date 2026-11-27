@@ -150,4 +150,19 @@ class FollowsCacheTest {
             assertTrue(again.of("g2").isEmpty())
         }
     }
+
+    @Test
+    fun theFirstReadDeletesListsPastRetentionAndFilesThatAreNotLists() {
+        runBlocking {
+            cache().remember("old", listOf(follow("1")))
+            now += 20 * day
+            cache().remember("recent", listOf(follow("2")))
+            val folder = java.io.File(dir.root, "follows")
+            java.io.File(folder, "broken.json").writeText("{not json")
+            java.io.File(folder, "other.json").writeText("""{"v":99,"member":"x","at":1}""")
+            now += 11 * day
+            assertEquals(setOf("recent"), cache().remembered().keys)
+            assertEquals(setOf("recent.json"), folder.list()!!.filter { it.endsWith(".json") }.toSet())
+        }
+    }
 }
