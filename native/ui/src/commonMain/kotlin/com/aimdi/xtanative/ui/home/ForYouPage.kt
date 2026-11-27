@@ -117,8 +117,8 @@ internal fun ForYouPage(toTop: Int, actions: PostActions, contentPadding: Paddin
     PullToRefreshBox(isRefreshing = state.refreshing && !bones, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize()) {
         when {
             // XTA's no-account screen, whose Add account signs in.
-            state.noAccount -> PageMessage(null) { ProblemView(Problem.NoAccount, { vm.refresh() }) }
-            state.threads.isEmpty() && problem != null -> PageMessage(null) { ProblemView(problem, { vm.refresh() }, context = stringResource(Res.string.problem_unable_to_load_the_tweets)) }
+            state.noAccount -> ProblemView(Problem.NoAccount, { vm.refresh() })
+            state.threads.isEmpty() && problem != null -> ProblemView(problem, { vm.refresh() }, context = stringResource(Res.string.problem_unable_to_load_the_tweets))
             state.threads.isEmpty() && state.answered && !state.refreshing -> PageMessage(stringResource(Res.string.home_for_you_empty)) {}
             bones -> Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(top = contentPadding.calculateTopPadding())) { FeedSkeleton() }
             else -> CompositionLocalProvider(LocalInlinePlayer provides inline) {

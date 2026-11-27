@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.common
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -108,39 +109,28 @@ fun ProblemView(problem: Problem, onRetry: () -> Unit, modifier: Modifier = Modi
     val look = ProblemLook.of(problem)
     val actions = LocalProblemActions.current
     val answered = (problem as? Problem.Answer)?.code
-    Column(modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    // The empty pages' frame and words ([EmptyState]), the failure's mark in the icon's place.
+    StateFrame(modifier) {
         // X's answer's own mark where it has one, else the look's: a null here had hidden every look's mark behind the warning sign.
         ProblemMark(look, answered?.let(XAnswers::emoji) ?: look.emoji)
-        Text(answered?.let { xAnswerText(it) } ?: stringResource(titleOf(look)), fontSize = 18.sp, textAlign = TextAlign.Center)
-        if (answered == null) Text(
-            detailsOf(look),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 12.dp),
-        )
+        StateTitle(answered?.let { xAnswerText(it) } ?: stringResource(titleOf(look)))
+        if (answered == null) StateBody(detailsOf(look))
         // The status X answered with, for whoever reports it: under the words, small, not the message itself.
-        if (look == ProblemLook.HTTP) Text(
-            stringResource(Res.string.problem_http_text, (problem as? Problem.Refused)?.code ?: 0),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 8.dp),
-        )
-        if (context != null && look == ProblemLook.OTHER) {
-            Text(context, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 12.dp))
-        }
-        FlowRow(
-            Modifier.padding(top = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            if (look.addAccount && actions != null) AddAccountButton(actions.addAccount)
-            RetryButton(problem, onRetry, raised = look.raisedRetry)
-            if (look.diagnostics && actions != null) {
-                TextButton(onClick = actions.diagnostics) {
-                    Icon(Icons.Outlined.Info, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(Res.string.settings_diagnostics))
+        if (look == ProblemLook.HTTP) StateBody(stringResource(Res.string.problem_http_text, (problem as? Problem.Refused)?.code ?: 0), small = true)
+        if (context != null && look == ProblemLook.OTHER) StateBody(context)
+        StateActions {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                if (look.addAccount && actions != null) AddAccountButton(actions.addAccount)
+                RetryButton(problem, onRetry, raised = look.raisedRetry)
+                if (look.diagnostics && actions != null) {
+                    TextButton(onClick = actions.diagnostics) {
+                        Icon(Icons.Outlined.Info, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(Res.string.settings_diagnostics))
+                    }
                 }
             }
         }
@@ -157,12 +147,14 @@ fun ProblemRow(problem: Problem, onRetry: () -> Unit, modifier: Modifier = Modif
     }
 }
 
+/** The failure's mark, as big as an empty page's icon ([STATE_MARK]): its emoji, else the warning sign in the muted colour. */
 @Composable
 private fun ProblemMark(look: ProblemLook, emoji: String? = look.emoji) {
+    val mark = Modifier.padding(bottom = 8.dp).size(STATE_MARK.dp)
     if (emoji == null) {
-        Icon(Icons.Outlined.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 16.dp).size(36.dp))
+        Icon(Icons.Outlined.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = mark)
     } else {
-        Text(emoji, fontSize = 36.sp, modifier = Modifier.padding(bottom = 16.dp))
+        Box(mark, contentAlignment = Alignment.Center) { Text(emoji, fontSize = 36.sp, textAlign = TextAlign.Center) }
     }
 }
 

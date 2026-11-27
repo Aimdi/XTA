@@ -213,7 +213,7 @@ private fun AntennaRow(antenna: Antenna, onOpen: () -> Unit, onSettings: () -> U
 
 @Composable
 private fun EmptyAntennas(onNew: () -> Unit) {
-    EmptyState(DiscoverIcons.Radar, stringResource(Res.string.discover_antenna_empty)) {
+    EmptyState(DiscoverIcons.Sensors, stringResource(Res.string.discover_antenna_empty)) {
         Button(onClick = onNew, modifier = Modifier.heightIn(min = 48.dp)) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.discover_antenna_new), modifier = Modifier.padding(start = 8.dp))

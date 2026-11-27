@@ -38,7 +38,13 @@ import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.data.inFirstKinds
 import com.aimdi.xtanative.networks.NetworkFailure
 import com.aimdi.xtanative.networks.Page
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Warning
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.STATE_MARK
+import com.aimdi.xtanative.ui.common.StateActions
+import com.aimdi.xtanative.ui.common.StateFrame
+import com.aimdi.xtanative.ui.common.StateTitle
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ReadFailureSheet
 import com.aimdi.xtanative.ui.common.ReadSource
@@ -90,14 +96,12 @@ fun networkProblemText(problem: Problem, network: String): String = when (val fi
 /** A read of [network] that brought nothing: why, and a way to try again; its ⓘ opens why in a sheet ([RetryNotice]). */
 @Composable
 fun NetworkProblemView(problem: Problem, network: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
-    Column(
-        modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 40.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
+    // The app's own failed pages' frame and words ([ProblemView]).
+    StateFrame(modifier) {
         val message = networkProblemText(problem, network)
-        Text(message, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
-        RetryNotice(message, onRetry, problem)
+        Icon(Icons.Outlined.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 8.dp).size(STATE_MARK.dp))
+        StateTitle(message)
+        StateActions { RetryNotice(message, onRetry, problem) }
     }
 }
 

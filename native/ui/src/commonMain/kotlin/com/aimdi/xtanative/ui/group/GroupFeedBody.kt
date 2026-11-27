@@ -205,10 +205,10 @@ fun GroupFeedBody(
     // The bones are the sign it loads: no spinner over them.
     PullToRefreshBox(isRefreshing = run.refreshing && shows != FeedShows.BONES, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize().readVisibility(vm::visible)) {
         when (shows) {
-            FeedShows.MISSING -> Whole { ProblemView(Problem.Other, { vm.refresh() }, context = stringResource(Res.string.unable_to_load_the_group)) }
+            FeedShows.MISSING -> ProblemView(Problem.Other, { vm.refresh() }, context = stringResource(Res.string.unable_to_load_the_group))
             FeedShows.NO_MEMBERS -> Whole { Message(stringResource(Res.string.groups_no_members)) }
             FeedShows.PLUGIN_POSTS -> PluginPostsOnly(plugin.shown, plugins, list, contentPadding, problem) { vm.refresh() }
-            FeedShows.PROBLEM -> Whole { ProblemView(problem ?: Problem.Other, { vm.refresh() }) }
+            FeedShows.PROBLEM -> ProblemView(problem ?: Problem.Other, { vm.refresh() })
             FeedShows.BONES -> SkeletonPage(contentPadding)
             FeedShows.CAUGHT_UP -> Whole { CaughtUpCard(run.shown.catchUpMessage, run, vm) }
             FeedShows.EMPTY -> Whole { Message(stringResource(Res.string.groups_feed_empty)) }
