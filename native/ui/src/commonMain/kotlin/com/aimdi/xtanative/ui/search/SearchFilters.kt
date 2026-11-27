@@ -87,3 +87,18 @@ object SearchFilters {
     fun formFor(view: XSearchView, fieldText: String): XAdvancedSearch =
         if (view.advanced.activeFilters.isEmpty()) XAdvancedSearch.fromQuery(fieldText) else view.advanced
 }
+
+/** The desktop's advanced search dialog: how wide and tall it grows, and when its sections stand in two columns. */
+object AdvancedSearchLayout {
+    /** The widest the dialog grows, in dp: two columns of fields as wide as the reading column's half. */
+    const val MAX_WIDTH = 960
+
+    /** The most of the window's height it takes; the form scrolls inside it. */
+    const val MAX_HEIGHT_FRACTION = 0.9f
+
+    /** From this width of its form on (dp), the search words and accounts stand beside the content and numbers. */
+    const val TWO_COLUMNS_FROM = 720
+
+    /** How many columns the form has at [width] dp. */
+    fun columns(width: Float): Int = if (width >= TWO_COLUMNS_FROM) 2 else 1
+}

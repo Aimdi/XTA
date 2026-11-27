@@ -143,4 +143,12 @@ class SearchDatesTest {
         assertTrue(SearchStart.findsPeople(SearchTab.PEOPLE), "Discover's Find people opens here")
         SearchTab.entries.filter { it != SearchTab.PEOPLE }.forEach { assertFalse(SearchStart.findsPeople(it), it.name) }
     }
+
+    @Test
+    fun theDesktopsAdvancedSearchStandsInTwoColumnsOnlyWhereTheyFit() {
+        assertEquals(1, AdvancedSearchLayout.columns(600f))
+        assertEquals(1, AdvancedSearchLayout.columns(AdvancedSearchLayout.TWO_COLUMNS_FROM - 1f))
+        assertEquals(2, AdvancedSearchLayout.columns(AdvancedSearchLayout.TWO_COLUMNS_FROM.toFloat()))
+        assertEquals(2, AdvancedSearchLayout.columns(AdvancedSearchLayout.MAX_WIDTH.toFloat()))
+    }
 }

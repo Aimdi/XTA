@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.search
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -14,9 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,6 +30,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -41,7 +43,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
-import androidx.compose.material3.Switch
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -55,7 +57,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
@@ -66,12 +69,15 @@ import com.aimdi.xtanative.core.x.search.XAdvancedSearch
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Content
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Filter
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Inclusion
+import com.aimdi.xtanative.ui.common.ColumnScrollbar
 import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.currentLocale
+import com.aimdi.xtanative.ui.common.dialogDefault
+import com.aimdi.xtanative.ui.common.escapeClears
 import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.discover_accounts
@@ -113,7 +119,9 @@ import com.aimdi.xtanative.ui.generated.resources.discover_this_exact_phrase
 import com.aimdi.xtanative.ui.generated.resources.discover_to_these_accounts
 import com.aimdi.xtanative.ui.generated.resources.discover_until
 import com.aimdi.xtanative.ui.generated.resources.discover_videos
-import com.aimdi.xtanative.ui.theme.xSwitchColors
+import com.aimdi.xtanative.ui.generated.resources.home_filter_reset
+import com.aimdi.xtanative.ui.home.verticalScrollByKeys
+import com.aimdi.xtanative.ui.settings.isDesktop
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import org.jetbrains.compose.resources.StringResource
@@ -154,11 +162,145 @@ private fun labelResource(label: FilterLabel): StringResource = when (label) {
 /**
  * XTA's advanced search: the filters, section by section, and the query
  * they write; Search hands them to the results, closing leaves the search
- * as it was.
+ * as it was. On the desktop a dialog over the window, the navigation beside
+ * the page still in sight ([DesktopAdvancedSearch]); on a phone the whole
+ * screen.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AdvancedSearchDialog(
+    filters: XAdvancedSearch,
+    onChange: ((XAdvancedSearch) -> XAdvancedSearch) -> Unit,
+    onApply: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    if (isDesktop) DesktopAdvancedSearch(filters, onChange, onApply, onDismiss) else PhoneAdvancedSearch(filters, onChange, onApply, onDismiss)
+}
+
+/** The form's sections, each a block of its own, so a wide dialog can set them in two columns. */
+private class FormSections(
+    val terms: @Composable () -> Unit,
+    val accounts: @Composable () -> Unit,
+    val content: @Composable () -> Unit,
+    val numbers: @Composable () -> Unit,
+)
+
+@Composable
+private fun formSections(filters: XAdvancedSearch, onChange: ((XAdvancedSearch) -> XAdvancedSearch) -> Unit, onApply: () -> Unit): FormSections {
+    // On the desktop the keys go to the first field as the form opens; a phone keeps its keyboard down.
+    val first = if (isDesktop) Modifier.dialogDefault() else Modifier
+    return FormSections(
+        terms = {
+            Section(DiscoverIcons.TextFields, Res.string.discover_search_term) {
+                listOf(Filter.ALL_WORDS, Filter.EXACT_PHRASE, Filter.ANY_WORDS, Filter.NONE_WORDS, Filter.HASHTAGS).forEach { filter ->
+                    TextFilter(filters, filter, onChange, onApply, modifier = if (filter == Filter.ALL_WORDS) first else Modifier)
+                }
+                LanguageField(filters.language) { code -> onChange { it.copy(language = code) } }
+            }
+        },
+        accounts = {
+            Section(DiscoverIcons.AlternateEmail, Res.string.discover_accounts) {
+                listOf(Filter.FROM_ACCOUNTS, Filter.TO_ACCOUNTS, Filter.MENTIONING_ACCOUNTS).forEach { filter ->
+                    TextFilter(filters, filter, onChange, onApply)
+                }
+            }
+        },
+        content = { Section(DiscoverIcons.PermMedia, Res.string.discover_content_filter) { ContentFilters(filters, onChange) } },
+        numbers = {
+            Section(DiscoverIcons.Tune, Res.string.discover_filters) {
+                listOf(Filter.MIN_REPLIES, Filter.MIN_LIKES, Filter.MIN_RETWEETS).forEach { filter ->
+                    TextFilter(filters, filter, onChange, onApply, number = true)
+                }
+                DateRow(stringResource(Res.string.discover_since), filters.since) { day -> onChange { it.copy(since = day) } }
+                DateRow(stringResource(Res.string.discover_until), filters.until) { day -> onChange { it.copy(until = day) } }
+            }
+        },
+    )
+}
+
+/**
+ * The desktop's advanced search: a dialog as wide as its two columns need
+ * ([AdvancedSearchLayout]), the window's navigation in sight beside it, no
+ * taller than most of the window with a scrollbar; Reset filters, Cancel and
+ * Search at its foot, as a desktop dialog has them. Enter in a field
+ * searches, Esc empties the field first and closes the dialog after.
+ */
+@Composable
+private fun DesktopAdvancedSearch(
+    filters: XAdvancedSearch,
+    onChange: ((XAdvancedSearch) -> XAdvancedSearch) -> Unit,
+    onApply: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val windowHeight = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.height.toDp() }
+    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        Surface(
+            modifier = Modifier
+                .padding(24.dp)
+                .widthIn(max = AdvancedSearchLayout.MAX_WIDTH.dp)
+                .then(if (windowHeight > 0.dp) Modifier.heightIn(max = windowHeight * AdvancedSearchLayout.MAX_HEIGHT_FRACTION) else Modifier),
+            shape = AlertDialogDefaults.shape,
+            color = AlertDialogDefaults.containerColor,
+            tonalElevation = AlertDialogDefaults.TonalElevation,
+        ) {
+            Column {
+                Row(Modifier.fillMaxWidth().padding(start = 24.dp, end = 12.dp, top = 16.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        stringResource(Res.string.discover_advanced_search),
+                        Modifier.weight(1f),
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = AlertDialogDefaults.titleContentColor,
+                    )
+                    IconTip(stringResource(Res.string.discover_close)) { IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_close)) } }
+                }
+                val sections = formSections(filters, onChange, onApply)
+                val scroll = rememberScrollState()
+                BoxWithConstraints(Modifier.weight(1f, fill = false)) {
+                    val columns = AdvancedSearchLayout.columns(maxWidth.value)
+                    // The bar's own lane at the end, so it never covers the fields.
+                    Column(Modifier.padding(end = 12.dp).verticalScrollByKeys(scroll)) {
+                        if (columns == 2) {
+                            Row {
+                                Column(Modifier.weight(1f)) {
+                                    sections.terms()
+                                    sections.accounts()
+                                }
+                                Column(Modifier.weight(1f)) {
+                                    sections.content()
+                                    sections.numbers()
+                                }
+                            }
+                        } else {
+                            sections.terms()
+                            sections.accounts()
+                            sections.content()
+                            sections.numbers()
+                        }
+                        QueryPreview(filters.query)
+                    }
+                    ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd))
+                }
+                Hairline()
+                Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    TextButton(onClick = { onChange { XAdvancedSearch() } }, enabled = filters.activeFilters.isNotEmpty()) {
+                        Text(stringResource(Res.string.home_filter_reset))
+                    }
+                    Spacer(Modifier.weight(1f))
+                    TextButton(onClick = onDismiss) { Text(stringResource(Res.string.discover_cancel)) }
+                    Spacer(Modifier.width(8.dp))
+                    Button(onClick = onApply) {
+                        Icon(Icons.Filled.Search, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Text(stringResource(Res.string.discover_search), modifier = Modifier.padding(start = 8.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** The phone's advanced search: the whole screen, the filters in one column, Search at its foot. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PhoneAdvancedSearch(
     filters: XAdvancedSearch,
     onChange: ((XAdvancedSearch) -> XAdvancedSearch) -> Unit,
     onApply: () -> Unit,
@@ -175,8 +317,9 @@ internal fun AdvancedSearchDialog(
                     },
                     title = { Text(stringResource(Res.string.discover_advanced_search)) },
                     actions = {
-                        IconTip(stringResource(Res.string.discover_clear)) { IconButton(onClick = { onChange { XAdvancedSearch() } }, enabled = filters.activeFilters.isNotEmpty()) {
-                            Icon(Icons.Filled.Refresh, stringResource(Res.string.discover_clear))
+                        val reset = stringResource(Res.string.home_filter_reset)
+                        IconTip(reset) { IconButton(onClick = { onChange { XAdvancedSearch() } }, enabled = filters.activeFilters.isNotEmpty()) {
+                            Icon(Icons.Filled.Refresh, reset)
                         } }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -186,26 +329,12 @@ internal fun AdvancedSearchDialog(
         ) { padding ->
             // A form in the reading column's width, centred in a wide window, as the settings pages are.
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
+                val sections = formSections(filters, onChange, onApply)
                 Column(Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp).fillMaxSize().verticalScroll(rememberScrollState())) {
-                    Section(DiscoverIcons.TextFields, Res.string.discover_search_term) {
-                        listOf(Filter.ALL_WORDS, Filter.EXACT_PHRASE, Filter.ANY_WORDS, Filter.NONE_WORDS, Filter.HASHTAGS).forEach { filter ->
-                            TextFilter(filters, filter, onChange, onApply)
-                        }
-                        LanguageField(filters.language) { code -> onChange { it.copy(language = code) } }
-                    }
-                    Section(DiscoverIcons.AlternateEmail, Res.string.discover_accounts) {
-                        listOf(Filter.FROM_ACCOUNTS, Filter.TO_ACCOUNTS, Filter.MENTIONING_ACCOUNTS).forEach { filter ->
-                            TextFilter(filters, filter, onChange, onApply)
-                        }
-                    }
-                    Section(DiscoverIcons.PermMedia, Res.string.discover_content_filter) { ContentFilters(filters, onChange) }
-                    Section(DiscoverIcons.Tune, Res.string.discover_filters) {
-                        listOf(Filter.MIN_REPLIES, Filter.MIN_LIKES, Filter.MIN_RETWEETS).forEach { filter ->
-                            TextFilter(filters, filter, onChange, onApply, number = true)
-                        }
-                        DateRow(stringResource(Res.string.discover_since), filters.since) { day -> onChange { it.copy(since = day) } }
-                        DateRow(stringResource(Res.string.discover_until), filters.until) { day -> onChange { it.copy(until = day) } }
-                    }
+                    sections.terms()
+                    sections.accounts()
+                    sections.content()
+                    sections.numbers()
                     QueryPreview(filters.query)
                     Spacer(Modifier.height(8.dp))
                 }
@@ -231,8 +360,13 @@ private fun ContentFilters(filters: XAdvancedSearch, onChange: ((XAdvancedSearch
     Choices(Inclusion.entries.map { it to filterLabel(SearchFilters.linksLabel(it)) }, filters.links) { links ->
         onChange { it.copy(links = links) }
     }
-    ToggleRow(stringResource(Res.string.discover_include_reposts), filters.includeReposts) { on -> onChange { it.withIncludeReposts(on) } }
-    ToggleRow(stringResource(Res.string.discover_hide_retweets), filters.excludeRetweets) { on -> onChange { it.withExcludeRetweets(on) } }
+    // Reposts as chips too, as the rows above: one of the two, or neither (X's own way), a second click taking it back.
+    Toggles(
+        listOf(
+            Triple(stringResource(Res.string.discover_include_reposts), filters.includeReposts) { on: Boolean -> onChange { it.withIncludeReposts(on) } },
+            Triple(stringResource(Res.string.discover_hide_retweets), filters.excludeRetweets) { on: Boolean -> onChange { it.withExcludeRetweets(on) } },
+        ),
+    )
 }
 
 @Composable
@@ -244,13 +378,14 @@ private fun Section(icon: ImageVector, title: StringResource, content: @Composab
         }
         content()
         Spacer(Modifier.height(8.dp))
-        Hairline()
+        // The phone's full-screen form parts its sections with lines; the desktop's dialog by its section titles alone.
+        if (!isDesktop) Hairline()
     }
 }
 
 /**
  * A filter typed in, with a cross that empties it; the minimums take digits
- * only. Enter searches with the filters as they are ([onApply]), as Enter in
+ * only. Esc empties it before it closes the form ([escapeClears]). Enter searches with the filters as they are ([onApply]), as Enter in
  * a search field does; Tab goes on to the next field. The cross is the
  * pointer's: neither Tab nor Enter stops on it, so Enter never erases what
  * was typed.
@@ -262,6 +397,7 @@ private fun TextFilter(
     onChange: ((XAdvancedSearch) -> XAdvancedSearch) -> Unit,
     onApply: () -> Unit,
     number: Boolean = false,
+    modifier: Modifier = Modifier,
 ) {
     val value = filters.textOf(filter)
     OutlinedTextField(
@@ -281,7 +417,7 @@ private fun TextFilter(
         keyboardOptions = KeyboardOptions(keyboardType = if (number) KeyboardType.Number else KeyboardType.Text, imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = { onApply() }),
         shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp).escapeClears(value) { onChange { it.cleared(filter) } },
     )
 }
 
@@ -351,19 +487,14 @@ private fun <T> Choices(options: List<Pair<T, String>>, selected: T, onSelect: (
     }
 }
 
+/** Chips each turned on or off by a click, wrapping as [Choices] do: [toggles] are each label, whether it is on, and what turns it. */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ToggleRow(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .heightIn(min = 52.dp)
-            .toggleable(value = checked, role = Role.Switch, onValueChange = onChange)
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Text(label, modifier = Modifier.weight(1f))
-        Switch(checked = checked, onCheckedChange = null, colors = xSwitchColors())
+private fun Toggles(toggles: List<Triple<String, Boolean, (Boolean) -> Unit>>) {
+    FlowRow(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        toggles.forEach { (label, on, turn) ->
+            FlatFilterChip(selected = on, onClick = { turn(!on) }, label = { Text(label) })
+        }
     }
 }
 
