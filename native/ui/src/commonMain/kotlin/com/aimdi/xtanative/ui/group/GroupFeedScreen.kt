@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.feed.ContentFilter
 import com.aimdi.xtanative.core.feed.FeedSort
+import com.aimdi.xtanative.ui.common.edgeFade
+import com.aimdi.xtanative.ui.common.wheelScrollsSideways
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.InBarColumn
@@ -261,8 +263,9 @@ private fun ControlBar(
 ) {
     // Under the bar, in the column its contents and the posts stand in.
     InBarColumn {
+        val scroll = rememberScrollState()
         Row(
-            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp),
+            Modifier.fillMaxWidth().wheelScrollsSideways(scroll).edgeFade(scroll).horizontalScroll(scroll).padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

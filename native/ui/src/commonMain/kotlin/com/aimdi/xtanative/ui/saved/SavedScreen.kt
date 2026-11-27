@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -80,7 +81,9 @@ import com.aimdi.xtanative.ui.common.SearchField
 import com.aimdi.xtanative.ui.common.ReadingColumn
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.TopBarBack
+import com.aimdi.xtanative.ui.common.edgeFade
 import com.aimdi.xtanative.ui.common.onSecondaryClick
+import com.aimdi.xtanative.ui.common.wheelScrollsSideways
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -451,7 +454,11 @@ private fun FilterButton(menu: SavedFilterMenu, sort: SavedSort, mediaOnly: Bool
     }
 }
 
-/** The chips under the search: the network picker and a rule, the tabs, and a dashed + for a new folder. */
+/**
+ * The chips under the search: the network picker and a rule, the tabs, and a
+ * + for a new folder, kept in reach after them. Where the chips overflow, the
+ * mouse wheel scrolls them and the cut end fades.
+ */
 @Composable
 private fun ChipRow(
     chips: List<SavedChip>,
@@ -463,35 +470,37 @@ private fun ChipRow(
     onFolderMenu: (SavedFolder) -> Unit,
     onNewFolder: () -> Unit,
 ) {
-    LazyRow(
-        Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (source != null) {
-            item(key = "source") { SourcePicker(source, onSource) }
-            item(key = "rule") { VerticalDivider(Modifier.height(24.dp), color = MaterialTheme.colorScheme.outlineVariant) }
+    val row = rememberLazyListState()
+    Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        LazyRow(
+            Modifier.weight(1f).wheelScrollsSideways(row).edgeFade(row),
+            state = row,
+            contentPadding = PaddingValues(start = 16.dp, end = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (source != null) {
+                item(key = "source") { SourcePicker(source, onSource) }
+                item(key = "rule") { VerticalDivider(Modifier.height(24.dp), color = MaterialTheme.colorScheme.outlineVariant) }
+            }
+            items(chips, key = { it.token }) { chip ->
+                val selected = chip.token == tab
+                TabChip(
+                    label = chipLabel(chip),
+                    selected = selected,
+                    trailing = if (selected && chip.token == SavedTabs.FAVORITES) {
+                        if (likesByGroup) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown
+                    } else {
+                        null
+                    },
+                    onClick = { onSelect(chip.token) },
+                    onLongClick = chip.folder?.let { folder -> { onFolderMenu(folder) } },
+                )
+            }
         }
-        items(chips, key = { it.token }) { chip ->
-            val selected = chip.token == tab
-            TabChip(
-                label = chipLabel(chip),
-                selected = selected,
-                trailing = if (selected && chip.token == SavedTabs.FAVORITES) {
-                    if (likesByGroup) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown
-                } else {
-                    null
-                },
-                onClick = { onSelect(chip.token) },
-                onLongClick = chip.folder?.let { folder -> { onFolderMenu(folder) } },
-            )
-        }
-        item(key = "new") {
-            IconTip(stringResource(Res.string.saved_new_folder)) { IconButton(onClick = onNewFolder) {
-                Icon(Icons.Filled.Add, stringResource(Res.string.saved_new_folder), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
-            } }
-        }
+        IconTip(stringResource(Res.string.saved_new_folder)) { IconButton(onClick = onNewFolder) {
+            Icon(Icons.Filled.Add, stringResource(Res.string.saved_new_folder), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+        } }
     }
 }
 
