@@ -216,10 +216,9 @@ class SettingsPanesTest {
     }
 
     @Test
-    fun thePluginStoreOpensItsOwnScreen() {
-        assertFalse(SettingsPanes.showsBeside(SettingsPanes.PLUGIN_STORE))
-        assertTrue(SettingsPanes.showsBeside(SettingsSection.DATA.id))
-        assertTrue(SettingsPanes.showsBeside(SettingsPanes.ABOUT))
+    fun thePluginStoreStandsBesideTheListAsASectionDoes() {
+        assertEquals(SettingsPanes.PLUGIN_STORE, SettingsPanes.shown(SettingsPanes.PLUGIN_STORE))
+        assertEquals(SettingsPanes.PLUGIN_STORE, SettingsPanes.marked(SettingsPanes.PLUGIN_STORE))
     }
 
     @Test

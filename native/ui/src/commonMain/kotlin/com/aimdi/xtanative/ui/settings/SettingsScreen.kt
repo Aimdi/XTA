@@ -167,16 +167,21 @@ private fun SettingsHome(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, sna
     ) { onOpen(SettingsRoutes.PLUGINS) }
     SettingsDivider()
     SectionRow(SettingsSection.DATA, onOpen)
-    Row(
-        Modifier.fillMaxWidth().clickable { advanced = !advanced }.padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(Icons.Outlined.Build, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-        Spacer(Modifier.width(16.dp))
-        Text(stringResource(Res.string.settings_advanced), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-        Icon(if (advanced) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, null)
+    // On the desktop listed as the two panes' list has them, at any width; a phone folds them away.
+    if (isDesktop) {
+        SettingsSection.advanced.forEach { SectionRow(it, onOpen) }
+    } else {
+        Row(
+            Modifier.fillMaxWidth().clickable { advanced = !advanced }.padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Outlined.Build, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.width(16.dp))
+            Text(stringResource(Res.string.settings_advanced), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+            Icon(if (advanced) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, null)
+        }
+        if (advanced) SettingsSection.advanced.forEach { SectionRow(it, onOpen) }
     }
-    if (advanced) SettingsSection.advanced.forEach { SectionRow(it, onOpen) }
     SettingsHeader(stringResource(Res.string.settings_app_info))
     AboutRows(onOpen, onIntroAgain, snackbar, vm)
 }

@@ -15,7 +15,7 @@ object SettingsPanes {
     /** The list's row for App info, which is no section of its own: the settings home's last rows, as a page. */
     const val ABOUT = "about"
 
-    /** The list's row for the plugin store, which opens its own screen rather than showing beside the list. */
+    /** The list's row for the plugin store, shown beside the list as the sections are. */
     const val PLUGIN_STORE = "plugin-store"
 
     /** Whether Settings stands in two panes: on the desktop, in a place [widthDp] wide. */
@@ -24,9 +24,6 @@ object SettingsPanes {
     /** The list's rows in their order: the settings home's sections, the plugin store among them, then App info. */
     val rows: List<String> = SettingsSection.everyday.map { it.id } + SettingsSection.ACCOUNT.id + PLUGIN_STORE + SettingsSection.DATA.id +
         SettingsSection.advanced.map { it.id } + ABOUT
-
-    /** Whether picking row [id] shows it beside the list: all but the plugin store. */
-    fun showsBeside(id: String): Boolean = id != PLUGIN_STORE
 
     /** The row ↑ ([by] -1) or ↓ (1) from [from]; null at either end, or from no row of the list. */
     fun step(from: String?, by: Int): String? {
@@ -45,7 +42,14 @@ object SettingsPanes {
     }
 
     /** What is shown beside the list at first, or after [saved]: a page it can show, else General. */
-    fun shown(saved: String?): String = saved?.takeIf { SettingsSection.of(it) != null || it == ABOUT } ?: SettingsSection.GENERAL.id
+    fun shown(saved: String?): String = saved?.takeIf { SettingsSection.of(it) != null || it == ABOUT || it == PLUGIN_STORE } ?: SettingsSection.GENERAL.id
+
+    /**
+     * The page last shown beside the list while the app runs: Settings opens
+     * on it again however it is opened (the frame's row, Ctrl+comma, a menu),
+     * as a desktop's settings window keeps its place.
+     */
+    var last: String? = null
 
     /** The page and control a route opens beside the list ([SettingsRoutes.section], Read aloud's); null for a screen of its own. */
     fun target(route: String): PaneTarget? {

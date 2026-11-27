@@ -1,23 +1,18 @@
 package com.aimdi.xtanative.ui.settings
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -38,12 +33,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.InputMode
 import androidx.compose.ui.input.key.Key
@@ -69,6 +62,10 @@ import com.aimdi.xtanative.ui.generated.resources.settings_search
 import com.aimdi.xtanative.ui.generated.resources.settings_title
 import com.aimdi.xtanative.ui.home.LocalBesideList
 import com.aimdi.xtanative.ui.home.LocalDesktopActions
+import com.aimdi.xtanative.ui.home.NavRowFrame
+import com.aimdi.xtanative.ui.home.NavRowLook
+import com.aimdi.xtanative.ui.pluginstore.PluginRoutes
+import com.aimdi.xtanative.ui.pluginstore.PluginStoreScreen
 import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -79,8 +76,9 @@ import org.jetbrains.compose.resources.stringResource
  * list of its sections at the start, the section picked standing beside
  * them, as a desktop's settings window. ↑ and ↓ walk the list, showing each
  * section as they reach it; Enter or Tab goes into the section, Esc there
- * back to its row. What a section opens that is no section (Backup, the
- * plugin store, an account's sign-in) is pushed as on a phone ([onOpen]).
+ * back to its row; the plugin store stands there as a section does. What a
+ * section opens that is no section (Backup, a plugin, an account's sign-in)
+ * is pushed as on a phone ([onOpen]).
  */
 @Composable
 internal fun SettingsTwoPanes(
@@ -92,7 +90,7 @@ internal fun SettingsTwoPanes(
     onIntroAgain: () -> Unit,
     onStartOver: () -> Unit,
 ) {
-    var picked by rememberSaveable { mutableStateOf<String?>(null) }
+    var picked by rememberSaveable { mutableStateOf(SettingsPanes.last) }
     var focus by remember { mutableStateOf<String?>(null) }
     val shown = SettingsPanes.shown(picked)
     val marked = SettingsPanes.marked(shown)
@@ -102,6 +100,7 @@ internal fun SettingsTwoPanes(
 
     fun show(id: String, control: String? = null) {
         picked = id
+        SettingsPanes.last = id
         focus = control
     }
 
@@ -110,7 +109,7 @@ internal fun SettingsTwoPanes(
         val target = SettingsPanes.target(route)
         if (target != null) show(target.id, target.focus) else onOpen(route)
     }
-    val pick: (String) -> Unit = { id -> if (SettingsPanes.showsBeside(id)) show(id) else onOpen(SettingsRoutes.PLUGINS) }
+    val pick: (String) -> Unit = { id -> show(id) }
     // The keys move the focus here themselves, so Compose is told the keyboard is in use, as its own Tab does: after a
     // click on a row it holds the pointer's mode and drops the focus from the next row's lighting, which showed no ring.
     val modes = LocalInputModeManager.current
@@ -143,7 +142,7 @@ internal fun SettingsTwoPanes(
                 if (down && !event.isShiftPressed) {
                     SettingsPanes.step(id, if (event.key == Key.DirectionDown) 1 else -1)?.let { next ->
                         toRow(next)
-                        if (SettingsPanes.showsBeside(next)) show(next)
+                        show(next)
                     }
                 }
                 !event.isShiftPressed
@@ -151,7 +150,7 @@ internal fun SettingsTwoPanes(
             Key.Enter, Key.NumPadEnter -> {
                 if (down) {
                     pick(id)
-                    if (SettingsPanes.showsBeside(id)) intoPane()
+                    intoPane()
                 }
                 true
             }
@@ -202,6 +201,8 @@ internal fun SettingsTwoPanes(
                 key(shown) {
                     if (shown == SettingsPanes.ABOUT) {
                         AboutPage(vm, onBack, onOpen, onIntroAgain)
+                    } else if (shown == SettingsPanes.PLUGIN_STORE) {
+                        PluginStoreScreen(onBack, onOpen = { id -> onOpen(PluginRoutes.client(id)) }, onSettings = { id -> onOpen(PluginRoutes.settings(id)) })
                     } else {
                         SettingsSectionScreen(shown, focus, onBack = paneBack, onOpen = open, onStartOver = onStartOver)
                     }
@@ -230,30 +231,25 @@ private fun SectionList(marked: String, rows: Map<String, FocusRequester>, keys:
                 else -> stringResource(Res.string.settings_app_info) to GroupIcons.InfoOutline
             }
             PaneRow(
-                title, icon, marked = id == marked, opensScreen = !SettingsPanes.showsBeside(id),
+                title, icon, marked = id == marked,
                 modifier = Modifier.focusRequester(rows.getValue(id)).onPreviewKeyEvent { keys(id, it) },
             ) { pick(id) }
         }
     }
 }
 
-/** One row of the list: a section's icon and title, filled while its page stands beside the list; [opensScreen] for one that opens a screen of its own. */
+/**
+ * One row of the list: a section's icon and title, lit as the frame's own
+ * column lights the place shown ([NavRowFrame]: the accent and a bold title
+ * while its page stands beside the list), the pointer only a faint wash and
+ * the keyboard's focus a ring, so neither passes for the row picked.
+ */
 @Composable
-private fun PaneRow(title: String, icon: ImageVector, marked: Boolean, opensScreen: Boolean, modifier: Modifier, onClick: () -> Unit) {
+private fun PaneRow(title: String, icon: ImageVector, marked: Boolean, modifier: Modifier, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
-    val text = if (marked) colors.onSecondaryContainer else colors.onSurface
-    Row(
-        Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 1.dp).clip(RoundedCornerShape(12.dp))
-            .background(if (marked) colors.secondaryContainer else Color.Transparent)
-            .then(modifier)
-            .clickable(onClick = onClick)
-            .heightIn(min = 44.dp).padding(horizontal = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(icon, null, tint = if (marked) text else colors.onSurfaceVariant, modifier = Modifier.size(22.dp))
-        Spacer(Modifier.width(14.dp))
-        Text(title, style = MaterialTheme.typography.bodyLarge, color = text, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
-        if (opensScreen) Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null, tint = colors.onSurfaceVariant)
+    NavRowFrame(marked, onClick, modifier.padding(vertical = 1.dp), shape = RoundedCornerShape(12.dp), minHeight = 44.dp) {
+        Icon(icon, null, tint = if (marked) colors.primary else colors.onSurfaceVariant, modifier = Modifier.size(22.dp))
+        Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = NavRowLook.weight(marked), maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
     }
 }
 
