@@ -9,20 +9,24 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.IconTip
+import com.aimdi.xtanative.ui.common.RingedFocus
 import com.aimdi.xtanative.ui.common.TipText
+import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.discover_clear_recent_searches
 import com.aimdi.xtanative.ui.generated.resources.discover_delete
@@ -34,6 +38,8 @@ import org.jetbrains.compose.resources.stringResource
  * with a tap or taken away with its cross, and a button clearing them all.
  * Nothing shows while there are none. The one [highlighted] from the
  * search field's keys ([pickedFromRecent]) shows selected, scrolled into view.
+ * On the desktop Tab reaches each chip, its cross and the clear button in
+ * turn, each with the keyboard's ring; Enter or Space does what a click does.
  */
 @Composable
 fun RecentSearchesBar(
@@ -57,19 +63,26 @@ fun RecentSearchesBar(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             itemsIndexed(queries, key = { _, query -> query }) { index, query ->
-                InputChip(
-                    selected = index == highlighted,
-                    onClick = { onSelect(query) },
-                    label = { TipText(query, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                    leadingIcon = { Icon(DiscoverIcons.History, contentDescription = recent, modifier = Modifier.size(18.dp)) },
-                    trailingIcon = {
-                        Icon(
-                            Icons.Filled.Close,
-                            contentDescription = delete,
-                            modifier = Modifier.size(18.dp).clickable { onRemove(query) },
-                        )
-                    },
-                )
+                RingedFocus {
+                    InputChip(
+                        selected = index == highlighted,
+                        onClick = { onSelect(query) },
+                        label = { TipText(query, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        leadingIcon = { Icon(DiscoverIcons.History, contentDescription = recent, modifier = Modifier.size(18.dp)) },
+                        trailingIcon = {
+                            Icon(
+                                Icons.Filled.Close,
+                                contentDescription = delete,
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .keyboardFocusRing(outset = 3.dp)
+                                    .clip(CircleShape)
+                                    .clickable(role = Role.Button, onClickLabel = delete) { onRemove(query) },
+                            )
+                        },
+                        modifier = Modifier.keyboardFocusRing(outset = 2.dp),
+                    )
+                }
             }
         }
         IconTip(stringResource(Res.string.discover_clear_recent_searches)) { IconButton(onClick = onClear) {

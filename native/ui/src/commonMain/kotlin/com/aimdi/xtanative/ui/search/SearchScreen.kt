@@ -169,9 +169,10 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
         )
     }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
+    // The bar stands in the page's column rather than in the scaffold's top bar: Tab goes from the field and the
+    // tabs on to the recent searches under them, rather than past them (a scaffold's body comes first to Tab).
+    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+        Column(Modifier.fillMaxSize()) {
             SearchHeader(
                 hasQuery = state.view.hasQuery,
                 query = state.view.query,
@@ -181,9 +182,6 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
                 onBack = onBack,
                 field = searchField,
             )
-        },
-    ) { padding ->
-        Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             Formats.handleOf(field.text)?.let { handle -> GoToRow(handle) { actions.openProfile(handle) } }
             if (!state.view.hasQuery) {
                 RecentSearchesBar(
