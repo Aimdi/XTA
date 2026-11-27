@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.chrome
 
+import com.aimdi.xtanative.ui.links.LaunchPlace
 import java.io.File
 import java.io.IOException
 import java.net.StandardProtocolFamily
@@ -52,12 +53,18 @@ sealed interface InstanceMessage {
         override val line: String = "$FILE$path"
     }
 
+    /** Show [place] (Saved, the settings, the deck), as the desktop entry's actions ask, and bring the window forward. */
+    data class Show(val place: LaunchPlace) : InstanceMessage {
+        override val line: String = "$SHOW${place.key}"
+    }
+
     /** Whether a copy too old to know this message is asked to raise its window instead: all but a [Hello], which leaves it alone. */
     val raisesWhenUnknown: Boolean get() = this !is Hello && this !is Raise
 
     companion object {
         private const val OPEN = "open "
         private const val FILE = "file "
+        private const val SHOW = "show "
 
         /** The longest link a later start hands over; anything longer is no link a reader typed or clicked. */
         const val MAX_URL = 4_096
@@ -70,6 +77,7 @@ sealed interface InstanceMessage {
                 text == Hello.line -> Hello
                 text.startsWith(OPEN) -> link(text.removePrefix(OPEN))?.let(::Open)
                 text.startsWith(FILE) -> path(text.removePrefix(FILE))?.let(::OpenFile)
+                text.startsWith(SHOW) -> LaunchPlace.of(text.removePrefix(SHOW))?.let(::Show)
                 else -> null
             }
         }

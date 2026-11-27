@@ -98,9 +98,11 @@ import com.aimdi.xtanative.ui.importer.OpenedFileDialogs
 import com.aimdi.xtanative.ui.intro.IntroFlow
 import com.aimdi.xtanative.ui.intro.IntroScreen
 import com.aimdi.xtanative.ui.links.BindLinkScreens
+import com.aimdi.xtanative.ui.links.LaunchPlace
 import com.aimdi.xtanative.ui.links.LinkBrowserScreen
 import com.aimdi.xtanative.ui.links.LinkScreens
 import com.aimdi.xtanative.ui.links.LocalLinks
+import com.aimdi.xtanative.ui.links.OpenRequests
 import com.aimdi.xtanative.ui.media.Galleries
 import com.aimdi.xtanative.ui.media.GalleryViewer
 import com.aimdi.xtanative.ui.media.ImageViewer
@@ -511,8 +513,20 @@ fun XtaNativeRoot() {
                 }
             }
         }
-        // A file opened with the app (a backup, an OPML list) is asked about first.
-        if (secondary == null && screensUp) OpenedFileDialogs()
+        // `xta-native --saved`, `--settings` and `--deck` (the desktop entry's actions), as the column's rows open them;
+        // a file opened with the app (a backup, an OPML list) is asked about first.
+        if (secondary == null && screensUp) {
+            LaunchedEffect(nav, frameOpens) {
+                OpenRequests.shownPlaces.collect { place ->
+                    when (place) {
+                        LaunchPlace.SAVED -> frameOpens.open(HomeDestination.SAVED.route) { nav.push(Routes.SAVED) }
+                        LaunchPlace.DECK -> frameOpens.open(HomeDestination.DECK.route) { nav.push(Routes.DECK) }
+                        LaunchPlace.SETTINGS -> openSettings()
+                    }
+                }
+            }
+            OpenedFileDialogs()
+        }
         // Alt+Home goes back to Home, as a browser's goes to its home page, and to Home's start page there (not
         // Saved or another page last picked on its bar); nothing where Home is not below.
         val openHome = remember(nav) {

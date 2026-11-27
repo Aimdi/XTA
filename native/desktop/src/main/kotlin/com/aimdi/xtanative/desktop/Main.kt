@@ -117,10 +117,12 @@ fun main(args: Array<String>) {
     val link = InstanceMessage.linkIn(args)
     // A file named that is not there is no file to open: the start only raises the window, as before files were opened.
     val file = CommandLine.filesIn(args).firstOrNull { File(it).isFile }
+    val place = CommandLine.placeIn(args)
     val startHidden = "--minimized" in args
     // A start from the session's autostart leaves a copy already running as it is, shown or hidden in the tray.
     val asked = file?.let(InstanceMessage::OpenFile)
         ?: link?.let(InstanceMessage::Open)
+        ?: place?.let(InstanceMessage::Show)
         ?: if (startHidden) InstanceMessage.Hello else InstanceMessage.Raise
     val instance = SingleInstance.claim(files, asked) ?: exitProcess(0)
     // What the app prints is kept in its log too, once this start is the one that runs: from the menu, nothing reads the terminal.
@@ -131,6 +133,7 @@ fun main(args: Array<String>) {
     when (asked) {
         is InstanceMessage.OpenFile -> OpenRequests.file(asked.path)
         is InstanceMessage.Open -> DesktopIncomingLinks.hand(asked.url)
+        is InstanceMessage.Show -> OpenRequests.place(asked.place)
         else -> Unit
     }
     val raises = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
@@ -147,6 +150,7 @@ fun main(args: Array<String>) {
         when (message) {
             is InstanceMessage.Open -> DesktopIncomingLinks.hand(message.url)
             is InstanceMessage.OpenFile -> OpenRequests.file(message.path)
+            is InstanceMessage.Show -> OpenRequests.place(message.place)
             else -> Unit
         }
         raises.tryEmit(Unit)

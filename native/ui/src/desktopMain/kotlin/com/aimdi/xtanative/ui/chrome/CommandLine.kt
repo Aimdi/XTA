@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.chrome
 
+import com.aimdi.xtanative.ui.links.LaunchPlace
 import java.io.File
 import java.net.URI
 
@@ -18,8 +19,11 @@ object CommandLine {
     /** The option whose next argument (or `=` value) is a file to open: `--open <file>`. */
     const val OPEN = "--open"
 
+    /** The options that open a place of the app, as the desktop entry's actions start it. */
+    val places: Map<String, LaunchPlace> = LaunchPlace.entries.associateBy { "--" + it.key }
+
     /** The options a start knows; every other argument beginning with `-` is refused. */
-    val options: Set<String> = setOf("--help", "-h", "--version", "--minimized", "--verbose", OPEN)
+    val options: Set<String> = setOf("--help", "-h", "--version", "--minimized", "--verbose", OPEN) + places.keys
 
     /** The first argument of [args] that looks like an option but is none this app knows, or null; `--open`'s file is no option. */
     fun unknownOption(args: Array<String>): String? = args.withIndex().firstOrNull { (index, arg) ->
@@ -56,6 +60,9 @@ object CommandLine {
         return file?.toPath()?.normalize()?.toString()
     }
 
+    /** The place [args] ask for (`--saved`, `--settings`, `--deck`), the first one named; null for none. */
+    fun placeIn(args: Array<String>): LaunchPlace? = args.firstNotNullOfOrNull { places[it] }
+
     /** What the terminal is told for [option] before the usage, as getopt programs word it. */
     fun unknownLine(option: String): String = "xta-native: unknown option '$option'"
 
@@ -88,6 +95,8 @@ object CommandLine {
         |  FILE, --open FILE
         |                 an XTA backup to restore, or an OPML list of feeds to
         |                 follow, each asked first in the app's window
+        |  --saved, --settings, --deck
+        |                 open Saved, the settings or the deck
         |  --minimized    start hidden in the tray (with Settings > General >
         |                 Close to tray on, while a tray shows the icon)
         |  --verbose      also log the system's facts and every request the app

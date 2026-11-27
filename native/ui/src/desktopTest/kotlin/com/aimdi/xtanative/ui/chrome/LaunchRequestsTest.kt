@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.chrome
 
+import com.aimdi.xtanative.ui.links.LaunchPlace
 import java.io.File
 import java.nio.file.Files
 import java.util.concurrent.LinkedBlockingQueue
@@ -11,7 +12,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-/** Files a start asks for (`xta-native backup.json`, `--open`), and how they reach the copy running. */
+/** Files and places a start asks for (`xta-native backup.json`, `--open`, `--saved`), and how they reach the copy running. */
 class LaunchRequestsTest {
     private val cwd = File("/home/me/Downloads")
 
@@ -27,25 +28,30 @@ class LaunchRequestsTest {
     }
 
     @Test
-    fun openIsAKnownOption() {
+    fun openAndThePlacesAreKnownOptions() {
         assertEquals(CommandLine.Answer.RUN, CommandLine.answer(arrayOf("--open", "-odd.json")), "--open's file is no option")
-        assertEquals(CommandLine.Answer.RUN, CommandLine.answer(arrayOf("--open=a.json")))
+        assertEquals(CommandLine.Answer.RUN, CommandLine.answer(arrayOf("--open=a.json", "--saved", "--settings", "--deck")))
         assertEquals(CommandLine.Answer.UNKNOWN, CommandLine.answer(arrayOf("--opened", "a.json")))
-        listOf("--open", "FILE").forEach { assertTrue(it in CommandLine.usage, it) }
+        assertEquals(LaunchPlace.SAVED, CommandLine.placeIn(arrayOf("--verbose", "--saved", "--deck")))
+        assertNull(CommandLine.placeIn(arrayOf("https://x.com/saved")))
+        listOf("--open", "--saved", "--settings", "--deck", "FILE").forEach { assertTrue(it in CommandLine.usage, it) }
     }
 
     @Test
-    fun filesTravelAsLines() {
+    fun filesAndPlacesTravelAsLines() {
         val file = InstanceMessage.OpenFile("/home/me/a b.json")
         assertEquals(file, InstanceMessage.parse(file.line))
+        val show = InstanceMessage.Show(LaunchPlace.SETTINGS)
+        assertEquals(show, InstanceMessage.parse(show.line))
         assertNull(InstanceMessage.parse("file relative.json"), "only an absolute path")
         assertNull(InstanceMessage.parse("file /a\u0000b"))
-        assertTrue(file.raisesWhenUnknown)
+        assertNull(InstanceMessage.parse("show home"))
+        assertTrue(file.raisesWhenUnknown && show.raisesWhenUnknown)
         assertFalse(InstanceMessage.Hello.raisesWhenUnknown)
     }
 
     @Test
-    fun aSecondStartHandsTheFirstItsFile() {
+    fun aSecondStartHandsTheFirstItsFileAndPlace() {
         val folder = Files.createTempDirectory("xta-instance").toFile()
         val runtime = Files.createTempDirectory("xta-run").toFile()
         val first = assertNotNull(SingleInstance.claim(folder, InstanceMessage.Raise, runtime))
@@ -54,6 +60,8 @@ class LaunchRequestsTest {
         try {
             assertNull(SingleInstance.claim(folder, InstanceMessage.OpenFile("/tmp/feeds.opml"), runtime))
             assertEquals(InstanceMessage.OpenFile("/tmp/feeds.opml"), heard.poll(5, TimeUnit.SECONDS))
+            assertNull(SingleInstance.claim(folder, InstanceMessage.Show(LaunchPlace.DECK), runtime))
+            assertEquals(InstanceMessage.Show(LaunchPlace.DECK), heard.poll(5, TimeUnit.SECONDS))
         } finally {
             first.close()
         }

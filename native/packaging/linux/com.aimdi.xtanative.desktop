@@ -103,7 +103,7 @@ StartupWMClass=com-aimdi-xtanative-desktop-MainKt
 # One main window: a second start raises it (SingleInstance), so a menu offers no "New window".
 # The posts it opens in windows of their own come from inside the app, not from a launcher.
 SingleMainWindow=true
-Actions=new-search;
+Actions=new-search;saved;deck;settings;
 
 # X's search page, which the app opens as its own search with the field ready to type in.
 [Desktop Action new-search]
@@ -138,3 +138,101 @@ Name[zh_CN]=新搜索
 Name[zh_TW]=新搜尋
 Exec=xta-native https://x.com/search
 
+# Saved, the posts and notes kept on this computer.
+[Desktop Action saved]
+Name=Saved
+Name[ar]=المحفوظ
+Name[be]=Захаванае
+Name[be@latin]=Zachavanaje
+Name[ca]=Desat
+Name[cs]=Uloženo
+Name[de]=Archiv
+Name[eo]=Konservitaĵoj
+Name[es]=Guardado
+Name[et]=Salvestatud
+Name[eu]=Gordeak
+Name[fr]=Enregistré
+Name[hi]=सहेजा गया
+Name[id]=Disimpan
+Name[it]=Salvati
+Name[ja]=保存済み
+Name[ko]=저장됨
+Name[nb]=Lagret
+Name[nl]=Opgeslagen
+Name[pl]=Zapisane
+Name[pt]=Salvo
+Name[pt_BR]=Salvo
+Name[ro]=Salvat
+Name[ru]=Избранное
+Name[tr]=Kaydedilmiş
+Name[uk]=Збережено
+Name[vi]=Đã lưu
+Name[zh_CN]=已保存
+Name[zh_TW]=已儲存
+Exec=xta-native --saved
+
+# The deck: several timelines in columns side by side.
+[Desktop Action deck]
+Name=Deck
+Name[ar]=الأعمدة
+Name[be]=Калонкі
+Name[be@latin]=Kałonki
+Name[ca]=Deck
+Name[cs]=Sloupce
+Name[de]=Deck
+Name[eo]=Kolumnaro
+Name[es]=Deck
+Name[et]=Veerud
+Name[eu]=Zutabeak
+Name[fr]=Deck
+Name[hi]=कॉलम
+Name[id]=Kolom
+Name[it]=Deck
+Name[ja]=デッキ
+Name[ko]=덱
+Name[nb]=Kolonner
+Name[nl]=Deck
+Name[pl]=Kolumny
+Name[pt]=Deck
+Name[pt_BR]=Deck
+Name[ro]=Coloane
+Name[ru]=Колонки
+Name[tr]=Sütunlar
+Name[uk]=Колонки
+Name[vi]=Cột
+Name[zh_CN]=多栏
+Name[zh_TW]=多欄
+Exec=xta-native --deck
+
+# The settings, as Ctrl+, opens them.
+[Desktop Action settings]
+Name=Settings
+Name[ar]=الإعدادات
+Name[be]=Налады
+Name[be@latin]=Nalady
+Name[ca]=Configuració
+Name[cs]=Nastavení
+Name[de]=Einstellungen
+Name[eo]=Agordoj
+Name[es]=Configuración
+Name[et]=Seaded
+Name[eu]=Ezarpenak
+Name[fr]=Paramètres
+Name[hi]=सेटिंग
+Name[id]=Pengaturan
+Name[it]=Impostazioni
+Name[ja]=設定
+Name[ko]=설정
+Name[nb]=Innstillinger
+Name[nl]=Instellingen
+Name[pl]=Ustawienia
+Name[pt]=Definições
+Name[pt_BR]=Configurações
+Name[ro]=Setări
+Name[ru]=Настройки
+Name[tr]=Ayarlar
+Name[uk]=Налаштування
+Name[vi]=Cài đặt
+Name[zh_CN]=设置
+Name[zh_TW]=設定
+Exec=xta-native --settings
