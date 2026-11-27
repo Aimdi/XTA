@@ -45,6 +45,7 @@ import com.aimdi.xtanative.core.x.model.XLive
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.parse.XText
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.framedClickable
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -64,7 +65,10 @@ import com.aimdi.xtanative.ui.theme.edgeColor
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
-internal val EmbedShape = RoundedCornerShape(16.dp)
+/** The corners of a framed block in a post ([Embed]), in dp. */
+internal const val EMBED_RADIUS = 16f
+
+internal val EmbedShape = RoundedCornerShape(EMBED_RADIUS.dp)
 
 /** A frame around something a post carries, as XTA's TweetEmbedSurface draws it; [onClick] opens it. */
 @Composable
@@ -73,8 +77,9 @@ internal fun Embed(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null,
         modifier
             .fillMaxWidth()
             .clip(EmbedShape)
-            .border(Dp.Hairline, edgeColor(), EmbedShape)
-            .let { if (onClick != null) it.clickable(onClick = onClick) else it },
+            // The keyboard's ring drawn over the hairline, on the frame's edge.
+            .let { if (onClick != null) it.framedClickable(EMBED_RADIUS, onClick) else it }
+            .border(Dp.Hairline, edgeColor(), EmbedShape),
     ) { content() }
 }
 

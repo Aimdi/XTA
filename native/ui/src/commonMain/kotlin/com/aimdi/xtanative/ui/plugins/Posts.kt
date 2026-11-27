@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.data.plugins.keepable
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.framedClickable
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.HitArea
 import com.aimdi.xtanative.ui.common.RingedFocus
@@ -373,13 +374,13 @@ fun QuotedNetworkPost(post: NetworkPost, actions: NetworkPostActions, modifier: 
 @Composable
 private fun QuotedNetworkPost(post: NetworkPost, actions: NetworkPostActions, modifier: Modifier, extras: NetworkPostExtras) {
     var revealed by rememberSaveable(post.id, post.revision) { mutableStateOf(false) }
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(QUOTE_RADIUS.dp)
     Column(
         modifier
             .fillMaxWidth()
             .clip(shape)
+            .framedClickable(QUOTE_RADIUS) { actions.open(post) }
             .border(Dp.Hairline, edgeColor(), shape)
-            .clickable { actions.open(post) }
             .padding(12.dp),
     ) {
         TipText(post.authorName, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -677,3 +678,6 @@ private const val MAX_INDENT = 4
 
 /** XTA's quotes show six lines of their text. */
 private const val QUOTE_LINES = 6
+
+/** A quoted post's corners, in dp. */
+private const val QUOTE_RADIUS = 16f

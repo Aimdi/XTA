@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.common
 
 import androidx.compose.foundation.IndicationNodeFactory
 import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.HoverInteraction
@@ -68,6 +69,14 @@ internal object RowHighlight {
         return Block(side, end, w, h, minOf(RADIUS, w / 2, h / 2))
     }
 
+    /**
+     * The lit shape of a framed block [width] × [height] dp (a quoted post,
+     * its edge rounded by [radius]): its own bounds and corners, so the
+     * keyboard's ring lies on its edge, not a second, smaller frame inside it.
+     */
+    fun framed(width: Float, height: Float, radius: Float): Block =
+        Block(0f, 0f, width.coerceAtLeast(0f), height.coerceAtLeast(0f), minOf(radius, width / 2, height / 2).coerceAtLeast(0f))
+
     /** The wash's strength: a press over the pointer resting on it, nothing for a focus alone (the ring shows that). */
     fun alpha(hovered: Boolean, pressed: Boolean): Float = when {
         pressed -> PRESS
@@ -89,16 +98,20 @@ internal class RowIndication(
     private val ring: Color,
     private val keyboard: State<Boolean>,
     private val tab: Boolean = false,
+    private val frame: Float? = null,
 ) : IndicationNodeFactory {
-    override fun create(interactionSource: InteractionSource): DelegatableNode = RowNode(interactionSource, wash, ring, keyboard, tab)
+    override fun create(interactionSource: InteractionSource): DelegatableNode = RowNode(interactionSource, wash, ring, keyboard, tab, frame)
 
     /** The same lighting for a tab ([XtaTab]): inset at its sides too, as narrow as a page's tabs are. */
     fun forTab(): RowIndication = RowIndication(wash, ring, keyboard, tab = true)
 
-    override fun equals(other: Any?): Boolean =
-        other is RowIndication && other.wash == wash && other.ring == ring && other.keyboard === keyboard && other.tab == tab
+    /** The same lighting for a framed block whose corners are [radius] dp ([RowHighlight.framed]): its ring on the frame. */
+    fun framed(radius: Float): RowIndication = RowIndication(wash, ring, keyboard, frame = radius)
 
-    override fun hashCode(): Int = ((wash.hashCode() * 31 + ring.hashCode()) * 31 + keyboard.hashCode()) * 31 + tab.hashCode()
+    override fun equals(other: Any?): Boolean =
+        other is RowIndication && other.wash == wash && other.ring == ring && other.keyboard === keyboard && other.tab == tab && other.frame == frame
+
+    override fun hashCode(): Int = (((wash.hashCode() * 31 + ring.hashCode()) * 31 + keyboard.hashCode()) * 31 + tab.hashCode()) * 31 + frame.hashCode()
 }
 
 private class RowNode(
@@ -107,6 +120,7 @@ private class RowNode(
     private val ring: Color,
     private val keyboard: State<Boolean>,
     private val tab: Boolean,
+    private val frame: Float?,
 ) : Modifier.Node(), DrawModifierNode {
     private val hovers = mutableSetOf<HoverInteraction.Enter>()
     private val focuses = mutableSetOf<FocusInteraction.Focus>()
@@ -151,7 +165,7 @@ private class RowNode(
         val ringed = focuses.isNotEmpty() && keyboard.value
         if (alpha == 0f && !ringed) return
         val px = density
-        val block = RowHighlight.block(size.width / px, size.height / px, tab)
+        val block = frame?.let { RowHighlight.framed(size.width / px, size.height / px, it) } ?: RowHighlight.block(size.width / px, size.height / px, tab)
         val topLeft = Offset(block.left * px, block.top * px)
         val shape = Size(block.width * px, block.height * px)
         if (shape.minDimension <= 0f) return
@@ -210,4 +224,16 @@ internal fun XtaTab(
             interactionSource = interactions,
         )
     }
+}
+
+/**
+ * A click on a framed block (a quoted post) whose corners are [radius] dp,
+ * lit on its own frame where the platform lights rows ([RowIndication.framed]):
+ * the keyboard's ring is its edge, not a second frame inside it.
+ */
+@Composable
+internal fun Modifier.framedClickable(radius: Float, onClick: () -> Unit): Modifier {
+    val indication = LocalIndication.current
+    val lit = remember(indication, radius) { (indication as? RowIndication)?.framed(radius) ?: indication }
+    return clickable(interactionSource = null, indication = lit, onClick = onClick)
 }

@@ -39,4 +39,10 @@ class RowHighlightTest {
         assertEquals(RowHighlight.HOVER, RowHighlight.alpha(hovered = true, pressed = false))
         assertEquals(0f, RowHighlight.alpha(hovered = false, pressed = false))
     }
+
+    @Test
+    fun aFramedBlockIsLitOnItsOwnEdgeWithItsCorners() {
+        assertEquals(RowHighlight.Block(0f, 0f, 600f, 120f, 16f), RowHighlight.framed(600f, 120f, 16f))
+        assertEquals(RowHighlight.Block(0f, 0f, 20f, 10f, 5f), RowHighlight.framed(20f, 10f, 16f))
+    }
 }
