@@ -9,6 +9,7 @@ import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import coil3.size.Dimension
 import coil3.size.Scale
+import java.io.IOException
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Canvas
 import org.jetbrains.skia.FilterMipmap
@@ -23,14 +24,16 @@ internal actual fun ComponentRegistry.Builder.addPlatformPictureDecoders() {
 
 /**
  * Decodes a picture as Coil's Skia decoder does, to the size its box asks
- * for, but shrinks it through Skia's mipmaps with linear filtering instead
- * of taking the nearest pixel. A picture it cannot draw that way is left to
- * Coil's own decoder.
+ * for, but shrinks it with linear filtering (through Skia's mipmaps below
+ * half its size) instead of taking the nearest pixel. A picture it cannot
+ * draw that way is left to Coil's own decoder; one past
+ * [PictureScaling.MOST_PIXELS] by its header is refused, never decoded.
  */
 internal class SmoothPictureDecoder(private val bytes: ByteArray, private val options: Options) : Decoder {
     override suspend fun decode(): DecodeResult? {
         val image = runCatching { Image.makeFromEncoded(bytes) }.getOrNull() ?: return null
         return try {
+            if (!PictureScaling.decodable(image.width, image.height)) throw IOException("Picture of ${image.width}x${image.height} pixels is too large")
             smooth(image)
         } catch (_: RuntimeException) {
             null
@@ -55,7 +58,7 @@ internal class SmoothPictureDecoder(private val bytes: ByteArray, private val op
                     image,
                     Rect.makeWH(image.width.toFloat(), image.height.toFloat()),
                     Rect.makeWH(width.toFloat(), height.toFloat()),
-                    FilterMipmap(FilterMode.LINEAR, MipmapMode.LINEAR),
+                    FilterMipmap(FilterMode.LINEAR, if (PictureScaling.mipmapped(image.width, image.height, width, height)) MipmapMode.LINEAR else MipmapMode.NONE),
                     null,
                     true,
                 )

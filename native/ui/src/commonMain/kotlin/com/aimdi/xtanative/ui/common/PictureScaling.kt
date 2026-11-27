@@ -17,6 +17,25 @@ internal object PictureScaling {
     const val LONGEST_SIDE = 4096
 
     /**
+     * A picture of more pixels than this is not decoded at all: Skia decodes
+     * the whole picture before shrinking it, four bytes a pixel, so a crafted
+     * 30000 by 30000 one would take gigabytes. X's largest are 4096 square.
+     */
+    const val MOST_PIXELS = 64_000_000L
+
+    /** Whether a [width] by [height] picture, as its header gives it, is decoded. */
+    fun decodable(width: Int, height: Int): Boolean = width > 0 && height > 0 && width.toLong() * height <= MOST_PIXELS
+
+    /**
+     * Whether shrinking a [width] by [height] picture to [decodedWidth] by
+     * [decodedHeight] goes through mipmaps: only below half its size, where
+     * plain linear filtering would skip pixels. Above it they would cost a
+     * third more memory for nothing.
+     */
+    fun mipmapped(width: Int, height: Int, decodedWidth: Int, decodedHeight: Int): Boolean =
+        maxOf(decodedWidth.toDouble() / width, decodedHeight.toDouble() / height) < 0.5
+
+    /**
      * The size a [width] by [height] picture is decoded to for a box
      * [boxWidth] by [boxHeight] (0 for a side that is not bounded): shrunk
      * until it just covers the box ([fill], a cropped tile) or just fits in
