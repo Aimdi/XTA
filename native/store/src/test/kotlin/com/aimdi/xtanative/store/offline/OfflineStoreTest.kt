@@ -223,6 +223,19 @@ class OfflineStoreTest {
     }
 
     @Test
+    fun aLoadClearsTheManifestCopiesACrashLeftButNotOneBeingWritten() = timed {
+        store().keepArticle(article())
+        val hour = 60L * 60 * 1000
+        val left = File(library, ".manifest.json.4815162342.part").apply { writeText("{\"ver"); setLastModified(System.currentTimeMillis() - hour) }
+        val writing = File(library, ".manifest.json.777.part").apply { writeText("{"); setLastModified(System.currentTimeMillis() + hour) }
+        val cold = store()
+        cold.load()
+        assertFalse(left.exists())
+        assertTrue(writing.exists())
+        assertEquals(1, cold.state.value.entries.size)
+    }
+
+    @Test
     fun clearRemovesEveryCopyAndALoadClearsWhatACrashLeft() = timed {
         val model = store()
         model.keepArticle(article())

@@ -6,6 +6,7 @@ import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
+import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -21,7 +22,10 @@ class StoreFile(private val file: File) {
 
     /** The text, or null when nothing was written yet. */
     suspend fun read(): String? = mutex.withLock {
-        withContext(Dispatchers.IO) { file.takeIf { it.isFile }?.readText() }
+        withContext(Dispatchers.IO) {
+            file.sweepStagedOnce()
+            file.takeIf { it.isFile }?.readText()
+        }
     }
 
     suspend fun write(text: String) = mutex.withLock {
@@ -61,6 +65,7 @@ fun File.replaceWithCopyOf(source: File) = replaceThrough { out -> source.inputS
 
 private fun File.replaceThrough(write: (FileOutputStream) -> Unit) {
     val folder = absoluteFile.parentFile.apply { mkdirs() }
+    sweepStagedOnce()
     val partial = Files.createTempFile(folder.toPath(), ".$name.", ".part")
     try {
         FileOutputStream(partial.toFile()).use {
@@ -80,4 +85,29 @@ private fun moveOver(from: Path, to: Path) {
     } catch (_: AtomicMoveNotSupportedException) {
         Files.move(from, to, StandardCopyOption.REPLACE_EXISTING)
     }
+}
+
+/** Later than any staging file an earlier run left, earlier than any this run makes; the slack covers coarse file times. */
+private val thisRunStarted = System.currentTimeMillis() - 2_000
+
+private val sweptTargets: MutableSet<String> = ConcurrentHashMap.newKeySet()
+
+/** Per folder, the stale staging files found when this run first wrote or read there: one listing each, however many files it holds. */
+private val staleInFolder = ConcurrentHashMap<String, List<File>>()
+
+private val stagedName = Regex("^\\..+\\.[0-9]+\\.part$")
+
+/** Whether [file] is a [replaceWith] staging file an earlier run left behind when it stopped mid-write. */
+fun isStaleStagedWrite(file: File, before: Long = thisRunStarted): Boolean =
+    stagedName.matches(file.name) && file.isFile && file.lastModified() < before
+
+/** The first time this run touches this file: the staging files of its own an earlier run's crash left beside it go. */
+private fun File.sweepStagedOnce() {
+    val target = absoluteFile
+    val folder = target.parentFile ?: return
+    if (!sweptTargets.add(target.path)) return
+    val stale = staleInFolder.computeIfAbsent(folder.path) { folder.listFiles()?.filter { isStaleStagedWrite(it) }.orEmpty() }
+    if (stale.isEmpty()) return
+    val prefix = ".${target.name}."
+    stale.filter { it.name.startsWith(prefix) && it.name.removePrefix(prefix).removeSuffix(".part").all(Char::isDigit) }.forEach { it.delete() }
 }

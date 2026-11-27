@@ -45,4 +45,23 @@ class StoreFileTest {
         assertEquals(listOf("feed.json"), folder.list()!!.toList())
         folder.deleteRecursively()
     }
+
+    @Test
+    fun theFirstTouchOfAFileClearsTheStagingAnEarlierCrashLeftBesideIt() = runBlocking {
+        val folder = Files.createTempDirectory("swept").toFile()
+        val hour = 60L * 60 * 1000
+        fun staged(name: String, age: Long) = File(folder, name).apply { writeText("half"); setLastModified(System.currentTimeMillis() - age) }
+        val crashed = staged(".settings.json.123456789.part", hour)
+        val writing = staged(".settings.json.42.part", -hour)
+        val other = staged(".settings.json.bak.9.part", hour)
+        val notOurs = staged("settings.json.part", hour)
+        val feeds = staged(".feed.json.7.part", hour)
+        assertNull(StoreDir(folder).file("settings.json").read())
+        assertEquals(setOf(writing.name, other.name, notOurs.name, feeds.name), folder.list()!!.toSet())
+        File(folder, "feed.json").replaceWith("[]")
+        assertEquals(false, feeds.exists())
+        assertEquals(true, isStaleStagedWrite(other))
+        assertEquals(false, isStaleStagedWrite(notOurs))
+        folder.deleteRecursively()
+    }
 }

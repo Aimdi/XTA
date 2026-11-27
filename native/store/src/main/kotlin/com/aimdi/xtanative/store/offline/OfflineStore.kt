@@ -2,6 +2,7 @@ package com.aimdi.xtanative.store.offline
 
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.store.StoreDir
+import com.aimdi.xtanative.store.isStaleStagedWrite
 import com.aimdi.xtanative.store.downloads.MediaHttp
 import com.aimdi.xtanative.store.saved.sha256
 import java.io.File
@@ -281,13 +282,14 @@ class OfflineStore(
         OfflineArticle.fromJson(J.parse(file.readText()))?.takeIf { it.id == entry.id && it.bodyHtml.isNotBlank() }
     }.getOrNull()
 
-    /** Folders no entry names and staging left by a crash; the manifest's own file is left alone. */
+    /** Folders no entry names and staging left by a crash, the manifest's half-written copies too; the manifest itself is left alone. */
     private fun cleanOrphans(entries: List<OfflineEntry>) {
         val kept = entries.mapTo(HashSet()) { it.directory }
         root.listFiles()?.forEach { item ->
             when {
                 item.isDirectory && item.name !in kept -> item.deleteRecursively()
                 item.isFile && item.name.endsWith(".tmp") -> item.delete()
+                isStaleStagedWrite(item) -> item.delete()
             }
         }
     }
