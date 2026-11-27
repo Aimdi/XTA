@@ -49,11 +49,26 @@ class CrashScrubTest {
     }
 
     @Test
-    fun addressesKeepOnlyTheirHost() {
+    fun addressesKeepOnlyAKnownHost() {
         assertEquals(
-            "failed: https://x.com/[path] and http://example.org",
+            "failed: https://x.com/[path] and http://[host]",
             scrubbed("failed: https://me:pw@x.com/alice/status/1?ct0=abc&q=secret and http://example.org"),
         )
+        assertEquals(
+            "PROPFIND https://[host]/[path] failed; then https://pbs.twimg.com/[path] and https://api.github.com/[path]",
+            scrubbed("PROPFIND https://cloud.alice-home.de:8443/remote.php/dav/files/alice/ failed; then https://pbs.twimg.com/media/a.jpg and https://api.github.com/repos/a/b"),
+        )
+        assertEquals("https://[host]/[path]", scrubbed("https://x.com.evil.example/a"), "a known name inside another host is no known host")
+        assertEquals("wss://[host]", scrubbed("wss://192.168.178.68:2283"))
+        assertEquals("(see https://x.com:443) and (https://[host])", scrubbed("(see https://x.com:443) and (https://immich.alice.lan)"))
+    }
+
+    @Test
+    fun eMailAddressesGo() {
+        assertEquals("login as [email] refused", scrubbed("login as alice.smith+xta@mail.example.org refused"))
+        assertEquals("([email])", scrubbed("(bob@posteo.de)"))
+        assertEquals("no @[handle] and @[handle]", scrubbed("no @bob.bsky.social and @carol@mastodon.social"), "a fediverse handle stays a handle")
+        assertEquals("\tat java.base@17.0.21/java.lang.Thread.run(Thread.java:840)", scrubbed("\tat java.base@17.0.21/java.lang.Thread.run(Thread.java:840)"))
     }
 
     @Test
