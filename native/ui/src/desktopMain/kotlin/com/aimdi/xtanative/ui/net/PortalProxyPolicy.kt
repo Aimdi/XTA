@@ -6,7 +6,12 @@ import com.aimdi.xtanative.core.net.ProxyUrl
 import com.aimdi.xtanative.ui.media.mpris.DBusConnection
 import com.aimdi.xtanative.ui.media.mpris.DBusMessage
 import com.aimdi.xtanative.ui.media.mpris.DBusType
+import java.awt.EventQueue
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.concurrent.thread
 
 /**
  * The desktop's proxy settings, as its portal (org.freedesktop.portal.ProxyResolver)
@@ -22,6 +27,11 @@ import java.util.concurrent.ConcurrentHashMap
  * fail ([ProxyRoute.Unusable]) for the first [graceMs] rather than slip past
  * a proxy the desktop may set, then go straight. A bus that cannot be
  * reached is tried again later, ever less often, never given up on.
+ *
+ * [warm] asks once at start, off every request's thread, waiting the whole
+ * grace: while it waits, a request (never one on the window's thread, which
+ * is never held up by the portal) waits for its answer instead of failing,
+ * so a portal slow at login only delays the first requests.
  */
 class PortalProxyPolicy(
     private val connect: () -> DBusConnection?,
@@ -46,6 +56,9 @@ class PortalProxyPolicy(
     @Volatile
     private var firstMiss: Long? = null
 
+    private val warming = AtomicBoolean(false)
+    private val firstAnswer = CompletableFuture<ProxyRoute>()
+
     private var nextConnect = 0L
     private var connectWait = retryMs
 
@@ -53,16 +66,34 @@ class PortalProxyPolicy(
         val key = "${scheme.lowercase()}://${if (':' in host) "[$host]" else host}:$port"
         val now = clock()
         kept[key]?.takeIf { now < it.until }?.let { return it.route }
+        if (EventQueue.isDispatchThread()) return answered[key] ?: lastAnswer ?: unknown(key, now)
         val (route, keepMs) = lookup(key, now)?.let { answer(key, it) to cacheMs } ?: (unknown(key, now) to retryMs)
         if (kept.size > MAX_KEPT) kept.clear()
         kept[key] = Kept(route, now + keepMs)
         return route
     }
 
+    /**
+     * Asks the portal for X's address on a thread of its own, waiting up to
+     * the grace for its answer, so the first requests wait for it rather
+     * than fail. Once only, while nothing has answered yet.
+     */
+    fun warm(key: String = "https://x.com:443") {
+        if (lastAnswer != null || !warming.compareAndSet(false, true)) return
+        thread(isDaemon = true, name = "xta-proxy-portal") {
+            try {
+                lookup(key, clock(), graceMs)?.let { answer(key, it) }
+            } finally {
+                warming.set(false)
+                firstAnswer.complete(lastAnswer ?: ProxyRoute.Unusable)
+            }
+        }
+    }
+
     /** The portal's route for [uri]; null when it gave no answer to go by. */
-    private fun lookup(uri: String, now: Long): ProxyRoute? {
+    private fun lookup(uri: String, now: Long, waitMs: Long = timeoutMs): ProxyRoute? {
         val connection = connection(now) ?: return ProxyRoute.Direct
-        val reply = connection.call(PORTAL, PATH, IFACE, "Lookup", "s", listOf(uri), timeoutMs) ?: return null
+        val reply = connection.call(PORTAL, PATH, IFACE, "Lookup", "s", listOf(uri), waitMs) ?: return null
         return routeOf(reply)
     }
 
@@ -70,6 +101,7 @@ class PortalProxyPolicy(
         if (answered.size > MAX_KEPT) answered.clear()
         answered[key] = route
         lastAnswer = route
+        firstAnswer.complete(route)
         return route
     }
 
@@ -77,7 +109,12 @@ class PortalProxyPolicy(
         answered[key]?.let { return it }
         lastAnswer?.let { return it }
         val since = firstMiss ?: now.also { firstMiss = it }
-        return if (now - since < graceMs) ProxyRoute.Unusable else ProxyRoute.Direct
+        if (now - since >= graceMs) return ProxyRoute.Direct
+        if (warming.get() && !EventQueue.isDispatchThread()) {
+            runCatching { firstAnswer.get(graceMs - (now - since), TimeUnit.MILLISECONDS) }
+            lastAnswer?.let { return it }
+        }
+        return ProxyRoute.Unusable
     }
 
     /** No bus in reach goes straight; it is tried again after a wait that doubles up to [cacheMs]. */

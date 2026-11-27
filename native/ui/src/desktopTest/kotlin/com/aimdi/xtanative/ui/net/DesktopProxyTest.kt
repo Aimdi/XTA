@@ -181,6 +181,28 @@ class DesktopProxyTest {
     }
 
     @Test
+    fun aSlowPortalWarmedAtStartDelaysTheFirstRequestInsteadOfFailingIt() {
+        val (daemon, socket) = privateBus() ?: return println("no dbus-daemon: skipped")
+        try {
+            val fake = assertNotNull(DBusConnection.connect(socket))
+            fake.onCall = { call ->
+                if (call.member == "Lookup") Thread { Thread.sleep(400); fake.reply(call, "as", listOf(listOf("http://portal.lan:3128"))) }.start()
+            }
+            fake.call(DBusConnection.BUS, DBusConnection.BUS_PATH, DBusConnection.BUS, "RequestName", "su", listOf(PortalProxyPolicy.PORTAL, 4L))
+            val policy = PortalProxyPolicy({ DBusConnection.connect(socket) }, timeoutMs = 100, graceMs = 5_000)
+            policy.warm()
+            assertEquals(ProxyRoute.Via(ProxyKind.HTTP, "portal.lan", 3128), policy.route("https", "x.com", 443), "waited for the portal's answer")
+            var onWindowThread: ProxyRoute? = null
+            java.awt.EventQueue.invokeAndWait { onWindowThread = policy.route("https", "pbs.twimg.com", 443) }
+            assertEquals(ProxyRoute.Via(ProxyKind.HTTP, "portal.lan", 3128), onWindowThread, "the window's thread takes the last answer, never asks")
+            fake.close()
+        } finally {
+            daemon.destroy()
+            daemon.waitFor(5, TimeUnit.SECONDS)
+        }
+    }
+
+    @Test
     fun aBusOutOfReachIsTriedAgainLaterNotGivenUpOn() {
         var now = 0L
         val connects = AtomicInteger()

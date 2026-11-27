@@ -45,11 +45,14 @@ object DesktopProxy {
      */
     fun follow(settings: SettingsStore, env: Map<String, String> = System.getenv(), portal: ProxyPolicy? = PortalProxyPolicy.desktop) {
         Authenticator.setDefault(AppProxy.socksAuthenticator)
-        AppProxy.use(policy(runBlocking { settings.load() }, env, portal))
+        AppProxy.use(policy(runBlocking { settings.load() }, env, portal).warmed())
         settings.settings.map(::choice).distinctUntilChanged().drop(1)
-            .onEach { AppProxy.use(policy(it, env, portal)) }
+            .onEach { AppProxy.use(policy(it, env, portal).warmed()) }
             .launchIn(scope)
     }
+
+    /** A portal's first answer asked for off the window's thread now, so requests wait for it rather than for a miss. */
+    private fun ProxyPolicy.warmed(): ProxyPolicy = also { (it as? PortalProxyPolicy)?.warm() }
 
     /** The policy [settings] ask for, the environment being [env] and the desktop's portal [portal]. */
     fun policy(settings: Settings, env: Map<String, String>, portal: ProxyPolicy?): ProxyPolicy = policy(choice(settings), env, portal)
