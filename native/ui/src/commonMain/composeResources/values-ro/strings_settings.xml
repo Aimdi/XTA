@@ -325,6 +325,7 @@
     <string name="settings_intro_again_description">Revezi cardurile de la prima pornire.</string>
     <string name="settings_open_logs">Deschide dosarul de jurnale</string>
     <string name="settings_copy_diagnostics">Copiază informațiile de diagnostic</string>
+    <string name="settings_copy_diagnostics_description">Versiuni și detalii de sistem pentru un raport de eroare, fără datele contului</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Copiază raportul</string>
     <string name="settings_diagnostics_copied">Diagnosticarea a fost copiată în clipboard</string>

@@ -325,6 +325,7 @@
     <string name="settings_intro_again_description">पहली बार खोलने पर दिखे कार्ड फिर से देखें।</string>
     <string name="settings_open_logs">लॉग फ़ोल्डर खोलें</string>
     <string name="settings_copy_diagnostics">निदान जानकारी कॉपी करें</string>
+    <string name="settings_copy_diagnostics_description">बग रिपोर्ट के लिए संस्करण और सिस्टम विवरण, खाते के डेटा के बिना</string>
     <string name="settings_ok">ठीक है</string>
     <string name="settings_diagnostics_copy">रिपोर्ट कॉपी करें</string>
     <string name="settings_diagnostics_copied">निदान क्लिपबोर्ड पर कॉपी हो गया</string>

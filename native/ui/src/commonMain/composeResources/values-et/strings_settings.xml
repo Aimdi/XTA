@@ -325,6 +325,7 @@
     <string name="settings_intro_again_description">Vaata esimese käivituse kaardid uuesti läbi.</string>
     <string name="settings_open_logs">Ava logide kaust</string>
     <string name="settings_copy_diagnostics">Kopeeri diagnostikaandmed</string>
+    <string name="settings_copy_diagnostics_description">Versioonid ja süsteemi andmed veateate jaoks, ilma kontoandmeteta</string>
     <string name="settings_ok">Sobib</string>
     <string name="settings_diagnostics_copy">Kopeeri aruanne</string>
     <string name="settings_diagnostics_copied">Diagnostika kopeeriti lõikelauale</string>

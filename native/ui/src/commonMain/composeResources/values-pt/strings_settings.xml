@@ -325,6 +325,7 @@
     <string name="settings_intro_again_description">Rever os cartões do primeiro arranque.</string>
     <string name="settings_open_logs">Abrir pasta de registos</string>
     <string name="settings_copy_diagnostics">Copiar diagnóstico</string>
+    <string name="settings_copy_diagnostics_description">Versões e detalhes do sistema para um relatório de erro, sem dados da conta</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">Copiar o relatório</string>
     <string name="settings_diagnostics_copied">Diagnóstico copiado para a área de transferência</string>

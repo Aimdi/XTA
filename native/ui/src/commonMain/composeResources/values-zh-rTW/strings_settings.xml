@@ -325,6 +325,7 @@
     <string name="settings_intro_again_description">重新查看首次啟動時的卡片。</string>
     <string name="settings_open_logs">開啟記錄檔資料夾</string>
     <string name="settings_copy_diagnostics">複製診斷資訊</string>
+    <string name="settings_copy_diagnostics_description">用於錯誤回報的版本與系統資訊,不含帳號資料</string>
     <string name="settings_ok">確定</string>
     <string name="settings_diagnostics_copy">複製報告</string>
     <string name="settings_diagnostics_copied">診斷已複製到剪貼簿</string>

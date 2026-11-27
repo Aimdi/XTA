@@ -325,6 +325,7 @@
     <string name="settings_intro_again_description">初回起動時のカードをもう一度見る。</string>
     <string name="settings_open_logs">ログフォルダーを開く</string>
     <string name="settings_copy_diagnostics">診断情報をコピー</string>
+    <string name="settings_copy_diagnostics_description">不具合報告用のバージョンとシステム情報(アカウント情報は含みません)</string>
     <string name="settings_ok">OK</string>
     <string name="settings_diagnostics_copy">レポートをコピー</string>
     <string name="settings_diagnostics_copied">診断をクリップボードにコピーしました</string>

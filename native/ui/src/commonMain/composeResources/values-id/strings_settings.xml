@@ -325,6 +325,7 @@
     <string name="settings_intro_again_description">Putar ulang kartu saat pertama kali dibuka.</string>
     <string name="settings_open_logs">Buka folder log</string>
     <string name="settings_copy_diagnostics">Salin info diagnostik</string>
+    <string name="settings_copy_diagnostics_description">Versi dan detail sistem untuk laporan bug, tanpa data akun</string>
     <string name="settings_ok">Oke</string>
     <string name="settings_diagnostics_copy">Salin laporan</string>
     <string name="settings_diagnostics_copied">Diagnostik disalin ke papan klip</string>

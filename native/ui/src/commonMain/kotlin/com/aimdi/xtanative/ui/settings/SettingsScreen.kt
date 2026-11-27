@@ -232,7 +232,7 @@ internal fun AboutRows(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snack
     // The versions and the system's facts a bug report asks for, never an account or a token.
     if (isDesktop) {
         val diagnosticsCopied = stringResource(Res.string.settings_diagnostics_copied)
-        NavigationRow(stringResource(Res.string.settings_copy_diagnostics), icon = Icons.Outlined.Build, chevron = false) {
+        NavigationRow(stringResource(Res.string.settings_copy_diagnostics), stringResource(Res.string.settings_copy_diagnostics_description), Icons.Outlined.Build, chevron = false) {
             diagnosticsText()?.let { text ->
                 copyText(text)
                 scope.launch { snackbar.showSnackbar(diagnosticsCopied) }

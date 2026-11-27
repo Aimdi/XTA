@@ -325,6 +325,7 @@
     <string name="settings_intro_again_description">Jašče raz prajści kartki pieršaha zapusku.</string>
     <string name="settings_open_logs">Adkryć papku žurnałaŭ</string>
     <string name="settings_copy_diagnostics">Skapijavać zviestki dla dyjahnostyki</string>
+    <string name="settings_copy_diagnostics_description">Versii i zviestki pra sistemu dla paviedamlennia pra pamyłku, biez danych ulikovaha zapisu</string>
     <string name="settings_ok">Dobra</string>
     <string name="settings_diagnostics_copy">Skapijavać spravazdaču</string>
     <string name="settings_diagnostics_copied">Dyjahnostyka skapijavana ŭ bufier abmienu</string>

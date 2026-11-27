@@ -325,6 +325,7 @@
     <string name="settings_intro_again_description">Ikusi berriro lehen abioko txartelak.</string>
     <string name="settings_open_logs">Ireki erregistroen karpeta</string>
     <string name="settings_copy_diagnostics">Kopiatu diagnostikoa</string>
+    <string name="settings_copy_diagnostics_description">Bertsioak eta sistemaren xehetasunak akats-txosten baterako, kontuaren daturik gabe</string>
     <string name="settings_ok">Ados</string>
     <string name="settings_diagnostics_copy">Kopiatu txostena</string>
     <string name="settings_diagnostics_copied">Diagnostikoa arbelera kopiatu da</string>
