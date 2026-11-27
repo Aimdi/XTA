@@ -94,4 +94,21 @@ class XtaTweetJsonTest {
         val likedOnX = post.copy(likedOnX = true)
         assertEquals(likedOnX, XtaTweetJson.decode(J(XtaTweetJson.encode(likedOnX))), "X's word that the reader liked it is kept")
     }
+
+    @Test
+    fun aQuoteXNamedWithoutSendingItIsKeptSoTheKeptPostStillOffersToOpenIt() {
+        val post = XPost(
+            id = "300",
+            text = "Quoting a deleted tweet",
+            author = XUser("7", "amy", "Amy"),
+            createdAt = null,
+            quotedWithheld = com.aimdi.xtanative.core.x.model.XWithheld("299", null, screenName = "cid"),
+        )
+        val kept = XtaTweetJson.decode(J(XtaTweetJson.encode(post)))!!
+        assertNull(kept.quoted)
+        assertEquals(com.aimdi.xtanative.core.x.model.XWithheld("299", null, screenName = "cid"), kept.quotedWithheld)
+        // One that named no post at all stays a quote that could not be read.
+        val nameless = XtaTweetJson.decode(J(XtaTweetJson.encode(post.copy(quotedWithheld = com.aimdi.xtanative.core.x.model.XWithheld("", null)))))!!
+        assertEquals("", nameless.quotedWithheld?.id)
+    }
 }

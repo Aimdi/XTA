@@ -53,6 +53,15 @@ object XtaTweetJson {
             put("quoted_status_id_str", it.id)
             put("quotedStatusWithCard", encode(it))
         }
+        if (post.quoted == null) post.quotedWithheld?.let { withheld ->
+            // A quote X named without sending (deleted, or just left out): kept as X's own fields say it, so the
+            // kept post still offers to open the post it quotes rather than reading as no quote at all.
+            put("is_quote_status", true)
+            withheld.id.takeIf { it.isNotEmpty() }?.let { id ->
+                put("quoted_status_id_str", id)
+                withheld.screenName?.let { put("quoted_status_permalink", buildJsonObject { put("expanded", "https://x.com/$it/status/$id") }) }
+            }
+        }
         post.reposted?.let { put("retweetedStatusWithCard", encode(it)) }
     }
 
