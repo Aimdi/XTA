@@ -416,4 +416,10 @@
     <string name="settings_local_backup_before_restore">Abans d\'una restauració · %1$s</string>
     <string name="settings_local_backup_restore">Restaura</string>
     <string name="settings_open_opml">Segueix els canals de %1$s amb</string>
+    <string name="settings_mute_list">Paraules i comptes silenciats</string>
+    <string name="settings_mute_list_description">Les publicacions amb aquestes paraules, o d'aquests comptes, es pleguen darrere d'una petita fila «Silenciat» a tots els canals, cerques, perfils i respostes d'aquest dispositiu. Una paraula sola només coincideix amb paraules senceres; una frase, a qualsevol lloc.</string>
+    <string name="settings_mute_add_hint">Afegeix una paraula, una frase o un @compte</string>
+    <string name="settings_mute_search">Cerca entre els silenciats</string>
+    <string name="settings_mute_empty">No hi ha res silenciat</string>
+    <string name="settings_mute_until">Fins al %1$s</string>
 </resources>

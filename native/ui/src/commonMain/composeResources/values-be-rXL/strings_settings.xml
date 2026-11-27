@@ -418,4 +418,10 @@
     <string name="settings_local_backup_before_restore">Pierad adnaŭlenniem · %1$s</string>
     <string name="settings_local_backup_restore">Adnavić</string>
     <string name="settings_open_opml">Padpisacca na stužki z %1$s praz</string>
+    <string name="settings_mute_list">Scišanyja słovy i ŭlikovyja zapisy</string>
+    <string name="settings_mute_list_description">Dopisy z hetymi słovami abo ad hetych ulikovych zapisaŭ zhortvajucca pad nievialikim radkom «Scišana» va ŭsich stužkach, pošuku, profilach i adkazach na hetaj pryladzie. Asobnaje słova supadaje tolki całkam; fraza — dzie zaŭhodna.</string>
+    <string name="settings_mute_add_hint">Dadajcie słova, frazu abo @ulikovy zapis</string>
+    <string name="settings_mute_search">Pošuk siarod scišanych</string>
+    <string name="settings_mute_empty">Ničoha nie scišana</string>
+    <string name="settings_mute_until">Da %1$s</string>
 </resources>

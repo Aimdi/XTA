@@ -119,4 +119,11 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Tidak bisa memuat halaman balasan selanjutnya</string>
     <string name="posts_unable_to_load_who_retweeted">Tidak bisa memuat siapa yang mencuit ulang cuitan ini</string>
     <string name="posts_unable_to_load_more_retweets">Tidak bisa memuat lebih banyak orang yang mencuit ulang cuitan ini</string>
+    <string name="posts_muted_reason">Dibisukan: %1$s</string>
+    <string name="posts_muted_show">Tampilkan</string>
+    <string name="posts_mute_account">Bisukan @%1$s</string>
+    <string name="posts_unmute_account">Bunyikan @%1$s</string>
+    <string name="posts_mute_word">Bisukan kata…</string>
+    <string name="posts_mute_word_title">Bisukan kata atau frasa</string>
+    <string name="posts_mute_confirm">Bisukan</string>
 </resources>

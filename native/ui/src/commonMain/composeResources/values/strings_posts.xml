@@ -122,4 +122,11 @@
     <string name="posts_translation_other">The translation didn't work. Try again.</string>
     <string name="posts_quote_unavailable">Could not retrieve quoted post</string>
     <string name="posts_no_text">The post did not contain any text. This is unexpected</string>
+    <string name="posts_muted_reason">Muted: %1$s</string>
+    <string name="posts_muted_show">Show</string>
+    <string name="posts_mute_account">Mute @%1$s</string>
+    <string name="posts_unmute_account">Unmute @%1$s</string>
+    <string name="posts_mute_word">Mute a word…</string>
+    <string name="posts_mute_word_title">Mute a word or phrase</string>
+    <string name="posts_mute_confirm">Mute</string>
 </resources>

@@ -103,6 +103,16 @@ val LocalCashtagSheet = staticCompositionLocalOf<((symbol: String) -> Unit)?> { 
 @Suppress("UNUSED_PARAMETER")
 @Composable
 fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = emptySet(), playing: Boolean = false) {
+    // The app-wide mute list folds a thread behind why, wherever it is drawn ([Mutes]).
+    val mutes = muteList()
+    val scope = postScope()
+    val reason = remember(thread, mutes, scope.focalId, scope.profileScreenName) { Mutes.reason(mutes, thread, scope) }
+    if (reason != null) MutedFold(thread.id, reason) { ThreadPosts(thread, actions, pinnedIds) } else ThreadPosts(thread, actions, pinnedIds)
+}
+
+/** [ThreadRows]' posts, the gaps X left in it and the line under them. */
+@Composable
+private fun ThreadPosts(thread: XThread, actions: PostActions, pinnedIds: Set<String>) {
     val threaded = thread.posts.size > 1
     Column(Modifier.fillMaxWidth()) {
         thread.posts.forEachIndexed { index, post ->

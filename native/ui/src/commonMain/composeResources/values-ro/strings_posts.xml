@@ -125,4 +125,11 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Nu se poate încărca următoarea pagină de răspunsuri</string>
     <string name="posts_unable_to_load_who_retweeted">Nu se poate încărca cine a retweetat acest tweet</string>
     <string name="posts_unable_to_load_more_retweets">Nu se pot încărca mai multe persoane care au retweetat acest tweet</string>
+    <string name="posts_muted_reason">Ignorat: %1$s</string>
+    <string name="posts_muted_show">Arată</string>
+    <string name="posts_mute_account">Ignoră @%1$s</string>
+    <string name="posts_unmute_account">Nu mai ignora @%1$s</string>
+    <string name="posts_mute_word">Ignoră un cuvânt…</string>
+    <string name="posts_mute_word_title">Ignoră un cuvânt sau o expresie</string>
+    <string name="posts_mute_confirm">Ignoră</string>
 </resources>

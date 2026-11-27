@@ -414,4 +414,10 @@
     <string name="settings_local_backup_before_restore">Enne taastamist · %1$s</string>
     <string name="settings_local_backup_restore">Taasta</string>
     <string name="settings_open_opml">Jälgi faili %1$s vooge rakendusega</string>
+    <string name="settings_mute_list">Vaigistatud sõnad ja kontod</string>
+    <string name="settings_mute_list_description">Nende sõnadega või nende kontode postitused volditakse selles seadmes igas voos, otsingus, profiilis ja vastuste loendis väikese rea „Vaigistatud“ taha. Üksik sõna sobib ainult tervete sõnadega, fraas kõikjal.</string>
+    <string name="settings_mute_add_hint">Lisa sõna, fraas või @konto</string>
+    <string name="settings_mute_search">Otsi vaigistatute seast</string>
+    <string name="settings_mute_empty">Midagi pole vaigistatud</string>
+    <string name="settings_mute_until">Kuni %1$s</string>
 </resources>

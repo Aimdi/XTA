@@ -416,4 +416,10 @@
     <string name="settings_local_backup_before_restore">Avant une restauration · %1$s</string>
     <string name="settings_local_backup_restore">Restaurer</string>
     <string name="settings_open_opml">Suivre les flux de %1$s avec</string>
+    <string name="settings_mute_list">Mots et comptes masqués</string>
+    <string name="settings_mute_list_description">Les publications contenant ces mots, ou de ces comptes, sont repliées derrière une petite ligne « Masqué » dans chaque fil, recherche, profil et liste de réponses de cet appareil. Un mot seul ne correspond qu'à des mots entiers ; une expression, n'importe où.</string>
+    <string name="settings_mute_add_hint">Ajouter un mot, une expression ou un @compte</string>
+    <string name="settings_mute_search">Rechercher dans les masqués</string>
+    <string name="settings_mute_empty">Rien n'est masqué</string>
+    <string name="settings_mute_until">Jusqu'au %1$s</string>
 </resources>

@@ -416,4 +416,10 @@
     <string name="settings_local_backup_before_restore">Antes de um restauro · %1$s</string>
     <string name="settings_local_backup_restore">Restaurar</string>
     <string name="settings_open_opml">Seguir os feeds de %1$s com</string>
+    <string name="settings_mute_list">Palavras e contas silenciadas</string>
+    <string name="settings_mute_list_description">As publicações com estas palavras, ou destas contas, ficam recolhidas atrás de uma pequena linha «Silenciado» em todos os feeds, pesquisas, perfis e listas de respostas neste dispositivo. Uma palavra só corresponde a palavras inteiras; uma expressão, em qualquer lugar.</string>
+    <string name="settings_mute_add_hint">Adicionar uma palavra, expressão ou @conta</string>
+    <string name="settings_mute_search">Pesquisar silenciados</string>
+    <string name="settings_mute_empty">Nada está silenciado</string>
+    <string name="settings_mute_until">Até %1$s</string>
 </resources>

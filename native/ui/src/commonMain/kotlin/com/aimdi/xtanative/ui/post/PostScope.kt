@@ -114,7 +114,8 @@ internal fun SharedPostPrefs(content: @Composable () -> Unit) {
     val sessions = LocalSessions.current
     val session = sessions.state.collectAsStateWithLifecycle()
     val reads = remember(store, settings, sessions, session) { SharedReads(store.state, settings, sessions, session) }
-    CompositionLocalProvider(LocalPostPrefs provides prefs, LocalSharedReads provides reads) { SharedKeep(content) }
+    val mutes = remember(now?.get(PostsPrefs.muteList)) { Mutes.of(now) }
+    CompositionLocalProvider(LocalPostPrefs provides prefs, LocalSharedReads provides reads, LocalMuteList provides mutes) { SharedKeep(content) }
 }
 
 /**

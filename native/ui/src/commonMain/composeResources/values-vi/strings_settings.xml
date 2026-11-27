@@ -412,4 +412,10 @@
     <string name="settings_local_backup_before_restore">Trước khi khôi phục · %1$s</string>
     <string name="settings_local_backup_restore">Khôi phục</string>
     <string name="settings_open_opml">Theo dõi các nguồn tin trong %1$s bằng</string>
+    <string name="settings_mute_list">Từ và tài khoản đã ẩn</string>
+    <string name="settings_mute_list_description">Bài đăng có những từ này, hoặc của những tài khoản này, được gập sau một dòng nhỏ “Đã ẩn” ở mọi bảng tin, tìm kiếm, hồ sơ và danh sách trả lời trên thiết bị này. Một từ đơn chỉ khớp với nguyên từ; cụm từ khớp ở bất kỳ đâu.</string>
+    <string name="settings_mute_add_hint">Thêm một từ, cụm từ hoặc @tài khoản</string>
+    <string name="settings_mute_search">Tìm trong mục đã ẩn</string>
+    <string name="settings_mute_empty">Chưa ẩn gì</string>
+    <string name="settings_mute_until">Đến %1$s</string>
 </resources>

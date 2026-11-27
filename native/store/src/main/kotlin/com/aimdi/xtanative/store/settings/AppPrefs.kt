@@ -164,6 +164,9 @@ object PostsPrefs : PrefSection() {
     val languages = text("feed.languages", "")
     val languageAction = choice("feed.language_action", LanguageFilterAction.OFF, LanguageFilterAction.entries)
 
+    /** The app-wide mute list (words, phrases and accounts) as JSON ([com.aimdi.xtanative.core.feed.MuteList]); XTA Native's own. */
+    val muteList = text("feed.app_mute_list", "", seeded = false)
+
     /** When For you last cached a first page (ISO-8601), for the strip's unread dot. */
     val forYouNewestCachedAt = text("feed.for_you_newest_cached_at", "", seeded = false)
 

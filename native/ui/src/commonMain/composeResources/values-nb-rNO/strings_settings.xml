@@ -414,4 +414,10 @@
     <string name="settings_local_backup_before_restore">Før en gjenoppretting · %1$s</string>
     <string name="settings_local_backup_restore">Gjenopprett</string>
     <string name="settings_open_opml">Følg strømmene i %1$s med</string>
+    <string name="settings_mute_list">Dempede ord og kontoer</string>
+    <string name="settings_mute_list_description">Innlegg med disse ordene, eller fra disse kontoene, foldes bak en liten «Dempet»-rad i alle strømmer, søk, profiler og svarlister på denne enheten. Et enkelt ord treffer bare hele ord; et uttrykk treffer hvor som helst.</string>
+    <string name="settings_mute_add_hint">Legg til et ord, et uttrykk eller en @konto</string>
+    <string name="settings_mute_search">Søk i dempede</string>
+    <string name="settings_mute_empty">Ingenting er dempet</string>
+    <string name="settings_mute_until">Til %1$s</string>
 </resources>

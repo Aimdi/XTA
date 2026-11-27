@@ -414,4 +414,10 @@
     <string name="settings_local_backup_before_restore">Vor einer Wiederherstellung · %1$s</string>
     <string name="settings_local_backup_restore">Wiederherstellen</string>
     <string name="settings_open_opml">Feeds aus %1$s folgen mit</string>
+    <string name="settings_mute_list">Stummgeschaltete Wörter und Konten</string>
+    <string name="settings_mute_list_description">Beiträge mit diesen Wörtern oder von diesen Konten werden auf diesem Gerät in jedem Feed, jeder Suche, jedem Profil und jeder Antwortliste hinter einer kleinen Zeile „Stummgeschaltet“ eingeklappt. Ein einzelnes Wort trifft nur ganze Wörter, ein Ausdruck überall.</string>
+    <string name="settings_mute_add_hint">Wort, Ausdruck oder @Konto hinzufügen</string>
+    <string name="settings_mute_search">Stummgeschaltete durchsuchen</string>
+    <string name="settings_mute_empty">Nichts ist stummgeschaltet</string>
+    <string name="settings_mute_until">Bis %1$s</string>
 </resources>

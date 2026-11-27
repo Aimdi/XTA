@@ -414,4 +414,10 @@
     <string name="settings_local_backup_before_restore">Vóór een herstelactie · %1$s</string>
     <string name="settings_local_backup_restore">Herstellen</string>
     <string name="settings_open_opml">Volg de feeds in %1$s met</string>
+    <string name="settings_mute_list">Gedempte woorden en accounts</string>
+    <string name="settings_mute_list_description">Berichten met deze woorden, of van deze accounts, worden op dit apparaat in elke feed, zoekopdracht, elk profiel en elke reactielijst achter een kleine regel ‘Gedempt’ ingeklapt. Eén woord komt alleen overeen met hele woorden; een zin overal.</string>
+    <string name="settings_mute_add_hint">Voeg een woord, zin of @account toe</string>
+    <string name="settings_mute_search">Gedempte doorzoeken</string>
+    <string name="settings_mute_empty">Er is niets gedempt</string>
+    <string name="settings_mute_until">Tot %1$s</string>
 </resources>

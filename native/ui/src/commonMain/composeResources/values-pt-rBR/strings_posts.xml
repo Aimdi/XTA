@@ -122,4 +122,11 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Não foi possível carregar a próxima página de respostas</string>
     <string name="posts_unable_to_load_who_retweeted">Não foi possível carregar quem retweetou este tweet</string>
     <string name="posts_unable_to_load_more_retweets">Não foi possível carregar mais pessoas que retweetaram este tweet</string>
+    <string name="posts_muted_reason">Silenciado: %1$s</string>
+    <string name="posts_muted_show">Mostrar</string>
+    <string name="posts_mute_account">Silenciar @%1$s</string>
+    <string name="posts_unmute_account">Deixar de silenciar @%1$s</string>
+    <string name="posts_mute_word">Silenciar uma palavra…</string>
+    <string name="posts_mute_word_title">Silenciar uma palavra ou frase</string>
+    <string name="posts_mute_confirm">Silenciar</string>
 </resources>

@@ -68,6 +68,12 @@ import com.aimdi.xtanative.store.settings.ThemePrefs
 import com.aimdi.xtanative.ui.media.ReaderIcons
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.posts_muted_reason
+import com.aimdi.xtanative.ui.generated.resources.settings_mute_list
+import com.aimdi.xtanative.ui.generated.resources.settings_mute_list_description
+import com.aimdi.xtanative.core.feed.MuteList
+import com.aimdi.xtanative.ui.saved.LocalKeeper
+import java.time.Instant
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login
 import com.aimdi.xtanative.ui.generated.resources.settings_start_at_login_description
 import com.aimdi.xtanative.ui.links.BrowserPickerRow
@@ -272,6 +278,7 @@ internal fun PostsSettings(title: String, vm: SettingsViewModel, focus: String?,
     val settings by vm.settings.collectAsStateWithLifecycle()
     val session by vm.session.collectAsStateWithLifecycle()
     var confirmAll by remember { mutableStateOf(false) }
+    var editingMutes by rememberSaveable { mutableStateOf(false) }
     SettingsPage(title, onBack) { padding ->
         SettingsList(padding) {
             // The page's title names the first group already: no header repeats it.
@@ -314,7 +321,18 @@ internal fun PostsSettings(title: String, vm: SettingsViewModel, focus: String?,
 
             SettingsHeader(stringResource(Res.string.settings_language_filter), stringResource(Res.string.settings_language_filter_description))
             LanguageFilterRows(settings, vm)
+
+            SettingsHeader(stringResource(Res.string.settings_mute_list), stringResource(Res.string.settings_mute_list_description))
+            val mutes = remember(settings[PostsPrefs.muteList]) { MuteList.parse(settings[PostsPrefs.muteList]) }
+            NavigationRow(
+                stringResource(Res.string.settings_mute_list),
+                stringResource(Res.string.posts_muted_reason, mutes.activeAt(Instant.now()).size.toString()),
+                focused = focus == PostsPrefs.muteList.key,
+            ) { editingMutes = true }
         }
+    }
+    if (editingMutes) {
+        MuteListDialog(remember(settings[PostsPrefs.muteList]) { MuteList.parse(settings[PostsPrefs.muteList]) }, LocalKeeper.current) { editingMutes = false }
     }
     if (confirmAll) {
         ConfirmDialog(

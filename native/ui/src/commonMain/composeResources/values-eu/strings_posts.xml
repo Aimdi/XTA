@@ -122,4 +122,11 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Ezin da hurrengo erantzunen orria kargatu</string>
     <string name="posts_unable_to_load_who_retweeted">Ezin da kargatu nork birtxiotu duen txio hau</string>
     <string name="posts_unable_to_load_more_retweets">Ezin da kargatu txio hau birtxiotu duten pertsona gehiago</string>
+    <string name="posts_muted_reason">Isilarazita: %1$s</string>
+    <string name="posts_muted_show">Erakutsi</string>
+    <string name="posts_mute_account">Isilarazi @%1$s</string>
+    <string name="posts_unmute_account">Utzi @%1$s isilarazteari</string>
+    <string name="posts_mute_word">Isilarazi hitz bat…</string>
+    <string name="posts_mute_word_title">Isilarazi hitz edo esaldi bat</string>
+    <string name="posts_mute_confirm">Isilarazi</string>
 </resources>

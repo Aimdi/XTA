@@ -418,4 +418,10 @@
     <string name="settings_local_backup_before_restore">Перед восстановлением · %1$s</string>
     <string name="settings_local_backup_restore">Восстановить</string>
     <string name="settings_open_opml">Подписаться на ленты из %1$s через</string>
+    <string name="settings_mute_list">Скрытые слова и аккаунты</string>
+    <string name="settings_mute_list_description">Посты с этими словами или от этих аккаунтов сворачиваются под небольшой строкой «Скрыто» во всех лентах, поиске, профилях и ответах на этом устройстве. Отдельное слово совпадает только целиком; фраза — где угодно.</string>
+    <string name="settings_mute_add_hint">Добавьте слово, фразу или @аккаунт</string>
+    <string name="settings_mute_search">Поиск среди скрытых</string>
+    <string name="settings_mute_empty">Ничего не скрыто</string>
+    <string name="settings_mute_until">До %1$s</string>
 </resources>

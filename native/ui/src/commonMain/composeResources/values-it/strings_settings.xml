@@ -416,4 +416,10 @@
     <string name="settings_local_backup_before_restore">Prima di un ripristino · %1$s</string>
     <string name="settings_local_backup_restore">Ripristina</string>
     <string name="settings_open_opml">Segui i feed di %1$s con</string>
+    <string name="settings_mute_list">Parole e account silenziati</string>
+    <string name="settings_mute_list_description">I post con queste parole, o di questi account, vengono ripiegati dietro una piccola riga «Silenziato» in ogni feed, ricerca, profilo ed elenco di risposte su questo dispositivo. Una parola singola corrisponde solo a parole intere; una frase ovunque.</string>
+    <string name="settings_mute_add_hint">Aggiungi una parola, una frase o un @account</string>
+    <string name="settings_mute_search">Cerca tra i silenziati</string>
+    <string name="settings_mute_empty">Nulla è silenziato</string>
+    <string name="settings_mute_until">Fino al %1$s</string>
 </resources>

@@ -418,4 +418,10 @@
     <string name="settings_local_backup_before_restore">Před obnovením · %1$s</string>
     <string name="settings_local_backup_restore">Obnovit</string>
     <string name="settings_open_opml">Sledovat kanály z %1$s pomocí</string>
+    <string name="settings_mute_list">Ztlumená slova a účty</string>
+    <string name="settings_mute_list_description">Příspěvky s těmito slovy nebo od těchto účtů se na tomto zařízení sbalí za malý řádek „Ztlumeno“ ve všech kanálech, hledání, profilech a odpovědích. Jedno slovo odpovídá jen celým slovům; fráze kdekoli.</string>
+    <string name="settings_mute_add_hint">Přidejte slovo, frázi nebo @účet</string>
+    <string name="settings_mute_search">Hledat ve ztlumených</string>
+    <string name="settings_mute_empty">Nic není ztlumeno</string>
+    <string name="settings_mute_until">Do %1$s</string>
 </resources>

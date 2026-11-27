@@ -412,4 +412,10 @@
     <string name="settings_local_backup_before_restore">Sebelum pemulihan · %1$s</string>
     <string name="settings_local_backup_restore">Pulihkan</string>
     <string name="settings_open_opml">Ikuti umpan di %1$s dengan</string>
+    <string name="settings_mute_list">Kata dan akun yang dibisukan</string>
+    <string name="settings_mute_list_description">Postingan dengan kata-kata ini, atau dari akun-akun ini, dilipat di balik baris kecil “Dibisukan” di setiap feed, pencarian, profil, dan daftar balasan di perangkat ini. Satu kata hanya cocok dengan kata utuh; frasa cocok di mana saja.</string>
+    <string name="settings_mute_add_hint">Tambahkan kata, frasa, atau @akun</string>
+    <string name="settings_mute_search">Cari yang dibisukan</string>
+    <string name="settings_mute_empty">Tidak ada yang dibisukan</string>
+    <string name="settings_mute_until">Hingga %1$s</string>
 </resources>

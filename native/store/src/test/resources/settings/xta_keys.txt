@@ -289,6 +289,7 @@ feed.language_action
 home.deck_group_ids
 home.deck_column_width
 feed.reading_position
+feed.app_mute_list
 feed.for_you_newest_cached_at
 feed.global_include_replies
 feed.global_include_retweets

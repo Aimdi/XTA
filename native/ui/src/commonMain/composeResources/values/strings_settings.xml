@@ -414,4 +414,10 @@
     <string name="settings_local_backup_before_restore">Before a restore · %1$s</string>
     <string name="settings_local_backup_restore">Restore</string>
     <string name="settings_open_opml">Follow the feeds in %1$s with</string>
+    <string name="settings_mute_list">Muted words and accounts</string>
+    <string name="settings_mute_list_description">Posts with these words, or by these accounts, fold behind a small “Muted” row in every feed, search, profile and reply list on this device. A single word matches whole words only; a phrase matches anywhere.</string>
+    <string name="settings_mute_add_hint">Add a word, a phrase or an @account</string>
+    <string name="settings_mute_search">Search muted</string>
+    <string name="settings_mute_empty">Nothing is muted</string>
+    <string name="settings_mute_until">Until %1$s</string>
 </resources>

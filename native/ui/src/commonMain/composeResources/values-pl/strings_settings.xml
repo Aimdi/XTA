@@ -418,4 +418,10 @@
     <string name="settings_local_backup_before_restore">Przed przywróceniem · %1$s</string>
     <string name="settings_local_backup_restore">Przywróć</string>
     <string name="settings_open_opml">Obserwuj kanały z %1$s za pomocą</string>
+    <string name="settings_mute_list">Wyciszone słowa i konta</string>
+    <string name="settings_mute_list_description">Posty z tymi słowami lub od tych kont są zwijane za małym wierszem „Wyciszone” w każdym kanale, wyszukiwaniu, profilu i liście odpowiedzi na tym urządzeniu. Pojedyncze słowo pasuje tylko do całych słów; fraza w dowolnym miejscu.</string>
+    <string name="settings_mute_add_hint">Dodaj słowo, frazę lub @konto</string>
+    <string name="settings_mute_search">Szukaj wśród wyciszonych</string>
+    <string name="settings_mute_empty">Nic nie jest wyciszone</string>
+    <string name="settings_mute_until">Do %1$s</string>
 </resources>

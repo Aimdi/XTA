@@ -121,4 +121,11 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Yanıtların bir sonraki sayfası yüklenemedi</string>
     <string name="posts_unable_to_load_who_retweeted">Bu tweeti retweetleyenler yüklenemiyor</string>
     <string name="posts_unable_to_load_more_retweets">Bu tweeti retweetleyen diğer kişiler yüklenemiyor</string>
+    <string name="posts_muted_reason">Sessize alındı: %1$s</string>
+    <string name="posts_muted_show">Göster</string>
+    <string name="posts_mute_account">@%1$s hesabını sessize al</string>
+    <string name="posts_unmute_account">@%1$s sesini aç</string>
+    <string name="posts_mute_word">Bir kelimeyi sessize al…</string>
+    <string name="posts_mute_word_title">Bir kelimeyi veya ifadeyi sessize al</string>
+    <string name="posts_mute_confirm">Sessize al</string>
 </resources>

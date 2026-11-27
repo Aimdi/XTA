@@ -414,4 +414,10 @@
     <string name="settings_local_backup_before_restore">Geri yüklemeden önce · %1$s</string>
     <string name="settings_local_backup_restore">Geri yükle</string>
     <string name="settings_open_opml">%1$s içindeki akışları şununla takip et</string>
+    <string name="settings_mute_list">Sessize alınan kelimeler ve hesaplar</string>
+    <string name="settings_mute_list_description">Bu kelimeleri içeren ya da bu hesaplardan gelen gönderiler, bu cihazdaki her akışta, aramada, profilde ve yanıt listesinde küçük bir “Sessize alındı” satırının arkasına katlanır. Tek kelime yalnızca tam kelimelerle, ifade her yerde eşleşir.</string>
+    <string name="settings_mute_add_hint">Bir kelime, ifade veya @hesap ekleyin</string>
+    <string name="settings_mute_search">Sessize alınanlarda ara</string>
+    <string name="settings_mute_empty">Sessize alınan bir şey yok</string>
+    <string name="settings_mute_until">%1$s tarihine kadar</string>
 </resources>

@@ -412,4 +412,10 @@
     <string name="settings_local_backup_before_restore">恢复之前 · %1$s</string>
     <string name="settings_local_backup_restore">恢复</string>
     <string name="settings_open_opml">使用以下方式关注 %1$s 中的订阅源</string>
+    <string name="settings_mute_list">屏蔽的词语和账号</string>
+    <string name="settings_mute_list_description">包含这些词语或来自这些账号的帖子，会在本设备的所有动态、搜索、个人资料和回复列表中折叠到一行小小的“已屏蔽”后面。单个词只匹配完整的词；短语在任何位置都会匹配。</string>
+    <string name="settings_mute_add_hint">添加词语、短语或 @账号</string>
+    <string name="settings_mute_search">搜索已屏蔽</string>
+    <string name="settings_mute_empty">没有屏蔽任何内容</string>
+    <string name="settings_mute_until">直到 %1$s</string>
 </resources>

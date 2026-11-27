@@ -122,4 +122,11 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Kan ikke laste inn neste side med svar</string>
     <string name="posts_unable_to_load_who_retweeted">Kan ikke laste inn hvem som har retweetet denne tweeten</string>
     <string name="posts_unable_to_load_more_retweets">Kan ikke laste inn flere som har retweetet denne tweeten</string>
+    <string name="posts_muted_reason">Dempet: %1$s</string>
+    <string name="posts_muted_show">Vis</string>
+    <string name="posts_mute_account">Demp @%1$s</string>
+    <string name="posts_unmute_account">Opphev demping av @%1$s</string>
+    <string name="posts_mute_word">Demp et ord…</string>
+    <string name="posts_mute_word_title">Demp et ord eller uttrykk</string>
+    <string name="posts_mute_confirm">Demp</string>
 </resources>

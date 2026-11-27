@@ -414,4 +414,10 @@
     <string name="settings_local_backup_before_restore">Berreskuratu aurretik · %1$s</string>
     <string name="settings_local_backup_restore">Berreskuratu</string>
     <string name="settings_open_opml">Jarraitu %1$s fitxategiko jarioei honekin:</string>
+    <string name="settings_mute_list">Isilarazitako hitzak eta kontuak</string>
+    <string name="settings_mute_list_description">Hitz hauek dituzten edo kontu hauen argitalpenak «Isilarazita» lerro txiki baten atzean tolesten dira gailu honetako jario, bilaketa, profil eta erantzun guztietan. Hitz bakar batek hitz osoekin bakarrik bat egiten du; esaldi batek edonon.</string>
+    <string name="settings_mute_add_hint">Gehitu hitz bat, esaldi bat edo @kontu bat</string>
+    <string name="settings_mute_search">Bilatu isilarazitakoetan</string>
+    <string name="settings_mute_empty">Ez dago ezer isilarazita</string>
+    <string name="settings_mute_until">%1$s arte</string>
 </resources>

@@ -31,6 +31,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import com.aimdi.xtanative.ui.post.MutedFold
+import com.aimdi.xtanative.ui.post.Mutes
+import com.aimdi.xtanative.ui.post.muteList
+import com.aimdi.xtanative.ui.post.reason
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -120,6 +124,14 @@ internal fun rememberPostCard(plugin: XtaPlugin?, post: NetworkPost): (@Composab
  */
 @Composable
 fun PluginPostRow(post: SourcedPost, plugin: XtaPlugin?) {
+    // The app-wide mute list folds it as it folds X's ([Mutes]).
+    val mutes = muteList()
+    val reason = remember(post, mutes) { Mutes.reason(mutes, post.source, post.post) }
+    if (reason != null) MutedFold(post.source + ":" + post.post.id, reason) { PluginPostCard(post, plugin) } else PluginPostCard(post, plugin)
+}
+
+@Composable
+private fun PluginPostCard(post: SourcedPost, plugin: XtaPlugin?) {
     val markColor = plugin?.brandColor ?: MaterialTheme.colorScheme.primary
     val card = rememberPostCard(plugin, post.post)
     if (card != null) return SourceStrip(provenanceColor(markColor), card)

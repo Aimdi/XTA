@@ -412,4 +412,10 @@
     <string name="settings_local_backup_before_restore">復元の前 · %1$s</string>
     <string name="settings_local_backup_restore">復元</string>
     <string name="settings_open_opml">%1$s のフィードをフォローするプラグイン</string>
+    <string name="settings_mute_list">ミュートした単語とアカウント</string>
+    <string name="settings_mute_list_description">これらの単語を含む投稿、またはこれらのアカウントの投稿は、この端末のすべてのフィード・検索・プロフィール・返信一覧で小さな「ミュート中」の行に折りたたまれます。単語は語単位でのみ一致し、フレーズはどこでも一致します。</string>
+    <string name="settings_mute_add_hint">単語、フレーズ、または @アカウントを追加</string>
+    <string name="settings_mute_search">ミュート中を検索</string>
+    <string name="settings_mute_empty">ミュートしているものはありません</string>
+    <string name="settings_mute_until">%1$s まで</string>
 </resources>

@@ -21,9 +21,17 @@ import com.aimdi.xtanative.ui.saved.LocalKeeper
 import com.aimdi.xtanative.ui.saved.NoteSheet
 import com.aimdi.xtanative.ui.saved.SaveSheet
 import com.aimdi.xtanative.ui.saved.isSaved
+import com.aimdi.xtanative.ui.saved.Keeper
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
+import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.posts_mute_account
+import com.aimdi.xtanative.ui.generated.resources.posts_mute_word
+import com.aimdi.xtanative.ui.generated.resources.posts_unmute_account
+import java.time.Instant
+import org.jetbrains.compose.resources.stringResource
 
 /** What an X post's ⋯ sheet opens once it has closed: the note on the post, its folders, its author's groups; or nothing more. */
-private enum class MenuStep { MENU, NOTE, FOLDERS, GROUPS, CLOSED }
+private enum class MenuStep { MENU, NOTE, FOLDERS, GROUPS, MUTE_WORD, CLOSED }
 
 /**
  * An X post's ⋯ sheet, in XTA's order (plugin_post_actions.dart, as
@@ -42,6 +50,13 @@ fun PostMenu(post: XPost, actions: PostActions, onDismiss: () -> Unit) {
         MenuStep.NOTE -> actions.keep.NoteSheet(post, onDismiss)
         MenuStep.FOLDERS -> actions.keep.SaveSheet(post, onDismiss)
         MenuStep.GROUPS -> AuthorGroupsSheet(post.shown.author, onDismiss)
+        MenuStep.MUTE_WORD -> {
+            val keeper = LocalKeeper.current
+            MuteWordDialog("", onDismiss) { term, duration ->
+                onDismiss()
+                Mutes.change(keeper, offerUndo = true) { it.withWord(term, duration?.let(Instant.now()::plus)) }
+            }
+        }
         MenuStep.CLOSED -> LaunchedEffect(Unit) { onDismiss() }
     }
 }
@@ -81,7 +96,23 @@ private fun MenuSheet(post: XPost, actions: PostActions, onDismiss: () -> Unit, 
     val inWindow = remember(windows, shown.id) { windows?.let { open -> { open.post(shown.id) } } }
     PostMenuSurface(onDismiss) {
         PostMenuRows(menu, saved, handlers, onDone = { onStep(MenuStep.CLOSED) }, newWindow = inWindow, hints = true, openAuthor = openAuthor, copyText = copyText)
+        MenuGroupDivider()
+        MuteRows(shown, keeper, onStep)
     }
+}
+
+/** Muting the post's author on this device, or no longer, and muting a word ([Mutes]). */
+@Composable
+private fun MuteRows(shown: XPost, keeper: Keeper, onStep: (MenuStep) -> Unit) {
+    val author = shown.author
+    if (author.screenName.isNotEmpty()) {
+        val muted = muteList().mutes(author.screenName, author.id, Instant.now())
+        MenuRow(GroupIcons.VisibilityOffOutlined, stringResource(if (muted) Res.string.posts_unmute_account else Res.string.posts_mute_account, author.screenName)) {
+            onStep(MenuStep.CLOSED)
+            Mutes.change(keeper, offerUndo = !muted) { if (muted) it.unmuting(author.screenName, author.id) else it.withAccount(author.screenName, author.id) }
+        }
+    }
+    MenuRow(GroupIcons.SpeakerNotesOffOutlined, stringResource(Res.string.posts_mute_word)) { onStep(MenuStep.MUTE_WORD) }
 }
 
 /** A row of a post's menu or sheet, laid out as [PluginMenuRow] lays one out (denser in a desktop's pointer menu). */

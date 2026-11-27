@@ -122,4 +122,11 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Vastuste järgmise lehe laadimine ei õnnestu</string>
     <string name="posts_unable_to_load_who_retweeted">Selle säutsu kordussäutsijate laadimine ei õnnestu</string>
     <string name="posts_unable_to_load_more_retweets">Rohkemate kordussäutsijate laadimine ei õnnestu</string>
+    <string name="posts_muted_reason">Vaigistatud: %1$s</string>
+    <string name="posts_muted_show">Näita</string>
+    <string name="posts_mute_account">Vaigista @%1$s</string>
+    <string name="posts_unmute_account">Tühista @%1$s vaigistus</string>
+    <string name="posts_mute_word">Vaigista sõna…</string>
+    <string name="posts_mute_word_title">Vaigista sõna või fraas</string>
+    <string name="posts_mute_confirm">Vaigista</string>
 </resources>

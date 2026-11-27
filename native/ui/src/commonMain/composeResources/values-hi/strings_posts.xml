@@ -122,4 +122,11 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">उत्तरों का अगला पृष्ठ लोड नहीं किया जा सका</string>
     <string name="posts_unable_to_load_who_retweeted">इस पोस्ट को रीट्वीट करने वालों को लोड नहीं किया जा सका</string>
     <string name="posts_unable_to_load_more_retweets">इस पोस्ट को रीट्वीट करने वाले और लोगों को लोड नहीं किया जा सका</string>
+    <string name="posts_muted_reason">म्यूट: %1$s</string>
+    <string name="posts_muted_show">दिखाएँ</string>
+    <string name="posts_mute_account">@%1$s को म्यूट करें</string>
+    <string name="posts_unmute_account">@%1$s को अनम्यूट करें</string>
+    <string name="posts_mute_word">कोई शब्द म्यूट करें…</string>
+    <string name="posts_mute_word_title">कोई शब्द या वाक्यांश म्यूट करें</string>
+    <string name="posts_mute_confirm">म्यूट करें</string>
 </resources>

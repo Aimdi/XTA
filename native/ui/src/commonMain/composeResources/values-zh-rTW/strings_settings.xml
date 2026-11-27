@@ -412,4 +412,10 @@
     <string name="settings_local_backup_before_restore">還原之前 · %1$s</string>
     <string name="settings_local_backup_restore">還原</string>
     <string name="settings_open_opml">使用以下方式追蹤 %1$s 中的訂閱源</string>
+    <string name="settings_mute_list">靜音的字詞與帳號</string>
+    <string name="settings_mute_list_description">含有這些字詞或來自這些帳號的貼文，會在本裝置的所有動態、搜尋、個人檔案與回覆列表中摺疊到一行小小的「已靜音」後面。單一字詞只比對完整的字；片語在任何位置都會比對。</string>
+    <string name="settings_mute_add_hint">新增字詞、片語或 @帳號</string>
+    <string name="settings_mute_search">搜尋已靜音</string>
+    <string name="settings_mute_empty">沒有靜音任何內容</string>
+    <string name="settings_mute_until">直到 %1$s</string>
 </resources>

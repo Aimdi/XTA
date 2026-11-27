@@ -119,4 +119,11 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">无法载入下一页回复</string>
     <string name="posts_unable_to_load_who_retweeted">无法加载转推此推文的用户</string>
     <string name="posts_unable_to_load_more_retweets">无法载入更多转推此推文的用户</string>
+    <string name="posts_muted_reason">已屏蔽：%1$s</string>
+    <string name="posts_muted_show">显示</string>
+    <string name="posts_mute_account">屏蔽 @%1$s</string>
+    <string name="posts_unmute_account">取消屏蔽 @%1$s</string>
+    <string name="posts_mute_word">屏蔽词语…</string>
+    <string name="posts_mute_word_title">屏蔽词语或短语</string>
+    <string name="posts_mute_confirm">屏蔽</string>
 </resources>

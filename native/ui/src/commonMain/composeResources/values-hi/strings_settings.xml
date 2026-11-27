@@ -414,4 +414,10 @@
     <string name="settings_local_backup_before_restore">पुनर्स्थापना से पहले · %1$s</string>
     <string name="settings_local_backup_restore">पुनर्स्थापित करें</string>
     <string name="settings_open_opml">%1$s की फ़ीड इससे फ़ॉलो करें</string>
+    <string name="settings_mute_list">म्यूट किए गए शब्द और खाते</string>
+    <string name="settings_mute_list_description">इन शब्दों वाली या इन खातों की पोस्ट इस डिवाइस पर हर फ़ीड, खोज, प्रोफ़ाइल और जवाबों की सूची में एक छोटी “म्यूट” पंक्ति के पीछे मोड़ दी जाती हैं। अकेला शब्द केवल पूरे शब्दों से मेल खाता है; वाक्यांश कहीं भी।</string>
+    <string name="settings_mute_add_hint">कोई शब्द, वाक्यांश या @खाता जोड़ें</string>
+    <string name="settings_mute_search">म्यूट किए गए में खोजें</string>
+    <string name="settings_mute_empty">कुछ भी म्यूट नहीं है</string>
+    <string name="settings_mute_until">%1$s तक</string>
 </resources>

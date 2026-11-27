@@ -422,4 +422,10 @@
     <string name="settings_local_backup_before_restore">قبل الاستعادة · %1$s</string>
     <string name="settings_local_backup_restore">استعادة</string>
     <string name="settings_open_opml">متابعة الخلاصات في %1$s باستخدام</string>
+    <string name="settings_mute_list">الكلمات والحسابات المكتومة</string>
+    <string name="settings_mute_list_description">تُطوى المنشورات التي تحتوي هذه الكلمات أو التي كتبتها هذه الحسابات خلف سطر صغير «مكتوم» في كل الخلاصات والبحث والملفات الشخصية وقوائم الردود على هذا الجهاز. الكلمة المفردة تطابق الكلمات الكاملة فقط، والعبارة تطابق في أي مكان.</string>
+    <string name="settings_mute_add_hint">أضف كلمة أو عبارة أو ‎@حسابًا</string>
+    <string name="settings_mute_search">البحث في المكتوم</string>
+    <string name="settings_mute_empty">لا شيء مكتوم</string>
+    <string name="settings_mute_until">حتى %1$s</string>
 </resources>

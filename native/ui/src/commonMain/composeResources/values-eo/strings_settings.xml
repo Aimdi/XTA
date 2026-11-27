@@ -414,4 +414,10 @@
     <string name="settings_local_backup_before_restore">Antaŭ restarigo · %1$s</string>
     <string name="settings_local_backup_restore">Restarigi</string>
     <string name="settings_open_opml">Sekvi la fluojn de %1$s per</string>
+    <string name="settings_mute_list">Silentigitaj vortoj kaj kontoj</string>
+    <string name="settings_mute_list_description">Afiŝoj kun ĉi tiuj vortoj, aŭ de ĉi tiuj kontoj, faldiĝas malantaŭ malgranda vico «Silentigita» en ĉiu fluo, serĉo, profilo kaj respondlisto en ĉi tiu aparato. Unuopa vorto kongruas nur kun tutaj vortoj; frazo ie ajn.</string>
+    <string name="settings_mute_add_hint">Aldonu vorton, frazon aŭ @konton</string>
+    <string name="settings_mute_search">Serĉi en silentigitaj</string>
+    <string name="settings_mute_empty">Nenio estas silentigita</string>
+    <string name="settings_mute_until">Ĝis %1$s</string>
 </resources>

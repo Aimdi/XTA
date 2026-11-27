@@ -128,4 +128,11 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Nie ŭdajecca zahruzić nastupnuju staronku adkazaŭ</string>
     <string name="posts_unable_to_load_who_retweeted">Nie atrymoŭvajecca zahruzić, chto retvitnuŭ hety tvit</string>
     <string name="posts_unable_to_load_more_retweets">Nie atrymoŭvajecca zahruzić bolš liudziej, jakija retvitnuli hety tvit</string>
+    <string name="posts_muted_reason">Scišana: %1$s</string>
+    <string name="posts_muted_show">Pakazać</string>
+    <string name="posts_mute_account">Scišyć @%1$s</string>
+    <string name="posts_unmute_account">Nie scišać @%1$s</string>
+    <string name="posts_mute_word">Scišyć słova…</string>
+    <string name="posts_mute_word_title">Scišyć słova abo frazu</string>
+    <string name="posts_mute_confirm">Scišyć</string>
 </resources>

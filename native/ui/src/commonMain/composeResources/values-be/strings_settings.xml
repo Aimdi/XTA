@@ -418,4 +418,10 @@
     <string name="settings_local_backup_before_restore">Перад аднаўленнем · %1$s</string>
     <string name="settings_local_backup_restore">Аднавіць</string>
     <string name="settings_open_opml">Падпісацца на стужкі з %1$s праз</string>
+    <string name="settings_mute_list">Сцішаныя словы і ўліковыя запісы</string>
+    <string name="settings_mute_list_description">Допісы з гэтымі словамі або ад гэтых уліковых запісаў згортваюцца пад невялікім радком «Сцішана» ва ўсіх стужках, пошуку, профілях і адказах на гэтай прыладзе. Асобнае слова супадае толькі цалкам; фраза — дзе заўгодна.</string>
+    <string name="settings_mute_add_hint">Дадайце слова, фразу або @уліковы запіс</string>
+    <string name="settings_mute_search">Пошук сярод сцішаных</string>
+    <string name="settings_mute_empty">Нічога не сцішана</string>
+    <string name="settings_mute_until">Да %1$s</string>
 </resources>

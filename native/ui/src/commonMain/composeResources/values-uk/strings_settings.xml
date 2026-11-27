@@ -418,4 +418,10 @@
     <string name="settings_local_backup_before_restore">Перед відновленням · %1$s</string>
     <string name="settings_local_backup_restore">Відновити</string>
     <string name="settings_open_opml">Підписатися на стрічки з %1$s через</string>
+    <string name="settings_mute_list">Приховані слова й облікові записи</string>
+    <string name="settings_mute_list_description">Дописи з цими словами або від цих облікових записів згортаються під невеликим рядком «Приховано» в усіх стрічках, пошуку, профілях і відповідях на цьому пристрої. Окреме слово збігається лише цілком; фраза — будь-де.</string>
+    <string name="settings_mute_add_hint">Додайте слово, фразу або @обліковий запис</string>
+    <string name="settings_mute_search">Пошук серед прихованих</string>
+    <string name="settings_mute_empty">Нічого не приховано</string>
+    <string name="settings_mute_until">До %1$s</string>
 </resources>

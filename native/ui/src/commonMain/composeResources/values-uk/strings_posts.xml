@@ -128,4 +128,11 @@
     <string name="posts_unable_to_load_the_next_page_of_replies">Не вдається завантажити наступну сторінку відповідей</string>
     <string name="posts_unable_to_load_who_retweeted">Не вдається завантажити тих, хто ретвітнув цей твіт</string>
     <string name="posts_unable_to_load_more_retweets">Не вдається завантажити більше людей, які ретвітнули цей твіт</string>
+    <string name="posts_muted_reason">Приховано: %1$s</string>
+    <string name="posts_muted_show">Показати</string>
+    <string name="posts_mute_account">Приховати @%1$s</string>
+    <string name="posts_unmute_account">Не приховувати @%1$s</string>
+    <string name="posts_mute_word">Приховати слово…</string>
+    <string name="posts_mute_word_title">Приховати слово або фразу</string>
+    <string name="posts_mute_confirm">Приховати</string>
 </resources>

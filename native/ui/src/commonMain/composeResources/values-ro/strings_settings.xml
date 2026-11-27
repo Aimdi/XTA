@@ -416,4 +416,10 @@
     <string name="settings_local_backup_before_restore">Înainte de o restaurare · %1$s</string>
     <string name="settings_local_backup_restore">Restaurează</string>
     <string name="settings_open_opml">Urmărește fluxurile din %1$s cu</string>
+    <string name="settings_mute_list">Cuvinte și conturi ignorate</string>
+    <string name="settings_mute_list_description">Postările cu aceste cuvinte sau de la aceste conturi se pliază în spatele unui mic rând „Ignorat” în fiecare flux, căutare, profil și listă de răspunsuri de pe acest dispozitiv. Un singur cuvânt se potrivește doar cu cuvinte întregi; o expresie oriunde.</string>
+    <string name="settings_mute_add_hint">Adaugă un cuvânt, o expresie sau un @cont</string>
+    <string name="settings_mute_search">Caută printre cele ignorate</string>
+    <string name="settings_mute_empty">Nimic nu este ignorat</string>
+    <string name="settings_mute_until">Până la %1$s</string>
 </resources>
