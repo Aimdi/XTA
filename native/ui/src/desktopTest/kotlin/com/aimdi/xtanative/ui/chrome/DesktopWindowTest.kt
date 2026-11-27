@@ -49,6 +49,19 @@ class DesktopWindowTest {
     }
 
     @Test
+    fun aNewPostWindowOpensWhollyOnTheWorkArea() {
+        val screen = listOf(ScreenArea(0, 0, 1600, 900))
+        assertEquals(SavedWindow(680, 810, x = 460, y = 45), SavedWindow.newPostWindow(1.0, screen, 0), "never as tall as the whole work area")
+        assertEquals(SavedWindow(680, 810, x = 492, y = 77), SavedWindow.newPostWindow(1.0, screen, 1), "stepped from the one before")
+        assertEquals(SavedWindow.newPostWindow(1.0, screen, 0), SavedWindow.newPostWindow(1.0, screen, 6))
+        val panel = listOf(ScreenArea(0, 30, 1920, 1050), ScreenArea(1920, 0, 1920, 1080))
+        assertEquals(SavedWindow(680, 900, x = 620, y = 105), SavedWindow.newPostWindow(1.0, panel, 0), "below the panel, on the primary screen")
+        val small = SavedWindow.newPostWindow(2.0, listOf(ScreenArea(0, 0, 1280, 720)), 5)
+        assertEquals(SavedWindow(1280, 648, x = 0, y = 72), small, "a step never pushes it off")
+        assertEquals(SavedWindow(680, 900), SavedWindow.newPostWindow(1.0, emptyList(), 3), "no screen known: the desktop places it")
+    }
+
+    @Test
     fun aDamagedFileKeepsTheFirstSizeButStillItsMaximizing() {
         assertEquals(SavedWindow(1100, 820, true), SavedWindow.parse("[window]\nwidth=0\nheight=700\nmaximized=true"))
         assertEquals(SavedWindow(1100, 820, false), SavedWindow.parse("[window]\nwidth=20000\nheight=700"))

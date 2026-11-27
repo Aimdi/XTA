@@ -329,10 +329,12 @@ private fun ApplicationScope.RouteWindow(opened: OpenedWindow, app: DesktopApp, 
     val part by secondary.titlePart.collectAsState()
     // Where it was left, when it comes back (Ctrl+Shift+T, or at start); else a reading column's size where the desktop puts it.
     val bounds = opened.bounds
+    // Wholly on a screen's work area, as the main window is.
+    val placed = remember { bounds?.placedOn(screenAreas()) ?: SavedWindow.newPostWindow(uiScale, screenAreas(), opened.serial) }
     val state = rememberWindowState(
-        placement = if (bounds?.maximized == true) WindowPlacement.Maximized else WindowPlacement.Floating,
-        size = remember { bounds?.let { DpSize(it.width.dp, it.height.dp) } ?: postWindowSize(uiScale) },
-        position = bounds?.let(::savedPosition) ?: WindowPosition.PlatformDefault,
+        placement = if (placed.maximized) WindowPlacement.Maximized else WindowPlacement.Floating,
+        size = DpSize(placed.width.dp, placed.height.dp),
+        position = savedPosition(placed),
     )
     Window(
         onCloseRequest = { if (AppQuit.taken()) quit() else secondary.close() },
@@ -366,12 +368,6 @@ private fun ApplicationScope.RouteWindow(opened: OpenedWindow, app: DesktopApp, 
 private fun KeyEvent.reopensWindow(): Boolean = type == KeyEventType.KeyDown && key == Key.T && isCtrlPressed && isShiftPressed && !isAltPressed
 
 /** A post window's size at the interface size [scale] ([SavedWindow.postWindow]), on the primary screen's work area. */
-private fun postWindowSize(scale: Double): DpSize {
-    val area = screenArea()
-    val (width, height) = SavedWindow.postWindow(scale, area?.first ?: 0, area?.second ?: 0)
-    return DpSize(width.dp, height.dp)
-}
-
 /** The smallest a window may be at the interface size [scale] ([SavedWindow.minimum]), on the primary screen's work area. */
 private fun minimumSize(scale: Double): Dimension {
     val area = screenArea()

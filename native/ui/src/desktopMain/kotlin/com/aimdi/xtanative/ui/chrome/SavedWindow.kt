@@ -81,8 +81,37 @@ data class SavedWindow(val width: Int, val height: Int, val maximized: Boolean =
             return (if (areaWidth > 0) minOf(width, areaWidth) else width) to (if (areaHeight > 0) minOf(POST_HEIGHT, areaHeight) else POST_HEIGHT)
         }
 
+        /**
+         * A new post window on the desktop's [screens] (work areas, the
+         * primary first) at the interface size [scale]: [postWindow]'s width,
+         * no taller than [POST_AREA_SHARE] of the primary screen's work area,
+         * centred on it and stepped down and along a little for each window
+         * opened before it ([serial]), so they do not hide each other, but
+         * always wholly on it. Without screens, [postWindow]'s size with no
+         * place, which the desktop then picks.
+         */
+        fun newPostWindow(scale: Double, screens: List<ScreenArea>, serial: Int): SavedWindow {
+            val area = screens.firstOrNull() ?: return postWindow(scale).let { (width, height) -> SavedWindow(width, height) }
+            val width = postWindow(scale, area.width, area.height).first
+            val height = minOf(POST_HEIGHT, (area.height * POST_AREA_SHARE).roundToInt()).coerceAtLeast(1)
+            val step = Math.floorMod(serial, CASCADE) * CASCADE_STEP
+            return SavedWindow(
+                width,
+                height,
+                x = (area.x + (area.width - width) / 2 + step).coerceIn(area.x, maxOf(area.x, area.x + area.width - width)),
+                y = (area.y + (area.height - height) / 2 + step).coerceIn(area.y, maxOf(area.y, area.y + area.height - height)),
+            )
+        }
+
         private const val POST_WIDTH = 680
         private const val POST_HEIGHT = 900
+
+        /** The most of a work area's height a new post window takes: a window as tall as the screen reads as maximized, and its edges are lost under the panels. */
+        private const val POST_AREA_SHARE = 0.9
+
+        /** How many new windows step on from the one before before they start over at the centre, and how far each step is. */
+        private const val CASCADE = 6
+        private const val CASCADE_STEP = 32
 
         /** A first window, tall rather than wide: the layouts are a reading column. */
         val FIRST = SavedWindow(1100, 820)
