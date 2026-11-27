@@ -64,6 +64,7 @@ import com.aimdi.xtanative.core.x.model.photoUrl
 import com.aimdi.xtanative.data.LocalPostCache
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.common.turnTo
@@ -192,6 +193,8 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     // The zoom and pan keys, for the photo shown, and which pages' photos are zoomed in.
     val zoomKeys = remember { MutableSharedFlow<ViewerKey>(extraBufferCapacity = 8) }
     val zoomedPages = remember { mutableStateMapOf<Int, Boolean>() }
+    // How far each page's photo is zoomed, in percent; only the bar's readout reads it, so a pinch redraws only that.
+    val zoomPercents = remember { mutableStateMapOf<Int, Int>() }
     // A video page's keys: Space, k, j, l, m, f, < > and 0 to 9, for the page shown.
     val videoKeys = remember { MutableSharedFlow<VideoKey>(extraBufferCapacity = 8) }
     Box(
@@ -227,7 +230,8 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     ) {
         Column(Modifier.fillMaxSize()) {
             val current = viewed.pages.getOrNull(pager.currentPage)
-            ViewerBar(pager, items.size, backdrop, onClose) {
+            val zoom = { zoomPercents[pager.currentPage]?.takeIf { zoomedPages[pager.currentPage] == true } }
+            ViewerBar(pager, items.size, backdrop, onClose, zoom) {
                 if (onOpenPost != null && current != null) {
                     IconTip(stringResource(Res.string.posts_open_post)) { IconButton(onClick = { onOpenPost(current) }) { Icon(PostIcons.OpenInNew, stringResource(Res.string.posts_open_post), tint = Color.White) } }
                 }
@@ -262,6 +266,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
                                 onClose = onClose,
                                 zoomKeys = zoomKeys.takeIf { pager.currentPage == page },
                                 onZoomed = { zoomedPages[page] = it },
+                                onPercent = { zoomPercents[page] = it },
                             )
                             XMedia.Kind.VIDEO, XMedia.Kind.GIF -> {
                                 val download: ((String) -> Unit)? = if (saver == null) null else { url -> viewed.save(viewed.pages[page], url)?.let(saver::save) }
@@ -300,9 +305,9 @@ private fun AltCaption(alt: String, modifier: Modifier) {
 /** The most lines of a picture's description the viewer shows. */
 private const val ALT_LINES = 4
 
-/** The black bar over the pages: back, "2 / 4" rolling with the page, and [actions] for the page shown. */
+/** The black bar over the pages: back, "2 / 4" rolling with the page, on the desktop how far the photo is zoomed while it is ([zoom]), and [actions] for the page shown. */
 @Composable
-private fun ViewerBar(pager: PagerState, count: Int, backdrop: Float, onClose: () -> Unit, actions: @Composable () -> Unit) {
+private fun ViewerBar(pager: PagerState, count: Int, backdrop: Float, onClose: () -> Unit, zoom: () -> Int?, actions: @Composable () -> Unit) {
     val media = stringResource(Res.string.reader_media)
     Row(
         Modifier.fillMaxWidth().background(Color.Black.copy(alpha = backdrop)).statusBarsPadding().heightIn(min = 56.dp).padding(end = 4.dp),
@@ -323,10 +328,19 @@ private fun ViewerBar(pager: PagerState, count: Int, backdrop: Float, onClose: (
                 Text(" / $count", color = Color.White)
             }
         }
+        if (isDesktop) ZoomReadout(zoom)
         Spacer(Modifier.weight(1f))
         actions()
         if (isDesktop) IconTip(stringResource(Res.string.reader_close)) { IconButton(onClick = onClose) { Icon(Icons.Filled.Close, stringResource(Res.string.reader_close), tint = Color.White) } }
     }
+}
+
+/** "200 %" while the photo shown is zoomed in, as the reader's language writes it; nothing at its fitted size. */
+@Composable
+private fun ZoomReadout(zoom: () -> Int?) {
+    val percent = zoom() ?: return
+    val locale = currentLocale()
+    Text(remember(percent, locale) { ViewerZoom.percentText(percent, locale) }, color = Color.White.copy(alpha = 0.7f), modifier = Modifier.padding(start = 16.dp))
 }
 
 /** ‹ and › at the sides while there is a page that way, white on black over any picture. */

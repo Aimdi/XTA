@@ -1,8 +1,11 @@
 package com.aimdi.xtanative.ui.media
 
+import java.text.NumberFormat
+import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 /** A point or a shift on screen, in pixels. */
 data class Shift(val x: Float, val y: Float) {
@@ -99,6 +102,12 @@ object ViewerZoom {
 
     /** Whether the photo is zoomed in, so one finger pans it rather than turning the page or closing the viewer. */
     fun zoomed(scale: Float): Boolean = scale > MIN + 0.01f
+
+    /** [scale] in whole percent of the fitted size: 100 fitted, 400 at [MAX]. */
+    fun wholePercent(scale: Float): Int = (scale * 100).roundToInt()
+
+    /** [percent] as [locale] writes a percentage ("200%", "200 %"). */
+    fun percentText(percent: Int, locale: Locale): String = NumberFormat.getPercentInstance(locale).format(percent / 100.0)
 }
 
 /**

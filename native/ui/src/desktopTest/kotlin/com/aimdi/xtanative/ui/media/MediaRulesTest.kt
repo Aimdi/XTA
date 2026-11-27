@@ -122,6 +122,16 @@ class MediaRulesTest {
     }
 
     @Test
+    fun theZoomReadsInWholePercentAsTheLanguageWritesIt() {
+        assertEquals(100, ViewerZoom.wholePercent(ViewerZoom.MIN))
+        assertEquals(400, ViewerZoom.wholePercent(ViewerZoom.MAX))
+        assertEquals(144, ViewerZoom.wholePercent(ViewerZoom.keyed(ViewerZoom.keyed(1f, ViewerKey.ZOOM_IN), ViewerKey.ZOOM_IN)))
+        assertEquals("200%", ViewerZoom.percentText(200, java.util.Locale.ENGLISH))
+        assertEquals("200\u00a0%", ViewerZoom.percentText(200, java.util.Locale.GERMAN))
+        assertEquals("1,000%", ViewerZoom.percentText(1000, java.util.Locale.US))
+    }
+
+    @Test
     fun aDoubleTapZoomsAroundThePointTapped() {
         assertEquals(ViewerZoom.MAX, ViewerZoom.doubleTapScale(1f))
         assertEquals(ViewerZoom.MIN, ViewerZoom.doubleTapScale(2.5f))

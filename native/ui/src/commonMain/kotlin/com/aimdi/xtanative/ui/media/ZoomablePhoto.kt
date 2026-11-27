@@ -69,6 +69,7 @@ internal fun ZoomablePhoto(
     onClose: () -> Unit,
     zoomKeys: Flow<ViewerKey>? = null,
     onZoomed: (Boolean) -> Unit = {},
+    onPercent: (Int) -> Unit = {},
 ) {
     var scale by remember { mutableFloatStateOf(1f) }
     var area by remember { mutableStateOf(IntSize.Zero) }
@@ -113,6 +114,8 @@ internal fun ZoomablePhoto(
     // The viewer reads the arrows as moving about the photo while it is zoomed in.
     val zoomedNow by rememberUpdatedState(onZoomed)
     LaunchedEffect(Unit) { snapshotFlow { ViewerZoom.zoomed(scale) }.collect { zoomedNow(it) } }
+    val percentNow by rememberUpdatedState(onPercent)
+    LaunchedEffect(Unit) { snapshotFlow { ViewerZoom.wholePercent(scale) }.collect { percentNow(it) } }
 
     Box(
         Modifier
