@@ -23,13 +23,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.ColumnScrollbar
+import com.aimdi.xtanative.ui.common.bleed
 import com.aimdi.xtanative.ui.common.SearchField
 import com.aimdi.xtanative.ui.common.dialogDefault
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -147,10 +147,3 @@ private fun <T> ChoiceOption(option: T, label: String, selected: T?, description
     }
 }
 
-/** Laid out [by] wider on either side than the space given, reaching into the dialog's margin. */
-private fun Modifier.bleed(by: Dp): Modifier = layout { measurable, constraints ->
-    val extra = by.roundToPx() * 2
-    val wider = if (constraints.hasBoundedWidth) constraints.copy(maxWidth = constraints.maxWidth + extra, minWidth = constraints.minWidth + extra) else constraints
-    val placeable = measurable.measure(wider)
-    layout((placeable.width - extra).coerceAtLeast(0), placeable.height) { placeable.place(-extra / 2, 0) }
-}

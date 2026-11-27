@@ -18,4 +18,11 @@ class SavedNoteLookTest {
     fun theDesktopsLitBlockLeavesAMarginRoundThePencil() {
         assertTrue(SavedNoteLook.PADDING - RowHighlight.SIDE_INSET >= 8f)
     }
+
+    @Test
+    fun anOpenedPostShowsItsSavedNoteUnlessItIsBlank() {
+        assertEquals("Hello note", NoteRules.shownSavedNote("Hello note"))
+        assertEquals(null, NoteRules.shownSavedNote("  "))
+        assertEquals(null, NoteRules.shownSavedNote(null))
+    }
 }

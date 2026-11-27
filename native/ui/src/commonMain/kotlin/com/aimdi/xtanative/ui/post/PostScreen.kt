@@ -83,6 +83,9 @@ import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.bleed
+import com.aimdi.xtanative.ui.saved.SavedNoteLook
+import com.aimdi.xtanative.ui.saved.SavedNoteOnPost
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.common.itemMotion
@@ -460,6 +463,8 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order:
         }
         FocalMetaLine(shown, scope.prefs, order, picture)
         if (article == null) PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture, countsMax = FooterFit.FOCAL_COUNTS_MAX.dp)
+        // Its note in Saved, as Saved shows it, the pencil level with the text above.
+        SavedNoteOnPost(post, Modifier.padding(top = 4.dp).bleed(SavedNoteLook.PADDING.dp))
     }
     Hairline()
     if (menu) {
