@@ -21,6 +21,18 @@ object AppLocale {
      * of Chinese are kept under China and Taiwan, Latin Belarusian under
      * [LATIN_BELARUSIAN_REGION].
      */
+    /** The languages written right to left, by their ISO 639 code. */
+    val RIGHT_TO_LEFT = setOf("ar", "fa", "he", "iw", "ur", "ps", "yi", "dv", "ckb", "ug", "sd")
+
+    /**
+     * The right-to-left languages the app is written in. A system set to
+     * another (Hebrew) shows the app in English, left to right.
+     */
+    val SHOWN_RIGHT_TO_LEFT = setOf("ar")
+
+    /** Whether the screens are laid out right to left for [language] (an ISO 639 code), the one the app shows. */
+    fun rightToLeft(language: String?): Boolean = language in SHOWN_RIGHT_TO_LEFT
+
     fun of(code: String?): Pair<String, String>? {
         val tag = code?.takeIf { it.isNotBlank() && it != SYSTEM } ?: return null
         return when (tag) {

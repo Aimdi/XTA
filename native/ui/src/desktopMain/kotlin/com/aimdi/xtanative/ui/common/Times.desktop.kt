@@ -34,10 +34,15 @@ internal actual fun datePattern(locale: Locale, skeleton: String): String {
 }
 
 private val yearAtStart = Regex("^y+[^A-Za-z']*")
-private val yearAtEnd = Regex("(?:[\\s,]*'[^']*')?[\\s,]*y+[^A-Za-z']*$")
 
-/** "MMM d, y" to "MMM d", "dd.MM.y" to "dd.MM.", "y/MM/dd" to "MM/dd", "d 'de' MMM 'de' y" to "d 'de' MMM". */
-private fun withoutYear(pattern: String): String =
+/** The year at the end with what joins it on: spaces, commas, a slash or dash, and the marks that keep a right-to-left date's order (U+200E, U+200F, U+061C). */
+private val yearAtEnd = Regex("(?:[\\s,]*'[^']*')?[\\s,/\\-\u200E\u200F\u061C]*y+[^A-Za-z']*$")
+
+/**
+ * "MMM d, y" to "MMM d", "dd.MM.y" to "dd.MM.", "y/MM/dd" to "MM/dd", "d 'de' MMM 'de' y" to "d 'de' MMM",
+ * Arabic's "dd‏/MM‏/y" to "dd‏/MM".
+ */
+internal fun withoutYear(pattern: String): String =
     pattern.replace(yearAtStart, "").replace(yearAtEnd, "").ifBlank { pattern }
 
 /** The locale's short time: "3:04 PM", "15:04". */

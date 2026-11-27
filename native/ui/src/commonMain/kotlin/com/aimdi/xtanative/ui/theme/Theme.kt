@@ -13,6 +13,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -21,7 +22,13 @@ val XBlue = Color(0xFF1D9BF0)
 /** The X Look colours the screens are drawn with now, for what a ColorScheme has no name for. */
 val LocalXLook = staticCompositionLocalOf { XLook.scheme(XLookTokens.LIGHTS_OUT) }
 
-/** XTA's type scale, which [XtaTheme] gives Material. */
+/**
+ * XTA's type scale, which [XtaTheme] gives Material. Every style takes its
+ * direction from its text, as a web page's dir="auto" does: an English post
+ * in the Arabic app reads left to right with its full stop at its end, an
+ * Arabic one in the English app right to left, where a paragraph would
+ * otherwise run the app's way whatever its words.
+ */
 internal val XtaTypography = Typography(
     titleLarge = TextStyle(fontSize = 20.sp, lineHeight = 24.sp, fontWeight = FontWeight.Bold),
     titleMedium = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.Bold),
@@ -30,7 +37,18 @@ internal val XtaTypography = Typography(
     bodySmall = TextStyle(fontSize = 13.sp, lineHeight = 16.sp),
     labelLarge = TextStyle(fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.Bold),
     labelMedium = TextStyle(fontSize = 13.sp, lineHeight = 16.sp),
-)
+).directedByContent()
+
+private fun Typography.directedByContent(): Typography {
+    fun TextStyle.byContent() = copy(textDirection = TextDirection.Content)
+    return Typography(
+        displayLarge = displayLarge.byContent(), displayMedium = displayMedium.byContent(), displaySmall = displaySmall.byContent(),
+        headlineLarge = headlineLarge.byContent(), headlineMedium = headlineMedium.byContent(), headlineSmall = headlineSmall.byContent(),
+        titleLarge = titleLarge.byContent(), titleMedium = titleMedium.byContent(), titleSmall = titleSmall.byContent(),
+        bodyLarge = bodyLarge.byContent(), bodyMedium = bodyMedium.byContent(), bodySmall = bodySmall.byContent(),
+        labelLarge = labelLarge.byContent(), labelMedium = labelMedium.byContent(), labelSmall = labelSmall.byContent(),
+    )
+}
 
 /** XTA's corners: a sheet's and a dialog's top is rounded as the app's own sheets are, not as wide as Material's. */
 internal val XtaShapes = Shapes(extraLarge = RoundedCornerShape(20.dp))

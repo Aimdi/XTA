@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.common
 import java.time.LocalDateTime
 import java.time.ZoneId
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -17,5 +18,15 @@ class TimesTest {
         assertTrue(sameCalendarDay(at(2026, 8, 4, 0, 5), at(2026, 8, 4, 23, 55), zone))
         assertFalse(sameCalendarDay(at(2026, 8, 3, 23, 55), at(2026, 8, 4, 0, 5), zone))
         assertFalse(sameCalendarDay(at(2025, 8, 4, 12, 0), at(2026, 8, 4, 12, 0), zone))
+    }
+
+    @Test
+    fun aDateWithoutItsYearLosesWhatJoinedIt() {
+        assertEquals("dd\u200F/MM", withoutYear("dd\u200F/MM\u200F/y"))
+        assertEquals("dd.MM.", withoutYear("dd.MM.y"))
+        assertEquals("MMM d", withoutYear("MMM d, y"))
+        assertEquals("MM/dd", withoutYear("y/MM/dd"))
+        assertEquals("d 'de' MMM", withoutYear("d 'de' MMM 'de' y"))
+        assertEquals("d MMM", withoutYear("d MMM y"))
     }
 }
