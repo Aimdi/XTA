@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">账号已被冻结</string>
     <string name="posts_add_to_group">添加到订阅组</string>
+    <string name="posts_copy_text">复制文本</string>
     <string name="posts_article_on_x">X 上的文章</string>
     <string name="posts_boosts">转发</string>
     <string name="posts_collapse">收起</string>

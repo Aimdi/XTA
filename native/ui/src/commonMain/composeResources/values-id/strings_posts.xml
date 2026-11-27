@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">Akun ditangguhkan</string>
     <string name="posts_add_to_group">Tambah ke grup</string>
+    <string name="posts_copy_text">Salin teks</string>
     <string name="posts_article_on_x">Artikel di X</string>
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Ciutkan</string>

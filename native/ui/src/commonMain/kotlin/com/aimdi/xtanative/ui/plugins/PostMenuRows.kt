@@ -9,11 +9,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.groups_open_profile
 import com.aimdi.xtanative.ui.generated.resources.posts_add_to_group
+import com.aimdi.xtanative.ui.generated.resources.posts_copy_text
 import com.aimdi.xtanative.ui.generated.resources.posts_open_in_browser
 import com.aimdi.xtanative.ui.generated.resources.posts_open_in_new_window
 import com.aimdi.xtanative.ui.generated.resources.posts_quotes
 import com.aimdi.xtanative.ui.generated.resources.posts_reposted_by
+import com.aimdi.xtanative.ui.generated.resources.reader_link_copy
 import com.aimdi.xtanative.ui.generated.resources.reader_link_share
 import com.aimdi.xtanative.ui.generated.resources.saved_add_note
 import com.aimdi.xtanative.ui.generated.resources.saved_save_here
@@ -64,7 +67,8 @@ internal class PostMenuHandlers(
 /**
  * A plugin post's entries in XTA's order (showPluginPostActions): saving it
  * on this device or taking it out, the note on it, its author's groups,
- * sharing its link, its folder, who reposted and quoted it where the plugin
+ * an X post's author's profile ([openAuthor]), sharing its link (copying it
+ * where there is no share sheet), an X post's words ([copyText]), its folder, who reposted and quoted it where the plugin
  * lists them, a window of its own where the app opens one ([newWindow]:
  * an X post's on the desktop), and the browser.
  */
@@ -77,6 +81,8 @@ internal fun PostMenuRows(
     row: PluginMenuEntry = SheetEntry,
     newWindow: (() -> Unit)? = null,
     hints: Boolean = false,
+    openAuthor: (() -> Unit)? = null,
+    copyText: (() -> Unit)? = null,
 ) {
     val outside = rememberOpenOutside()
     val share = rememberShareText()
@@ -89,7 +95,16 @@ internal fun PostMenuRows(
     hinted(if (saved) SavedIcons.Bookmark else SavedIcons.BookmarkBorder, stringResource(if (saved) Res.string.saved_unsave else Res.string.saved_save_here), MenuHint.SAVE, then(handlers.toggleSaved))
     row(SavedIcons.EditNote, stringResource(Res.string.saved_add_note), then(handlers.editNote))
     menu.author?.let { author -> row(HomeIcons.PeopleOutlined, stringResource(Res.string.posts_add_to_group), then { handlers.addToGroup(author) }) }
-    hinted(Icons.Outlined.Share, stringResource(Res.string.reader_link_share), MenuHint.COPY_LINK, then { share(menu.url) })
+    openAuthor?.let { open -> row(PostIcons.PersonOutline, stringResource(Res.string.groups_open_profile), then(open)) }
+    // Where there is no share sheet (the desktop) the link is copied, and the entry says so.
+    val copies = pluginsOnDesktop
+    hinted(
+        if (copies) PostIcons.ContentCopy else Icons.Outlined.Share,
+        stringResource(if (copies) Res.string.reader_link_copy else Res.string.reader_link_share),
+        MenuHint.COPY_LINK,
+        then { share(menu.url) },
+    )
+    copyText?.let { copy -> row(PostIcons.ContentCopy, stringResource(Res.string.posts_copy_text), then(copy)) }
     row(SavedIcons.Folder, stringResource(Res.string.saved_save_to_folder), then(handlers.chooseFolder))
     if (menu.reposts != null || menu.quotes != null) MenuGroupDivider()
     menu.reposts?.let { open -> row(XIcons.Repost, stringResource(Res.string.posts_reposted_by), then(open)) }

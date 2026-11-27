@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">帳號已遭停權</string>
     <string name="posts_add_to_group">新增至群組</string>
+    <string name="posts_copy_text">複製文字</string>
     <string name="posts_article_on_x">X 上的文章</string>
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">收起</string>

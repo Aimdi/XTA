@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">Kasutajakonto on ajutiselt peatatud</string>
     <string name="posts_add_to_group">Lisa gruppi</string>
+    <string name="posts_copy_text">Kopeeri tekst</string>
     <string name="posts_article_on_x">Artikkel X-is</string>
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Ahenda</string>

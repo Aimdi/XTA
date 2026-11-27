@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">Compte suspendu</string>
     <string name="posts_add_to_group">Ajouter au groupe</string>
+    <string name="posts_copy_text">Copier le texte</string>
     <string name="posts_article_on_x">Article sur X</string>
     <string name="posts_boosts">Republications</string>
     <string name="posts_collapse">Réduire</string>

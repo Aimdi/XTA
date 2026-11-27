@@ -5,6 +5,8 @@ import com.aimdi.xtanative.core.x.model.XEntity
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.core.x.parse.XRun
+import com.aimdi.xtanative.core.x.parse.XText
 import com.aimdi.xtanative.services.ai.XTranslator
 import com.aimdi.xtanative.services.links.LinkPreviewLayout
 import com.aimdi.xtanative.services.links.LinkPreviews
@@ -76,6 +78,13 @@ object PostView {
     /** The tickers the price strip under a post names: its first cashtags, upper-cased, each once; none in a quote. */
     fun cashtags(shown: XPost, quoted: Boolean): List<String> =
         if (quoted) emptyList() else shown.entities.filterIsInstance<XEntity.Cashtag>().map { it.symbol.uppercase() }.distinct().take(CASHTAG_LIMIT)
+
+    /**
+     * The text "Copy text" puts on the clipboard: [shown]'s words as the post
+     * draws them, but each link by its whole address, not the shortened
+     * display text, so a pasted link still opens.
+     */
+    fun copiedText(shown: XPost): String = XText.runs(shown).joinToString("") { if (it is XRun.Link) it.url else it.text }
 
     /** What stands for the post [shown] quotes, or null when it quotes none; a quote's own quote is never drawn. */
     fun quote(shown: XPost, quoted: Boolean): QuoteBlock? {

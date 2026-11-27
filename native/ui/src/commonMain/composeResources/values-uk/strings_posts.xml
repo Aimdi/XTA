@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">Акаунт призупинено</string>
     <string name="posts_add_to_group">Додати до групи</string>
+    <string name="posts_copy_text">Копіювати текст</string>
     <string name="posts_article_on_x">Стаття в X</string>
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Згорнути</string>

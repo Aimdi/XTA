@@ -124,6 +124,20 @@ object PostIcons {
                 "L19,6.41V10h2V3h-7z",
         )
     }
+    val ContentCopy: ImageVector by lazy {
+        icon(
+            "ContentCopy",
+            "M16,1H4c-1.1,0 -2,0.9 -2,2v14h2V3h12V1zM19,5H8c-1.1,0 -2,0.9 -2,2v14c0,1.1 0.9,2 2,2h11c1.1,0 2,-0.9 2,-2V7c0,-1.1 -0.9,-2 -2,-2z" +
+                "M19,21H8V7h11v14z",
+        )
+    }
+    val PersonOutline: ImageVector by lazy {
+        icon(
+            "PersonOutline",
+            "M12,6c1.1,0 2,0.9 2,2s-0.9,2 -2,2 -2,-0.9 -2,-2 0.9,-2 2,-2m0,10c2.7,0 5.8,1.29 6,2H6c0.23,-0.72 3.31,-2 6,-2m0,-12" +
+                "C9.79,4 8,5.79 8,8s1.79,4 4,4 4,-1.79 4,-4 -1.79,-4 -4,-4zM12,14c-2.67,0 -8,1.34 -8,4v2h16v-2c0,-2.66 -5.33,-4 -8,-4z",
+        )
+    }
     val UnfoldMore: ImageVector by lazy {
         icon("UnfoldMore", "M12,5.83L15.17,9l1.41,-1.41L12,3 7.41,7.59 8.83,9 12,5.83zM12,18.17L8.83,15l-1.41,1.41L12,21l4.59,-4.59L15.17,15 12,18.17z")
     }

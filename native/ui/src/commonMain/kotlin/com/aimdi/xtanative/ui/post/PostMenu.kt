@@ -9,6 +9,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.plugins.PluginMenuRow
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
@@ -27,8 +28,8 @@ private enum class MenuStep { MENU, NOTE, FOLDERS, GROUPS, CLOSED }
 /**
  * An X post's ⋯ sheet, in XTA's order (plugin_post_actions.dart, as
  * tweet_post_menu.dart opens it for an X post): save it on this device or
- * take it out, the note on it in Saved, Add to group for its author, Share
- * link, Save to folder…, Reposted by, Quotes, Open in new window (on the
+ * take it out, the note on it in Saved, Add to group for its author, Open
+ * profile, Share link (Copy link on the desktop), Copy text, Save to folder…, Reposted by, Quotes, Open in new window (on the
  * desktop) and Open in browser. None of it
  * writes to X; what the running plugins add is in the post's share sheet,
  * where XTA has it.
@@ -70,10 +71,16 @@ private fun MenuSheet(post: XPost, actions: PostActions, onDismiss: () -> Unit, 
             chooseFolder = { onStep(MenuStep.FOLDERS) },
         )
     }
+    val copy = rememberCopyText()
+    val words = remember(shown) { PostView.copiedText(shown).takeIf { it.isNotBlank() } }
+    val copyText = words?.let { { copy(it) } }
+    val openAuthor = remember(shown, actions) {
+        if (shown.author.screenName.isEmpty()) null else { { actions.openUser(shown.author.screenName, shown.author.id) } }
+    }
     val windows = LocalPostWindows.current
     val inWindow = remember(windows, shown.id) { windows?.let { open -> { open(shown.id) } } }
     PostMenuSurface(onDismiss) {
-        PostMenuRows(menu, saved, handlers, onDone = { onStep(MenuStep.CLOSED) }, newWindow = inWindow, hints = true)
+        PostMenuRows(menu, saved, handlers, onDone = { onStep(MenuStep.CLOSED) }, newWindow = inWindow, hints = true, openAuthor = openAuthor, copyText = copyText)
     }
 }
 

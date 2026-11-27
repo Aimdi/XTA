@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">Cont suspendat</string>
     <string name="posts_add_to_group">Adăugați la grup</string>
+    <string name="posts_copy_text">Copiază textul</string>
     <string name="posts_article_on_x">Articol pe X</string>
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Restrânge</string>

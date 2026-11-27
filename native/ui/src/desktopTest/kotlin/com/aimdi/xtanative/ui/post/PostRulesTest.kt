@@ -97,6 +97,13 @@ class PostRulesTest {
     }
 
     @Test
+    fun copyTextTakesTheWordsAsDrawnWithEachLinkWhole() {
+        val link = XEntity.Link(5, 20, "https://t.co/a1", "https://example.com/read?id=7", "example.com/read…")
+        val shown = post("1", text = "Read https://t.co/a1 now &amp; then").copy(entities = listOf(link))
+        assertEquals("Read https://example.com/read?id=7 now & then", PostView.copiedText(shown))
+    }
+
+    @Test
     fun anArticleLinkWithoutItsArticleIsACardAndCashtagsAreTheFirstFourOnce() {
         val link = XEntity.Link(0, 5, "https://t.co/a", "https://x.com/i/article/42", "x.com/i/article/42")
         assertEquals("https://x.com/i/article/42", PostView.articleLink(post("1").copy(entities = listOf(link))))

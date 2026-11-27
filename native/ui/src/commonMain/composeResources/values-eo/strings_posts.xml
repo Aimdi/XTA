@@ -3,6 +3,7 @@
 <resources>
     <string name="posts_account_suspended">Konto haltiĝis</string>
     <string name="posts_add_to_group">Aldoni al grupo</string>
+    <string name="posts_copy_text">Kopii tekston</string>
     <string name="posts_article_on_x">Artikolo ĉe X</string>
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Faldi</string>

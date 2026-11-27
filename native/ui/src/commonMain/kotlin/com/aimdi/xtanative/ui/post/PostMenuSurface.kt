@@ -77,7 +77,7 @@ internal data class MenuHint(val held: List<StringResource>, val key: String) {
         /** b: saves the post on this device, or unsaves it. */
         val SAVE = MenuHint(emptyList(), "B")
 
-        /** Ctrl+Shift+C: copies the post's link, as Share link does on the desktop, which has no share sheet. */
+        /** Ctrl+Shift+C: copies the post's link, as the menu's Copy link does on the desktop, which has no share sheet. */
         val COPY_LINK = MenuHint(listOf(Res.string.keys_ctrl, Res.string.keys_shift), "C")
     }
 }
