@@ -85,6 +85,7 @@ import com.aimdi.xtanative.ui.home.HomeWide
 import com.aimdi.xtanative.ui.home.FrameRoots
 import com.aimdi.xtanative.ui.home.LocalFrameRoots
 import com.aimdi.xtanative.ui.home.LocalWideFrame
+import com.aimdi.xtanative.ui.home.LocalWindowRoot
 import com.aimdi.xtanative.ui.home.PageEnd
 import com.aimdi.xtanative.ui.home.PageStart
 import com.aimdi.xtanative.ui.home.RailMenu
@@ -961,7 +962,8 @@ private val FULL_WINDOW = setOf(Routes.MEDIA, Routes.GALLERY, Routes.IMAGE, Plug
  */
 @Composable
 private fun WideFramed(nav: NavHostController, routes: HomeRoutes, opens: FrameOpens, content: @Composable () -> Unit) {
-    if (!isDesktop || LocalSecondaryWindow.current != null) return content()
+    if (!isDesktop) return content()
+    if (LocalSecondaryWindow.current != null) return WindowRooted(nav, content)
     val frame = remember { WideFrame() }
     val focus = remember(frame) { FrameFocus(frame.pageBar) }
     var menu by remember { mutableStateOf(false) }
@@ -1027,6 +1029,19 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, opens: FrameO
             }
         }
     }
+}
+
+/**
+ * The screens of a window of its own ([content]), its first one known as
+ * the window's root ([LocalWindowRoot]): its bar draws no Back, which would
+ * only close the window.
+ */
+@Composable
+private fun WindowRooted(nav: NavHostController, content: @Composable () -> Unit) {
+    val stack by nav.currentBackStack.collectAsStateWithLifecycle()
+    // The navigation's graph stands first in the stack, with no graph of its own around it.
+    val root = stack.firstOrNull { it.destination.parent != null }
+    CompositionLocalProvider(LocalWindowRoot provides root, content = content)
 }
 
 /**

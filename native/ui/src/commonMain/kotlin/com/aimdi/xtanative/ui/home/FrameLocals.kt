@@ -70,17 +70,28 @@ val LocalFrameRoots = compositionLocalOf<Set<Any>> { emptySet() }
 val LocalBesideList = staticCompositionLocalOf<Boolean?> { null }
 
 /**
+ * The first screen of a window of its own (a post, a profile, a search
+ * opened with Ctrl or the middle button), as the owner it is composed under
+ * ([LocalViewModelStoreOwner]): there is nothing to go back to from it, the
+ * window's close button and Ctrl+W close it. Null in the app's own window.
+ */
+val LocalWindowRoot = compositionLocalOf<Any?> { null }
+
+/**
  * Whether the screen composed here is one the frame's column or rail opened
  * ([LocalFrameRoots]): the navigation beside it already leads everywhere, so
  * its bar draws no Back of its own. Esc, Alt+Left and the mouse's back
  * button still go back. False on a phone, in a narrow window, and for a
  * screen opened any other way (Search from a hashtag, Settings by Ctrl+comma).
  * A page shown beside the list that picks it says for itself ([LocalBesideList]).
+ * The first screen of a window of its own has no Back either ([LocalWindowRoot]):
+ * one that closed the window looked like a step back inside it.
  */
 @Composable
 fun isFrameRoot(): Boolean {
     LocalBesideList.current?.let { return it }
     val owner = LocalViewModelStoreOwner.current ?: return false
+    if (owner === LocalWindowRoot.current) return true
     return LocalWideFrame.current != null && owner in LocalFrameRoots.current
 }
 

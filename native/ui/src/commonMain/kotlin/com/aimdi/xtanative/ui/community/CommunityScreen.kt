@@ -22,11 +22,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import com.aimdi.xtanative.ui.common.Scaffold
 import com.aimdi.xtanative.ui.common.XtaTab
@@ -50,7 +48,6 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.ColumnTopAppBar
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.rememberStickyHeaderRoom
 import com.aimdi.xtanative.ui.common.KeepsClearOfStickyHeader
 import com.aimdi.xtanative.ui.common.FeedSkeleton
@@ -63,6 +60,7 @@ import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.datePattern
 import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.common.TopBarBack
 import com.aimdi.xtanative.ui.feed.feedThreads
 import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -123,7 +121,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
         topBar = {
             ColumnTopAppBar(
                 navigationIcon = {
-                    IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
+                    TopBarBack(onBack)
                 },
                 title = { TipText(state.community?.name.orEmpty(), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -174,7 +172,7 @@ fun CommunityMembersScreen(id: String, actions: PostActions, onBack: () -> Unit)
         topBar = {
             ColumnTopAppBar(
                 navigationIcon = {
-                    IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } }
+                    TopBarBack(onBack)
                 },
                 title = { Text(stringResource(Res.string.discover_community_members)) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),

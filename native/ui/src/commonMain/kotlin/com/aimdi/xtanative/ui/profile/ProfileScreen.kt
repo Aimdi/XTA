@@ -31,7 +31,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
@@ -97,6 +96,7 @@ import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.common.rememberStickyHeaderRoom
 import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.common.TopBarBack
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.posts_account_suspended
@@ -222,7 +222,7 @@ fun ProfileScreen(
         topBar = {
             ColumnTopAppBar(
                 title = { TipText(user?.name ?: "@$screenName", maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                navigationIcon = { IconTip(stringResource(Res.string.back)) { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } } },
+                navigationIcon = { TopBarBack(onBack) },
                 actions = {
                     if (user != null) {
                         IconTip(stringResource(Res.string.search)) { IconButton(onClick = { searchPosts(ProfileHeader.searchQuery(user)) }) { Icon(Icons.Filled.Search, stringResource(Res.string.search)) } }
