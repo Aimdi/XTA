@@ -408,4 +408,10 @@
     <string name="settings_unread_outside">Irakurri gabekoen kopurua leihotik kanpo</string>
     <string name="settings_unread_outside_description">Leihoaren izenburuak, erretiluko ikonoak eta abiarazleak zenbat argitalpen irakurri gabe dauden erakusten dute, inoiz ez zer dioten</string>
     <string name="settings_unreadable_files">Zure datu batzuk ezin izan dira irakurri: %1$s. Dauden bezala uzten dira, eta haietako aldaketak ez dira gordeko berriro irakur daitezen arte.</string>
+    <string name="settings_local_backups">Babeskopia automatikoak</string>
+    <string name="settings_local_backups_description">Ordenagailu honetan gordetako kopiak, egunero eta inportazio edo berreskuratze bakoitzaren aurretik eginak. X-ko saio-hasierak ez daude barnean.</string>
+    <string name="settings_local_backup_daily">Eguneko kopia · %1$s</string>
+    <string name="settings_local_backup_before_restore">Berreskuratu aurretik · %1$s</string>
+    <string name="settings_local_backup_restore">Berreskuratu</string>
+    <string name="settings_open_opml">Jarraitu %1$s fitxategiko jarioei honekin:</string>
 </resources>

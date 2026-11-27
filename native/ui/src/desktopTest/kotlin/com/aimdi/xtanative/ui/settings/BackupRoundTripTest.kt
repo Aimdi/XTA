@@ -9,6 +9,7 @@ import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.core.x.XAccountHealth
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.store.backup.BackupDocument
+import com.aimdi.xtanative.store.backup.LocalBackupKind
 import com.aimdi.xtanative.store.backup.ExportChoice
 import com.aimdi.xtanative.store.backup.GroupRow
 import com.aimdi.xtanative.store.backup.XtaTime
@@ -116,6 +117,23 @@ class BackupRoundTripTest {
         assertEquals(JsonPrimitive(true), settings["feed.catch_up_mode.-1"])
         assertNull(settings["feed.catch_up_mode.gone"], "no feed here, no key")
         assertEquals(JsonPrimitive(true), settings[PluginStorePrefs.showPrivate.key])
+    }
+
+    @Test
+    fun eachRestoreFirstKeepsACopyOfTheDeviceWithoutItsSignIns(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        val backup = DeviceBackup(graph) { now }
+        backup.restore(xta(), includeReadPositions = true)
+        val first = graph.localBackups.list().single()
+        assertEquals(LocalBackupKind.BEFORE_RESTORE, first.kind)
+        assertTrue(backup.open(first)!!.subscriptions.orEmpty().isEmpty(), "taken before the restore wrote anything")
+
+        backup.restore(xta(), includeReadPositions = false)
+        val second = graph.localBackups.list().first()
+        val copy = backup.open(second)!!
+        assertEquals(listOf("1"), copy.subscriptions!!.map { it.id }, "the first restore's follows are in the copy before the second")
+        assertTrue(copy.accounts.isNullOrEmpty(), "no sign-in sits in a copy the reader did not ask for")
+        assertEquals(2, graph.localBackups.list().size)
     }
 
     @Test

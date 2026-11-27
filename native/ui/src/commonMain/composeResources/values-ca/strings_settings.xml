@@ -410,4 +410,10 @@
     <string name="settings_unread_outside">Nombre de no llegits fora de la finestra</string>
     <string name="settings_unread_outside_description">El títol de la finestra, la icona de la safata i el llançador mostren quantes publicacions no has llegit, mai què diuen</string>
     <string name="settings_unreadable_files">No s\'han pogut llegir algunes de les teves dades: %1$s. Es deixen tal com són i els canvis no es desen fins que es puguin tornar a llegir.</string>
+    <string name="settings_local_backups">Còpies de seguretat automàtiques</string>
+    <string name="settings_local_backups_description">Còpies desades en aquest ordinador, fetes cada dia i abans de cada importació o restauració. No inclouen els inicis de sessió d\'X.</string>
+    <string name="settings_local_backup_daily">Còpia diària · %1$s</string>
+    <string name="settings_local_backup_before_restore">Abans d\'una restauració · %1$s</string>
+    <string name="settings_local_backup_restore">Restaura</string>
+    <string name="settings_open_opml">Segueix els canals de %1$s amb</string>
 </resources>

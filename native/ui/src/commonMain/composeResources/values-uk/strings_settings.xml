@@ -412,4 +412,10 @@
     <string name="settings_unread_outside">Кількість непрочитаного поза вікном</string>
     <string name="settings_unread_outside_description">Заголовок вікна, значок у треї та панель запуску показують, скільки дописів не прочитано, але ніколи — що в них написано</string>
     <string name="settings_unreadable_files">Не вдалося прочитати частину ваших даних: %1$s. Вони залишаються як є, а зміни в них не зберігаються, доки їх знову не вдасться прочитати.</string>
+    <string name="settings_local_backups">Автоматичні копії</string>
+    <string name="settings_local_backups_description">Копії на цьому комп’ютері, що створюються щодня та перед кожним імпортом або відновленням. Входи в X до них не потрапляють.</string>
+    <string name="settings_local_backup_daily">Щоденна копія · %1$s</string>
+    <string name="settings_local_backup_before_restore">Перед відновленням · %1$s</string>
+    <string name="settings_local_backup_restore">Відновити</string>
+    <string name="settings_open_opml">Підписатися на стрічки з %1$s через</string>
 </resources>

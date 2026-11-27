@@ -12,6 +12,7 @@ import com.aimdi.xtanative.core.x.signing.SigningBootstrap
 import com.aimdi.xtanative.data.plugins.PluginPrefs
 import com.aimdi.xtanative.store.StoreDir
 import com.aimdi.xtanative.store.antenna.AntennaStore
+import com.aimdi.xtanative.store.backup.BackupRotation
 import com.aimdi.xtanative.store.backup.StoredWebDavBaselines
 import com.aimdi.xtanative.store.crash.CrashReport
 import com.aimdi.xtanative.store.crash.CrashReporter
@@ -48,6 +49,7 @@ import com.aimdi.xtanative.ui.saved.Keeper
 import com.aimdi.xtanative.ui.settings.ChromeAvatar
 import com.aimdi.xtanative.ui.settings.DeviceBackup
 import com.aimdi.xtanative.ui.settings.KeptSections
+import com.aimdi.xtanative.ui.settings.LocalBackups
 import com.aimdi.xtanative.ui.settings.MainThreadStalls
 import com.aimdi.xtanative.ui.settings.PluginBackups
 import com.aimdi.xtanative.ui.settings.SettingsStart
@@ -156,6 +158,9 @@ class AppGraph(
 
     /** Crash reports, written down on the device only while the reader has them on, and filed on GitHub with their token. */
     val crashReports = CrashReports(File(files, "crash-reports"))
+
+    /** The app's own copies of the data: one a day, and one before each import or restore (Settings › Data lists them). */
+    val localBackups = BackupRotation(File(files, "backups"))
     /** Where the Android app's main-thread watchdog writes down stalls; Diagnostics reads it. */
     val mainThreadStallFile = File(files, MainThreadStalls.FILE)
     val crashReporter = CrashReporter(OkHttpCrashReports(), { settings.load() }, crashReports, version)
@@ -260,6 +265,7 @@ class AppGraph(
                 DeviceBackup(this@AppGraph).adoptKeptProfiles()
                 DeviceBackup(this@AppGraph).adoptKeptGroups()
             }
+            scope.launch { LocalBackups.keepDaily(DeviceBackup(this@AppGraph)) }
             if (mockX == null) {
                 scope.launch { SettingsStart.refreshEndpoints(settings, client) }
                 scope.launch { crashReporter.sendKept() }

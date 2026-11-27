@@ -412,4 +412,10 @@
     <string name="settings_unread_outside">Počet nepřečtených mimo okno</string>
     <string name="settings_unread_outside_description">Název okna, ikona v oznamovací oblasti a spouštěč ukazují, kolik příspěvků je nepřečtených, nikdy ne jejich obsah</string>
     <string name="settings_unreadable_files">Některá vaše data nelze přečíst: %1$s. Zůstávají beze změny a změny v nich se neuloží, dokud je nepůjde znovu přečíst.</string>
+    <string name="settings_local_backups">Automatické zálohy</string>
+    <string name="settings_local_backups_description">Kopie uložené v tomto počítači, pořízené každý den a před každým importem nebo obnovením. Přihlášení k X v nich nejsou.</string>
+    <string name="settings_local_backup_daily">Denní kopie · %1$s</string>
+    <string name="settings_local_backup_before_restore">Před obnovením · %1$s</string>
+    <string name="settings_local_backup_restore">Obnovit</string>
+    <string name="settings_open_opml">Sledovat kanály z %1$s pomocí</string>
 </resources>

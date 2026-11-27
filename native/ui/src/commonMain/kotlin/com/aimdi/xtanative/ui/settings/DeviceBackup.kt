@@ -10,6 +10,8 @@ import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.store.backup.BackupDocument
 import com.aimdi.xtanative.store.backup.ExportChoice
+import com.aimdi.xtanative.store.backup.LocalBackup
+import com.aimdi.xtanative.store.backup.LocalBackupKind
 import com.aimdi.xtanative.store.backup.NetworkAccount
 import com.aimdi.xtanative.store.backup.NetworkMembers
 import com.aimdi.xtanative.store.backup.XtaTime
@@ -63,7 +65,25 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
     }
 
     /**
-     * Writes every section of [document] into its store, as XTA's import does:
+     * A copy of everything but the X sign-ins kept in the data folder as
+     * [kind] ([com.aimdi.xtanative.store.backup.BackupRotation]); null when
+     * it could not be read or written, which stops nothing.
+     */
+    suspend fun snapshot(kind: LocalBackupKind): LocalBackup? = runCatching {
+        graph.localBackups.write(kind, export(LocalBackups.CHOICE), clock())
+    }.getOrNull()
+
+    /** Whether a daily copy is due at [now]. */
+    suspend fun dueDaily(now: Instant): Boolean = graph.localBackups.dueDaily(now)
+
+    /** [backup]'s document, read back to restore; null once it is gone or unreadable. */
+    suspend fun open(backup: LocalBackup): BackupDocument? =
+        (BackupRead.read(graph.localBackups.read(backup, LocalBackups.MAX_BYTES)) as? BackupRead.Ready)?.document
+
+    /**
+     * Writes every section of [document] into its store, as XTA's import does,
+     * after a copy of the device's data is kept ([snapshot]), so a wrong
+     * import or restore can be undone from Settings › Data:
      * the settings first (and XTA's launch steps after them), then the session,
      * its groups' members of other networks named as their plugins name them
      * ([networkAccounts]), the saved posts, likes, notes, article notes,
@@ -76,6 +96,7 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
      * feeds keep ([ReadMarks]).
      */
     suspend fun restore(document: BackupDocument, includeReadPositions: Boolean) {
+        snapshot(LocalBackupKind.BEFORE_RESTORE)
         val restoring = document.forRestore(includeReadPositions)
         val now = clock().toEpochMilli()
         restoring.settings?.let { graph.settings.restore(it) }

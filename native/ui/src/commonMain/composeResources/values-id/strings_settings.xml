@@ -406,4 +406,10 @@
     <string name="settings_unread_outside">Jumlah belum dibaca di luar jendela</string>
     <string name="settings_unread_outside_description">Judul jendela, ikon baki, dan peluncur menunjukkan berapa banyak postingan yang belum dibaca, tidak pernah isinya</string>
     <string name="settings_unreadable_files">Sebagian data Anda tidak dapat dibaca: %1$s. Data itu dibiarkan apa adanya, dan perubahannya tidak disimpan sampai dapat dibaca lagi.</string>
+    <string name="settings_local_backups">Cadangan otomatis</string>
+    <string name="settings_local_backups_description">Salinan yang disimpan di komputer ini, dibuat setiap hari dan sebelum setiap impor atau pemulihan. Login X tidak disertakan.</string>
+    <string name="settings_local_backup_daily">Salinan harian · %1$s</string>
+    <string name="settings_local_backup_before_restore">Sebelum pemulihan · %1$s</string>
+    <string name="settings_local_backup_restore">Pulihkan</string>
+    <string name="settings_open_opml">Ikuti umpan di %1$s dengan</string>
 </resources>

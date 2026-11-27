@@ -410,4 +410,10 @@
     <string name="settings_unread_outside">Numărul de necitite în afara ferestrei</string>
     <string name="settings_unread_outside_description">Titlul ferestrei, pictograma din zona de notificare și lansatorul arată câte postări sunt necitite, niciodată ce scrie în ele</string>
     <string name="settings_unreadable_files">Unele dintre datele tale nu au putut fi citite: %1$s. Sunt lăsate așa cum sunt, iar modificările lor nu se salvează până nu pot fi citite din nou.</string>
+    <string name="settings_local_backups">Copii de rezervă automate</string>
+    <string name="settings_local_backups_description">Copii păstrate pe acest computer, făcute în fiecare zi și înainte de fiecare import sau restaurare. Autentificările X nu sunt incluse.</string>
+    <string name="settings_local_backup_daily">Copie zilnică · %1$s</string>
+    <string name="settings_local_backup_before_restore">Înainte de o restaurare · %1$s</string>
+    <string name="settings_local_backup_restore">Restaurează</string>
+    <string name="settings_open_opml">Urmărește fluxurile din %1$s cu</string>
 </resources>

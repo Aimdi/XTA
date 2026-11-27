@@ -412,4 +412,10 @@
     <string name="settings_unread_outside">Колькасць непрачытанага па-за акном</string>
     <string name="settings_unread_outside_description">Загаловак акна, значок у трэі і панэль запуску паказваюць, колькі допісаў не прачытана, але ніколі не тое, што ў іх напісана</string>
     <string name="settings_unreadable_files">Не ўдалося прачытаць частку вашых даных: %1$s. Яны застаюцца як ёсць, а змены ў іх не захоўваюцца, пакуль іх не ўдасца прачытаць зноў.</string>
+    <string name="settings_local_backups">Аўтаматычныя копіі</string>
+    <string name="settings_local_backups_description">Копіі на гэтым камп’ютары, якія робяцца кожны дзень і перад кожным імпартам або аднаўленнем. Уваходы ў X у іх не трапляюць.</string>
+    <string name="settings_local_backup_daily">Штодзённая копія · %1$s</string>
+    <string name="settings_local_backup_before_restore">Перад аднаўленнем · %1$s</string>
+    <string name="settings_local_backup_restore">Аднавіць</string>
+    <string name="settings_open_opml">Падпісацца на стужкі з %1$s праз</string>
 </resources>

@@ -408,4 +408,10 @@
     <string name="settings_unread_outside">Nombro de nelegitaj ekster la fenestro</string>
     <string name="settings_unread_outside_description">La titolo de la fenestro, la piktogramo en la sistempleto kaj la lanĉilo montras kiom da afiŝoj estas nelegitaj, neniam kion ili diras</string>
     <string name="settings_unreadable_files">Kelkaj el viaj datumoj ne legeblis: %1$s. Ili restas kiel ili estas, kaj ŝanĝoj al ili ne estas konservataj ĝis ili denove legeblos.</string>
+    <string name="settings_local_backups">Aŭtomataj sekurkopioj</string>
+    <string name="settings_local_backups_description">Kopioj konservataj en ĉi tiu komputilo, farataj ĉiutage kaj antaŭ ĉiu importo aŭ restarigo. Ensalutoj al X ne estas inkluzivitaj.</string>
+    <string name="settings_local_backup_daily">Ĉiutaga kopio · %1$s</string>
+    <string name="settings_local_backup_before_restore">Antaŭ restarigo · %1$s</string>
+    <string name="settings_local_backup_restore">Restarigi</string>
+    <string name="settings_open_opml">Sekvi la fluojn de %1$s per</string>
 </resources>

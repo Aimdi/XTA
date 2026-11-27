@@ -58,11 +58,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.SingletonImageLoader
 import coil3.compose.LocalPlatformContext
+import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.services.util.formatByteSize
 import com.aimdi.xtanative.store.backup.BackupCategory
 import com.aimdi.xtanative.store.backup.BackupDocument
 import com.aimdi.xtanative.store.backup.ExportChoice
+import com.aimdi.xtanative.store.backup.LocalBackup
+import com.aimdi.xtanative.store.backup.LocalBackupKind
 import com.aimdi.xtanative.store.backup.OkHttpWebDav
 import com.aimdi.xtanative.store.backup.WebDavConfig
 import com.aimdi.xtanative.store.backup.WebDavOutcome
@@ -177,7 +180,7 @@ internal fun ImportPreviewDialog(document: BackupDocument, onDismiss: () -> Unit
  * screen goes away.
  */
 @Composable
-internal fun RestoreDialog(document: BackupDocument?, vm: SettingsViewModel, snackbar: SnackbarHostState?, onClose: () -> Unit, onRestored: suspend () -> Unit = {}) {
+internal fun RestoreDialog(document: BackupDocument?, graph: AppGraph, snackbar: SnackbarHostState?, onClose: () -> Unit, onRestored: suspend () -> Unit = {}) {
     if (document == null) return
     val scope = rememberCoroutineScope()
     val imported = stringResource(Res.string.settings_imported)
@@ -185,7 +188,7 @@ internal fun RestoreDialog(document: BackupDocument?, vm: SettingsViewModel, sna
         onClose()
         scope.launch {
             withContext(NonCancellable + Dispatchers.Default) {
-                DeviceBackup(vm.graph).restore(document, includeReadPositions)
+                DeviceBackup(graph).restore(document, includeReadPositions)
                 onRestored()
             }
             snackbar?.showSnackbar(imported)
@@ -201,6 +204,7 @@ internal fun DataSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
     val scope = rememberCoroutineScope()
     var offered by remember { mutableStateOf<BackupDocument?>(null) }
     var problem by remember { mutableStateOf<BackupRead?>(null) }
+    var copies by remember { mutableIntStateOf(0) }
     val takeBackup: (suspend () -> String?) -> Unit = { read ->
         scope.launch {
             val text = withContext(Dispatchers.IO) { runCatching { read() }.getOrNull() }
@@ -225,9 +229,35 @@ internal fun DataSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
             NavigationRow(stringResource(Res.string.settings_sync), stringResource(Res.string.settings_sync_description), Icons.Outlined.Refresh) {
                 onOpen(SettingsRoutes.section(SettingsSection.SYNC.id))
             }
+            LocalBackupRows(vm.graph, copies) { offered = it }
         }
     }
-    RestoreDialog(offered, vm, snackbar, onClose = { offered = null })
+    RestoreDialog(offered, vm.graph, snackbar, onClose = { offered = null }) { copies++ }
+}
+
+/**
+ * The app's latest automatic copies ([LocalBackups]), newest first, each
+ * restored as a chosen backup is, after its preview; [revision] changes
+ * when a restore made a new one.
+ */
+@Composable
+private fun LocalBackupRows(graph: AppGraph, revision: Int, onOpened: (BackupDocument) -> Unit) {
+    val scope = rememberCoroutineScope()
+    val locale = currentLocale()
+    val copies by produceState(emptyList<LocalBackup>(), revision) {
+        value = LocalBackups.shown(runCatching { graph.localBackups.list() }.getOrDefault(emptyList()))
+    }
+    SettingsHeader(stringResource(Res.string.settings_local_backups), stringResource(Res.string.settings_local_backups_description))
+    copies.forEach { copy ->
+        val size = formatByteSize(copy.bytes)
+        val kind = when (copy.kind) {
+            LocalBackupKind.DAILY -> stringResource(Res.string.settings_local_backup_daily, size)
+            LocalBackupKind.BEFORE_RESTORE -> stringResource(Res.string.settings_local_backup_before_restore, size)
+        }
+        NavigationRow(shortDateTime(copy.madeAt, locale), kind, chevron = false, action = stringResource(Res.string.settings_local_backup_restore)) {
+            scope.launch { DeviceBackup(graph).open(copy)?.let(onOpened) }
+        }
+    }
 }
 
 /** The device's files that could not be read, while there are any: their notes or drafts show as empty, and changes to them are refused. */
@@ -503,7 +533,7 @@ internal fun SyncSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
     }
 
     offered?.let { (document, downloaded) ->
-        RestoreDialog(document, vm, snackbar, onClose = { offered = null }) {
+        RestoreDialog(document, vm.graph, snackbar, onClose = { offered = null }) {
             // Only a confirmed restore becomes the baseline the next upload is checked against.
             if (downloaded != null) sync.acknowledge(config, downloaded)
         }

@@ -416,4 +416,10 @@
     <string name="settings_unread_outside">عدد غير المقروء خارج النافذة</string>
     <string name="settings_unread_outside_description">يعرض عنوان النافذة وأيقونة شريط النظام والمشغّل عدد المنشورات غير المقروءة، ولا يعرض محتواها أبدًا</string>
     <string name="settings_unreadable_files">تعذّرت قراءة بعض بياناتك: %1$s. تُركت كما هي، ولن تُحفظ التغييرات عليها حتى تمكن قراءتها مجددًا.</string>
+    <string name="settings_local_backups">نسخ احتياطية تلقائية</string>
+    <string name="settings_local_backups_description">نسخ محفوظة على هذا الحاسوب، تُنشأ كل يوم وقبل كل استيراد أو استعادة. لا تُضمَّن تسجيلات الدخول إلى X.</string>
+    <string name="settings_local_backup_daily">نسخة يومية · %1$s</string>
+    <string name="settings_local_backup_before_restore">قبل الاستعادة · %1$s</string>
+    <string name="settings_local_backup_restore">استعادة</string>
+    <string name="settings_open_opml">متابعة الخلاصات في %1$s باستخدام</string>
 </resources>
