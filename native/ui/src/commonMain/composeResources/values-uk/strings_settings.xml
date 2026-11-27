@@ -411,4 +411,5 @@
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
     <string name="settings_unread_outside">Кількість непрочитаного поза вікном</string>
     <string name="settings_unread_outside_description">Заголовок вікна, значок у треї та панель запуску показують, скільки дописів не прочитано, але ніколи — що в них написано</string>
+    <string name="settings_unreadable_files">Не вдалося прочитати частину ваших даних: %1$s. Вони залишаються як є, а зміни в них не зберігаються, доки їх знову не вдасться прочитати.</string>
 </resources>

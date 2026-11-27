@@ -10,6 +10,10 @@ import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -37,11 +41,27 @@ class StoreFile(private val file: File) {
     suspend fun delete() = mutex.withLock {
         withContext(Dispatchers.IO) { file.delete() }
     }
+
+    /** [File.keepUnreadable] between this file's reads and writes. */
+    suspend fun keepUnreadable(): File = mutex.withLock {
+        withContext(Dispatchers.IO) { file.keepUnreadable() }
+    }
 }
 
 /** The directory the app gives the store; each name is always the same [StoreFile]. */
 class StoreDir(val root: File) {
     private val files = HashMap<String, StoreFile>()
+    private val unreadableNames = MutableStateFlow<Set<String>>(emptySet())
+
+    /**
+     * The files found there but unreadable by the stores that keep a value
+     * whole, which write nothing over them until they read again: Settings ›
+     * Data names them.
+     */
+    val unreadable: StateFlow<Set<String>> = unreadableNames.asStateFlow()
+
+    internal fun markUnreadable(name: String, unreadable: Boolean) =
+        unreadableNames.update { if (unreadable) it + name else it - name }
 
     /** [name] may hold one level of folder ("saved/folders.json"). */
     @Synchronized

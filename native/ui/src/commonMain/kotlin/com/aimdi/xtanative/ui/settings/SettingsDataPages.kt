@@ -212,6 +212,7 @@ internal fun DataSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
     SayOnce(snackbar, problem?.let { backupProblem(it) }) { problem = null }
     SettingsPage(title, onBack, snackbar) { padding ->
         SettingsList(padding, view = Modifier.takesDroppedBackup(enabled = offered == null, onDropped = takeBackup)) {
+            UnreadableFilesNotice(vm)
             NavigationRow(stringResource(Res.string.settings_downloads), icon = Icons.Outlined.KeyboardArrowDown) { onOpen(SettingsRoutes.DOWNLOADS) }
             NavigationRow(stringResource(Res.string.settings_offline), icon = Icons.Outlined.Done) { onOpen(SettingsRoutes.OFFLINE) }
             ImageCacheRow()
@@ -225,6 +226,19 @@ internal fun DataSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
         }
     }
     RestoreDialog(offered, vm, snackbar, onClose = { offered = null })
+}
+
+/** The device's files that could not be read, while there are any: their notes or drafts show as empty, and changes to them are refused. */
+@Composable
+private fun UnreadableFilesNotice(vm: SettingsViewModel) {
+    val unreadable by vm.graph.unreadableFiles.collectAsStateWithLifecycle()
+    if (unreadable.isEmpty()) return
+    Text(
+        stringResource(Res.string.settings_unreadable_files, unreadable.sorted().joinToString()),
+        color = MaterialTheme.colorScheme.error,
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+    )
 }
 
 /** How much the picture cache holds, and a way to empty it. */

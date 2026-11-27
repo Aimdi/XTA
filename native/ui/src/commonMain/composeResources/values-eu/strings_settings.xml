@@ -407,4 +407,5 @@
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
     <string name="settings_unread_outside">Irakurri gabekoen kopurua leihotik kanpo</string>
     <string name="settings_unread_outside_description">Leihoaren izenburuak, erretiluko ikonoak eta abiarazleak zenbat argitalpen irakurri gabe dauden erakusten dute, inoiz ez zer dioten</string>
+    <string name="settings_unreadable_files">Zure datu batzuk ezin izan dira irakurri: %1$s. Dauden bezala uzten dira, eta haietako aldaketak ez dira gordeko berriro irakur daitezen arte.</string>
 </resources>

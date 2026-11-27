@@ -409,4 +409,5 @@
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
     <string name="settings_unread_outside">Numero di non letti fuori dalla finestra</string>
     <string name="settings_unread_outside_description">Il titolo della finestra, l\'icona nell\'area di notifica e il launcher mostrano quanti post non hai letto, mai cosa dicono</string>
+    <string name="settings_unreadable_files">Non è stato possibile leggere alcuni dei tuoi dati: %1$s. Restano come sono e le modifiche non vengono salvate finché non si potranno leggere di nuovo.</string>
 </resources>

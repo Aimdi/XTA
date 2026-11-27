@@ -411,4 +411,5 @@
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
     <string name="settings_unread_outside">Liczba nieprzeczytanych poza oknem</string>
     <string name="settings_unread_outside_description">Tytuł okna, ikona w zasobniku i program uruchamiający pokazują, ile wpisów jest nieprzeczytanych, nigdy ich treści</string>
+    <string name="settings_unreadable_files">Nie udało się odczytać części Twoich danych: %1$s. Pozostają bez zmian, a zmiany w nich nie są zapisywane, dopóki nie da się ich znów odczytać.</string>
 </resources>

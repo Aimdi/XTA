@@ -407,4 +407,5 @@
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
     <string name="settings_unread_outside">Ungelesene außerhalb des Fensters zählen</string>
     <string name="settings_unread_outside_description">Fenstertitel, Symbol in der Leiste und Starter zeigen, wie viele Beiträge ungelesen sind, nie ihren Inhalt</string>
+    <string name="settings_unreadable_files">Einige deiner Daten konnten nicht gelesen werden: %1$s. Sie bleiben unverändert, und Änderungen daran werden erst gespeichert, wenn sie wieder lesbar sind.</string>
 </resources>

@@ -409,4 +409,5 @@
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
     <string name="settings_unread_outside">Nombre de non-lus hors de la fenêtre</string>
     <string name="settings_unread_outside_description">Le titre de la fenêtre, l\'icône de la zone de notification et le lanceur indiquent combien de publications sont non lues, jamais leur contenu</string>
+    <string name="settings_unreadable_files">Certaines de vos données n\'ont pas pu être lues : %1$s. Elles sont laissées telles quelles, et leurs modifications ne sont pas enregistrées tant qu\'elles ne peuvent pas être relues.</string>
 </resources>

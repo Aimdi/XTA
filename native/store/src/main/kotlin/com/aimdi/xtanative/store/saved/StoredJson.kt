@@ -2,6 +2,7 @@ package com.aimdi.xtanative.store.saved
 
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.store.StoreDir
+import java.io.IOException
 import java.security.MessageDigest
 import java.time.Instant
 import java.time.LocalDateTime
@@ -20,8 +21,10 @@ import kotlinx.serialization.json.JsonElement
  * device stores: read on first use, then held in [state]. A change is written
  * back whole before it is shown, so the screens never see what the disk does
  * not hold, and a failed write leaves both as they were. A file that cannot
- * be read (damaged, or written by a newer build) is copied aside to
- * `<name>.unreadable` before anything replaces it.
+ * be read (damaged, written by a newer build, or not ours to open) shows as
+ * empty and is never written over: each change is refused, as a full disk
+ * refuses it, until the file reads again, and [StoreDir.unreadable] names it.
+ * What could be read of it is first copied aside to `<name>.unreadable-<millis>`.
  */
 internal class StoredJson<T : Any>(
     private val dir: StoreDir,
@@ -33,6 +36,9 @@ internal class StoredJson<T : Any>(
     private val lock = Mutex()
     private val current = MutableStateFlow<T?>(null)
 
+    /** Whether the file was last found there but unreadable: nothing is written over it then. */
+    private var failed = false
+
     /** Null until the file is first read. */
     val state: StateFlow<T?> = current.asStateFlow()
 
@@ -41,11 +47,12 @@ internal class StoredJson<T : Any>(
     /** Replaces the value with what [change] makes of it; returning the same instance writes nothing. */
     suspend fun update(change: (T) -> T): T = updateWith { old -> change(old).let { it to it } }
 
-    /** Like [update], also handing back what [change] says alongside the new value. */
+    /** Like [update], also handing back what [change] says alongside the new value; throws while the file cannot be read. */
     suspend fun <R> updateWith(change: (T) -> Pair<T, R>): R = lock.withLock {
-        val old = loaded()
+        val old = if (failed) read().also { current.value = it } else loaded()
         val (next, result) = change(old)
         if (next !== old) {
+            if (failed) throw IOException("$name could not be read, so it is not written over")
             dir.file(name).write(encode(next).toString())
             current.value = next
         }
@@ -55,10 +62,21 @@ internal class StoredJson<T : Any>(
     private suspend fun loaded(): T = current.value ?: read().also { current.value = it }
 
     private suspend fun read(): T {
-        val text = dir.file(name).read() ?: return empty
-        val value = decode(J.parse(text))
-        if (value == null) dir.file("$name.unreadable").write(text)
+        val value = try {
+            readFile()
+        } catch (_: IOException) {
+            null
+        }
+        failed = value == null
+        dir.markUnreadable(name, failed)
         return value ?: empty
+    }
+
+    /** What the file holds, [empty] when there is none; null when it cannot be understood, once its bytes are copied aside. */
+    private suspend fun readFile(): T? {
+        val file = dir.file(name)
+        val text = file.read() ?: return empty
+        return decode(J.parse(text)) ?: null.also { file.keepUnreadable() }
     }
 }
 

@@ -405,4 +405,5 @@
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
     <string name="settings_unread_outside">在窗口外显示未读数</string>
     <string name="settings_unread_outside_description">窗口标题、托盘图标和启动器显示有多少帖子未读，从不显示其内容</string>
+    <string name="settings_unreadable_files">无法读取你的部分数据：%1$s。它们保持原样，在能再次读取之前，对它们的更改不会保存。</string>
 </resources>

@@ -407,4 +407,5 @@
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
     <string name="settings_unread_outside">विंडो के बाहर अपठित संख्या</string>
     <string name="settings_unread_outside_description">विंडो का शीर्षक, ट्रे आइकन और लॉन्चर दिखाते हैं कि कितनी पोस्ट अपठित हैं, उनमें क्या लिखा है यह कभी नहीं</string>
+    <string name="settings_unreadable_files">आपका कुछ डेटा पढ़ा नहीं जा सका: %1$s. उसे जैसा है वैसा छोड़ दिया गया है, और जब तक वह फिर से पढ़ा न जा सके, उसमें किए बदलाव सहेजे नहीं जाते।</string>
 </resources>

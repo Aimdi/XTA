@@ -93,6 +93,9 @@ class AppGraph(
     /** What the device keeps beside the session (XTA's database and preferences), each store in its own files. */
     private val store = StoreDir(File(files, "store"))
     val settings = SettingsStore(store)
+
+    /** The store's files found unreadable, which nothing writes over meanwhile (Settings › Data names them). */
+    val unreadableFiles: StateFlow<Set<String>> get() = store.unreadable
     val recentSearches = RecentSearches(settings)
     val saved = SavedStore(store)
     val likes = LikesStore(store)

@@ -405,4 +405,5 @@
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
     <string name="settings_unread_outside">Jumlah belum dibaca di luar jendela</string>
     <string name="settings_unread_outside_description">Judul jendela, ikon baki, dan peluncur menunjukkan berapa banyak postingan yang belum dibaca, tidak pernah isinya</string>
+    <string name="settings_unreadable_files">Sebagian data Anda tidak dapat dibaca: %1$s. Data itu dibiarkan apa adanya, dan perubahannya tidak disimpan sampai dapat dibaca lagi.</string>
 </resources>

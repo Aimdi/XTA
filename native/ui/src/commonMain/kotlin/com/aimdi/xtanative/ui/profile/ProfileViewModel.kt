@@ -24,6 +24,8 @@ import com.aimdi.xtanative.ui.media.MediaGridItem
 import com.aimdi.xtanative.ui.media.MediaGridItems
 import com.aimdi.xtanative.ui.post.cached
 import com.aimdi.xtanative.ui.post.page
+import com.aimdi.xtanative.ui.saved.KeepNotice
+import com.aimdi.xtanative.ui.saved.KeepNotices
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -413,7 +415,7 @@ internal class ProfileViewModel(
     fun saveNote(note: String) {
         val user = state.value.user ?: return
         viewModelScope.launch {
-            graph.profileNotes.set(user.id, note)
+            if (!written { graph.profileNotes.set(user.id, note) }) return@launch
             state.update { it.copy(note = note.trim()) }
         }
     }
@@ -422,10 +424,21 @@ internal class ProfileViewModel(
 
     fun hideReplies(hidden: Boolean) = changeFilters { user -> graph.profileFilters.setRepliesHidden(user.id, user.screenName, hidden) }
 
+    /** Whether [write] went through; one the disk refused (full, or a file that could not be read) is said, not thrown. */
+    private suspend fun written(write: suspend () -> Unit): Boolean = try {
+        write()
+        true
+    } catch (error: CancellationException) {
+        throw error
+    } catch (_: Exception) {
+        KeepNotices.show(KeepNotice.SomethingWentWrong)
+        false
+    }
+
     private fun changeFilters(change: suspend (XUser) -> Unit) {
         val user = state.value.user ?: return
         viewModelScope.launch {
-            change(user)
+            if (!written { change(user) }) return@launch
             val filters = graph.profileFilters.filters()
             state.update { it.copy(filters = filters) }
         }

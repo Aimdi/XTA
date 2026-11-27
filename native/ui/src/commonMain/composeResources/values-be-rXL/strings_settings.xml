@@ -411,4 +411,5 @@
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
     <string name="settings_unread_outside">Kolkasć niepračytanaha pa-za aknom</string>
     <string name="settings_unread_outside_description">Zahalovak akna, značok u trei i panel zapusku pakazvajuć, kolki dopisaŭ nie pračytana, ale nikoli nie toje, što ŭ ich napisana</string>
+    <string name="settings_unreadable_files">Nie ŭdałosia pračytać častku vašych danych: %1$s. Jany zastajucca jak jość, a zmieny ŭ ich nie zachoŭvajucca, pakul ich nie ŭdasca pračytać znoŭ.</string>
 </resources>

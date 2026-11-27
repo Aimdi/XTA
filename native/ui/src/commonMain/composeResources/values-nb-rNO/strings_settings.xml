@@ -407,4 +407,5 @@
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
     <string name="settings_unread_outside">Antall uleste utenfor vinduet</string>
     <string name="settings_unread_outside_description">Vindustittelen, ikonet i systemstatusfeltet og programstarteren viser hvor mange innlegg som er uleste, aldri hva de sier</string>
+    <string name="settings_unreadable_files">Noen av dataene dine kunne ikke leses: %1$s. De blir latt være som de er, og endringer i dem lagres ikke før de kan leses igjen.</string>
 </resources>

@@ -407,4 +407,5 @@
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
     <string name="settings_unread_outside">Unread count outside the window</string>
     <string name="settings_unread_outside_description">The window\'s title, the tray icon and the launcher show how many posts are unread, never what they say</string>
+    <string name="settings_unreadable_files">Some of your data could not be read: %1$s. It is left as it is, and changes to it are not saved until it can be read again.</string>
 </resources>

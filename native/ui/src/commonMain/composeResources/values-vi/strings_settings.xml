@@ -405,4 +405,5 @@
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
     <string name="settings_unread_outside">Số chưa đọc bên ngoài cửa sổ</string>
     <string name="settings_unread_outside_description">Tiêu đề cửa sổ, biểu tượng khay hệ thống và trình khởi chạy cho biết có bao nhiêu bài chưa đọc, không bao giờ hiện nội dung</string>
+    <string name="settings_unreadable_files">Không thể đọc một số dữ liệu của bạn: %1$s. Dữ liệu được giữ nguyên, và các thay đổi sẽ không được lưu cho đến khi đọc lại được.</string>
 </resources>

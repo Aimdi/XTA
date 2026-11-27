@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.store.reading
 
 import com.aimdi.xtanative.core.json.J
+import java.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -103,7 +104,7 @@ class ArticleReading private constructor(
             val bounded = ReadingAppearance(fontSize ?: state.fontSize, lineHeight ?: state.lineHeight).bounded()
             state.copy(fontSize = bounded.fontSize, lineHeight = bounded.lineHeight)
         }
-        appearanceWrite = scope.launch { current.value.let { appearanceStore.set(ReadingAppearance(it.fontSize, it.lineHeight)) } }
+        appearanceWrite = scope.launch { refusable { current.value.let { appearanceStore.set(ReadingAppearance(it.fontSize, it.lineHeight)) } } }
     }
 
     /**
@@ -167,7 +168,15 @@ class ArticleReading private constructor(
 
     private suspend fun write() {
         if (!journaled || !remembers()) return
-        journal.put(articleId, current.value.point)
+        refusable { journal.put(articleId, current.value.point) }
+    }
+
+    /** A place or a text size the disk refuses (full, or its file unreadable and so not written over) is lost, not the reading. */
+    private suspend fun refusable(write: suspend () -> Unit) {
+        try {
+            write()
+        } catch (_: IOException) {
+        }
     }
 
     /** The reader is gone: the place is written one last time, and late reports are ignored. */

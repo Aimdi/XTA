@@ -409,4 +409,5 @@
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
     <string name="settings_unread_outside">Número de não lidos fora da janela</string>
     <string name="settings_unread_outside_description">O título da janela, o ícone da bandeja e o lançador mostram quantas publicações não foram lidas, nunca o que dizem</string>
+    <string name="settings_unreadable_files">Não foi possível ler alguns dos seus dados: %1$s. Eles ficam como estão, e as alterações não são salvas até que possam ser lidos de novo.</string>
 </resources>

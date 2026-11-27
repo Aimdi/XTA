@@ -405,4 +405,5 @@
     <string name="settings_proxy_bypass_hint">example.com, 192.168.0.0/16</string>
     <string name="settings_unread_outside">在視窗外顯示未讀數</string>
     <string name="settings_unread_outside_description">視窗標題、系統匣圖示與啟動器顯示有多少貼文未讀，絕不顯示其內容</string>
+    <string name="settings_unreadable_files">無法讀取你的部分資料：%1$s。它們維持原樣，在能再次讀取之前，對它們的變更不會儲存。</string>
 </resources>
