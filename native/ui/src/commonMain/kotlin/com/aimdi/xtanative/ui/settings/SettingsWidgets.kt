@@ -318,6 +318,22 @@ internal fun <T> ChoiceRow(
     }
 }
 
+/** A row whose [value] opens a choice of its own ([onClick]: several picked in a dialog), drawn as a [ChoiceRow] is. */
+@Composable
+internal fun PickerRow(title: String, description: String? = null, value: String, enabled: Boolean = true, onClick: () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().clickable(enabled = enabled, onClick = onClick).padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        RowText(title, description, enabled, Modifier.weight(1f).padding(end = 12.dp))
+        if (isDesktop) {
+            DropdownValue(value, enabled)
+        } else {
+            Text(value, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 220.dp))
+        }
+    }
+}
+
 /**
  * The value a [ChoiceRow] shows on the desktop, as a desktop's drop-down
  * list does: in an outlined box, with its arrow, so it reads as a choice to

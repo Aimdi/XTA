@@ -98,7 +98,8 @@
     <string name="settings_reading_position_description">從上次離開的位置重新開啟每個時間軸，並在新貼文與已看過的貼文之間顯示「你已看完」分隔線。僅適用於時間順序時間軸。</string>
     <string name="settings_language_filter">Language filter</string>
     <string name="settings_language_filter_description">Only keep posts in languages you choose. Unknown languages stay visible.</string>
-    <string name="settings_language_filter_languages">Languages (e.g. en, fr, ja)</string>
+    <string name="settings_language_filter_languages">語言</string>
+    <string name="settings_language_filter_none">無</string>
     <string name="settings_language_filter_off">Show all</string>
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>

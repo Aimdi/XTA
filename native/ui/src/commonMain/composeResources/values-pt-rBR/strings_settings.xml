@@ -98,7 +98,8 @@
     <string name="settings_reading_position_description">Reabre cada feed onde você parou, com um separador "Você está em dia" entre as publicações novas e as já vistas. Apenas para feeds cronológicos.</string>
     <string name="settings_language_filter">Language filter</string>
     <string name="settings_language_filter_description">Only keep posts in languages you choose. Unknown languages stay visible.</string>
-    <string name="settings_language_filter_languages">Languages (e.g. en, fr, ja)</string>
+    <string name="settings_language_filter_languages">Idiomas</string>
+    <string name="settings_language_filter_none">Nenhum</string>
     <string name="settings_language_filter_off">Show all</string>
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>

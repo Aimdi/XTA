@@ -98,7 +98,8 @@
     <string name="settings_reading_position_description">Öffnet jeden Feed dort, wo du aufgehört hast, mit einer „Du bist auf dem Laufenden“-Trennlinie zwischen neuen und bereits gesehenen Beiträgen. Nur für chronologische Feeds.</string>
     <string name="settings_language_filter">Sprachfilter</string>
     <string name="settings_language_filter_description">Nur Beiträge in gewählten Sprachen behalten. Unbekannte Sprachen bleiben sichtbar.</string>
-    <string name="settings_language_filter_languages">Sprachen (z. B. en, de, ja)</string>
+    <string name="settings_language_filter_languages">Sprachen</string>
+    <string name="settings_language_filter_none">Keine</string>
     <string name="settings_language_filter_off">Alle zeigen</string>
     <string name="settings_language_filter_hide">Ausblenden</string>
     <string name="settings_language_filter_fold">Einklappen</string>

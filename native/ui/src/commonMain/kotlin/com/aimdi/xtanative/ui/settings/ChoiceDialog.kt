@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -135,6 +137,88 @@ internal fun <T> ChoiceDialog(
     )
 }
 
+/**
+ * A choice of several values, as [ChoiceDialog] is laid out (its height, its
+ * filter) with a check box on each; what is ticked counts only once [confirm]
+ * is pressed, in the order it was ticked. Enter in the filter ticks the one
+ * option it has left, or unticks it.
+ */
+@Composable
+internal fun <T> MultiChoiceDialog(
+    title: String,
+    options: List<T>,
+    chosen: List<T>,
+    label: @Composable (T) -> String,
+    terms: @Composable (T) -> List<String>,
+    description: (@Composable (T) -> String?)? = null,
+    confirm: String,
+    onDismiss: () -> Unit,
+    onConfirm: (List<T>) -> Unit,
+) {
+    val windowHeight = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.height.toDp() }
+    val labels = options.map { label(it) }
+    val names = options.map { terms(it) }
+    var picked by remember { mutableStateOf(chosen) }
+    var query by remember { mutableStateOf("") }
+    val shown = ChoiceList.matchingAny(names, query)
+    val toggle = { option: T -> picked = if (option in picked) picked - option else picked + option }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        modifier = if (windowHeight > 0.dp) Modifier.heightIn(max = ChoiceList.maxHeight(windowHeight)) else Modifier,
+        title = { Text(title) },
+        text = {
+            Column {
+                if (ChoiceList.filtered(options.size)) {
+                    val keys = if (isDesktop) Modifier.dialogDefault() else Modifier
+                    SearchField(query, { query = it }, stringResource(Res.string.search), Modifier.fillMaxWidth().padding(bottom = 8.dp).then(keys), onSearch = {
+                        ChoiceList.picked(shown)?.let { toggle(options[it]) }
+                    })
+                }
+                val scroll = rememberScrollState()
+                Box(Modifier.bleed(ROW_BLEED)) {
+                    Column(Modifier.verticalScroll(scroll)) {
+                        shown.forEach { index -> CheckOption(options[index], labels[index], options[index] in picked, description, toggle) }
+                        if (shown.isEmpty()) {
+                            Text(
+                                stringResource(Res.string.settings_no_results),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = ROW_BLEED, vertical = 12.dp),
+                            )
+                        }
+                    }
+                    Box(Modifier.matchParentSize()) { ColumnScrollbar(scroll, Modifier.align(Alignment.TopEnd)) }
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = { onConfirm(picked) }) { Text(confirm) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.settings_cancel)) } },
+    )
+}
+
+@Composable
+private fun <T> CheckOption(option: T, label: String, checked: Boolean, description: (@Composable (T) -> String?)?, onToggle: (T) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().toggleable(value = checked, role = Role.Checkbox) { onToggle(option) }
+            .padding(horizontal = ROW_BLEED, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Checkbox(checked = checked, onCheckedChange = null)
+        Spacer(Modifier.width(12.dp))
+        OptionText(option, label, description)
+    }
+}
+
+@Composable
+private fun <T> OptionText(option: T, label: String, description: (@Composable (T) -> String?)?) {
+    Column {
+        Text(label, style = MaterialTheme.typography.bodyLarge)
+        description?.invoke(option)?.let {
+            Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
 @Composable
 private fun <T> ChoiceOption(option: T, label: String, selected: T?, description: (@Composable (T) -> String?)?, onSelect: (T) -> Unit) {
     Row(
@@ -144,12 +228,7 @@ private fun <T> ChoiceOption(option: T, label: String, selected: T?, description
     ) {
         RadioButton(selected = option == selected, onClick = null)
         Spacer(Modifier.width(12.dp))
-        Column {
-            Text(label, style = MaterialTheme.typography.bodyLarge)
-            description?.invoke(option)?.let {
-                Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        }
+        OptionText(option, label, description)
     }
 }
 

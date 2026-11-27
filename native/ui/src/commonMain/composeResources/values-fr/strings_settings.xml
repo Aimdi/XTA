@@ -98,7 +98,8 @@
     <string name="settings_reading_position_description">Rouvre chaque fil là où vous vous étiez arrêté, avec un séparateur « Vous êtes à jour » entre les nouvelles publications et celles déjà vues. Fils chronologiques uniquement.</string>
     <string name="settings_language_filter">Filtre de langue</string>
     <string name="settings_language_filter_description">Ne garde que les posts dans les langues choisies. Les langues inconnues restent visibles.</string>
-    <string name="settings_language_filter_languages">Langues (ex. en, fr, ja)</string>
+    <string name="settings_language_filter_languages">Langues</string>
+    <string name="settings_language_filter_none">Aucune</string>
     <string name="settings_language_filter_off">Tout afficher</string>
     <string name="settings_language_filter_hide">Masquer</string>
     <string name="settings_language_filter_fold">Replier</string>

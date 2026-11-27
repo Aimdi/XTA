@@ -98,7 +98,8 @@
     <string name="settings_reading_position_description">Åpner hver feed der du slapp, med en «Du er à jour»-deler mellom nye innlegg og de du alt har sett. Kun for kronologiske feeder.</string>
     <string name="settings_language_filter">Language filter</string>
     <string name="settings_language_filter_description">Only keep posts in languages you choose. Unknown languages stay visible.</string>
-    <string name="settings_language_filter_languages">Languages (e.g. en, fr, ja)</string>
+    <string name="settings_language_filter_languages">Språk</string>
+    <string name="settings_language_filter_none">Ingen</string>
     <string name="settings_language_filter_off">Show all</string>
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>

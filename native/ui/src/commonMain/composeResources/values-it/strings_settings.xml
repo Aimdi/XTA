@@ -98,7 +98,8 @@
     <string name="settings_reading_position_description">Riapre ogni feed dove l'avevi lasciato, con un separatore «Sei aggiornato» tra i post nuovi e quelli già visti. Solo per i feed cronologici.</string>
     <string name="settings_language_filter">Language filter</string>
     <string name="settings_language_filter_description">Only keep posts in languages you choose. Unknown languages stay visible.</string>
-    <string name="settings_language_filter_languages">Languages (e.g. en, fr, ja)</string>
+    <string name="settings_language_filter_languages">Lingue</string>
+    <string name="settings_language_filter_none">Nessuna</string>
     <string name="settings_language_filter_off">Show all</string>
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>

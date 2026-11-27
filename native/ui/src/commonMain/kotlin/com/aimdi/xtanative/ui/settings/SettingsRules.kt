@@ -12,6 +12,8 @@ import com.aimdi.xtanative.store.settings.ThemePrefs
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import java.text.Collator
+import java.util.Locale
 
 /** Settings › AI as typed (_ai.dart): the three fields, until saved, and whether the key shows. */
 data class AiForm(val baseUrl: String = "", val apiKey: String = "", val model: String = "", val keyHidden: Boolean = true) {
@@ -75,6 +77,39 @@ object LanguageFilterInput {
     /** [settings] with [action] chosen; hiding or folding needs a language to keep. */
     fun withAction(settings: Settings, action: LanguageFilterAction): Settings? =
         if (action != LanguageFilterAction.OFF && !isActive(settings[PostsPrefs.languages])) null else settings.with(PostsPrefs.languageAction, action)
+}
+
+/**
+ * The language filter's picker: every language by its name, the ones kept
+ * at the top, saved as the codes the filter reads (`en,fr,ja`). A code the
+ * list has no language for (typed before there was a list) stays, by its code.
+ */
+object LanguagePicks {
+    /** Every two-letter language code there is a name for. */
+    val known: List<String> by lazy { Locale.getISOLanguages().toList() }
+
+    /** The codes [saved] keeps, each once. */
+    fun chosen(saved: String): List<String> = LanguageFilter.parseLanguages(saved).distinctBy { it.lowercase() }
+
+    /** What [chosen] is saved as. */
+    fun saved(chosen: List<String>): String = chosen.joinToString(",")
+
+    /** Language [code]'s name for a [reader]; the code itself where there is none. */
+    fun name(code: String, reader: Locale): String =
+        Locale.forLanguageTag(code).getDisplayLanguage(reader).takeIf { it.isNotBlank() && !it.equals(code, ignoreCase = true) }
+            ?.replaceFirstChar { it.titlecase(reader) } ?: code
+
+    /** What finds [code] in the list's filter: its name for the [reader], in English and in itself, and the code. */
+    fun terms(code: String, reader: Locale): List<String> {
+        val locale = Locale.forLanguageTag(code)
+        return listOf(name(code, reader), locale.getDisplayLanguage(Locale.ENGLISH), locale.getDisplayLanguage(locale), code).distinct()
+    }
+
+    /** The list's order: [chosen] first as picked, then every other of [known] by its name for the [reader]. */
+    fun options(chosen: List<String>, reader: Locale, known: List<String> = this.known): List<String> {
+        val byName = Collator.getInstance(reader)
+        return chosen + known.filter { code -> chosen.none { it.equals(code, ignoreCase = true) } }.sortedWith(compareBy(byName) { name(it, reader) })
+    }
 }
 
 /**

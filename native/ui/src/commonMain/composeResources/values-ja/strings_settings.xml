@@ -98,7 +98,8 @@
     <string name="settings_reading_position_description">各フィードを前回の位置から再開し、新しい投稿と既読の投稿の間に「すべて確認済み」の区切りを表示します。時系列フィードのみ。</string>
     <string name="settings_language_filter">言語フィルター</string>
     <string name="settings_language_filter_description">選んだ言語の投稿だけを残します。不明な言語はそのまま表示します。</string>
-    <string name="settings_language_filter_languages">言語（例: en, ja, fr）</string>
+    <string name="settings_language_filter_languages">言語</string>
+    <string name="settings_language_filter_none">なし</string>
     <string name="settings_language_filter_off">すべて表示</string>
     <string name="settings_language_filter_hide">非表示</string>
     <string name="settings_language_filter_fold">折りたたむ</string>

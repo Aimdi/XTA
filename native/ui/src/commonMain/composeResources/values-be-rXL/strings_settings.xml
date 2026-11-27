@@ -98,7 +98,8 @@
     <string name="settings_reading_position_description">Adkryvaje kožnuju stužku tam, dzie vy spynilisia, z razdzialialnikam «Vy ŭsio pračytali» pamiž novymi i ŭžo prahledžanymi pastami. Tolki dla chranalahičnych stužak.</string>
     <string name="settings_language_filter">Filtr moŭ</string>
     <string name="settings_language_filter_description">Pakidać tolki dopisy na vybranych movach. Dopisy na nieviadomych movach zastajucca bačnymi.</string>
-    <string name="settings_language_filter_languages">Movy (naprykład en, fr, ja)</string>
+    <string name="settings_language_filter_languages">Movy</string>
+    <string name="settings_language_filter_none">Niama</string>
     <string name="settings_language_filter_off">Pakazvać usie</string>
     <string name="settings_language_filter_hide">Schavać</string>
     <string name="settings_language_filter_fold">Zharnuć</string>

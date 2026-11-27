@@ -135,6 +135,20 @@ class SettingsRulesTest {
     }
 
     @Test
+    fun theLanguagePickerListsEveryLanguageByNameWithTheKeptOnesFirst() {
+        val german = java.util.Locale.GERMAN
+        assertEquals(listOf("en", "fr"), LanguagePicks.chosen(" en, fr ,EN,, "))
+        assertEquals("en,fr", LanguagePicks.saved(listOf("en", "fr")))
+        assertEquals("Englisch", LanguagePicks.name("en", german))
+        assertEquals("qme", LanguagePicks.name("qme", german))
+        assertTrue("Japanisch" in LanguagePicks.terms("ja", german) && "Japanese" in LanguagePicks.terms("ja", german) && "ja" in LanguagePicks.terms("ja", german))
+        assertTrue(LanguagePicks.known.containsAll(listOf("en", "de", "ja", "zh")))
+        val options = LanguagePicks.options(listOf("qme", "fr"), german, known = listOf("fr", "en", "de", "ar"))
+        // The kept first as picked, a code no language has among them; the rest by their German names: Arabisch, Deutsch, Englisch.
+        assertEquals(listOf("qme", "fr", "ar", "de", "en"), options)
+    }
+
+    @Test
     fun theFeedTabsAreFollowingForYouAndThePinnedNetworksThatAreOn() {
         val settings = Settings().with(HomePrefs.feedStripNetworks, listOf("reddit", "mastodon", "karakeep")).with(RedditPrefs.enabled, true).with(KarakeepPrefs.enabled, true)
         assertEquals(listOf("following", "x", "reddit"), SettingsChoices.feedTabs(settings))

@@ -98,7 +98,8 @@
     <string name="settings_reading_position_description">Avab iga voo sealt, kus pooleli jäid, eraldajaga „Oled kursis“ uute ja juba nähtud postituste vahel. Ainult kronoloogilistele voogudele.</string>
     <string name="settings_language_filter">Language filter</string>
     <string name="settings_language_filter_description">Only keep posts in languages you choose. Unknown languages stay visible.</string>
-    <string name="settings_language_filter_languages">Languages (e.g. en, fr, ja)</string>
+    <string name="settings_language_filter_languages">Keeled</string>
+    <string name="settings_language_filter_none">Puuduvad</string>
     <string name="settings_language_filter_off">Show all</string>
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>

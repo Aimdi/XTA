@@ -98,7 +98,8 @@
     <string name="settings_reading_position_description">从上次离开的位置重新打开每个信息流，并在新帖子与已看过的帖子之间显示“你已看完”分隔线。仅适用于时间顺序信息流。</string>
     <string name="settings_language_filter">语言筛选</string>
     <string name="settings_language_filter_description">只保留所选语言的帖子。未知语言仍会显示。</string>
-    <string name="settings_language_filter_languages">语言（如 en, zh, ja）</string>
+    <string name="settings_language_filter_languages">语言</string>
+    <string name="settings_language_filter_none">无</string>
     <string name="settings_language_filter_off">全部显示</string>
     <string name="settings_language_filter_hide">隐藏</string>
     <string name="settings_language_filter_fold">折叠</string>

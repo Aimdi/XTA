@@ -98,7 +98,8 @@
     <string name="settings_reading_position_description">각 피드를 마지막으로 본 위치에서 다시 열고, 새 게시물과 이미 본 게시물 사이에 "모두 확인했습니다" 구분선을 표시합니다. 시간순 피드에만 적용됩니다.</string>
     <string name="settings_language_filter">Language filter</string>
     <string name="settings_language_filter_description">Only keep posts in languages you choose. Unknown languages stay visible.</string>
-    <string name="settings_language_filter_languages">Languages (e.g. en, fr, ja)</string>
+    <string name="settings_language_filter_languages">언어</string>
+    <string name="settings_language_filter_none">없음</string>
     <string name="settings_language_filter_off">Show all</string>
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>

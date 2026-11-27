@@ -98,7 +98,8 @@
     <string name="settings_reading_position_description">Reabre cada feed donde lo dejaste, con un separador «Estás al día» entre las publicaciones nuevas y las ya vistas. Solo para feeds cronológicos.</string>
     <string name="settings_language_filter">Filtro de idioma</string>
     <string name="settings_language_filter_description">Solo muestra publicaciones en los idiomas elegidos. Los desconocidos siguen visibles.</string>
-    <string name="settings_language_filter_languages">Idiomas (p. ej. en, es, ja)</string>
+    <string name="settings_language_filter_languages">Idiomas</string>
+    <string name="settings_language_filter_none">Ninguno</string>
     <string name="settings_language_filter_off">Mostrar todo</string>
     <string name="settings_language_filter_hide">Ocultar</string>
     <string name="settings_language_filter_fold">Plegar</string>

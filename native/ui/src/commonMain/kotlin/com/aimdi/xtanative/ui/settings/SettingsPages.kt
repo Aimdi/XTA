@@ -17,15 +17,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -43,11 +40,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -277,21 +272,19 @@ internal fun PostsSettings(title: String, vm: SettingsViewModel, focus: String?,
     var confirmAll by remember { mutableStateOf(false) }
     SettingsPage(title, onBack) { padding ->
         SettingsList(padding) {
-            SettingsHeader(stringResource(Res.string.settings_posts))
+            // The page's title names the first group already: no header repeats it.
             PrefSwitch(settings, PostsPrefs.absoluteTimestamps, stringResource(Res.string.settings_absolute_timestamp), stringResource(Res.string.settings_absolute_timestamp_description), vm, focus)
-            CheckRow(
-                stringResource(Res.string.settings_hide_sensitive),
-                stringResource(Res.string.settings_hide_sensitive_description),
-                settings[PostsPrefs.hideSensitive],
-                focused = focus == PostsPrefs.hideSensitive.key,
-            ) { vm.set(PostsPrefs.hideSensitive, it) }
+            PrefSwitch(settings, PostsPrefs.hideSensitive, stringResource(Res.string.settings_hide_sensitive), stringResource(Res.string.settings_hide_sensitive_description), vm, focus)
             PrefSwitch(settings, PostsPrefs.alwaysShowSensitiveMedia, stringResource(Res.string.settings_always_show_sensitive), null, vm, focus)
             PrefSwitch(settings, PostsPrefs.fullPostContents, stringResource(Res.string.settings_full_contents), stringResource(Res.string.settings_full_contents_description), vm, focus)
             PrefSwitch(settings, PostsPrefs.nonConfirmationBias, stringResource(Res.string.settings_non_confirmation), stringResource(Res.string.settings_non_confirmation_description), vm, focus)
             PrefSwitch(settings, PostsPrefs.hideUnrelatedPostWarnings, stringResource(Res.string.settings_unrelated_warnings), stringResource(Res.string.settings_unrelated_warnings_description), vm, focus)
             PrefSwitch(settings, PostsPrefs.subscribeBadge, stringResource(Res.string.settings_subscribe_badge), stringResource(Res.string.settings_subscribe_badge_description), vm, focus)
+            PrefSwitch(settings, PostsPrefs.threadedReplies, stringResource(Res.string.settings_threaded_replies), stringResource(Res.string.settings_threaded_replies_description), vm, focus)
 
-            SettingsHeader(stringResource(Res.string.settings_default_feed_tab))
+            SettingsHeader(stringResource(Res.string.settings_layout_feed))
+            PrefSwitch(settings, PostsPrefs.collapseReposts, stringResource(Res.string.settings_collapse_boosts), stringResource(Res.string.settings_collapse_boosts_description), vm, focus)
+            PrefSwitch(settings, PostsPrefs.rememberReadingPosition, stringResource(Res.string.settings_reading_position), stringResource(Res.string.settings_reading_position_description), vm, focus)
             PrefSwitch(settings, PostsPrefs.includeReplies, stringResource(Res.string.settings_include_replies), stringResource(Res.string.settings_feed_default_description), vm, focus)
             PrefSwitch(settings, PostsPrefs.includeReposts, stringResource(Res.string.settings_include_reposts), stringResource(Res.string.settings_feed_default_description), vm, focus)
             val own = session.ownChoices.replies + session.ownChoices.reposts
@@ -304,8 +297,6 @@ internal fun PostsSettings(title: String, vm: SettingsViewModel, focus: String?,
             ) { confirmAll = true }
 
             SettingsHeader(stringResource(Res.string.settings_zen_mode))
-            PrefSwitch(settings, PostsPrefs.threadedReplies, stringResource(Res.string.settings_threaded_replies), stringResource(Res.string.settings_threaded_replies_description), vm, focus)
-            PrefSwitch(settings, PostsPrefs.collapseReposts, stringResource(Res.string.settings_collapse_boosts), stringResource(Res.string.settings_collapse_boosts_description), vm, focus)
             PrefSwitch(settings, PostsPrefs.zenMode, stringResource(Res.string.settings_zen_mode), stringResource(GestureWording.zenModeDescription), vm, focus)
             PrefSwitch(settings, PostsPrefs.calmMode, stringResource(Res.string.settings_calm_mode), stringResource(Res.string.settings_calm_mode_description), vm, focus)
             ChoiceRow(
@@ -316,7 +307,6 @@ internal fun PostsSettings(title: String, vm: SettingsViewModel, focus: String?,
                 label = { it.toString() },
                 focused = focus == PostsPrefs.zenPageCap.key,
             ) { vm.set(PostsPrefs.zenPageCap, it) }
-            PrefSwitch(settings, PostsPrefs.rememberReadingPosition, stringResource(Res.string.settings_reading_position), stringResource(Res.string.settings_reading_position_description), vm, focus)
 
             SettingsHeader(stringResource(Res.string.settings_language_filter), stringResource(Res.string.settings_language_filter_description))
             LanguageFilterRows(settings, vm)
@@ -338,37 +328,50 @@ internal fun PostsSettings(title: String, vm: SettingsViewModel, focus: String?,
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * The language filter's rows: the languages kept, picked by name from a list
+ * ([LanguagesDialog]), then what happens to posts in any other, which only
+ * counts once a language is picked.
+ */
 @Composable
 private fun LanguageFilterRows(settings: Settings, vm: SettingsViewModel) {
-    var typed by rememberSaveable { mutableStateOf(settings[PostsPrefs.languages]) }
-    var focused by remember { mutableStateOf(false) }
-    val commit = { vm.update { LanguageFilterInput.committed(it, typed) } }
-    OutlinedTextField(
-        value = typed,
-        onValueChange = { typed = it },
-        label = { Text(stringResource(Res.string.settings_language_filter_languages)) },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { commit() }),
-        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp).onFocusChanged { state ->
-            if (focused && !state.isFocused) commit()
-            focused = state.isFocused
-        },
-    )
-    val action = settings[PostsPrefs.languageAction]
-    val active = LanguageFilterInput.isActive(typed)
-    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
-        LanguageFilterAction.entries.forEachIndexed { index, choice ->
-            SegmentedButton(
-                selected = action == choice,
-                onClick = { vm.update { LanguageFilterInput.withAction(LanguageFilterInput.committed(it, typed), choice) ?: it } },
-                enabled = choice == LanguageFilterAction.OFF || active,
-                shape = SegmentedButtonDefaults.itemShape(index, LanguageFilterAction.entries.size),
-            ) { Text(languageActionLabel(choice)) }
+    var picking by remember { mutableStateOf(false) }
+    val chosen = LanguagePicks.chosen(settings[PostsPrefs.languages])
+    val reader = currentLocale()
+    PickerRow(
+        stringResource(Res.string.settings_language_filter_languages),
+        value = if (chosen.isEmpty()) stringResource(Res.string.settings_language_filter_none) else chosen.joinToString(", ") { LanguagePicks.name(it, reader) },
+    ) { picking = true }
+    ChoiceRow(
+        stringResource(Res.string.settings_language_filter_action),
+        options = LanguageFilterAction.entries,
+        selected = settings[PostsPrefs.languageAction],
+        label = { languageActionLabel(it) },
+        enabled = chosen.isNotEmpty(),
+    ) { choice -> vm.update { LanguageFilterInput.withAction(it, choice) ?: it } }
+    if (picking) {
+        LanguagesDialog(chosen, reader, onDismiss = { picking = false }) { picked ->
+            picking = false
+            vm.update { LanguageFilterInput.committed(it, LanguagePicks.saved(picked)) }
         }
     }
-    ValueRow(stringResource(Res.string.settings_language_filter_action), languageActionLabel(action))
+}
+
+/** The languages to keep, every language by name with its code under it, those already kept at the top. */
+@Composable
+private fun LanguagesDialog(chosen: List<String>, reader: Locale, onDismiss: () -> Unit, onSave: (List<String>) -> Unit) {
+    val options = remember(reader) { LanguagePicks.options(chosen, reader) }
+    MultiChoiceDialog(
+        stringResource(Res.string.settings_language_filter_languages),
+        options,
+        chosen,
+        label = { LanguagePicks.name(it, reader) },
+        terms = { LanguagePicks.terms(it, reader) },
+        description = { it },
+        confirm = stringResource(Res.string.settings_save),
+        onDismiss = onDismiss,
+        onConfirm = onSave,
+    )
 }
 
 // ---- Media (_media.dart) ----

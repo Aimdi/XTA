@@ -98,7 +98,8 @@
     <string name="settings_reading_position_description">Адкрывае кожную стужку там, дзе вы спыніліся, з раздзяляльнікам «Вы ўсё прачыталі» паміж новымі і ўжо прагледжанымі пастамі. Толькі для храналагічных стужак.</string>
     <string name="settings_language_filter">Language filter</string>
     <string name="settings_language_filter_description">Only keep posts in languages you choose. Unknown languages stay visible.</string>
-    <string name="settings_language_filter_languages">Languages (e.g. en, fr, ja)</string>
+    <string name="settings_language_filter_languages">Мовы</string>
+    <string name="settings_language_filter_none">Няма</string>
     <string name="settings_language_filter_off">Show all</string>
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>

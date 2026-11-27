@@ -98,7 +98,8 @@
     <string name="settings_reading_position_description">हर फ़ीड वहीं से खोलती है जहाँ आपने छोड़ा था, नई और पहले देखी गई पोस्ट के बीच "आप अप-टू-डेट हैं" विभाजक के साथ। केवल कालानुक्रमिक फ़ीड के लिए।</string>
     <string name="settings_language_filter">Language filter</string>
     <string name="settings_language_filter_description">Only keep posts in languages you choose. Unknown languages stay visible.</string>
-    <string name="settings_language_filter_languages">Languages (e.g. en, fr, ja)</string>
+    <string name="settings_language_filter_languages">भाषाएँ</string>
+    <string name="settings_language_filter_none">कोई नहीं</string>
     <string name="settings_language_filter_off">Show all</string>
     <string name="settings_language_filter_hide">Hide</string>
     <string name="settings_language_filter_fold">Fold</string>
