@@ -6,8 +6,12 @@ import java.io.InterruptedIOException
 import java.net.SocketTimeoutException
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.coroutineContext
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
@@ -89,7 +93,18 @@ class OkHttpXHttp(client: OkHttpClient = defaultClient) : XHttp {
             val millis = if (timeout.timeoutNanos() == 0L) left else minOf(left, TimeUnit.NANOSECONDS.toMillis(timeout.timeoutNanos()))
             timeout.timeout(millis, TimeUnit.MILLISECONDS)
         }
-        call.execute().use { it.toXResponse() }
+        // execute() blocks this thread; a caller that leaves cancels the call instead of waiting out its timeout.
+        val leaving = launch(start = CoroutineStart.UNDISPATCHED) {
+            try { awaitCancellation() } finally { call.cancel() }
+        }
+        try {
+            call.execute().use { it.toXResponse() }
+        } catch (error: IOException) {
+            ensureActive()
+            throw error
+        } finally {
+            leaving.cancel()
+        }
     }
 
     private fun hasTimeToRetry(budget: XRequestBudget?) = budget == null || budget.remainingMillis > RETRY_DELAY_MILLIS
