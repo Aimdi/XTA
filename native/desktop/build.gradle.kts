@@ -140,7 +140,9 @@ compose.desktop {
             packageVersion = versionName
             // Beside the modules Compose always ships: German month names and
             // separators (jdk.localedata), and what the libraries may load.
-            modules("jdk.localedata", "jdk.unsupported", "java.naming", "java.management", "java.instrument", "java.sql")
+            // jdk.accessibility: what a screen reader's bridge (java-atk-wrapper)
+            // builds on; nothing loads it unless an assistive technology is named.
+            modules("jdk.localedata", "jdk.unsupported", "java.naming", "java.management", "java.instrument", "java.sql", "jdk.accessibility")
             // The voice engine downloaded voices read with, as XTA's Linux bundle
             // carries it: tool/voice_engine.py puts it in linux-x64/voice-engine
             // here (CI does before it builds), and the app finds it under
