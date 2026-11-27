@@ -67,11 +67,11 @@
     <string name="settings_always_show_sensitive">Sensible Medien immer anzeigen</string>
     <string name="settings_full_contents">Vollständigen Beitragsinhalt immer anzeigen</string>
     <string name="settings_full_contents_description">Den vollständigen Inhalt von Beiträgen immer anzeigen, ohne abzuschneiden</string>
-    <string name="settings_non_confirmation">Non-Confirmation-Bias-Modus aktivieren</string>
-    <string name="settings_non_confirmation_description">Autor des Beitrags verbergen. Vermeide Bestätigungsfehler aufgrund von Autoritätsargumenten.</string>
+    <string name="settings_non_confirmation">Autoren ausblenden (gegen Bestätigungsfehler)</string>
+    <string name="settings_non_confirmation_description">Blendet aus, wer einen Beitrag geschrieben hat, damit das Gesagte zählt und nicht der Name dahinter.</string>
     <string name="settings_unrelated_warnings">Warnungen für nicht verwandte Beiträge deaktivieren</string>
     <string name="settings_unrelated_warnings_description">Warnungen für nicht verwandte Beiträge im Feed deaktivieren</string>
-    <string name="settings_subscribe_badge">Abonnieren-Knopf auf Profilbildern anzeigen</string>
+    <string name="settings_subscribe_badge">Abonnieren-Schaltfläche auf Profilbildern anzeigen</string>
     <string name="settings_subscribe_badge_description">Zeigt ein + auf den Profilbildern von Autoren, die du nicht abonniert hast</string>
     <string name="settings_include_replies">Antworten anzeigen</string>
     <string name="settings_include_reposts">Reposts anzeigen</string>
