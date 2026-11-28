@@ -95,4 +95,5 @@
     <string name="home_mark_all_read">Отметить всё прочитанным</string>
     <string name="home_deck_width_same">Как у других колонок</string>
     <string name="home_deck_show_unread">Показывать число непрочитанных</string>
+    <string name="home_deck_profile">Посты аккаунта</string>
 </resources>

@@ -92,4 +92,5 @@
     <string name="home_mark_all_read">Đánh dấu tất cả đã đọc</string>
     <string name="home_deck_width_same">Giống các cột khác</string>
     <string name="home_deck_show_unread">Hiện số chưa đọc</string>
+    <string name="home_deck_profile">Bài đăng của một tài khoản</string>
 </resources>

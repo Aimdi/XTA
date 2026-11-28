@@ -46,4 +46,30 @@ class DeckColumnsTest {
         assertEquals(500f, DeckColumns.width(1500f, 3, 380f), "three fit: each takes a third")
         assertEquals(380f, DeckColumns.width(1500f, 5, 380f), "five do not: each keeps its width, the deck scrolls")
     }
+
+    @Test
+    fun aColumnCanBeASearchAnAccountAnAntennaOrASavedFolder() {
+        val search = DeckColumn.Search("kotlin, compose lang:en")
+        assertFalse(',' in search.id, "a search's comma never splits the deck's list")
+        assertEquals(search, DeckColumn.of(search.id))
+        listOf(DeckColumn.Profile("jack"), DeckColumn.Antenna("a1"), DeckColumn.SavedFolder("f1")).forEach {
+            assertEquals(it, DeckColumn.of(it.id), "${it.id} reads back as it was written")
+            assertTrue(DeckColumn.isTimeline(it.id), "a restore keeps it, as it keeps Home's timelines")
+        }
+        assertNull(DeckColumn.of("@search:"))
+        assertNull(DeckColumn.of("@search:%zz"), "a broken search reads as no column")
+        assertNull(DeckColumn.of("@profile:"))
+        val session = Session(deck = listOf(search.id, "@profile:jack", "@antenna:a1", "@saved:f1"))
+        assertEquals(4, session.deckColumns.size, "kept whatever the device holds; a column whose antenna is gone says so itself")
+    }
+
+    @Test
+    fun theReaderNamesASearchOrAnAccount() {
+        assertEquals(DeckColumn.Search("cats"), DeckAsks.search("  cats "))
+        assertNull(DeckAsks.search("   "))
+        assertEquals(DeckColumn.Profile("jack"), DeckAsks.profile("@jack"))
+        assertEquals(DeckColumn.Profile("jack"), DeckAsks.profile("https://x.com/jack"))
+        assertNull(DeckAsks.profile("not a handle!"))
+        assertNull(DeckAsks.profile("@a @b"), "one account a column")
+    }
 }

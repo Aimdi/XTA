@@ -94,4 +94,5 @@
     <string name="home_mark_all_read">Marchează totul ca citit</string>
     <string name="home_deck_width_same">La fel ca celelalte coloane</string>
     <string name="home_deck_show_unread">Afișează numărul de necitite</string>
+    <string name="home_deck_profile">Postările unui cont</string>
 </resources>

@@ -1,5 +1,8 @@
 package com.aimdi.xtanative.core.session
 
+import java.net.URLDecoder
+import java.net.URLEncoder
+
 /**
  * Groups nested in groups, as XTA nests them: a parent shows its children
  * under it, and its feed reads its own members and everything nested in it.
@@ -138,14 +141,46 @@ sealed interface DeckColumn {
         override val id: String get() = NETWORK + networkId
     }
 
+    /** X's latest posts for a search, as Search's Latest tab reads them. */
+    data class Search(val query: String) : DeckColumn {
+        override val id: String get() = SEARCH + encoded(query)
+    }
+
+    /** An account's posts, as its profile's Posts tab reads them. */
+    data class Profile(val screenName: String) : DeckColumn {
+        override val id: String get() = PROFILE + screenName
+    }
+
+    /** An antenna's feed, by the antenna's id. */
+    data class Antenna(val antennaId: String) : DeckColumn {
+        override val id: String get() = ANTENNA + antennaId
+    }
+
+    /** One folder of Saved, by the folder's id: the device's posts, read from nowhere. */
+    data class SavedFolder(val folderId: String) : DeckColumn {
+        override val id: String get() = SAVED + folderId
+    }
+
     companion object {
         private const val NETWORK = "@network:"
+        private const val SEARCH = "@search:"
+        private const val PROFILE = "@profile:"
+        private const val ANTENNA = "@antenna:"
+        private const val SAVED = "@saved:"
 
-        /** The column [id] names; a group's id is any that is not one of Home's timelines. */
+        /**
+         * The column [id] names; a group's id is any that is not one of Home's
+         * timelines. A search is kept URL-encoded, so no comma of it splits
+         * the deck's list as XTA writes it.
+         */
         fun of(id: String): DeckColumn? = when {
             id == Following.id -> Following
             id == ForYou.id -> ForYou
             id.startsWith(NETWORK) -> id.removePrefix(NETWORK).takeIf { it.isNotBlank() }?.let(::Network)
+            id.startsWith(SEARCH) -> decoded(id.removePrefix(SEARCH))?.takeIf { it.isNotBlank() }?.let(::Search)
+            id.startsWith(PROFILE) -> id.removePrefix(PROFILE).takeIf { it.isNotBlank() }?.let(::Profile)
+            id.startsWith(ANTENNA) -> id.removePrefix(ANTENNA).takeIf { it.isNotBlank() }?.let(::Antenna)
+            id.startsWith(SAVED) -> id.removePrefix(SAVED).takeIf { it.isNotBlank() }?.let(::SavedFolder)
             id.startsWith("@") -> null
             id.isBlank() -> null
             else -> Group(id)
@@ -153,7 +188,22 @@ sealed interface DeckColumn {
 
         /** Whether [id] names one of Home's timelines rather than a group: a restore keeps it, as it keeps a group still there. */
         fun isTimeline(id: String): Boolean = of(id).let { it != null && it !is Group }
+
+        private fun encoded(text: String): String = URLEncoder.encode(text, Charsets.UTF_8)
+
+        private fun decoded(text: String): String? = try {
+            URLDecoder.decode(text, Charsets.UTF_8)
+        } catch (_: IllegalArgumentException) {
+            null
+        }
     }
+}
+
+/** A column the reader names in Add column: a search of X, or an account by its handle or profile link. */
+object DeckAsks {
+    fun search(text: String): DeckColumn.Search? = text.trim().takeIf { it.isNotEmpty() }?.let(DeckColumn::Search)
+
+    fun profile(text: String): DeckColumn.Profile? = ImportHandles.parse(text.trim()).singleOrNull()?.let(DeckColumn::Profile)
 }
 
 /** The deck's columns as the reader arranges them. */

@@ -97,4 +97,5 @@
     <string name="home_mark_all_read">تعليم الكل كمقروء</string>
     <string name="home_deck_width_same">مثل باقي الأعمدة</string>
     <string name="home_deck_show_unread">إظهار عدد غير المقروء</string>
+    <string name="home_deck_profile">منشورات حساب</string>
 </resources>

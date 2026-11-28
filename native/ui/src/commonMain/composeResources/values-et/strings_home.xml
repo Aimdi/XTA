@@ -93,4 +93,5 @@
     <string name="home_mark_all_read">Märgi kõik loetuks</string>
     <string name="home_deck_width_same">Sama mis teistel veergudel</string>
     <string name="home_deck_show_unread">Näita lugemata arvu</string>
+    <string name="home_deck_profile">Konto postitused</string>
 </resources>

@@ -95,4 +95,5 @@
     <string name="home_mark_all_read">Пазначыць усё як прачытанае</string>
     <string name="home_deck_width_same">Як у іншых калонак</string>
     <string name="home_deck_show_unread">Паказваць колькасць непрачытанага</string>
+    <string name="home_deck_profile">Допісы акаўнта</string>
 </resources>

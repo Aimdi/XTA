@@ -116,7 +116,7 @@ class UnreadTally(private val graph: AppGraph, private val scope: CoroutineScope
             DeckColumn.Following -> HomeTab.Following
             DeckColumn.ForYou -> HomeTab.ForYou
             is DeckColumn.Group -> HomeTab.Group(column.groupId, "")
-            is DeckColumn.Network -> null
+            is DeckColumn.Network, is DeckColumn.Search, is DeckColumn.Profile, is DeckColumn.Antenna, is DeckColumn.SavedFolder -> null
         }
 
         /** The read-mark keys of [session]'s home feeds that are [lit]. */

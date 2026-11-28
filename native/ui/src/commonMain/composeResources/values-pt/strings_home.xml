@@ -93,4 +93,5 @@
     <string name="home_mark_all_read">Marcar tudo como lido</string>
     <string name="home_deck_width_same">Igual às outras colunas</string>
     <string name="home_deck_show_unread">Mostrar número de não lidos</string>
+    <string name="home_deck_profile">Publicações de uma conta</string>
 </resources>

@@ -93,4 +93,5 @@
     <string name="home_mark_all_read">सभी को पढ़ा हुआ चिह्नित करें</string>
     <string name="home_deck_width_same">दूसरे कॉलम जैसी</string>
     <string name="home_deck_show_unread">अपठित संख्या दिखाएँ</string>
+    <string name="home_deck_profile">किसी खाते की पोस्ट</string>
 </resources>

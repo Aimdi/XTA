@@ -148,9 +148,8 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     val graph = LocalGraph.current
     val session by graph.sessions.state.collectAsStateWithLifecycle()
     val columns = session?.deckColumns.orEmpty()
-    val groups = session?.groups.orEmpty()
     val networks = LocalHomeNetworks.current
-    val available by networks.available.collectAsStateWithLifecycle()
+    val names = rememberColumnNames()
     val settings = LocalSettingsStore.current
     val width by remember(settings) { settings.observe(HomePrefs.deckColumnWidth) }.collectAsStateWithLifecycle(DeckWidth.MEDIUM)
     val scope = rememberCoroutineScope()
@@ -162,6 +161,7 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     val toTop = remember { mutableStateMapOf<String, Int>() }
     var refreshedAll by remember { mutableIntStateOf(0) }
     var adding by remember { mutableStateOf(false) }
+    var asking by remember { mutableStateOf<DeckAsk?>(null) }
     // The desktop's Add column drops down under the + (or the empty deck's button) that opened it, as Home's switcher does.
     val addAnchor = remember(scope) { SwitcherAnchor(scope) }
     val barAdd = addAnchor.button(ADD_IN_BAR)
@@ -228,7 +228,7 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
                                     if (index > 0) VerticalDivider()
                                     ReadColumn(column.id) {
                                         DeckColumnView(
-                                            column, labelOf(column, groups, available), place, calls, toTop[column.id] ?: 0, refreshedAll,
+                                            column, labelOf(column, names), place, calls, toTop[column.id] ?: 0, refreshedAll,
                                             columnActions, Modifier.width(widths[index].dp).fillMaxHeight().chosenMark(chosen == column.id),
                                         )
                                     }
@@ -247,8 +247,17 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
         }
     }
     if (adding) {
-        AddColumnSheet(addable(columns, groups, available), networks, addAnchor, onDismiss = { adding = false }) { column ->
+        AddColumnSheet(addable(columns, names), networks, addAnchor, onDismiss = { adding = false }) { choice ->
             adding = false
+            when (choice) {
+                is AddChoice.Column -> edit { DeckColumns.added(it, choice.column) }
+                is AddChoice.Ask -> asking = choice.ask
+            }
+        }
+    }
+    asking?.let { ask ->
+        AskColumnDialog(ask, onDismiss = { asking = null }) { column ->
+            asking = null
             edit { DeckColumns.added(it, column) }
         }
     }
@@ -327,6 +336,10 @@ internal fun DeckColumnView(
                 ForYouPage(toTop, actions, PaddingValues())
             }
             is DeckColumn.Network -> NetworkColumn(column.networkId, label, place, calls, toTop, reads) { refreshed++ }
+            is DeckColumn.Search, is DeckColumn.Profile, is DeckColumn.Antenna, is DeckColumn.SavedFolder -> {
+                ColumnHeader(column, label, place, calls, onRefresh = { refreshed++ })
+                LocalColumnBody(column, actions, reads, toTop)
+            }
         }
     }
 }
@@ -412,6 +425,7 @@ private fun ColumnMark(column: DeckColumn) {
         DeckColumn.ForYou -> TimelineMark(HomeTab.ForYou, LocalHomeNetworks.current, 24.dp)
         is DeckColumn.Network -> LocalHomeNetworks.current.Mark(column.networkId, 24.dp)
         is DeckColumn.Group -> Icon(HomeIcons.PeopleOutlined, contentDescription = null, modifier = Modifier.size(24.dp))
+        else -> DeckMarks.of(column)?.let { Icon(it, contentDescription = null, modifier = Modifier.size(24.dp)) }
     }
 }
 
@@ -450,22 +464,29 @@ private fun EmptyDeck(button: Modifier, onAdd: () -> Unit) {
     }
 }
 
-/** A column's name: Following, For you (X's), the network's, or the group's with its emoji. */
+/** A column's name: Following, For you (X's), the network's, the group's with its emoji, the search, the account, the antenna's or the folder's. */
 @Composable
-private fun labelOf(column: DeckColumn, groups: List<FollowGroup>, available: List<StripNetwork>): String = when (column) {
+private fun labelOf(column: DeckColumn, names: ColumnNames): String = when (column) {
     DeckColumn.Following -> stringResource(Res.string.following)
     // Named as X names that timeline, the X mark beside it: an X mark beside "X" read as a close button.
     DeckColumn.ForYou -> stringResource(Res.string.home_column_for_you)
-    is DeckColumn.Network -> available.firstOrNull { it.id == column.networkId }?.title ?: column.networkId
-    is DeckColumn.Group -> groups.firstOrNull { it.id == column.groupId }?.let(HomeStrip::groupLabel) ?: column.groupId
+    is DeckColumn.Network -> names.available.firstOrNull { it.id == column.networkId }?.title ?: column.networkId
+    is DeckColumn.Group -> names.groups.firstOrNull { it.id == column.groupId }?.let(HomeStrip::groupLabel) ?: column.groupId
+    else -> names.of(column)
 }
 
-/** What Add column offers: Home's timelines, every network running, then every group, less the columns already on the deck. */
-private fun addable(columns: List<DeckColumn>, groups: List<FollowGroup>, available: List<StripNetwork>): List<DeckColumn> {
+/**
+ * What Add column offers: Home's timelines, every network running, every
+ * group, the searches followed, the antennas and Saved's folders, less the
+ * columns already on the deck; then a search and an account of the reader's
+ * choosing ([DeckAsk]).
+ */
+private fun addable(columns: List<DeckColumn>, names: ColumnNames): List<AddChoice> {
     val all = listOf(DeckColumn.Following, DeckColumn.ForYou) +
-        available.filter { it.id != FeedStrip.FOLLOWING && it.id != FeedStrip.FOR_YOU }.map { DeckColumn.Network(it.id) } +
-        groups.map { DeckColumn.Group(it.id) }
-    return all.filterNot { it in columns }
+        names.available.filter { it.id != FeedStrip.FOLLOWING && it.id != FeedStrip.FOR_YOU }.map { DeckColumn.Network(it.id) } +
+        names.groups.map { DeckColumn.Group(it.id) } +
+        names.addable()
+    return all.filterNot { it in columns }.map(AddChoice::Column) + DeckAsk.entries.map(AddChoice::Ask)
 }
 
 /** The Add column buttons, by the part of the deck they stand in: the top bar's +, and the empty deck's. */
@@ -483,7 +504,7 @@ private fun Modifier.anchoring(button: SwitcherButton): Modifier =
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AddColumnSheet(choices: List<DeckColumn>, networks: HomeNetworks, anchor: SwitcherAnchor, onDismiss: () -> Unit, onPick: (DeckColumn) -> Unit) {
+private fun AddColumnSheet(choices: List<AddChoice>, networks: HomeNetworks, anchor: SwitcherAnchor, onDismiss: () -> Unit, onPick: (AddChoice) -> Unit) {
     val frame = LocalWideFrame.current
     // Taken once, whether or not it drops down, as the switcher takes its button.
     val button = remember { anchor.take()?.takeIf { frame != null && it.bounds != null } }
@@ -496,7 +517,7 @@ private fun AddColumnSheet(choices: List<DeckColumn>, networks: HomeNetworks, an
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp),
             )
-            choices.forEach { column -> key(column.id) { AddColumnRow(column, networks, onPick) } }
+            choices.forEach { choice -> key(choice.key) { AddColumnRow(choice, networks, onPick) } }
             Spacer(Modifier.height(6.dp))
         }
         return
@@ -508,30 +529,35 @@ private fun AddColumnSheet(choices: List<DeckColumn>, networks: HomeNetworks, an
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
         )
         LazyColumn(Modifier.fillMaxWidth().navigationBarsPadding(), state = rememberSheetList()) {
-            items(choices, key = { it.id }) { column -> AddColumnRow(column, networks, onPick) }
+            items(choices, key = { it.key }) { choice -> AddColumnRow(choice, networks, onPick) }
         }
     }
 }
 
 /** One of Add column's choices, led by the mark its column's head will show: a group's emoji, else its people; denser in a pointer's menu. */
 @Composable
-private fun AddColumnRow(column: DeckColumn, networks: HomeNetworks, onPick: (DeckColumn) -> Unit) {
-    val session by LocalGraph.current.sessions.state.collectAsStateWithLifecycle()
-    val available by networks.available.collectAsStateWithLifecycle()
-    val groups = session?.groups.orEmpty()
+private fun AddColumnRow(choice: AddChoice, networks: HomeNetworks, onPick: (AddChoice) -> Unit) {
+    val names = rememberColumnNames(networks)
     val closer = LocalSheetCloser.current
     val metrics = LocalMenuRowMetrics.current
     val pointer = metrics == MenuRowMetrics.Pointer
     Row(
         Modifier.fillMaxWidth().heightIn(min = if (pointer) metrics.minHeight else 56.dp)
-            .clickable { closer.close { onPick(column) } }
+            .clickable { closer.close { onPick(choice) } }
             .padding(horizontal = if (pointer) metrics.padding else 24.dp, vertical = metrics.verticalPadding),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(if (pointer) metrics.gap else 16.dp),
     ) {
-        val (emoji, name) = ColumnTitle.of(column, labelOf(column, groups, available))
+        val (emoji, name) = when (choice) {
+            is AddChoice.Column -> ColumnTitle.of(choice.column, labelOf(choice.column, names))
+            is AddChoice.Ask -> null to stringResource(choice.ask.title)
+        }
         Box(Modifier.size(24.dp), contentAlignment = Alignment.Center) {
-            if (emoji != null) Text(emoji, fontSize = 18.sp, maxLines = 1) else ColumnMark(column)
+            when {
+                emoji != null -> Text(emoji, fontSize = 18.sp, maxLines = 1)
+                choice is AddChoice.Column -> ColumnMark(choice.column)
+                choice is AddChoice.Ask -> Icon(choice.ask.icon, contentDescription = null, modifier = Modifier.size(24.dp))
+            }
         }
         TipText(name, style = if (pointer) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
