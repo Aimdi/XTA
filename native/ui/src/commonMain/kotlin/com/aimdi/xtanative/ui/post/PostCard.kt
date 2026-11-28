@@ -209,6 +209,8 @@ fun PostCard(
             .opening(rememberDoubleTapLike(shown, scope.prefs, actions)) {
                 if (presses.take() == PostPress.TAP_IN_WINDOW && inWindow != null) inWindow() else actions.openPost(shown.id)
             }
+            // Dragged with the mouse, the card hands out its address, and a Saved folder's chip takes the post ([dragsPost]).
+            .dragsPost(post, PostView.url(post, scope.prefs))
             .drawBehind {
                 val x = PostGeometry.RAIL_CENTER.dp.toPx()
                 val width = PostGeometry.RAIL_WIDTH.dp.toPx()

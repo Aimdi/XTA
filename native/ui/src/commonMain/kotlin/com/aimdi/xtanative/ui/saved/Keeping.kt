@@ -36,6 +36,26 @@ object Keeping {
         filing.remember(folderId)
     }
 
+    /**
+     * [item] dropped on a folder's chip ([folderId], null for Unfiled): saved
+     * there, or moved there when it is saved already, keeping its note, with
+     * "Changes saved" whose undo puts it back. The save sheet's remembered
+     * folder stays as it was.
+     */
+    fun fileByDrop(keeper: Keeper, item: Keepable, folderId: String?) = keeper.keep {
+        val index = keeper.saved.index()
+        val saved = index.isSaved(item.id)
+        val was = index.folderOf(item.id)
+        if (saved && was == folderId) return@keep
+        if (saved) keeper.saved.setFolder(listOf(item.id), folderId) else file(keeper, SavedFiling(keeper.saved, keeper.settings), item, folderId)
+        KeepNotices.show(
+            KeepNotice.ChangesSaved(undo = {
+                if (saved) keeper.saved.setFolder(listOf(item.id), was) else keeper.saved.remove(item.id)
+                true
+            }),
+        )
+    }
+
     /** The heart tapped: liked on this device, or no longer; the first like says that likes stay here. */
     fun toggleLike(keeper: Keeper, item: Keepable) = keeper.keep { like(keeper, item, !keeper.likes.isLiked(item.id)) }
 

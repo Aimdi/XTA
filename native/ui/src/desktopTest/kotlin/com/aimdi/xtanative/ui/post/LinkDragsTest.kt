@@ -79,4 +79,18 @@ class LinkDragsTest {
         assertEquals("main", DragHover.windowUnder(null, listOf("main")), "another program in use")
         assertNull(DragHover.windowUnder("post", emptyList<String>()))
     }
+
+    @Test
+    fun aPostsCardHandsOutItsAddressAndThePostForSaved() {
+        val post = com.aimdi.xtanative.core.x.model.XPost("7", com.aimdi.xtanative.core.x.model.XUser("1", "jane", "Jane"), java.time.Instant.EPOCH, "hi")
+        val address = "https://x.com/jane/status/7"
+        DraggedPosts.started(address, post)
+        val transfer = LinkTransfer(address, carriesPost = true)
+        assertEquals(address, transfer.getTransferData(DataFlavor.stringFlavor))
+        assertEquals(address + "\r\n", transfer.getTransferData(LinkDragFlavors.uriList))
+        assertEquals(post, PostDragFlavor.postIn(transfer))
+        assertNull(PostDragFlavor.postIn(LinkTransfer(address)), "a link of the post's text carries no post")
+        assertNull(PostDragFlavor.postIn(LinkTransfer("https://x.com/jane/status/8", carriesPost = true)), "another drag's address")
+        assertNull(DraggedPosts.post(null))
+    }
 }

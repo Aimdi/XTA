@@ -41,6 +41,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.ui.common.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -131,6 +132,7 @@ import com.aimdi.xtanative.ui.home.FindsWithKeys
 import com.aimdi.xtanative.ui.home.SelectsWithKeys
 import com.aimdi.xtanative.ui.home.foundWithKeys
 import com.aimdi.xtanative.ui.post.PostActions
+import com.aimdi.xtanative.ui.post.takesPostDrops
 import com.aimdi.xtanative.ui.theme.edgeColor
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -481,6 +483,7 @@ private fun ChipRow(
     onNewFolder: () -> Unit,
 ) {
     val row = rememberLazyListState()
+    val keeper = LocalKeeper.current
     Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         LazyRow(
             Modifier.weight(1f).wheelScrollsSideways(row).edgeFade(row),
@@ -505,6 +508,12 @@ private fun ChipRow(
                     },
                     onClick = { onSelect(chip.token) },
                     onLongClick = chip.folder?.let { folder -> { onFolderMenu(folder) } },
+                    // A post dragged from its card files in a folder's chip, or Unfiled's ([takesPostDrops]).
+                    onPost = when {
+                        chip.folder != null -> { post -> Keeping.fileByDrop(keeper, Keepable.of(post), chip.folder.id) }
+                        chip.token == SavedTabs.UNFILED -> { post -> Keeping.fileByDrop(keeper, Keepable.of(post), null) }
+                        else -> null
+                    },
                 )
             }
         }
@@ -523,16 +532,17 @@ private fun chipLabel(chip: SavedChip): String = when (chip.token) {
     else -> chip.folder?.name.orEmpty()
 }
 
-/** A tab as a plain outlined chip, the selected one written and outlined in the accent; a folder's opens its menu on a long press. */
+/** A tab as a plain outlined chip, the selected one written and outlined in the accent; a folder's opens its menu on a long press, and takes a post dropped on it ([onPost]). */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun TabChip(label: String, selected: Boolean, trailing: ImageVector?, onClick: () -> Unit, onLongClick: (() -> Unit)?) {
+private fun TabChip(label: String, selected: Boolean, trailing: ImageVector?, onClick: () -> Unit, onLongClick: (() -> Unit)?, onPost: ((XPost) -> Unit)? = null) {
     val accent = MaterialTheme.colorScheme.primary
     val shape = RoundedCornerShape(8.dp)
     Row(
         Modifier
             .heightIn(min = 32.dp)
             .clip(shape)
+            .then(onPost?.let { Modifier.takesPostDrops(it) } ?: Modifier)
             .border(1.dp, if (selected) accent else edgeColor(), shape)
             // A right-click opens what a long press does, as a desktop opens a thing's menu.
             .then(onLongClick?.let { Modifier.onSecondaryClick(it) } ?: Modifier)

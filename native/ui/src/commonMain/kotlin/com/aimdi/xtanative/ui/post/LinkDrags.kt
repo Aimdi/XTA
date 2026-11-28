@@ -1,8 +1,10 @@
 package com.aimdi.xtanative.ui.post
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.AnnotatedString
+import com.aimdi.xtanative.core.x.model.XPost
 import java.net.URI
 
 /**
@@ -39,4 +41,34 @@ internal expect fun Modifier.dragsLinks(linkAt: (Offset) -> String?): Modifier
 /** A drag from a link in [text], laid out as [layout] holds it, drags its address out (a mention's profile, a tag's search, as a middle click opens them). */
 internal fun Modifier.linkDrags(text: AnnotatedString, layout: TextLayoutHolder): Modifier = dragsLinks { position ->
     tagAt(text, layout.result, position) { LinkDrags.addressOf(it) != null }?.let(LinkDrags::addressOf)
+}
+
+/**
+ * Dragging a post's card with the mouse drags the post's address out, the
+ * one Copy link copies ([LinkDrags]), and lets a Saved folder's chip take
+ * the post itself ([takesPostDrops]). A drag from a link, a picture or
+ * selected text inside the card drags that instead. Nothing on Android.
+ */
+internal expect fun Modifier.dragsPost(post: XPost, url: String?): Modifier
+
+/** A place a post dragged from its card ([dragsPost]) is dropped on: lit while one is over it, [onPost] takes it. Nothing on Android. */
+@Composable
+internal expect fun Modifier.takesPostDrops(onPost: (XPost) -> Unit): Modifier
+
+/**
+ * The post a card's drag carries ([dragsPost]), by the address the drag
+ * hands over: a drag holds text only, so the app keeps the post it began
+ * with here, for a drop in any of its windows ([takesPostDrops]).
+ */
+internal object DraggedPosts {
+    @Volatile
+    private var dragged: Pair<String, XPost>? = null
+
+    /** A drag of [post] under [address] began. */
+    fun started(address: String, post: XPost) {
+        dragged = address to post
+    }
+
+    /** The post the drag handing over [address] carries; null for a drag of anything else. */
+    fun post(address: String?): XPost? = dragged?.takeIf { address != null && it.first == address }?.second
 }

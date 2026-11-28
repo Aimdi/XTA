@@ -3,12 +3,14 @@ package com.aimdi.xtanative.ui.post
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitTouchSlopOrCancellation
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropSourceModifierNode
 import androidx.compose.ui.draganddrop.DragAndDropTransferAction
 import androidx.compose.ui.draganddrop.DragAndDropTransferData
 import androidx.compose.ui.draganddrop.DragAndDropTransferable
+import androidx.compose.ui.draganddrop.awtTransferable
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -32,6 +34,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.ui.common.showingDropTarget
 import com.aimdi.xtanative.ui.links.DraggedText
 import java.awt.Component
 import java.awt.EventQueue
@@ -53,12 +57,27 @@ internal actual fun Modifier.dragsLink(url: String?): Modifier {
 
 internal actual fun Modifier.dragsLinks(linkAt: (Offset) -> String?): Modifier = this then LinkDragElement(null, linkAt)
 
-private data class LinkDragElement(val address: String?, val linkAt: ((Offset) -> String?)?) : ModifierNodeElement<LinkDragNode>() {
-    override fun create() = LinkDragNode(address, linkAt)
+// The card is no link the reader rests the mouse on: its address shows at the window's foot only once dragged.
+internal actual fun Modifier.dragsPost(post: XPost, url: String?): Modifier {
+    val address = LinkDrags.addressOf(url) ?: return this
+    return this then LinkDragElement(address, null, post)
+}
+
+// Compose's desktop drag data (awtTransferable) still carries @ExperimentalComposeUiApi.
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+internal actual fun Modifier.takesPostDrops(onPost: (XPost) -> Unit): Modifier = showingDropTarget(
+    offered = { event -> PostDragFlavor.postIn(event.awtTransferable) != null },
+    takes = { event -> PostDragFlavor.postIn(event.awtTransferable) != null },
+) { event -> PostDragFlavor.postIn(event.awtTransferable)?.also(onPost) != null }
+
+private data class LinkDragElement(val address: String?, val linkAt: ((Offset) -> String?)?, val post: XPost? = null) : ModifierNodeElement<LinkDragNode>() {
+    override fun create() = LinkDragNode(address, linkAt, post)
 
     override fun update(node: LinkDragNode) {
         node.address = address
         node.linkAt = linkAt
+        node.post = post
     }
 
     override fun InspectorInfo.inspectableProperties() {
@@ -75,7 +94,7 @@ private data class LinkDragElement(val address: String?, val linkAt: ((Offset) -
  * address at the window's foot ([LinkHover]), as a browser's status bubble.
  */
 @OptIn(ExperimentalComposeUiApi::class)
-private class LinkDragNode(var address: String?, var linkAt: ((Offset) -> String?)?) : DelegatingNode(), CompositionLocalConsumerModifierNode {
+private class LinkDragNode(var address: String?, var linkAt: ((Offset) -> String?)?, var post: XPost?) : DelegatingNode(), CompositionLocalConsumerModifierNode {
     private var dragged: String? = null
 
     /** The window's pill this link last spoke to. */
@@ -84,11 +103,12 @@ private class LinkDragNode(var address: String?, var linkAt: ((Offset) -> String
     private val source = delegate(
         DragAndDropSourceModifierNode { _ ->
             val url = dragged ?: return@DragAndDropSourceModifierNode
+            val carried = post?.also { DraggedPosts.started(url, it) }
             val (size, draw) = decoration(url)
             val under = DragHover.componentUnderPointer()
             startDragAndDropTransfer(
                 DragAndDropTransferData(
-                    DragAndDropTransferable(LinkTransfer(url)),
+                    DragAndDropTransferable(LinkTransfer(url, carriesPost = carried != null)),
                     supportedActions = listOf(DragAndDropTransferAction.Copy, DragAndDropTransferAction.Link),
                     onTransferCompleted = { DragHover.settle(under) },
                 ),
@@ -126,6 +146,7 @@ private class LinkDragNode(var address: String?, var linkAt: ((Offset) -> String
                             event.type == PointerEventType.Enter || event.type == PointerEventType.Move -> address ?: linkAt?.invoke(change.position)
                             else -> continue
                         }
+                        if (post != null) continue
                         val to = hover ?: currentValueOf(LocalLinkHover)?.also { hover = it } ?: continue
                         if (url != null) to.over(this@LinkDragNode, url) else to.left(this@LinkDragNode)
                     }
@@ -214,10 +235,12 @@ internal object LinkDragFlavors {
 /**
  * A link as a drag hands it over: `text/uri-list` for browsers and file
  * managers, plain text for editors and terminals, and the app's own mark
- * ([DraggedText.FROM_APP]), so the window it came from does not take it back.
+ * ([DraggedText.FROM_APP]), so the window it came from does not take it back;
+ * a post's card also its own mark ([PostDragFlavor]), for a Saved folder's chip.
  */
-internal class LinkTransfer(private val address: String) : Transferable {
-    override fun getTransferDataFlavors(): Array<DataFlavor> = arrayOf(LinkDragFlavors.uriList, DataFlavor.stringFlavor, DraggedText.FROM_APP)
+internal class LinkTransfer(private val address: String, private val carriesPost: Boolean = false) : Transferable {
+    override fun getTransferDataFlavors(): Array<DataFlavor> =
+        listOfNotNull(LinkDragFlavors.uriList, DataFlavor.stringFlavor, DraggedText.FROM_APP, PostDragFlavor.POST.takeIf { carriesPost }).toTypedArray()
 
     override fun isDataFlavorSupported(flavor: DataFlavor): Boolean = transferDataFlavors.any { it.equals(flavor) }
 
@@ -225,6 +248,17 @@ internal class LinkTransfer(private val address: String) : Transferable {
         flavor.equals(LinkDragFlavors.uriList) -> LinkDrags.uriList(address)
         flavor.equals(DataFlavor.stringFlavor) -> address
         flavor.equals(DraggedText.FROM_APP) -> address
+        carriesPost && flavor.equals(PostDragFlavor.POST) -> address
         else -> throw UnsupportedFlavorException(flavor)
     }
+}
+
+/** The mark of a post dragged from its card ([dragsPost]): the address it hands over names the post [DraggedPosts] keeps. */
+internal object PostDragFlavor {
+    val POST: DataFlavor = DataFlavor("application/x-xta-native-post;class=java.lang.String")
+
+    /** The post [transfer] carries from a card of this app; null for anything else, and for one that cannot be read. */
+    fun postIn(transfer: Transferable?): XPost? = runCatching {
+        transfer?.takeIf { it.isDataFlavorSupported(POST) }?.let { DraggedPosts.post(it.getTransferData(POST) as? String) }
+    }.getOrNull()
 }
