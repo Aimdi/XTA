@@ -55,7 +55,7 @@ internal class RedditTransport(
     suspend fun authorize(clientId: String): String {
         token?.takeIf { hasToken }?.let { return it }
         require(clientId.isNotBlank()) { "Missing client id" }
-        val response = withDeadline(timeoutMillis, TOKEN_URL) {
+        val response = withDeadline(allowance(timeoutMillis, TOKEN_URL), TOKEN_URL) {
             http.post(
                 TOKEN_URL,
                 mapOf("Authorization" to basicAuth(clientId), "User-Agent" to RedditClient.API_USER_AGENT),
@@ -90,7 +90,7 @@ internal class RedditTransport(
             }
             if (public && jar.isNotEmpty()) put("Cookie", cookieHeader(jar))
         }
-        val response = withDeadline(timeoutMillis, url) { http.get(url, headers, followRedirects = true) }
+        val response = withDeadline(allowance(timeoutMillis, url), url) { http.get(url, headers, followRedirects = true) }
         remember(response, consent)
         if (response.code == 401) forgetToken()
         if (token != null && response.code != 200) throw failureOf(response, url)
@@ -108,7 +108,7 @@ internal class RedditTransport(
             if (jar.isNotEmpty()) put("Cookie", cookieHeader(jar))
         }
         val body = form.entries.joinToString("&") { (name, value) -> "${formEncode(name)}=${formEncode(value)}" }
-        val response = withDeadline(timeoutMillis, url) { http.post(url, headers, body, "$FORM; charset=utf-8") }
+        val response = withDeadline(allowance(timeoutMillis, url), url) { http.post(url, headers, body, "$FORM; charset=utf-8") }
         remember(response, emptyMap())
         return response
     }

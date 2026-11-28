@@ -62,8 +62,12 @@ class RedditClient(
     /** The browser the website is asked as: XTA's repairable `reddit.web_user_agent`. */
     webUserAgent: String = WEB_USER_AGENT,
     private val clock: () -> Long = System::currentTimeMillis,
+    /** What one listing, thread or search may take in all, across every route it tries. */
+    private val readBudgetMillis: Long = READ_BUDGET_MILLIS,
+    /** How long one request may wait for its answer. */
+    timeoutMillis: Long = RedditTransport.REQUEST_TIMEOUT_MILLIS,
 ) {
-    private val transport = RedditTransport(http, webUserAgent, clock)
+    private val transport = RedditTransport(http, webUserAgent, clock, timeoutMillis)
     private val routes = PublicRoutes(clock)
 
     /** www.reddit.com's pages are a megabyte each, mostly styles: parsed two at a time, so a refresh of many communities does not hold a dozen. */
@@ -112,7 +116,7 @@ class RedditClient(
             if (!after.isNullOrEmpty()) put("after", after)
         }
         if (session.anonymous) {
-            publicListing(name, sort, query)
+            budgeted { publicListing(name, sort, query) }
         } else {
             val token = transport.token(session)
             listingOf(transport.read(redditUrl("$OAUTH/r/$name/${sort.path}", query), token))
@@ -245,7 +249,7 @@ class RedditClient(
      * community search says, then the public `about.json`, then the
      * old.reddit sidebar. The search shows no subscriber count.
      */
-    suspend fun about(subreddit: String, session: RedditSession = RedditSession.ANONYMOUS): RedditSubredditAbout = reading {
+    suspend fun about(subreddit: String, session: RedditSession = RedditSession.ANONYMOUS): RedditSubredditAbout = budgetedRead {
         val name = normaliseSubreddit(subreddit) ?: throw notFound("Not a subreddit name: $subreddit")
         if (session.anonymous) {
             aboutFromWww(name) ?: aboutFromPublicJson(name) ?: aboutFromSidebar(name)
@@ -285,10 +289,10 @@ class RedditClient(
      * `fetchSubredditIcon`): one noticed before, its `about`, or its old.reddit
      * page. Never throws: a feed must not fail because a picture did.
      */
-    suspend fun icon(subreddit: String, session: RedditSession = RedditSession.ANONYMOUS): String? = reading {
-        val name = normaliseSubreddit(subreddit) ?: return@reading null
-        icons[name.lowercase()]?.let { return@reading it.ifEmpty { null } }
-        quietly { about(name, session).iconUrl }?.let { return@reading it }
+    suspend fun icon(subreddit: String, session: RedditSession = RedditSession.ANONYMOUS): String? = budgetedRead {
+        val name = normaliseSubreddit(subreddit) ?: return@budgetedRead null
+        icons[name.lowercase()]?.let { return@budgetedRead it.ifEmpty { null } }
+        quietly { about(name, session).iconUrl }?.let { return@budgetedRead it }
         quietly {
             rememberIcon(name, scrape(redditUrl("$OLD/r/$name/", mapOf("limit" to "1")))?.let(RedditOldListing::subredditIcon))
             icons[name.lowercase()]
@@ -313,7 +317,7 @@ class RedditClient(
         subreddit: String? = null,
         sort: RedditSearchSort = RedditSearchSort.RELEVANCE,
         session: RedditSession = RedditSession.ANONYMOUS,
-    ): Page<RedditPost> = reading {
+    ): Page<RedditPost> = budgetedRead {
         val name = subreddit?.let(::normaliseSubreddit)
         val params = buildMap {
             put("q", query)
@@ -335,7 +339,7 @@ class RedditClient(
     }
 
     /** Communities matching [query]. */
-    suspend fun searchSubreddits(query: String, session: RedditSession = RedditSession.ANONYMOUS): Page<RedditSubredditResult> = reading {
+    suspend fun searchSubreddits(query: String, session: RedditSession = RedditSession.ANONYMOUS): Page<RedditSubredditResult> = budgetedRead {
         val routes = SearchRoutes(
             path = "/subreddits/search",
             params = mapOf("q" to query, "raw_json" to "1"),
@@ -348,7 +352,7 @@ class RedditClient(
     }
 
     /** Accounts matching [query]. */
-    suspend fun searchUsers(query: String, session: RedditSession = RedditSession.ANONYMOUS): Page<RedditUserResult> = reading {
+    suspend fun searchUsers(query: String, session: RedditSession = RedditSession.ANONYMOUS): Page<RedditUserResult> = budgetedRead {
         val routes = SearchRoutes(
             path = "/users/search",
             params = mapOf("q" to query, "raw_json" to "1"),
@@ -425,7 +429,7 @@ class RedditClient(
      * A page of [user]'s posts, newest first (XTA's `fetchUserPosts`):
      * www.reddit.com's profile, and old.reddit's where that is still served.
      */
-    suspend fun userPosts(user: String, after: String? = null, limit: Int = PAGE_SIZE): Page<RedditPost> = reading {
+    suspend fun userPosts(user: String, after: String? = null, limit: Int = PAGE_SIZE): Page<RedditPost> = budgetedRead {
         val name = user.replace(userPrefix, "").trim().ifEmpty { throw notFound("Not a username: $user") }
         orElse({ userPostsFromWww(name, after) }) { www ->
             recovering { userPostsFromOldReddit(name, after, limit) }?.takeIf { it.items.isNotEmpty() } ?: throw www
@@ -462,7 +466,7 @@ class RedditClient(
         permalink: String,
         sort: RedditCommentSort = RedditCommentSort.BEST,
         session: RedditSession = RedditSession.ANONYMOUS,
-    ): RedditThread = reading {
+    ): RedditThread = budgetedRead {
         if (session.anonymous) {
             threadWithoutAccount(permalink, sort)
         } else {
@@ -564,7 +568,7 @@ class RedditClient(
      * for an NSFW post whose card Reddit refuses. Never throws: this fills in
      * a post already open.
      */
-    suspend fun post(permalink: String, session: RedditSession = RedditSession.ANONYMOUS): RedditPost? = reading {
+    suspend fun post(permalink: String, session: RedditSession = RedditSession.ANONYMOUS): RedditPost? = budgetedRead {
         val fromApi = if (session.anonymous) null else recovering { postFromApi(permalink, transport.token(session)) }
         fromApi ?: postFromEmbed(permalink)
     }
@@ -618,6 +622,11 @@ class RedditClient(
     /** Runs a read off the caller's thread: the pages are parsed where it runs. */
     private suspend fun <T> reading(block: suspend () -> T): T = withContext(Dispatchers.Default) { block() }
 
+    /** [reading] with one budget for the whole walk: a Reddit that stalls on every host fails in seconds, not minutes. */
+    private suspend fun <T> budgetedRead(block: suspend () -> T): T = reading { budgeted(block) }
+
+    private suspend fun <T> budgeted(block: suspend () -> T): T = withinBudget(readBudgetMillis, block)
+
     companion object {
         /**
          * How many posts a listing page asks for: one number for every
@@ -626,6 +635,14 @@ class RedditClient(
          * rate budget when several communities load at once.
          */
         const val PAGE_SIZE = 50
+
+        /**
+         * How long a reader waits for one listing, thread or search before
+         * it is a failure with a retry, whichever and however many hosts it
+         * tried: a little more than one request's twenty seconds, so the
+         * route most likely to answer gets its full wait.
+         */
+        const val READ_BUDGET_MILLIS = 25_000L
 
         /** For the API and its token endpoint: the shape Reddit's rules ask for, as XTA sends it. */
         const val API_USER_AGENT = "android:com.aimdi.xta:1.0 (read-only, account-free)"
