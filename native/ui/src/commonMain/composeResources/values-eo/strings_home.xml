@@ -91,4 +91,6 @@
     <string name="home_switch_account">Ŝanĝi konton</string>
     <string name="home_unread_count">Nelegitaj: %1$d</string>
     <string name="home_mark_all_read">Marki ĉion kiel legitajn</string>
+    <string name="home_deck_width_same">Same kiel la aliaj kolumnoj</string>
+    <string name="home_deck_show_unread">Montri nombron de nelegitaj</string>
 </resources>

@@ -92,4 +92,6 @@
     <string name="home_switch_account">Schimbă contul</string>
     <string name="home_unread_count">Necitite: %1$d</string>
     <string name="home_mark_all_read">Marchează totul ca citit</string>
+    <string name="home_deck_width_same">La fel ca celelalte coloane</string>
+    <string name="home_deck_show_unread">Afișează numărul de necitite</string>
 </resources>

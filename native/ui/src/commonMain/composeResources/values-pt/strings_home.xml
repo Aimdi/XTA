@@ -91,4 +91,6 @@
     <string name="home_switch_account">Mudar de conta</string>
     <string name="home_unread_count">Por ler: %1$d</string>
     <string name="home_mark_all_read">Marcar tudo como lido</string>
+    <string name="home_deck_width_same">Igual às outras colunas</string>
+    <string name="home_deck_show_unread">Mostrar número de não lidos</string>
 </resources>

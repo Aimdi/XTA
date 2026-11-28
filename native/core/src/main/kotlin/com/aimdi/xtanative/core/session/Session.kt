@@ -39,6 +39,8 @@ data class Session(
     val offFollowing: Set<String> = emptySet(),
     /** Groups pinned as the deck's columns, in order. */
     val deck: List<String> = emptyList(),
+    /** The deck's columns' own choices, by column id: only those that differ from a plain column. */
+    val deckOptions: Map<String, DeckColumnOptions> = emptyMap(),
 ) {
     /** The members of groups switched off the home feeds, nested groups included. */
     val excludedFromFollowing: Set<String> get() = memberIdsOf(offFollowing.flatMapTo(HashSet()) { GroupTree.withDescendants(it, nesting) })
@@ -212,6 +214,7 @@ data class Session(
         nesting = (nesting - groupId).filterValues { it != groupId },
         offFollowing = offFollowing - groupId,
         deck = deck - groupId,
+        deckOptions = deckOptions - groupId,
     )
 
     /** Every member of [sourceId] moved into [targetId], once, and [sourceId] gone. */
@@ -241,6 +244,16 @@ data class Session(
 
     /** [groupId] pinned as the deck's last column, or unpinned. */
     fun toggledDeck(groupId: String): Session = copy(deck = DeckGroups.toggled(deck, groupId))
+
+    /** [columnId]'s own choices, a plain column's when it has none. */
+    fun deckOptionsOf(columnId: String): DeckColumnOptions = deckOptions[columnId] ?: DeckColumnOptions()
+
+    /** [columnId] with [options]; a plain column's are not kept. */
+    fun withDeckOptions(columnId: String, options: DeckColumnOptions): Session =
+        copy(deckOptions = if (options.isDefault) deckOptions - columnId else deckOptions + (columnId to options))
+
+    /** [columnId] off the deck, its own choices with it. */
+    fun withoutDeckColumn(columnId: String): Session = copy(deck = deck - columnId, deckOptions = deckOptions - columnId)
 
     /** The deck's groups: the pinned groups that still exist, in pin order. */
     val deckGroups: List<FollowGroup> get() = deck.mapNotNull { id -> groups.firstOrNull { it.id == id } }

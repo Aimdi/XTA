@@ -91,4 +91,6 @@
     <string name="home_switch_account">Vaheta kontot</string>
     <string name="home_unread_count">Lugemata: %1$d</string>
     <string name="home_mark_all_read">Märgi kõik loetuks</string>
+    <string name="home_deck_width_same">Sama mis teistel veergudel</string>
+    <string name="home_deck_show_unread">Näita lugemata arvu</string>
 </resources>

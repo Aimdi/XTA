@@ -144,19 +144,24 @@ fun groupFeedViewModel(groupId: String?): GroupFeedViewModel {
  * group's and empty feed's words; with [mediaOnly], its media alone
  * (group_media_page.dart). Every group feed is drawn so: a group's screen,
  * Home's Following, a page of the bar and the deck's columns. [toTop] grows
- * when the reader asks for the top.
+ * when the reader asks for the top; a deck column leaves out the threads
+ * [keep] does not keep ([ShapedFeed]).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupFeedBody(
-    state: GroupFeedUi,
+    feed: GroupFeedUi,
     vm: GroupFeedViewModel,
     actions: PostActions,
     list: LazyListState,
     contentPadding: PaddingValues,
     mediaOnly: Boolean,
     toTop: Int = 0,
+    keep: ((XThread) -> Boolean)? = null,
 ) {
+    // Also for the place kept as the feed goes, which maps back to the feed's own threads.
+    val shaped by rememberUpdatedState(remember(feed, keep) { ShapedFeed.of(feed, keep) })
+    val state = shaped.state
     val plugin by vm.plugin.collectAsStateWithLifecycle()
     val plugins = rememberRunningPlugins()
     val media = rememberLazyListState()
@@ -178,7 +183,7 @@ fun GroupFeedBody(
     }
     val keepPlace = {
         val (thread, offset) = rows.threadOf(list.firstVisibleItemIndex, list.firstVisibleItemScrollOffset, list.layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: 0)
-        vm.keepPlace(thread, offset)
+        vm.keepPlace(shaped.original(thread), offset)
     }
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { keepPlace() }
     DisposableEffect(Unit) { onDispose { keepPlace() } }

@@ -90,4 +90,6 @@
     <string name="home_switch_account">切换账号</string>
     <string name="home_unread_count">%1$d 篇未读</string>
     <string name="home_mark_all_read">全部标为已读</string>
+    <string name="home_deck_width_same">与其他栏相同</string>
+    <string name="home_deck_show_unread">显示未读数</string>
 </resources>

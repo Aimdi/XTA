@@ -93,4 +93,6 @@
     <string name="home_switch_account">Przełącz konto</string>
     <string name="home_unread_count">Nieprzeczytane: %1$d</string>
     <string name="home_mark_all_read">Oznacz wszystko jako przeczytane</string>
+    <string name="home_deck_width_same">Jak pozostałe kolumny</string>
+    <string name="home_deck_show_unread">Pokazuj liczbę nieprzeczytanych</string>
 </resources>

@@ -91,4 +91,6 @@
     <string name="home_switch_account">Account wisselen</string>
     <string name="home_unread_count">%1$d ongelezen</string>
     <string name="home_mark_all_read">Alles als gelezen markeren</string>
+    <string name="home_deck_width_same">Zoals de andere kolommen</string>
+    <string name="home_deck_show_unread">Aantal ongelezen tonen</string>
 </resources>

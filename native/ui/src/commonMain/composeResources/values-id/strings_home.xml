@@ -90,4 +90,6 @@
     <string name="home_switch_account">Ganti akun</string>
     <string name="home_unread_count">%1$d belum dibaca</string>
     <string name="home_mark_all_read">Tandai semua sudah dibaca</string>
+    <string name="home_deck_width_same">Sama dengan kolom lain</string>
+    <string name="home_deck_show_unread">Tampilkan jumlah belum dibaca</string>
 </resources>

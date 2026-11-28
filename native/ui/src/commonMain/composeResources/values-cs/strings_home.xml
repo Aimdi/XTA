@@ -93,4 +93,6 @@
     <string name="home_switch_account">Přepnout účet</string>
     <string name="home_unread_count">Nepřečteno: %1$d</string>
     <string name="home_mark_all_read">Označit vše jako přečtené</string>
+    <string name="home_deck_width_same">Stejná jako ostatní sloupce</string>
+    <string name="home_deck_show_unread">Zobrazit počet nepřečtených</string>
 </resources>

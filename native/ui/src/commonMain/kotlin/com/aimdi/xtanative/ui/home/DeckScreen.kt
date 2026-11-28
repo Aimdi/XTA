@@ -77,6 +77,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.feed.FeedStrip
 import com.aimdi.xtanative.core.session.DeckColumn
+import com.aimdi.xtanative.core.session.DeckColumnOptions
 import com.aimdi.xtanative.core.session.DeckColumns
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.DeckWidth
@@ -154,6 +155,8 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     val width by remember(settings) { settings.observe(HomePrefs.deckColumnWidth) }.collectAsStateWithLifecycle(DeckWidth.MEDIUM)
     val scope = rememberCoroutineScope()
     val edit: (change: (List<String>) -> List<String>) -> Unit = { change -> scope.launch { graph.sessions.update { it.copy(deck = change(it.deck)) } } }
+    val options = session?.deckOptions.orEmpty()
+    val setOptions: (String, DeckColumnOptions) -> Unit = { id, chosen -> scope.launch { graph.sessions.update { it.withDeckOptions(id, chosen) } } }
     val detail = remember { DeckDetail() }
     val columnActions = remember(actions, detail) { detail.actionsOver(actions) }
     val toTop = remember { mutableStateMapOf<String, Int>() }
@@ -198,7 +201,7 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
                     EmptyDeck(Modifier.anchoring(emptyAdd)) { openAdd(emptyAdd) }
                 } else {
                     val tally = graph.unread
-                    val each = DeckColumns.width(maxWidth.value, columns.size, width.dp.toFloat()).dp
+                    val widths = DeckColumns.widths(maxWidth.value, columns.map { column -> DeckLook.widthOf(options[column.id], width).dp.toFloat() })
                     val scroll = rememberScrollState()
                     // A column's header dragged with the mouse moves it, the deck scrolling at its edges and Esc putting it back.
                     val slots = rememberSlotDrag(scroll, vertical = false)
@@ -215,16 +218,18 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
                                 val calls = ColumnCalls(
                                     onTitle = { toTop[column.id] = (toTop[column.id] ?: 0) + 1 },
                                     onMove = { by -> edit { DeckColumns.moved(it, index, by) } },
-                                    onRemove = { edit { ids -> ids - column.id } },
+                                    onRemove = { scope.launch { graph.sessions.update { it.withoutDeckColumn(column.id) } } },
                                     handle = handle,
                                     onMarkRead = UnreadTally.tabOf(column)?.let { tab -> { tally.markRead(tab) } },
+                                    options = options[column.id] ?: DeckColumnOptions(),
+                                    onOptions = { chosen -> setOptions(column.id, chosen) },
                                 )
                                 Row(Modifier.fillMaxHeight().dragSlot(slots, column.id, MaterialTheme.colorScheme.primary).background(background)) {
                                     if (index > 0) VerticalDivider()
                                     ReadColumn(column.id) {
                                         DeckColumnView(
                                             column, labelOf(column, groups, available), place, calls, toTop[column.id] ?: 0, refreshedAll,
-                                            columnActions, Modifier.width(each).fillMaxHeight().chosenMark(chosen == column.id),
+                                            columnActions, Modifier.width(widths[index].dp).fillMaxHeight().chosenMark(chosen == column.id),
                                         )
                                     }
                                 }
@@ -285,6 +290,9 @@ internal class ColumnCalls(
     val handle: Modifier = Modifier,
     /** The column's Mark all as read; null for a network's, whose read marks are its plugin's. */
     val onMarkRead: (() -> Unit)? = null,
+    /** The column's own choices ([DeckColumnOptions]), and the menu's way to change them; null where it has none. */
+    val options: DeckColumnOptions = DeckColumnOptions(),
+    val onOptions: ((DeckColumnOptions) -> Unit)? = null,
 )
 
 /** A column of the deck: its header over its timeline, read again on its own and with every column ([refreshedAll]). */
@@ -306,9 +314,11 @@ internal fun DeckColumnView(
             is DeckColumn.Group, DeckColumn.Following -> {
                 val vm = groupFeedViewModel((column as? DeckColumn.Group)?.groupId)
                 val state by vm.ui.collectAsStateWithLifecycle()
+                val options = calls.options
+                val keep = remember(options) { options.takeIf { it.filters }?.let { chosen -> chosen::keeps } }
                 RefreshesOn(reads) { vm.refresh() }
                 ColumnHeader(column, label, place, calls, onRefresh = { refreshed++ })
-                GroupFeedBody(state, vm, actions, rememberLazyListState(), PaddingValues(), mediaOnly = false, toTop = toTop)
+                GroupFeedBody(state, vm, actions, rememberLazyListState(), PaddingValues(), mediaOnly = options.mediaOnly, toTop = toTop, keep = keep)
             }
             DeckColumn.ForYou -> {
                 val vm = forYouViewModel()
@@ -368,12 +378,14 @@ private fun ColumnHeader(column: DeckColumn, label: String, place: ColumnPlace, 
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false),
                     )
+                    if (calls.options.unreadCount) ColumnUnread(column)
                 }
             }
             extra()
             IconTip(stringResource(Res.string.home_refresh)) { IconButton(onClick = onRefresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) } }
-            if (calls.menu) ColumnMenu(place, calls)
+            if (calls.menu) ColumnMenu(column, place, calls)
         }
         HorizontalDivider()
     }
@@ -403,34 +415,6 @@ private fun ColumnMark(column: DeckColumn) {
     }
 }
 
-@Composable
-private fun ColumnMenu(place: ColumnPlace, calls: ColumnCalls) {
-    var open by remember { mutableStateOf(false) }
-    Box {
-        IconTip(stringResource(Res.string.home_more_options)) { IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.home_more_options)) } }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            DropdownMenuItem(
-                text = { Text(stringResource(Res.string.home_deck_move_left)) },
-                enabled = !place.first,
-                onClick = { open = false; calls.onMove(-1) },
-            )
-            DropdownMenuItem(
-                text = { Text(stringResource(Res.string.home_deck_move_right)) },
-                enabled = !place.last,
-                onClick = { open = false; calls.onMove(1) },
-            )
-            DropdownMenuItem(text = { Text(stringResource(Res.string.home_deck_remove)) }, onClick = { open = false; calls.onRemove() })
-            calls.onMarkRead?.let { mark ->
-                HorizontalDivider()
-                MarkReadItem {
-                    open = false
-                    mark()
-                }
-            }
-        }
-    }
-}
-
 /** The top bar's ⋮: the columns' width, the one in use ticked. */
 @Composable
 private fun WidthMenu(current: DeckWidth, onPick: (DeckWidth) -> Unit) {
@@ -446,19 +430,13 @@ private fun WidthMenu(current: DeckWidth, onPick: (DeckWidth) -> Unit) {
             )
             DeckWidth.entries.forEach { choice ->
                 DropdownMenuItem(
-                    text = { Text(stringResource(widthLabel(choice))) },
+                    text = { Text(stringResource(widthName(choice))) },
                     trailingIcon = { if (choice == current) Icon(Icons.Filled.Check, contentDescription = null) },
                     onClick = { open = false; onPick(choice) },
                 )
             }
         }
     }
-}
-
-private fun widthLabel(width: DeckWidth): StringResource = when (width) {
-    DeckWidth.NARROW -> Res.string.home_deck_width_narrow
-    DeckWidth.MEDIUM -> Res.string.home_deck_width_medium
-    DeckWidth.WIDE -> Res.string.home_deck_width_wide
 }
 
 /** No columns yet: what the deck is for, and Add column. */

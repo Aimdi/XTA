@@ -91,4 +91,6 @@
     <string name="home_switch_account">Konto wechseln</string>
     <string name="home_unread_count">%1$d ungelesen</string>
     <string name="home_mark_all_read">Alles als gelesen markieren</string>
+    <string name="home_deck_width_same">Wie die anderen Spalten</string>
+    <string name="home_deck_show_unread">Anzahl ungelesener anzeigen</string>
 </resources>

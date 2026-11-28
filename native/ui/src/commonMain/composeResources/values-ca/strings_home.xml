@@ -91,4 +91,6 @@
     <string name="home_switch_account">Canvia de compte</string>
     <string name="home_unread_count">No llegits: %1$d</string>
     <string name="home_mark_all_read">Marca-ho tot com a llegit</string>
+    <string name="home_deck_width_same">Igual que les altres columnes</string>
+    <string name="home_deck_show_unread">Mostra el nombre de no llegits</string>
 </resources>

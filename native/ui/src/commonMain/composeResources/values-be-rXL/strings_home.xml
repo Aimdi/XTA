@@ -93,4 +93,6 @@
     <string name="home_switch_account">Zmianić ulikovy zapis</string>
     <string name="home_unread_count">Niepračytanyja: %1$d</string>
     <string name="home_mark_all_read">Paznačyć usio jak pračytanaje</string>
+    <string name="home_deck_width_same">Jak u inšych kałonak</string>
+    <string name="home_deck_show_unread">Pakazvać kolkasć niepračytanaha</string>
 </resources>

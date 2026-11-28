@@ -176,4 +176,15 @@ object DeckColumns {
      */
     fun width(available: Float, count: Int, preferred: Float): Float =
         if (count <= 0) preferred else maxOf(preferred, available / count)
+
+    /**
+     * Each column's width in [available] dp when each would take its own
+     * [preferred] dp: the room left over shared out evenly while they fit,
+     * else their own, the deck scrolling sideways.
+     */
+    fun widths(available: Float, preferred: List<Float>): List<Float> {
+        val spare = available - preferred.sum()
+        if (preferred.isEmpty() || spare <= 0f) return preferred
+        return preferred.map { it + spare / preferred.size }
+    }
 }

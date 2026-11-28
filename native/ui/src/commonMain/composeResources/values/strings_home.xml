@@ -91,4 +91,6 @@
     <string name="home_switch_account">Switch account</string>
     <string name="home_unread_count">%1$d unread</string>
     <string name="home_mark_all_read">Mark all as read</string>
+    <string name="home_deck_width_same">Same as the other columns</string>
+    <string name="home_deck_show_unread">Show unread count</string>
 </resources>

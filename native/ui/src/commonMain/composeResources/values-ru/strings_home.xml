@@ -93,4 +93,6 @@
     <string name="home_switch_account">Сменить аккаунт</string>
     <string name="home_unread_count">Непрочитанные: %1$d</string>
     <string name="home_mark_all_read">Отметить всё прочитанным</string>
+    <string name="home_deck_width_same">Как у других колонок</string>
+    <string name="home_deck_show_unread">Показывать число непрочитанных</string>
 </resources>

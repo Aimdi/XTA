@@ -91,4 +91,6 @@
     <string name="home_switch_account">Bytt konto</string>
     <string name="home_unread_count">%1$d uleste</string>
     <string name="home_mark_all_read">Merk alt som lest</string>
+    <string name="home_deck_width_same">Som de andre kolonnene</string>
+    <string name="home_deck_show_unread">Vis antall uleste</string>
 </resources>

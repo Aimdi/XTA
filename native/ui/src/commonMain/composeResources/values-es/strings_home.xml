@@ -91,4 +91,6 @@
     <string name="home_switch_account">Cambiar de cuenta</string>
     <string name="home_unread_count">Sin leer: %1$d</string>
     <string name="home_mark_all_read">Marcar todo como leído</string>
+    <string name="home_deck_width_same">Igual que las demás columnas</string>
+    <string name="home_deck_show_unread">Mostrar el número de no leídos</string>
 </resources>

@@ -33,6 +33,7 @@ internal object SessionCodec {
         put("postCaps", JsonObject(session.postCaps.mapValues { JsonPrimitive(it.value) }))
         put("offFollowing", strings(session.offFollowing))
         put("deck", strings(session.deck))
+        if (session.deckOptions.isNotEmpty()) put("deckOptions", JsonObject(session.deckOptions.mapValues { DeckColumnOptions.json(it.value) }))
     }.toString()
 
     fun decode(text: String): Session? {
@@ -53,6 +54,7 @@ internal object SessionCodec {
             postCaps = entries(root["postCaps"]) { it.int?.takeIf { cap -> cap > 0 } },
             offFollowing = root["offFollowing"].list.mapNotNullTo(LinkedHashSet()) { it.string },
             deck = root["deck"].list.mapNotNull { it.string },
+            deckOptions = entries(root["deckOptions"]) { DeckColumnOptions.of(it) },
         )
     }
 

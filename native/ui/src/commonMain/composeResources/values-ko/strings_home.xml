@@ -90,4 +90,6 @@
     <string name="home_switch_account">계정 전환</string>
     <string name="home_unread_count">읽지 않음 %1$d</string>
     <string name="home_mark_all_read">모두 읽음으로 표시</string>
+    <string name="home_deck_width_same">다른 열과 같게</string>
+    <string name="home_deck_show_unread">읽지 않은 수 표시</string>
 </resources>
