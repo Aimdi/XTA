@@ -2,6 +2,7 @@ package com.aimdi.xtanative.plugins.pixiv
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -94,6 +95,7 @@ internal fun PixivWorksGrid(
     mutes: (PixivMutes) -> PixivMutes = { it },
     hideMuted: Boolean = true,
     tile: (@Composable (works: List<PixivIllust>, index: Int) -> Unit)? = null,
+    takeKeys: Boolean = true,
     header: LazyStaggeredGridScope.() -> Unit = {},
 ) {
     val runtime = LocalPixiv.current
@@ -101,6 +103,8 @@ internal fun PixivWorksGrid(
     val current = pixivMutes()
     val shown = remember(state.items, current, hideMuted) { if (hideMuted) mutes(current).filter(state.items) else state.items }
     val grid = rememberLazyStaggeredGridState()
+    val sheets = LocalPixivSheets.current
+    val mark = remember { GridMark() }
     ReportsReadingScroll(grid)
     LaunchedEffect(list) { list.ensure() }
     GridToTop(grid, toTop)
@@ -109,18 +113,26 @@ internal fun PixivWorksGrid(
     TellsFailedRefresh(list.refreshFailures)
     PullToRefreshBox(isRefreshing = state.loading && state.items.isNotEmpty(), onRefresh = list::refresh, modifier = modifier.fillMaxSize()) {
         BoxWithConstraints(Modifier.fillMaxSize()) {
+            val columns = gridColumns(maxWidth.value, maxHeight.value)
+            val ids = remember(shown) { shown.map { it.id } }
             LazyVerticalStaggeredGrid(
-                columns = StaggeredGridCells.Fixed(gridColumns(maxWidth.value, maxHeight.value)),
+                columns = StaggeredGridCells.Fixed(columns),
                 state = grid,
                 contentPadding = padding.plus(4.dp),
                 verticalItemSpacing = 8.dp,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().worksGridKeys(
+                    grid, ids, columns, mark, takeKeys,
+                    onOpen = { index -> runtime.openWork(shown, index, list) },
+                    onMenu = { index -> shown.getOrNull(index)?.let { sheets.show(PixivSheet.WorkActions(it)) } },
+                ),
             ) {
                 header()
                 pagedState(state, shown.isEmpty(), empty, onRetry = list::refresh)
                 itemsIndexed(shown, key = { _, illust -> "work-" + illust.id }, contentType = { _, _ -> "work" }) { index, illust ->
-                    if (tile != null) tile(shown, index) else WorkTile(illust, onOpen = { runtime.openWork(shown, index, list) })
+                    Box(if (mark.id.value == illust.id) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp)).padding(2.dp) else Modifier) {
+                        if (tile != null) tile(shown, index) else WorkTile(illust, onOpen = { runtime.openWork(shown, index, list) })
+                    }
                 }
                 pagedFooter(state, list::retryMore)
             }
