@@ -7,8 +7,8 @@ import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.ui.group.XDiscovery
 import com.aimdi.xtanative.ui.group.ReadMarks
-import java.io.IOException
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -54,16 +53,25 @@ class UnreadTally(private val graph: AppGraph, private val scope: CoroutineScope
     }
 
     private suspend fun follow() {
-        val reading = graph.settings.settings.map { it[PostsPrefs.rememberReadingPosition] }
+        // Only that one switch: every other setting written would read every group's posts again.
+        val reading = graph.settings.observe(PostsPrefs.rememberReadingPosition)
         merge(asked, ReadMarks.changes, graph.sessions.state, reading)
             .debounce(AFTER_MILLIS)
-            .collectLatest {
-                // While the settings cannot be read the count stays as it was; the start says why.
-                try {
-                    state.value = read()
-                } catch (_: IOException) {
-                }
-            }
+            .collectLatest { attempt { state.value = read() } }
+    }
+
+    /**
+     * [work], or the count left as it was when it fails: settings that cannot
+     * be read (the start says why), a feed's cache that breaks. A failure
+     * never ends the following for the rest of the run.
+     */
+    private suspend fun attempt(work: suspend () -> Unit) {
+        try {
+            work()
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+        }
     }
 
     /** The marks as they are now. */
@@ -84,7 +92,7 @@ class UnreadTally(private val graph: AppGraph, private val scope: CoroutineScope
     fun markRead(tab: HomeTab) {
         val key = HomeUnread.feedKey(tab) ?: return
         scope.launch {
-            marks(key).markNewestRead(clock())
+            attempt { marks(key).markNewestRead(clock()) }
             reload()
         }
     }
@@ -93,8 +101,7 @@ class UnreadTally(private val graph: AppGraph, private val scope: CoroutineScope
     fun markAllRead() {
         scope.launch {
             val session = graph.sessions.state.value ?: return@launch
-            val lit = read().lit
-            unreadFeeds(session, lit).forEach { key -> marks(key).markNewestRead(clock()) }
+            attempt { unreadFeeds(session, read().lit).forEach { key -> marks(key).markNewestRead(clock()) } }
             reload()
         }
     }
