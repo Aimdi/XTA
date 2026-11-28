@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Updated %1$s</string>
     <string name="watchlist_view_latest">View latest</string>
     <plurals name="works_count"><item quantity="one">%2$s work</item><item quantity="other">%2$s works</item></plurals>
+    <string name="settings_intro_desktop">This private plugin reads Pixiv like a gallery app: illustrations, manga, novels, rankings, your bookmarks and search. Click Sign in to log in with your Pixiv account in the browser, or paste a refresh token below. Only the bookmarks, follows and watchlist changes you make are sent to your Pixiv account. Nothing is ever posted, commented on or reported from here.</string>
+    <string name="columns_portrait_desktop">Grid columns in tall windows</string>
+    <string name="columns_landscape_desktop">Grid columns in wide windows</string>
+    <string name="swipe_works_desktop">Move between works</string>
+    <string name="swipe_works_description_desktop">Scroll sideways to the next work in the list. In works with several pages, keep scrolling past the first or last page.</string>
+    <string name="reader_right_to_left_description_desktop">Manga pages turn the Japanese way: the next page comes in from the left, and ← goes on</string>
 </resources>

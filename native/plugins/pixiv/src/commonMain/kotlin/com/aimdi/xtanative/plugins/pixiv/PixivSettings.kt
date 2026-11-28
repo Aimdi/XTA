@@ -42,6 +42,7 @@ import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberAppLinkSettings
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -71,7 +72,7 @@ internal fun PixivSettingsScreen() {
 @Composable
 private fun SettingsList(padding: PaddingValues) {
     LazyColumn(Modifier.fillMaxSize(), contentPadding = padding) {
-        item(key = "intro") { Text(pluginString(Strings.settings_intro), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(16.dp)) }
+        item(key = "intro") { Text(pluginString(if (PluginPlatform.isDesktop) Strings.settings_intro_desktop else Strings.settings_intro), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(16.dp)) }
         val sections: List<@Composable () -> Unit> = listOf(
             { AccountSettings() },
             { ContentSettings() },
@@ -224,7 +225,8 @@ private fun BookmarkSettings() {
     val runtime = LocalPixiv.current
     val settings = pixivSettings()
     SectionTitle(pluginString(Strings.bookmark_settings))
-    bookmarkSwitches.forEach { (pref, title, description) ->
+    // A desktop has nothing to vibrate.
+    bookmarkSwitches.filter { (pref) -> !PluginPlatform.isDesktop || pref != PixivPrefs.haptics }.forEach { (pref, title, description) ->
         SwitchRow(pluginString(title), pluginString(description), settings[pref]) { runtime.settings.set(pref, it) }
     }
 }

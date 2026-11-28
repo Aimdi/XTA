@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Aktualisiert %1$s</string>
     <string name="watchlist_view_latest">Neuesten Teil ansehen</string>
     <plurals name="works_count"><item quantity="one">%2$s Werk</item><item quantity="other">%2$s Werke</item></plurals>
+    <string name="settings_intro_desktop">Dieses private Plugin liest Pixiv wie eine Galerie-App: Illustrationen, Manga, Romane, Rankings, deine Lesezeichen und Suche. Klicke auf Anmelden, um dich im Browser bei Pixiv anzumelden, oder füge unten einen Refresh-Token ein. An dein Pixiv-Konto gehen nur die Lesezeichen, Follows und Änderungen an der Merkliste, die du selbst vornimmst. Von hier aus wird nie etwas gepostet, kommentiert oder gemeldet.</string>
+    <string name="columns_portrait_desktop">Rasterspalten in hohen Fenstern</string>
+    <string name="columns_landscape_desktop">Rasterspalten in breiten Fenstern</string>
+    <string name="swipe_works_desktop">Zwischen Werken wechseln</string>
+    <string name="swipe_works_description_desktop">Seitlich scrollen, um zum nächsten Werk der Liste zu gelangen. Bei Werken mit mehreren Seiten über die erste oder letzte Seite hinaus weiterscrollen.</string>
+    <string name="reader_right_to_left_description_desktop">Manga-Seiten blättern japanisch um: Die nächste Seite kommt von links, und ← geht weiter</string>
 </resources>

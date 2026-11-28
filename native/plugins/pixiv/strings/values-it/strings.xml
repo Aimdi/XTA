@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Aggiornata %1$s</string>
     <string name="watchlist_view_latest">Mostra il più recente</string>
     <plurals name="works_count"><item quantity="one">%2$s opera</item><item quantity="other">%2$s opere</item></plurals>
+    <string name="settings_intro_desktop">Questo plugin privato legge Pixiv come un’app galleria: illustrazioni, manga, romanzi, classifiche, i tuoi segnalibri e la ricerca. Fai clic su Accedi per entrare con l’account Pixiv nel browser, oppure incolla un refresh token sotto. Al tuo account Pixiv arrivano solo i segnalibri, i follow e le modifiche alle serie seguite che fai tu. Da qui non si pubblica, non si commenta e non si segnala mai nulla.</string>
+    <string name="columns_portrait_desktop">Colonne della griglia nelle finestre alte</string>
+    <string name="columns_landscape_desktop">Colonne della griglia nelle finestre larghe</string>
+    <string name="swipe_works_desktop">Passa da un’opera all’altra</string>
+    <string name="swipe_works_description_desktop">Scorri di lato fino all’opera successiva della lista. Nelle opere con più pagine, continua oltre la prima o l’ultima pagina.</string>
+    <string name="reader_right_to_left_description_desktop">Le pagine dei manga si girano alla giapponese: la successiva arriva da sinistra e ← va avanti</string>
 </resources>

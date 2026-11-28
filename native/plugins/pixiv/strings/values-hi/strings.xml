@@ -500,4 +500,10 @@
     <string name="watchlist_updated">%1$s अपडेट हुई</string>
     <string name="watchlist_view_latest">नवीनतम देखें</string>
     <plurals name="works_count"><item quantity="one">%2$s कृति</item><item quantity="other">%2$s कृतियाँ</item></plurals>
+    <string name="settings_intro_desktop">यह निजी प्लगिन Pixiv को गैलरी ऐप की तरह पढ़ता है: चित्र, मांगा, उपन्यास, रैंकिंग, आपके बुकमार्क और खोज। साइन इन पर क्लिक करके ब्राउज़र में अपने Pixiv खाते से लॉग इन करें, या नीचे रीफ़्रेश टोकन चिपकाएँ। आपके Pixiv खाते पर केवल वे बुकमार्क, फ़ॉलो और वॉचलिस्ट बदलाव भेजे जाते हैं जो आप खुद करते हैं। यहाँ से कभी कुछ पोस्ट, टिप्पणी या रिपोर्ट नहीं किया जाता।</string>
+    <string name="columns_portrait_desktop">लंबी विंडो में ग्रिड कॉलम</string>
+    <string name="columns_landscape_desktop">चौड़ी विंडो में ग्रिड कॉलम</string>
+    <string name="swipe_works_desktop">कृतियों के बीच जाएँ</string>
+    <string name="swipe_works_description_desktop">सूची की अगली कृति तक बगल में स्क्रॉल करें। कई पेज वाली कृतियों में पहले या आख़िरी पेज के आगे भी स्क्रॉल करते रहें।</string>
+    <string name="reader_right_to_left_description_desktop">मांगा के पेज जापानी ढंग से पलटते हैं: अगला पेज बाईं ओर से आता है, और ← आगे ले जाता है</string>
 </resources>

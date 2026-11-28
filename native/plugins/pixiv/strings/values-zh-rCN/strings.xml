@@ -500,4 +500,10 @@
     <string name="watchlist_updated">%1$s更新</string>
     <string name="watchlist_view_latest">查看最新话</string>
     <plurals name="works_count"><item quantity="other">%2$s 件作品</item></plurals>
+    <string name="settings_intro_desktop">此私有插件像图库应用一样阅读 Pixiv：插画、漫画、小说、排行榜、你的收藏与搜索。点登录在浏览器中用 Pixiv 账号登录，或在下方粘贴刷新令牌。只有你亲自进行的收藏、关注和追更列表更改会发送到你的 Pixiv 账号。此处绝不会发帖、评论或举报。</string>
+    <string name="columns_portrait_desktop">高窗口中的网格列数</string>
+    <string name="columns_landscape_desktop">宽窗口中的网格列数</string>
+    <string name="swipe_works_desktop">在作品间切换</string>
+    <string name="swipe_works_description_desktop">横向滚动到列表中的下一个作品。多页作品中，越过第一页或最后一页继续滚动。</string>
+    <string name="reader_right_to_left_description_desktop">漫画按日式翻页：下一页从左侧出现，← 向前翻</string>
 </resources>

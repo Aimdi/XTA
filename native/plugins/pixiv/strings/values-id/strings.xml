@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Diperbarui %1$s</string>
     <string name="watchlist_view_latest">Lihat terbaru</string>
     <plurals name="works_count"><item quantity="other">%2$s karya</item></plurals>
+    <string name="settings_intro_desktop">Plugin pribadi ini membaca Pixiv seperti aplikasi galeri: ilustrasi, manga, novel, peringkat, penanda Anda, dan pencarian. Klik Masuk untuk masuk dengan akun Pixiv di peramban, atau tempel token penyegaran di bawah. Hanya penanda, ikutan, dan perubahan daftar pantau yang Anda buat sendiri yang dikirim ke akun Pixiv Anda. Dari sini tidak pernah ada yang diposting, dikomentari, atau dilaporkan.</string>
+    <string name="columns_portrait_desktop">Kolom kisi di jendela tinggi</string>
+    <string name="columns_landscape_desktop">Kolom kisi di jendela lebar</string>
+    <string name="swipe_works_desktop">Berpindah antarkarya</string>
+    <string name="swipe_works_description_desktop">Gulir ke samping ke karya berikutnya dalam daftar. Pada karya dengan beberapa halaman, terus gulir melewati halaman pertama atau terakhir.</string>
+    <string name="reader_right_to_left_description_desktop">Halaman manga dibalik cara Jepang: halaman berikutnya datang dari kiri, dan ← maju</string>
 </resources>

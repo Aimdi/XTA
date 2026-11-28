@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Eguneratua: %1$s</string>
     <string name="watchlist_view_latest">Ikusi azkena</string>
     <plurals name="works_count"><item quantity="one">lan %2$s</item><item quantity="other">%2$s lan</item></plurals>
+    <string name="settings_intro_desktop">Plugin pribatu honek Pixiv galeria-aplikazio gisa irakurtzen du: ilustrazioak, manga, eleberriak, sailkapenak, zure laster-markak eta bilaketa. Sakatu Hasi saioa Pixiv kontuarekin nabigatzailean sartzeko, edo itsatsi freskatze-token bat behean. Zuk zeuk egiten dituzun laster-markak, jarraipenak eta jarraipen-zerrendako aldaketak soilik bidaltzen dira zure Pixiv kontura. Hemendik ez da inoiz ezer argitaratzen, iruzkintzen edo salatzen.</string>
+    <string name="columns_portrait_desktop">Saretaren zutabeak leiho altuetan</string>
+    <string name="columns_landscape_desktop">Saretaren zutabeak leiho zabaletan</string>
+    <string name="swipe_works_desktop">Lanen artean mugitu</string>
+    <string name="swipe_works_description_desktop">Korritu alboetara zerrendako hurrengo lanera. Orri bat baino gehiagoko lanetan, jarraitu korritzen lehen edo azken orritik harago.</string>
+    <string name="reader_right_to_left_description_desktop">Mangaren orriak japoniar erara pasatzen dira: hurrengo orria ezkerretik dator, eta ← aurrera doa</string>
 </resources>

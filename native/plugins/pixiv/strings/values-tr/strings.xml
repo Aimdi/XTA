@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Güncellendi: %1$s</string>
     <string name="watchlist_view_latest">En yenisini gör</string>
     <plurals name="works_count"><item quantity="one">%2$s eser</item><item quantity="other">%2$s eser</item></plurals>
+    <string name="settings_intro_desktop">Bu özel eklenti Pixiv’i bir galeri uygulaması gibi okur: illüstrasyonlar, mangalar, romanlar, sıralamalar, yer imleriniz ve arama. Giriş Yap’a tıklayıp tarayıcıda Pixiv hesabınızla oturum açın veya aşağıya yenileme jetonu yapıştırın. Pixiv hesabınıza yalnızca kendi yaptığınız yer imleri, takipler ve izleme listesi değişiklikleri gönderilir. Buradan asla gönderi paylaşılmaz, yorum yapılmaz veya şikâyette bulunulmaz.</string>
+    <string name="columns_portrait_desktop">Uzun pencerelerde ızgara sütunları</string>
+    <string name="columns_landscape_desktop">Geniş pencerelerde ızgara sütunları</string>
+    <string name="swipe_works_desktop">Eserler arasında geç</string>
+    <string name="swipe_works_description_desktop">Listedeki sonraki esere geçmek için yana kaydırın. Çok sayfalı eserlerde ilk veya son sayfanın ötesine kaydırmayı sürdürün.</string>
+    <string name="reader_right_to_left_description_desktop">Manga sayfaları Japon usulü çevrilir: sonraki sayfa soldan gelir ve ← ileri gider</string>
 </resources>

@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Oppdatert %1$s</string>
     <string name="watchlist_view_latest">Se nyeste</string>
     <plurals name="works_count"><item quantity="one">%2$s verk</item><item quantity="other">%2$s verk</item></plurals>
+    <string name="settings_intro_desktop">Denne private utvidelsen leser Pixiv som en galleriapp: illustrasjoner, manga, romaner, rangeringer, bokmerkene dine og søk. Klikk på Logg inn for å logge inn med Pixiv-kontoen i nettleseren, eller lim inn en oppfriskningstoken nedenfor. Bare bokmerkene, følgingene og endringene i følgelisten som du selv gjør, sendes til Pixiv-kontoen din. Herfra blir ingenting noen gang postet, kommentert eller rapportert.</string>
+    <string name="columns_portrait_desktop">Rutenettkolonner i høye vinduer</string>
+    <string name="columns_landscape_desktop">Rutenettkolonner i brede vinduer</string>
+    <string name="swipe_works_desktop">Bla mellom verk</string>
+    <string name="swipe_works_description_desktop">Rull sidelengs til neste verk i lista. I verk med flere sider ruller du videre forbi første eller siste side.</string>
+    <string name="reader_right_to_left_description_desktop">Mangasider blas på japansk vis: neste side kommer fra venstre, og ← går videre</string>
 </resources>

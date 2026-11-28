@@ -500,4 +500,10 @@
     <string name="watchlist_updated">%1$s 업데이트</string>
     <string name="watchlist_view_latest">최신화 보기</string>
     <plurals name="works_count"><item quantity="other">작품 %2$s</item></plurals>
+    <string name="settings_intro_desktop">이 비공개 플러그인은 갤러리 앱처럼 Pixiv를 읽습니다. 일러스트, 만화, 소설, 랭킹, 북마크, 검색. 로그인으로 브라우저에서 Pixiv에 접속하거나 아래에 리프레시 토큰을 붙여 넣으세요. Pixiv 계정에는 직접 한 북마크, 팔로우, 관심 목록 변경만 전송됩니다. 여기서 게시, 댓글, 신고를 하는 일은 없습니다.</string>
+    <string name="columns_portrait_desktop">세로로 긴 창의 그리드 열</string>
+    <string name="columns_landscape_desktop">가로로 넓은 창의 그리드 열</string>
+    <string name="swipe_works_desktop">작품 사이 이동</string>
+    <string name="swipe_works_description_desktop">옆으로 스크롤해 목록의 다음 작품으로 이동합니다. 여러 페이지 작품에서는 첫 페이지나 마지막 페이지를 넘어 계속 스크롤하세요.</string>
+    <string name="reader_right_to_left_description_desktop">만화 페이지를 일본식으로 넘깁니다. 다음 페이지가 왼쪽에서 나오고 ←로 넘어갑니다</string>
 </resources>

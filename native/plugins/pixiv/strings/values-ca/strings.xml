@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Actualitzada %1$s</string>
     <string name="watchlist_view_latest">Mostra el més recent</string>
     <plurals name="works_count"><item quantity="one">%2$s obra</item><item quantity="other">%2$s obres</item></plurals>
+    <string name="settings_intro_desktop">Aquest connector privat llegeix Pixiv com una galeria: il·lustracions, manga, novel·les, rànquings, els vostres marcadors i la cerca. Feu clic a Inicia la sessió per entrar amb el compte de Pixiv al navegador, o enganxeu un token de renovació a sota. Al vostre compte de Pixiv només s’envien els marcadors, els seguiments i els canvis a la llista de seguiment que feu vosaltres. Des d’aquí mai no es publica, es comenta ni es denuncia res.</string>
+    <string name="columns_portrait_desktop">Columnes de la graella en finestres altes</string>
+    <string name="columns_landscape_desktop">Columnes de la graella en finestres amples</string>
+    <string name="swipe_works_desktop">Passa d’una obra a una altra</string>
+    <string name="swipe_works_description_desktop">Desplaceu-vos de costat fins a l’obra següent de la llista. En obres de diverses pàgines, continueu més enllà de la primera o l’última pàgina.</string>
+    <string name="reader_right_to_left_description_desktop">Les pàgines del manga passen a la japonesa: la pàgina següent entra per l’esquerra, i ← avança</string>
 </resources>

@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Обновлено %1$s</string>
     <string name="watchlist_view_latest">Открыть последнюю</string>
     <plurals name="works_count"><item quantity="one">%2$s работа</item><item quantity="few">%2$s работы</item><item quantity="many">%2$s работ</item><item quantity="other">%2$s работы</item></plurals>
+    <string name="settings_intro_desktop">Этот частный плагин читает Pixiv как галерею: иллюстрации, манга, романы, рейтинги, ваши закладки и поиск. Нажмите «Войти», чтобы войти в Pixiv в браузере, или вставьте refresh-токен ниже. В ваш аккаунт Pixiv отправляются только закладки, подписки и изменения списка отслеживания, которые вы делаете сами. Публикации, комментарии и жалобы отсюда никогда не отправляются.</string>
+    <string name="columns_portrait_desktop">Столбцы сетки в высоких окнах</string>
+    <string name="columns_landscape_desktop">Столбцы сетки в широких окнах</string>
+    <string name="swipe_works_desktop">Переход между работами</string>
+    <string name="swipe_works_description_desktop">Прокручивайте вбок к следующей работе в списке. В работах с несколькими страницами продолжайте прокрутку за первую или последнюю страницу.</string>
+    <string name="reader_right_to_left_description_desktop">Страницы манги листаются по-японски: следующая страница появляется слева, и ← ведёт дальше</string>
 </resources>

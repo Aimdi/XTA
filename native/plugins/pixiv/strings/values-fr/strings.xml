@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Mise à jour %1$s</string>
     <string name="watchlist_view_latest">Voir le dernier</string>
     <plurals name="works_count"><item quantity="one">%2$s œuvre</item><item quantity="other">%2$s œuvres</item></plurals>
+    <string name="settings_intro_desktop">Ce greffon privé lit Pixiv comme une galerie : illustrations, mangas, romans, classements, vos favoris et la recherche. Cliquez sur Se connecter pour vous identifier avec votre compte Pixiv dans le navigateur, ou collez un jeton d’actualisation ci-dessous. Seuls les favoris, abonnements et changements de liste de suivi que vous faites vous-même sont envoyés à votre compte Pixiv. Rien n’est jamais publié, commenté ni signalé depuis ici.</string>
+    <string name="columns_portrait_desktop">Colonnes de la grille en fenêtre haute</string>
+    <string name="columns_landscape_desktop">Colonnes de la grille en fenêtre large</string>
+    <string name="swipe_works_desktop">Passer d’une œuvre à l’autre</string>
+    <string name="swipe_works_description_desktop">Faites défiler sur le côté jusqu’à l’œuvre suivante de la liste. Pour les œuvres de plusieurs pages, continuez au-delà de la première ou de la dernière page.</string>
+    <string name="reader_right_to_left_description_desktop">Les pages de manga se tournent à la japonaise : la suivante arrive par la gauche, et ← avance</string>
 </resources>

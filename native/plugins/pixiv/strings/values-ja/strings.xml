@@ -500,4 +500,10 @@
     <string name="watchlist_updated">%1$sに更新</string>
     <string name="watchlist_view_latest">最新話を見る</string>
     <plurals name="works_count"><item quantity="other">作品 %2$s</item></plurals>
+    <string name="settings_intro_desktop">このプライベートプラグインはギャラリーアプリのようにPixivを読みます。イラスト、マンガ、小説、ランキング、ブックマーク、検索。サインインでブラウザからPixivにログインするか、下にリフレッシュトークンを貼ってください。Pixivアカウントに送られるのは、あなた自身が行ったブックマーク、フォロー、ウォッチリストの変更だけです。ここから投稿・コメント・通報をすることはありません。</string>
+    <string name="columns_portrait_desktop">縦長のウィンドウでのグリッド列数</string>
+    <string name="columns_landscape_desktop">横長のウィンドウでのグリッド列数</string>
+    <string name="swipe_works_desktop">作品間を移動</string>
+    <string name="swipe_works_description_desktop">横にスクロールしてリストの次の作品へ。複数ページの作品では、最初または最後のページを越えてスクロールします。</string>
+    <string name="reader_right_to_left_description_desktop">マンガのページを日本式にめくります。次のページは左から現れ、← で進みます</string>
 </resources>

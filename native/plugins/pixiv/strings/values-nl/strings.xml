@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Bijgewerkt %1$s</string>
     <string name="watchlist_view_latest">Nieuwste bekijken</string>
     <plurals name="works_count"><item quantity="one">%2$s werk</item><item quantity="other">%2$s werken</item></plurals>
+    <string name="settings_intro_desktop">Deze privéplug-in leest Pixiv als een galerij-app: illustraties, manga, romans, ranglijsten, je bladwijzers en zoeken. Klik op Aanmelden om in de browser in te loggen met je Pixiv-account, of plak hieronder een refresh-token. Alleen de bladwijzers, follows en wijzigingen in de volglijst die je zelf maakt, gaan naar je Pixiv-account. Vanuit hier wordt nooit iets gepost, becommentarieerd of gemeld.</string>
+    <string name="columns_portrait_desktop">Rasterkolommen in hoge vensters</string>
+    <string name="columns_landscape_desktop">Rasterkolommen in brede vensters</string>
+    <string name="swipe_works_desktop">Tussen werken bladeren</string>
+    <string name="swipe_works_description_desktop">Scrol opzij naar het volgende werk in de lijst. Bij werken met meerdere pagina’s scrol je door voorbij de eerste of laatste pagina.</string>
+    <string name="reader_right_to_left_description_desktop">Mangapagina’s slaan op zijn Japans om: de volgende pagina komt van links, en ← gaat verder</string>
 </resources>

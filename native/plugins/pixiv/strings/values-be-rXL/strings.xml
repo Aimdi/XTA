@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Abnoŭlena %1$s</string>
     <string name="watchlist_view_latest">Adkryć apošniuju</string>
     <plurals name="works_count"><item quantity="one">%2$s praca</item><item quantity="few">%2$s pracy</item><item quantity="many">%2$s prac</item><item quantity="other">%2$s pracy</item></plurals>
+    <string name="settings_intro_desktop">Hety pryvatny plahin čytaje Pixiv jak halereju: iliustracyi, manha, ramany, rejtynhi, vašy zakladki i pošuk. Nacisnicie «Uvajsci», kab uvajsci ŭ Pixiv u braŭzery, abo ŭstaŭcie refresh-token nižej. Na vaš akaŭnt Pixiv adpraŭlajucca tolki zakladki, padpiski i zmieny ŭ spisie nazirańnia, jakija vy robicie sami. Publikacyi, kamentaryi i skarhi adsul nikoli nie adpraŭlajucca.</string>
+    <string name="columns_portrait_desktop">Slupki sietki ŭ vysokich voknach</string>
+    <string name="columns_landscape_desktop">Slupki sietki ŭ šyrokich voknach</string>
+    <string name="swipe_works_desktop">Pierachod pamiž pracami</string>
+    <string name="swipe_works_description_desktop">Prakručvajcie ŭbok da nastupnaj pracy ŭ spisie. U pracach z niekalkimi staronkami praciahvajcie prakručvać za pieršuju abo apošniuju staronku.</string>
+    <string name="reader_right_to_left_description_desktop">Staronki manhi hartajucca pa-japonsku: nastupnaja staronka zjaŭlajecca źleva, i ← viadzie dalej</string>
 </resources>

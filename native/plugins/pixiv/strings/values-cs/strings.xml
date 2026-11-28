@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Aktualizováno %1$s</string>
     <string name="watchlist_view_latest">Zobrazit nejnovější</string>
     <plurals name="works_count"><item quantity="one">%2$s dílo</item><item quantity="few">%2$s díla</item><item quantity="many">%2$s díla</item><item quantity="other">%2$s děl</item></plurals>
+    <string name="settings_intro_desktop">Tento soukromý plugin čte Pixiv jako galerii: ilustrace, manga, romány, žebříčky, vaše záložky a vyhledávání. Klikněte na Přihlásit a přihlaste se účtem Pixiv v prohlížeči, nebo níže vložte refresh token. Do vašeho účtu Pixiv se odesílají jen záložky, sledování a změny sledovaných sérií, které sami provedete. Odtud se nikdy nic nepublikuje, nekomentuje ani nenahlašuje.</string>
+    <string name="columns_portrait_desktop">Sloupce mřížky ve vysokých oknech</string>
+    <string name="columns_landscape_desktop">Sloupce mřížky v širokých oknech</string>
+    <string name="swipe_works_desktop">Přecházet mezi díly</string>
+    <string name="swipe_works_description_desktop">Posouvejte do strany na další dílo v seznamu. U děl s více stránkami pokračujte za první nebo poslední stránku.</string>
+    <string name="reader_right_to_left_description_desktop">Stránky mangy se otáčejí japonsky: další stránka přichází zleva a ← jde dál</string>
 </resources>

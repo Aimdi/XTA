@@ -500,4 +500,10 @@
     <string name="watchlist_updated">%1$s更新</string>
     <string name="watchlist_view_latest">查看最新話</string>
     <plurals name="works_count"><item quantity="other">%2$s 件作品</item></plurals>
+    <string name="settings_intro_desktop">此私有外掛像圖庫應用程式一樣閱讀 Pixiv：插畫、漫畫、小說、排行榜、你的收藏與搜尋。點登入以在瀏覽器中用 Pixiv 帳號登入，或在下方貼上重新整理權杖。只有你親自進行的收藏、追蹤和追更清單變更會傳送到你的 Pixiv 帳號。此處絕不會發文、留言或檢舉。</string>
+    <string name="columns_portrait_desktop">高視窗中的網格欄數</string>
+    <string name="columns_landscape_desktop">寬視窗中的網格欄數</string>
+    <string name="swipe_works_desktop">在作品間切換</string>
+    <string name="swipe_works_description_desktop">橫向捲動到清單中的下一個作品。多頁作品中，越過第一頁或最後一頁繼續捲動。</string>
+    <string name="reader_right_to_left_description_desktop">漫畫依日式翻頁：下一頁從左側出現，← 向前翻</string>
 </resources>

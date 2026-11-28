@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Actualizada %1$s</string>
     <string name="watchlist_view_latest">Ver lo último</string>
     <plurals name="works_count"><item quantity="one">%2$s obra</item><item quantity="other">%2$s obras</item></plurals>
+    <string name="settings_intro_desktop">Este complemento privado lee Pixiv como una galería: ilustraciones, manga, novelas, rankings, tus marcadores y búsqueda. Haz clic en Iniciar sesión para entrar con tu cuenta de Pixiv en el navegador, o pega un token de actualización abajo. A tu cuenta de Pixiv solo se envían los marcadores, los seguimientos y los cambios en la lista de seguimiento que hagas tú. Desde aquí nunca se publica, se comenta ni se denuncia nada.</string>
+    <string name="columns_portrait_desktop">Columnas de la cuadrícula en ventanas altas</string>
+    <string name="columns_landscape_desktop">Columnas de la cuadrícula en ventanas anchas</string>
+    <string name="swipe_works_desktop">Pasar de una obra a otra</string>
+    <string name="swipe_works_description_desktop">Desplázate hacia un lado hasta la siguiente obra de la lista. En obras de varias páginas, sigue desplazándote más allá de la primera o la última.</string>
+    <string name="reader_right_to_left_description_desktop">Las páginas del manga pasan a la japonesa: la siguiente entra por la izquierda y ← avanza</string>
 </resources>

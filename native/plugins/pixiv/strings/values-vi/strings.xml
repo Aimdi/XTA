@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Cập nhật %1$s</string>
     <string name="watchlist_view_latest">Xem phần mới nhất</string>
     <plurals name="works_count"><item quantity="other">%2$s tác phẩm</item></plurals>
+    <string name="settings_intro_desktop">Plugin riêng này đọc Pixiv như một ứng dụng thư viện: tranh minh họa, manga, tiểu thuyết, xếp hạng, dấu trang của bạn và tìm kiếm. Nhấp Đăng nhập để vào tài khoản Pixiv trên trình duyệt, hoặc dán mã làm mới bên dưới. Chỉ những dấu trang, lượt theo dõi và thay đổi trong danh sách truyện theo dõi do chính bạn thực hiện mới được gửi lên tài khoản Pixiv của bạn. Từ đây không bao giờ đăng bài, bình luận hay báo cáo gì.</string>
+    <string name="columns_portrait_desktop">Số cột lưới ở cửa sổ cao</string>
+    <string name="columns_landscape_desktop">Số cột lưới ở cửa sổ rộng</string>
+    <string name="swipe_works_desktop">Chuyển giữa các tác phẩm</string>
+    <string name="swipe_works_description_desktop">Cuộn ngang tới tác phẩm tiếp theo trong danh sách. Với tác phẩm nhiều trang, tiếp tục cuộn qua trang đầu hoặc trang cuối.</string>
+    <string name="reader_right_to_left_description_desktop">Trang manga lật theo kiểu Nhật: trang tiếp theo đến từ bên trái, và ← đi tiếp</string>
 </resources>

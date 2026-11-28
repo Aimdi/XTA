@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Actualizată %1$s</string>
     <string name="watchlist_view_latest">Vezi cel mai recent</string>
     <plurals name="works_count"><item quantity="one">%2$s lucrare</item><item quantity="few">%2$s lucrări</item><item quantity="other">%2$s de lucrări</item></plurals>
+    <string name="settings_intro_desktop">Acest plugin privat citește Pixiv ca o aplicație-galerie: ilustrații, manga, romane, clasamente, semnele dvs. de carte și căutarea. Faceți clic pe Conectare pentru a intra cu contul Pixiv în browser sau lipiți un token de reîmprospătare mai jos. În contul dvs. Pixiv ajung doar semnele de carte, urmăririle și modificările listei de urmărire pe care le faceți dvs. De aici nu se publică, nu se comentează și nu se raportează niciodată nimic.</string>
+    <string name="columns_portrait_desktop">Coloane ale grilei în ferestre înalte</string>
+    <string name="columns_landscape_desktop">Coloane ale grilei în ferestre late</string>
+    <string name="swipe_works_desktop">Treceți de la o lucrare la alta</string>
+    <string name="swipe_works_description_desktop">Derulați lateral până la următoarea lucrare din listă. La lucrările cu mai multe pagini, continuați dincolo de prima sau ultima pagină.</string>
+    <string name="reader_right_to_left_description_desktop">Paginile manga se întorc în stil japonez: pagina următoare vine din stânga, iar ← merge înainte</string>
 </resources>

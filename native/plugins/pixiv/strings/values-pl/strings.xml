@@ -500,4 +500,10 @@
     <string name="watchlist_updated">Zaktualizowano %1$s</string>
     <string name="watchlist_view_latest">Zobacz najnowszy</string>
     <plurals name="works_count"><item quantity="one">%2$s praca</item><item quantity="few">%2$s prace</item><item quantity="many">%2$s prac</item><item quantity="other">%2$s pracy</item></plurals>
+    <string name="settings_intro_desktop">Ta prywatna wtyczka czyta Pixiv jak aplikację-galerię: ilustracje, mangę, powieści, rankingi, twoje zakładki i wyszukiwanie. Kliknij Zaloguj się, aby wejść kontem Pixiv w przeglądarce, albo wklej refresh token poniżej. Na twoje konto Pixiv trafiają tylko zakładki, obserwowania i zmiany na liście obserwowanych, które wprowadzasz samodzielnie. Stąd nigdy nic nie jest publikowane, komentowane ani zgłaszane.</string>
+    <string name="columns_portrait_desktop">Kolumny siatki w wysokich oknach</string>
+    <string name="columns_landscape_desktop">Kolumny siatki w szerokich oknach</string>
+    <string name="swipe_works_desktop">Przechodzenie między pracami</string>
+    <string name="swipe_works_description_desktop">Przewiń w bok do następnej pracy na liście. W pracach z wieloma stronami przewijaj dalej za pierwszą lub ostatnią stronę.</string>
+    <string name="reader_right_to_left_description_desktop">Strony mangi przewracają się po japońsku: następna strona przychodzi z lewej, a ← idzie dalej</string>
 </resources>
