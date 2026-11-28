@@ -40,6 +40,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -267,8 +268,11 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
                 // XTA's "Group microblogging services", one line under the plugins it is about, unless the search leaves it out.
                 if (grouping) item(key = "group-microblogging") { MicroblogGroupingRow(detailed = false) }
                 available(offer, locale, actions, availableOpen) { availableOpen = !availableOpen }
-                // Only a catalogue that was read can say nothing is on offer.
-                if (store.installed.isEmpty() && store.onOffer.isEmpty() && !store.catalogue.refreshing && !store.catalogue.unreachable) {
+                // Only a catalogue that was read can say nothing is on offer; one whose plugins are all private leads to them.
+                val read = !store.catalogue.refreshing && !store.catalogue.unreachable
+                if (read && store.onOffer.isEmpty() && store.privateHidden && query.isBlank()) {
+                    item(key = "private-hidden") { PrivateHidden(nothingInstalled = store.installed.isEmpty()) { scope.launch { plugins.showPrivate(true) } } }
+                } else if (store.installed.isEmpty() && store.onOffer.isEmpty() && read) {
                     item(key = "empty") { MessageText(stringResource(Res.string.plugin_store_empty)) }
                 }
             } }
@@ -782,6 +786,19 @@ private fun ShowPrivateMenu(showPrivate: Boolean, onChange: (Boolean) -> Unit) {
                 trailingIcon = { Checkbox(checked = showPrivate, onCheckedChange = null) },
             )
         } }
+    }
+}
+
+/**
+ * Nothing else on offer while the catalogue's private plugins are hidden: the
+ * store's empty line, where nothing is installed either, over the menu's own
+ * Show private plugins as a button.
+ */
+@Composable
+private fun PrivateHidden(nothingInstalled: Boolean, onShow: () -> Unit) {
+    Column(Modifier.fillMaxWidth().padding(vertical = if (nothingInstalled) 0.dp else 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        if (nothingInstalled) MessageText(stringResource(Res.string.plugin_store_empty))
+        OutlinedButton(onClick = onShow) { Text(stringResource(Res.string.plugin_store_show_private)) }
     }
 }
 

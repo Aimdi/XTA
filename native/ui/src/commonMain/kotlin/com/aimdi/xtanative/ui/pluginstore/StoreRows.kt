@@ -37,10 +37,12 @@ internal object StoreRows {
      * The installed plugins as the store lays them out: one that has
      * something to say or do ([needsRow]: an update, a failure, a download
      * under way) keeps a row of its own, first; the others stand two to a
-     * line as boxes.
+     * line as boxes. One plugin alone to box is a row across the column,
+     * rather than a box beside a gap with its menu mid-page.
      */
     fun <T> slots(plugins: List<T>, needsRow: (T) -> Boolean): List<StoreSlot<T>> {
         val (rows, boxes) = plugins.partition(needsRow)
+        if (boxes.size == 1) return (rows + boxes).map { StoreSlot(listOf(it), boxes = false) }
         return rows.map { StoreSlot(listOf(it), boxes = false) } + boxes.chunked(BOXES_PER_LINE).map { StoreSlot(it, boxes = true) }
     }
 

@@ -40,6 +40,8 @@ data class PluginStoreState(
     val plugins: List<PluginState> = emptyList(),
     val catalogue: CatalogueStatus = CatalogueStatus(),
     val showPrivate: Boolean = false,
+    /** Whether private plugins the catalogue offers are hidden ([hidesPrivate]). */
+    val privateHidden: Boolean = false,
 ) {
     val installed: List<PluginState> get() = plugins.filter { it.installed != null }
 
@@ -373,6 +375,7 @@ class PluginManager(
         plugins = storeListing(catalogue, installed, host.platform, api, showPrivate).map { it.over(busy[it.id], failures[it.id]) },
         catalogue = catalogueStatus,
         showPrivate = showPrivate,
+        privateHidden = hidesPrivate(catalogue, installed, host.platform, api, showPrivate),
     )
 
     /** What is under way, or went wrong last, wins over where the plugin otherwise stands. */

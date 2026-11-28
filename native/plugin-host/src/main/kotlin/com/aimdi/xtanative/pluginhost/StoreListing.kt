@@ -74,6 +74,14 @@ fun storeListing(
     return mine + onOffer
 }
 
+/**
+ * Whether [catalogue] holds a private plugin, not [installed], that the store
+ * would offer were private plugins shown: what the store can point to while
+ * [showPrivate] is off and nothing else is on offer.
+ */
+fun hidesPrivate(catalogue: PluginCatalogue?, installed: Map<String, InstalledPlugin>, platform: PluginPlatform, api: PluginApi, showPrivate: Boolean): Boolean =
+    !showPrivate && catalogue?.entries.orEmpty().any { it.isPrivate && it.id !in installed && isOffered(it, platform, api, showPrivate = true) }
+
 /** Whether the store offers [entry] to someone who does not have it. */
 internal fun isOffered(entry: CatalogueEntry, platform: PluginPlatform, api: PluginApi, showPrivate: Boolean): Boolean =
     notOfferedBecause(entry, platform, api, showPrivate) == null
