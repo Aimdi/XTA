@@ -81,6 +81,7 @@ import com.aimdi.xtanative.ui.group.CustomSettingsScreen
 import com.aimdi.xtanative.ui.group.FeedSettingsSheet
 import com.aimdi.xtanative.ui.group.GroupFeedScreen
 import com.aimdi.xtanative.ui.group.groupFeedViewModel
+import com.aimdi.xtanative.ui.plugins.LocalKeptPlace
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginActions
 import com.aimdi.xtanative.ui.plugins.PluginClientBar
@@ -511,7 +512,8 @@ private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: I
     ) { padding ->
         val (top, bottom) = rememberLiveEdges(padding)
         Box(Modifier.fillMaxSize().padding(top)) {
-            CompositionLocalProvider(LocalPluginClientBar provides client) {
+            // Its own values, apart from the same plugin pinned on Home's Feed: a section picked here stays here.
+            CompositionLocalProvider(LocalPluginClientBar provides client, LocalKeptPlace provides owner) {
                 networks.Page(id, bottom, toTop)
             }
         }
