@@ -37,11 +37,12 @@ class RedditListingCache(
     private inner class Entry(read: suspend () -> Page<RedditPost>) {
         @Volatile var settledAt: Long? = null
 
+        /** Kept only briefly: a failure, or an empty first page, which is what a passing refusal can look like. */
         @Volatile var failed = false
 
         val fetch: Deferred<Page<RedditPost>> = scope.async(start = CoroutineStart.LAZY) {
             try {
-                read().also { settle(failed = false) }
+                read().also { settle(failed = it.items.isEmpty()) }
             } catch (e: Throwable) {
                 settle(failed = true)
                 throw e
@@ -129,9 +130,20 @@ class RedditFollowingFeed(
         limit: Int = RedditClient.PAGE_SIZE,
         forceRefresh: Boolean = false,
         session: RedditSession = RedditSession.ANONYMOUS,
-    ): List<RedditPost> {
+    ): List<RedditPost> = read(subreddits, sort, timeFilter, hideNsfw, limit, forceRefresh, session).posts
+
+    /** [posts], with why the communities that could not be read were not, so a feed missing some can say so. */
+    suspend fun read(
+        subreddits: Collection<String>,
+        sort: RedditSort = RedditSort.HOT,
+        timeFilter: RedditTimeFilter = RedditTimeFilter.DAY,
+        hideNsfw: Boolean = false,
+        limit: Int = RedditClient.PAGE_SIZE,
+        forceRefresh: Boolean = false,
+        session: RedditSession = RedditSession.ANONYMOUS,
+    ): RedditFeedRead {
         val names = subreddits.distinct()
-        if (names.isEmpty()) return emptyList()
+        if (names.isEmpty()) return RedditFeedRead(emptyList())
         forgetOnSessionChange(session)
         val window = timeFilter.takeIf { sort.usesTimeFilter }
         val pages = coroutineScope {
@@ -145,7 +157,8 @@ class RedditFollowingFeed(
         }
         // None of them could be read (offline, refused): that is a failed read to say so, not a feed with nothing new.
         if (pages.all { it.isFailure }) throw pages.first().exceptionOrNull()!!
-        return newestFirst(pages.flatMap { it.getOrDefault(emptyList()) })
+        val failures = names.zip(pages).mapNotNull { (name, page) -> page.exceptionOrNull()?.let { name to it } }.toMap()
+        return RedditFeedRead(newestFirst(pages.flatMap { it.getOrDefault(emptyList()) }), failures)
     }
 
     private suspend fun postsOf(
@@ -168,6 +181,12 @@ class RedditFollowingFeed(
         if (lastSession != session) cache.clear()
         lastSession = session
     }
+}
+
+/** The merged feed and the communities that could not be read into it, by name. */
+data class RedditFeedRead(val posts: List<RedditPost>, val failures: Map<String, Throwable> = emptyMap()) {
+    /** What to say about the communities missing: the first one's failure, or null when none is. */
+    val failure: Throwable? get() = failures.values.firstOrNull()
 }
 
 /**

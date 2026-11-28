@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.reddit
 import com.aimdi.xtanative.networks.reddit.FlatComment
 import com.aimdi.xtanative.networks.reddit.RedditComment
 import com.aimdi.xtanative.networks.reddit.RedditCommentSort
+import com.aimdi.xtanative.networks.reddit.RedditFeedRead
 import com.aimdi.xtanative.networks.reddit.RedditPost
 import com.aimdi.xtanative.networks.reddit.RedditThread
 import com.aimdi.xtanative.networks.reddit.flattenComments
@@ -32,11 +33,12 @@ internal suspend fun <T> attempt(block: suspend () -> T): Result<T> = try {
  * again only when asked to, by a pull ([refresh] with force, which goes past
  * the shared cache too), when the communities change, or once it is older
  * than [FRESH_MILLIS]; a read under way is joined. A failed read keeps the
- * posts already shown.
+ * posts already shown and says it failed above them, as does a read some of
+ * whose communities could not be read.
  */
 internal class RedditFeed(
     private val scope: CoroutineScope,
-    private val read: suspend (names: List<String>, force: Boolean) -> List<RedditPost>,
+    private val read: suspend (names: List<String>, force: Boolean) -> RedditFeedRead,
     private val clock: () -> Long = System::currentTimeMillis,
 ) {
     data class State(
@@ -45,6 +47,8 @@ internal class RedditFeed(
         /** A first answer has arrived. */
         val loaded: Boolean = false,
         val problem: Throwable? = null,
+        /** Why what is shown is not all there is: the last refresh failed, or some communities did not load. */
+        val notice: Throwable? = null,
         /** Whether any community is followed. */
         val following: Boolean = false,
     )
@@ -71,12 +75,16 @@ internal class RedditFeed(
         mutable.update { it.copy(loading = true, problem = null, following = true) }
         job = scope.launch {
             attempt { read(names, force) }
-                .onSuccess { posts ->
-                    fetchedAt = clock()
-                    mutable.value = State(posts = posts.distinctBy { it.id }, loaded = true, following = true)
+                .onSuccess { answer ->
+                    // A feed missing communities is not fresh: the next visit reads them again.
+                    fetchedAt = if (answer.failure == null) clock() else 0L
+                    mutable.value = State(posts = answer.posts.distinctBy { it.id }, loaded = true, notice = answer.failure, following = true)
                 }
                 .onFailure { error ->
-                    mutable.update { shown -> shown.copy(loading = false, loaded = true, problem = if (shown.posts.isEmpty()) error else null) }
+                    mutable.update { shown ->
+                        val kept = shown.posts.isNotEmpty()
+                        shown.copy(loading = false, loaded = true, problem = if (kept) null else error, notice = if (kept) error else null)
+                    }
                 }
         }
     }

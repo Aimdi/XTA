@@ -127,13 +127,18 @@ class RedditClient(
      * Routes are tried most likely first, and the first that answers ends the
      * search, so the common case costs one request. A verdict (private,
      * banned, quarantined, missing) ends it too: no other host will disagree.
-     * A login page is no verdict: it answers for its host alone.
+     * A login page is no verdict: it answers for its host alone. Nor is an
+     * empty first page from www, which is also what it serves for a missing
+     * community or in place of one it would not serve: the other routes are
+     * asked, and only when none of them answers is the community empty.
      */
     private suspend fun publicListing(name: String, sort: RedditSort, query: Map<String, String>): Page<RedditPost> {
         var worst: Exception? = null
+        var empty: Page<RedditPost>? = null
         for (route in routes.inOrder()) {
             when (val attempt = attempt(route, name, sort, query)) {
                 is RouteAttempt.Hit -> return attempt.page.also { routes.remember(route) }
+                is RouteAttempt.Empty -> empty = empty ?: attempt.page
                 is RouteAttempt.Verdict -> throw attempt.failure.also { routes.remember(route) }
                 is RouteAttempt.Miss -> {
                     cooldownOf(attempt.failure)?.let { routes.refuse(route, it) }
@@ -141,6 +146,7 @@ class RedditClient(
                 }
             }
         }
+        empty?.let { return it }
         throw publicFailure(worst, name)
     }
 
@@ -174,7 +180,11 @@ class RedditClient(
         val response = transport.read(url)
         if (response.code != 200) return RouteAttempt.Miss(transport.failureOf(response, url))
         val page = wwwParse(response.body, RedditWww::listing)
-        return if (page.kind == WwwPageKind.READ) RouteAttempt.Hit(Page(page.posts, page.after)) else RouteAttempt.Miss(wwwRefusal(page.kind, url))
+        return when {
+            page.kind != WwwPageKind.READ -> RouteAttempt.Miss(wwwRefusal(page.kind, url))
+            page.posts.isEmpty() && query["after"].isNullOrEmpty() -> RouteAttempt.Empty(Page(emptyList(), null))
+            else -> RouteAttempt.Hit(Page(page.posts, page.after))
+        }
     }
 
     /** A feed piece's query: whose, which window, and after which post, in the cursor form the site's own paging carries. */
@@ -686,6 +696,9 @@ class RedditClient(
 /** What one route made of a listing request. */
 internal sealed interface RouteAttempt {
     data class Hit(val page: Page<RedditPost>) : RouteAttempt
+
+    /** Nothing, from a route that may say so of a community another route can read: kept in case no other route answers. */
+    data class Empty(val page: Page<RedditPost>) : RouteAttempt
 
     /** An answer no other route will contradict. */
     data class Verdict(val failure: NetworkRequestException) : RouteAttempt

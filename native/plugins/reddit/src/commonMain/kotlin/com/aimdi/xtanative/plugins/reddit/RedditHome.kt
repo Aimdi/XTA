@@ -364,7 +364,9 @@ private fun FollowingFeed(app: RedditApp, frame: PluginFrame) {
                 RedditFeedBody.EMPTY -> item(key = "quiet") { RedditEmpty(RedditGlyphs.Forum, pluginString(Strings.nothing_new)) }
                 RedditFeedBody.PROBLEM -> item(key = "problem") { RedditProblemView(problem!!, onRetry = { app.feed.refresh(names, force = true) }) }
                 RedditFeedBody.BONES -> item(key = "loading") { FeedSkeleton() }
-                RedditFeedBody.POSTS -> Unit
+                RedditFeedBody.POSTS -> state.notice?.let { notice ->
+                    item(key = "notice") { RedditProblemView(notice, onRetry = { app.feed.refresh(names, force = true) }, compact = true) }
+                }
             }
             items(state.posts, key = { "post:" + it.id }, contentType = { "post" }) { post -> RedditPostCard(app, post) }
         } }

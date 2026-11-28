@@ -1,8 +1,10 @@
 package com.aimdi.xtanative.networks.reddit
 
+import com.aimdi.xtanative.networks.NetworkRequestException
+import com.aimdi.xtanative.networks.Page
 import java.io.IOException
-import java.util.concurrent.atomic.AtomicInteger
 import java.net.SocketTimeoutException
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -157,5 +159,43 @@ class RedditReliabilityTest {
         RedditClient(fake).icon("dartlang")
 
         assertEquals(1, fake.urls.count { it.host == "old.reddit.com" && it.encodedPath == "/r/dartlang/" })
+    }
+
+    @Test
+    fun anEmptyWwwPageIsAskedOfTheOtherRoutesBeforeItIsBelieved() = runBlocking {
+        val fake = FakeReddit { if (it.isWww) page(WWW_EMPTY) else page(LISTING_HTML) }
+        val listing = RedditClient(fake).listing("dartlang")
+
+        assertEquals("abc123", listing.items.single().id)
+        assertEquals(listOf("www.reddit.com", "old.reddit.com"), fake.hosts)
+    }
+
+    @Test
+    fun anEmptyPageIsKeptOnlyAsBrieflyAsAFailure() = runBlocking {
+        var now = 0L
+        val cache = RedditListingCache(clock = { now })
+        val key = RedditListingKey("dartlang", RedditSort.HOT, null)
+        var reads = 0
+        repeat(2) { cache.listing(key) { reads++; Page(emptyList<RedditPost>(), null) } }
+        assertEquals(1, reads)
+        now += RedditListingCache.FAILURE_TTL_MILLIS
+        cache.listing(key) { reads++; Page(emptyList<RedditPost>(), null) }
+        assertEquals(2, reads, "an empty page is what a passing refusal can look like")
+    }
+
+    @Test
+    fun theFeedSaysWhichCommunitiesDidNotLoad() = runBlocking {
+        val fake = FakeReddit {
+            when {
+                it.url.queryParameter("name") == "gone" || "/r/gone" in it.url.encodedPath -> page("", 403)
+                it.isWww -> page(WWW_LISTING)
+                else -> page("", 500)
+            }
+        }
+        val read = RedditFollowingFeed(RedditClient(fake)).read(listOf("dartlang", "gone"))
+
+        assertEquals(listOf("abc123"), read.posts.map { it.id })
+        assertEquals(setOf("gone"), read.failures.keys)
+        assertEquals(403, (read.failure as NetworkRequestException).code)
     }
 }

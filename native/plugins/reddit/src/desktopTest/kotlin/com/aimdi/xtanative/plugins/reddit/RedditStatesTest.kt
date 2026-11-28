@@ -1,9 +1,11 @@
 package com.aimdi.xtanative.plugins.reddit
 
 import com.aimdi.xtanative.networks.NetworkRequestException
+import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.reddit.RedditComment
 import com.aimdi.xtanative.networks.reddit.RedditCommentSort
 import com.aimdi.xtanative.networks.reddit.RedditCommentsCursor
+import com.aimdi.xtanative.networks.reddit.RedditFeedRead
 import com.aimdi.xtanative.networks.reddit.RedditPost
 import com.aimdi.xtanative.networks.reddit.RedditThread
 import com.aimdi.xtanative.store.StoreFile
@@ -40,7 +42,7 @@ class RedditStatesTest {
     fun theFeedIsReadOnceAndShownAgainWhileFresh(): Unit = runBlocking {
         val reads = AtomicInteger()
         var now = 0L
-        val feed = RedditFeed(scope, read = { names, _ -> reads.incrementAndGet(); names.map(::post) }, clock = { now })
+        val feed = RedditFeed(scope, read = { names, _ -> reads.incrementAndGet(); RedditFeedRead(names.map(::post)) }, clock = { now })
         feed.refresh(listOf("a", "b"))
         assertEquals(listOf("a", "b"), settled(feed.state) { it.loaded && !it.loading }.posts.map { it.id })
         feed.refresh(listOf("a", "b"))
@@ -55,7 +57,7 @@ class RedditStatesTest {
     @Test
     fun aPullOrOtherCommunitiesReadAgain(): Unit = runBlocking {
         val forced = mutableListOf<Boolean>()
-        val feed = RedditFeed(scope, read = { names, force -> synchronized(forced) { forced += force }; names.map(::post) })
+        val feed = RedditFeed(scope, read = { names, force -> synchronized(forced) { forced += force }; RedditFeedRead(names.map(::post)) })
         feed.refresh(listOf("a"))
         settled(feed.state) { it.posts.size == 1 && !it.loading }
         feed.refresh(listOf("a"), force = true)
@@ -69,7 +71,7 @@ class RedditStatesTest {
     @Test
     fun followingNothingIsAnAnswerAndAFailureKeepsWhatIsShown(): Unit = runBlocking {
         var fail = false
-        val feed = RedditFeed(scope, read = { names, _ -> if (fail) throw NetworkRequestException("reddit", 429, "slow down") else names.map(::post) })
+        val feed = RedditFeed(scope, read = { names, _ -> if (fail) throw NetworkRequestException("reddit", 429, "slow down") else RedditFeedRead(names.map(::post)) })
         feed.refresh(emptyList())
         val nothing = settled(feed.state) { it.loaded }
         assertTrue(nothing.posts.isEmpty() && !nothing.following)
@@ -81,6 +83,7 @@ class RedditStatesTest {
         val kept = settled(feed.state) { !it.loading }
         assertEquals(1, kept.posts.size)
         assertNull(kept.problem)
+        assertNotNull(kept.notice, "a failed refresh says so above the posts it kept")
 
         val empty = RedditFeed(scope, read = { _, _ -> throw NetworkRequestException("reddit", 403, "blocked") })
         empty.refresh(listOf("a"))
@@ -89,10 +92,46 @@ class RedditStatesTest {
     }
 
     @Test
+    fun communitiesThatDidNotLoadAreSaidAboveThePostsAndReadAgainNextTime(): Unit = runBlocking {
+        val reads = AtomicInteger()
+        val missing = NetworkRequestException("reddit", 403, "blocked")
+        val feed = RedditFeed(scope, read = { names, _ ->
+            if (reads.incrementAndGet() == 1) RedditFeedRead(listOf(post("a")), mapOf("b" to missing)) else RedditFeedRead(names.map(::post))
+        })
+        feed.refresh(listOf("a", "b"))
+        val partial = settled(feed.state) { it.loaded && !it.loading }
+        assertEquals(listOf("a"), partial.posts.map { it.id })
+        assertEquals(missing, partial.notice)
+        assertEquals(RedditFeedBody.POSTS, RedditFeedBody.of(listed = true, none = false, state = partial))
+
+        feed.refresh(listOf("a", "b"))
+        val whole = settled(feed.state) { it.posts.size == 2 && !it.loading }
+        assertNull(whole.notice, "a feed missing communities is not kept as fresh")
+        assertEquals(2, reads.get())
+        scope.cancel()
+    }
+
+    @Test
+    fun aPageAllHiddenIsSkippedPastNotHandedOnAsTheEnd(): Unit = runBlocking {
+        val pages = mapOf(null to Page(listOf("nsfw1"), "c1"), "c1" to Page(listOf("nsfw2"), "c2"), "c2" to Page(listOf("ok"), "c3"))
+        val asked = mutableListOf<String?>()
+        val shown = shownPage<String>(null, { items -> items.filterNot { it.startsWith("nsfw") } }) { cursor -> asked += cursor; pages.getValue(cursor) }
+
+        assertEquals(listOf("ok"), shown.items)
+        assertEquals("c3", shown.next)
+        assertEquals(listOf(null, "c1", "c2"), asked)
+
+        val endless = shownPage<String>(null, { emptyList() }) { cursor -> Page(listOf("x"), (cursor ?: "0") + "1") }
+        assertTrue(endless.items.isEmpty(), "a few pages at most")
+        assertNotNull(endless.next, "and the list still has a next page")
+        assertEquals(Page(emptyList<String>(), null), shownPage<String>(null, { it }) { Page(emptyList(), null) })
+    }
+
+    @Test
     fun aReadUnderWayIsJoinedNotRepeated(): Unit = runBlocking {
         val gate = CompletableDeferred<Unit>()
         val reads = AtomicInteger()
-        val feed = RedditFeed(scope, read = { names, _ -> reads.incrementAndGet(); gate.await(); names.map(::post) })
+        val feed = RedditFeed(scope, read = { names, _ -> reads.incrementAndGet(); gate.await(); RedditFeedRead(names.map(::post)) })
         feed.refresh(listOf("a"))
         feed.refresh(listOf("a"))
         gate.complete(Unit)
@@ -233,7 +272,7 @@ class RedditStatesTest {
     @Test
     fun zeroFollowsReadNothingNeverLoadAndARemountRefreshStaysANoOp(): Unit = runBlocking {
         val reads = AtomicInteger()
-        val feed = RedditFeed(scope, read = { names, _ -> reads.incrementAndGet(); names.map(::post) })
+        val feed = RedditFeed(scope, read = { names, _ -> reads.incrementAndGet(); RedditFeedRead(names.map(::post)) })
         assertFalse(feed.state.value.loading)
         feed.refresh(emptyList())
         val nothing = feed.state.value

@@ -4,6 +4,7 @@ import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.reddit.RedditAuth
 import com.aimdi.xtanative.networks.reddit.RedditComment
 import com.aimdi.xtanative.networks.reddit.RedditCommentSort
+import com.aimdi.xtanative.networks.reddit.RedditFeedRead
 import com.aimdi.xtanative.networks.reddit.RedditPost
 import com.aimdi.xtanative.networks.reddit.RedditReaders
 import com.aimdi.xtanative.networks.reddit.RedditReading
@@ -124,9 +125,9 @@ internal class RedditApp(val host: PluginHost) {
 
     fun close() = scope.cancel()
 
-    private suspend fun readFeed(names: List<String>, force: Boolean): List<RedditPost> {
+    private suspend fun readFeed(names: List<String>, force: Boolean): RedditFeedRead {
         val choices = RedditChoices.of(prefs.load())
-        return reading().feed.posts(
+        return reading().feed.read(
             names,
             sort = choices.sort.listing(),
             timeFilter = choices.window.listing(),
@@ -138,13 +139,14 @@ internal class RedditApp(val host: PluginHost) {
 
     suspend fun listing(subreddit: String, after: String?): Page<RedditPost> {
         val choices = RedditChoices.of(prefs.load())
-        val page = reading().client.listing(subreddit, choices.sort.listing(), choices.window.listing(), after, session = session())
-        return Page(choices.shown(page.items), page.next)
+        return shownPage(after, choices::shown) { cursor ->
+            reading().client.listing(subreddit, choices.sort.listing(), choices.window.listing(), cursor, session = session())
+        }
     }
 
     suspend fun userPosts(user: String, after: String?): Page<RedditPost> {
-        val page = reading().client.userPosts(user, after)
-        return Page(RedditChoices.of(prefs.load()).shown(page.items), page.next)
+        val choices = RedditChoices.of(prefs.load())
+        return shownPage(after, choices::shown) { cursor -> reading().client.userPosts(user, cursor) }
     }
 
     suspend fun thread(permalink: String, sort: RedditCommentSort): RedditThread = reading().client.thread(permalink, sort, session())
@@ -458,3 +460,24 @@ internal class RedditShelf(private val capacity: Int = 200, private val keyOf: (
     @Synchronized
     fun get(key: String): RedditPost? = posts[key]
 }
+
+/**
+ * The page at [after] as [shown] leaves it. A page [shown] empties entirely
+ * (all NSFW or hidden) while Reddit names a next one is skipped past, a few
+ * pages at most: handed on empty, it would end the list as if Reddit had no
+ * more.
+ */
+internal suspend fun <T> shownPage(after: String?, shown: (List<T>) -> List<T>, read: suspend (String?) -> Page<T>): Page<T> {
+    var cursor = after
+    repeat(SKIPPED_PAGES) {
+        val page = read(cursor)
+        val kept = shown(page.items)
+        val next = page.next?.ifEmpty { null }
+        if (kept.isNotEmpty() || page.items.isEmpty() || next == null || next == cursor) return Page(kept, page.next)
+        cursor = next
+    }
+    return read(cursor).let { Page(shown(it.items), it.next) }
+}
+
+/** How many pages in a row may be all hidden before one is handed on empty. */
+private const val SKIPPED_PAGES = 3

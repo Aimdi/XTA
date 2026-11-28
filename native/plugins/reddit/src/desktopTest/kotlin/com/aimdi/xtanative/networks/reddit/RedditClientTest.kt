@@ -215,7 +215,7 @@ class RedditClientTest {
     }
 
     @Test
-    fun aCommunityWithNothingInItIsEmptyNotBrokenAndNotAskedElsewhere() = runBlocking {
+    fun aCommunityWithNothingInItIsEmptyNotBroken() = runBlocking {
         val www = reddit { page(WWW_EMPTY) }
         val wwwListing = RedditClient(www).listing("dartlang")
         val old = reddit(wwwRefused { page(EMPTY_LISTING_HTML) })
@@ -223,7 +223,7 @@ class RedditClientTest {
 
         assertTrue(wwwListing.items.isEmpty())
         assertNull(wwwListing.next)
-        assertEquals(listOf("www.reddit.com"), www.hosts)
+        assertEquals("www.reddit.com", www.hosts.first())
         assertTrue(oldListing.items.isEmpty())
         assertEquals(listOf("www.reddit.com", "old.reddit.com"), old.hosts)
     }

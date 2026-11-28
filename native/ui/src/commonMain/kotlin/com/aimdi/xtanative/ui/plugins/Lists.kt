@@ -193,8 +193,9 @@ data class PagedState<T>(
  * A list a network hands out page by page: [read] gives the page that starts
  * at a cursor (null for the first), and each item is shown once by [key]. The
  * first page is read at once; [refresh] reads it again and [more] the next
- * one. A cursor that comes round again, or a page with nothing new, ends the
- * list. Reads run in [scope]: [rememberKept]'s, or a view model's.
+ * one. A cursor that comes round again, or a few pages in a row with nothing
+ * new, ends the list: one page of repeats (a ranking that shifted under the
+ * cursor) does not. Reads run in [scope]: [rememberKept]'s, or a view model's.
  */
 class PagedItems<T : Any>(
     private val scope: CoroutineScope,
@@ -207,6 +208,9 @@ class PagedItems<T : Any>(
     private var job: Job? = null
     private val used = HashSet<String>()
 
+    /** Pages in a row that brought nothing new. */
+    @Volatile private var barren = 0
+
     init {
         refresh()
     }
@@ -218,6 +222,7 @@ class PagedItems<T : Any>(
             try {
                 val page = read(null)
                 used.clear()
+                barren = 0
                 mutable.value = PagedState(items = page.items.distinctBy(key), next = page.next?.ifEmpty { null }, loaded = true)
             } catch (e: CancellationException) {
                 throw e
@@ -236,12 +241,16 @@ class PagedItems<T : Any>(
             try {
                 val page = read(cursor)
                 used += cursor
+                val before = barren
+                var after = before
                 mutable.update { shown ->
                     val known = shown.items.mapTo(HashSet(), key)
                     val fresh = page.items.filter { key(it) !in known }.distinctBy(key)
-                    val next = page.next?.takeIf { it.isNotEmpty() && it !in used && fresh.isNotEmpty() }
+                    after = if (fresh.isEmpty()) before + 1 else 0
+                    val next = page.next?.takeIf { it.isNotEmpty() && it !in used && after <= BARREN_PAGES }
                     shown.copy(items = shown.items + fresh, next = next, loadingMore = false)
                 }
+                barren = after
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -256,6 +265,9 @@ class PagedItems<T : Any>(
         more()
     }
 }
+
+/** How many pages in a row may bring nothing new before a list is taken to have ended. */
+private const val BARREN_PAGES = 2
 
 /**
  * [pages] as a list that reads more as its end comes into view and is pulled
