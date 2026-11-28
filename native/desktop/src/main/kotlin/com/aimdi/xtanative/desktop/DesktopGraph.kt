@@ -9,7 +9,6 @@ import com.aimdi.xtanative.ui.chrome.DesktopAttention
 import com.aimdi.xtanative.ui.common.XdgFolders
 import com.aimdi.xtanative.ui.downloads.DesktopFiles
 import com.aimdi.xtanative.ui.group.EarlyFollowing
-import com.aimdi.xtanative.ui.media.MpvEngine
 import com.aimdi.xtanative.ui.media.VideoCheck
 import com.aimdi.xtanative.ui.net.DesktopNetworkMonitor
 import com.aimdi.xtanative.ui.net.DesktopProxy
@@ -102,7 +101,6 @@ internal fun DesktopApp.start() {
     plugins.startWith(ids("XTA_NATIVE_PLUGIN_INSTALL"), ids("XTA_NATIVE_PLUGIN_PIN"), ids("XTA_NATIVE_PLUGIN_UNINSTALL"))
     if (env("XTA_NATIVE_VOICE_CHECK") != null) VoiceCheck.ask()
     env("XTA_NATIVE_VIDEO_CHECK")?.let(VideoCheck::ask)
-    MpvEngine.warmUp()
     DesktopAttention.follow(graph)
 }
 

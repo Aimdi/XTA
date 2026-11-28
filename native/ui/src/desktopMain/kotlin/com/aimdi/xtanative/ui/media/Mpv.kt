@@ -208,6 +208,8 @@ internal class Mpv private constructor(
          * ([MpvOptions.REQUIRED]).
          */
         fun create(options: List<Pair<String, String>>, name: String, video: Boolean, onEvent: (Mpv, MpvEvent) -> Unit): Mpv? {
+            // Opened by the first video on screen; one made before (a viewer, a podcast) waits for it here.
+            if (!MpvEngine.ready) return null
             val handle = MpvJni.nativeCreate()
             if (handle == 0L) return null
             val refused = options.filter { (key, value) -> MpvJni.nativeSetOption(handle, MpvJni.cString(key), MpvJni.cString(value)) < 0 }

@@ -26,6 +26,9 @@ internal interface VideoPlayer : PlayerCore {
 /** Makes the platform's players, as Settings › Media says ([VideoOptions]). */
 internal fun interface VideoPlayers {
     fun make(options: VideoOptions): VideoPlayer
+
+    /** Gets ready to make one soon, without waiting: a video is on screen. */
+    fun warm() {}
 }
 
 /**
