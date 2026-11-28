@@ -41,6 +41,17 @@ class IdleInhibitTest {
         assertEquals(listOf("inhibit", "release 1"), bus.calls)
     }
 
+    /** Its last word from mpv's thread may come after the window's thread let it go: a video let go is heard no more. */
+    @Test
+    fun aVideoLetGoNeverKeepsTheScreenOnAgain() {
+        inhibitor.playing(video, true)
+        inhibitor.letGo(video)
+        assertFalse(inhibitor.holding)
+        inhibitor.playing(video, true)
+        assertFalse(inhibitor.holding, "a late word of a video let go")
+        assertEquals(listOf("inhibit", "release 1"), bus.calls)
+    }
+
     @Test
     fun theScreenSleepsOnlyOnceNoVideoPlays() {
         inhibitor.playing(video, true)

@@ -154,6 +154,7 @@ internal class MpvVideoCore<P : MpvPictures>(
         released = true
         OneVideo.stopped(this)
         tellControls()
+        IdleInhibit.letGo(this)
         pictures?.close() ?: player?.close()
     }
 

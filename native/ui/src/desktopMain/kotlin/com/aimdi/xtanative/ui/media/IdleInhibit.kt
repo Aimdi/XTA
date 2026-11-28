@@ -5,6 +5,8 @@ import com.aimdi.xtanative.ui.media.mpris.DBusType
 import com.aimdi.xtanative.ui.media.mpris.ObjectPath
 import com.aimdi.xtanative.ui.media.mpris.Variant
 import java.awt.Frame
+import java.util.Collections
+import java.util.WeakHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -40,6 +42,9 @@ internal interface InhibitBus {
  */
 internal class IdleInhibitor(private val bus: InhibitBus, private val shown: () -> Boolean, private val reason: String = REASON) {
     private val players = HashSet<Any>()
+
+    /** The players let go ([letGo]): a word of theirs that comes after is too late. */
+    private val gone: MutableSet<Any> = Collections.newSetFromMap(WeakHashMap())
     private var held: HeldInhibit? = null
 
     /** Whether the screen is kept on now. */
@@ -50,8 +55,14 @@ internal class IdleInhibitor(private val bus: InhibitBus, private val shown: () 
 
     /** [player] heard playing ([now]) or no longer; the screen kept on or let go to match. */
     fun playing(player: Any, now: Boolean) {
-        if (now) players.add(player) else players.remove(player)
+        if (now && player !in gone) players.add(player) else players.remove(player)
         check()
+    }
+
+    /** [player] let go for good: it never keeps the screen on again. */
+    fun letGo(player: Any) {
+        gone.add(player)
+        playing(player, false)
     }
 
     /** Matches what is held to what plays and what shows: a window hidden or shown again since. */
@@ -140,16 +151,30 @@ internal object IdleInhibit {
 
     /** [player] (a video's core) heard playing or no longer ([IdleInhibitRules.keepsAwake]). */
     fun playing(player: Any, now: Boolean) {
-        thread.execute {
+        onThread {
             inhibitor.playing(player, now)
             lookWhilePlaying()
         }
     }
 
+    /** [player] let go: what its threads still say after is ignored, so it never keeps the screen on again. */
+    fun letGo(player: Any) {
+        onThread {
+            inhibitor.letGo(player)
+            lookWhilePlaying()
+        }
+    }
+
+    /** [work] on the inhibitor's thread; a bus that fails is tried again at the next word or look. */
+    private fun onThread(work: () -> Unit) {
+        thread.execute { runCatching(work) }
+    }
+
     /** While something plays, the windows are looked at again every few seconds: one minimised or closed to the tray lets the screen sleep. */
     private fun lookWhilePlaying() {
         if (inhibitor.anyPlaying && looking == null) {
-            looking = thread.scheduleWithFixedDelay(inhibitor::check, LOOK_S, LOOK_S, TimeUnit.SECONDS)
+            // A look that fails must not end the looks: a scheduled task that throws never runs again.
+            looking = thread.scheduleWithFixedDelay({ runCatching { inhibitor.check() } }, LOOK_S, LOOK_S, TimeUnit.SECONDS)
         } else if (!inhibitor.anyPlaying) {
             looking?.cancel(false)
             looking = null
