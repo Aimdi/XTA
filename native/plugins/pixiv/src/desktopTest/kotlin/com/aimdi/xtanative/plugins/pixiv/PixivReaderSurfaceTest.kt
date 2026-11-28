@@ -48,4 +48,39 @@ class PixivReaderSurfaceTest {
         ReaderSurface(2, 0) { flipped = true }.changeDirection()
         assertTrue(flipped)
     }
+
+    @Test
+    fun eachPageTakesItsOwnShapeOnceItsPictureIsIn() {
+        val surface = ReaderSurface(3, 0, firstRatio = 0.75f) {}
+        assertEquals(0.75f, surface.ratioOf(2), "a page not in yet takes the first page's shape")
+        surface.measured(2, 1200, 600)
+        surface.measured(1, 690, 13_800)
+        assertEquals(2f, surface.ratioOf(2))
+        assertEquals(0.05f, surface.ratioOf(1), "a long strip is drawn whole, not cut to a fixed shape")
+        assertEquals(0.75f, surface.ratioOf(0))
+        surface.measured(0, 0, 100)
+        assertEquals(0.75f, surface.ratioOf(0), "a picture without a size changes nothing")
+        assertEquals(1f, ReaderSurface(1, 0, firstRatio = Float.NaN) {}.ratioOf(0))
+        assertEquals(0.02f, ReaderSurface(1, 0, firstRatio = 0.001f) {}.ratioOf(0))
+    }
+}
+
+/** The swiped reader's right-to-left choice, a key of the plugin's own. */
+class PixivRightToLeftTest {
+    @Test
+    fun theChoiceIsKeptUnderThePluginsOwnPrefixAndReadsOffUntilSet() {
+        val empty = com.aimdi.xtanative.store.settings.Settings()
+        assertEquals(false, PixivRightToLeft.of(empty))
+        val on = PixivRightToLeft.with(empty, true)
+        assertEquals(true, PixivRightToLeft.of(on))
+        assertTrue(PixivRightToLeft.KEY.startsWith(com.aimdi.xtanative.ui.plugins.PluginSettings.prefixOf("pixiv")), "the app keeps only the plugin's own keys")
+        assertEquals(false, PixivRightToLeft.of(PixivRightToLeft.with(on, false)))
+    }
+
+    @Test
+    fun aRightToLeftLayoutAlreadyReadsThatWay() {
+        assertEquals(true, PixivRightToLeft.reversed(on = true, layoutRightToLeft = false))
+        assertEquals(false, PixivRightToLeft.reversed(on = true, layoutRightToLeft = true))
+        assertEquals(false, PixivRightToLeft.reversed(on = false, layoutRightToLeft = true))
+    }
 }

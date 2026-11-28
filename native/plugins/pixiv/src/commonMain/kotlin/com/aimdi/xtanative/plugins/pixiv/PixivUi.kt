@@ -63,8 +63,10 @@ import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.common.rememberSwitchedHaptics
 import com.aimdi.xtanative.ui.plugins.PluginText
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberImageRequest
+import kotlinx.coroutines.flow.SharedFlow
 
 /** The running plugin, for every composable of its screens. */
 internal val LocalPixiv = staticCompositionLocalOf<PixivRuntime> { error("No Pixiv plugin runtime here") }
@@ -97,6 +99,7 @@ internal fun PixivPicture(
     onLoaded: (() -> Unit)? = null,
     loading: Boolean = false,
     failed: (@Composable BoxScope.(retry: () -> Unit) -> Unit)? = { retry -> PictureRetry(retry) },
+    onSize: ((width: Int, height: Int) -> Unit)? = null,
 ) {
     if (url.isNullOrEmpty()) {
         Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant))
@@ -113,9 +116,10 @@ internal fun PixivPicture(
                 contentDescription = contentDescription,
                 contentScale = contentScale,
                 onLoading = { phase = PicturePhase.LOADING },
-                onSuccess = {
+                onSuccess = { success ->
                     phase = PicturePhase.SHOWN
                     onLoaded?.invoke()
+                    onSize?.invoke(success.result.image.width, success.result.image.height)
                 },
                 onError = { phase = PicturePhase.FAILED },
                 modifier = Modifier.fillMaxSize(),
@@ -173,9 +177,14 @@ internal fun failureText(failure: PixivFailure): PluginText = when (failure) {
     PixivFailure.BAD_RESPONSE -> Strings.error_response
 }
 
-/** A read that failed with nothing to show: why, and Retry. */
+/** A read that failed with nothing to show: why, and Retry; signed out, the way to sign in instead. */
 @Composable
 internal fun PixivProblem(error: Throwable?, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    // Signed out, Retry can never work: the way to sign in takes its place, and a sign-in since reads again.
+    if (PixivFailure.of(error ?: Exception()) == PixivFailure.NOT_SIGNED_IN) {
+        if (!PixivAccounts.signedIn(pixivSettings())) return PixivSignInPrompt(pluginString(Strings.sign_in_to_see), modifier)
+        LaunchedEffect(Unit) { onRetry() }
+    }
     Column(
         modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 40.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -192,6 +201,30 @@ internal fun PixivProblem(error: Throwable?, onRetry: () -> Unit, modifier: Modi
             Spacer(Modifier.width(8.dp))
             Text(pluginString(Strings.retry))
         }
+    }
+}
+
+/** Tells the reader when a pull to refresh failed and [failures]' list or read kept what it showed before. */
+@Composable
+internal fun TellsFailedRefresh(failures: SharedFlow<Throwable>) {
+    val runtime = LocalPixiv.current
+    val language = currentLanguage()
+    LaunchedEffect(failures, language) {
+        failures.collect { runtime.tell(failureText(PixivFailure.of(it)).get(language)) }
+    }
+}
+
+/** A small part of a screen that did not load (a creator's other works, a series' place): why, in one line, and Retry. */
+@Composable
+internal fun PixivAsideProblem(error: Throwable?, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            pixivErrorText(error),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f),
+        )
+        TextButton(onClick = onRetry) { Text(pluginString(Strings.retry)) }
     }
 }
 

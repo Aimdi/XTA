@@ -1,6 +1,18 @@
 package com.aimdi.xtanative.plugins.pixiv
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -67,6 +79,7 @@ internal fun PixivisionArticleScreen(id: Long, language: String) {
     val outside = rememberOutside()
     val fetch = rememberKept("pixiv-pixivision-$id") { scope -> PixivFetch(scope) { runtime.discovery.pixivisionArticle(id) }.also { it.ensure() } }
     val state by fetch.state.collectAsState()
+    TellsFailedRefresh(fetch.refreshFailures)
     val url = Pixivision.articleUrl(id, language)
     PluginScaffold(
         title = state.value?.title?.ifEmpty { null } ?: pluginString(Strings.pixivision_articles),
@@ -95,8 +108,7 @@ private fun Article(article: PixivisionArticle) {
     PluginReadingColumn(PaddingValues(16.dp), list) { column -> LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = column) {
         item(key = "head") {
             Column {
-                article.coverUrl?.let { PixivPicture(it, Modifier.fillMaxWidth().aspectRatio(16f / 9f).clip(RoundedCornerShape(12.dp))) }
-                Spacer(Modifier.height(12.dp))
+                ArticleCover(article)
                 if (article.title.isNotEmpty()) Text(article.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 if (article.intro.isNotEmpty()) Text(article.intro, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 8.dp))
                 if (works.isNotEmpty()) {
@@ -108,16 +120,52 @@ private fun Article(article: PixivisionArticle) {
     } }
 }
 
-/** A featured work: its picture and title open it, its creator's line opens them. */
+/**
+ * The article's cover: its page's own picture, else its first featured
+ * work's when that one does not load (Pixiv's share picture often is gone),
+ * else no cover at all.
+ */
+@Composable
+private fun ArticleCover(article: PixivisionArticle) {
+    val covers = remember(article) { Pixivision.covers(article) }
+    var tried by remember(covers) { mutableIntStateOf(0) }
+    val cover = covers.getOrNull(tried) ?: return
+    key(cover) {
+        PixivPicture(
+            cover,
+            Modifier.fillMaxWidth().aspectRatio(16f / 9f).clip(RoundedCornerShape(12.dp)),
+            failed = { LaunchedEffect(cover) { tried++ } },
+        )
+    }
+    Spacer(Modifier.height(12.dp))
+}
+
+/**
+ * A featured work: its picture, in its own shape and at a size fit for the
+ * width it is shown at, and its title open it, a right-click or long press
+ * its picture's actions; its creator's line opens them.
+ */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun FeaturedWork(work: PixivisionWork) {
     val runtime = LocalPixiv.current
+    val sheets = LocalPixivSheets.current
+    var ratio by remember(work.imageUrl) { mutableFloatStateOf(PLACEHOLDER_RATIO) }
+    val actions = { sheets.show(PixivSheet.FeaturedActions(work)) }
     Column(Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
-        PixivPicture(
-            work.imageUrl,
-            Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(12.dp)).clickable { runtime.open(PixivRoute.Work(work.artworkId)) },
-            contentDescription = work.title,
-        )
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            val widthPx = with(LocalDensity.current) { maxWidth.roundToPx() }
+            val url = remember(work.imageUrl, widthPx) { work.imageUrl?.let { Pixivision.sized(it, widthPx) } }
+            PixivPicture(
+                url,
+                Modifier.fillMaxWidth().aspectRatio(ratio).clip(RoundedCornerShape(12.dp))
+                    .onContextClick(actions)
+                    .combinedClickable(onClick = { runtime.open(PixivRoute.Work(work.artworkId)) }, onLongClick = actions),
+                contentScale = ContentScale.Fit,
+                contentDescription = work.title,
+                onSize = { w, h -> if (w > 0 && h > 0) ratio = (w.toFloat() / h).coerceIn(MIN_RATIO, MAX_RATIO) },
+            )
+        }
         Text(work.title, style = MaterialTheme.typography.titleSmall, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 8.dp))
         if (work.userId > 0) {
             Row(Modifier.clip(RoundedCornerShape(8.dp)).clickable { runtime.openUser(work.userId) }.padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -128,3 +176,8 @@ private fun FeaturedWork(work: PixivisionWork) {
         }
     }
 }
+
+/** A featured picture's shape before it loads, and the tallest and widest it is shown. */
+private const val PLACEHOLDER_RATIO = 1f
+private const val MIN_RATIO = 0.4f
+private const val MAX_RATIO = 2.5f

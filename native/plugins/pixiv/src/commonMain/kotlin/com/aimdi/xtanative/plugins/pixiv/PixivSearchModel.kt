@@ -88,7 +88,7 @@ internal class PixivSearchModel(private val runtime: PixivRuntime, private val s
         if (quiet) return
         suggesting = scope.launch {
             delay(DEBOUNCE_MS)
-            val tags = runCatching { runtime.searchApi.autocomplete(word) }.getOrNull() ?: return@launch
+            val tags = catchingFailures { runtime.searchApi.autocomplete(word) }.getOrNull() ?: return@launch
             if (mutable.value.typed == text) mutable.update { it.copy(suggestions = tags) }
         }
     }

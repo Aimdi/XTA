@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Vlastní server Pixivu</string>
     <string name="image_host_privacy">Zrcadlo nebo váš server vidí každý obrázek, který otevřete, včetně R-18, i vaši IP adresu.</string>
     <string name="image_host_reset">Obnovit výchozí</string>
+    <string name="in_home_feed">Zobrazit na domovské časové ose</string>
+    <string name="in_home_feed_description">Přimíchá nová díla autorů, které tu sledujete, do Sledovaných a Pro vás</string>
     <string name="info_copied">Informace zkopírovány</string>
     <string name="link_copied">Odkaz zkopírován</string>
     <string name="manage_account">Spravovat účet na pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G týdenní</string>
     <string name="read_horizontally">Číst vodorovně</string>
     <string name="read_vertically">Číst svisle</string>
+    <string name="reader_right_to_left">Číst zprava doleva</string>
+    <string name="reader_right_to_left_description">Stránky mangy se při přejetí otáčejí po japonsku: další stránka přijde zleva a ← jde dál</string>
     <string name="recommended_empty">Teď nic doporučeného — potáhněte pro obnovení</string>
     <string name="recommended_users">Navrhovaní tvůrci</string>
     <string name="recommended_users_empty">Teď žádní navrhovaní tvůrci</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">Zobrazit díla R-18</string>
     <string name="show_r18_description">Ve výchozím stavu vypnuto. Když je vypnuto, omezená díla se ve feedech skrývají.</string>
     <string name="sign_in">Přihlásit se přes Pixiv</string>
+    <string name="sign_in_browser_intro">Přihlašovací stránka Pixivu se otevře v prohlížeči. Po přihlášení se prohlížeč zeptá, zda smí otevřít XTA: povolte to a budete přihlášeni i tady.</string>
+    <string name="sign_in_expired">Toto přihlášení vypršelo. Otevřete přihlašovací stránku Pixivu znovu.</string>
     <string name="sign_in_failed">Nepodařilo se přihlásit k Pixiv</string>
-    <string name="sign_in_needs_android">Přihlášení zde vyžaduje vestavěný prohlížeč aplikace pro Android, který desktopová aplikace nemá.</string>
+    <string name="sign_in_no_code">Není v tom žádný přihlašovací kód</string>
+    <string name="sign_in_open_browser">Otevřít přihlašovací stránku Pixivu</string>
+    <string name="sign_in_paste_hint">Vložte adresu pixiv://… nebo kód</string>
+    <string name="sign_in_paste_steps">Před přihlášením otevřete vývojářské nástroje prohlížeče (F12) na kartě Síť. Po přihlášení najděte adresu začínající pixiv://account/login, zkopírujte ji a hned ji sem vložte: její kód platí jen asi 30 sekund.</string>
+    <string name="sign_in_paste_title">Pokud prohlížeč přihlášení nevrátí</string>
+    <string name="sign_in_paste_use">Přihlásit se tímto kódem</string>
+    <string name="sign_in_to_see">Pixiv tohle ukazuje jen přihlášeným čtenářům.</string>
+    <string name="sign_in_waiting">Čeká se na Pixiv… Přihlaste se v prohlížeči.</string>
     <string name="sign_out">Odhlásit se</string>
     <string name="sign_out_named">Odhlásit účet %1$s?</string>
     <string name="sign_out_question">Odhlásit se z Pixivu?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Právě populární</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Zachová všechny barvy, soubor bude větší. Kódování může trvat minutu</string>
     <string name="ugoira_encoding">Kóduje se snímek %1$d z %2$d…</string>
     <string name="ugoira_export_failed">Animaci se nepodařilo uložit</string>
     <string name="ugoira_fetching">Načítají se snímky…</string>
     <string name="ugoira_pause">Pozastavit animaci</string>
     <string name="ugoira_play">Přehrát animaci</string>
+    <string name="ugoira_save_apng">Uložit jako APNG</string>
     <string name="ugoira_save_gif">Uložit jako GIF</string>
     <string name="ugoira_save_zip">Uložit snímky jako ZIP</string>
+    <string name="ugoira_saved_apng">Animace uložena jako APNG</string>
     <string name="ugoira_saved_gif">Animace uložena jako GIF</string>
     <string name="ugoira_saved_zip">Snímky uloženy jako ZIP</string>
     <string name="ugoira_saving">Ukládá se…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Zrušit ztlumení</string>
     <string name="unmute_question">Zrušit ztlumení %1$s?</string>
     <string name="viewing_section">Zobrazení</string>
-    <string name="walkthrough_sign_in">Pro otevření díla se přihlaste</string>
     <string name="walkthrough_title">Oblíbené na Pixivu</string>
     <string name="watchlist_add">Přidat do sledovaných</string>
     <string name="watchlist_empty">Zde se objeví série mangy, které přidáte do sledovaných</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Aktualizováno %1$s</string>
     <string name="watchlist_view_latest">Zobrazit nejnovější</string>
     <plurals name="works_count"><item quantity="one">%2$s dílo</item><item quantity="few">%2$s díla</item><item quantity="many">%2$s díla</item><item quantity="other">%2$s děl</item></plurals>
+    <string name="settings_intro_desktop">Tento soukromý plugin čte Pixiv jako galerii: ilustrace, manga, romány, žebříčky, vaše záložky a vyhledávání. Klikněte na Přihlásit a přihlaste se účtem Pixiv v prohlížeči, nebo níže vložte refresh token. Do vašeho účtu Pixiv se odesílají jen záložky, sledování a změny sledovaných sérií, které sami provedete. Odtud se nikdy nic nepublikuje, nekomentuje ani nenahlašuje.</string>
+    <string name="columns_portrait_desktop">Sloupce mřížky ve vysokých oknech</string>
+    <string name="columns_landscape_desktop">Sloupce mřížky v širokých oknech</string>
+    <string name="swipe_works_desktop">Přecházet mezi díly</string>
+    <string name="swipe_works_description_desktop">Posouvejte do strany na další dílo v seznamu. U děl s více stránkami pokračujte za první nebo poslední stránku.</string>
+    <string name="reader_right_to_left_description_desktop">Stránky mangy se otáčejí japonsky: další stránka přichází zleva a ← jde dál</string>
 </resources>

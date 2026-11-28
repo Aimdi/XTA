@@ -70,6 +70,7 @@ import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.saved.SavedIcons
+import kotlinx.coroutines.delay
 
 /** A work's screen: alone, or as one page of a pager over the list it was opened from. */
 @Composable
@@ -82,7 +83,11 @@ internal fun PixivWorkScreen(route: PixivRoute.Work) {
     }
 }
 
-/** A work opened from a list, in a sideways pager over its neighbours; past the last one the list's next page loads. */
+/**
+ * A work opened from a list, in a sideways pager over its neighbours; past
+ * the last one the list's next page loads. A work is read once the pager
+ * rests on it, and only the works near it keep what was read.
+ */
 @Composable
 private fun WorkPager(handoff: PixivWorkHandoff) {
     val runtime = LocalPixiv.current
@@ -91,10 +96,15 @@ private fun WorkPager(handoff: PixivWorkHandoff) {
     val tail by model.tail.collectAsState()
     val pages = works.size + if (tail == PixivPagerTail.NONE) 0 else 1
     val pager = rememberPagerState(initialPage = handoff.index) { pages }
+    val models = rememberKept("pixiv-pager-works") { scope -> PixivPagerWorks(scope) { own, work -> PixivWorkModel(runtime, own, work.id, work, autoStart = false) } }
     LaunchedEffect(pager.currentPage, works.size) { model.near(pager.currentPage) }
+    LaunchedEffect(pager.settledPage, works) {
+        if (models.settledOnce) delay(PixivPagerWorks.SETTLE_MILLIS)
+        models.settle(works.map { it.id }, pager.settledPage)
+    }
     HorizontalPager(pager, key = { works.getOrNull(it)?.id ?: -1L }, beyondViewportPageCount = 0) { page ->
         val work = works.getOrNull(page)
-        if (work != null) WorkPage(work.id, work) else PagerTailPage(tail, model::loadMore)
+        if (work != null) WorkPage(work.id, work, models.model(work)) else PagerTailPage(tail, model::loadMore)
     }
 }
 
@@ -115,9 +125,9 @@ private fun PagerTailPage(tail: PixivPagerTail, onRetry: () -> Unit) {
 
 /** One work: behind its notice while muted, else its pages, details, the creator's other works and related works. */
 @Composable
-internal fun WorkPage(id: Long, seed: PixivIllust?) {
+internal fun WorkPage(id: Long, seed: PixivIllust?, held: PixivWorkModel? = null) {
     val runtime = LocalPixiv.current
-    val model = rememberKept("pixiv-work-$id") { scope -> PixivWorkModel(runtime, scope, id, seed) }
+    val model = held ?: rememberKept("pixiv-work-$id") { scope -> PixivWorkModel(runtime, scope, id, seed) }
     val state by model.state.collectAsState()
     val illust = state.illust
     if (illust == null) {
@@ -294,6 +304,7 @@ private fun DetailGrid(
     val works = remember(related.items, mutes) { mutes.filter(related.items) }
     val grid = rememberLazyStaggeredGridState()
     ReadsAhead(grid, related) { model.related.more() }
+    TellsFailedRefresh(model.related.refreshFailures)
     PullToRefreshBox(isRefreshing = related.loading && related.items.isNotEmpty(), onRefresh = model::load, modifier = Modifier.fillMaxSize()) {
         BoxWithConstraints(Modifier.fillMaxSize()) {
             LazyVerticalStaggeredGrid(
@@ -306,7 +317,12 @@ private fun DetailGrid(
             ) {
                 top()
                 item(key = "meta", span = StaggeredGridItemSpan.FullLine) { WorkMeta(illust, state, surface) }
-                if (state.authorWorks.isNotEmpty()) item(key = "author", span = StaggeredGridItemSpan.FullLine) { AuthorWorks(illust, state.authorWorks) }
+                when {
+                    state.authorWorks.isNotEmpty() -> item(key = "author", span = StaggeredGridItemSpan.FullLine) { AuthorWorks(illust, state.authorWorks) }
+                    state.authorWorksError != null -> item(key = "author", span = StaggeredGridItemSpan.FullLine) {
+                        AuthorWorksProblem(illust, state.authorWorksError, model::retryAuthorWorks)
+                    }
+                }
                 relatedWorks(works, related, state, runtime, model)
             }
         }
@@ -380,6 +396,8 @@ internal class WorkSurface(private val model: PixivWorkModel, private val runtim
     override val offersVertical: Boolean get() = true
 
     override fun showPage(page: Int) = model.showPage(page)
+
+    fun retrySeries() = model.retrySeries()
 
     override fun changeDirection() = openReader(page, vertical = true)
 

@@ -81,6 +81,17 @@ class StoreListingTest {
     }
 
     @Test
+    fun theStoreKnowsWhenPrivatePluginsItWouldOfferAreHidden() {
+        val catalogue = catalogue(entry("pixiv", PluginCategory.ART, isPrivate = true), entry("reddit", PluginCategory.SOCIAL))
+        val hidden = { showPrivate: Boolean, mine: List<InstalledPlugin> -> hidesPrivate(catalogue, mine.associateBy { it.id }, desktop, api, showPrivate) }
+        assertTrue(hidden(false, emptyList()))
+        assertEquals(false, hidden(true, emptyList()), "shown already")
+        assertEquals(false, hidden(false, listOf(installed("pixiv", category = PluginCategory.ART))), "the private one is installed")
+        assertEquals(false, hidesPrivate(catalogue(entry("pixiv", PluginCategory.ART, isPrivate = true, available = false)), emptyMap(), desktop, api, false), "held back either way")
+        assertEquals(false, hidesPrivate(null, emptyMap(), desktop, api, false))
+    }
+
+    @Test
     fun aPluginForANewerApiNeedsANewerAppAndOneForAnApiThisAppNoLongerLoadsIsNotOffered() {
         val app = PluginApi(2, 3)
         val catalogue = catalogue(entry("newer", apiVersion = 4), entry("current", apiVersion = 3), entry("older", apiVersion = 1))

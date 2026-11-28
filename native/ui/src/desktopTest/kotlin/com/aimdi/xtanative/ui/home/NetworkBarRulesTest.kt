@@ -1,6 +1,14 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
+import com.aimdi.xtanative.ui.plugins.PluginBarContent
 import com.aimdi.xtanative.ui.plugins.PluginClientBar
+import com.aimdi.xtanative.ui.plugins.PluginHomeTab
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -38,5 +46,21 @@ class NetworkBarRulesTest {
         assertEquals("page:hackernews", NetworkBarRules.owner(BarPage.Network("hackernews")))
         takeover.show(NetworkBarRules.FEED, null, null)
         assertNull(takeover.on(BarPage.Feed))
+    }
+
+    @Test
+    fun aNetworkReadAsOneOfSeveralColumnsKeepsItsSectionsOffHomesBar() {
+        val takeover = NetworkBarTakeover()
+        takeover.show(NetworkBarRules.FEED, "pixiv", handed(4), inColumn = true)
+        assertEquals("pixiv", takeover.on(BarPage.Feed)?.network, "the column draws them under itself")
+        assertNull(takeover.onBar(BarPage.Feed), "not across every column of Home")
+        takeover.show(NetworkBarRules.FEED, "pixiv", handed(4))
+        assertEquals("pixiv", takeover.onBar(BarPage.Feed)?.network, "read alone, the sections are Home's bar")
+    }
+
+    private fun handed(sections: Int): PluginClientBar = PluginClientBar().apply {
+        val tabs = List(sections) { PluginHomeTab(Icons.Filled.Home, "s$it", it == 0, {}) }
+        val none: @Composable RowScope.() -> Unit = {}
+        content = PluginBarContent(mutableStateOf(tabs), mutableStateOf<Color?>(null), mutableStateOf(none))
     }
 }

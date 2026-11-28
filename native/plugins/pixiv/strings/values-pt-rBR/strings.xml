@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Servidor do próprio Pixiv</string>
     <string name="image_host_privacy">Um espelho ou seu próprio servidor vê cada imagem que você abre, incluindo as R-18, e seu endereço IP.</string>
     <string name="image_host_reset">Restaurar o padrão</string>
+    <string name="in_home_feed">Mostrar na linha do tempo inicial</string>
+    <string name="in_home_feed_description">Mistura as obras novas dos criadores que você segue aqui em Seguindo e Para você</string>
     <string name="info_copied">Informações copiadas</string>
     <string name="link_copied">Link copiado</string>
     <string name="manage_account">Gerenciar a conta em pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G semanal</string>
     <string name="read_horizontally">Ler na horizontal</string>
     <string name="read_vertically">Ler na vertical</string>
+    <string name="reader_right_to_left">Ler da direita para a esquerda</string>
+    <string name="reader_right_to_left_description">As páginas de mangá viram no estilo japonês ao deslizar: a próxima página entra pela esquerda e ← avança</string>
     <string name="recommended_empty">Nada recomendado no momento — puxe para atualizar</string>
     <string name="recommended_users">Criadores sugeridos</string>
     <string name="recommended_users_empty">Nenhum criador sugerido no momento</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">Mostrar obras R-18</string>
     <string name="show_r18_description">Desativado por padrão. Quando desativado, obras restritas ficam ocultas nos feeds.</string>
     <string name="sign_in">Entrar com Pixiv</string>
+    <string name="sign_in_browser_intro">A página de login do Pixiv abre no seu navegador. Depois de entrar, o navegador pede para abrir o XTA: permita e você estará conectado aqui.</string>
+    <string name="sign_in_expired">Este login expirou. Abra a página de login do Pixiv de novo.</string>
     <string name="sign_in_failed">Não foi possível entrar no Pixiv</string>
-    <string name="sign_in_needs_android">Entrar aqui exige o navegador integrado do app para Android, que o app para computador não tem.</string>
+    <string name="sign_in_no_code">Isso não tem nenhum código de login</string>
+    <string name="sign_in_open_browser">Abrir a página de login do Pixiv</string>
+    <string name="sign_in_paste_hint">Cole o endereço pixiv://… ou o código</string>
+    <string name="sign_in_paste_steps">Antes de entrar, abra as ferramentas de desenvolvedor do navegador (F12) na aba Rede. Depois de entrar, encontre o endereço que começa com pixiv://account/login, copie e cole aqui na hora: o código vale só uns 30 segundos.</string>
+    <string name="sign_in_paste_title">Se o navegador não devolver o login</string>
+    <string name="sign_in_paste_use">Entrar com este código</string>
+    <string name="sign_in_to_see">O Pixiv só mostra isto para quem está conectado.</string>
+    <string name="sign_in_waiting">Aguardando o Pixiv… Entre no seu navegador.</string>
     <string name="sign_out">Sair</string>
     <string name="sign_out_named">Sair da conta %1$s?</string>
     <string name="sign_out_question">Sair do Pixiv?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Em alta agora</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Mantém todas as cores, em um arquivo maior. A codificação pode levar um minuto</string>
     <string name="ugoira_encoding">Codificando quadro %1$d de %2$d…</string>
     <string name="ugoira_export_failed">Não foi possível salvar a animação</string>
     <string name="ugoira_fetching">Buscando quadros…</string>
     <string name="ugoira_pause">Pausar animação</string>
     <string name="ugoira_play">Reproduzir animação</string>
+    <string name="ugoira_save_apng">Salvar como APNG</string>
     <string name="ugoira_save_gif">Salvar como GIF</string>
     <string name="ugoira_save_zip">Salvar quadros como ZIP</string>
+    <string name="ugoira_saved_apng">Animação salva como APNG</string>
     <string name="ugoira_saved_gif">Animação salva como GIF</string>
     <string name="ugoira_saved_zip">Quadros salvos como ZIP</string>
     <string name="ugoira_saving">Salvando…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Desfazer silêncio</string>
     <string name="unmute_question">Desfazer o silêncio de %1$s?</string>
     <string name="viewing_section">Visualização</string>
-    <string name="walkthrough_sign_in">Entre para abrir esta obra</string>
     <string name="walkthrough_title">Popular no Pixiv</string>
     <string name="watchlist_add">Adicionar à lista de acompanhamento</string>
     <string name="watchlist_empty">As séries de mangá que você adicionar à lista de acompanhamento aparecem aqui</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Atualizada %1$s</string>
     <string name="watchlist_view_latest">Ver o mais recente</string>
     <plurals name="works_count"><item quantity="one">%2$s obra</item><item quantity="other">%2$s obras</item></plurals>
+    <string name="settings_intro_desktop">Este plugin privado lê o Pixiv como um app de galeria: ilustrações, mangás, romances, rankings, seus favoritos e busca. Clique em Entrar para fazer login com a conta Pixiv no navegador, ou cole um token de atualização abaixo. Só os favoritos, as contas seguidas e as mudanças na lista de acompanhamento que você fizer vão para a sua conta Pixiv. Daqui nada é postado, comentado ou denunciado, nunca.</string>
+    <string name="columns_portrait_desktop">Colunas da grade em janelas altas</string>
+    <string name="columns_landscape_desktop">Colunas da grade em janelas largas</string>
+    <string name="swipe_works_desktop">Passar entre obras</string>
+    <string name="swipe_works_description_desktop">Role para o lado até a próxima obra da lista. Em obras com várias páginas, continue rolando além da primeira ou da última página.</string>
+    <string name="reader_right_to_left_description_desktop">As páginas de mangá viram do jeito japonês: a próxima entra pela esquerda e ← avança</string>
 </resources>

@@ -1009,7 +1009,7 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, opens: FrameO
         val kind = if (home == null) FrameKind.NONE else HomeWide.frame(maxWidth.value, rail = true)
         val viewer = visible.any { it.destination.route in FULL_WINDOW }
         val deckFits = DeckGroups.fits(maxWidth.value, minOf(maxWidth, maxHeight).value)
-        val screens = stack.map { entry -> FrameRoute(entry.destination.route, entry.text("id")?.takeIf { entry.destination.route == Routes.GROUP }) }
+        val screens = stack.map { entry -> FrameRoute(entry.destination.route, entry.text("id")?.takeIf { entry.destination.route == Routes.GROUP }, pluginOf(entry)) }
         val opened = remember { FrameRoots() }
         val calls = remember(nav, frame, routes, leaveRow) { frameCalls(nav, frame, routes, leaveRow, opened) }
         val railMenu = menu && kind == FrameKind.RAIL
@@ -1147,6 +1147,10 @@ private fun FindsInSettings(nav: NavHostController) {
 }
 
 private fun NavHostController.hasRoute(route: String): Boolean = runCatching { graph.findNode(route) != null }.getOrDefault(false)
+
+/** The plugin whose own page [entry] is (not its settings, which belong to the store); null for the app's screens. */
+private fun pluginOf(entry: NavBackStackEntry): String? =
+    entry.text("pluginId")?.takeIf { entry.destination.route.let { it != null && it.startsWith("plugin/") && it != PluginRoutes.SETTINGS } }
 
 /** A route's text argument; null where the route has none. */
 private fun NavBackStackEntry.text(name: String): String? = arguments?.read { getStringOrNull(name) }

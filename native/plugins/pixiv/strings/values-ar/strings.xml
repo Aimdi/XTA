@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">خادم Pixiv نفسه</string>
     <string name="image_host_privacy">ترى المرآة أو خادمك الخاص كل صورة تفتحها، بما فيها صور R-18، وعنوان IP الخاص بك.</string>
     <string name="image_host_reset">استعادة الافتراضي</string>
+    <string name="in_home_feed">العرض في الخط الزمني الرئيسي</string>
+    <string name="in_home_feed_description">يمزج الأعمال الجديدة للمبدعين الذين تتابعهم هنا في «المتابَعون» و«لك»</string>
     <string name="info_copied">تم نسخ المعلومات</string>
     <string name="link_copied">تم نسخ الرابط</string>
     <string name="manage_account">إدارة الحساب على pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G أسبوعي</string>
     <string name="read_horizontally">القراءة أفقيًا</string>
     <string name="read_vertically">القراءة عموديًا</string>
+    <string name="reader_right_to_left">القراءة من اليمين إلى اليسار</string>
+    <string name="reader_right_to_left_description">تُقلب صفحات المانغا على الطريقة اليابانية عند السحب: تأتي الصفحة التالية من اليسار، ومفتاح ← يتقدّم</string>
     <string name="recommended_empty">لا توصيات حالياً — اسحب للتحديث</string>
     <string name="recommended_users">مبدعون مقترَحون</string>
     <string name="recommended_users_empty">لا مبدعين مقترَحين حالياً</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">إظهار أعمال R-18</string>
     <string name="show_r18_description">إيقاف افتراضيًا. عند الإيقاف تُخفى الأعمال المقيّدة من الخلاصات.</string>
     <string name="sign_in">تسجيل الدخول عبر Pixiv</string>
+    <string name="sign_in_browser_intro">تُفتح صفحة تسجيل الدخول إلى Pixiv في متصفحك. بعد تسجيل الدخول يطلب المتصفح فتح XTA: اسمح بذلك وستكون مسجَّل الدخول هنا.</string>
+    <string name="sign_in_expired">انتهت صلاحية تسجيل الدخول هذا. افتح صفحة تسجيل الدخول إلى Pixiv مرة أخرى.</string>
     <string name="sign_in_failed">تعذّر تسجيل الدخول إلى Pixiv</string>
-    <string name="sign_in_needs_android">يتطلب تسجيل الدخول هنا المتصفح المدمج في تطبيق Android، وهو غير متوفر في تطبيق سطح المكتب.</string>
+    <string name="sign_in_no_code">لا يحتوي هذا على رمز تسجيل دخول</string>
+    <string name="sign_in_open_browser">فتح صفحة تسجيل الدخول إلى Pixiv</string>
+    <string name="sign_in_paste_hint">الصق عنوان pixiv://… أو الرمز</string>
+    <string name="sign_in_paste_steps">قبل تسجيل الدخول، افتح أدوات المطوّرين في المتصفح (F12) على تبويب «الشبكة». بعد تسجيل الدخول، ابحث عن العنوان الذي يبدأ بـ pixiv://account/login وانسخه والصقه هنا فورًا: رمزه صالح لنحو 30 ثانية فقط.</string>
+    <string name="sign_in_paste_title">إن لم يُعِد المتصفح تسجيل الدخول</string>
+    <string name="sign_in_paste_use">تسجيل الدخول بهذا الرمز</string>
+    <string name="sign_in_to_see">لا يعرض Pixiv هذا إلا للقرّاء المسجَّلين.</string>
+    <string name="sign_in_waiting">في انتظار Pixiv… سجّل الدخول في متصفحك.</string>
     <string name="sign_out">تسجيل الخروج</string>
     <string name="sign_out_named">هل تريد تسجيل خروج %1$s؟</string>
     <string name="sign_out_question">هل تريد تسجيل الخروج من Pixiv؟</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">الرائج الآن</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">تُحفظ كل الألوان، في ملف أكبر. قد يستغرق الترميز دقيقة</string>
     <string name="ugoira_encoding">جارٍ ترميز الإطار %1$d من %2$d…</string>
     <string name="ugoira_export_failed">تعذّر حفظ الرسوم المتحركة</string>
     <string name="ugoira_fetching">جارٍ جلب الإطارات…</string>
     <string name="ugoira_pause">إيقاف الرسم المتحرك مؤقتًا</string>
     <string name="ugoira_play">تشغيل الرسم المتحرك</string>
+    <string name="ugoira_save_apng">حفظ بصيغة APNG</string>
     <string name="ugoira_save_gif">حفظ بصيغة GIF</string>
     <string name="ugoira_save_zip">حفظ الإطارات بصيغة ZIP</string>
+    <string name="ugoira_saved_apng">حُفظت الحركة بصيغة APNG</string>
     <string name="ugoira_saved_gif">حُفظت الرسوم المتحركة بصيغة GIF</string>
     <string name="ugoira_saved_zip">حُفظت الإطارات بصيغة ZIP</string>
     <string name="ugoira_saving">جارٍ الحفظ…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">إلغاء الكتم</string>
     <string name="unmute_question">هل تريد إلغاء كتم %1$s؟</string>
     <string name="viewing_section">العرض</string>
-    <string name="walkthrough_sign_in">سجّل الدخول لفتح هذا العمل</string>
     <string name="walkthrough_title">الرائج على Pixiv</string>
     <string name="watchlist_add">إضافة إلى قائمة المتابعة</string>
     <string name="watchlist_empty">تظهر هنا سلاسل المانجا التي تضيفها إلى قائمة المتابعة</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">آخر تحديث %1$s</string>
     <string name="watchlist_view_latest">عرض الأحدث</string>
     <plurals name="works_count"><item quantity="zero">لا أعمال</item><item quantity="one">عمل واحد</item><item quantity="two">عملان</item><item quantity="few">%2$s أعمال</item><item quantity="many">%2$s عملًا</item><item quantity="other">%2$s عمل</item></plurals>
+    <string name="settings_intro_desktop">تقرأ هذه الإضافة الخاصة Pixiv كتطبيق معرض: الرسوم والمانجا والروايات والترتيب وإشاراتك المرجعية والبحث. انقر على تسجيل الدخول لتسجيل الدخول بحساب Pixiv في المتصفح، أو الصق رمز التحديث أدناه. لا يُرسَل إلى حسابك على Pixiv إلا ما تُجريه بنفسك من إشارات ومتابعات وتغييرات على قائمة المتابعة. ولا يُنشَر من هنا أي شيء ولا يُعلَّق عليه ولا يُبلَّغ عنه أبدًا.</string>
+    <string name="columns_portrait_desktop">أعمدة الشبكة في النوافذ الطويلة</string>
+    <string name="columns_landscape_desktop">أعمدة الشبكة في النوافذ العريضة</string>
+    <string name="swipe_works_desktop">التنقل بين الأعمال</string>
+    <string name="swipe_works_description_desktop">مرّر جانبيًا إلى العمل التالي في القائمة. في الأعمال متعددة الصفحات، تابع التمرير بعد الصفحة الأولى أو الأخيرة.</string>
+    <string name="reader_right_to_left_description_desktop">تُقلب صفحات المانجا على الطريقة اليابانية: تأتي الصفحة التالية من اليسار، ويتقدم ← للأمام</string>
 </resources>

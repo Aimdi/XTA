@@ -177,8 +177,10 @@ class DesktopKeysTest {
     }
 
     @Test
-    fun onTheFirstScreenTheMouseBackButtonClosesTheAppAndTheKeysDoNothing() {
-        assertEquals(DeskAction.LEAVE_APP, DesktopKeys.mouseBack(canGoBack = false, somethingOpen = false))
+    fun onTheFirstScreenTheMouseBackButtonGoesHomeNeverQuitsAndTheKeysDoNothing() {
+        assertEquals(DeskAction.GO_HOME, DesktopKeys.mouseBack(canGoBack = false, somethingOpen = false))
+        assertEquals(DeskAction.LEAVE_APP, DesktopKeys.mouseBack(canGoBack = false, somethingOpen = false, ownWindow = true), "a post's own window closes")
+        assertEquals(DeskAction.BACK, DesktopKeys.mouseBack(canGoBack = true, somethingOpen = false, ownWindow = true))
         assertEquals(DeskAction.CLOSE, DesktopKeys.mouseBack(canGoBack = false, somethingOpen = true))
         assertEquals(DeskAction.BACK, DesktopKeys.mouseBack(canGoBack = true, somethingOpen = false))
         assertEquals(DeskAction.NONE, action(DeskKey.ESCAPE, canGoBack = false))

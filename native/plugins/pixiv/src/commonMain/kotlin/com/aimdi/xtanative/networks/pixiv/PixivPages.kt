@@ -12,6 +12,13 @@ object PixivPages {
     const val EMPTY_PAGE_ADVANCE_LIMIT = 5
 
     /**
+     * What one read the reader waits on may spend in all: every page
+     * [visiblePage] reads past, a token refresh and a retry included. Past
+     * it the read is a timeout, not a minute or more of spinner.
+     */
+    const val READ_BUDGET_MILLIS = 20_000L
+
+    /**
      * The page at [next] (the first when null) as [visible] leaves it, moving
      * on while the filters empty it and the list goes on. Without this a list
      * shows nothing yet never scrolls far enough to ask for more.

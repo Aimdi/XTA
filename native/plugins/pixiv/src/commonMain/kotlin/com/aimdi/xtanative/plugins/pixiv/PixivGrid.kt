@@ -2,6 +2,7 @@ package com.aimdi.xtanative.plugins.pixiv
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,18 +63,21 @@ import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.common.GridSkeleton
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ReportsReadingScroll
 import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 
-/** How many columns a works grid [width] × [height] dp gets, as the reader's settings for the orientation and the text size ask. */
+/** How many columns a works grid [width] × [height] dp gets, as the reader's settings for the orientation and the text size ask (on the desktop, the text size scales the tiles). */
 @Composable
 internal fun gridColumns(width: Float, height: Float): Int {
     val settings = pixivSettings()
     val density = LocalDensity.current
-    return PixivLayout.columns(width, PixivLayout.picked(settings, landscape = width > height), largeText = density.fontScale > 1.4f)
+    val picked = PixivLayout.picked(settings, landscape = width > height)
+    if (PluginPlatform.isDesktop) return PixivLayout.desktopColumns(width, picked, density.fontScale)
+    return PixivLayout.columns(width, picked, largeText = density.fontScale > 1.4f)
 }
 
 /**
@@ -94,6 +98,7 @@ internal fun PixivWorksGrid(
     mutes: (PixivMutes) -> PixivMutes = { it },
     hideMuted: Boolean = true,
     tile: (@Composable (works: List<PixivIllust>, index: Int) -> Unit)? = null,
+    takeKeys: Boolean = true,
     header: LazyStaggeredGridScope.() -> Unit = {},
 ) {
     val runtime = LocalPixiv.current
@@ -101,25 +106,36 @@ internal fun PixivWorksGrid(
     val current = pixivMutes()
     val shown = remember(state.items, current, hideMuted) { if (hideMuted) mutes(current).filter(state.items) else state.items }
     val grid = rememberLazyStaggeredGridState()
+    val sheets = LocalPixivSheets.current
+    val mark = remember { GridMark() }
     ReportsReadingScroll(grid)
     LaunchedEffect(list) { list.ensure() }
     GridToTop(grid, toTop)
     RefreshesOn(refresh) { list.refresh() }
     ReadsAhead(grid, state) { list.more() }
+    TellsFailedRefresh(list.refreshFailures)
     PullToRefreshBox(isRefreshing = state.loading && state.items.isNotEmpty(), onRefresh = list::refresh, modifier = modifier.fillMaxSize()) {
         BoxWithConstraints(Modifier.fillMaxSize()) {
+            val columns = gridColumns(maxWidth.value, maxHeight.value)
+            val ids = remember(shown) { shown.map { it.id } }
             LazyVerticalStaggeredGrid(
-                columns = StaggeredGridCells.Fixed(gridColumns(maxWidth.value, maxHeight.value)),
+                columns = StaggeredGridCells.Fixed(columns),
                 state = grid,
                 contentPadding = padding.plus(4.dp),
                 verticalItemSpacing = 8.dp,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().worksGridKeys(
+                    grid, ids, columns, mark, takeKeys,
+                    onOpen = { index -> runtime.openWork(shown, index, list) },
+                    onMenu = { index -> shown.getOrNull(index)?.let { sheets.show(PixivSheet.WorkActions(it) { runtime.openWork(shown, index, list) }) } },
+                ),
             ) {
                 header()
-                pagedState(state, shown.isEmpty(), empty, onRetry = list::refresh)
-                itemsIndexed(shown, key = { _, illust -> "work-" + illust.id }) { index, illust ->
-                    if (tile != null) tile(shown, index) else WorkTile(illust, onOpen = { runtime.openWork(shown, index, list) })
+                pagedState(state, shown.isEmpty(), empty, onRetry = list::refresh, columns = columns, retryEmpty = list.offersRetry)
+                itemsIndexed(shown, key = { _, illust -> "work-" + illust.id }, contentType = { _, _ -> "work" }) { index, illust ->
+                    Box(if (mark.id.value == illust.id) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp)).padding(2.dp) else Modifier) {
+                        if (tile != null) tile(shown, index) else WorkTile(illust, onOpen = { runtime.openWork(shown, index, list) })
+                    }
                 }
                 pagedFooter(state, list::retryMore)
             }
@@ -127,18 +143,25 @@ internal fun PixivWorksGrid(
     }
 }
 
-/** A list's first load (XTA's grid bones, two across), failure or emptiness, across the whole grid. */
-internal fun <T> LazyStaggeredGridScope.pagedState(state: PixivListState<T>, nothingShown: Boolean, empty: String, onRetry: () -> Unit) {
+/** A list's first load (XTA's grid bones, as many across as the grid's [columns]), failure or emptiness, across the whole grid. */
+internal fun <T> LazyStaggeredGridScope.pagedState(
+    state: PixivListState<T>,
+    nothingShown: Boolean,
+    empty: String,
+    onRetry: () -> Unit,
+    columns: Int = 2,
+    retryEmpty: Boolean = true,
+) {
     when {
-        state.items.isEmpty() && state.error != null -> item(key = "state", span = StaggeredGridItemSpan.FullLine) { PixivProblem(state.error, onRetry) }
-        state.waiting -> item(key = "state", span = StaggeredGridItemSpan.FullLine) { GridSkeleton(columns = 2) }
-        nothingShown && state.loaded && !state.loading -> item(key = "state", span = StaggeredGridItemSpan.FullLine) { PixivEmpty(empty, onRetry) }
+        state.items.isEmpty() && state.error != null -> item(key = "state", contentType = "state", span = StaggeredGridItemSpan.FullLine) { PixivProblem(state.error, onRetry) }
+        state.waiting -> item(key = "state", contentType = "state", span = StaggeredGridItemSpan.FullLine) { GridSkeleton(count = columns * 3, columns = columns) }
+        nothingShown && state.loaded && !state.loading -> item(key = "state", contentType = "state", span = StaggeredGridItemSpan.FullLine) { PixivEmpty(empty, onRetry.takeIf { retryEmpty }) }
     }
 }
 
 /** The next page's spinner, or Retry after it failed. */
 internal fun <T> LazyStaggeredGridScope.pagedFooter(state: PixivListState<T>, onRetry: () -> Unit) {
-    item(key = "footer", span = StaggeredGridItemSpan.FullLine) {
+    item(key = "footer", contentType = "footer", span = StaggeredGridItemSpan.FullLine) {
         when {
             state.loadingMore -> LoadingRow()
             state.moreFailed -> Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {

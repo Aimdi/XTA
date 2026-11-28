@@ -10,6 +10,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivNovelApi
 import com.aimdi.xtanative.networks.pixiv.PixivSearchApi
 import com.aimdi.xtanative.networks.pixiv.PixivSocialApi
 import com.aimdi.xtanative.networks.pixiv.PixivUser
+import com.aimdi.xtanative.networks.pixiv.PixivWeb
 import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.PixivPrefs
@@ -63,6 +64,10 @@ internal class PixivRuntime(val host: PluginHost) {
         appInForce = { PixivApp.published(host.repairs.value) },
     )
 
+    init {
+        PixivWeb.published = { host.repairs.value }
+    }
+
     val discovery = PixivDiscoveryApi(client)
     val searchApi = PixivSearchApi(client)
     val social = PixivSocialApi(client)
@@ -89,6 +94,15 @@ internal class PixivRuntime(val host: PluginHost) {
     val revealedComments: StateFlow<Set<Long>> = revealed.asStateFlow()
 
     fun revealComment(id: Long) = revealed.update { it + id }
+
+    /** A sign-in in the reader's browser, waiting for the code Pixiv hands back (the desktop has no web view). */
+    val browserSignIn = PixivBrowserSignIn()
+
+    /** The first pages every surface shows alike, kept a while for all of them. */
+    val firstPages = PixivFirstPages()
+
+    /** [name]'s key among [firstPages] for the account and choices in use now, so one account's pages never show under another. */
+    fun firstPageKey(name: String): String = name + "|" + PixivSessionKey.of(settings.now)
 
     /** What a screen hands the next one it opens (the work as its list had it, the list itself), by key. */
     val shelf = PixivShelf()
@@ -197,7 +211,7 @@ internal class PixivRuntime(val host: PluginHost) {
     /**
      * The creators followed here in the groups that hold them (pixiv_group.dart's
      * loadPixivGroupPosts): each one's newest works, those muted left out, those
-     * with a date. Home's timelines have no switch for them in XTA.
+     * with a date; Home's timelines take them while the settings' switch is on.
      */
     val feed: PluginFeed = object : PluginFeed() {
         override suspend fun followed(): List<String> = PixivFollows.of(settings.load()).map { "${it.id}" }

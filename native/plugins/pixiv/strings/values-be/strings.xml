@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Уласны сервер Pixiv</string>
     <string name="image_host_privacy">Люстэрка або ваш сервер бачыць кожную выяву, якую вы адкрываеце, у тым ліку R-18, і ваш IP-адрас.</string>
     <string name="image_host_reset">Скінуць да прадвызначанага</string>
+    <string name="in_home_feed">Паказваць у хатняй стужцы</string>
+    <string name="in_home_feed_description">Дамешвае новыя працы аўтараў, за якімі вы сочыце тут, у «Падпіскі» і «Для вас»</string>
     <string name="info_copied">Звесткі скапіяваны</string>
     <string name="link_copied">Спасылка скапіявана</string>
     <string name="manage_account">Кіраваць уліковым запісам на pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G тыднёвы</string>
     <string name="read_horizontally">Чытаць гарызантальна</string>
     <string name="read_vertically">Чытаць вертыкальна</string>
+    <string name="reader_right_to_left">Чытаць справа налева</string>
+    <string name="reader_right_to_left_description">Старонкі мангі гартаюцца па-японску: наступная старонка з\'яўляецца злева, а ← вядзе далей</string>
     <string name="recommended_empty">Пакуль няма рэкамендацый — пацягніце, каб абнавіць</string>
     <string name="recommended_users">Рэкамендаваныя аўтары</string>
     <string name="recommended_users_empty">Пакуль няма рэкамендаваных аўтараў</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">Паказваць працы R-18</string>
     <string name="show_r18_description">Па змаўчанні выключана. Калі выключана, абмежаваныя працы хаваюцца са стужак.</string>
     <string name="sign_in">Увайсці праз Pixiv</string>
+    <string name="sign_in_browser_intro">Старонка ўваходу Pixiv адкрыецца ў браўзеры. Пасля ўваходу браўзер спытае, ці адкрыць XTA: дазвольце, і вы ўвойдзеце тут.</string>
+    <string name="sign_in_expired">Тэрмін гэтага ўваходу скончыўся. Адкрыйце старонку ўваходу Pixiv яшчэ раз.</string>
     <string name="sign_in_failed">Не ўдалося ўвайсці ў Pixiv</string>
-    <string name="sign_in_needs_android">Для ўваходу тут патрэбны ўбудаваны браўзер праграмы для Android, якога няма ў версіі для камп'ютара.</string>
+    <string name="sign_in_no_code">Тут няма кода ўваходу</string>
+    <string name="sign_in_open_browser">Адкрыць старонку ўваходу Pixiv</string>
+    <string name="sign_in_paste_hint">Устаўце адрас pixiv://… або код</string>
+    <string name="sign_in_paste_steps">Перад уваходам адкрыйце інструменты распрацоўшчыка браўзера (F12) на ўкладцы «Сетка». Пасля ўваходу знайдзіце адрас, які пачынаецца з pixiv://account/login, скапіруйце яго і адразу ўстаўце сюды: яго код дзейнічае толькі каля 30 секунд.</string>
+    <string name="sign_in_paste_title">Калі браўзер не верне ўваход</string>
+    <string name="sign_in_paste_use">Увайсці з гэтым кодам</string>
+    <string name="sign_in_to_see">Pixiv паказвае гэта толькі чытачам, якія ўвайшлі.</string>
+    <string name="sign_in_waiting">Чакаем Pixiv… Увайдзіце ў браўзеры.</string>
     <string name="sign_out">Выйсці</string>
     <string name="sign_out_named">Выйсці з уліковага запісу %1$s?</string>
     <string name="sign_out_question">Выйсці з Pixiv?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Актуальнае цяпер</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Захоўваюцца ўсе колеры, файл большы. Кадаванне можа заняць хвіліну</string>
     <string name="ugoira_encoding">Кадзіраванне кадра %1$d з %2$d…</string>
     <string name="ugoira_export_failed">Не ўдалося захаваць анімацыю</string>
     <string name="ugoira_fetching">Атрыманне кадраў…</string>
     <string name="ugoira_pause">Прыпыніць анімацыю</string>
     <string name="ugoira_play">Прайграць анімацыю</string>
+    <string name="ugoira_save_apng">Захаваць як APNG</string>
     <string name="ugoira_save_gif">Захаваць як GIF</string>
     <string name="ugoira_save_zip">Захаваць кадры ў ZIP</string>
+    <string name="ugoira_saved_apng">Анімацыя захавана як APNG</string>
     <string name="ugoira_saved_gif">Анімацыя захавана як GIF</string>
     <string name="ugoira_saved_zip">Кадры захаваны ў ZIP</string>
     <string name="ugoira_saving">Захаванне…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Паказваць зноў</string>
     <string name="unmute_question">Больш не хаваць %1$s?</string>
     <string name="viewing_section">Прагляд</string>
-    <string name="walkthrough_sign_in">Увайдзіце, каб адкрыць гэтую працу</string>
     <string name="walkthrough_title">Папулярнае на Pixiv</string>
     <string name="watchlist_add">Дадаць у спіс назірання</string>
     <string name="watchlist_empty">Тут з’явяцца серыі мангі, якія вы дадасце ў спіс назірання</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Абноўлена %1$s</string>
     <string name="watchlist_view_latest">Адкрыць апошнюю</string>
     <plurals name="works_count"><item quantity="one">%2$s праца</item><item quantity="few">%2$s працы</item><item quantity="many">%2$s прац</item><item quantity="other">%2$s працы</item></plurals>
+    <string name="settings_intro_desktop">Гэты прыватны плагін чытае Pixiv як галерэю: ілюстрацыі, манга, раманы, рэйтынгі, вашы закладкі і пошук. Націсніце «Увайсці», каб увайсці ў Pixiv у браўзеры, або ўстаўце refresh-токен ніжэй. На ваш акаўнт Pixiv адпраўляюцца толькі закладкі, падпіскі і змены ў спісе назірання, якія вы робіце самі. Публікацыі, каментарыі і скаргі адсюль ніколі не адпраўляюцца.</string>
+    <string name="columns_portrait_desktop">Слупкі сеткі ў высокіх вокнах</string>
+    <string name="columns_landscape_desktop">Слупкі сеткі ў шырокіх вокнах</string>
+    <string name="swipe_works_desktop">Пераход паміж працамі</string>
+    <string name="swipe_works_description_desktop">Пракручвайце ўбок да наступнай працы ў спісе. У працах з некалькімі старонкамі працягвайце пракручваць за першую або апошнюю старонку.</string>
+    <string name="reader_right_to_left_description_desktop">Старонкі мангі гартаюцца па-японску: наступная старонка з’яўляецца злева, і ← вядзе далей</string>
 </resources>

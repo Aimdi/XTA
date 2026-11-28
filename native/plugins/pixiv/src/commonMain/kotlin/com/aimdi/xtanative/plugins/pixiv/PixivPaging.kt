@@ -1,15 +1,33 @@
 package com.aimdi.xtanative.plugins.pixiv
 
+import com.aimdi.xtanative.core.x.http.withRequestBudget
 import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.pixiv.PixivPages
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+/**
+ * [block]'s outcome as `runCatching` gives it, except that a cancellation
+ * stays one: a reader who left, or a read dropped for a newer one, is not a
+ * failure to report or to keep as a value.
+ */
+internal inline fun <T> catchingFailures(block: () -> T): Result<T> = try {
+    Result.success(block())
+} catch (cancelled: CancellationException) {
+    throw cancelled
+} catch (failure: Exception) {
+    Result.failure(failure)
+}
 
 /** Where a list Pixiv hands out page by page stands. */
 internal data class PixivListState<T>(
@@ -35,7 +53,8 @@ internal data class PixivListState<T>(
  * loading; a later refresh keeps the list up, and keeps it when it fails. A
  * page the [visible] filter empties is read past ([PixivPages.visiblePage]).
  * Swapping the source ([use]) or a refresh drops whatever was still on its
- * way, so a slow page of the old source never joins the new list.
+ * way, so a slow page of the old source never joins the new list. Each read,
+ * with the pages it reads past, has [budgetMillis] in all.
  */
 internal class PixivList<T : Any>(
     private val scope: CoroutineScope,
@@ -43,8 +62,29 @@ internal class PixivList<T : Any>(
     private var load: suspend (next: String?) -> Page<T>,
     private val visible: (List<T>) -> List<T> = { it },
 ) {
+    /** Whether an empty list offers to read again: not one of what the device keeps, which a read cannot fill. */
+    var offersRetry: Boolean = true
+
+    /** What each read may spend, the pages it reads past included; a fan-out over many creators is given more. */
+    var budgetMillis: Long = PixivPages.READ_BUDGET_MILLIS
+
+    /** Where the first page is shared with the other surfaces, and under what name now; none for a list of its own. */
+    private var shared: PixivFirstPages? = null
+    private var sharedKey: () -> String? = { null }
+
+    /** Shares this list's first page through [pages] under [key] (null: not now, as for a choice of its own), as each surface reads the same one. */
+    fun sharedThrough(pages: PixivFirstPages, key: () -> String?) = apply {
+        shared = pages
+        sharedKey = key
+    }
+
     private val mutable = MutableStateFlow(PixivListState<T>())
     val state: StateFlow<PixivListState<T>> = mutable.asStateFlow()
+
+    private val failedRefreshes = staleFailures()
+
+    /** Why a refresh failed while the list stayed up: the list itself shows nothing wrong, so a screen says it ([TellsFailedRefresh]). */
+    val refreshFailures: SharedFlow<Throwable> = failedRefreshes.asSharedFlow()
 
     private var next: String? = null
     private val used = HashSet<String>()
@@ -52,21 +92,35 @@ internal class PixivList<T : Any>(
     private var moreJob: Job? = null
 
     /** Reads the first page again; the first time, the list shows its loading. */
-    fun refresh() {
+    fun refresh() = first(afresh = true)
+
+    /** The first page, from another surface's read while it is fresh unless [afresh]. */
+    private fun first(afresh: Boolean) {
         job?.cancel()
         moreJob?.cancel()
         val soft = mutable.value.items.isNotEmpty()
+        val shareKey = sharedKey()
+        val kept = if (afresh || shareKey == null) null else shared?.get<T>(shareKey)
+        if (kept != null) {
+            used.clear()
+            next = kept.next
+            mutable.value = PixivListState(items = kept.items.distinctBy(key), loaded = true, hasMore = kept.next != null)
+            return
+        }
         mutable.update { it.copy(loading = true, error = null, loadingMore = false, moreFailed = false) }
         job = scope.launch {
             try {
-                val page = PixivPages.visiblePage(null, load, visible)
+                val page = read(null)
+                if (shareKey != null && shareKey == sharedKey()) shared?.put(shareKey, page)
                 used.clear()
                 next = page.next
                 mutable.value = PixivListState(items = page.items.distinctBy(key), loaded = true, hasMore = page.next != null)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
+                PixivLog.failed("a list's first page", e)
                 mutable.update { if (soft) it.copy(loading = false) else it.copy(loading = false, loaded = true, error = e) }
+                if (soft) failedRefreshes.tryEmit(e)
             }
         }
     }
@@ -74,7 +128,7 @@ internal class PixivList<T : Any>(
     /** The first page, unless a list is already shown or on its way. */
     fun ensure() {
         val now = mutable.value
-        if (now.items.isEmpty() && !now.loading) refresh()
+        if (now.items.isEmpty() && !now.loading) first(afresh = false)
     }
 
     /** The next page, once: a call while one is on its way, after the end or after a failure does nothing. */
@@ -85,17 +139,21 @@ internal class PixivList<T : Any>(
         mutable.update { it.copy(loadingMore = true) }
         moreJob = scope.launch {
             try {
-                val page = PixivPages.visiblePage(cursor, load, visible)
+                val page = read(cursor)
                 used += cursor
                 next = page.next?.takeIf { it !in used }
                 mutable.update { it.copy(items = PixivPages.merge(it.items, page.items, key), loadingMore = false, hasMore = next != null) }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
+                PixivLog.failed("a list's next page", e)
                 mutable.update { it.copy(loadingMore = false, moreFailed = true) }
             }
         }
     }
+
+    private suspend fun read(cursor: String?): Page<T> =
+        withRequestBudget(budgetMillis, "pixiv list") { PixivPages.visiblePage(cursor, load, visible) }
 
     /** Asks for the page that failed again. */
     fun retryMore() {
@@ -122,7 +180,7 @@ internal class PixivList<T : Any>(
 /** What the device keeps (bookmarks, history), shown as a list the grids draw: read again whenever it changes. */
 internal class PixivLocalList<S, T : Any>(scope: CoroutineScope, key: (T) -> Any, private val convert: (S) -> T) {
     private var source: List<S> = emptyList()
-    val list = PixivList(scope, key, { Page(source.map(convert), null) })
+    val list = PixivList(scope, key, { Page(source.map(convert), null) }).apply { offersRetry = false }
 
     fun show(next: List<S>) {
         if (next == source && list.state.value.loaded) return
@@ -134,9 +192,18 @@ internal class PixivLocalList<S, T : Any>(scope: CoroutineScope, key: (T) -> Any
 /** Something Pixiv answers in one read, [value] once it arrived; [load] reads it again, as Retry and a pull do. */
 internal data class PixivFetchState<T>(val value: T? = null, val loading: Boolean = false, val error: Throwable? = null)
 
-internal class PixivFetch<T : Any>(private val scope: CoroutineScope, private val read: suspend () -> T) {
+internal class PixivFetch<T : Any>(
+    private val scope: CoroutineScope,
+    private val budgetMillis: Long = PixivPages.READ_BUDGET_MILLIS,
+    private val read: suspend () -> T,
+) {
     private val mutable = MutableStateFlow(PixivFetchState<T>())
     val state: StateFlow<PixivFetchState<T>> = mutable.asStateFlow()
+
+    private val failedRefreshes = staleFailures()
+
+    /** Why a pull failed while what was read stayed up. */
+    val refreshFailures: SharedFlow<Throwable> = failedRefreshes.asSharedFlow()
 
     private var job: Job? = null
 
@@ -150,12 +217,15 @@ internal class PixivFetch<T : Any>(private val scope: CoroutineScope, private va
         mutable.update { it.copy(loading = true, error = null) }
         job = scope.launch {
             try {
-                val value = read()
+                val value = withRequestBudget(budgetMillis, "pixiv read") { read() }
                 mutable.value = PixivFetchState(value)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                mutable.update { it.copy(loading = false, error = if (keep && it.value != null) null else e) }
+                PixivLog.failed("a read", e)
+                val stale = keep && mutable.value.value != null
+                mutable.update { it.copy(loading = false, error = if (stale) null else e) }
+                if (stale) failedRefreshes.tryEmit(e)
             }
         }
     }
@@ -171,3 +241,6 @@ internal class PixivFetch<T : Any>(private val scope: CoroutineScope, private va
         mutable.value = PixivFetchState()
     }
 }
+
+/** Where a list or read keeps the failures of refreshes that left the old content up, until a screen says them. */
+private fun staleFailures() = MutableSharedFlow<Throwable>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)

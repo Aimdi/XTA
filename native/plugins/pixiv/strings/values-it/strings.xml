@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Server di Pixiv</string>
     <string name="image_host_privacy">Un mirror o il tuo server vede ogni immagine che apri, anche quelle R-18, e il tuo indirizzo IP.</string>
     <string name="image_host_reset">Ripristina predefinito</string>
+    <string name="in_home_feed">Mostra nella timeline Home</string>
+    <string name="in_home_feed_description">Mescola le nuove opere dei creatori che segui qui in Seguiti e Per te</string>
     <string name="info_copied">Informazioni copiate</string>
     <string name="link_copied">Link copiato</string>
     <string name="manage_account">Gestisci l’account su pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G settimanale</string>
     <string name="read_horizontally">Leggi in orizzontale</string>
     <string name="read_vertically">Leggi in verticale</string>
+    <string name="reader_right_to_left">Leggi da destra a sinistra</string>
+    <string name="reader_right_to_left_description">Le pagine dei manga si sfogliano alla giapponese: la pagina successiva arriva da sinistra e ← va avanti</string>
     <string name="recommended_empty">Niente da consigliare al momento — scorri per aggiornare</string>
     <string name="recommended_users">Creatori consigliati</string>
     <string name="recommended_users_empty">Nessun creatore consigliato al momento</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">Mostra opere R-18</string>
     <string name="show_r18_description">Disattivato per impostazione predefinita. Se disattivato, le opere limitate sono nascoste dai feed.</string>
     <string name="sign_in">Accedi con Pixiv</string>
+    <string name="sign_in_browser_intro">La pagina di accesso di Pixiv si apre nel browser. Dopo l'accesso, il browser chiede di aprire XTA: consentilo e sarai connesso qui.</string>
+    <string name="sign_in_expired">Questo accesso è scaduto. Riapri la pagina di accesso di Pixiv.</string>
     <string name="sign_in_failed">Impossibile accedere a Pixiv</string>
-    <string name="sign_in_needs_android">Per accedere qui serve il browser integrato dell'app Android, che l'app desktop non ha.</string>
+    <string name="sign_in_no_code">Non contiene alcun codice di accesso</string>
+    <string name="sign_in_open_browser">Apri la pagina di accesso di Pixiv</string>
+    <string name="sign_in_paste_hint">Incolla l'indirizzo pixiv://… o il codice</string>
+    <string name="sign_in_paste_steps">Prima di accedere, apri gli strumenti per sviluppatori del browser (F12) nella scheda Rete. Dopo l'accesso, trova l'indirizzo che inizia con pixiv://account/login, copialo e incollalo subito qui: il suo codice dura solo circa 30 secondi.</string>
+    <string name="sign_in_paste_title">Se il browser non restituisce l'accesso</string>
+    <string name="sign_in_paste_use">Accedi con questo codice</string>
+    <string name="sign_in_to_see">Pixiv lo mostra solo a chi ha effettuato l'accesso.</string>
+    <string name="sign_in_waiting">In attesa di Pixiv… Accedi nel browser.</string>
     <string name="sign_out">Esci</string>
     <string name="sign_out_named">Uscire da %1$s?</string>
     <string name="sign_out_question">Uscire da Pixiv?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Di tendenza ora</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Tutti i colori conservati, in un file più grande. La codifica può richiedere un minuto</string>
     <string name="ugoira_encoding">Codifica del fotogramma %1$d di %2$d…</string>
     <string name="ugoira_export_failed">Impossibile salvare l’animazione</string>
     <string name="ugoira_fetching">Recupero dei fotogrammi…</string>
     <string name="ugoira_pause">Metti in pausa l’animazione</string>
     <string name="ugoira_play">Riproduci animazione</string>
+    <string name="ugoira_save_apng">Salva come APNG</string>
     <string name="ugoira_save_gif">Salva come GIF</string>
     <string name="ugoira_save_zip">Salva i fotogrammi come ZIP</string>
+    <string name="ugoira_saved_apng">Animazione salvata come APNG</string>
     <string name="ugoira_saved_gif">Animazione salvata come GIF</string>
     <string name="ugoira_saved_zip">Fotogrammi salvati come ZIP</string>
     <string name="ugoira_saving">Salvataggio…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Riattiva</string>
     <string name="unmute_question">Riattivare %1$s?</string>
     <string name="viewing_section">Visualizzazione</string>
-    <string name="walkthrough_sign_in">Accedi per aprire questa opera</string>
     <string name="walkthrough_title">Popolari su Pixiv</string>
     <string name="watchlist_add">Aggiungi alle serie seguite</string>
     <string name="watchlist_empty">Qui compaiono le serie manga che aggiungi alle serie seguite</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Aggiornata %1$s</string>
     <string name="watchlist_view_latest">Mostra il più recente</string>
     <plurals name="works_count"><item quantity="one">%2$s opera</item><item quantity="other">%2$s opere</item></plurals>
+    <string name="settings_intro_desktop">Questo plugin privato legge Pixiv come un’app galleria: illustrazioni, manga, romanzi, classifiche, i tuoi segnalibri e la ricerca. Fai clic su Accedi per entrare con l’account Pixiv nel browser, oppure incolla un refresh token sotto. Al tuo account Pixiv arrivano solo i segnalibri, i follow e le modifiche alle serie seguite che fai tu. Da qui non si pubblica, non si commenta e non si segnala mai nulla.</string>
+    <string name="columns_portrait_desktop">Colonne della griglia nelle finestre alte</string>
+    <string name="columns_landscape_desktop">Colonne della griglia nelle finestre larghe</string>
+    <string name="swipe_works_desktop">Passa da un’opera all’altra</string>
+    <string name="swipe_works_description_desktop">Scorri di lato fino all’opera successiva della lista. Nelle opere con più pagine, continua oltre la prima o l’ultima pagina.</string>
+    <string name="reader_right_to_left_description_desktop">Le pagine dei manga si girano alla giapponese: la successiva arriva da sinistra e ← va avanti</string>
 </resources>

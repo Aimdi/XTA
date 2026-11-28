@@ -81,10 +81,26 @@ object FrameMarks {
      * The mark for the navigation's [stack] (its entries' routes, the shown
      * last): the screen shown's, else that of the nearest screen below it with
      * one, as a post opened from Home leaves Home's page marked and a profile
-     * opened from the search leaves Search marked.
+     * opened from the search leaves Search marked. A plugin's own pages
+     * ([FrameRoute.plugin]) mark the plugin's page where the bar has it, else
+     * nothing but Home's page under them: the store or the search they were
+     * opened from are not where the reader is.
      */
-    fun ofStack(stack: List<FrameRoute>, home: String, homePage: String?, bar: Set<String>): FrameMark =
-        stack.asReversed().asSequence().map { of(it.route, home, homePage, it.group, bar) }.firstOrNull { it != FrameMark() } ?: FrameMark()
+    fun ofStack(stack: List<FrameRoute>, home: String, homePage: String?, bar: Set<String>): FrameMark {
+        var overPlugin = false
+        for (entry in stack.asReversed()) {
+            val plugin = entry.plugin
+            if (plugin != null) {
+                val page = BarPage.Network(plugin).id
+                if (page in bar) return FrameMark(page = page)
+                overPlugin = true
+                continue
+            }
+            val mark = of(entry.route, home, homePage, entry.group, bar)
+            if (mark != FrameMark()) return if (!overPlugin || entry.route == home) mark else FrameMark()
+        }
+        return FrameMark()
+    }
 }
 
 /**
@@ -119,7 +135,7 @@ class FrameRoots {
 class FrameCalls(val page: (Int, BarPage) -> Unit, val screen: (String) -> Unit, val group: (FollowGroup) -> Unit)
 
 /** A screen in the navigation: its route pattern, and the group it shows ([group], its id) on a group's screen. */
-data class FrameRoute(val route: String?, val group: String? = null)
+data class FrameRoute(val route: String?, val group: String? = null, val plugin: String? = null)
 
 /**
  * The column itself: the account menu with Home's pages under the account

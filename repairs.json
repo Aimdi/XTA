@@ -25,6 +25,7 @@
     "pixiv.user_agent": "PixivAndroidApp/5.0.234 (Android 11; Pixel 5)",
     "pixiv.client_id": "MOBrBDS8blbauoSck0ZfDbtuzpyT",
     "pixiv.client_secret": "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj",
+    "pixiv.web_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
     "reddit.web_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
     "stocks.user_agent": "Mozilla/5.0 (Android) XTA"
   }

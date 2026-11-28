@@ -78,7 +78,7 @@ internal fun WorkMeta(illust: PixivIllust, state: PixivWorkState, surface: WorkS
             Spacer(Modifier.height(14.dp))
             Text(illust.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
         }
-        illust.series?.let { SeriesBlock(it, state) }
+        illust.series?.let { SeriesBlock(it, state, surface::retrySeries) }
         Spacer(Modifier.height(8.dp))
         WorkStats(illust)
         if (illust.captionHtml.isNotEmpty() || illust.caption.isNotEmpty()) {
@@ -258,9 +258,10 @@ internal fun SeriesLink(series: PixivSeriesRef, dense: Boolean = false, novel: B
 
 /** The work's series and, once Pixiv says, "#n of N" between the works before and after it. */
 @Composable
-private fun SeriesBlock(series: PixivSeriesRef, state: PixivWorkState) {
+private fun SeriesBlock(series: PixivSeriesRef, state: PixivWorkState, onRetry: () -> Unit) {
     val runtime = LocalPixiv.current
     SeriesLink(series)
+    if (state.series == null && state.seriesError != null) PixivAsideProblem(state.seriesError, onRetry)
     val place = state.series ?: return
     Row(verticalAlignment = Alignment.CenterVertically) {
         IconTip(pluginString(Strings.series_previous)) { IconButton(onClick = { place.previous?.let(runtime::openWork) }, enabled = place.previous != null) {
@@ -272,6 +273,15 @@ private fun SeriesBlock(series: PixivSeriesRef, state: PixivWorkState) {
         IconTip(pluginString(Strings.series_next)) { IconButton(onClick = { place.next?.let(runtime::openWork) }, enabled = place.next != null) {
             Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, pluginString(Strings.series_next))
         } }
+    }
+}
+
+/** "More by <name>" when the creator's other works did not load: why, and Retry. */
+@Composable
+internal fun AuthorWorksProblem(illust: PixivIllust, error: Throwable, onRetry: () -> Unit) {
+    Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, bottom = 8.dp)) {
+        Text(pluginString(Strings.more_by, illust.userName), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        PixivAsideProblem(error, onRetry)
     }
 }
 

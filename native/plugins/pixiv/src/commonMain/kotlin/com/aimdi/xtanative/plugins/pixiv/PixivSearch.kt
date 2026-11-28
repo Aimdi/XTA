@@ -86,7 +86,7 @@ internal class PixivAppSearch(private val runtime: () -> PixivRuntime) : PluginS
     override fun Results(query: String, frame: PluginFrame) {
         PixivRoot(runtime()) {
             if (!PixivAccounts.signedIn(pixivSettings())) {
-                PixivEmpty(pluginString(Strings.not_configured))
+                PixivSignInPrompt(pluginString(Strings.not_configured))
             } else {
                 val model = rememberSearch(PixivSearchKind.WORKS, query)
                 SearchBody(model, frame.padding, typing = null)
@@ -261,7 +261,7 @@ private fun SearchResults(model: PixivSearchModel, view: PixivSearchView, paddin
             if (!model.kind.isWorks) {
                 PixivNovelFeed(model.novels, pluginString(Strings.search_empty), padding)
             } else {
-                PixivWorksGrid(model.works, pluginString(Strings.search_empty), padding = padding, header = {
+                PixivWorksGrid(model.works, pluginString(Strings.search_empty), padding = padding, takeKeys = false, header = {
                     if (view.previewMode) item(key = "preview-note", span = StaggeredGridItemSpan.FullLine) { PreviewNote() }
                     if (view.showsPopularStrip) item(key = "popular", span = StaggeredGridItemSpan.FullLine) { PopularStrip(view) }
                 })

@@ -102,4 +102,25 @@ class PixivisionTest {
         )
         assertEquals("https://www.pixivision.net/zh-tw/a/42", Pixivision.articleUrl(42, "zh-tw"))
     }
+
+    @Test
+    fun aFeaturedPictureIsAskedForAtTheSizeItIsShown() {
+        val preview = "https://i.pximg.net/c/768x1200_80/img-master/img/2024/09/01/00/00/00/1001_p0_master1200.jpg"
+        val master = "https://i.pximg.net/img-master/img/2024/09/01/00/00/00/1001_p0_master1200.jpg"
+        assertEquals(preview, Pixivision.sized(preview, 700), "the preview is wide enough")
+        assertEquals(master, Pixivision.sized(preview, 1100), "wider than the preview: the master")
+        assertEquals(master, Pixivision.full(preview))
+        assertEquals("https://i.pximg.net/1.jpg", Pixivision.sized("https://i.pximg.net/1.jpg", 2000), "an address without a preview size stays")
+    }
+
+    @Test
+    fun theCoverFallsBackToTheFirstFeaturedPicture() {
+        val work = PixivisionWork(1, 10, "One", "A", imageUrl = "https://i.pximg.net/c/260x260_80/img-master/img/1_p0_square1200.jpg")
+        assertEquals(
+            listOf("https://embed.pixiv.net/spotlight.php?id=1", "https://i.pximg.net/img-master/img/1_p0_square1200.jpg"),
+            Pixivision.covers(PixivisionArticle(coverUrl = "https://embed.pixiv.net/spotlight.php?id=1", works = listOf(work))),
+        )
+        assertEquals(listOf("https://i.pximg.net/img-master/img/1_p0_square1200.jpg"), Pixivision.covers(PixivisionArticle(works = listOf(work))))
+        assertEquals(emptyList<String>(), Pixivision.covers(PixivisionArticle()), "no cover at all, never an empty box")
+    }
 }

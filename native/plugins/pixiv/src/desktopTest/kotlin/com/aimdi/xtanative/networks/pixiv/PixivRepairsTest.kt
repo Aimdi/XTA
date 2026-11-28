@@ -17,7 +17,7 @@ import kotlinx.coroutines.runBlocking
 class PixivRepairsTest {
     @Test
     fun repairsJsonNamesOnlyThePixivValuesThisPluginKnowsAsItShipsThem() {
-        val slots = PixivApp.SLOTS.associateBy { it.key }
+        val slots = PIXIV_REPAIR_SLOTS.associateBy { it.key }
         val published = Repairs.parse(repairsJson().readText()).filterKeys { it.startsWith("pixiv.") }
 
         assertEquals(slots.keys, published.keys)
@@ -30,8 +30,8 @@ class PixivRepairsTest {
 
     @Test
     fun everyShippedValueFitsItsKindAndIsDeclaredOnce() {
-        PixivApp.SLOTS.forEach { assertTrue(it.kind.fits(it.shipped), it.key) }
-        assertEquals(PixivApp.SLOTS.size, PixivApp.SLOTS.map { it.key }.toSet().size)
+        PIXIV_REPAIR_SLOTS.forEach { assertTrue(it.kind.fits(it.shipped), it.key) }
+        assertEquals(PIXIV_REPAIR_SLOTS.size, PIXIV_REPAIR_SLOTS.map { it.key }.toSet().size)
     }
 
     @Test
@@ -64,5 +64,31 @@ class PixivRepairsTest {
             .map { File(it, "repairs.json") }
             .firstOrNull { it.isFile && File(it.parentFile, "native").isDirectory }
         return assertNotNull(found, "repairs.json beside native/")
+    }
+
+    @Test
+    fun pixivsWebsitesAreAskedAsACurrentDesktopChromeThatRepairsMayReplace() {
+        val agent = PixivWeb.USER_AGENT
+        val major = Regex("""Chrome/(\d+)\.""").find(agent)?.groupValues?.get(1)?.toInt() ?: 0
+        assertTrue(major >= 157, "a browser years out of date is a bot tell: $agent")
+        assertTrue("Mobile" !in agent && "Windows NT 10.0; Win64; x64" in agent, agent)
+        assertEquals(agent, PixivImages.HEADERS["User-Agent"])
+        assertEquals(agent, Pixivision.USER_AGENT)
+        assertEquals(agent, com.aimdi.xtanative.store.downloads.downloadRequestHeaders("https://i.pximg.net/img-original/1_p0.png")["User-Agent"], "the app's downloads ask as the plugin does")
+        val before = PixivWeb.published
+        try {
+            PixivWeb.published = { mapOf("pixiv.web_user_agent" to "Mozilla/5.0 (X11; Linux x86_64) Chrome/158.0.0.0 Safari/537.36") }
+            assertEquals("Mozilla/5.0 (X11; Linux x86_64) Chrome/158.0.0.0 Safari/537.36", PixivImages.HEADERS["User-Agent"])
+            assertEquals("https://www.pixiv.net/", PixivImages.HEADERS["Referer"])
+        } finally {
+            PixivWeb.published = before
+        }
+    }
+
+    @Test
+    fun theAppsAndroidVersionFollowsItsAgent() {
+        assertEquals("11", pixivAndroidVersion(PixivApp().userAgent))
+        assertEquals("14", pixivAndroidVersion("PixivAndroidApp/6.2.0 (Android 14; Pixel 8)"))
+        assertEquals("11", pixivAndroidVersion("PixivAndroidApp/6.2.0"))
     }
 }

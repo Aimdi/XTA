@@ -91,7 +91,8 @@ object CommandLine {
         |
         |  URL            an http:// or https:// link to open in the app; when the
         |                 app is running already, its window opens the link and
-        |                 this start ends
+        |                 this start ends (also the pixiv:// address Pixiv's
+        |                 sign-in in the browser hands back)
         |  FILE, --open FILE
         |                 an XTA backup to restore, or an OPML list of feeds to
         |                 follow, each asked first in the app's window

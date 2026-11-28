@@ -110,4 +110,21 @@ class PixivPagingTest {
         local.list.settled({ it.items == listOf(3) }) {}
         assertTrue(reads == 3)
     }
+
+    @Test
+    fun aReadThatWalksPastEmptyPagesStopsWhenItsBudgetIsSpent(): Unit = runBlocking {
+        var asked = 0
+        val list = PixivList<Int>(CoroutineScope(coroutineContext), { it }, { next ->
+            asked++
+            kotlinx.coroutines.delay(100)
+            Page(emptyList(), "p${asked + 1}")
+        }).apply { budgetMillis = 250 }
+        val started = System.nanoTime()
+        list.refresh()
+        list.settled({ it.error != null }) {}
+        val took = (System.nanoTime() - started) / 1_000_000
+        assertTrue(list.state.value.error is java.net.SocketTimeoutException, "${list.state.value.error}")
+        assertTrue(asked in 2..3, "the walk stopped at the budget: $asked pages")
+        assertTrue(took < 2_000, "no page after the budget: $took ms")
+    }
 }

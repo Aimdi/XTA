@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Ułasny server Pixiv</string>
     <string name="image_host_privacy">Liusterka abo vaš server bačyć kožnuju vyjavu, jakuju vy adkryvajecie, u tym liku R-18, i vaš IP-adras.</string>
     <string name="image_host_reset">Skinuć da pradvyznačanaha</string>
+    <string name="in_home_feed">Pakazvać u chatniaj stužcy</string>
+    <string name="in_home_feed_description">Damiešvaje novyja pracy aŭtaraŭ, za jakimi vy sočycie tut, u «Padpiski» i «Dla vas»</string>
     <string name="info_copied">Zviestki skapijavany</string>
     <string name="link_copied">Spasyłka skapijavana</string>
     <string name="manage_account">Kiravać ulikovym zapisam na pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G tydniovy</string>
     <string name="read_horizontally">Čytać haryzantalna</string>
     <string name="read_vertically">Čytać viertykalna</string>
+    <string name="reader_right_to_left">Čytać sprava nalieva</string>
+    <string name="reader_right_to_left_description">Staronki manhi hartajucca pa-japonsku: nastupnaja staronka zjaŭlajecca źleva, a ← viadzie dalej</string>
     <string name="recommended_empty">Pakul niama rekamendacyj — paciahnicie, kab abnavić</string>
     <string name="recommended_users">Rekamendavanyja aŭtary</string>
     <string name="recommended_users_empty">Pakul niama rekamendavanych aŭtaraŭ</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">Pakazvać pracy R-18</string>
     <string name="show_r18_description">Pa zmaŭčanni vyklučana. Kali vyklučana, abmiežavanyja pracy chavajucca.</string>
     <string name="sign_in">Uvajsci praz Pixiv</string>
+    <string name="sign_in_browser_intro">Staronka ŭvachodu Pixiv adkryjecca ŭ braŭzery. Pasla ŭvachodu braŭzer spytaje, ci adkryć XTA: dazvolcie, i vy ŭvojdziecie tut.</string>
+    <string name="sign_in_expired">Termin hetaha ŭvachodu skončyŭsia. Adkryjcie staronku ŭvachodu Pixiv jašče raz.</string>
     <string name="sign_in_failed">Nie ŭdałosia ŭvajsci ŭ Pixiv</string>
-    <string name="sign_in_needs_android">Dla ŭvachodu tut patrebny ŭbudavany braŭzer prahramy dla Android, jakoha niama ŭ versii dla kampjutara.</string>
+    <string name="sign_in_no_code">Tut niama koda ŭvachodu</string>
+    <string name="sign_in_open_browser">Adkryć staronku ŭvachodu Pixiv</string>
+    <string name="sign_in_paste_hint">Ustaŭcie adras pixiv://… abo kod</string>
+    <string name="sign_in_paste_steps">Pierad uvachodam adkryjcie instrumienty raspracoŭščyka braŭzera (F12) na ŭkładcy «Sietka». Pasla ŭvachodu znajdzicie adras, jaki pačynajecca z pixiv://account/login, skapirujcie jaho i adrazu ŭstaŭcie siudy: jaho kod dziejničaje tolki kala 30 siekund.</string>
+    <string name="sign_in_paste_title">Kali braŭzer nie viernie ŭvachod</string>
+    <string name="sign_in_paste_use">Uvajsci z hetym kodam</string>
+    <string name="sign_in_to_see">Pixiv pakazvaje heta tolki čytačam, jakija ŭvajšli.</string>
+    <string name="sign_in_waiting">Čakajem Pixiv… Uvajdzicie ŭ braŭzery.</string>
     <string name="sign_out">Vyjsci</string>
     <string name="sign_out_named">Vyjsci z ulikovaha zapisu %1$s?</string>
     <string name="sign_out_question">Vyjsci z Pixiv?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Aktualnaje ciapier</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Zachoŭvajucca ŭsie koliery, fajł bolšy. Kadavannie moža zaniać chvilinu</string>
     <string name="ugoira_encoding">Kadziravańnie kadra %1$d z %2$d…</string>
     <string name="ugoira_export_failed">Nie ŭdałosia zachavać animacyju</string>
     <string name="ugoira_fetching">Atrymańnie kadraŭ…</string>
     <string name="ugoira_pause">Prypynić animacyju</string>
     <string name="ugoira_play">Prajhrać animacyju</string>
+    <string name="ugoira_save_apng">Zachavać jak APNG</string>
     <string name="ugoira_save_gif">Zachavać jak GIF</string>
     <string name="ugoira_save_zip">Zachavać kadry ŭ ZIP</string>
+    <string name="ugoira_saved_apng">Animacyja zachavana jak APNG</string>
     <string name="ugoira_saved_gif">Animacyja zachavana jak GIF</string>
     <string name="ugoira_saved_zip">Kadry zachavany ŭ ZIP</string>
     <string name="ugoira_saving">Zachavannie…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Pakazvać znoŭ</string>
     <string name="unmute_question">Bolš nie chavać %1$s?</string>
     <string name="viewing_section">Prahliad</string>
-    <string name="walkthrough_sign_in">Uvajdzicie, kab adkryć hetuju pracu</string>
     <string name="walkthrough_title">Papuliarnaje na Pixiv</string>
     <string name="watchlist_add">Dadać u spis nazirańnia</string>
     <string name="watchlist_empty">Tut zjaviacca seryi manhi, jakija vy dadascie ŭ spis nazirańnia</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Abnoŭlena %1$s</string>
     <string name="watchlist_view_latest">Adkryć apošniuju</string>
     <plurals name="works_count"><item quantity="one">%2$s praca</item><item quantity="few">%2$s pracy</item><item quantity="many">%2$s prac</item><item quantity="other">%2$s pracy</item></plurals>
+    <string name="settings_intro_desktop">Hety pryvatny plahin čytaje Pixiv jak halereju: iliustracyi, manha, ramany, rejtynhi, vašy zakladki i pošuk. Nacisnicie «Uvajsci», kab uvajsci ŭ Pixiv u braŭzery, abo ŭstaŭcie refresh-token nižej. Na vaš akaŭnt Pixiv adpraŭlajucca tolki zakladki, padpiski i zmieny ŭ spisie nazirańnia, jakija vy robicie sami. Publikacyi, kamentaryi i skarhi adsul nikoli nie adpraŭlajucca.</string>
+    <string name="columns_portrait_desktop">Slupki sietki ŭ vysokich voknach</string>
+    <string name="columns_landscape_desktop">Slupki sietki ŭ šyrokich voknach</string>
+    <string name="swipe_works_desktop">Pierachod pamiž pracami</string>
+    <string name="swipe_works_description_desktop">Prakručvajcie ŭbok da nastupnaj pracy ŭ spisie. U pracach z niekalkimi staronkami praciahvajcie prakručvać za pieršuju abo apošniuju staronku.</string>
+    <string name="reader_right_to_left_description_desktop">Staronki manhi hartajucca pa-japonsku: nastupnaja staronka zjaŭlajecca źleva, i ← viadzie dalej</string>
 </resources>

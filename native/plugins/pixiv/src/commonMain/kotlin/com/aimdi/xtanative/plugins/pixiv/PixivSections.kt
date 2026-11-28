@@ -163,7 +163,7 @@ private suspend fun openLatest(runtime: PixivRuntime, series: PixivWatchlistSeri
     when {
         latest == null -> runtime.open(if (novels) PixivRoute.NovelSeries(series.id) else PixivRoute.Series(series.id))
         novels -> runtime.open(PixivRoute.Novel(latest))
-        else -> runCatching { runtime.client.illustDetail(latest) }
+        else -> catchingFailures { runtime.client.illustDetail(latest) }
             .onSuccess { runtime.openWork(it) }
             .onFailure { runtime.tell(failureText(PixivFailure.of(it)).get(language)) }
     }

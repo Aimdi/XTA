@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Pixiv 官方服务器</string>
     <string name="image_host_privacy">镜像或自定义服务器能看到你打开的每张图片（包括 R-18）以及你的 IP 地址。</string>
     <string name="image_host_reset">恢复默认</string>
+    <string name="in_home_feed">在主页时间线中显示</string>
+    <string name="in_home_feed_description">将你在这里关注的创作者的新作品混入“关注”和“为你推荐”</string>
     <string name="info_copied">已复制作品信息</string>
     <string name="link_copied">已复制链接</string>
     <string name="manage_account">在 pixiv.net 管理账号</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G 周榜</string>
     <string name="read_horizontally">横向阅读</string>
     <string name="read_vertically">竖向阅读</string>
+    <string name="reader_right_to_left">从右往左阅读</string>
+    <string name="reader_right_to_left_description">滑动时漫画按日式翻页：下一页从左边进来，← 前进</string>
     <string name="recommended_empty">暂时没有推荐 — 下拉刷新</string>
     <string name="recommended_users">推荐创作者</string>
     <string name="recommended_users_empty">暂时没有推荐创作者</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">显示 R-18 作品</string>
     <string name="show_r18_description">默认关闭。关闭时，受限作品会从动态中隐藏。</string>
     <string name="sign_in">使用 Pixiv 登录</string>
+    <string name="sign_in_browser_intro">Pixiv 的登录页面会在浏览器中打开。登录后，浏览器会询问是否打开 XTA：允许即可在这里登录。</string>
+    <string name="sign_in_expired">此次登录已过期。请重新打开 Pixiv 登录页面。</string>
     <string name="sign_in_failed">无法登录 Pixiv</string>
-    <string name="sign_in_needs_android">在此登录需要 Android 应用的内置浏览器，桌面版没有这个浏览器。</string>
+    <string name="sign_in_no_code">其中没有登录代码</string>
+    <string name="sign_in_open_browser">打开 Pixiv 登录页面</string>
+    <string name="sign_in_paste_hint">粘贴 pixiv://… 地址或代码</string>
+    <string name="sign_in_paste_steps">登录前，先在浏览器中打开开发者工具（F12）的“网络”标签。登录后，找到以 pixiv://account/login 开头的地址，复制后立刻粘贴到这里：其中的代码只在约 30 秒内有效。</string>
+    <string name="sign_in_paste_title">如果浏览器没有把登录交回来</string>
+    <string name="sign_in_paste_use">用此代码登录</string>
+    <string name="sign_in_to_see">Pixiv 只向已登录的读者显示此内容。</string>
+    <string name="sign_in_waiting">正在等待 Pixiv… 请在浏览器中登录。</string>
     <string name="sign_out">退出登录</string>
     <string name="sign_out_named">退出 %1$s 的登录？</string>
     <string name="sign_out_question">退出 Pixiv 登录？</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">当前热门</string>
     <string name="ugoira">动图</string>
+    <string name="ugoira_apng_note">保留所有颜色，文件更大。编码可能需要一分钟</string>
     <string name="ugoira_encoding">正在编码第 %1$d 帧，共 %2$d 帧…</string>
     <string name="ugoira_export_failed">无法保存动图</string>
     <string name="ugoira_fetching">正在获取帧…</string>
     <string name="ugoira_pause">暂停动图</string>
     <string name="ugoira_play">播放动图</string>
+    <string name="ugoira_save_apng">保存为 APNG</string>
     <string name="ugoira_save_gif">保存为 GIF</string>
     <string name="ugoira_save_zip">将帧保存为 ZIP</string>
+    <string name="ugoira_saved_apng">动图已保存为 APNG</string>
     <string name="ugoira_saved_gif">动图已保存为 GIF</string>
     <string name="ugoira_saved_zip">帧已保存为 ZIP</string>
     <string name="ugoira_saving">正在保存…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">取消屏蔽</string>
     <string name="unmute_question">取消屏蔽 %1$s？</string>
     <string name="viewing_section">浏览</string>
-    <string name="walkthrough_sign_in">登录后才能打开此作品</string>
     <string name="walkthrough_title">Pixiv 热门</string>
     <string name="watchlist_add">加入追更列表</string>
     <string name="watchlist_empty">加入追更列表的漫画系列会显示在这里</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">%1$s更新</string>
     <string name="watchlist_view_latest">查看最新话</string>
     <plurals name="works_count"><item quantity="other">%2$s 件作品</item></plurals>
+    <string name="settings_intro_desktop">此私有插件像图库应用一样阅读 Pixiv：插画、漫画、小说、排行榜、你的收藏与搜索。点登录在浏览器中用 Pixiv 账号登录，或在下方粘贴刷新令牌。只有你亲自进行的收藏、关注和追更列表更改会发送到你的 Pixiv 账号。此处绝不会发帖、评论或举报。</string>
+    <string name="columns_portrait_desktop">高窗口中的网格列数</string>
+    <string name="columns_landscape_desktop">宽窗口中的网格列数</string>
+    <string name="swipe_works_desktop">在作品间切换</string>
+    <string name="swipe_works_description_desktop">横向滚动到列表中的下一个作品。多页作品中，越过第一页或最后一页继续滚动。</string>
+    <string name="reader_right_to_left_description_desktop">漫画按日式翻页：下一页从左侧出现，← 向前翻</string>
 </resources>

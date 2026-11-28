@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Pixiv公式サーバー</string>
     <string name="image_host_privacy">ミラーや独自のサーバーには、開いたすべての画像（R-18を含む）とIPアドレスが見えます。</string>
     <string name="image_host_reset">デフォルトに戻す</string>
+    <string name="in_home_feed">ホームのタイムラインに表示</string>
+    <string name="in_home_feed_description">ここでフォローしているクリエイターの新着作品を「フォロー中」と「おすすめ」に混ぜます</string>
     <string name="info_copied">作品情報をコピーしました</string>
     <string name="link_copied">リンクをコピーしました</string>
     <string name="manage_account">pixiv.net でアカウントを管理</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G ウィークリー</string>
     <string name="read_horizontally">横読み</string>
     <string name="read_vertically">縦読み</string>
+    <string name="reader_right_to_left">右から左に読む</string>
+    <string name="reader_right_to_left_description">スワイプでマンガのページを日本式にめくります。次のページは左から現れ、← で進みます</string>
     <string name="recommended_empty">いまおすすめはありません — 引っ張って更新</string>
     <string name="recommended_users">おすすめのクリエイター</string>
     <string name="recommended_users_empty">いまおすすめのクリエイターはいません</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">R-18 作品を表示</string>
     <string name="show_r18_description">既定ではオフ。オフのとき、制限付き作品はフィードから隠されます。</string>
     <string name="sign_in">Pixiv でサインイン</string>
+    <string name="sign_in_browser_intro">Pixivのログインページがブラウザで開きます。ログインすると、ブラウザがXTAを開くか尋ねるので、許可するとここでログインできます。</string>
+    <string name="sign_in_expired">このログインは期限切れです。Pixivのログインページをもう一度開いてください。</string>
     <string name="sign_in_failed">Pixiv にサインインできませんでした</string>
-    <string name="sign_in_needs_android">ここでのログインには Android アプリの内蔵ブラウザが必要ですが、デスクトップ版にはありません。</string>
+    <string name="sign_in_no_code">ログインコードが含まれていません</string>
+    <string name="sign_in_open_browser">Pixivのログインページを開く</string>
+    <string name="sign_in_paste_hint">pixiv://… のアドレスまたはコードを貼り付け</string>
+    <string name="sign_in_paste_steps">ログインする前に、ブラウザの開発者ツール（F12）のネットワークタブを開いておきます。ログイン後、pixiv://account/login で始まるアドレスを探してコピーし、すぐにここへ貼り付けてください。コードの有効期間は約30秒です。</string>
+    <string name="sign_in_paste_title">ブラウザからログインが戻らない場合</string>
+    <string name="sign_in_paste_use">このコードでログイン</string>
+    <string name="sign_in_to_see">Pixivはこれをログインしている人にだけ表示します。</string>
+    <string name="sign_in_waiting">Pixivを待っています… ブラウザでログインしてください。</string>
     <string name="sign_out">サインアウト</string>
     <string name="sign_out_named">%1$s からサインアウトしますか？</string>
     <string name="sign_out_question">Pixiv からサインアウトしますか？</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">急上昇タグ</string>
     <string name="ugoira">うごイラ</string>
+    <string name="ugoira_apng_note">すべての色を保ちますが、ファイルは大きくなります。エンコードに1分ほどかかることがあります</string>
     <string name="ugoira_encoding">フレーム %1$d / %2$d をエンコード中…</string>
     <string name="ugoira_export_failed">アニメーションを保存できませんでした</string>
     <string name="ugoira_fetching">フレームを取得中…</string>
     <string name="ugoira_pause">アニメーションを一時停止</string>
     <string name="ugoira_play">アニメーションを再生</string>
+    <string name="ugoira_save_apng">APNGで保存</string>
     <string name="ugoira_save_gif">GIF で保存</string>
     <string name="ugoira_save_zip">フレームを ZIP で保存</string>
+    <string name="ugoira_saved_apng">アニメーションをAPNGで保存しました</string>
     <string name="ugoira_saved_gif">アニメーションを GIF で保存しました</string>
     <string name="ugoira_saved_zip">フレームを ZIP で保存しました</string>
     <string name="ugoira_saving">保存中…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">ミュート解除</string>
     <string name="unmute_question">%1$s のミュートを解除しますか？</string>
     <string name="viewing_section">表示</string>
-    <string name="walkthrough_sign_in">この作品を開くにはサインインしてください</string>
     <string name="walkthrough_title">Pixiv で人気</string>
     <string name="watchlist_add">ウォッチリストに追加</string>
     <string name="watchlist_empty">ウォッチリストに追加したマンガシリーズがここに表示されます</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">%1$sに更新</string>
     <string name="watchlist_view_latest">最新話を見る</string>
     <plurals name="works_count"><item quantity="other">作品 %2$s</item></plurals>
+    <string name="settings_intro_desktop">このプライベートプラグインはギャラリーアプリのようにPixivを読みます。イラスト、マンガ、小説、ランキング、ブックマーク、検索。サインインでブラウザからPixivにログインするか、下にリフレッシュトークンを貼ってください。Pixivアカウントに送られるのは、あなた自身が行ったブックマーク、フォロー、ウォッチリストの変更だけです。ここから投稿・コメント・通報をすることはありません。</string>
+    <string name="columns_portrait_desktop">縦長のウィンドウでのグリッド列数</string>
+    <string name="columns_landscape_desktop">横長のウィンドウでのグリッド列数</string>
+    <string name="swipe_works_desktop">作品間を移動</string>
+    <string name="swipe_works_description_desktop">横にスクロールしてリストの次の作品へ。複数ページの作品では、最初または最後のページを越えてスクロールします。</string>
+    <string name="reader_right_to_left_description_desktop">マンガのページを日本式にめくります。次のページは左から現れ、← で進みます</string>
 </resources>

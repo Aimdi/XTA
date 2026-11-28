@@ -86,13 +86,14 @@ internal fun <T : Any> PixivRows(
     ListToTop(scroll, toTop)
     RefreshesOn(refresh) { list.refresh() }
     RowsReadAhead(scroll, state) { list.more() }
+    TellsFailedRefresh(list.refreshFailures)
     PullToRefreshBox(isRefreshing = state.loading && state.items.isNotEmpty(), onRefresh = list::refresh, modifier = Modifier.fillMaxSize()) {
         PluginReadingColumn(padding, scroll) { column -> LazyColumn(state = scroll, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             header()
             when {
                 state.items.isEmpty() && state.error != null -> item(key = "state") { PixivProblem(state.error, list::refresh) }
                 state.waiting -> item(key = "state") { FeedSkeleton(count = 4) }
-                rows.isEmpty() && state.loaded && !state.loading -> item(key = "state") { PixivEmpty(empty, list::refresh) }
+                rows.isEmpty() && state.loaded && !state.loading -> item(key = "state") { PixivEmpty(empty, (list::refresh).takeIf { list.offersRetry }) }
             }
             items(rows, key = { "row-" + key(it) }) { item ->
                 row(item)

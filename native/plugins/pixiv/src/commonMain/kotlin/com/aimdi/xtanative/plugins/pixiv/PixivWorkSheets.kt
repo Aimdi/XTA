@@ -33,10 +33,17 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
+import com.aimdi.xtanative.networks.pixiv.PixivImages
 import com.aimdi.xtanative.networks.pixiv.PixivNovel
+import com.aimdi.xtanative.networks.pixiv.Pixivision
+import com.aimdi.xtanative.networks.pixiv.PixivisionWork
+import com.aimdi.xtanative.networks.pixiv.pixivArtworkUrl
+import com.aimdi.xtanative.ui.plugins.MediaItem
+import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.links.LocalLinks
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.PluginPostMenuRows
 import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -102,23 +109,57 @@ internal fun rememberOutside(): PixivOutside {
  * creator or the work itself) above the shared post sheet's.
  */
 @Composable
-internal fun WorkActionsSheet(illust: PixivIllust, sheets: PixivSheets) {
+internal fun WorkActionsSheet(illust: PixivIllust, sheets: PixivSheets, open: (() -> Unit)? = null) {
     val runtime = LocalPixiv.current
     val marks by runtime.bookmarking.works.state.collectAsState()
     val bookmarked = marks.on(illust.id, illust.isBookmarked)
     val haptics = rememberHaptics()
     val copy = rememberCopy()
+    val signedIn = PixivAccounts.signedIn(pixivSettings())
+    val imageHost = pixivSettings()[PixivPrefs.imageHost]
     PixivSheetFrame(sheets) {
         val pages = illust.viewerUrls.size
+        SheetRow(PostIcons.Image, pluginString(Strings.novel_image_open), { sheets.close(); open?.invoke() ?: runtime.openWork(illust) })
+        SheetRow(GroupIcons.GridView, pluginString(Strings.novel_image_view), { sheets.close(); runtime.host.openMedia(PixivShared.pages(illust, imageHost), 0) })
         SheetRow(SavedIcons.Download, pluginString(if (pages > 1) Strings.download_all else Strings.download), { sheets.close(); sheets.saveAll(illust) })
-        SheetRow(if (bookmarked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder, pluginString(if (bookmarked) Strings.unbookmark else Strings.bookmark), {
+        if (signedIn) SheetRow(if (bookmarked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder, pluginString(if (bookmarked) Strings.unbookmark else Strings.bookmark), {
             sheets.close()
             sheets.toggleBookmark(illust, haptics)
         })
-        SheetRow(XIcons.Link, pluginString(Strings.copy_link), { sheets.close(); copy(illust.url, Strings.link_copied) })
+        // On the desktop the shared entries below copy the link already.
+        if (!PluginPlatform.isDesktop) SheetRow(XIcons.Link, pluginString(Strings.copy_link), { sheets.close(); copy(illust.url, Strings.link_copied) })
         MuteRows(sheets, workMuteChoices(illust).take(2), leave = false)
         HorizontalDivider()
-        PluginPostMenuRows(runtime.host, PixivShared.menu(illust), sheets::close) { icon, label, onClick -> SheetRow(icon, label, onClick) }
+        // The creator's groups once signed in, when their works can be read for the group.
+        val menu = if (signedIn) PixivShared.menu(illust) { if (!runtime.isFollowedHere(illust.userId)) runtime.followHere(PixivBookmarking.authorOf(illust)) } else PixivShared.menu(illust)
+        PluginPostMenuRows(runtime.host, menu, sheets::close) { icon, label, onClick -> SheetRow(icon, label, onClick) }
+    }
+}
+
+/**
+ * A Pixivision picture's sheet, as its right-click or long press opens it:
+ * its work here or on Pixiv, the picture full screen or saved, the work's
+ * link copied. The picture alone needs no account.
+ */
+@Composable
+internal fun FeaturedActionsSheet(work: PixivisionWork, sheets: PixivSheets) {
+    val runtime = LocalPixiv.current
+    val copy = rememberCopy()
+    val outside = rememberOutside()
+    val imageHost = pixivSettings()[PixivPrefs.imageHost]
+    val url = pixivArtworkUrl(work.artworkId)
+    val picture = work.imageUrl?.let(Pixivision::full)
+    PixivSheetFrame(sheets) {
+        SheetRow(PostIcons.Image, pluginString(Strings.novel_image_open), { sheets.close(); runtime.open(PixivRoute.Work(work.artworkId)) })
+        picture?.let { shown ->
+            SheetRow(GroupIcons.GridView, pluginString(Strings.novel_image_view), {
+                sheets.close()
+                runtime.host.openMedia(listOf(MediaItem(PixivImages.url(shown, imageHost), alt = work.title.ifEmpty { null })), 0)
+            })
+            SheetRow(SavedIcons.Download, pluginString(Strings.novel_image_save), { sheets.close(); sheets.saveImage(shown) })
+        }
+        SheetRow(XIcons.Link, pluginString(Strings.copy_link), { sheets.close(); copy(url, Strings.link_copied) })
+        SheetRow(SavedIcons.OpenInNew, pluginString(Strings.open_on_pixiv), { sheets.close(); outside.open(url) })
     }
 }
 
@@ -139,6 +180,7 @@ internal fun PageActionsSheet(sheet: PixivSheet.PageActions, sheets: PixivSheets
         }
         if (illust.isUgoira && sheet.page == 0) {
             SheetRow(PixivIcons.Gif, pluginString(Strings.ugoira_save_gif), { sheets.close(); sheets.saveGif(illust) }, subtitle = pluginString(Strings.ugoira_slow))
+            SheetRow(PixivIcons.Collections, pluginString(Strings.ugoira_save_apng), { sheets.close(); sheets.saveApng(illust) }, subtitle = pluginString(Strings.ugoira_apng_note))
             SheetRow(SavedIcons.Folder, pluginString(Strings.ugoira_save_zip), { sheets.close(); sheets.saveZip(illust) })
         }
         SheetRow(XIcons.Link, pluginString(Strings.copy_link), { sheets.close(); copy(illust.url, Strings.link_copied) })

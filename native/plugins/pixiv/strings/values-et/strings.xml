@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Pixivi enda server</string>
     <string name="image_host_privacy">Peegel või sinu oma server näeb iga pilti, mille avad, ka R-18 pilte, ja sinu IP-aadressi.</string>
     <string name="image_host_reset">Taasta vaikimisi</string>
+    <string name="in_home_feed">Näita avalehe ajajoonel</string>
+    <string name="in_home_feed_description">Segab siin jälgitavate loojate uued tööd vaadetesse Jälgitavad ja Sinule</string>
     <string name="info_copied">Info kopeeritud</string>
     <string name="link_copied">Link kopeeritud</string>
     <string name="manage_account">Halda kontot saidil pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G nädalane</string>
     <string name="read_horizontally">Loe horisontaalselt</string>
     <string name="read_vertically">Loe vertikaalselt</string>
+    <string name="reader_right_to_left">Loe paremalt vasakule</string>
+    <string name="reader_right_to_left_description">Manga lehed pöörduvad libistades jaapani moodi: järgmine leht tuleb vasakult ja ← liigub edasi</string>
     <string name="recommended_empty">Praegu soovitusi pole — tõmba värskendamiseks</string>
     <string name="recommended_users">Soovitatud loojad</string>
     <string name="recommended_users_empty">Praegu soovitatud loojaid pole</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">Näita R-18 teoseid</string>
     <string name="show_r18_description">Vaikimisi väljas. Kui väljas, peidetakse piiratud teosed voogudest.</string>
     <string name="sign_in">Logi Pixiviga sisse</string>
+    <string name="sign_in_browser_intro">Pixivi sisselogimisleht avaneb sinu brauseris. Kui oled sisse loginud, küsib brauser luba XTA avamiseks: luba see ja oled siin sisse logitud.</string>
+    <string name="sign_in_expired">See sisselogimine on aegunud. Ava Pixivi sisselogimisleht uuesti.</string>
     <string name="sign_in_failed">Pixivisse sisselogimine ebaõnnestus</string>
-    <string name="sign_in_needs_android">Siin sisselogimiseks on vaja Androidi rakenduse sisseehitatud brauserit, mida töölauarakendusel pole.</string>
+    <string name="sign_in_no_code">Selles pole sisselogimiskoodi</string>
+    <string name="sign_in_open_browser">Ava Pixivi sisselogimisleht</string>
+    <string name="sign_in_paste_hint">Kleebi pixiv://… aadress või kood</string>
+    <string name="sign_in_paste_steps">Ava enne sisselogimist brauseri arendaja tööriistad (F12) vahekaardil Võrk. Leia pärast sisselogimist aadress, mis algab pixiv://account/login, kopeeri see ja kleebi kohe siia: selle kood kehtib vaid umbes 30 sekundit.</string>
+    <string name="sign_in_paste_title">Kui brauser sisselogimist tagasi ei anna</string>
+    <string name="sign_in_paste_use">Logi selle koodiga sisse</string>
+    <string name="sign_in_to_see">Pixiv näitab seda ainult sisseloginud lugejatele.</string>
+    <string name="sign_in_waiting">Ootan Pixivit… Logi brauseris sisse.</string>
     <string name="sign_out">Logi välja</string>
     <string name="sign_out_named">Kas logida %1$s välja?</string>
     <string name="sign_out_question">Kas logida Pixivist välja?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Praegu populaarne</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Kõik värvid säilivad, fail on suurem. Kodeerimine võib võtta minuti</string>
     <string name="ugoira_encoding">Kodeerin kaadrit %1$d/%2$d…</string>
     <string name="ugoira_export_failed">Animatsiooni ei õnnestunud salvestada</string>
     <string name="ugoira_fetching">Laadin kaadreid…</string>
     <string name="ugoira_pause">Peata animatsioon</string>
     <string name="ugoira_play">Esita animatsioon</string>
+    <string name="ugoira_save_apng">Salvesta APNG-na</string>
     <string name="ugoira_save_gif">Salvesta GIF-ina</string>
     <string name="ugoira_save_zip">Salvesta kaadrid ZIP-ina</string>
+    <string name="ugoira_saved_apng">Animatsioon salvestati APNG-na</string>
     <string name="ugoira_saved_gif">Animatsioon salvestati GIF-ina</string>
     <string name="ugoira_saved_zip">Kaadrid salvestati ZIP-ina</string>
     <string name="ugoira_saving">Salvestan…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Tühista vaigistus</string>
     <string name="unmute_question">Kas tühistada %1$s vaigistus?</string>
     <string name="viewing_section">Vaatamine</string>
-    <string name="walkthrough_sign_in">Selle teose avamiseks logi sisse</string>
     <string name="walkthrough_title">Populaarne Pixivis</string>
     <string name="watchlist_add">Lisa jälgimisnimekirja</string>
     <string name="watchlist_empty">Siin on mangasarjad, mille lisad jälgimisnimekirja</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Uuendatud %1$s</string>
     <string name="watchlist_view_latest">Vaata uusimat</string>
     <plurals name="works_count"><item quantity="one">%2$s teos</item><item quantity="other">%2$s teost</item></plurals>
+    <string name="settings_intro_desktop">See privaatne plugin loeb Pixivi nagu galeriiäppi: illustratsioonid, manga, romaanid, edetabelid, sinu järjehoidjad ja otsing. Klõpsa Logi sisse, et Pixivi kontole brauseris sisse logida, või kleebi allpool värskendustõend. Sinu Pixivi kontole saadetakse ainult järjehoidjad, jälgimised ja jälgimisnimekirja muudatused, mille ise teed. Siit ei postitata, kommenteerita ega teatata kunagi midagi.</string>
+    <string name="columns_portrait_desktop">Ruudustiku veerud kõrgetes akendes</string>
+    <string name="columns_landscape_desktop">Ruudustiku veerud laiades akendes</string>
+    <string name="swipe_works_desktop">Liigu teoste vahel</string>
+    <string name="swipe_works_description_desktop">Keri külje suunas loendi järgmise teoseni. Mitmeleheküljeliste teoste puhul keri edasi esimesest või viimasest leheküljest mööda.</string>
+    <string name="reader_right_to_left_description_desktop">Manga lehed pööratakse jaapani moodi: järgmine leht tuleb vasakult ja ← liigub edasi</string>
 </resources>

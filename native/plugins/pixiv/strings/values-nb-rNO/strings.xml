@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Pixivs egen server</string>
     <string name="image_host_privacy">Et speil eller din egen server ser hvert bilde du åpner, også R-18-bilder, og IP-adressen din.</string>
     <string name="image_host_reset">Tilbakestill til standard</string>
+    <string name="in_home_feed">Vis i hjem-tidslinjen</string>
+    <string name="in_home_feed_description">Blander nye verk fra skaperne du følger her inn i Følger og For deg</string>
     <string name="info_copied">Info kopiert</string>
     <string name="link_copied">Lenke kopiert</string>
     <string name="manage_account">Administrer kontoen på pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G ukentlig</string>
     <string name="read_horizontally">Les horisontalt</string>
     <string name="read_vertically">Les vertikalt</string>
+    <string name="reader_right_to_left">Les fra høyre mot venstre</string>
+    <string name="reader_right_to_left_description">Mangasider blas på japansk vis når du sveiper: neste side kommer inn fra venstre, og ← går videre</string>
     <string name="recommended_empty">Ingenting anbefalt akkurat nå — dra for å oppdatere</string>
     <string name="recommended_users">Foreslåtte skapere</string>
     <string name="recommended_users_empty">Ingen foreslåtte skapere akkurat nå</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">Vis R-18-verk</string>
     <string name="show_r18_description">Av som standard. Når av, skjules begrensede verk fra feeder.</string>
     <string name="sign_in">Logg inn med Pixiv</string>
+    <string name="sign_in_browser_intro">Pixivs påloggingsside åpnes i nettleseren din. Når du har logget på, spør nettleseren om å åpne XTA: tillat det, så er du logget på her.</string>
+    <string name="sign_in_expired">Denne påloggingen er utløpt. Åpne Pixivs påloggingsside på nytt.</string>
     <string name="sign_in_failed">Kunne ikke logge inn på Pixiv</string>
-    <string name="sign_in_needs_android">Innlogging her krever den innebygde nettleseren i Android-appen, som skrivebordsappen ikke har.</string>
+    <string name="sign_in_no_code">Det inneholder ingen påloggingskode</string>
+    <string name="sign_in_open_browser">Åpne Pixivs påloggingsside</string>
+    <string name="sign_in_paste_hint">Lim inn pixiv://…-adressen eller koden</string>
+    <string name="sign_in_paste_steps">Før du logger på, åpne utviklerverktøyene i nettleseren (F12) på fanen Nettverk. Etter påloggingen finner du adressen som begynner med pixiv://account/login, kopierer den og limer den inn her med en gang: koden varer bare rundt 30 sekunder.</string>
+    <string name="sign_in_paste_title">Hvis nettleseren ikke gir påloggingen tilbake</string>
+    <string name="sign_in_paste_use">Logg på med denne koden</string>
+    <string name="sign_in_to_see">Pixiv viser dette bare til lesere som er logget på.</string>
+    <string name="sign_in_waiting">Venter på Pixiv … Logg på i nettleseren.</string>
     <string name="sign_out">Logg ut</string>
     <string name="sign_out_named">Logge ut av %1$s?</string>
     <string name="sign_out_question">Logge ut av Pixiv?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Populært nå</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Alle farger beholdes, i en større fil. Kodingen kan ta et minutt</string>
     <string name="ugoira_encoding">Koder bilde %1$d av %2$d …</string>
     <string name="ugoira_export_failed">Kunne ikke lagre animasjonen</string>
     <string name="ugoira_fetching">Henter bilder …</string>
     <string name="ugoira_pause">Sett animasjonen på pause</string>
     <string name="ugoira_play">Spill av animasjonen</string>
+    <string name="ugoira_save_apng">Lagre som APNG</string>
     <string name="ugoira_save_gif">Lagre som GIF</string>
     <string name="ugoira_save_zip">Lagre bildene som ZIP</string>
+    <string name="ugoira_saved_apng">Animasjonen er lagret som APNG</string>
     <string name="ugoira_saved_gif">Animasjonen er lagret som GIF</string>
     <string name="ugoira_saved_zip">Bildene er lagret som ZIP</string>
     <string name="ugoira_saving">Lagrer …</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Opphev demping</string>
     <string name="unmute_question">Oppheve demping av %1$s?</string>
     <string name="viewing_section">Visning</string>
-    <string name="walkthrough_sign_in">Logg inn for å åpne dette verket</string>
     <string name="walkthrough_title">Populært på Pixiv</string>
     <string name="watchlist_add">Legg til i følgelisten</string>
     <string name="watchlist_empty">Mangaserier du legger til i følgelisten, vises her</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Oppdatert %1$s</string>
     <string name="watchlist_view_latest">Se nyeste</string>
     <plurals name="works_count"><item quantity="one">%2$s verk</item><item quantity="other">%2$s verk</item></plurals>
+    <string name="settings_intro_desktop">Denne private utvidelsen leser Pixiv som en galleriapp: illustrasjoner, manga, romaner, rangeringer, bokmerkene dine og søk. Klikk på Logg inn for å logge inn med Pixiv-kontoen i nettleseren, eller lim inn en oppfriskningstoken nedenfor. Bare bokmerkene, følgingene og endringene i følgelisten som du selv gjør, sendes til Pixiv-kontoen din. Herfra blir ingenting noen gang postet, kommentert eller rapportert.</string>
+    <string name="columns_portrait_desktop">Rutenettkolonner i høye vinduer</string>
+    <string name="columns_landscape_desktop">Rutenettkolonner i brede vinduer</string>
+    <string name="swipe_works_desktop">Bla mellom verk</string>
+    <string name="swipe_works_description_desktop">Rull sidelengs til neste verk i lista. I verk med flere sider ruller du videre forbi første eller siste side.</string>
+    <string name="reader_right_to_left_description_desktop">Mangasider blas på japansk vis: neste side kommer fra venstre, og ← går videre</string>
 </resources>

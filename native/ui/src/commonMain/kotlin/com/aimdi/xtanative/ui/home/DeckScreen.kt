@@ -462,8 +462,9 @@ private fun NetworkColumn(id: String, label: String, place: ColumnPlace, calls: 
     ColumnHeader(DeckColumn.Network(id), label, place, calls, onRefresh) { PluginActions(client) }
     val rows = ShellRows.of(client.feeds?.feeds, client.content?.tabs?.value.orEmpty(), onBar = false)
     val accent = pluginAccent(client.content?.accent?.value)
-    rows.sections?.let { ShellFeedRow(it, null, accent) }
-    rows.feeds?.let { ShellFeedRow(it, client.feeds?.filter, accent) }
+    // Under the header and as wide: the plugin's tabs start where its name does.
+    rows.sections?.let { ShellFeedRow(it, null, accent, Modifier.headerWidth()) }
+    rows.feeds?.let { ShellFeedRow(it, client.feeds?.filter, accent, Modifier.headerWidth()) }
     CompositionLocalProvider(LocalPluginClientBar provides client) {
         networks.Page(id, PaddingValues(), toTop)
     }
@@ -480,7 +481,7 @@ private fun NetworkColumn(id: String, label: String, place: ColumnPlace, calls: 
 private fun ColumnHeader(column: DeckColumn, label: String, place: ColumnPlace, calls: ColumnCalls, onRefresh: () -> Unit, extra: @Composable RowScope.() -> Unit = {}) {
     // A group's emoji stands in the mark's place, ahead of its bare name.
     val (emoji, name) = ColumnTitle.of(column, label)
-    Column(Modifier.fillMaxWidth().wrapContentWidth().widthIn(max = ReadingColumn.MAX_WIDTH.dp)) {
+    Column(Modifier.headerWidth()) {
         Row(Modifier.fillMaxWidth().then(calls.handle).heightIn(min = 48.dp).padding(start = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.weight(1f)) {
                 Row(
@@ -508,6 +509,9 @@ private fun ColumnHeader(column: DeckColumn, label: String, place: ColumnPlace, 
         HorizontalDivider()
     }
 }
+
+/** A column's header width: the column's, in a column wider than the posts' reading column as wide as they are, centred. */
+private fun Modifier.headerWidth(): Modifier = fillMaxWidth().wrapContentWidth().widthIn(max = ReadingColumn.MAX_WIDTH.dp)
 
 /** A column's name as its head shows it. */
 internal object ColumnTitle {

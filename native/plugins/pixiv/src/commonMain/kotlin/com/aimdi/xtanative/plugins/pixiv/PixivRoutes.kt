@@ -2,6 +2,7 @@ package com.aimdi.xtanative.plugins.pixiv
 
 import com.aimdi.xtanative.networks.pixiv.PixivLinkRef
 import com.aimdi.xtanative.networks.pixiv.PixivLinks
+import com.aimdi.xtanative.networks.pixiv.PixivLogin
 import com.aimdi.xtanative.networks.pixiv.PixivSearchKind
 import com.aimdi.xtanative.networks.pixiv.PixivUserListKind
 import java.net.URLDecoder
@@ -50,6 +51,9 @@ internal sealed interface PixivRoute {
 
     data object SignIn : PixivRoute
 
+    /** Pixiv's sign-in in the browser come back (`pixiv://account/login`): its one-time [code], null where Pixiv said it failed. */
+    data class SignInReturn(val code: String?) : PixivRoute
+
     /** The plugin's settings as a screen of its own, as More opens them. */
     data object Settings : PixivRoute
 
@@ -77,6 +81,7 @@ internal object PixivRoutes {
         PixivRoute.Mute -> "mute"
         PixivRoute.CopyTemplate -> "copy-template"
         PixivRoute.SignIn -> "sign-in"
+        is PixivRoute.SignInReturn -> query("sign-in-return", "code" to route.code)
         PixivRoute.Settings -> "settings"
         is PixivRoute.Picture -> query("picture", "shelf" to route.shelf)
     }
@@ -106,6 +111,7 @@ internal object PixivRoutes {
             "mute" -> PixivRoute.Mute
             "copy-template" -> PixivRoute.CopyTemplate
             "sign-in" -> PixivRoute.SignIn
+            "sign-in-return" -> PixivRoute.SignInReturn(args["code"]?.ifEmpty { null })
             "settings" -> PixivRoute.Settings
             "picture" -> shelf?.let { PixivRoute.Picture(it) }
             else -> null
@@ -116,7 +122,15 @@ internal object PixivRoutes {
     fun forUrl(url: String): String? {
         val text = url.trim()
         if (!text.startsWith("https://") && !text.startsWith("http://") && !text.startsWith("pixiv://")) return null
+        signInReturn(text)?.let { return of(it) }
         return PixivLinks.parse(text)?.let(::routeOf)?.let(::of)
+    }
+
+    /** Pixiv's sign-in redirect ([PixivLogin.codeFrom]): with its code, or failed; null for any other address. */
+    private fun signInReturn(url: String): PixivRoute.SignInReturn? = when {
+        PixivLogin.codeFrom(url) != null -> PixivRoute.SignInReturn(PixivLogin.codeFrom(url))
+        PixivLogin.deniedIn(url) -> PixivRoute.SignInReturn(null)
+        else -> null
     }
 
     /** A creator a group holds by their Pixiv id, on their profile (pixiv_plugin.dart's destinationFor); null for anything else. */

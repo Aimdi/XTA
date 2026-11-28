@@ -97,6 +97,15 @@ sealed interface KeepNotice {
 
     /** A timeline put on the deck from somewhere else; Open shows it there ([open]). */
     class AddedToDeck(val open: () -> Unit) : KeepNotice
+
+    /**
+     * Plugin [name] installed, with its page for Home not yet anywhere the
+     * reader finds it: [showAsTab] puts it on Home's bar (the desktop
+     * column's row), [pin] beside For you; null where it is there already.
+     */
+    class PluginInstalled(val name: String, val showAsTab: (() -> Unit)?, val pin: (() -> Unit)?) : KeepNotice {
+        override val long get() = true
+    }
 }
 
 /** The notice showing now, one at a time: a new one replaces it. [serial] tells two of the same apart. */

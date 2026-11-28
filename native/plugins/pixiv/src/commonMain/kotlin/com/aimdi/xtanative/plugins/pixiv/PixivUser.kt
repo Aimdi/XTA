@@ -145,7 +145,7 @@ private fun ProfileActions(scope: PixivProfileScope) {
     val profile = scope.profile
     IconTip(pluginString(Strings.share_link)) { IconButton(onClick = { outside.share(profile.url) }) { Icon(Icons.Filled.Share, pluginString(Strings.share_link)) } }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, null) }
+        IconTip(pluginString(Strings.more_actions)) { IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_actions)) } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             val item: @Composable (ImageVector, PluginText, () -> Unit) -> Unit = { icon, label, run ->
                 DropdownMenuItem(text = { Text(pluginString(label)) }, leadingIcon = { Icon(icon, null) }, onClick = {

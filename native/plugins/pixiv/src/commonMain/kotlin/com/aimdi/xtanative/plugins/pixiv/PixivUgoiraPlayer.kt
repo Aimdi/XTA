@@ -42,9 +42,8 @@ import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.plugins.PluginProgress
 import com.aimdi.xtanative.ui.plugins.pluginString
-import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.io.InputStream
+import kotlin.time.Duration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
@@ -56,9 +55,10 @@ private enum class UgoiraPhase { IDLE, LOADING, PLAYING, PAUSED, FAILED }
 /**
  * An ugoira's still picture with a play button over it: a tap fetches the
  * frame archive from the reader's image server (with Pixiv's Referer) and
- * plays the frames in place, each for its own delay, decoding one ahead so a
- * long animation never sits in memory decoded whole. It stops when the page
- * leaves the screen.
+ * plays the frames in place, each for its own delay. Frames are decoded once
+ * and kept when the animation fits in [FRAME_CACHE_BYTES], else one ahead
+ * each loop, so a long animation never sits in memory decoded whole. It
+ * stops when the page leaves the screen.
  */
 @Composable
 internal fun UgoiraPlayer(illust: PixivIllust, modifier: Modifier = Modifier) {
@@ -69,12 +69,13 @@ internal fun UgoiraPlayer(illust: PixivIllust, modifier: Modifier = Modifier) {
     var frame by remember(illust.id) { mutableStateOf<Painter?>(null) }
     LaunchedEffect(illust.id, phase == UgoiraPhase.LOADING) {
         if (phase != UgoiraPhase.LOADING) return@LaunchedEffect
-        frames = runCatching { ugoiraFrames(runtime, illust) }.getOrNull()?.takeIf { it.isNotEmpty() }
+        frames = catchingFailures { ugoiraFrames(runtime, illust) }.getOrNull()?.takeIf { it.isNotEmpty() }
         phase = if (frames == null) UgoiraPhase.FAILED else UgoiraPhase.PLAYING
     }
+    val cache = remember(frames, context) { frames?.let { all -> UgoiraFrameCache(all.size) { decode(context, all[it]) } } }
     LaunchedEffect(illust.id, phase == UgoiraPhase.PLAYING) {
         val playing = frames?.takeIf { phase == UgoiraPhase.PLAYING } ?: return@LaunchedEffect
-        play(context, playing) { frame = it }
+        play(playing.map { it.delay }, cache ?: return@LaunchedEffect) { frame = it }
     }
     Box(modifier) {
         frame?.let { Image(it, contentDescription = null, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize().background(Color.Black)) }
@@ -109,69 +110,100 @@ private fun BoxScope.UgoiraControl(phase: UgoiraPhase, onTap: () -> Unit) {
     }
 }
 
-/** Shows each frame for its delay, round and round, decoding the next while one shows. */
-private suspend fun play(context: PlatformContext, frames: List<PixivFrameBytes>, show: (Painter) -> Unit) {
+/**
+ * Shows each frame for its delay, round and round, decoding the next while one
+ * shows; [cache] keeps what it decodes when the whole animation fits, so later
+ * loops decode nothing. [wait] is how a frame's time passes.
+ */
+internal suspend fun <T : Any> play(
+    delays: List<Duration>,
+    cache: UgoiraFrameCache<T>,
+    wait: suspend (Long) -> Unit = { delay(it) },
+    show: (T) -> Unit,
+) {
     var index = 0
-    var next = decode(context, frames[0])
+    var next = cache.frame(0)
     while (true) {
         next?.let(show)
-        val shownFor = frames[index].delay.inWholeMilliseconds
+        val shownFor = delays[index].inWholeMilliseconds
         val started = System.currentTimeMillis()
-        index = (index + 1) % frames.size
-        next = decode(context, frames[index])
-        delay((shownFor - (System.currentTimeMillis() - started)).coerceAtLeast(0))
+        index = (index + 1) % delays.size
+        next = cache.frame(index)
+        wait((shownFor - (System.currentTimeMillis() - started)).coerceAtLeast(0))
     }
 }
 
-/** One frame decoded by the app's image loader, kept out of its caches; null for a frame that will not decode. */
-private suspend fun decode(context: PlatformContext, frame: PixivFrameBytes): Painter? {
-    val request = ImageRequest.Builder(context).data(frame.bytes).memoryCachePolicy(CachePolicy.DISABLED).diskCachePolicy(CachePolicy.DISABLED).build()
-    return (SingletonImageLoader.get(context).execute(request) as? SuccessResult)?.image?.asPainter(context)
+/** A decoded frame and the memory it takes. */
+internal class DecodedFrame<T : Any>(val value: T, val bytes: Long)
+
+/**
+ * An ugoira's frames as [decode] makes them, all kept once decoded when the
+ * first one shows they fit in [budget] together, else decoded again each
+ * loop, one ahead, as a long animation needs. A frame that would not decode
+ * is asked for again next time.
+ */
+internal class UgoiraFrameCache<T : Any>(private val frames: Int, private val budget: Long = FRAME_CACHE_BYTES, private val decode: suspend (Int) -> DecodedFrame<T>?) {
+    private val kept = HashMap<Int, T>()
+    private var keeps: Boolean? = null
+
+    suspend fun frame(index: Int): T? {
+        kept[index]?.let { return it }
+        val decoded = decode(index) ?: return null
+        val keep = keeps ?: (decoded.bytes * frames <= budget).also { keeps = it }
+        if (keep) kept[index] = decoded.value
+        return decoded.value
+    }
 }
 
-/** The ugoira's frames: its metadata, then its archive from the reader's image server, read whole (at most [MAX_ARCHIVE]). */
+/** The most an ugoira's decoded frames may take to be kept between loops (a 600×600 one: about 33 frames). */
+internal const val FRAME_CACHE_BYTES = 48L * 1024 * 1024
+
+/** One frame decoded by the app's image loader, kept out of its caches; null for a frame that will not decode. */
+private suspend fun decode(context: PlatformContext, frame: PixivFrameBytes): DecodedFrame<Painter>? {
+    val request = ImageRequest.Builder(context).data(frame.bytes).memoryCachePolicy(CachePolicy.DISABLED).diskCachePolicy(CachePolicy.DISABLED).build()
+    val image = (SingletonImageLoader.get(context).execute(request) as? SuccessResult)?.image ?: return null
+    val bytes = image.size.takeIf { it > 0 } ?: (image.width.toLong() * image.height * 4)
+    return DecodedFrame(image.asPainter(context), bytes)
+}
+
+/** The ugoira's frames: its metadata, then its archive from the reader's image server, read entry by entry (at most [MAX_ARCHIVE]). */
 internal suspend fun ugoiraFrames(runtime: PixivRuntime, illust: PixivIllust): List<PixivFrameBytes> {
     val meta = runtime.client.ugoiraMetadata(illust.id)
     val url = meta.archiveUrl(runtime.settings[PixivPrefs.imageHost])
-    val archive = withContext(Dispatchers.IO) {
+    return withContext(Dispatchers.IO) {
         OkHttpMediaHttp().get(url, PixivImages.HEADERS).use { response ->
             if (response.code !in 200..299) throw IOException("ugoira archive: HTTP ${response.code}")
             if ((response.contentLength ?: 0) > MAX_ARCHIVE) throw IOException("ugoira archive too large")
-            readCapped(response.body) { ensureActive() }
+            meta.framesFrom(response.body, MAX_ARCHIVE) { ensureActive() }
         }
     }
-    return withContext(Dispatchers.Default) { meta.framesIn(archive) }
 }
 
-private const val MAX_ARCHIVE = 64 * 1024 * 1024
+private const val MAX_ARCHIVE = 64L * 1024 * 1024
 
-/** [input] read whole, refusing more than [MAX_ARCHIVE]; [check] runs between reads, so a cancelled export stops on its way. */
-private fun readCapped(input: InputStream, check: () -> Unit = {}): ByteArray {
-    val out = ByteArrayOutputStream()
-    val buffer = ByteArray(64 * 1024)
-    while (true) {
-        check()
-        val read = input.read(buffer)
-        if (read < 0) return out.toByteArray()
-        out.write(buffer, 0, read)
-        if (out.size() > MAX_ARCHIVE) throw IOException("ugoira archive too large")
+/** An animation format an ugoira is saved in: its file's type and ending, and how its frames are encoded. */
+internal enum class PixivUgoiraFormat(val type: String, val ending: String) {
+    GIF("image/gif", ".gif"),
+    // An APNG is a PNG to anything that reads only its first frame, and is typed as one where files are kept.
+    APNG("image/png", ".png"),
+    ;
+
+    suspend fun encode(frames: List<PixivFrameBytes>, onFrame: (done: Int) -> Unit): ByteArray = when (this) {
+        GIF -> PixivGifWriter.encode(frames, decode = { decodePixels(it, atLeastWidth = null) }, onFrame)
+        APNG -> PixivApngWriter.encode(frames, decode = { decodePixels(it, atLeastWidth = null) }, onFrame)
     }
 }
 
-/** An ugoira saved as a looping GIF (pixiv_ugoira_export.dart): its frames fetched, then encoded a frame at a time, then saved where downloads go. */
+/** An ugoira saved as a looping GIF (pixiv_ugoira_export.dart) or APNG: its frames fetched, then encoded a frame at a time, then saved where downloads go. */
 internal object PixivUgoiraExport {
-    const val GIF_TYPE = "image/gif"
-
     /** Says each step through [say]: fetching, the frame being encoded with XTA's note that it can take a minute, then saving, which no Cancel stops. Whether the file was saved. */
-    suspend fun gif(runtime: PixivRuntime, illust: PixivIllust, language: String, say: (PluginProgress) -> Unit): Boolean {
+    suspend fun save(runtime: PixivRuntime, illust: PixivIllust, format: PixivUgoiraFormat, language: String, say: (PluginProgress) -> Unit): Boolean {
         val frames = ugoiraFrames(runtime, illust)
         say(encoding(language, 0, frames.size))
-        val gif = withContext(Dispatchers.Default) {
-            PixivGifWriter.encode(frames, decode = { decodePixels(it, atLeastWidth = null) }) { done -> say(encoding(language, done, frames.size)) }
-        }
+        val file = withContext(Dispatchers.Default) { format.encode(frames) { done -> say(encoding(language, done, frames.size)) } }
         say(PluginProgress(Strings.ugoira_saving.get(language), cancellable = false))
         val naming = PixivSaveNaming.of(runtime.settings.now)
-        return runtime.host.saveFileAndWait(gif, naming.workName(illust, ".gif"), GIF_TYPE, naming.subfolder(illust))
+        return runtime.host.saveFileAndWait(file, naming.workName(illust, format.ending), format.type, naming.subfolder(illust))
     }
 
     /** "Encoding frame 3 of 40…" for the frame after the [done] ones, its ring filled that far. */

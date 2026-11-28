@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Własny serwer Pixiv</string>
     <string name="image_host_privacy">Serwer lustrzany lub twój własny serwer widzi każdy otwierany obraz, także R-18, oraz twój adres IP.</string>
     <string name="image_host_reset">Przywróć domyślny</string>
+    <string name="in_home_feed">Pokazuj na osi czasu strony głównej</string>
+    <string name="in_home_feed_description">Dodaje nowe prace twórców obserwowanych tutaj do Obserwowanych i Dla Ciebie</string>
     <string name="info_copied">Skopiowano informacje</string>
     <string name="link_copied">Skopiowano link</string>
     <string name="manage_account">Zarządzaj kontem na pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G tygodniowy</string>
     <string name="read_horizontally">Czytaj poziomo</string>
     <string name="read_vertically">Czytaj pionowo</string>
+    <string name="reader_right_to_left">Czytaj od prawej do lewej</string>
+    <string name="reader_right_to_left_description">Strony mangi przewracają się po japońsku przy przesuwaniu: następna strona wjeżdża z lewej, a ← idzie dalej</string>
     <string name="recommended_empty">Nic do polecenia — przeciągnij, by odświeżyć</string>
     <string name="recommended_users">Proponowani twórcy</string>
     <string name="recommended_users_empty">Brak proponowanych twórców</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">Pokazuj prace R-18</string>
     <string name="show_r18_description">Domyślnie wyłączone. Gdy wyłączone, ograniczone prace są ukrywane w feedach.</string>
     <string name="sign_in">Zaloguj się przez Pixiv</string>
+    <string name="sign_in_browser_intro">Strona logowania Pixiv otworzy się w przeglądarce. Po zalogowaniu przeglądarka zapyta o otwarcie XTA: zezwól, a zostaniesz zalogowany tutaj.</string>
+    <string name="sign_in_expired">To logowanie wygasło. Otwórz ponownie stronę logowania Pixiv.</string>
     <string name="sign_in_failed">Nie udało się zalogować do Pixiv</string>
-    <string name="sign_in_needs_android">Logowanie tutaj wymaga wbudowanej przeglądarki aplikacji na Androida, której nie ma aplikacja na komputer.</string>
+    <string name="sign_in_no_code">Nie ma w tym kodu logowania</string>
+    <string name="sign_in_open_browser">Otwórz stronę logowania Pixiv</string>
+    <string name="sign_in_paste_hint">Wklej adres pixiv://… lub kod</string>
+    <string name="sign_in_paste_steps">Przed zalogowaniem otwórz narzędzia deweloperskie przeglądarki (F12) na karcie Sieć. Po zalogowaniu znajdź adres zaczynający się od pixiv://account/login, skopiuj go i od razu wklej tutaj: jego kod działa tylko około 30 sekund.</string>
+    <string name="sign_in_paste_title">Jeśli przeglądarka nie odda logowania</string>
+    <string name="sign_in_paste_use">Zaloguj się tym kodem</string>
+    <string name="sign_in_to_see">Pixiv pokazuje to tylko zalogowanym czytelnikom.</string>
+    <string name="sign_in_waiting">Czekam na Pixiv… Zaloguj się w przeglądarce.</string>
     <string name="sign_out">Wyloguj się</string>
     <string name="sign_out_named">Wylogować konto %1$s?</string>
     <string name="sign_out_question">Wylogować się z Pixiv?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Popularne teraz</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Zachowuje wszystkie kolory, w większym pliku. Kodowanie może potrwać minutę</string>
     <string name="ugoira_encoding">Kodowanie klatki %1$d z %2$d…</string>
     <string name="ugoira_export_failed">Nie udało się zapisać animacji</string>
     <string name="ugoira_fetching">Pobieranie klatek…</string>
     <string name="ugoira_pause">Wstrzymaj animację</string>
     <string name="ugoira_play">Odtwórz animację</string>
+    <string name="ugoira_save_apng">Zapisz jako APNG</string>
     <string name="ugoira_save_gif">Zapisz jako GIF</string>
     <string name="ugoira_save_zip">Zapisz klatki jako ZIP</string>
+    <string name="ugoira_saved_apng">Animację zapisano jako APNG</string>
     <string name="ugoira_saved_gif">Animację zapisano jako GIF</string>
     <string name="ugoira_saved_zip">Klatki zapisano jako ZIP</string>
     <string name="ugoira_saving">Zapisywanie…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Cofnij wyciszenie</string>
     <string name="unmute_question">Cofnąć wyciszenie: %1$s?</string>
     <string name="viewing_section">Wyświetlanie</string>
-    <string name="walkthrough_sign_in">Zaloguj się, aby otworzyć tę pracę</string>
     <string name="walkthrough_title">Popularne na Pixiv</string>
     <string name="watchlist_add">Dodaj do listy obserwowanych</string>
     <string name="watchlist_empty">Tu pojawią się serie mangi dodane do listy obserwowanych</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Zaktualizowano %1$s</string>
     <string name="watchlist_view_latest">Zobacz najnowszy</string>
     <plurals name="works_count"><item quantity="one">%2$s praca</item><item quantity="few">%2$s prace</item><item quantity="many">%2$s prac</item><item quantity="other">%2$s pracy</item></plurals>
+    <string name="settings_intro_desktop">Ta prywatna wtyczka czyta Pixiv jak aplikację-galerię: ilustracje, mangę, powieści, rankingi, twoje zakładki i wyszukiwanie. Kliknij Zaloguj się, aby wejść kontem Pixiv w przeglądarce, albo wklej refresh token poniżej. Na twoje konto Pixiv trafiają tylko zakładki, obserwowania i zmiany na liście obserwowanych, które wprowadzasz samodzielnie. Stąd nigdy nic nie jest publikowane, komentowane ani zgłaszane.</string>
+    <string name="columns_portrait_desktop">Kolumny siatki w wysokich oknach</string>
+    <string name="columns_landscape_desktop">Kolumny siatki w szerokich oknach</string>
+    <string name="swipe_works_desktop">Przechodzenie między pracami</string>
+    <string name="swipe_works_description_desktop">Przewiń w bok do następnej pracy na liście. W pracach z wieloma stronami przewijaj dalej za pierwszą lub ostatnią stronę.</string>
+    <string name="reader_right_to_left_description_desktop">Strony mangi przewracają się po japońsku: następna strona przychodzi z lewej, a ← idzie dalej</string>
 </resources>

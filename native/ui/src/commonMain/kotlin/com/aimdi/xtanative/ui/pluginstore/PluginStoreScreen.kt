@@ -40,6 +40,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -155,11 +156,18 @@ import com.aimdi.xtanative.ui.home.rememberLeaveField
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.saved.KeepNotice
+import com.aimdi.xtanative.ui.saved.KeepNotices
 import com.aimdi.xtanative.ui.settings.SETTINGS_MAX_WIDTH
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import java.text.NumberFormat
 import java.util.Locale
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -176,8 +184,10 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
     val running by plugins.running.collectAsStateWithLifecycle()
     val pins by plugins.stripPins.collectAsStateWithLifecycle(emptyList())
     val problems by plugins.startProblems.collectAsStateWithLifecycle()
-    val settings by LocalGraph.current.settings.state.collectAsStateWithLifecycle()
+    val graph = LocalGraph.current
+    val settings by graph.settings.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val language = currentLanguage()
     var confirming by remember { mutableStateOf<PluginState?>(null) }
     var query by rememberSaveable { mutableStateOf("") }
     val locale = currentLocale()
@@ -216,7 +226,7 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
         val actions = StoreActions(
             open = onOpen,
             settings = onSettings,
-            install = { id -> scope.launch { plugins.install(id) } },
+            install = { id -> scope.launch { if (plugins.install(id)) offerPlaces(plugins, id, language) { graph.settings.state.value } } },
             update = { id -> scope.launch { plugins.manager.update(id) } },
             cancel = plugins.manager::cancel,
             uninstall = { state -> confirming = state },
@@ -258,8 +268,11 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
                 // XTA's "Group microblogging services", one line under the plugins it is about, unless the search leaves it out.
                 if (grouping) item(key = "group-microblogging") { MicroblogGroupingRow(detailed = false) }
                 available(offer, locale, actions, availableOpen) { availableOpen = !availableOpen }
-                // Only a catalogue that was read can say nothing is on offer.
-                if (store.installed.isEmpty() && store.onOffer.isEmpty() && !store.catalogue.refreshing && !store.catalogue.unreachable) {
+                // Only a catalogue that was read can say nothing is on offer; one whose plugins are all private leads to them.
+                val read = !store.catalogue.refreshing && !store.catalogue.unreachable
+                if (read && store.onOffer.isEmpty() && store.privateHidden && query.isBlank()) {
+                    item(key = "private-hidden") { PrivateHidden(nothingInstalled = store.installed.isEmpty()) { scope.launch { plugins.showPrivate(true) } } }
+                } else if (store.installed.isEmpty() && store.onOffer.isEmpty() && read) {
                     item(key = "empty") { MessageText(stringResource(Res.string.plugin_store_empty)) }
                 }
             } }
@@ -342,6 +355,39 @@ private fun StoreSearchField(query: String, modifier: Modifier, onQuery: (String
         },
         modifier = modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
     )
+}
+
+/**
+ * Once plugin [id] is installed and running, with a page for Home: a notice
+ * offering what its menu here offers, so it is found again, on a tap: its
+ * tab (a row of the desktop's column) and its pin beside For you, each
+ * while it is not there yet. Nothing for a plugin with no page for Home.
+ */
+private suspend fun offerPlaces(plugins: AppPlugins, id: String, language: String, settings: () -> Settings?) {
+    val running = withTimeoutOrNull(START_WAIT_MS) { plugins.running.first { list -> list.any { it.plugin.id == id } } }
+        ?.firstOrNull { it.plugin.id == id } ?: return
+    if (running.plugin.homeTab == null) return
+    val tab = settings().tabOf(id) == false
+    val pin = id !in plugins.stripPins.first()
+    if (!tab && !pin) return
+    val name = runCatching { running.plugin.title(language) }.getOrDefault(id)
+    KeepNotices.show(
+        KeepNotice.PluginInstalled(
+            name,
+            showAsTab = { place { plugins.showAsTab(id, true) } }.takeIf { tab },
+            pin = { place { plugins.pinOnStrip(id, true) } }.takeIf { pin },
+        ),
+    )
+}
+
+/** How long an installed plugin is waited for to start before its notice is left out. */
+private const val START_WAIT_MS = 10_000L
+
+/** Where a notice's choice is written: it outlives the store, which the reader may have left. */
+private val Placing = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+private fun place(write: suspend () -> Unit) {
+    Placing.launch { write() }
 }
 
 /** What an installed plugin's menu ticks: its pin on Home's strip, and its tab on Home's bar (null when it has none to show). */
@@ -740,6 +786,19 @@ private fun ShowPrivateMenu(showPrivate: Boolean, onChange: (Boolean) -> Unit) {
                 trailingIcon = { Checkbox(checked = showPrivate, onCheckedChange = null) },
             )
         } }
+    }
+}
+
+/**
+ * Nothing else on offer while the catalogue's private plugins are hidden: the
+ * store's empty line, where nothing is installed either, over the menu's own
+ * Show private plugins as a button.
+ */
+@Composable
+private fun PrivateHidden(nothingInstalled: Boolean, onShow: () -> Unit) {
+    Column(Modifier.fillMaxWidth().padding(vertical = if (nothingInstalled) 0.dp else 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        if (nothingInstalled) MessageText(stringResource(Res.string.plugin_store_empty))
+        OutlinedButton(onClick = onShow) { Text(stringResource(Res.string.plugin_store_show_private)) }
     }
 }
 

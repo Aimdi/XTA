@@ -69,6 +69,7 @@ import com.aimdi.xtanative.ui.plugins.ShellFilter
 import com.aimdi.xtanative.ui.plugins.ShellSortOption
 import com.aimdi.xtanative.ui.plugins.ShellSortSheet
 import com.aimdi.xtanative.ui.plugins.ShellSubtitle
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -305,8 +306,12 @@ private fun NovelHomeSection(model: PixivHomeModel, view: PixivHomeView, padding
 @Composable
 private fun SignInBody(padding: PaddingValues) {
     val runtime = LocalPixiv.current
-    val preview = rememberKept("pixiv-walkthrough") { scope -> PixivList(scope, { it.id }, { runtime.discovery.walkthrough(it) }, { runtime.mutes.now.filter(it) }).also { it.ensure() } }
-    PixivWorksGrid(preview, empty = "", padding = padding, tile = { works, index -> WalkthroughTile(works[index]) }, header = {
+    val preview = rememberKept("pixiv-walkthrough") { scope ->
+        PixivList(scope, { it.id }, { runtime.discovery.walkthrough(it) }, { runtime.mutes.now.filter(it) })
+            .sharedThrough(runtime.firstPages) { runtime.firstPageKey("walkthrough") }
+            .also { it.ensure() }
+    }
+    PixivWorksGrid(preview, empty = "", padding = padding, tile = { works, index -> WalkthroughTile(works, index, preview) }, header = {
         item(key = "sign-in", span = StaggeredGridItemSpan.FullLine) {
             Column(Modifier.fillMaxWidth().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(pluginString(Strings.not_configured), textAlign = TextAlign.Center)
@@ -320,15 +325,21 @@ private fun SignInBody(padding: PaddingValues) {
     })
 }
 
-/** A work Pixiv shows before sign-in: only its picture, since opening it needs an account. */
+/**
+ * A work Pixiv shows before sign-in: its picture, opening the work as the
+ * list has it (its details need an account, its pages do not).
+ */
 @Composable
-private fun WalkthroughTile(illust: PixivIllust) {
+private fun WalkthroughTile(works: List<PixivIllust>, index: Int, list: PixivList<PixivIllust>) {
     val runtime = LocalPixiv.current
-    val language = com.aimdi.xtanative.ui.plugins.currentLanguage()
+    val sheets = LocalPixivSheets.current
+    val illust = works[index]
+    val open = { runtime.openWork(works, index, list) }
     PixivPicture(
         illust.thumbnailUrl,
         Modifier.fillMaxWidth().aspectRatio(illust.aspectRatio.toFloat().coerceIn(0.45f, 1.6f)).clip(RoundedCornerShape(8.dp))
-            .clickable { runtime.tell(Strings.walkthrough_sign_in.get(language)) },
+            .onContextClick { sheets.show(PixivSheet.WorkActions(illust, open)) }
+            .clickable(onClick = open),
         contentDescription = illust.title,
     )
 }

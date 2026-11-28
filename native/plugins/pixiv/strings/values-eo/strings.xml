@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">La propra servilo de Pixiv</string>
     <string name="image_host_privacy">Spegulo aŭ via propra servilo vidas ĉiun bildon, kiun vi malfermas, ankaŭ R-18-ajn, kaj vian IP-adreson.</string>
     <string name="image_host_reset">Restarigi la defaŭlton</string>
+    <string name="in_home_feed">Montri en la hejma tempolinio</string>
+    <string name="in_home_feed_description">Miksas novajn verkojn de la kreintoj, kiujn vi sekvas ĉi tie, en Sekvataj kaj Por vi</string>
     <string name="info_copied">Informoj kopiitaj</string>
     <string name="link_copied">Ligilo kopiita</string>
     <string name="manage_account">Administri konton ĉe pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G ĉiusemajna</string>
     <string name="read_horizontally">Legi horizontale</string>
     <string name="read_vertically">Legi vertikale</string>
+    <string name="reader_right_to_left">Legi de dekstre maldekstren</string>
+    <string name="reader_right_to_left_description">Mangaaj paĝoj turniĝas japanmaniere per ŝovo: la sekva paĝo venas de maldekstre, kaj ← iras antaŭen</string>
     <string name="recommended_empty">Neniu rekomendo nun — tiri por aktualigi</string>
     <string name="recommended_users">Proponitaj kreintoj</string>
     <string name="recommended_users_empty">Neniuj proponitaj kreintoj nun</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">Montri R-18 verkojn</string>
     <string name="show_r18_description">Defaŭlte malŝaltita. Kiam malŝaltita, limigitaj verkoj kaŝiĝas el fluoj.</string>
     <string name="sign_in">Ensaluti per Pixiv</string>
+    <string name="sign_in_browser_intro">La ensaluta paĝo de Pixiv malfermiĝas en via retumilo. Post ensaluto la retumilo petas malfermi XTA: permesu, kaj vi estos ensalutinta ĉi tie.</string>
+    <string name="sign_in_expired">Ĉi tiu ensaluto eksvalidiĝis. Malfermu denove la ensalutan paĝon de Pixiv.</string>
     <string name="sign_in_failed">Ensaluto al Pixiv malsukcesis</string>
-    <string name="sign_in_needs_android">Por ensaluti ĉi tie necesas la enkonstruita retumilo de la Android-aplikaĵo, kiun la labortabla aplikaĵo ne havas.</string>
+    <string name="sign_in_no_code">Tio enhavas neniun ensalutan kodon</string>
+    <string name="sign_in_open_browser">Malfermi la ensalutan paĝon de Pixiv</string>
+    <string name="sign_in_paste_hint">Algluu la adreson pixiv://… aŭ la kodon</string>
+    <string name="sign_in_paste_steps">Antaŭ ensaluto, malfermu la programistajn ilojn de la retumilo (F12) ĉe la langeto Reto. Post ensaluto, trovu la adreson, kiu komenciĝas per pixiv://account/login, kopiu ĝin kaj tuj algluu ĝin ĉi tie: ĝia kodo validas nur ĉirkaŭ 30 sekundojn.</string>
+    <string name="sign_in_paste_title">Se la retumilo ne redonas la ensaluton</string>
+    <string name="sign_in_paste_use">Ensaluti per ĉi tiu kodo</string>
+    <string name="sign_in_to_see">Pixiv montras tion nur al ensalutintaj legantoj.</string>
+    <string name="sign_in_waiting">Atendante Pixiv… Ensalutu en via retumilo.</string>
     <string name="sign_out">Elsaluti</string>
     <string name="sign_out_named">Ĉu elsaluti el %1$s?</string>
     <string name="sign_out_question">Ĉu elsaluti el Pixiv?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Nun furoranta</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Ĉiuj koloroj restas, en pli granda dosiero. Kodado povas daŭri minuton</string>
     <string name="ugoira_encoding">Kodigas kadron %1$d el %2$d…</string>
     <string name="ugoira_export_failed">Ne eblis konservi la animacion</string>
     <string name="ugoira_fetching">Prenas kadrojn…</string>
     <string name="ugoira_pause">Paŭzigi la animacion</string>
     <string name="ugoira_play">Ludi la animacion</string>
+    <string name="ugoira_save_apng">Konservi kiel APNG</string>
     <string name="ugoira_save_gif">Konservi kiel GIF</string>
     <string name="ugoira_save_zip">Konservi kadrojn kiel ZIP</string>
+    <string name="ugoira_saved_apng">Animacio konservita kiel APNG</string>
     <string name="ugoira_saved_gif">Animacio konservita kiel GIF</string>
     <string name="ugoira_saved_zip">Kadroj konservitaj kiel ZIP</string>
     <string name="ugoira_saving">Konservado…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Malsilentigi</string>
     <string name="unmute_question">Ĉu malsilentigi %1$s?</string>
     <string name="viewing_section">Rigardado</string>
-    <string name="walkthrough_sign_in">Ensalutu por malfermi ĉi tiun verkon</string>
     <string name="walkthrough_title">Popularaj ĉe Pixiv</string>
     <string name="watchlist_add">Aldoni al atentolisto</string>
     <string name="watchlist_empty">Ĉi tie aperas la mangaaj serioj, kiujn vi aldonas al via atentolisto</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Ĝisdatigita %1$s</string>
     <string name="watchlist_view_latest">Vidi la plej novan</string>
     <plurals name="works_count"><item quantity="one">%2$s verko</item><item quantity="other">%2$s verkoj</item></plurals>
+    <string name="settings_intro_desktop">Ĉi tiu privata kromprogramo legas Pixiv kiel galerio: ilustraĵoj, mangaoj, romanoj, rangigoj, viaj legosignoj kaj serĉo. Alklaku Ensaluti por ensaluti per via Pixiv-konto en la retumilo, aŭ algluu refreŝigan ĵetonon sube. Al via Pixiv-konto iras nur la legosignoj, sekvoj kaj ŝanĝoj de la atentolisto, kiujn vi mem faras. De ĉi tie nenio iam estas afiŝita, komentita aŭ raportita.</string>
+    <string name="columns_portrait_desktop">Kradaj kolumnoj en altaj fenestroj</string>
+    <string name="columns_landscape_desktop">Kradaj kolumnoj en larĝaj fenestroj</string>
+    <string name="swipe_works_desktop">Moviĝi inter verkoj</string>
+    <string name="swipe_works_description_desktop">Rulumu flanken al la sekva verko en la listo. Ĉe verkoj kun pluraj paĝoj, daŭre rulumu preter la unuan aŭ lastan paĝon.</string>
+    <string name="reader_right_to_left_description_desktop">Mangaaj paĝoj turniĝas laŭ japana maniero: la sekva paĝo venas de maldekstre, kaj ← iras pluen</string>
 </resources>

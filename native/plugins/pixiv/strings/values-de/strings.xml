@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Pixivs eigener Server</string>
     <string name="image_host_privacy">Ein Spiegelserver oder dein eigener Server sieht jedes Bild, das du öffnest, auch R-18-Werke, und deine IP-Adresse.</string>
     <string name="image_host_reset">Auf Standard zurücksetzen</string>
+    <string name="in_home_feed">In der Home-Timeline anzeigen</string>
+    <string name="in_home_feed_description">Mischt neue Werke der Künstler, denen du hier folgst, in Folge ich und Für dich</string>
     <string name="info_copied">Infos kopiert</string>
     <string name="link_copied">Link kopiert</string>
     <string name="manage_account">Konto auf pixiv.net verwalten</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G wöchentlich</string>
     <string name="read_horizontally">Horizontal lesen</string>
     <string name="read_vertically">Vertikal lesen</string>
+    <string name="reader_right_to_left">Von rechts nach links lesen</string>
+    <string name="reader_right_to_left_description">Manga-Seiten blättern beim Wischen japanisch um: Die nächste Seite kommt von links, und ← geht weiter</string>
     <string name="recommended_empty">Gerade nichts Empfohlenes — zum Aktualisieren ziehen</string>
     <string name="recommended_users">Vorgeschlagene Künstler</string>
     <string name="recommended_users_empty">Gerade keine vorgeschlagenen Künstler</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">R-18-Werke anzeigen</string>
     <string name="show_r18_description">Standardmäßig aus. Wenn aus, werden eingeschränkte Werke in Feeds ausgeblendet.</string>
     <string name="sign_in">Mit Pixiv anmelden</string>
+    <string name="sign_in_browser_intro">Die Anmeldeseite von Pixiv öffnet sich in deinem Browser. Nach der Anmeldung fragt der Browser, ob er XTA öffnen darf: Erlaube es, dann bist du hier angemeldet.</string>
+    <string name="sign_in_expired">Diese Anmeldung ist abgelaufen. Öffne die Anmeldeseite von Pixiv erneut.</string>
     <string name="sign_in_failed">Anmeldung bei Pixiv fehlgeschlagen</string>
-    <string name="sign_in_needs_android">Die Anmeldung hier braucht den integrierten Browser der Android-App, den die Desktop-App nicht hat.</string>
+    <string name="sign_in_no_code">Darin ist kein Anmeldecode</string>
+    <string name="sign_in_open_browser">Anmeldeseite von Pixiv öffnen</string>
+    <string name="sign_in_paste_hint">pixiv://…-Adresse oder Code einfügen</string>
+    <string name="sign_in_paste_steps">Öffne vor der Anmeldung die Entwicklertools des Browsers (F12) im Tab „Netzwerk“. Suche nach der Anmeldung die Adresse, die mit pixiv://account/login beginnt, kopiere sie und füge sie sofort hier ein: Ihr Code gilt nur etwa 30 Sekunden.</string>
+    <string name="sign_in_paste_title">Falls der Browser die Anmeldung nicht zurückgibt</string>
+    <string name="sign_in_paste_use">Mit diesem Code anmelden</string>
+    <string name="sign_in_to_see">Pixiv zeigt das nur angemeldeten Lesern.</string>
+    <string name="sign_in_waiting">Warte auf Pixiv… Melde dich in deinem Browser an.</string>
     <string name="sign_out">Abmelden</string>
     <string name="sign_out_named">Von %1$s abmelden?</string>
     <string name="sign_out_question">Von Pixiv abmelden?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Gerade angesagt</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Alle Farben bleiben erhalten, die Datei wird größer. Das Kodieren kann eine Minute dauern</string>
     <string name="ugoira_encoding">Einzelbild %1$d von %2$d wird kodiert…</string>
     <string name="ugoira_export_failed">Die Animation konnte nicht gespeichert werden</string>
     <string name="ugoira_fetching">Einzelbilder werden geladen…</string>
     <string name="ugoira_pause">Animation anhalten</string>
     <string name="ugoira_play">Animation abspielen</string>
+    <string name="ugoira_save_apng">Als APNG speichern</string>
     <string name="ugoira_save_gif">Als GIF speichern</string>
     <string name="ugoira_save_zip">Einzelbilder als ZIP speichern</string>
+    <string name="ugoira_saved_apng">Animation als APNG gespeichert</string>
     <string name="ugoira_saved_gif">Animation als GIF gespeichert</string>
     <string name="ugoira_saved_zip">Einzelbilder als ZIP gespeichert</string>
     <string name="ugoira_saving">Wird gespeichert…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Stummschaltung aufheben</string>
     <string name="unmute_question">Stummschaltung für %1$s aufheben?</string>
     <string name="viewing_section">Ansicht</string>
-    <string name="walkthrough_sign_in">Melde dich an, um dieses Werk zu öffnen</string>
     <string name="walkthrough_title">Beliebt auf Pixiv</string>
     <string name="watchlist_add">Zur Merkliste hinzufügen</string>
     <string name="watchlist_empty">Manga-Reihen auf deiner Merkliste erscheinen hier</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Aktualisiert %1$s</string>
     <string name="watchlist_view_latest">Neuesten Teil ansehen</string>
     <plurals name="works_count"><item quantity="one">%2$s Werk</item><item quantity="other">%2$s Werke</item></plurals>
+    <string name="settings_intro_desktop">Dieses private Plugin liest Pixiv wie eine Galerie-App: Illustrationen, Manga, Romane, Rankings, deine Lesezeichen und Suche. Klicke auf Anmelden, um dich im Browser bei Pixiv anzumelden, oder füge unten einen Refresh-Token ein. An dein Pixiv-Konto gehen nur die Lesezeichen, Follows und Änderungen an der Merkliste, die du selbst vornimmst. Von hier aus wird nie etwas gepostet, kommentiert oder gemeldet.</string>
+    <string name="columns_portrait_desktop">Rasterspalten in hohen Fenstern</string>
+    <string name="columns_landscape_desktop">Rasterspalten in breiten Fenstern</string>
+    <string name="swipe_works_desktop">Zwischen Werken wechseln</string>
+    <string name="swipe_works_description_desktop">Seitlich scrollen, um zum nächsten Werk der Liste zu gelangen. Bei Werken mit mehreren Seiten über die erste oder letzte Seite hinaus weiterscrollen.</string>
+    <string name="reader_right_to_left_description_desktop">Manga-Seiten blättern japanisch um: Die nächste Seite kommt von links, und ← geht weiter</string>
 </resources>

@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Pixiven zerbitzari propioa</string>
     <string name="image_host_privacy">Ispilu batek edo zure zerbitzariak irekitzen duzun irudi oro ikusten du, R-18 direnak barne, baita zure IP helbidea ere.</string>
     <string name="image_host_reset">Berrezarri lehenetsia</string>
+    <string name="in_home_feed">Erakutsi hasierako denbora-lerroan</string>
+    <string name="in_home_feed_description">Hemen jarraitzen dituzun sortzaileen lan berriak Jarraitzen eta Zuretzat zerrendetan nahasten ditu</string>
     <string name="info_copied">Informazioa kopiatu da</string>
     <string name="link_copied">Esteka kopiatu da</string>
     <string name="manage_account">Kudeatu kontua pixiv.net-en</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G astekoa</string>
     <string name="read_horizontally">Irakurri horizontalki</string>
     <string name="read_vertically">Irakurri bertikalki</string>
+    <string name="reader_right_to_left">Irakurri eskuinetik ezkerrera</string>
+    <string name="reader_right_to_left_description">Mangaren orriak japoniar eran pasatzen dira irristatzean: hurrengo orria ezkerretik dator, eta ← aurrera doa</string>
     <string name="recommended_empty">Une honetan ez dago gomendiorik — tira freskatzeko</string>
     <string name="recommended_users">Iradokitako sortzaileak</string>
     <string name="recommended_users_empty">Une honetan ez dago iradokitako sortzailerik</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">Erakutsi R-18 lanak</string>
     <string name="show_r18_description">Desaktibatuta lehenespenez. Desaktibatuta dagoenean, lan murriztuak ezkutatzen dira jarioetan.</string>
     <string name="sign_in">Hasi saioa Pixivekin</string>
+    <string name="sign_in_browser_intro">Pixiv-en saio-hasierako orria nabigatzailean irekiko da. Saioa hasi ondoren, nabigatzaileak XTA irekitzeko baimena eskatuko du: eman, eta hemen saioa hasita izango duzu.</string>
+    <string name="sign_in_expired">Saio-hasiera hau iraungi da. Ireki berriro Pixiv-en saio-hasierako orria.</string>
     <string name="sign_in_failed">Ezin izan da Pixiven saioa hasi</string>
-    <string name="sign_in_needs_android">Hemen saioa hasteko Android aplikazioaren nabigatzaile integratua behar da, eta mahaigaineko aplikazioak ez du.</string>
+    <string name="sign_in_no_code">Horrek ez du saio-hasierako koderik</string>
+    <string name="sign_in_open_browser">Ireki Pixiv-en saio-hasierako orria</string>
+    <string name="sign_in_paste_hint">Itsatsi pixiv://… helbidea edo kodea</string>
+    <string name="sign_in_paste_steps">Saioa hasi aurretik, ireki nabigatzailearen garatzaile-tresnak (F12) Sarea fitxan. Saioa hasi ondoren, bilatu pixiv://account/login-ekin hasten den helbidea, kopiatu eta itsatsi hemen berehala: kodeak 30 segundo inguru baino ez du irauten.</string>
+    <string name="sign_in_paste_title">Nabigatzaileak saio-hasiera itzultzen ez badu</string>
+    <string name="sign_in_paste_use">Hasi saioa kode honekin</string>
+    <string name="sign_in_to_see">Saioa hasita duten irakurleei bakarrik erakusten die Pixiv-ek hau.</string>
+    <string name="sign_in_waiting">Pixiv-en zain… Hasi saioa nabigatzailean.</string>
     <string name="sign_out">Itxi saioa</string>
     <string name="sign_out_named">%1$s kontuaren saioa itxi nahi duzu?</string>
     <string name="sign_out_question">Pixiv-eko saioa itxi nahi duzu?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Joerak orain</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Kolore guztiak gordetzen dira, fitxategi handiago batean. Kodetzeak minutu bat iraun dezake</string>
     <string name="ugoira_encoding">%1$d. fotograma kodetzen, guztira %2$d…</string>
     <string name="ugoira_export_failed">Ezin izan da animazioa gorde</string>
     <string name="ugoira_fetching">Fotogramak eskuratzen…</string>
     <string name="ugoira_pause">Pausatu animazioa</string>
     <string name="ugoira_play">Erreproduzitu animazioa</string>
+    <string name="ugoira_save_apng">Gorde APNG gisa</string>
     <string name="ugoira_save_gif">Gorde GIF gisa</string>
     <string name="ugoira_save_zip">Gorde fotogramak ZIP gisa</string>
+    <string name="ugoira_saved_apng">Animazioa APNG gisa gorde da</string>
     <string name="ugoira_saved_gif">Animazioa GIF gisa gorde da</string>
     <string name="ugoira_saved_zip">Fotogramak ZIP gisa gorde dira</string>
     <string name="ugoira_saving">Gordetzen…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Kendu isilaraztea</string>
     <string name="unmute_question">%1$s isilarazteari utzi nahi diozu?</string>
     <string name="viewing_section">Ikustea</string>
-    <string name="walkthrough_sign_in">Hasi saioa lan hau irekitzeko</string>
     <string name="walkthrough_title">Ezagunak Pixiven</string>
     <string name="watchlist_add">Gehitu jarraipen-zerrendara</string>
     <string name="watchlist_empty">Jarraipen-zerrendara gehitzen dituzun manga-serieak hemen agertzen dira</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Eguneratua: %1$s</string>
     <string name="watchlist_view_latest">Ikusi azkena</string>
     <plurals name="works_count"><item quantity="one">lan %2$s</item><item quantity="other">%2$s lan</item></plurals>
+    <string name="settings_intro_desktop">Plugin pribatu honek Pixiv galeria-aplikazio gisa irakurtzen du: ilustrazioak, manga, eleberriak, sailkapenak, zure laster-markak eta bilaketa. Sakatu Hasi saioa Pixiv kontuarekin nabigatzailean sartzeko, edo itsatsi freskatze-token bat behean. Zuk zeuk egiten dituzun laster-markak, jarraipenak eta jarraipen-zerrendako aldaketak soilik bidaltzen dira zure Pixiv kontura. Hemendik ez da inoiz ezer argitaratzen, iruzkintzen edo salatzen.</string>
+    <string name="columns_portrait_desktop">Saretaren zutabeak leiho altuetan</string>
+    <string name="columns_landscape_desktop">Saretaren zutabeak leiho zabaletan</string>
+    <string name="swipe_works_desktop">Lanen artean mugitu</string>
+    <string name="swipe_works_description_desktop">Korritu alboetara zerrendako hurrengo lanera. Orri bat baino gehiagoko lanetan, jarraitu korritzen lehen edo azken orritik harago.</string>
+    <string name="reader_right_to_left_description_desktop">Mangaren orriak japoniar erara pasatzen dira: hurrengo orria ezkerretik dator, eta ← aurrera doa</string>
 </resources>

@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Собственный сервер Pixiv</string>
     <string name="image_host_privacy">Зеркало или ваш сервер видит каждое изображение, которое вы открываете, включая R-18, и ваш IP-адрес.</string>
     <string name="image_host_reset">Вернуть стандартный</string>
+    <string name="in_home_feed">Показывать в домашней ленте</string>
+    <string name="in_home_feed_description">Подмешивает новые работы авторов, на которых вы подписаны здесь, в «Подписки» и «Для вас»</string>
     <string name="info_copied">Сведения скопированы</string>
     <string name="link_copied">Ссылка скопирована</string>
     <string name="manage_account">Управление аккаунтом на pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G недельный</string>
     <string name="read_horizontally">Читать горизонтально</string>
     <string name="read_vertically">Читать вертикально</string>
+    <string name="reader_right_to_left">Читать справа налево</string>
+    <string name="reader_right_to_left_description">Страницы манги листаются по-японски: следующая страница появляется слева, а ← ведёт дальше</string>
     <string name="recommended_empty">Пока нет рекомендаций — потяните, чтобы обновить</string>
     <string name="recommended_users">Рекомендуемые авторы</string>
     <string name="recommended_users_empty">Пока нет рекомендуемых авторов</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">Показывать работы R-18</string>
     <string name="show_r18_description">По умолчанию выключено. Когда выключено, ограниченные работы скрываются из лент.</string>
     <string name="sign_in">Войти через Pixiv</string>
+    <string name="sign_in_browser_intro">Страница входа Pixiv откроется в браузере. После входа браузер спросит, открыть ли XTA: разрешите, и вы войдёте здесь.</string>
+    <string name="sign_in_expired">Срок этого входа истёк. Откройте страницу входа Pixiv ещё раз.</string>
     <string name="sign_in_failed">Не удалось войти в Pixiv</string>
-    <string name="sign_in_needs_android">Для входа здесь нужен встроенный браузер приложения для Android, которого нет в версии для компьютера.</string>
+    <string name="sign_in_no_code">Здесь нет кода входа</string>
+    <string name="sign_in_open_browser">Открыть страницу входа Pixiv</string>
+    <string name="sign_in_paste_hint">Вставьте адрес pixiv://… или код</string>
+    <string name="sign_in_paste_steps">Перед входом откройте инструменты разработчика браузера (F12) на вкладке «Сеть». После входа найдите адрес, начинающийся с pixiv://account/login, скопируйте его и сразу вставьте сюда: его код действует всего около 30 секунд.</string>
+    <string name="sign_in_paste_title">Если браузер не вернёт вход</string>
+    <string name="sign_in_paste_use">Войти с этим кодом</string>
+    <string name="sign_in_to_see">Pixiv показывает это только вошедшим читателям.</string>
+    <string name="sign_in_waiting">Ждём Pixiv… Войдите в браузере.</string>
     <string name="sign_out">Выйти</string>
     <string name="sign_out_named">Выйти из аккаунта %1$s?</string>
     <string name="sign_out_question">Выйти из Pixiv?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Сейчас в тренде</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Сохраняются все цвета, файл больше. Кодирование может занять минуту</string>
     <string name="ugoira_encoding">Кодирование кадра %1$d из %2$d…</string>
     <string name="ugoira_export_failed">Не удалось сохранить анимацию</string>
     <string name="ugoira_fetching">Загрузка кадров…</string>
     <string name="ugoira_pause">Приостановить анимацию</string>
     <string name="ugoira_play">Воспроизвести анимацию</string>
+    <string name="ugoira_save_apng">Сохранить как APNG</string>
     <string name="ugoira_save_gif">Сохранить как GIF</string>
     <string name="ugoira_save_zip">Сохранить кадры в ZIP</string>
+    <string name="ugoira_saved_apng">Анимация сохранена как APNG</string>
     <string name="ugoira_saved_gif">Анимация сохранена как GIF</string>
     <string name="ugoira_saved_zip">Кадры сохранены в ZIP</string>
     <string name="ugoira_saving">Сохранение…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Не скрывать</string>
     <string name="unmute_question">Больше не скрывать %1$s?</string>
     <string name="viewing_section">Просмотр</string>
-    <string name="walkthrough_sign_in">Войдите, чтобы открыть эту работу</string>
     <string name="walkthrough_title">Популярное на Pixiv</string>
     <string name="watchlist_add">Добавить в список отслеживания</string>
     <string name="watchlist_empty">Здесь появятся серии манги, добавленные в список отслеживания</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Обновлено %1$s</string>
     <string name="watchlist_view_latest">Открыть последнюю</string>
     <plurals name="works_count"><item quantity="one">%2$s работа</item><item quantity="few">%2$s работы</item><item quantity="many">%2$s работ</item><item quantity="other">%2$s работы</item></plurals>
+    <string name="settings_intro_desktop">Этот частный плагин читает Pixiv как галерею: иллюстрации, манга, романы, рейтинги, ваши закладки и поиск. Нажмите «Войти», чтобы войти в Pixiv в браузере, или вставьте refresh-токен ниже. В ваш аккаунт Pixiv отправляются только закладки, подписки и изменения списка отслеживания, которые вы делаете сами. Публикации, комментарии и жалобы отсюда никогда не отправляются.</string>
+    <string name="columns_portrait_desktop">Столбцы сетки в высоких окнах</string>
+    <string name="columns_landscape_desktop">Столбцы сетки в широких окнах</string>
+    <string name="swipe_works_desktop">Переход между работами</string>
+    <string name="swipe_works_description_desktop">Прокручивайте вбок к следующей работе в списке. В работах с несколькими страницами продолжайте прокрутку за первую или последнюю страницу.</string>
+    <string name="reader_right_to_left_description_desktop">Страницы манги листаются по-японски: следующая страница появляется слева, и ← ведёт дальше</string>
 </resources>

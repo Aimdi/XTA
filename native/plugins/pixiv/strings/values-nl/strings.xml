@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Eigen server van Pixiv</string>
     <string name="image_host_privacy">Een mirror of je eigen server ziet elke afbeelding die je opent, ook R-18, en je IP-adres.</string>
     <string name="image_host_reset">Standaard herstellen</string>
+    <string name="in_home_feed">Tonen in de hometijdlijn</string>
+    <string name="in_home_feed_description">Mengt nieuwe werken van de makers die je hier volgt door Volgend en Voor jou</string>
     <string name="info_copied">Info gekopieerd</string>
     <string name="link_copied">Link gekopieerd</string>
     <string name="manage_account">Account beheren op pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G wekelijks</string>
     <string name="read_horizontally">Horizontaal lezen</string>
     <string name="read_vertically">Verticaal lezen</string>
+    <string name="reader_right_to_left">Van rechts naar links lezen</string>
+    <string name="reader_right_to_left_description">Mangapagina\'s slaan op de Japanse manier om bij vegen: de volgende pagina komt van links, en ← gaat verder</string>
     <string name="recommended_empty">Nu niets aanbevolen — trek om te vernieuwen</string>
     <string name="recommended_users">Voorgestelde makers</string>
     <string name="recommended_users_empty">Nu geen voorgestelde makers</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">R-18-werken tonen</string>
     <string name="show_r18_description">Standaard uit. Als uit, worden beperkte werken in feeds verborgen.</string>
     <string name="sign_in">Aanmelden met Pixiv</string>
+    <string name="sign_in_browser_intro">De aanmeldpagina van Pixiv opent in je browser. Na het aanmelden vraagt de browser om XTA te openen: sta dat toe, dan ben je hier aangemeld.</string>
+    <string name="sign_in_expired">Deze aanmelding is verlopen. Open de aanmeldpagina van Pixiv opnieuw.</string>
     <string name="sign_in_failed">Aanmelden bij Pixiv mislukt</string>
-    <string name="sign_in_needs_android">Inloggen kan hier alleen met de ingebouwde browser van de Android-app, en die heeft de desktopapp niet.</string>
+    <string name="sign_in_no_code">Daar staat geen aanmeldcode in</string>
+    <string name="sign_in_open_browser">Aanmeldpagina van Pixiv openen</string>
+    <string name="sign_in_paste_hint">Plak het pixiv://…-adres of de code</string>
+    <string name="sign_in_paste_steps">Open vóór het aanmelden de ontwikkelaarstools van de browser (F12) op het tabblad Netwerk. Zoek na het aanmelden het adres dat begint met pixiv://account/login, kopieer het en plak het hier meteen: de code is maar zo'n 30 seconden geldig.</string>
+    <string name="sign_in_paste_title">Als de browser de aanmelding niet teruggeeft</string>
+    <string name="sign_in_paste_use">Aanmelden met deze code</string>
+    <string name="sign_in_to_see">Pixiv toont dit alleen aan aangemelde lezers.</string>
+    <string name="sign_in_waiting">Wachten op Pixiv… Meld je aan in je browser.</string>
     <string name="sign_out">Afmelden</string>
     <string name="sign_out_named">%1$s afmelden?</string>
     <string name="sign_out_question">Afmelden bij Pixiv?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Nu populair</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Alle kleuren blijven behouden, in een groter bestand. Coderen kan een minuut duren</string>
     <string name="ugoira_encoding">Frame %1$d van %2$d coderen…</string>
     <string name="ugoira_export_failed">Kan de animatie niet opslaan</string>
     <string name="ugoira_fetching">Frames ophalen…</string>
     <string name="ugoira_pause">Animatie pauzeren</string>
     <string name="ugoira_play">Animatie afspelen</string>
+    <string name="ugoira_save_apng">Opslaan als APNG</string>
     <string name="ugoira_save_gif">Opslaan als GIF</string>
     <string name="ugoira_save_zip">Frames opslaan als ZIP</string>
+    <string name="ugoira_saved_apng">Animatie opgeslagen als APNG</string>
     <string name="ugoira_saved_gif">Animatie opgeslagen als GIF</string>
     <string name="ugoira_saved_zip">Frames opgeslagen als ZIP</string>
     <string name="ugoira_saving">Opslaan…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Dempen opheffen</string>
     <string name="unmute_question">%1$s niet meer dempen?</string>
     <string name="viewing_section">Weergave</string>
-    <string name="walkthrough_sign_in">Meld je aan om dit werk te openen</string>
     <string name="walkthrough_title">Populair op Pixiv</string>
     <string name="watchlist_add">Aan volglijst toevoegen</string>
     <string name="watchlist_empty">Mangareeksen die je aan je volglijst toevoegt, verschijnen hier</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Bijgewerkt %1$s</string>
     <string name="watchlist_view_latest">Nieuwste bekijken</string>
     <plurals name="works_count"><item quantity="one">%2$s werk</item><item quantity="other">%2$s werken</item></plurals>
+    <string name="settings_intro_desktop">Deze privéplug-in leest Pixiv als een galerij-app: illustraties, manga, romans, ranglijsten, je bladwijzers en zoeken. Klik op Aanmelden om in de browser in te loggen met je Pixiv-account, of plak hieronder een refresh-token. Alleen de bladwijzers, follows en wijzigingen in de volglijst die je zelf maakt, gaan naar je Pixiv-account. Vanuit hier wordt nooit iets gepost, becommentarieerd of gemeld.</string>
+    <string name="columns_portrait_desktop">Rasterkolommen in hoge vensters</string>
+    <string name="columns_landscape_desktop">Rasterkolommen in brede vensters</string>
+    <string name="swipe_works_desktop">Tussen werken bladeren</string>
+    <string name="swipe_works_description_desktop">Scrol opzij naar het volgende werk in de lijst. Bij werken met meerdere pagina’s scrol je door voorbij de eerste of laatste pagina.</string>
+    <string name="reader_right_to_left_description_desktop">Mangapagina’s slaan op zijn Japans om: de volgende pagina komt van links, en ← gaat verder</string>
 </resources>

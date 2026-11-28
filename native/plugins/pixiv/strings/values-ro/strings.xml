@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Serverul propriu Pixiv</string>
     <string name="image_host_privacy">O oglindă sau serverul tău vede fiecare imagine pe care o deschizi, inclusiv cele R-18, și adresa ta IP.</string>
     <string name="image_host_reset">Revino la implicit</string>
+    <string name="in_home_feed">Afișează în cronologia principală</string>
+    <string name="in_home_feed_description">Amestecă lucrările noi ale creatorilor pe care îi urmărești aici în Urmăriți și Pentru tine</string>
     <string name="info_copied">Informații copiate</string>
     <string name="link_copied">Link copiat</string>
     <string name="manage_account">Gestionează contul pe pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G săptămânal</string>
     <string name="read_horizontally">Citește orizontal</string>
     <string name="read_vertically">Citește vertical</string>
+    <string name="reader_right_to_left">Citește de la dreapta la stânga</string>
+    <string name="reader_right_to_left_description">Paginile de manga se întorc în stil japonez la glisare: pagina următoare vine din stânga, iar ← merge înainte</string>
     <string name="recommended_empty">Nimic recomandat acum — trage pentru a reîmprospăta</string>
     <string name="recommended_users">Creatori sugerați</string>
     <string name="recommended_users_empty">Niciun creator sugerat acum</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">Afișează lucrări R-18</string>
     <string name="show_r18_description">Dezactivat implicit. Când e dezactivat, lucrările restricționate sunt ascunse din fluxuri.</string>
     <string name="sign_in">Conectare cu Pixiv</string>
+    <string name="sign_in_browser_intro">Pagina de conectare Pixiv se deschide în browser. După ce te-ai conectat, browserul cere să deschidă XTA: permite, și vei fi conectat aici.</string>
+    <string name="sign_in_expired">Această conectare a expirat. Deschide din nou pagina de conectare Pixiv.</string>
     <string name="sign_in_failed">Nu s-a putut conecta la Pixiv</string>
-    <string name="sign_in_needs_android">Conectarea aici necesită browserul integrat al aplicației Android, pe care aplicația pentru desktop nu îl are.</string>
+    <string name="sign_in_no_code">Nu conține niciun cod de conectare</string>
+    <string name="sign_in_open_browser">Deschide pagina de conectare Pixiv</string>
+    <string name="sign_in_paste_hint">Lipește adresa pixiv://… sau codul</string>
+    <string name="sign_in_paste_steps">Înainte de conectare, deschide instrumentele pentru dezvoltatori ale browserului (F12) în fila Rețea. După conectare, caută adresa care începe cu pixiv://account/login, copiaz-o și lipește-o aici imediat: codul ei durează doar vreo 30 de secunde.</string>
+    <string name="sign_in_paste_title">Dacă browserul nu predă conectarea înapoi</string>
+    <string name="sign_in_paste_use">Conectează-te cu acest cod</string>
+    <string name="sign_in_to_see">Pixiv arată asta doar cititorilor conectați.</string>
+    <string name="sign_in_waiting">Se așteaptă Pixiv… Conectează-te în browser.</string>
     <string name="sign_out">Deconectare</string>
     <string name="sign_out_named">Deconectezi %1$s?</string>
     <string name="sign_out_question">Te deconectezi de la Pixiv?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">În tendințe acum</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Păstrează toate culorile, într-un fișier mai mare. Codarea poate dura un minut</string>
     <string name="ugoira_encoding">Se codifică cadrul %1$d din %2$d…</string>
     <string name="ugoira_export_failed">Animația nu a putut fi salvată</string>
     <string name="ugoira_fetching">Se preiau cadrele…</string>
     <string name="ugoira_pause">Întrerupe animația</string>
     <string name="ugoira_play">Redă animația</string>
+    <string name="ugoira_save_apng">Salvează ca APNG</string>
     <string name="ugoira_save_gif">Salvează ca GIF</string>
     <string name="ugoira_save_zip">Salvează cadrele ca ZIP</string>
+    <string name="ugoira_saved_apng">Animație salvată ca APNG</string>
     <string name="ugoira_saved_gif">Animație salvată ca GIF</string>
     <string name="ugoira_saved_zip">Cadre salvate ca ZIP</string>
     <string name="ugoira_saving">Se salvează…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Anulează ascunderea</string>
     <string name="unmute_question">Anulezi ascunderea pentru %1$s?</string>
     <string name="viewing_section">Vizualizare</string>
-    <string name="walkthrough_sign_in">Conectează-te pentru a deschide această lucrare</string>
     <string name="walkthrough_title">Populare pe Pixiv</string>
     <string name="watchlist_add">Adaugă în lista de urmărire</string>
     <string name="watchlist_empty">Seriile manga adăugate în lista de urmărire apar aici</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Actualizată %1$s</string>
     <string name="watchlist_view_latest">Vezi cel mai recent</string>
     <plurals name="works_count"><item quantity="one">%2$s lucrare</item><item quantity="few">%2$s lucrări</item><item quantity="other">%2$s de lucrări</item></plurals>
+    <string name="settings_intro_desktop">Acest plugin privat citește Pixiv ca o aplicație-galerie: ilustrații, manga, romane, clasamente, semnele dvs. de carte și căutarea. Faceți clic pe Conectare pentru a intra cu contul Pixiv în browser sau lipiți un token de reîmprospătare mai jos. În contul dvs. Pixiv ajung doar semnele de carte, urmăririle și modificările listei de urmărire pe care le faceți dvs. De aici nu se publică, nu se comentează și nu se raportează niciodată nimic.</string>
+    <string name="columns_portrait_desktop">Coloane ale grilei în ferestre înalte</string>
+    <string name="columns_landscape_desktop">Coloane ale grilei în ferestre late</string>
+    <string name="swipe_works_desktop">Treceți de la o lucrare la alta</string>
+    <string name="swipe_works_description_desktop">Derulați lateral până la următoarea lucrare din listă. La lucrările cu mai multe pagini, continuați dincolo de prima sau ultima pagină.</string>
+    <string name="reader_right_to_left_description_desktop">Paginile manga se întorc în stil japonez: pagina următoare vine din stânga, iar ← merge înainte</string>
 </resources>

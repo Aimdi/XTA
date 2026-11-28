@@ -59,14 +59,16 @@ internal fun ViewingSettings() {
     val runtime = LocalPixiv.current
     val settings = pixivSettings()
     var host by remember { mutableStateOf(false) }
+    // A desktop's window is tall or wide rather than a phone held upright or sideways, and it is scrolled, not swiped.
+    val desktop = PluginPlatform.isDesktop
     SectionTitle(pluginString(Strings.viewing_section))
     ActionRow(pluginString(Strings.image_host), { host = true }, subtitle = settings[PixivPrefs.imageHost])
     QualityRow(Strings.quality_feed, PixivQualitySlot.FEED)
     QualityRow(Strings.quality_detail, PixivQualitySlot.DETAIL)
     QualityRow(Strings.quality_reader, PixivQualitySlot.READER)
     val columns = listOf(0, 2, 3, 4).map { it to if (it == 0) pluginString(Strings.columns_auto) else "$it" }
-    ChoiceRow(pluginString(Strings.columns_portrait), settings[PixivPrefs.gridColumnsPortrait], columns) { runtime.settings.set(PixivPrefs.gridColumnsPortrait, it) }
-    ChoiceRow(pluginString(Strings.columns_landscape), settings[PixivPrefs.gridColumnsLandscape], columns) { runtime.settings.set(PixivPrefs.gridColumnsLandscape, it) }
+    ChoiceRow(pluginString(if (desktop) Strings.columns_portrait_desktop else Strings.columns_portrait), settings[PixivPrefs.gridColumnsPortrait], columns) { runtime.settings.set(PixivPrefs.gridColumnsPortrait, it) }
+    ChoiceRow(pluginString(if (desktop) Strings.columns_landscape_desktop else Strings.columns_landscape), settings[PixivPrefs.gridColumnsLandscape], columns) { runtime.settings.set(PixivPrefs.gridColumnsLandscape, it) }
     ChoiceRow(
         pluginString(Strings.detail_layout),
         settings[PixivPrefs.detailLayout],
@@ -76,7 +78,16 @@ internal fun ViewingSettings() {
             PixivDetailLayout.SPLIT to pluginString(Strings.detail_layout_split),
         ),
     ) { runtime.settings.set(PixivPrefs.detailLayout, it) }
-    SwitchRow(pluginString(Strings.swipe_works), pluginString(Strings.swipe_works_description), settings[PixivPrefs.swipeBetweenWorks]) { runtime.settings.set(PixivPrefs.swipeBetweenWorks, it) }
+    SwitchRow(
+        pluginString(if (desktop) Strings.swipe_works_desktop else Strings.swipe_works),
+        pluginString(if (desktop) Strings.swipe_works_description_desktop else Strings.swipe_works_description),
+        settings[PixivPrefs.swipeBetweenWorks]) { runtime.settings.set(PixivPrefs.swipeBetweenWorks, it) }
+    SwitchRow(
+        pluginString(Strings.reader_right_to_left),
+        pluginString(if (desktop) Strings.reader_right_to_left_description_desktop else Strings.reader_right_to_left_description),
+        PixivRightToLeft.of(settings)) { on ->
+        runtime.settings.update { PixivRightToLeft.with(it, on) }
+    }
     SwitchRow(pluginString(Strings.ai_badge), pluginString(Strings.ai_badge_description), settings[PixivPrefs.aiBadge]) { runtime.settings.set(PixivPrefs.aiBadge, it) }
     if (host) ImageHostDialog { host = false }
 }

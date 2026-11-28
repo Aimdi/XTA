@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Pixiv's own server</string>
     <string name="image_host_privacy">A mirror or your own server sees every image you open, R-18 ones included, and your IP address.</string>
     <string name="image_host_reset">Reset to default</string>
+    <string name="in_home_feed">Show in the home timeline</string>
+    <string name="in_home_feed_description">Mixes new works by the creators you follow here into Following and For you</string>
     <string name="info_copied">Info copied</string>
     <string name="link_copied">Link copied</string>
     <string name="manage_account">Manage account on pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G weekly</string>
     <string name="read_horizontally">Read horizontally</string>
     <string name="read_vertically">Read vertically</string>
+    <string name="reader_right_to_left">Read right to left</string>
+    <string name="reader_right_to_left_description">Manga pages turn the Japanese way when swiped: the next page comes in from the left, and ← goes on</string>
     <string name="recommended_empty">Nothing recommended right now — pull to refresh</string>
     <string name="recommended_users">Suggested creators</string>
     <string name="recommended_users_empty">No suggested creators right now</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">Show R-18 works</string>
     <string name="show_r18_description">Off by default. When off, restricted works are hidden from feeds.</string>
     <string name="sign_in">Sign in with Pixiv</string>
+    <string name="sign_in_browser_intro">Pixiv's sign-in page opens in your browser. Once you have signed in, the browser asks to open XTA: allow it, and you are signed in here.</string>
+    <string name="sign_in_expired">This sign-in has expired. Open Pixiv's sign-in page again.</string>
     <string name="sign_in_failed">Could not sign in to Pixiv</string>
-    <string name="sign_in_needs_android">Signing in here needs the Android app's built-in browser, which the desktop app doesn't have.</string>
+    <string name="sign_in_no_code">That holds no sign-in code</string>
+    <string name="sign_in_open_browser">Open Pixiv's sign-in page</string>
+    <string name="sign_in_paste_hint">Paste the pixiv://… address or the code</string>
+    <string name="sign_in_paste_steps">Before you sign in, open the browser's developer tools (F12) on the Network tab. After signing in, find the address that starts with pixiv://account/login, copy it and paste it here at once: its code lasts only about 30 seconds.</string>
+    <string name="sign_in_paste_title">If the browser doesn't hand the sign-in back</string>
+    <string name="sign_in_paste_use">Sign in with this code</string>
+    <string name="sign_in_to_see">Pixiv shows this only to readers who are signed in.</string>
+    <string name="sign_in_waiting">Waiting for Pixiv… Sign in in your browser.</string>
     <string name="sign_out">Sign out</string>
     <string name="sign_out_named">Sign out of %1$s?</string>
     <string name="sign_out_question">Sign out of Pixiv?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Trending now</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Every colour kept, in a larger file. Encoding can take a minute</string>
     <string name="ugoira_encoding">Encoding frame %1$d of %2$d…</string>
     <string name="ugoira_export_failed">Could not save the animation</string>
     <string name="ugoira_fetching">Fetching frames…</string>
     <string name="ugoira_pause">Pause animation</string>
     <string name="ugoira_play">Play animation</string>
+    <string name="ugoira_save_apng">Save as APNG</string>
     <string name="ugoira_save_gif">Save as GIF</string>
     <string name="ugoira_save_zip">Save frames as ZIP</string>
+    <string name="ugoira_saved_apng">Animation saved as APNG</string>
     <string name="ugoira_saved_gif">Animation saved as GIF</string>
     <string name="ugoira_saved_zip">Frames saved as ZIP</string>
     <string name="ugoira_saving">Saving…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Unmute</string>
     <string name="unmute_question">Unmute %1$s?</string>
     <string name="viewing_section">Viewing</string>
-    <string name="walkthrough_sign_in">Sign in to open this work</string>
     <string name="walkthrough_title">Popular on Pixiv</string>
     <string name="watchlist_add">Add to watchlist</string>
     <string name="watchlist_empty">Manga series you add to your watchlist show up here</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Updated %1$s</string>
     <string name="watchlist_view_latest">View latest</string>
     <plurals name="works_count"><item quantity="one">%2$s work</item><item quantity="other">%2$s works</item></plurals>
+    <string name="settings_intro_desktop">This private plugin reads Pixiv like a gallery app: illustrations, manga, novels, rankings, your bookmarks and search. Click Sign in to log in with your Pixiv account in the browser, or paste a refresh token below. Only the bookmarks, follows and watchlist changes you make are sent to your Pixiv account. Nothing is ever posted, commented on or reported from here.</string>
+    <string name="columns_portrait_desktop">Grid columns in tall windows</string>
+    <string name="columns_landscape_desktop">Grid columns in wide windows</string>
+    <string name="swipe_works_desktop">Move between works</string>
+    <string name="swipe_works_description_desktop">Scroll sideways to the next work in the list. In works with several pages, keep scrolling past the first or last page.</string>
+    <string name="reader_right_to_left_description_desktop">Manga pages turn the Japanese way: the next page comes in from the left, and ← goes on</string>
 </resources>

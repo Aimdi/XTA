@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Server milik Pixiv</string>
     <string name="image_host_privacy">Mirror atau server Anda sendiri melihat setiap gambar yang Anda buka, termasuk yang R-18, dan alamat IP Anda.</string>
     <string name="image_host_reset">Kembalikan ke bawaan</string>
+    <string name="in_home_feed">Tampilkan di linimasa beranda</string>
+    <string name="in_home_feed_description">Mencampurkan karya baru dari kreator yang kamu ikuti di sini ke Mengikuti dan Untukmu</string>
     <string name="info_copied">Info disalin</string>
     <string name="link_copied">Tautan disalin</string>
     <string name="manage_account">Kelola akun di pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G mingguan</string>
     <string name="read_horizontally">Baca horizontal</string>
     <string name="read_vertically">Baca vertikal</string>
+    <string name="reader_right_to_left">Baca dari kanan ke kiri</string>
+    <string name="reader_right_to_left_description">Halaman manga berganti ala Jepang saat digeser: halaman berikutnya datang dari kiri, dan ← maju</string>
     <string name="recommended_empty">Tidak ada rekomendasi saat ini — tarik untuk menyegarkan</string>
     <string name="recommended_users">Kreator yang disarankan</string>
     <string name="recommended_users_empty">Belum ada kreator yang disarankan</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">Tampilkan karya R-18</string>
     <string name="show_r18_description">Nonaktif secara bawaan. Saat nonaktif, karya terbatas disembunyikan dari feed.</string>
     <string name="sign_in">Masuk dengan Pixiv</string>
+    <string name="sign_in_browser_intro">Halaman masuk Pixiv terbuka di browsermu. Setelah masuk, browser akan meminta izin membuka XTA: izinkan, dan kamu akan masuk di sini.</string>
+    <string name="sign_in_expired">Proses masuk ini sudah kedaluwarsa. Buka lagi halaman masuk Pixiv.</string>
     <string name="sign_in_failed">Tidak dapat masuk ke Pixiv</string>
-    <string name="sign_in_needs_android">Masuk di sini memerlukan browser bawaan aplikasi Android, yang tidak dimiliki aplikasi desktop.</string>
+    <string name="sign_in_no_code">Itu tidak berisi kode masuk</string>
+    <string name="sign_in_open_browser">Buka halaman masuk Pixiv</string>
+    <string name="sign_in_paste_hint">Tempel alamat pixiv://… atau kodenya</string>
+    <string name="sign_in_paste_steps">Sebelum masuk, buka alat pengembang browser (F12) di tab Network. Setelah masuk, cari alamat yang diawali pixiv://account/login, salin, lalu segera tempel di sini: kodenya hanya berlaku sekitar 30 detik.</string>
+    <string name="sign_in_paste_title">Jika browser tidak mengembalikan proses masuk</string>
+    <string name="sign_in_paste_use">Masuk dengan kode ini</string>
+    <string name="sign_in_to_see">Pixiv hanya menampilkan ini kepada pembaca yang sudah masuk.</string>
+    <string name="sign_in_waiting">Menunggu Pixiv… Masuklah di browsermu.</string>
     <string name="sign_out">Keluar</string>
     <string name="sign_out_named">Keluar dari %1$s?</string>
     <string name="sign_out_question">Keluar dari Pixiv?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Sedang tren</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Semua warna dipertahankan, dalam berkas yang lebih besar. Pengodean bisa memakan waktu semenit</string>
     <string name="ugoira_encoding">Mengenkode bingkai %1$d dari %2$d…</string>
     <string name="ugoira_export_failed">Tidak dapat menyimpan animasi</string>
     <string name="ugoira_fetching">Mengambil bingkai…</string>
     <string name="ugoira_pause">Jeda animasi</string>
     <string name="ugoira_play">Putar animasi</string>
+    <string name="ugoira_save_apng">Simpan sebagai APNG</string>
     <string name="ugoira_save_gif">Simpan sebagai GIF</string>
     <string name="ugoira_save_zip">Simpan bingkai sebagai ZIP</string>
+    <string name="ugoira_saved_apng">Animasi disimpan sebagai APNG</string>
     <string name="ugoira_saved_gif">Animasi disimpan sebagai GIF</string>
     <string name="ugoira_saved_zip">Bingkai disimpan sebagai ZIP</string>
     <string name="ugoira_saving">Menyimpan…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Batal bisukan</string>
     <string name="unmute_question">Batal bisukan %1$s?</string>
     <string name="viewing_section">Tampilan</string>
-    <string name="walkthrough_sign_in">Masuk untuk membuka karya ini</string>
     <string name="walkthrough_title">Populer di Pixiv</string>
     <string name="watchlist_add">Tambahkan ke daftar pantau</string>
     <string name="watchlist_empty">Seri manga yang kamu tambahkan ke daftar pantau muncul di sini</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Diperbarui %1$s</string>
     <string name="watchlist_view_latest">Lihat terbaru</string>
     <plurals name="works_count"><item quantity="other">%2$s karya</item></plurals>
+    <string name="settings_intro_desktop">Plugin pribadi ini membaca Pixiv seperti aplikasi galeri: ilustrasi, manga, novel, peringkat, penanda Anda, dan pencarian. Klik Masuk untuk masuk dengan akun Pixiv di peramban, atau tempel token penyegaran di bawah. Hanya penanda, ikutan, dan perubahan daftar pantau yang Anda buat sendiri yang dikirim ke akun Pixiv Anda. Dari sini tidak pernah ada yang diposting, dikomentari, atau dilaporkan.</string>
+    <string name="columns_portrait_desktop">Kolom kisi di jendela tinggi</string>
+    <string name="columns_landscape_desktop">Kolom kisi di jendela lebar</string>
+    <string name="swipe_works_desktop">Berpindah antarkarya</string>
+    <string name="swipe_works_description_desktop">Gulir ke samping ke karya berikutnya dalam daftar. Pada karya dengan beberapa halaman, terus gulir melewati halaman pertama atau terakhir.</string>
+    <string name="reader_right_to_left_description_desktop">Halaman manga dibalik cara Jepang: halaman berikutnya datang dari kiri, dan ← maju</string>
 </resources>

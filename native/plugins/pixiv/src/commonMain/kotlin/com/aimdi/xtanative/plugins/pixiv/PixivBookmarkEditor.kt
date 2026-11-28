@@ -192,7 +192,7 @@ private fun rememberKnownTags(): List<String> {
     var known by remember { mutableStateOf(emptyList<String>()) }
     LaunchedEffect(Unit) {
         if (runtime.signedIn) {
-            known = listOf(PixivRestrict.PUBLIC, PixivRestrict.PRIVATE).flatMap { restrict -> runCatching { runtime.bookmarkApi.allTags(restrict) }.getOrDefault(emptyList()) }
+            known = listOf(PixivRestrict.PUBLIC, PixivRestrict.PRIVATE).flatMap { restrict -> catchingFailures { runtime.bookmarkApi.allTags(restrict) }.getOrDefault(emptyList()) }
                 .map { it.name }.distinct()
         }
     }

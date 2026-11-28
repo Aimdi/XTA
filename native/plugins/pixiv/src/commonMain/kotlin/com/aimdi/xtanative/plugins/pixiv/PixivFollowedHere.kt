@@ -13,6 +13,9 @@ internal object PixivFollowedHere {
     /** How many creators one read asks for, the most recently followed first. */
     const val PER_READ = 30
 
+    /** One read of [PER_READ] creators, three requests at a time: more than a single list's budget, still bounded. */
+    const val BUDGET_MILLIS = 45_000L
+
     suspend fun read(runtime: PixivRuntime): Page<PixivIllust> {
         val follows = PixivFollows.of(runtime.settings.now).asReversed().take(PER_READ)
         if (follows.isEmpty()) return Page(emptyList(), null)

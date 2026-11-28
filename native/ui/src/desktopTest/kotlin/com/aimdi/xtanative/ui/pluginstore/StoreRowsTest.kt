@@ -67,7 +67,12 @@ class StoreRowsTest {
             slots,
             "an update or a failure keeps its own row, first",
         )
-        assertEquals(listOf(StoreSlot(listOf("rss"), boxes = true)), StoreRows.slots(listOf("rss")) { false }, "an odd one stands alone in its line")
+        assertEquals(listOf(StoreSlot(listOf("rss"), boxes = false)), StoreRows.slots(listOf("rss")) { false }, "one alone is a row across the column")
+        assertEquals(
+            listOf(StoreSlot(listOf("bluesky!"), boxes = false), StoreSlot(listOf("pixiv"), boxes = false)),
+            StoreRows.slots(listOf("bluesky!", "pixiv")) { it.endsWith("!") },
+        )
+        assertEquals(StoreSlot(listOf("pixiv"), boxes = true), StoreRows.slots(listOf("threads", "mastodon", "pixiv")) { false }.last(), "an odd one after others keeps the grid")
         assertEquals(emptyList(), StoreRows.slots(emptyList<String>()) { false })
     }
 

@@ -55,7 +55,13 @@ internal data class Split<T>(val bar: List<T>, val more: List<T>)
  * switcher to lead back; [onHome] is what it does.
  */
 @Stable
-internal class NetworkBarSections(val network: String, val client: PluginClientBar, val onHome: (() -> Unit)? = null, val house: Boolean = true) {
+internal class NetworkBarSections(
+    val network: String,
+    val client: PluginClientBar,
+    val onHome: (() -> Unit)? = null,
+    val house: Boolean = true,
+    val inColumn: Boolean = false,
+) {
     /** The network's sections, as its plugin hands them now. */
     val sections: List<PluginHomeTab> get() = client.content?.tabs?.value.orEmpty()
 
@@ -84,14 +90,19 @@ internal class NetworkBarTakeover {
     /**
      * [owner] shows [network] through [client], or nothing when either is
      * null. [onHome] is what the bar's house does there: null leaves it to
-     * the bar, which turns to Home's own page.
+     * the bar, which turns to Home's own page. [inColumn]: the network is
+     * read as one of several columns side by side, which draws the sections
+     * under itself ([onBar] leaves them out of Home's bar).
      */
-    fun show(owner: String, network: String?, client: PluginClientBar?, onHome: (() -> Unit)? = null, house: Boolean = true) {
-        if (network == null || client == null) shown.remove(owner) else shown[owner] = NetworkBarSections(network, client, onHome, house)
+    fun show(owner: String, network: String?, client: PluginClientBar?, onHome: (() -> Unit)? = null, house: Boolean = true, inColumn: Boolean = false) {
+        if (network == null || client == null) shown.remove(owner) else shown[owner] = NetworkBarSections(network, client, onHome, house, inColumn)
     }
 
     /** The sections taking over the bar on [page], if any. */
     fun on(page: BarPage): NetworkBarSections? = NetworkBarRules.owner(page)?.let { shown[it] }?.takeIf { it.active }
+
+    /** The sections Home's own bottom bar takes on [page]: not those a column draws under itself. */
+    fun onBar(page: BarPage): NetworkBarSections? = on(page)?.takeIf { !it.inColumn }
 
     /**
      * Whether [page] has no bottom bar: Home's Feed showing a plugin whose

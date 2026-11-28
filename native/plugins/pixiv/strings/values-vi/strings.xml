@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Máy chủ của Pixiv</string>
     <string name="image_host_privacy">Máy chủ gương hoặc máy chủ riêng của bạn thấy mọi ảnh bạn mở, kể cả ảnh R-18, và địa chỉ IP của bạn.</string>
     <string name="image_host_reset">Đặt lại mặc định</string>
+    <string name="in_home_feed">Hiện trong dòng thời gian trang chủ</string>
+    <string name="in_home_feed_description">Trộn tác phẩm mới của những tác giả bạn theo dõi tại đây vào Đang theo dõi và Dành cho bạn</string>
     <string name="info_copied">Đã sao chép thông tin</string>
     <string name="link_copied">Đã sao chép liên kết</string>
     <string name="manage_account">Quản lý tài khoản trên pixiv.net</string>
@@ -330,6 +332,8 @@
     <string name="ranking_week_r18g">R-18G hàng tuần</string>
     <string name="read_horizontally">Đọc ngang</string>
     <string name="read_vertically">Đọc dọc</string>
+    <string name="reader_right_to_left">Đọc từ phải sang trái</string>
+    <string name="reader_right_to_left_description">Trang manga lật kiểu Nhật khi vuốt: trang tiếp theo đến từ bên trái, và ← đi tiếp</string>
     <string name="recommended_empty">Hiện không có gợi ý — kéo để làm mới</string>
     <string name="recommended_users">Người sáng tạo gợi ý</string>
     <string name="recommended_users_empty">Hiện không có người sáng tạo gợi ý</string>
@@ -435,8 +439,17 @@
     <string name="show_r18">Hiện tác phẩm R-18</string>
     <string name="show_r18_description">Mặc định tắt. Khi tắt, tác phẩm bị hạn chế được ẩn khỏi bảng tin.</string>
     <string name="sign_in">Đăng nhập bằng Pixiv</string>
+    <string name="sign_in_browser_intro">Trang đăng nhập của Pixiv sẽ mở trong trình duyệt. Sau khi đăng nhập, trình duyệt sẽ hỏi có mở XTA không: hãy cho phép, và bạn sẽ được đăng nhập tại đây.</string>
+    <string name="sign_in_expired">Lần đăng nhập này đã hết hạn. Hãy mở lại trang đăng nhập của Pixiv.</string>
     <string name="sign_in_failed">Không thể đăng nhập Pixiv</string>
-    <string name="sign_in_needs_android">Đăng nhập ở đây cần trình duyệt tích hợp của ứng dụng Android, mà ứng dụng máy tính không có.</string>
+    <string name="sign_in_no_code">Trong đó không có mã đăng nhập</string>
+    <string name="sign_in_open_browser">Mở trang đăng nhập của Pixiv</string>
+    <string name="sign_in_paste_hint">Dán địa chỉ pixiv://… hoặc mã</string>
+    <string name="sign_in_paste_steps">Trước khi đăng nhập, mở công cụ dành cho nhà phát triển của trình duyệt (F12) ở thẻ Network. Sau khi đăng nhập, tìm địa chỉ bắt đầu bằng pixiv://account/login, sao chép rồi dán ngay vào đây: mã của nó chỉ có hiệu lực khoảng 30 giây.</string>
+    <string name="sign_in_paste_title">Nếu trình duyệt không trả lại việc đăng nhập</string>
+    <string name="sign_in_paste_use">Đăng nhập bằng mã này</string>
+    <string name="sign_in_to_see">Pixiv chỉ hiện nội dung này cho người đọc đã đăng nhập.</string>
+    <string name="sign_in_waiting">Đang chờ Pixiv… Hãy đăng nhập trong trình duyệt.</string>
     <string name="sign_out">Đăng xuất</string>
     <string name="sign_out_named">Đăng xuất %1$s?</string>
     <string name="sign_out_question">Đăng xuất khỏi Pixiv?</string>
@@ -461,13 +474,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Đang thịnh hành</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Giữ mọi màu sắc, tệp sẽ lớn hơn. Mã hóa có thể mất một phút</string>
     <string name="ugoira_encoding">Đang mã hóa khung hình %1$d/%2$d…</string>
     <string name="ugoira_export_failed">Không thể lưu ảnh động</string>
     <string name="ugoira_fetching">Đang lấy khung hình…</string>
     <string name="ugoira_pause">Tạm dừng hoạt ảnh</string>
     <string name="ugoira_play">Phát hoạt ảnh</string>
+    <string name="ugoira_save_apng">Lưu dạng APNG</string>
     <string name="ugoira_save_gif">Lưu dưới dạng GIF</string>
     <string name="ugoira_save_zip">Lưu khung hình dưới dạng ZIP</string>
+    <string name="ugoira_saved_apng">Đã lưu hoạt ảnh dạng APNG</string>
     <string name="ugoira_saved_gif">Đã lưu ảnh động dưới dạng GIF</string>
     <string name="ugoira_saved_zip">Đã lưu khung hình dưới dạng ZIP</string>
     <string name="ugoira_saving">Đang lưu…</string>
@@ -477,7 +493,6 @@
     <string name="unmute">Bỏ ẩn</string>
     <string name="unmute_question">Bỏ ẩn %1$s?</string>
     <string name="viewing_section">Hiển thị</string>
-    <string name="walkthrough_sign_in">Đăng nhập để mở tác phẩm này</string>
     <string name="walkthrough_title">Phổ biến trên Pixiv</string>
     <string name="watchlist_add">Thêm vào truyện theo dõi</string>
     <string name="watchlist_empty">Các bộ manga bạn thêm vào truyện theo dõi sẽ hiện ở đây</string>
@@ -485,4 +500,10 @@
     <string name="watchlist_updated">Cập nhật %1$s</string>
     <string name="watchlist_view_latest">Xem phần mới nhất</string>
     <plurals name="works_count"><item quantity="other">%2$s tác phẩm</item></plurals>
+    <string name="settings_intro_desktop">Plugin riêng này đọc Pixiv như một ứng dụng thư viện: tranh minh họa, manga, tiểu thuyết, xếp hạng, dấu trang của bạn và tìm kiếm. Nhấp Đăng nhập để vào tài khoản Pixiv trên trình duyệt, hoặc dán mã làm mới bên dưới. Chỉ những dấu trang, lượt theo dõi và thay đổi trong danh sách truyện theo dõi do chính bạn thực hiện mới được gửi lên tài khoản Pixiv của bạn. Từ đây không bao giờ đăng bài, bình luận hay báo cáo gì.</string>
+    <string name="columns_portrait_desktop">Số cột lưới ở cửa sổ cao</string>
+    <string name="columns_landscape_desktop">Số cột lưới ở cửa sổ rộng</string>
+    <string name="swipe_works_desktop">Chuyển giữa các tác phẩm</string>
+    <string name="swipe_works_description_desktop">Cuộn ngang tới tác phẩm tiếp theo trong danh sách. Với tác phẩm nhiều trang, tiếp tục cuộn qua trang đầu hoặc trang cuối.</string>
+    <string name="reader_right_to_left_description_desktop">Trang manga lật theo kiểu Nhật: trang tiếp theo đến từ bên trái, và ← đi tiếp</string>
 </resources>

@@ -88,7 +88,11 @@ fun downloadRequestHeaders(url: String): Map<String, String> {
     return if (host == "pximg.net" || host.endsWith(".pximg.net")) pixivImageHeaders else emptyMap()
 }
 
-private val pixivImageHeaders = mapOf("Referer" to "https://www.pixiv.net/", "User-Agent" to "Mozilla/5.0")
+/** As the Pixiv plugin asks its image server: the shipped `pixiv.web_user_agent`, kept in step with it. */
+private val pixivImageHeaders = mapOf(
+    "Referer" to "https://www.pixiv.net/",
+    "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+)
 
 /** The content type each extension a download may end in stands for; a type's first extension is the one a file of it is given. */
 private val downloadMimeTypes = linkedMapOf(

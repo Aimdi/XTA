@@ -8,6 +8,7 @@ import java.util.zip.ZipOutputStream
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
@@ -82,6 +83,30 @@ class PixivUgoiraTest {
     fun theArchiveComesFromTheServerTheReaderPicked() {
         assertEquals("https://i.pixiv.re/img-zip-ugoira/img/2026/07/01/00/00/00/120_ugoira600x600.zip", ugoira.archiveUrl(PixivImages.MIRROR_HOST))
         assertEquals(ugoira.zipUrl, ugoira.archiveUrl())
+    }
+
+    @Test
+    fun framesStreamInEntryByEntryAndOnlyTheMetadatasFramesAreKept() {
+        val files = mapOf("0.png" to ByteArray(500) { 1 }, "junk.bin" to ByteArray(4000) { 2 }, "1.png" to ByteArray(700) { 3 })
+        for (deflate in listOf(false, true)) {
+            val archive = zip(files, deflate)
+            var reads = 0
+            val input = object : java.io.FilterInputStream(archive.inputStream()) {
+                override fun read(b: ByteArray, off: Int, len: Int): Int = super.read(b, off, minOf(len, 256)).also { reads++ }
+            }
+            val frames = ugoira.framesFrom(input)
+            assertEquals(listOf(500, 700), frames.map { it.bytes.size }, "deflate $deflate")
+            assertTrue(reads > 1, "the archive is read in pieces, not whole")
+        }
+    }
+
+    @Test
+    fun anArchivePastTheCapStopsWithAnIoError() {
+        val archive = zip(mapOf("0.png" to ByteArray(10_000) { (it % 251).toByte() }, "1.png" to byteArrayOf(1)), deflate = false)
+        assertFailsWith<java.io.IOException> { ugoira.framesFrom(archive.inputStream(), maxBytes = 4_000) }
+        assertEquals(2, ugoira.framesFrom(archive.inputStream(), maxBytes = archive.size.toLong()).size)
+        var checks = 0
+        assertFailsWith<IllegalStateException> { ugoira.framesFrom(archive.inputStream()) { if (++checks > 2) error("cancelled") } }
     }
 
     @Test

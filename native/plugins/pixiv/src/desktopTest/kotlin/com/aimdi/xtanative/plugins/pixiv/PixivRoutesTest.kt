@@ -27,6 +27,8 @@ class PixivRoutesTest {
         PixivRoute.Mute,
         PixivRoute.CopyTemplate,
         PixivRoute.SignIn,
+        PixivRoute.SignInReturn("a/b+c=d"),
+        PixivRoute.SignInReturn(null),
         PixivRoute.Settings,
         PixivRoute.Picture("11"),
     )
@@ -50,6 +52,15 @@ class PixivRoutesTest {
         assertNull(PixivRoutes.parse("user?id=-3"))
         assertNull(PixivRoutes.parse("picture"))
         assertNull(PixivRoutes.parse("elsewhere"))
+    }
+
+    @Test
+    fun theSignInsWayBackFromTheBrowserOpensItsScreenWithTheCode() {
+        assertEquals(PixivRoute.SignInReturn("abc-123"), parsedUrl("pixiv://account/login?code=abc-123&via=login"))
+        assertEquals(PixivRoute.SignInReturn("abc-123"), parsedUrl("https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback?state=s&code=abc-123"))
+        assertEquals(PixivRoute.SignInReturn(null), parsedUrl("pixiv://account/login?error=access_denied"))
+        assertNull(PixivRoutes.forUrl("pixiv://account/login"))
+        assertEquals("sign-in-return?code=abc-123", PixivPlugin().routeFor("pixiv://account/login?code=abc-123"), "the app's links reach the plugin")
     }
 
     @Test

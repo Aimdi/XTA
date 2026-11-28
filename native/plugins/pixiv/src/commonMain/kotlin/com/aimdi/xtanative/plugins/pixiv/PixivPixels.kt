@@ -59,32 +59,39 @@ internal class PixivPixels(val width: Int, val height: Int, val argb: IntArray) 
  * reads goes in one SauceNAO takes.
  */
 internal object PixivPng {
-    private val SIGNATURE = byteArrayOf(-119, 80, 78, 71, 13, 10, 26, 10)
+    val SIGNATURE = byteArrayOf(-119, 80, 78, 71, 13, 10, 26, 10)
 
     fun encode(pixels: PixivPixels): ByteArray {
         val out = ByteArrayOutputStream()
         out.write(SIGNATURE)
-        chunk(out, "IHDR", ByteArrayOutputStream().also { header ->
-            DataOutputStream(header).run {
-                writeInt(pixels.width)
-                writeInt(pixels.height)
-                write(byteArrayOf(8, 2, 0, 0, 0))
-            }
-        }.toByteArray())
-        chunk(out, "IDAT", ByteArrayOutputStream().also { data -> DeflaterOutputStream(data).use { it.write(filtered(pixels)) } }.toByteArray())
+        chunk(out, "IHDR", header(pixels.width, pixels.height))
+        chunk(out, "IDAT", deflated(pixels))
         chunk(out, "IEND", ByteArray(0))
         return out.toByteArray()
     }
 
+    /** IHDR's data: [width] × [height], RGB at eight bits each. */
+    fun header(width: Int, height: Int): ByteArray = ByteArrayOutputStream().also { header ->
+        DataOutputStream(header).run {
+            writeInt(width)
+            writeInt(height)
+            write(byteArrayOf(8, 2, 0, 0, 0))
+        }
+    }.toByteArray()
+
+    /** The [width] × [height] area of [pixels] at [left], [top], each row Paeth filtered, deflated: an IDAT's data. */
+    fun deflated(pixels: PixivPixels, left: Int = 0, top: Int = 0, width: Int = pixels.width, height: Int = pixels.height): ByteArray =
+        ByteArrayOutputStream().also { data -> DeflaterOutputStream(data).use { it.write(filtered(pixels, left, top, width, height)) } }.toByteArray()
+
     /** Each row as Paeth's filter writes it after its filter byte. */
-    private fun filtered(pixels: PixivPixels): ByteArray {
-        val stride = pixels.width * 3
-        val out = ByteArray((stride + 1) * pixels.height)
+    private fun filtered(pixels: PixivPixels, left: Int, top: Int, width: Int, height: Int): ByteArray {
+        val stride = width * 3
+        val out = ByteArray((stride + 1) * height)
         var above = ByteArray(stride)
-        for (y in 0 until pixels.height) {
+        for (y in 0 until height) {
             val row = ByteArray(stride)
-            for (x in 0 until pixels.width) {
-                val pixel = pixels.argb[y * pixels.width + x]
+            for (x in 0 until width) {
+                val pixel = pixels.argb[(top + y) * pixels.width + left + x]
                 row[x * 3] = (pixel shr 16).toByte()
                 row[x * 3 + 1] = (pixel shr 8).toByte()
                 row[x * 3 + 2] = pixel.toByte()
@@ -110,7 +117,7 @@ internal object PixivPng {
         return if (toLeft <= toUp && toLeft <= toCorner) left else if (toUp <= toCorner) up else corner
     }
 
-    private fun chunk(out: ByteArrayOutputStream, type: String, data: ByteArray) {
+    fun chunk(out: ByteArrayOutputStream, type: String, data: ByteArray) {
         val name = type.toByteArray(Charsets.US_ASCII)
         val crc = CRC32().apply {
             update(name)
