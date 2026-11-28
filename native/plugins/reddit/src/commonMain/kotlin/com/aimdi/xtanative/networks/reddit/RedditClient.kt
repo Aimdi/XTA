@@ -299,13 +299,16 @@ class RedditClient(
 
     /**
      * [subreddit]'s own picture, or null when it has none to find (XTA's
-     * `fetchSubredditIcon`): one noticed before, its `about`, or its old.reddit
-     * page. Never throws: a feed must not fail because a picture did.
+     * `fetchSubredditIcon`): one noticed before, its `about`, or, when the API
+     * answered that, its old.reddit page; without an account `about` already
+     * ended on that page, so it is not asked twice. Never throws: a feed must
+     * not fail because a picture did.
      */
     suspend fun icon(subreddit: String, session: RedditSession = RedditSession.ANONYMOUS): String? = budgetedRead {
         val name = normaliseSubreddit(subreddit) ?: return@budgetedRead null
         icons[name.lowercase()]?.let { return@budgetedRead it.ifEmpty { null } }
         quietly { about(name, session).iconUrl }?.let { return@budgetedRead it }
+        if (session.anonymous) return@budgetedRead icons[name.lowercase()]
         quietly {
             rememberIcon(name, scrape(redditUrl("$OLD/r/$name/", mapOf("limit" to "1")))?.let(RedditOldListing::subredditIcon))
             icons[name.lowercase()]

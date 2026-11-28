@@ -1,11 +1,14 @@
 package com.aimdi.xtanative.networks.reddit
 
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicInteger
 import java.net.SocketTimeoutException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -129,5 +132,30 @@ class RedditReliabilityTest {
         assertEquals(PublicRoute.WWW, routes.inOrder().last())
         now += 1_001
         assertEquals(PublicRoute.WWW, routes.inOrder().first())
+    }
+
+    @Test
+    fun noMoreThanThreeRequestsAreOnTheirWayAtOnce() = runBlocking {
+        val now = AtomicInteger()
+        val most = AtomicInteger()
+        val fake = FakeReddit {
+            most.accumulateAndGet(now.incrementAndGet(), ::maxOf)
+            delay(50)
+            now.decrementAndGet()
+            page(WWW_LISTING)
+        }
+        val client = RedditClient(fake)
+        (1..9).map { async { client.listing("community$it") } }.awaitAll()
+
+        assertEquals(9, fake.asked.size)
+        assertEquals(RedditTransport.MAX_IN_FLIGHT, most.get())
+    }
+
+    @Test
+    fun withoutAnAccountAnIconAsksOldRedditsPageOnce() = runBlocking {
+        val fake = FakeReddit { page("", 403) }
+        RedditClient(fake).icon("dartlang")
+
+        assertEquals(1, fake.urls.count { it.host == "old.reddit.com" && it.encodedPath == "/r/dartlang/" })
     }
 }

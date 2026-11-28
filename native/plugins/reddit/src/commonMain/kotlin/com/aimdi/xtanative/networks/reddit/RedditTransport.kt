@@ -9,6 +9,8 @@ import java.time.Instant
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Base64
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import okhttp3.HttpUrl
@@ -33,6 +35,13 @@ internal class RedditTransport(
      * over-18 consent, once given, is answered once rather than per community.
      */
     private val cookies = LinkedHashMap<String, String>()
+
+    /**
+     * How many requests may be on their way at once: a refresh of a dozen
+     * communities, their pictures and gallery cards would otherwise reach
+     * Reddit as one burst, which is what its network security blocks.
+     */
+    private val inFlight = Semaphore(MAX_IN_FLIGHT)
 
     @Volatile private var token: String? = null
 
@@ -93,7 +102,7 @@ internal class RedditTransport(
             }
             if (public && jar.isNotEmpty()) put("Cookie", cookieHeader(jar))
         }
-        val response = withDeadline(allowance(timeoutMillis, url), url) { http.get(url, headers, followRedirects = true) }
+        val response = inTurn { withDeadline(allowance(timeoutMillis, url), url) { http.get(url, headers, followRedirects = true) } }
         remember(response, consent)
         if (response.code == 401) forgetToken()
         if (token != null && response.code != 200) throw failureOf(response, url)
@@ -111,10 +120,13 @@ internal class RedditTransport(
             if (jar.isNotEmpty()) put("Cookie", cookieHeader(jar))
         }
         val body = form.entries.joinToString("&") { (name, value) -> "${formEncode(name)}=${formEncode(value)}" }
-        val response = withDeadline(allowance(timeoutMillis, url), url) { http.post(url, headers, body, "$FORM; charset=utf-8") }
+        val response = inTurn { withDeadline(allowance(timeoutMillis, url), url) { http.post(url, headers, body, "$FORM; charset=utf-8") } }
         remember(response, emptyMap())
         return response
     }
+
+    /** [request] once a place among the requests in flight is free; the wait for it counts against the read's budget, not the request's own deadline. */
+    private suspend fun <T> inTurn(request: suspend () -> T): T = inFlight.withPermit { request() }
 
     /** The value of the cookie [name] the website set, if it did. */
     fun cookie(name: String): String? = synchronized(cookies) { cookies[name] }
@@ -180,6 +192,8 @@ internal class RedditTransport(
 
         /** XTA's `RedditClient._timeout`: no read may wait longer than this. */
         const val REQUEST_TIMEOUT_MILLIS = 20_000L
+
+        const val MAX_IN_FLIGHT = 3
 
         private const val LANGUAGE = "en-US,en;q=0.9"
         private val cookieSeparator = Regex(",(?=[^;]+=)")
