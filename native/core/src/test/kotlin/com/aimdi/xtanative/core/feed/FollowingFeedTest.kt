@@ -77,7 +77,7 @@ class FollowingFeedTest {
     fun aFailedSearchFallsBackToTheAccountsOwnPosts() = runBlocking {
         val reads = FakeReads(
             mapOf(("b" to null) to page(post(95, b), post(50, b), next = "b2")),
-            failing = mapOf("a" to XRequestException(403, "refused")),
+            failing = mapOf("a" to XRequestException(500, "X failed")),
             profiles = mapOf(a.id to page(post(85, a), post(75, a), next = "ignored")),
         )
         val first = FollowingFeed(listOf(a, b), reads).first()

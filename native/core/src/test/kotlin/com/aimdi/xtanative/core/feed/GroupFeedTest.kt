@@ -5,6 +5,8 @@ import com.aimdi.xtanative.core.feed.Posts.page
 import com.aimdi.xtanative.core.feed.Posts.post
 import com.aimdi.xtanative.core.feed.Posts.thread
 import com.aimdi.xtanative.core.x.XAccount
+import com.aimdi.xtanative.core.x.XAnswerException
+import com.aimdi.xtanative.core.x.XEndpointRefusedException
 import com.aimdi.xtanative.core.x.XNoAccountException
 import com.aimdi.xtanative.core.x.XRateLimitedException
 import com.aimdi.xtanative.core.x.XRequestException
@@ -72,10 +74,11 @@ class GroupFeedTest {
         val plan = GroupFeedPlan("g", listOf(list, nasa))
         assertEquals(listOf("(from:nasa OR (list:123)) include:nativeretweets"), plan.chunks.map(plan::queryOf))
 
-        val reads = Reads(failing = mutableMapOf("list:123" to XRequestException(403, "refused")), profiles = mapOf("nasa" to page(thread(10, by = "nasa"))))
+        val reads = Reads(failing = mutableMapOf("list:123" to XRequestException(500, "X failed")), profiles = mapOf("nasa" to page(thread(10, by = "nasa"))))
         val first = GroupFeed(plan, reads).first()
         assertEquals(listOf("10"), ids(first.threads))
         assertEquals(listOf("nasa"), reads.profileReads, "the saved search has no profile of its own")
+        assertEquals(500, assertIs<XRequestException>(first.failures.single()).code, "without the saved search's posts the chunk is still failed")
 
         val onlySearch = Reads(failing = mutableMapOf("list:9" to XRequestException(403, "refused")))
         val failed = GroupFeed(GroupFeedPlan("g", listOf(FeedMember.search("list:9"))), onlySearch).first()
@@ -173,15 +176,74 @@ class GroupFeedTest {
     }
 
     @Test
-    fun profilesAreAskedForUnlessTheyCannotGetThroughEither() {
-        assertTrue(GroupFeed.fallsBack(XRateLimitedException()))
-        assertTrue(GroupFeed.fallsBack(XRequestException(403, "refused")))
-        assertTrue(GroupFeed.fallsBack(IllegalStateException("parse")))
-        assertFalse(GroupFeed.fallsBack(IOException("offline")))
+    fun profilesAreAskedForOnlyAfterATimeoutOrXsOwnFailure() {
         assertTrue(GroupFeed.fallsBack(SearchTimeoutException(20_000)), "a search that timed out is no lost connection")
         assertTrue(GroupFeed.fallsBack(InterruptedIOException("socket timed out")))
+        assertTrue(GroupFeed.fallsBack(XRequestException(500, "X failed")))
+        assertTrue(GroupFeed.fallsBack(XRequestException(503, "X failed")))
+        assertTrue(GroupFeed.fallsBack(XAnswerException(29, "Timeout: Unspecified")))
+        assertFalse(GroupFeed.fallsBack(XRateLimitedException()), "the profiles would only spend more of the limited accounts")
+        assertFalse(GroupFeed.fallsBack(XAnswerException(88, "Rate limit exceeded")))
+        assertFalse(GroupFeed.fallsBack(XRequestException(429, "limited")))
+        assertFalse(GroupFeed.fallsBack(XRequestException(401, "refused")))
+        assertFalse(GroupFeed.fallsBack(XRequestException(403, "refused")))
+        assertFalse(GroupFeed.fallsBack(XEndpointRefusedException("SearchTimeline")))
+        assertFalse(GroupFeed.fallsBack(IllegalStateException("parse")))
+        assertFalse(GroupFeed.fallsBack(IOException("offline")))
         assertFalse(GroupFeed.fallsBack(XNoAccountException()))
         assertFalse(GroupFeed.fallsBack(SigningUnavailableException("no signer")))
+    }
+
+    @Test
+    fun aRateLimitedOrRefusedSearchFailsItsChunkWithoutAskingAnyProfile() = runBlocking {
+        listOf(XRateLimitedException(), XRequestException(403, "refused"), XEndpointRefusedException("SearchTimeline")).forEach { error ->
+            val reads = Reads(failing = mutableMapOf("from:a" to error), profiles = mapOf("a" to page(thread(50, by = "a"))))
+            val feed = GroupFeed(GroupFeedPlan("g", listOf(a)), reads)
+            val first = feed.first()
+            assertTrue(first.threads.isEmpty())
+            assertSame(error, first.failures.single())
+            assertTrue(reads.profileReads.isEmpty(), "no profile is asked after $error")
+            assertTrue(feed.progress.value.canRetry)
+        }
+    }
+
+    @Test
+    fun aFallbackAsksAtMostFiveProfilesAndAChunkWithMembersLeftOutStaysFailed() = runBlocking {
+        val members = (1..8).map { FeedMember("m$it", "m$it", it.toLong()) }
+        val profiles = members.associate { it.id to page(thread(10L + it.followedAt, by = it.id)) }
+        val reads = Reads(failing = mutableMapOf("from:m1" to XRequestException(500, "X failed")), profiles = profiles)
+        val feed = GroupFeed(GroupFeedPlan("g", members), reads)
+        val first = feed.first()
+        assertEquals(GroupFeed.FALLBACK_MEMBERS, reads.profileReads.size)
+        assertEquals(GroupFeed.FALLBACK_MEMBERS, first.threads.size, "what the profiles brought is shown")
+        assertEquals(500, assertIs<XRequestException>(first.failures.single()).code)
+        assertTrue(feed.progress.value.canRetry, "the members left out are the retry's")
+
+        reads.failing.clear()
+        reads.searches.clear()
+        reads.pages = mapOf(("from:m1" to null) to page(thread(30, by = "m8"), thread(15, by = "m5"), next = "n2"))
+        val retried = feed.retryFailed()
+        assertEquals(listOf(null as String?), reads.searches.map { it.second }, "the retry reads the search from where it stood")
+        assertEquals(listOf("30"), ids(retried.threads), "a post the fallback already showed is not shown again")
+        assertFalse(feed.progress.value.canRetry)
+    }
+
+    @Test
+    fun aFallbackWhoseProfilesDidNotAllAnswerInTimeStaysFailed() = runBlocking {
+        val slow = object : FeedReads {
+            override suspend fun search(query: String, cursor: String?, includeReplies: Boolean): XTimelinePage = throw XRequestException(500, "X failed")
+
+            override suspend fun userPosts(userId: String, includeReplies: Boolean): XTimelinePage {
+                if (userId == "b") delay(Long.MAX_VALUE)
+                return page(thread(10, by = userId))
+            }
+        }
+        val small = listOf(FeedMember("a", "a", 1), FeedMember("b", "b", 2))
+        val feed = GroupFeed(GroupFeedPlan("g", small), slow, fallbackMillis = 100)
+        val first = feed.first()
+        assertEquals(listOf("10"), ids(first.threads))
+        assertIs<XRequestException>(first.failures.single())
+        assertTrue(feed.state().chunks.single().failed, "kept as failed for the next launch too")
     }
 
     @Test
@@ -234,7 +296,7 @@ class GroupFeedTest {
     fun theProfilesFallbackDropsRepostsTheFeedLeavesOutAndSkipsSavedSearches() = runBlocking {
         val repost = thread(post(60, by = "a", repostOf = post(5, by = "z")))
         val reads = Reads(
-            failing = mutableMapOf("from:a" to XRateLimitedException()),
+            failing = mutableMapOf("from:a" to XRequestException(503, "X failed")),
             profiles = mapOf("a" to page(thread(70, by = "a"), repost)),
         )
         val members = listOf(a, FeedMember.search("list:1", followedAt = 3))
@@ -249,7 +311,7 @@ class GroupFeedTest {
         var peak = 0
         val members = (1..6).map { FeedMember("m$it", "m$it", it.toLong()) }
         val slow = object : FeedReads {
-            override suspend fun search(query: String, cursor: String?, includeReplies: Boolean): XTimelinePage = throw XRateLimitedException()
+            override suspend fun search(query: String, cursor: String?, includeReplies: Boolean): XTimelinePage = throw XRequestException(500, "X failed")
 
             override suspend fun userPosts(userId: String, includeReplies: Boolean): XTimelinePage {
                 synchronized(this) { inFlight++; peak = maxOf(peak, inFlight) }
@@ -281,7 +343,7 @@ class GroupFeedTest {
         )
         val feed = GroupFeed(GroupFeedPlan("g", listOf(a)), reads)
         assertEquals(listOf("100", "90"), ids(feed.first().threads))
-        reads.failing["from:a"] = XRateLimitedException()
+        reads.failing["from:a"] = XRequestException(500, "X failed")
         val more = feed.more()
         assertEquals(listOf("70"), ids(more.threads), "what is already shown is not shown again")
         assertTrue(more.failures.isEmpty())

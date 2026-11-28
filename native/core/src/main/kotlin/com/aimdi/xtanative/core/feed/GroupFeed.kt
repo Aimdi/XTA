@@ -1,13 +1,11 @@
 package com.aimdi.xtanative.core.feed
 
 import com.aimdi.xtanative.core.x.XAccount
-import com.aimdi.xtanative.core.x.XNoAccountException
+import com.aimdi.xtanative.core.x.XAnswerException
 import com.aimdi.xtanative.core.x.XRateLimitedException
 import com.aimdi.xtanative.core.x.XRequestException
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XTimelinePage
-import com.aimdi.xtanative.core.x.signing.SigningUnavailableException
-import java.io.IOException
 import java.io.InterruptedIOException
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicBoolean
@@ -189,25 +187,32 @@ class GroupFeed(
     }
 
     /**
-     * A chunk's search, within [searchMillis]; when it fails, on any page, its
-     * accounts' own posts as the chunk's last page, as XTA's
-     * fetchChunkWithFallback: two at a time, within [fallbackMillis].
+     * A chunk's search, within [searchMillis]; when it timed out or X failed
+     * on its side ([fallsBack]), on any page, the own posts of at most
+     * [FALLBACK_MEMBERS] of its accounts, two at a time, within
+     * [fallbackMillis], as XTA's fetchChunkWithFallback. Only every member
+     * answering stands for the chunk's last page; otherwise what answered
+     * comes as a [PartialReadException], so the chunk stays failed and a
+     * retry reads its search again.
      */
     private suspend fun readChunk(chunk: List<FeedMember>, query: String, cursor: String?): XTimelinePage {
         val page = try {
             withTimeoutOrNull(searchMillis) { reads.search(query, cursor, plan.includeReplies) } ?: throw SearchTimeoutException(searchMillis)
         } catch (error: Throwable) {
             if (error is CancellationException || !fallsBack(error)) throw error
-            val own = ownPosts(chunk.filterNot(FeedMember::search))
+            val asked = chunk.filterNot(FeedMember::search).take(FALLBACK_MEMBERS)
+            val (own, answered) = ownPosts(asked)
             if (own.isEmpty()) throw error
+            if (answered < chunk.size) throw PartialReadException(own, error)
             return XTimelinePage(own, bottomCursor = null, topCursor = null)
         }
         if (UnrelatedPosts.found(page.threads, chunk)) unrelated.set(true)
         return page
     }
 
-    private suspend fun ownPosts(accounts: List<FeedMember>): List<XThread> {
-        if (accounts.isEmpty()) return emptyList()
+    /** The posts of those of [accounts] that answered in time, and how many answered. */
+    private suspend fun ownPosts(accounts: List<FeedMember>): Pair<List<XThread>, Int> {
+        if (accounts.isEmpty()) return emptyList<XThread>() to 0
         val gate = Semaphore(FALLBACK_CONCURRENCY)
         val pages = ArrayList<XTimelinePage>()
         withTimeoutOrNull(fallbackMillis) {
@@ -219,20 +224,32 @@ class GroupFeed(
                 }.awaitAll()
             }
         }
-        return synchronized(pages) { pages.flatMap { it.threads } }
+        return synchronized(pages) { pages.flatMap { it.threads } to pages.size }
     }
 
     companion object {
         /** Fewer than the chunks' searches: two chunks of twenty-odd accounts would otherwise open forty-odd profiles at once. */
         const val FALLBACK_CONCURRENCY = 2
 
+        /** The profiles one failed search may ask for: a few posts to show, not a request per member. */
+        const val FALLBACK_MEMBERS = 5
+
         /**
-         * Whether profiles are worth asking for after a failed search: not when
-         * there is no connection, no account, or no way to sign requests. A
-         * search that timed out is no lost connection: profiles may answer.
+         * Whether profiles are worth asking for after a failed search: only
+         * when it timed out or X failed on its side. Not after a rate limit
+         * or a refusal, which the profiles would only meet again while
+         * spending more of the accounts' requests; not when there is no
+         * connection, no account, or no way to sign requests.
          */
-        fun fallsBack(error: Throwable): Boolean =
-            (error !is IOException || error is InterruptedIOException) && error !is XNoAccountException && error !is SigningUnavailableException
+        fun fallsBack(error: Throwable): Boolean = when (error) {
+            is InterruptedIOException -> true
+            is XRequestException -> error.code >= 500
+            is XAnswerException -> error.errorCode != RATE_LIMIT_CODE
+            else -> false
+        }
+
+        /** X's own code for a rate limit, in an answer's errors. */
+        private const val RATE_LIMIT_CODE = 88
     }
 }
 

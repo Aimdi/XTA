@@ -71,6 +71,14 @@ data class FeedState(val chunks: List<ChunkState>) {
     val hasMore: Boolean get() = chunks.any { !it.exhausted || it.unread.isNotEmpty() }
 }
 
+/**
+ * A source's read that failed but brought some posts all the same, such as a
+ * search whose fallback reached only some of its accounts: [threads] are
+ * shown, and the source still counts as failed by [cause], so a retry or a
+ * later load reads it again from where it was.
+ */
+class PartialReadException(val threads: List<XThread>, override val cause: Throwable) : Exception(cause.message, cause)
+
 /** One newest-first timeline, read page by page; [key] tells it apart in a saved state. */
 class TimelineSource(val key: String, val read: suspend (cursor: String?) -> XTimelinePage)
 
@@ -258,7 +266,8 @@ class MergedTimeline(
             } catch (error: Throwable) {
                 if (error is CancellationException) throw error
                 // A failure is reported, not taken for a hole: what was read stands.
-                return SourceNewer(found, bridged = true, failure = error)
+                if (error is PartialReadException) found += error.threads.filter(wanted).filter { FeedOrder.timeOf(it) > than }
+                return SourceNewer(found, bridged = true, failure = (error as? PartialReadException)?.cause ?: error)
             }
             found += page.threads.filter(wanted).filter { FeedOrder.timeOf(it) > than }
             val oldest = page.threads.minOfOrNull(FeedOrder::timeOf)
@@ -385,7 +394,10 @@ class MergedTimeline(
             reading.source.read(reading.cursor)
         } catch (error: Throwable) {
             if (error is CancellationException) throw error
-            return error
+            if (error !is PartialReadException) return error
+            val kept = error.threads.filter(wanted)
+            synchronized(readings) { reading.unread += kept }
+            return error.cause
         }
         val kept = page.threads.filter(wanted)
         synchronized(readings) {
