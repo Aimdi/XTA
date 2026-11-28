@@ -57,7 +57,10 @@ import com.aimdi.xtanative.ui.generated.resources.downloads_failed
 import com.aimdi.xtanative.ui.generated.resources.downloads_open_failed
 import com.aimdi.xtanative.ui.generated.resources.downloads_open_file
 import com.aimdi.xtanative.ui.generated.resources.home_deck_added
+import com.aimdi.xtanative.ui.generated.resources.plugin_installed
 import com.aimdi.xtanative.ui.generated.resources.plugin_open
+import com.aimdi.xtanative.ui.generated.resources.plugin_pin
+import com.aimdi.xtanative.ui.generated.resources.settings_show_as_tab
 import com.aimdi.xtanative.ui.generated.resources.downloads_retry_hint
 import com.aimdi.xtanative.ui.generated.resources.downloads_saved_to
 import com.aimdi.xtanative.ui.generated.resources.groups_changes_saved
@@ -118,6 +121,8 @@ private fun KeepNoticeHost() {
             when {
                 current.notice.working -> 60_000L
                 current.notice is KeepNotice.ChangesSaved -> 8_000L
+                // Two choices to read and pick from: as long as an undo.
+                current.notice is KeepNotice.PluginInstalled -> 8_000L
                 current.notice.long -> 6_000L
                 else -> 4_000L
             },
@@ -140,6 +145,21 @@ private fun KeepNoticeHost() {
                 added.open()
             }) { Text(stringResource(Res.string.plugin_open), color = MaterialTheme.colorScheme.inversePrimary) }
         }
+    } ?: (current.notice as? KeepNotice.PluginInstalled)?.let { installed ->
+        {
+            // A choice taken leaves the notice; the other stays in the store's menu.
+            Row {
+                listOfNotNull(
+                    installed.showAsTab?.let { Res.string.settings_show_as_tab to it },
+                    installed.pin?.let { Res.string.plugin_pin to it },
+                ).forEach { (label, place) ->
+                    TextButton(onClick = {
+                        KeepNotices.hide(current)
+                        place()
+                    }) { Text(stringResource(label), color = MaterialTheme.colorScheme.inversePrimary) }
+                }
+            }
+        }
     } ?: (current.notice as? KeepNotice.ChangesSaved)?.let {
         {
             TextButton(onClick = { KeepNotices.undo(current, keeper::keep) }) { Text(stringResource(Res.string.groups_undo), color = MaterialTheme.colorScheme.inversePrimary) }
@@ -155,7 +175,11 @@ private fun KeepNoticeHost() {
             enter = if (reduced) EnterTransition.None else Motion.fadeEnter(false, Motion.STANDARD_MS) + slideInVertically(tween(Motion.STANDARD_MS)) { it / 2 },
             exit = Motion.fadeExit(reduced),
         ) {
-            Snackbar(modifier = Modifier.padding(horizontal = 16.dp).widthIn(max = 560.dp), action = open ?: (notice as? KeepNotice.Progress)?.onCancel?.let(::cancelButton)) {
+            Snackbar(
+                modifier = Modifier.padding(horizontal = 16.dp).widthIn(max = 560.dp),
+                action = open ?: (notice as? KeepNotice.Progress)?.onCancel?.let(::cancelButton),
+                actionOnNewLine = notice is KeepNotice.PluginInstalled,
+            ) {
                 if (notice is KeepNotice.Progress) ProgressLine(notice) else Text(noticeText(notice))
             }
         }
@@ -291,6 +315,7 @@ fun noticeText(notice: KeepNotice): String = when (notice) {
     is KeepNotice.Progress -> notice.text
     KeepNotice.Cancelled -> stringResource(Res.string.downloads_cancelled)
     is KeepNotice.AddedToDeck -> stringResource(Res.string.home_deck_added)
+    is KeepNotice.PluginInstalled -> notice.name + " · " + stringResource(Res.string.plugin_installed)
 }
 
 /** The line behind the lock: what the open tab keeps stays on this device. */
