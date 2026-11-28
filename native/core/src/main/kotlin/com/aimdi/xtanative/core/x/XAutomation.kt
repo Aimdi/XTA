@@ -23,6 +23,20 @@ object XErrorCodes {
         val parsed = runCatching { J.parse(response.body) }.getOrNull() ?: return emptySet()
         return parsed["errors"].list.mapNotNull { it["code"].int }.toSet()
     }
+
+    /**
+     * The codes that speak of the account that asked: all of them on a failed
+     * answer or one that carries no `data`; none on a successful answer with
+     * data, whose `errors` are GraphQL's partial errors about something in it
+     * (a quoted post whose author is locked reads 326 there). Taking those for
+     * the account paused every read when one locked author was in a feed.
+     */
+    fun ofAccount(response: XResponse): Set<Int> {
+        val codes = of(response)
+        if (codes.isEmpty() || !response.isSuccessful) return codes
+        val data = runCatching { J.parse(response.body)["data"] }.getOrNull() ?: return codes
+        return if (data.keys.isEmpty()) codes else emptySet()
+    }
 }
 
 /**
