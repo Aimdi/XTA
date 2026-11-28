@@ -13,8 +13,8 @@ import kotlin.test.assertTrue
 class XEndpointsTest {
     /** Every operation XTA's lib/client/endpoints.dart ships, with its id and host. */
     private val xta = mapOf(
-        "UserByRestId" to ("XIpMDIi_YoVzXeoON-cfAQ" to "twitter.com"),
-        "UserByScreenName" to ("AMIBMjtxEEATh4z8V9GtRg" to "twitter.com"),
+        "UserByRestId" to ("XIpMDIi_YoVzXeoON-cfAQ" to "x.com"),
+        "UserByScreenName" to ("AMIBMjtxEEATh4z8V9GtRg" to "x.com"),
         "Following" to ("9l9tzqLGQU9eutAJffqqMw" to "x.com"),
         "Followers" to ("sO2htFYgDpQopDNVjDcf1Q" to "x.com"),
         "Retweeters" to ("ROjiuYueotTnWoI8m2YaiQ" to "x.com"),
@@ -22,8 +22,8 @@ class XEndpointsTest {
         "ListMembers" to ("oIetCo19avgStX4mOnGsPg" to "x.com"),
         "TweetDetail" to ("wjV7NuWEsHgTBFfW3zYKzQ" to "x.com"),
         "SearchTimeline" to ("BYppgupFFS2yqVmmRNjlsw" to "x.com"),
-        "SearchTimelineUsers" to ("BYppgupFFS2yqVmmRNjlsw" to "twitter.com"),
-        "HomeTimeline" to ("-SBRQaLiRjWvTFD5SI403A" to "twitter.com"),
+        "SearchTimelineUsers" to ("BYppgupFFS2yqVmmRNjlsw" to "x.com"),
+        "HomeTimeline" to ("-SBRQaLiRjWvTFD5SI403A" to "x.com"),
         "UserMedia" to ("9EovraBTXJYGSEQXZqlLmQ" to "x.com"),
         "UserTweetsAndReplies" to ("M9Tz6NGTHeRzqHOPdj9I7g" to "x.com"),
         "UserOriginalsTimeline" to ("qtvmQffnepvr0oPe4A8MqQ" to "x.com"),
@@ -67,7 +67,7 @@ class XEndpointsTest {
         val posts = endpoints.url(XEndpoints.SEARCH, emptyMap())
         val people = endpoints.url(XEndpoints.SEARCH_USERS, emptyMap())
         assertEquals("x.com", posts.host)
-        assertEquals("twitter.com", people.host)
+        assertEquals("x.com", people.host)
         assertTrue(posts.encodedPath.endsWith("/SearchTimeline") && people.encodedPath.endsWith("/SearchTimeline"))
         assertNotEquals(XEndpoints.SEARCH, XEndpoints.SEARCH_USERS, "an override can repair people search without touching post search")
         endpoints.applyOverrides(J.parse("""{"endpoints": {"SearchTimelineUsers": "PEOPLEPEOPLEPEOPLE01"}}"""))

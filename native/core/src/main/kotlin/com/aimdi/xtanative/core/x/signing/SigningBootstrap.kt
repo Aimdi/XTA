@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.core.x.signing
 
+import com.aimdi.xtanative.core.x.XTransport
 import com.aimdi.xtanative.core.x.http.XHttp
 import com.aimdi.xtanative.core.x.http.XResponse
 import kotlinx.coroutines.async
@@ -90,7 +91,7 @@ class SigningBootstrap(private val http: XHttp) {
             "Accept-Language" to "en-US,en;q=0.9",
             "Cache-Control" to "no-cache",
             "Referer" to "https://x.com",
-            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
+            "User-Agent" to XTransport.USER_AGENT,
             "X-Twitter-Active-User" to "yes",
             "X-Twitter-Client-Language" to "en",
         )

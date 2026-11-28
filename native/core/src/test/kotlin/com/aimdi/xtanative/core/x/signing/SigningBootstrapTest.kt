@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.core.x.signing
 
+import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.http.XHttp
 import com.aimdi.xtanative.core.x.http.XResponse
 import kotlin.test.Test
@@ -38,6 +39,14 @@ class SigningBootstrapTest {
         assertEquals(listOf("https://x.com/i/jf/", bundle), x.asked)
         assertEquals(listOf<String?>(null), x.cookies)
         assertEquals(48, signer.keyBytes.size)
+    }
+
+    @Test
+    fun theSignersPagesAreAskedAsTheSameBrowserAsEveryRead() = runBlocking {
+        val agents = ArrayList<String?>()
+        val x = FakeX { url, headers -> if (url.host == "x.com") XResponse(200, page).also { agents += headers["User-Agent"] } else XResponse(200, script) }
+        SigningBootstrap(x).derive(null)
+        assertEquals(listOf<String?>(XClient.BASE_HEADERS["user-agent"]), agents)
     }
 
     @Test

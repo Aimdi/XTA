@@ -58,7 +58,7 @@ class XClientTest {
         assertEquals("quax_tests", user.screenName)
 
         val (url, headers) = x.asked.single()
-        assertEquals("twitter.com", url.host)
+        assertEquals("x.com", url.host)
         assertEquals("/i/api/graphql/AMIBMjtxEEATh4z8V9GtRg/UserByScreenName", url.encodedPath)
         assertTrue(url.queryParameter("variables")!!.contains("\"screen_name\":\"quax_tests\""))
         assertEquals("auth_token=maya; ct0=ct0-maya", headers["Cookie"])

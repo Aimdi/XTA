@@ -130,8 +130,9 @@ internal class XTransport(
     /**
      * A POST of [body] with one healthy account, as XTA's one-shot requests
      * (translation) pick one; with no account, the same request without an
-     * account's headers, signed without a session, as XTA sends it then. XTA
-     * signs it as a GET, as every request it makes; so does this.
+     * account's headers, signed without a session, as XTA sends it then. It
+     * is signed as the POST it is, and carries the web app's origin, as a
+     * request from x.com to api.x.com does.
      */
     suspend fun post(url: HttpUrl, body: String, contentType: String): XResponse = withRequestBudget(budgetMillis, url.encodedPath) {
         val now = clock()
@@ -139,7 +140,8 @@ internal class XTransport(
         val account = XAccountSelector(accounts().filterNot { health.read(it.id).let { state -> state.resting(now) || state.needsProbe(now) } })
             .pick(emptySet(), turn.getAndIncrement())
         val signer = signers.forSession(account?.cookie)
-        val headers = (BASE_HEADERS - "content-type") + account?.headers.orEmpty() + ("x-client-transaction-id" to signer.transactionId("GET", url.encodedPath))
+        val headers = (BASE_HEADERS - "content-type") + POST_HEADERS + account?.headers.orEmpty() +
+            ("x-client-transaction-id" to signer.transactionId("POST", url.encodedPath))
         http.post(url, headers, body, contentType).also { response -> if (account != null) verdictOf(account, response) }
     }
 
@@ -347,7 +349,17 @@ internal class XTransport(
         private const val BEARER =
             "Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA"
 
-        /** What every signed-in request carries before the account's own headers (XTA's headers.dart). */
+        /**
+         * The one browser every X request says it is, the signer's x.com
+         * pages included: a desktop Chrome, as the web app's sign-in is.
+         */
+        const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+
+        /**
+         * What every signed-in request carries before the account's own
+         * headers, as x.com's web app sends its GraphQL reads (same-origin
+         * fetches from x.com, which name no Origin).
+         */
         val BASE_HEADERS = mapOf(
             "accept" to "*/*",
             "accept-language" to "en-US,en;q=0.9",
@@ -357,16 +369,23 @@ internal class XTransport(
             "pragma" to "no-cache",
             "priority" to "u=1, i",
             "referer" to "https://x.com/",
-            "user-agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Mobile Safari/537.3",
+            "sec-fetch-dest" to "empty",
+            "sec-fetch-mode" to "cors",
+            "sec-fetch-site" to "same-origin",
+            "user-agent" to USER_AGENT,
             "x-twitter-active-user" to "yes",
+            "x-twitter-auth-type" to "OAuth2Session",
             "x-twitter-client-language" to "en",
         )
+
+        /** A POST goes from x.com to api.x.com: another origin of the same site. */
+        private val POST_HEADERS = mapOf("origin" to "https://x.com", "sec-fetch-site" to "same-site")
 
         /** What a guest read carries beside its token (XTA's fetchUnauthenticated). */
         private val GUEST_HEADERS = mapOf(
             "authorization" to XGuest.BEARER,
             "x-twitter-active-user" to "yes",
-            "user-agent" to BASE_HEADERS.getValue("user-agent"),
+            "user-agent" to USER_AGENT,
         )
     }
 }

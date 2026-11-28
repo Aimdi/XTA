@@ -63,7 +63,7 @@ class XReadsTest {
         assertEquals("quax_tests", user.screenName)
         val sent = x.sent.single()
         assertEquals("/i/api/graphql/XIpMDIi_YoVzXeoON-cfAQ/UserByRestId", sent.url.encodedPath)
-        assertEquals("twitter.com", sent.url.host)
+        assertEquals("x.com", sent.url.host)
         assertEquals("2095909295913103360", sent.variables["userId"].string)
         assertEquals(true, sent.variables["withSafetyModeUserFields"].boolean)
         assertEquals(true, sent.features["responsive_web_twitter_blue_verified_badge_is_enabled"].boolean)
@@ -139,7 +139,7 @@ class XReadsTest {
         val page = client(x).searchUsers("flutter")
         assertEquals(listOf("alice", "bob"), page.users.map { it.screenName })
         val sent = x.sent.single()
-        assertEquals("twitter.com", sent.url.host)
+        assertEquals("x.com", sent.url.host)
         assertEquals("People", sent.variables["product"].string)
         assertEquals("25", sent.variables["count"].string)
         assertEquals(false, sent.variables["withReactionsPerspective"].boolean)
@@ -291,6 +291,22 @@ class XReadsTest {
         assertEquals("text/plain;charset=UTF-8", sent.headers["content-type"])
         assertEquals("auth_token=a; ct0=ct0-a", sent.headers["Cookie"])
         assertTrue(sent.headers.getValue("x-client-transaction-id").isNotEmpty())
+        assertEquals("https://x.com", sent.headers["origin"], "x.com's web app asks api.x.com across origins")
+        assertEquals("same-site", sent.headers["sec-fetch-site"])
+    }
+
+    @Test
+    fun everyReadSaysItIsOneDesktopChromeAsTheWebAppSendsIt() = runBlocking {
+        val x = answering(fixture("retweeters.json"))
+        client(x).reposters("2001")
+        val headers = x.sent.single().headers
+        val agent = headers.getValue("user-agent")
+        assertTrue(agent.startsWith("Mozilla/5.0 (Windows NT 10.0; Win64; x64)") && agent.endsWith(" Safari/537.36"), agent)
+        assertEquals("OAuth2Session", headers["x-twitter-auth-type"])
+        assertEquals("yes", headers["x-twitter-active-user"])
+        assertEquals(listOf("empty", "cors", "same-origin"), listOf("sec-fetch-dest", "sec-fetch-mode", "sec-fetch-site").map { headers[it] })
+        assertNull(headers["origin"], "a same-origin GET names none")
+        assertEquals("x.com", x.sent.single().url.host)
     }
 
     @Test
@@ -347,7 +363,7 @@ class XReadsTest {
         client(x).homeTimeline(account, cursor = "c", count = 10)
         val sent = x.sent.single()
         assertEquals("/i/api/graphql/-SBRQaLiRjWvTFD5SI403A/HomeTimeline", sent.url.encodedPath)
-        assertEquals("twitter.com", sent.url.host)
+        assertEquals("x.com", sent.url.host)
         assertEquals(
             """{"userId":"ct0-a","count":10,"includePromotedContent":false,"withQuickPromoteEligibilityTweetFields":true,"withVoice":true,"withV2Timeline":true,"cursor":"c"}""",
             sent.url.queryParameter("variables"),

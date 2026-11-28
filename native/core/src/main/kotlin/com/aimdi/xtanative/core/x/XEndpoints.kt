@@ -69,7 +69,7 @@ class XEndpoints {
         const val TWEET_DETAIL = "TweetDetail"
         const val SEARCH = "SearchTimeline"
 
-        /** People search: SearchTimeline under a key of its own, on twitter.com. */
+        /** People search: SearchTimeline under a key of its own. */
         const val SEARCH_USERS = "SearchTimelineUsers"
         const val HOME_TIMELINE = "HomeTimeline"
         const val USER_REPOSTS = "UserRepostsTimeline"
@@ -92,8 +92,8 @@ class XEndpoints {
         fun isQueryId(id: String): Boolean = queryIdPattern.matches(id)
 
         val shipped: Map<String, XEndpoint> = listOf(
-            XEndpoint(USER_BY_REST_ID, "UserByRestId", "XIpMDIi_YoVzXeoON-cfAQ", "twitter.com"),
-            XEndpoint(USER_BY_SCREEN_NAME, "UserByScreenName", "AMIBMjtxEEATh4z8V9GtRg", "twitter.com"),
+            XEndpoint(USER_BY_REST_ID, "UserByRestId", "XIpMDIi_YoVzXeoON-cfAQ", "x.com"),
+            XEndpoint(USER_BY_SCREEN_NAME, "UserByScreenName", "AMIBMjtxEEATh4z8V9GtRg", "x.com"),
             XEndpoint(FOLLOWING, "Following", "9l9tzqLGQU9eutAJffqqMw", "x.com"),
             XEndpoint(FOLLOWERS, "Followers", "sO2htFYgDpQopDNVjDcf1Q", "x.com"),
             XEndpoint(RETWEETERS, "Retweeters", "ROjiuYueotTnWoI8m2YaiQ", "x.com"),
@@ -102,8 +102,8 @@ class XEndpoints {
             XEndpoint(USER_ORIGINALS, "UserOriginalsTimeline", "qtvmQffnepvr0oPe4A8MqQ", "x.com"),
             XEndpoint(TWEET_DETAIL, "TweetDetail", "wjV7NuWEsHgTBFfW3zYKzQ", "x.com"),
             XEndpoint(SEARCH, "SearchTimeline", "BYppgupFFS2yqVmmRNjlsw", "x.com"),
-            XEndpoint(SEARCH_USERS, "SearchTimeline", "BYppgupFFS2yqVmmRNjlsw", "twitter.com"),
-            XEndpoint(HOME_TIMELINE, "HomeTimeline", "-SBRQaLiRjWvTFD5SI403A", "twitter.com"),
+            XEndpoint(SEARCH_USERS, "SearchTimeline", "BYppgupFFS2yqVmmRNjlsw", "x.com"),
+            XEndpoint(HOME_TIMELINE, "HomeTimeline", "-SBRQaLiRjWvTFD5SI403A", "x.com"),
             // Reposts left the Posts timeline when X split them out.
             XEndpoint(USER_REPOSTS, "UserRepostsTimeline", "CnNg1YiKG7bRgi-RoIfKsw", "x.com"),
             XEndpoint(USER_REPLIES, "UserTweetsAndReplies", "M9Tz6NGTHeRzqHOPdj9I7g", "x.com"),
