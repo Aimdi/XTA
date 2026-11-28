@@ -176,7 +176,7 @@ private fun rememberShareImage(illust: PixivIllust): (page: Int, url: String) ->
         { page, url ->
             runtime.launch {
                 val shown = PixivImages.url(url, runtime.settings[PixivPrefs.imageHost])
-                val bytes = runCatching { pictureBytes(context, shown) }.getOrNull()
+                val bytes = catchingFailures { pictureBytes(context, shown) }.getOrNull()
                 if (bytes == null) {
                     runtime.tell(Strings.share_image_failed.get(language))
                 } else {

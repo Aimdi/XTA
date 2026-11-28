@@ -69,7 +69,7 @@ internal fun UgoiraPlayer(illust: PixivIllust, modifier: Modifier = Modifier) {
     var frame by remember(illust.id) { mutableStateOf<Painter?>(null) }
     LaunchedEffect(illust.id, phase == UgoiraPhase.LOADING) {
         if (phase != UgoiraPhase.LOADING) return@LaunchedEffect
-        frames = runCatching { ugoiraFrames(runtime, illust) }.getOrNull()?.takeIf { it.isNotEmpty() }
+        frames = catchingFailures { ugoiraFrames(runtime, illust) }.getOrNull()?.takeIf { it.isNotEmpty() }
         phase = if (frames == null) UgoiraPhase.FAILED else UgoiraPhase.PLAYING
     }
     val cache = remember(frames, context) { frames?.let { all -> UgoiraFrameCache(all.size) { decode(context, all[it]) } } }
