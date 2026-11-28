@@ -48,6 +48,7 @@ import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.WithReadingColumn
+import com.aimdi.xtanative.ui.media.SharedFeedPlayer
 import com.aimdi.xtanative.ui.common.rememberReadRecovery
 import com.aimdi.xtanative.ui.feed.feedThreads
 import com.aimdi.xtanative.ui.feed.rememberFeedLayout
@@ -235,13 +236,15 @@ private fun QuotesList(state: QuotesUi, vm: QuotesViewModel, actions: PostAction
     rememberReadRecovery(quotes.retryable, quotes.loading || quotes.loadingMore, vm::retryQuotes)
     PageMore(list, quotes.items.size) { quotes.cursor?.let(vm::loadQuotes) }
     val layout = rememberFeedLayout(quotes.items)
-    WithReadingColumn(padding, list) { column ->
-        LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
-            item(key = "sort") {
-                SortChip(state.quoteSort, Sorts.X_QUOTES, { quoteSortLabel(it) }, ::quoteSortIcon, vm::selectQuotes, Modifier.padding(start = 4.dp))
-            }
-            listState(quotes, { vm.loadQuotes() }, { quotes.cursor?.let(vm::loadQuotes) }, Res.string.posts_no_quotes, PostIcons.Quote, moreFailed = Res.string.posts_unable_to_load_the_next_page_of_replies, posts = true) {
-                feedThreads(quotes.items, layout, actions, keyOf = { "quote-" + it.id })
+    SharedFeedPlayer {
+        WithReadingColumn(padding, list) { column ->
+            LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
+                item(key = "sort") {
+                    SortChip(state.quoteSort, Sorts.X_QUOTES, { quoteSortLabel(it) }, ::quoteSortIcon, vm::selectQuotes, Modifier.padding(start = 4.dp))
+                }
+                listState(quotes, { vm.loadQuotes() }, { quotes.cursor?.let(vm::loadQuotes) }, Res.string.posts_no_quotes, PostIcons.Quote, moreFailed = Res.string.posts_unable_to_load_the_next_page_of_replies, posts = true) {
+                    feedThreads(quotes.items, layout, actions, keyOf = { "quote-" + it.id })
+                }
             }
         }
     }

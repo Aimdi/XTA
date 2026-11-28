@@ -62,6 +62,7 @@ import com.aimdi.xtanative.ui.common.pointerOnlyFocus
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.common.TopBarBack
 import com.aimdi.xtanative.ui.feed.feedThreads
+import com.aimdi.xtanative.ui.media.SharedFeedPlayer
 import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -138,7 +139,8 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
                 FeedSkeleton(Modifier.widthIn(max = ReadingColumn.MAX_WIDTH.dp), count = 4)
             }
             // Padding, not content padding: the tabs stick below the bar, not under it.
-            else -> WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding()), list) { column -> KeepsClearOfStickyHeader(room) { LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize().then(below).swipeTabs(CommunityTab.entries, state.tab, vm::select)) {
+            // The tiles take turns at one player: a video started pauses the one playing.
+            else -> SharedFeedPlayer { WithReadingColumn(PaddingValues(bottom = padding.calculateBottomPadding()), list) { column -> KeepsClearOfStickyHeader(room) { LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize().then(below).swipeTabs(CommunityTab.entries, state.tab, vm::select)) {
                 item(key = "header", contentType = "header") { CommunityHeader(community) { openMembers(community.id) } }
                 stickyHeader(key = TABS_KEY, contentType = "tabs") { CommunityTabs(state.tab, vm::select, room.header) }
                 when (state.tab) {
@@ -150,7 +152,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
                     }
                     CommunityTab.ABOUT -> item(key = "about", contentType = "about") { CommunityAbout(community) }
                 }
-            } } }
+            } } } }
         }
     }
 }

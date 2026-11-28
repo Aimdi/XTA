@@ -28,6 +28,7 @@ import com.aimdi.xtanative.ui.common.TipText
 import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.feed.feedThreads
 import com.aimdi.xtanative.ui.feed.rememberFeedLayout
+import com.aimdi.xtanative.ui.media.SharedFeedPlayer
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_no_posts_match
@@ -67,11 +68,13 @@ fun AntennaFeedScreen(id: String, actions: PostActions, onBack: () -> Unit) {
             !loaded -> LoadingRow(Modifier.padding(top = padding.calculateTopPadding()))
             // Deleted since it was opened.
             antenna == null -> EmptyNote(stringResource(Res.string.discover_no_results), modifier = Modifier.padding(top = padding.calculateTopPadding()))
-            else -> WithReadingColumn(padding, list) { column ->
-                val layout = rememberFeedLayout(posts.items)
-                LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
-                    feedThreads(posts.items, layout, actions)
-                    pageStatus(posts, Res.string.discover_no_posts_match, vm::retry, vm::more, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets, rows = PageRows.POSTS)
+            else -> SharedFeedPlayer {
+                WithReadingColumn(padding, list) { column ->
+                    val layout = rememberFeedLayout(posts.items)
+                    LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
+                        feedThreads(posts.items, layout, actions)
+                        pageStatus(posts, Res.string.discover_no_posts_match, vm::retry, vm::more, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets, rows = PageRows.POSTS)
+                    }
                 }
             }
         }
