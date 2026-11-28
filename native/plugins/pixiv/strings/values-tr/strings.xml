@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Şu an gündemde</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Tüm renkler korunur, dosya daha büyük olur. Kodlama bir dakika sürebilir</string>
     <string name="ugoira_encoding">Kare %1$d/%2$d kodlanıyor…</string>
     <string name="ugoira_export_failed">Animasyon kaydedilemedi</string>
     <string name="ugoira_fetching">Kareler alınıyor…</string>
     <string name="ugoira_pause">Animasyonu duraklat</string>
     <string name="ugoira_play">Animasyonu oynat</string>
+    <string name="ugoira_save_apng">APNG olarak kaydet</string>
     <string name="ugoira_save_gif">GIF olarak kaydet</string>
     <string name="ugoira_save_zip">Kareleri ZIP olarak kaydet</string>
+    <string name="ugoira_saved_apng">Animasyon APNG olarak kaydedildi</string>
     <string name="ugoira_saved_gif">Animasyon GIF olarak kaydedildi</string>
     <string name="ugoira_saved_zip">Kareler ZIP olarak kaydedildi</string>
     <string name="ugoira_saving">Kaydediliyor…</string>

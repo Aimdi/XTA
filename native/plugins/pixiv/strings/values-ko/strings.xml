@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">지금 인기 태그</string>
     <string name="ugoira">우고이라</string>
+    <string name="ugoira_apng_note">모든 색을 유지하지만 파일이 더 커집니다. 인코딩에 1분 정도 걸릴 수 있습니다</string>
     <string name="ugoira_encoding">%2$d개 중 %1$d번째 프레임 인코딩 중…</string>
     <string name="ugoira_export_failed">애니메이션을 저장하지 못했습니다</string>
     <string name="ugoira_fetching">프레임 가져오는 중…</string>
     <string name="ugoira_pause">애니메이션 일시정지</string>
     <string name="ugoira_play">애니메이션 재생</string>
+    <string name="ugoira_save_apng">APNG로 저장</string>
     <string name="ugoira_save_gif">GIF로 저장</string>
     <string name="ugoira_save_zip">프레임을 ZIP으로 저장</string>
+    <string name="ugoira_saved_apng">애니메이션을 APNG로 저장했습니다</string>
     <string name="ugoira_saved_gif">애니메이션을 GIF로 저장했습니다</string>
     <string name="ugoira_saved_zip">프레임을 ZIP으로 저장했습니다</string>
     <string name="ugoira_saving">저장 중…</string>

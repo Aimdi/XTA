@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">În tendințe acum</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Păstrează toate culorile, într-un fișier mai mare. Codarea poate dura un minut</string>
     <string name="ugoira_encoding">Se codifică cadrul %1$d din %2$d…</string>
     <string name="ugoira_export_failed">Animația nu a putut fi salvată</string>
     <string name="ugoira_fetching">Se preiau cadrele…</string>
     <string name="ugoira_pause">Întrerupe animația</string>
     <string name="ugoira_play">Redă animația</string>
+    <string name="ugoira_save_apng">Salvează ca APNG</string>
     <string name="ugoira_save_gif">Salvează ca GIF</string>
     <string name="ugoira_save_zip">Salvează cadrele ca ZIP</string>
+    <string name="ugoira_saved_apng">Animație salvată ca APNG</string>
     <string name="ugoira_saved_gif">Animație salvată ca GIF</string>
     <string name="ugoira_saved_zip">Cadre salvate ca ZIP</string>
     <string name="ugoira_saving">Se salvează…</string>

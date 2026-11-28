@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Tendències ara</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Es conserven tots els colors, en un fitxer més gran. La codificació pot trigar un minut</string>
     <string name="ugoira_encoding">S’està codificant el fotograma %1$d de %2$d…</string>
     <string name="ugoira_export_failed">No s’ha pogut desar l’animació</string>
     <string name="ugoira_fetching">S’estan obtenint els fotogrames…</string>
     <string name="ugoira_pause">Posa en pausa l’animació</string>
     <string name="ugoira_play">Reprodueix l’animació</string>
+    <string name="ugoira_save_apng">Desa com a APNG</string>
     <string name="ugoira_save_gif">Desa com a GIF</string>
     <string name="ugoira_save_zip">Desa els fotogrames com a ZIP</string>
+    <string name="ugoira_saved_apng">Animació desada com a APNG</string>
     <string name="ugoira_saved_gif">Animació desada com a GIF</string>
     <string name="ugoira_saved_zip">Fotogrames desats com a ZIP</string>
     <string name="ugoira_saving">S’està desant…</string>

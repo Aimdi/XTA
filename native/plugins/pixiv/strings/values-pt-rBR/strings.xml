@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Em alta agora</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Mantém todas as cores, em um arquivo maior. A codificação pode levar um minuto</string>
     <string name="ugoira_encoding">Codificando quadro %1$d de %2$d…</string>
     <string name="ugoira_export_failed">Não foi possível salvar a animação</string>
     <string name="ugoira_fetching">Buscando quadros…</string>
     <string name="ugoira_pause">Pausar animação</string>
     <string name="ugoira_play">Reproduzir animação</string>
+    <string name="ugoira_save_apng">Salvar como APNG</string>
     <string name="ugoira_save_gif">Salvar como GIF</string>
     <string name="ugoira_save_zip">Salvar quadros como ZIP</string>
+    <string name="ugoira_saved_apng">Animação salva como APNG</string>
     <string name="ugoira_saved_gif">Animação salva como GIF</string>
     <string name="ugoira_saved_zip">Quadros salvos como ZIP</string>
     <string name="ugoira_saving">Salvando…</string>

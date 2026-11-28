@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">अभी ट्रेंड में</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">हर रंग बना रहता है, फ़ाइल बड़ी होती है। एन्कोडिंग में एक मिनट लग सकता है</string>
     <string name="ugoira_encoding">%2$d में से फ़्रेम %1$d एन्कोड हो रहा है…</string>
     <string name="ugoira_export_failed">एनिमेशन सहेजा नहीं जा सका</string>
     <string name="ugoira_fetching">फ़्रेम लाए जा रहे हैं…</string>
     <string name="ugoira_pause">एनिमेशन रोकें</string>
     <string name="ugoira_play">एनिमेशन चलाएँ</string>
+    <string name="ugoira_save_apng">APNG के रूप में सहेजें</string>
     <string name="ugoira_save_gif">GIF के रूप में सहेजें</string>
     <string name="ugoira_save_zip">फ़्रेम ZIP के रूप में सहेजें</string>
+    <string name="ugoira_saved_apng">एनिमेशन APNG के रूप में सहेजा गया</string>
     <string name="ugoira_saved_gif">एनिमेशन GIF के रूप में सहेजा गया</string>
     <string name="ugoira_saved_zip">फ़्रेम ZIP के रूप में सहेजे गए</string>
     <string name="ugoira_saving">सहेजा जा रहा है…</string>

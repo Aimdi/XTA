@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Populært nå</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Alle farger beholdes, i en større fil. Kodingen kan ta et minutt</string>
     <string name="ugoira_encoding">Koder bilde %1$d av %2$d …</string>
     <string name="ugoira_export_failed">Kunne ikke lagre animasjonen</string>
     <string name="ugoira_fetching">Henter bilder …</string>
     <string name="ugoira_pause">Sett animasjonen på pause</string>
     <string name="ugoira_play">Spill av animasjonen</string>
+    <string name="ugoira_save_apng">Lagre som APNG</string>
     <string name="ugoira_save_gif">Lagre som GIF</string>
     <string name="ugoira_save_zip">Lagre bildene som ZIP</string>
+    <string name="ugoira_saved_apng">Animasjonen er lagret som APNG</string>
     <string name="ugoira_saved_gif">Animasjonen er lagret som GIF</string>
     <string name="ugoira_saved_zip">Bildene er lagret som ZIP</string>
     <string name="ugoira_saving">Lagrer …</string>

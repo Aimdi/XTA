@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Nu populair</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Alle kleuren blijven behouden, in een groter bestand. Coderen kan een minuut duren</string>
     <string name="ugoira_encoding">Frame %1$d van %2$d coderen…</string>
     <string name="ugoira_export_failed">Kan de animatie niet opslaan</string>
     <string name="ugoira_fetching">Frames ophalen…</string>
     <string name="ugoira_pause">Animatie pauzeren</string>
     <string name="ugoira_play">Animatie afspelen</string>
+    <string name="ugoira_save_apng">Opslaan als APNG</string>
     <string name="ugoira_save_gif">Opslaan als GIF</string>
     <string name="ugoira_save_zip">Frames opslaan als ZIP</string>
+    <string name="ugoira_saved_apng">Animatie opgeslagen als APNG</string>
     <string name="ugoira_saved_gif">Animatie opgeslagen als GIF</string>
     <string name="ugoira_saved_zip">Frames opgeslagen als ZIP</string>
     <string name="ugoira_saving">Opslaan…</string>

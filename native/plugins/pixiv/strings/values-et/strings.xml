@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Praegu populaarne</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Kõik värvid säilivad, fail on suurem. Kodeerimine võib võtta minuti</string>
     <string name="ugoira_encoding">Kodeerin kaadrit %1$d/%2$d…</string>
     <string name="ugoira_export_failed">Animatsiooni ei õnnestunud salvestada</string>
     <string name="ugoira_fetching">Laadin kaadreid…</string>
     <string name="ugoira_pause">Peata animatsioon</string>
     <string name="ugoira_play">Esita animatsioon</string>
+    <string name="ugoira_save_apng">Salvesta APNG-na</string>
     <string name="ugoira_save_gif">Salvesta GIF-ina</string>
     <string name="ugoira_save_zip">Salvesta kaadrid ZIP-ina</string>
+    <string name="ugoira_saved_apng">Animatsioon salvestati APNG-na</string>
     <string name="ugoira_saved_gif">Animatsioon salvestati GIF-ina</string>
     <string name="ugoira_saved_zip">Kaadrid salvestati ZIP-ina</string>
     <string name="ugoira_saving">Salvestan…</string>

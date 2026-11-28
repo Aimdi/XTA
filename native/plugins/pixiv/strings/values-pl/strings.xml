@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Popularne teraz</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Zachowuje wszystkie kolory, w większym pliku. Kodowanie może potrwać minutę</string>
     <string name="ugoira_encoding">Kodowanie klatki %1$d z %2$d…</string>
     <string name="ugoira_export_failed">Nie udało się zapisać animacji</string>
     <string name="ugoira_fetching">Pobieranie klatek…</string>
     <string name="ugoira_pause">Wstrzymaj animację</string>
     <string name="ugoira_play">Odtwórz animację</string>
+    <string name="ugoira_save_apng">Zapisz jako APNG</string>
     <string name="ugoira_save_gif">Zapisz jako GIF</string>
     <string name="ugoira_save_zip">Zapisz klatki jako ZIP</string>
+    <string name="ugoira_saved_apng">Animację zapisano jako APNG</string>
     <string name="ugoira_saved_gif">Animację zapisano jako GIF</string>
     <string name="ugoira_saved_zip">Klatki zapisano jako ZIP</string>
     <string name="ugoira_saving">Zapisywanie…</string>

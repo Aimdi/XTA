@@ -55,8 +55,8 @@ internal sealed interface PixivSheet {
     data class Resave(val illust: PixivIllust, val pages: List<Int>, val saved: List<Int>, val kind: PixivSaveKind) : PixivSheet
 }
 
-/** What a save writes: the pages themselves, or an ugoira's frames as a ZIP or as a GIF made here, each named as the first page. */
-internal enum class PixivSaveKind { PAGES, ZIP, GIF }
+/** What a save writes: the pages themselves, or an ugoira's frames as a ZIP or as a GIF or APNG made here, each named as the first page. */
+internal enum class PixivSaveKind { PAGES, ZIP, GIF, APNG }
 
 /** What a screen showing a work's pages can be asked to do from its page sheets. */
 internal interface PixivPageSurface {
@@ -165,6 +165,9 @@ internal class PixivSheets(private val runtime: PixivRuntime, private val langua
     /** Saves an ugoira as a GIF made here (pixiv_ugoira_save.dart), named as its first page, asking first when it was saved before. */
     fun saveGif(illust: PixivIllust) = save(illust, listOf(0), PixivSaveKind.GIF)
 
+    /** Saves an ugoira as an animated PNG made here, every colour kept, named as its first page, asking first when it was saved before. */
+    fun saveApng(illust: PixivIllust) = save(illust, listOf(0), PixivSaveKind.APNG)
+
     private fun save(illust: PixivIllust, pages: List<Int>, kind: PixivSaveKind) {
         val saved = PixivSavedPages.savedAmong(PixivSavedPages.of(runtime.settings.now), illust, pages)
         if (saved.isEmpty()) start(illust, pages, kind) else show(PixivSheet.Resave(illust, pages, saved, kind))
@@ -179,7 +182,8 @@ internal class PixivSheets(private val runtime: PixivRuntime, private val langua
     private fun start(illust: PixivIllust, pages: List<Int>, kind: PixivSaveKind) = when (kind) {
         PixivSaveKind.PAGES -> startSaving(illust, pages)
         PixivSaveKind.ZIP -> startZip(illust)
-        PixivSaveKind.GIF -> startGif(illust)
+        PixivSaveKind.GIF -> startAnimation(illust, PixivUgoiraFormat.GIF)
+        PixivSaveKind.APNG -> startAnimation(illust, PixivUgoiraFormat.APNG)
     }
 
     /** One page as any picture is saved; several together, the foot of the window saying which page is on its way, with Cancel (pixiv_download.dart). */
@@ -197,12 +201,12 @@ internal class PixivSheets(private val runtime: PixivRuntime, private val langua
         }
     }
 
-    /** The GIF fetched, encoded and saved under the foot of the window's progress, with Cancel until it is being saved. */
-    private fun startGif(illust: PixivIllust) {
+    /** The animation fetched, encoded as [format] and saved under the foot of the window's progress, with Cancel until it is being saved. */
+    private fun startAnimation(illust: PixivIllust, format: PixivUgoiraFormat) {
         runtime.launch {
             val language = language()
             val saved = try {
-                runtime.host.withProgress(PluginProgress(Strings.ugoira_fetching.get(language))) { say -> PixivUgoiraExport.gif(runtime, illust, language, say) }
+                runtime.host.withProgress(PluginProgress(Strings.ugoira_fetching.get(language))) { say -> PixivUgoiraExport.save(runtime, illust, format, language, say) }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -210,7 +214,7 @@ internal class PixivSheets(private val runtime: PixivRuntime, private val langua
                 null
             }
             if (saved == true) {
-                runtime.host.tell(Strings.ugoira_saved_gif.get(language))
+                runtime.host.tell((if (format == PixivUgoiraFormat.GIF) Strings.ugoira_saved_gif else Strings.ugoira_saved_apng).get(language))
                 afterSave(illust, listOf(0))
             }
         }

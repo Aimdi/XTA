@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Aktualnaje ciapier</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Zachoŭvajucca ŭsie koliery, fajł bolšy. Kadavannie moža zaniać chvilinu</string>
     <string name="ugoira_encoding">Kadziravańnie kadra %1$d z %2$d…</string>
     <string name="ugoira_export_failed">Nie ŭdałosia zachavać animacyju</string>
     <string name="ugoira_fetching">Atrymańnie kadraŭ…</string>
     <string name="ugoira_pause">Prypynić animacyju</string>
     <string name="ugoira_play">Prajhrać animacyju</string>
+    <string name="ugoira_save_apng">Zachavać jak APNG</string>
     <string name="ugoira_save_gif">Zachavać jak GIF</string>
     <string name="ugoira_save_zip">Zachavać kadry ŭ ZIP</string>
+    <string name="ugoira_saved_apng">Animacyja zachavana jak APNG</string>
     <string name="ugoira_saved_gif">Animacyja zachavana jak GIF</string>
     <string name="ugoira_saved_zip">Kadry zachavany ŭ ZIP</string>
     <string name="ugoira_saving">Zachavannie…</string>

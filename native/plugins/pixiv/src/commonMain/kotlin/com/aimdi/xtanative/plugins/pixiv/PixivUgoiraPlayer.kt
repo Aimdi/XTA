@@ -181,20 +181,29 @@ internal suspend fun ugoiraFrames(runtime: PixivRuntime, illust: PixivIllust): L
 
 private const val MAX_ARCHIVE = 64L * 1024 * 1024
 
-/** An ugoira saved as a looping GIF (pixiv_ugoira_export.dart): its frames fetched, then encoded a frame at a time, then saved where downloads go. */
-internal object PixivUgoiraExport {
-    const val GIF_TYPE = "image/gif"
+/** An animation format an ugoira is saved in: its file's type and ending, and how its frames are encoded. */
+internal enum class PixivUgoiraFormat(val type: String, val ending: String) {
+    GIF("image/gif", ".gif"),
+    // An APNG is a PNG to anything that reads only its first frame, and is typed as one where files are kept.
+    APNG("image/png", ".png"),
+    ;
 
+    suspend fun encode(frames: List<PixivFrameBytes>, onFrame: (done: Int) -> Unit): ByteArray = when (this) {
+        GIF -> PixivGifWriter.encode(frames, decode = { decodePixels(it, atLeastWidth = null) }, onFrame)
+        APNG -> PixivApngWriter.encode(frames, decode = { decodePixels(it, atLeastWidth = null) }, onFrame)
+    }
+}
+
+/** An ugoira saved as a looping GIF (pixiv_ugoira_export.dart) or APNG: its frames fetched, then encoded a frame at a time, then saved where downloads go. */
+internal object PixivUgoiraExport {
     /** Says each step through [say]: fetching, the frame being encoded with XTA's note that it can take a minute, then saving, which no Cancel stops. Whether the file was saved. */
-    suspend fun gif(runtime: PixivRuntime, illust: PixivIllust, language: String, say: (PluginProgress) -> Unit): Boolean {
+    suspend fun save(runtime: PixivRuntime, illust: PixivIllust, format: PixivUgoiraFormat, language: String, say: (PluginProgress) -> Unit): Boolean {
         val frames = ugoiraFrames(runtime, illust)
         say(encoding(language, 0, frames.size))
-        val gif = withContext(Dispatchers.Default) {
-            PixivGifWriter.encode(frames, decode = { decodePixels(it, atLeastWidth = null) }) { done -> say(encoding(language, done, frames.size)) }
-        }
+        val file = withContext(Dispatchers.Default) { format.encode(frames) { done -> say(encoding(language, done, frames.size)) } }
         say(PluginProgress(Strings.ugoira_saving.get(language), cancellable = false))
         val naming = PixivSaveNaming.of(runtime.settings.now)
-        return runtime.host.saveFileAndWait(gif, naming.workName(illust, ".gif"), GIF_TYPE, naming.subfolder(illust))
+        return runtime.host.saveFileAndWait(file, naming.workName(illust, format.ending), format.type, naming.subfolder(illust))
     }
 
     /** "Encoding frame 3 of 40…" for the frame after the [done] ones, its ring filled that far. */

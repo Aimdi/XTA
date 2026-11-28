@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">急上昇タグ</string>
     <string name="ugoira">うごイラ</string>
+    <string name="ugoira_apng_note">すべての色を保ちますが、ファイルは大きくなります。エンコードに1分ほどかかることがあります</string>
     <string name="ugoira_encoding">フレーム %1$d / %2$d をエンコード中…</string>
     <string name="ugoira_export_failed">アニメーションを保存できませんでした</string>
     <string name="ugoira_fetching">フレームを取得中…</string>
     <string name="ugoira_pause">アニメーションを一時停止</string>
     <string name="ugoira_play">アニメーションを再生</string>
+    <string name="ugoira_save_apng">APNGで保存</string>
     <string name="ugoira_save_gif">GIF で保存</string>
     <string name="ugoira_save_zip">フレームを ZIP で保存</string>
+    <string name="ugoira_saved_apng">アニメーションをAPNGで保存しました</string>
     <string name="ugoira_saved_gif">アニメーションを GIF で保存しました</string>
     <string name="ugoira_saved_zip">フレームを ZIP で保存しました</string>
     <string name="ugoira_saving">保存中…</string>

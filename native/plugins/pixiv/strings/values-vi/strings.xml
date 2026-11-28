@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Đang thịnh hành</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Giữ mọi màu sắc, tệp sẽ lớn hơn. Mã hóa có thể mất một phút</string>
     <string name="ugoira_encoding">Đang mã hóa khung hình %1$d/%2$d…</string>
     <string name="ugoira_export_failed">Không thể lưu ảnh động</string>
     <string name="ugoira_fetching">Đang lấy khung hình…</string>
     <string name="ugoira_pause">Tạm dừng hoạt ảnh</string>
     <string name="ugoira_play">Phát hoạt ảnh</string>
+    <string name="ugoira_save_apng">Lưu dạng APNG</string>
     <string name="ugoira_save_gif">Lưu dưới dạng GIF</string>
     <string name="ugoira_save_zip">Lưu khung hình dưới dạng ZIP</string>
+    <string name="ugoira_saved_apng">Đã lưu hoạt ảnh dạng APNG</string>
     <string name="ugoira_saved_gif">Đã lưu ảnh động dưới dạng GIF</string>
     <string name="ugoira_saved_zip">Đã lưu khung hình dưới dạng ZIP</string>
     <string name="ugoira_saving">Đang lưu…</string>

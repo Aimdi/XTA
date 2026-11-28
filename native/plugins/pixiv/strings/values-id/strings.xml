@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Sedang tren</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Semua warna dipertahankan, dalam berkas yang lebih besar. Pengodean bisa memakan waktu semenit</string>
     <string name="ugoira_encoding">Mengenkode bingkai %1$d dari %2$d…</string>
     <string name="ugoira_export_failed">Tidak dapat menyimpan animasi</string>
     <string name="ugoira_fetching">Mengambil bingkai…</string>
     <string name="ugoira_pause">Jeda animasi</string>
     <string name="ugoira_play">Putar animasi</string>
+    <string name="ugoira_save_apng">Simpan sebagai APNG</string>
     <string name="ugoira_save_gif">Simpan sebagai GIF</string>
     <string name="ugoira_save_zip">Simpan bingkai sebagai ZIP</string>
+    <string name="ugoira_saved_apng">Animasi disimpan sebagai APNG</string>
     <string name="ugoira_saved_gif">Animasi disimpan sebagai GIF</string>
     <string name="ugoira_saved_zip">Bingkai disimpan sebagai ZIP</string>
     <string name="ugoira_saving">Menyimpan…</string>

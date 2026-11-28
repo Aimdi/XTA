@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Joerak orain</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Kolore guztiak gordetzen dira, fitxategi handiago batean. Kodetzeak minutu bat iraun dezake</string>
     <string name="ugoira_encoding">%1$d. fotograma kodetzen, guztira %2$d…</string>
     <string name="ugoira_export_failed">Ezin izan da animazioa gorde</string>
     <string name="ugoira_fetching">Fotogramak eskuratzen…</string>
     <string name="ugoira_pause">Pausatu animazioa</string>
     <string name="ugoira_play">Erreproduzitu animazioa</string>
+    <string name="ugoira_save_apng">Gorde APNG gisa</string>
     <string name="ugoira_save_gif">Gorde GIF gisa</string>
     <string name="ugoira_save_zip">Gorde fotogramak ZIP gisa</string>
+    <string name="ugoira_saved_apng">Animazioa APNG gisa gorde da</string>
     <string name="ugoira_saved_gif">Animazioa GIF gisa gorde da</string>
     <string name="ugoira_saved_zip">Fotogramak ZIP gisa gorde dira</string>
     <string name="ugoira_saving">Gordetzen…</string>

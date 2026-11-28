@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Актуальнае цяпер</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Захоўваюцца ўсе колеры, файл большы. Кадаванне можа заняць хвіліну</string>
     <string name="ugoira_encoding">Кадзіраванне кадра %1$d з %2$d…</string>
     <string name="ugoira_export_failed">Не ўдалося захаваць анімацыю</string>
     <string name="ugoira_fetching">Атрыманне кадраў…</string>
     <string name="ugoira_pause">Прыпыніць анімацыю</string>
     <string name="ugoira_play">Прайграць анімацыю</string>
+    <string name="ugoira_save_apng">Захаваць як APNG</string>
     <string name="ugoira_save_gif">Захаваць як GIF</string>
     <string name="ugoira_save_zip">Захаваць кадры ў ZIP</string>
+    <string name="ugoira_saved_apng">Анімацыя захавана як APNG</string>
     <string name="ugoira_saved_gif">Анімацыя захавана як GIF</string>
     <string name="ugoira_saved_zip">Кадры захаваны ў ZIP</string>
     <string name="ugoira_saving">Захаванне…</string>

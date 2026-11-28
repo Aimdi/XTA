@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Právě populární</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Zachová všechny barvy, soubor bude větší. Kódování může trvat minutu</string>
     <string name="ugoira_encoding">Kóduje se snímek %1$d z %2$d…</string>
     <string name="ugoira_export_failed">Animaci se nepodařilo uložit</string>
     <string name="ugoira_fetching">Načítají se snímky…</string>
     <string name="ugoira_pause">Pozastavit animaci</string>
     <string name="ugoira_play">Přehrát animaci</string>
+    <string name="ugoira_save_apng">Uložit jako APNG</string>
     <string name="ugoira_save_gif">Uložit jako GIF</string>
     <string name="ugoira_save_zip">Uložit snímky jako ZIP</string>
+    <string name="ugoira_saved_apng">Animace uložena jako APNG</string>
     <string name="ugoira_saved_gif">Animace uložena jako GIF</string>
     <string name="ugoira_saved_zip">Snímky uloženy jako ZIP</string>
     <string name="ugoira_saving">Ukládá se…</string>

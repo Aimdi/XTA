@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">當前熱門</string>
     <string name="ugoira">動圖</string>
+    <string name="ugoira_apng_note">保留所有色彩，檔案較大。編碼可能需要一分鐘</string>
     <string name="ugoira_encoding">正在編碼第 %1$d 個影格，共 %2$d 個…</string>
     <string name="ugoira_export_failed">無法儲存動圖</string>
     <string name="ugoira_fetching">正在取得影格…</string>
     <string name="ugoira_pause">暫停動圖</string>
     <string name="ugoira_play">播放動圖</string>
+    <string name="ugoira_save_apng">儲存為 APNG</string>
     <string name="ugoira_save_gif">儲存為 GIF</string>
     <string name="ugoira_save_zip">將影格儲存為 ZIP</string>
+    <string name="ugoira_saved_apng">動畫已儲存為 APNG</string>
     <string name="ugoira_saved_gif">動圖已儲存為 GIF</string>
     <string name="ugoira_saved_zip">影格已儲存為 ZIP</string>
     <string name="ugoira_saving">正在儲存…</string>

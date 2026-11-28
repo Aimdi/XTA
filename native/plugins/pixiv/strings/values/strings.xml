@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Trending now</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Every colour kept, in a larger file. Encoding can take a minute</string>
     <string name="ugoira_encoding">Encoding frame %1$d of %2$d…</string>
     <string name="ugoira_export_failed">Could not save the animation</string>
     <string name="ugoira_fetching">Fetching frames…</string>
     <string name="ugoira_pause">Pause animation</string>
     <string name="ugoira_play">Play animation</string>
+    <string name="ugoira_save_apng">Save as APNG</string>
     <string name="ugoira_save_gif">Save as GIF</string>
     <string name="ugoira_save_zip">Save frames as ZIP</string>
+    <string name="ugoira_saved_apng">Animation saved as APNG</string>
     <string name="ugoira_saved_gif">Animation saved as GIF</string>
     <string name="ugoira_saved_zip">Frames saved as ZIP</string>
     <string name="ugoira_saving">Saving…</string>

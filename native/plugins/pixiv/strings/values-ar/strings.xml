@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">الرائج الآن</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">تُحفظ كل الألوان، في ملف أكبر. قد يستغرق الترميز دقيقة</string>
     <string name="ugoira_encoding">جارٍ ترميز الإطار %1$d من %2$d…</string>
     <string name="ugoira_export_failed">تعذّر حفظ الرسوم المتحركة</string>
     <string name="ugoira_fetching">جارٍ جلب الإطارات…</string>
     <string name="ugoira_pause">إيقاف الرسم المتحرك مؤقتًا</string>
     <string name="ugoira_play">تشغيل الرسم المتحرك</string>
+    <string name="ugoira_save_apng">حفظ بصيغة APNG</string>
     <string name="ugoira_save_gif">حفظ بصيغة GIF</string>
     <string name="ugoira_save_zip">حفظ الإطارات بصيغة ZIP</string>
+    <string name="ugoira_saved_apng">حُفظت الحركة بصيغة APNG</string>
     <string name="ugoira_saved_gif">حُفظت الرسوم المتحركة بصيغة GIF</string>
     <string name="ugoira_saved_zip">حُفظت الإطارات بصيغة ZIP</string>
     <string name="ugoira_saving">جارٍ الحفظ…</string>

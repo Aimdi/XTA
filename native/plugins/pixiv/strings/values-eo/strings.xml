@@ -463,13 +463,16 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Nun furoranta</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_apng_note">Ĉiuj koloroj restas, en pli granda dosiero. Kodado povas daŭri minuton</string>
     <string name="ugoira_encoding">Kodigas kadron %1$d el %2$d…</string>
     <string name="ugoira_export_failed">Ne eblis konservi la animacion</string>
     <string name="ugoira_fetching">Prenas kadrojn…</string>
     <string name="ugoira_pause">Paŭzigi la animacion</string>
     <string name="ugoira_play">Ludi la animacion</string>
+    <string name="ugoira_save_apng">Konservi kiel APNG</string>
     <string name="ugoira_save_gif">Konservi kiel GIF</string>
     <string name="ugoira_save_zip">Konservi kadrojn kiel ZIP</string>
+    <string name="ugoira_saved_apng">Animacio konservita kiel APNG</string>
     <string name="ugoira_saved_gif">Animacio konservita kiel GIF</string>
     <string name="ugoira_saved_zip">Kadroj konservitaj kiel ZIP</string>
     <string name="ugoira_saving">Konservado…</string>
