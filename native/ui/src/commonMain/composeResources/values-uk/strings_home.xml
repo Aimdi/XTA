@@ -96,4 +96,7 @@
     <string name="home_deck_width_same">Як в інших колонок</string>
     <string name="home_deck_show_unread">Показувати кількість непрочитаних</string>
     <string name="home_deck_profile">Дописи облікового запису</string>
+    <string name="home_deck_add_to">Додати до колонок</string>
+    <string name="home_deck_show_in">Показати в колонках</string>
+    <string name="home_deck_added">Додано до колонок</string>
 </resources>

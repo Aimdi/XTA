@@ -94,4 +94,7 @@
     <string name="home_deck_width_same">Wie die anderen Spalten</string>
     <string name="home_deck_show_unread">Anzahl ungelesener anzeigen</string>
     <string name="home_deck_profile">Beiträge eines Kontos</string>
+    <string name="home_deck_add_to">Zum Deck hinzufügen</string>
+    <string name="home_deck_show_in">Im Deck zeigen</string>
+    <string name="home_deck_added">Zum Deck hinzugefügt</string>
 </resources>

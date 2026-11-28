@@ -16,6 +16,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -32,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.data.LocalGraph
+import com.aimdi.xtanative.ui.common.onSecondaryClick
 import com.aimdi.xtanative.ui.settings.AvatarSheet
 
 /** What the column marks: a page of Home's bar, a screen of the menu (its route), or a group (its id). */
@@ -164,13 +166,23 @@ fun FramedSidebar(
                 pages = {
                     itemsIndexed(ui.bar, key = { _, barPage -> "page-" + barPage.id }) { index, barPage ->
                         val selected = barPage.id == mark.page
-                        NavRow(
-                            label = barLabel(barPage, ui),
-                            selected = selected,
-                            onClick = { calls.page(index, barPage) },
-                            icon = { BarPageIcon(barPage, selected, ui, networks) },
-                            modifier = if (selected) marked else Modifier,
-                        )
+                        val label = barLabel(barPage, ui)
+                        // A network's or a group's page goes on the deck from its menu, or dragged there.
+                        val column = deckColumnOfPage(barPage)
+                        var menu by remember { mutableStateOf(false) }
+                        Box {
+                            NavRow(
+                                label = label,
+                                selected = selected,
+                                onClick = { calls.page(index, barPage) },
+                                icon = { BarPageIcon(barPage, selected, ui, networks) },
+                                modifier = (if (selected) marked else Modifier).then(
+                                    if (column == null) Modifier
+                                    else Modifier.onSecondaryClick { menu = true }.opensMenuByKey { menu = true }.dragsToDeck(column, label),
+                                ),
+                            )
+                            if (column != null) TimelineRowMenu(menu, column, onDismiss = { menu = false })
+                        }
                     }
                 },
                 current = mark.screen,

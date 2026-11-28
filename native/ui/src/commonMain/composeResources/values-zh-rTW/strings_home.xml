@@ -93,4 +93,7 @@
     <string name="home_deck_width_same">與其他欄相同</string>
     <string name="home_deck_show_unread">顯示未讀數</string>
     <string name="home_deck_profile">某個帳號的貼文</string>
+    <string name="home_deck_add_to">新增到多欄</string>
+    <string name="home_deck_show_in">在多欄中顯示</string>
+    <string name="home_deck_added">已新增到多欄</string>
 </resources>

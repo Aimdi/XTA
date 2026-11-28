@@ -220,6 +220,18 @@ object DeckColumns {
     fun added(ids: List<String>, column: DeckColumn): List<String> = if (column.id in ids) ids else ids + column.id
 
     /**
+     * [ids] with [column] standing just before the column [before] (last
+     * when that is null or not on the deck): added there, or moved there
+     * when it is a column already, as a column dropped on the deck lands.
+     */
+    fun placed(ids: List<String>, column: DeckColumn, before: String?): List<String> {
+        if (before == column.id && column.id in ids) return ids
+        val rest = ids.filter { it != column.id }
+        val at = before?.let(rest::indexOf)?.takeIf { it >= 0 } ?: rest.size
+        return rest.toMutableList().apply { add(at, column.id) }
+    }
+
+    /**
      * Each column's width in [available] dp for [count] columns of
      * [preferred] dp: wider to fill the window while they fit, else
      * [preferred], the deck scrolling sideways.

@@ -94,4 +94,7 @@
     <string name="home_deck_width_same">Same kiel la aliaj kolumnoj</string>
     <string name="home_deck_show_unread">Montri nombron de nelegitaj</string>
     <string name="home_deck_profile">Afiŝoj de konto</string>
+    <string name="home_deck_add_to">Aldoni al la kolumnaro</string>
+    <string name="home_deck_show_in">Montri en la kolumnaro</string>
+    <string name="home_deck_added">Aldonita al la kolumnaro</string>
 </resources>

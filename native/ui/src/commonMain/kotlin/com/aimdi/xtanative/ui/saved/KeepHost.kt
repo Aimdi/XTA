@@ -56,6 +56,8 @@ import com.aimdi.xtanative.ui.generated.resources.downloads_downloading
 import com.aimdi.xtanative.ui.generated.resources.downloads_failed
 import com.aimdi.xtanative.ui.generated.resources.downloads_open_failed
 import com.aimdi.xtanative.ui.generated.resources.downloads_open_file
+import com.aimdi.xtanative.ui.generated.resources.home_deck_added
+import com.aimdi.xtanative.ui.generated.resources.plugin_open
 import com.aimdi.xtanative.ui.generated.resources.downloads_retry_hint
 import com.aimdi.xtanative.ui.generated.resources.downloads_saved_to
 import com.aimdi.xtanative.ui.generated.resources.groups_changes_saved
@@ -130,6 +132,13 @@ private fun KeepNoticeHost() {
                 KeepNotices.hide(current)
                 scope.launch { if (!files.open(saved.savedUri, saved.fileName)) KeepNotices.show(KeepNotice.OpenFailed) }
             }) { Text(stringResource(Res.string.downloads_open_file), color = MaterialTheme.colorScheme.inversePrimary) }
+        }
+    } ?: (current.notice as? KeepNotice.AddedToDeck)?.let { added ->
+        {
+            TextButton(onClick = {
+                KeepNotices.hide(current)
+                added.open()
+            }) { Text(stringResource(Res.string.plugin_open), color = MaterialTheme.colorScheme.inversePrimary) }
         }
     } ?: (current.notice as? KeepNotice.ChangesSaved)?.let {
         {
@@ -281,6 +290,7 @@ fun noticeText(notice: KeepNotice): String = when (notice) {
     KeepNotice.UndoFailed -> stringResource(Res.string.groups_undo_failed)
     is KeepNotice.Progress -> notice.text
     KeepNotice.Cancelled -> stringResource(Res.string.downloads_cancelled)
+    is KeepNotice.AddedToDeck -> stringResource(Res.string.home_deck_added)
 }
 
 /** The line behind the lock: what the open tab keeps stays on this device. */

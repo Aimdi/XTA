@@ -96,4 +96,7 @@
     <string name="home_deck_width_same">Jak u inšych kałonak</string>
     <string name="home_deck_show_unread">Pakazvać kolkasć niepračytanaha</string>
     <string name="home_deck_profile">Dopisy akaŭnta</string>
+    <string name="home_deck_add_to">Dadać u kałonki</string>
+    <string name="home_deck_show_in">Pakazać u kałonkach</string>
+    <string name="home_deck_added">Dadadziena ŭ kałonki</string>
 </resources>

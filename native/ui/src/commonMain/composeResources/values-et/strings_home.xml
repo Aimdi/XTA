@@ -94,4 +94,7 @@
     <string name="home_deck_width_same">Sama mis teistel veergudel</string>
     <string name="home_deck_show_unread">Näita lugemata arvu</string>
     <string name="home_deck_profile">Konto postitused</string>
+    <string name="home_deck_add_to">Lisa veergudesse</string>
+    <string name="home_deck_show_in">Näita veergudes</string>
+    <string name="home_deck_added">Lisatud veergudesse</string>
 </resources>

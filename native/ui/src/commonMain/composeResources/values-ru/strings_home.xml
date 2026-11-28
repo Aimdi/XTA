@@ -96,4 +96,7 @@
     <string name="home_deck_width_same">Как у других колонок</string>
     <string name="home_deck_show_unread">Показывать число непрочитанных</string>
     <string name="home_deck_profile">Посты аккаунта</string>
+    <string name="home_deck_add_to">Добавить в колонки</string>
+    <string name="home_deck_show_in">Показать в колонках</string>
+    <string name="home_deck_added">Добавлено в колонки</string>
 </resources>

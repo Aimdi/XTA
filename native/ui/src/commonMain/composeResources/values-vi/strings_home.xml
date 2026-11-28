@@ -93,4 +93,7 @@
     <string name="home_deck_width_same">Giống các cột khác</string>
     <string name="home_deck_show_unread">Hiện số chưa đọc</string>
     <string name="home_deck_profile">Bài đăng của một tài khoản</string>
+    <string name="home_deck_add_to">Thêm vào Cột</string>
+    <string name="home_deck_show_in">Hiện trong Cột</string>
+    <string name="home_deck_added">Đã thêm vào Cột</string>
 </resources>

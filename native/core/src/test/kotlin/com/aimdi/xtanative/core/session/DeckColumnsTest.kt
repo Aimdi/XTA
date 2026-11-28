@@ -42,6 +42,20 @@ class DeckColumnsTest {
     }
 
     @Test
+    fun aColumnDroppedOnTheDeckLandsBeforeTheOneItWasDroppedBefore() {
+        val ids = listOf("a", "b", "c")
+        val reddit = DeckColumn.Network("reddit")
+        assertEquals(listOf("a", "@network:reddit", "b", "c"), DeckColumns.placed(ids, reddit, before = "b"))
+        assertEquals(listOf("a", "b", "c", "@network:reddit"), DeckColumns.placed(ids, reddit, before = null), "dropped past the last column")
+        assertEquals(listOf("a", "b", "c", "@network:reddit"), DeckColumns.placed(ids, reddit, before = "gone"), "before a column no longer there")
+        assertEquals(listOf("c", "a", "b"), DeckColumns.placed(ids, DeckColumn.Group("c"), before = "a"), "a column already there moves, never twice")
+        assertEquals(listOf("a", "c", "b"), DeckColumns.placed(ids, DeckColumn.Group("b"), before = null), "to the end")
+        assertEquals(ids, DeckColumns.placed(ids, DeckColumn.Group("b"), before = "c"), "dropped where it stands")
+        assertEquals(ids, DeckColumns.placed(ids, DeckColumn.Group("b"), before = "b"), "dropped on itself")
+        assertEquals(listOf("@following"), DeckColumns.placed(emptyList(), DeckColumn.Following, before = null), "the first column")
+    }
+
+    @Test
     fun columnsFillTheWindowWhileTheyFitAndScrollPastIt() {
         assertEquals(500f, DeckColumns.width(1500f, 3, 380f), "three fit: each takes a third")
         assertEquals(380f, DeckColumns.width(1500f, 5, 380f), "five do not: each keeps its width, the deck scrolls")

@@ -94,4 +94,7 @@
     <string name="home_deck_width_same">Beste zutabeen berdina</string>
     <string name="home_deck_show_unread">Erakutsi irakurri gabeen kopurua</string>
     <string name="home_deck_profile">Kontu baten argitalpenak</string>
+    <string name="home_deck_add_to">Gehitu zutabeetara</string>
+    <string name="home_deck_show_in">Erakutsi zutabeetan</string>
+    <string name="home_deck_added">Zutabeetara gehitu da</string>
 </resources>

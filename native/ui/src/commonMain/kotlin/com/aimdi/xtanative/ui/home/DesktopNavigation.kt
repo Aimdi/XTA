@@ -540,6 +540,19 @@ class DesktopActions(
         return true
     }
 
+    /**
+     * [column] chosen as Ctrl+← and Ctrl+→ choose one, the page brought to it:
+     * a column shown from elsewhere (the Deck's Show in Deck); false while the
+     * page shows no such column.
+     */
+    fun chooseColumn(column: Any): Boolean {
+        if (column !in columnOrder()) return false
+        chosenColumn = column
+        opened = null
+        markedPost = null
+        return true
+    }
+
     /** The chosen column while the page still shows it; one removed since (its menu's Remove) counts as none, so the keys never go dead. */
     internal fun chosen(): Any? = chosenColumn?.takeIf { it in columnOrder() }
 

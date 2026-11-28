@@ -93,4 +93,7 @@
     <string name="home_deck_width_same">Sama dengan kolom lain</string>
     <string name="home_deck_show_unread">Tampilkan jumlah belum dibaca</string>
     <string name="home_deck_profile">Postingan sebuah akun</string>
+    <string name="home_deck_add_to">Tambahkan ke Kolom</string>
+    <string name="home_deck_show_in">Tampilkan di Kolom</string>
+    <string name="home_deck_added">Ditambahkan ke Kolom</string>
 </resources>

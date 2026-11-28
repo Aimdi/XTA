@@ -94,4 +94,7 @@
     <string name="home_deck_width_same">Same as the other columns</string>
     <string name="home_deck_show_unread">Show unread count</string>
     <string name="home_deck_profile">An account\'s posts</string>
+    <string name="home_deck_add_to">Add to Deck</string>
+    <string name="home_deck_show_in">Show in Deck</string>
+    <string name="home_deck_added">Added to Deck</string>
 </resources>

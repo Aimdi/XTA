@@ -94,4 +94,7 @@
     <string name="home_deck_width_same">Diğer sütunlarla aynı</string>
     <string name="home_deck_show_unread">Okunmamış sayısını göster</string>
     <string name="home_deck_profile">Bir hesabın gönderileri</string>
+    <string name="home_deck_add_to">Sütunlara ekle</string>
+    <string name="home_deck_show_in">Sütunlarda göster</string>
+    <string name="home_deck_added">Sütunlara eklendi</string>
 </resources>

@@ -67,6 +67,7 @@ import com.aimdi.xtanative.ui.downloads.DownloadsScreen
 import com.aimdi.xtanative.ui.history.HistoryScreen
 import com.aimdi.xtanative.ui.group.GroupDiscoveryScreen
 import com.aimdi.xtanative.ui.group.GroupFeedScreen
+import com.aimdi.xtanative.ui.home.DeckDragPicture
 import com.aimdi.xtanative.ui.home.DeckScreen
 import com.aimdi.xtanative.ui.home.DesktopNavigation
 import com.aimdi.xtanative.ui.home.FindsBackWithKeys
@@ -1044,6 +1045,8 @@ private fun WideFramed(nav: NavHostController, routes: HomeRoutes, opens: FrameO
                 PageEnd(focus)
             }
         }
+        // A group or a network dragged from the column onto the deck, its picture following the mouse.
+        DeckDragPicture()
         if (home != null) {
             // Closed by Esc, its X or the scrim, the keys go back to the rail's menu button; a row picked leads on to its screen.
             val hide = remember { { menu = false } }

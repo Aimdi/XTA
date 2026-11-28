@@ -94,4 +94,7 @@
     <string name="home_deck_width_same">Comme les autres colonnes</string>
     <string name="home_deck_show_unread">Afficher le nombre de non lus</string>
     <string name="home_deck_profile">Publications d\'un compte</string>
+    <string name="home_deck_add_to">Ajouter au Deck</string>
+    <string name="home_deck_show_in">Afficher dans le Deck</string>
+    <string name="home_deck_added">Ajouté au Deck</string>
 </resources>

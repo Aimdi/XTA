@@ -94,4 +94,7 @@
     <string name="home_deck_width_same">दूसरे कॉलम जैसी</string>
     <string name="home_deck_show_unread">अपठित संख्या दिखाएँ</string>
     <string name="home_deck_profile">किसी खाते की पोस्ट</string>
+    <string name="home_deck_add_to">कॉलम में जोड़ें</string>
+    <string name="home_deck_show_in">कॉलम में दिखाएँ</string>
+    <string name="home_deck_added">कॉलम में जोड़ा गया</string>
 </resources>

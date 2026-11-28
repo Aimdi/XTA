@@ -94,6 +94,9 @@ sealed interface KeepNotice {
 
     /** The reader stopped a long piece of work. */
     data object Cancelled : KeepNotice
+
+    /** A timeline put on the deck from somewhere else; Open shows it there ([open]). */
+    class AddedToDeck(val open: () -> Unit) : KeepNotice
 }
 
 /** The notice showing now, one at a time: a new one replaces it. [serial] tells two of the same apart. */

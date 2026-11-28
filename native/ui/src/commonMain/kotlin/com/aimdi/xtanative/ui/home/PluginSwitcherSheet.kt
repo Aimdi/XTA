@@ -56,6 +56,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.core.session.DeckColumn
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeyedSheet
@@ -232,7 +233,12 @@ private fun SwitcherBody(ui: HomeUi, networks: HomeNetworks, shown: HomeTab?, un
                 ids.chunked(PluginSwitcher.PER_ROW).forEach { row ->
                     Row {
                         row.forEach { id ->
-                            NetworkTile(id, ui, networks, shown = shown == HomeTab.Network(id), lit = HomeTab.Network(id).key in unread, Modifier.weight(1f).height(if (compact) 72.dp else 88.dp)) { calls.onNetwork(id) }
+                            var menu by remember { mutableStateOf(false) }
+                            // A right click (the Menu key, Shift+F10) offers Add to Deck.
+                            Box(Modifier.weight(1f).onSecondaryClick { menu = true }.opensMenuByKey { menu = true }) {
+                                NetworkTile(id, ui, networks, shown = shown == HomeTab.Network(id), lit = HomeTab.Network(id).key in unread, Modifier.fillMaxWidth().height(if (compact) 72.dp else 88.dp)) { calls.onNetwork(id) }
+                                TimelineRowMenu(menu, deckColumnOfStrip(id), onDismiss = { menu = false })
+                            }
                         }
                         repeat(PluginSwitcher.PER_ROW - row.size) { Spacer(Modifier.weight(1f)) }
                     }
@@ -324,10 +330,10 @@ private fun TimelineWords(ui: HomeUi, shown: HomeTab?, unread: Set<String>, call
     val now by tally.now.collectAsState()
     Row(Modifier.padding(start = 6.dp), verticalAlignment = Alignment.CenterVertically) {
         Row(Modifier.weight(1f).horizontalScroll(rememberScrollState())) {
-            timelines.forEach { tab -> Word(tabLabel(tab, ui), picked = tab == shown, lit = tab.key in unread, now.count(tab.key), { tally.markRead(tab) }) { calls.onTimeline(tab) } }
+            timelines.forEach { tab -> Word(tabLabel(tab, ui), deckColumnOfTab(tab), picked = tab == shown, lit = tab.key in unread, now.count(tab.key), { tally.markRead(tab) }) { calls.onTimeline(tab) } }
             groups.forEach { group ->
                 val tab = HomeTab.Group(group.id, group.name)
-                Word(group.name, picked = false, lit = tab.key in unread, now.count(tab.key), { tally.markRead(tab) }) { calls.onGroup(group) }
+                Word(group.name, DeckColumn.Group(group.id), picked = false, lit = tab.key in unread, now.count(tab.key), { tally.markRead(tab) }) { calls.onGroup(group) }
             }
         }
         IconTip(stringResource(Res.string.home_add_timeline)) { IconButton(onClick = calls.onAdd) { Icon(Icons.Filled.Add, stringResource(Res.string.home_add_timeline), tint = MaterialTheme.colorScheme.primary) } }
@@ -335,14 +341,14 @@ private fun TimelineWords(ui: HomeUi, shown: HomeTab?, unread: Set<String>, call
 }
 
 @Composable
-private fun Word(label: String, picked: Boolean, lit: Boolean, count: Int?, onMarkRead: () -> Unit, onClick: () -> Unit) {
+private fun Word(label: String, column: DeckColumn, picked: Boolean, lit: Boolean, count: Int?, onMarkRead: () -> Unit, onClick: () -> Unit) {
     val unread = unreadLabel(count)
     var menu by remember { mutableStateOf(false) }
-    // A right click on an unread one offers Mark all as read.
-    Box(Modifier.onSecondaryClick { if (lit) menu = true }) {
+    // A right click (the Menu key, Shift+F10) offers Mark all as read on an unread one, and Add to Deck.
+    Box(Modifier.onSecondaryClick { menu = true }.opensMenuByKey { menu = true }) {
         // The dot's meaning under the pointer, as the screen reader says it.
         if (lit) IconTip(unread) { WordRow(label, picked, lit, count, unread, onClick) } else WordRow(label, picked, lit, count, unread, onClick)
-        MarkReadMenu(menu, onDismiss = { menu = false }, onMark = onMarkRead)
+        TimelineRowMenu(menu, column, onDismiss = { menu = false }, onMarkRead = onMarkRead.takeIf { lit })
     }
 }
 

@@ -96,4 +96,7 @@
     <string name="home_deck_width_same">Stejná jako ostatní sloupce</string>
     <string name="home_deck_show_unread">Zobrazit počet nepřečtených</string>
     <string name="home_deck_profile">Příspěvky účtu</string>
+    <string name="home_deck_add_to">Přidat do sloupců</string>
+    <string name="home_deck_show_in">Zobrazit ve sloupcích</string>
+    <string name="home_deck_added">Přidáno do sloupců</string>
 </resources>

@@ -19,6 +19,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.core.feed.FeedStrip
 import com.aimdi.xtanative.core.session.DeckAsks
 import com.aimdi.xtanative.core.session.DeckColumn
 import com.aimdi.xtanative.data.LocalGraph
@@ -111,6 +112,49 @@ internal sealed interface AddChoice {
     data class Ask(val ask: DeckAsk) : AddChoice {
         override val key: String get() = "ask:" + ask.name
     }
+}
+
+/** Where a row of Add column stands: Home's own timelines, the networks, the groups, then the rest. */
+internal enum class AddSection { TIMELINES, NETWORKS, GROUPS, MORE }
+
+/** A row of Add column: what it adds, where it stands, and whether it is a column already ([added], marked, and shown when picked). */
+internal data class AddEntry(val choice: AddChoice, val section: AddSection, val added: Boolean) {
+    val key: String get() = choice.key
+}
+
+/** What Add column lists, decided apart from its sheet. */
+internal object AddColumnList {
+    /** From how many rows on Add column offers a field to type part of a name into. */
+    const val FILTER_FROM = 10
+
+    /**
+     * Every column Add column can add, those [onDeck] marked: Home's
+     * timelines, every network running, every group, the searches followed,
+     * the antennas and Saved's folders; then a search and an account of the
+     * reader's choosing ([DeckAsk]).
+     */
+    fun of(onDeck: List<DeckColumn>, names: ColumnNames): List<AddEntry> {
+        val there = onDeck.mapTo(HashSet()) { it.id }
+        fun section(section: AddSection, columns: List<DeckColumn>) = columns.map { AddEntry(AddChoice.Column(it), section, it.id in there) }
+        return section(AddSection.TIMELINES, listOf(DeckColumn.Following, DeckColumn.ForYou)) +
+            section(AddSection.NETWORKS, names.available.filter { it.id != FeedStrip.FOLLOWING && it.id != FeedStrip.FOR_YOU }.map { DeckColumn.Network(it.id) }) +
+            section(AddSection.GROUPS, names.groups.map { DeckColumn.Group(it.id) }) +
+            section(AddSection.MORE, names.addable()) +
+            DeckAsk.entries.map { AddEntry(AddChoice.Ask(it), AddSection.MORE, added = false) }
+    }
+
+    /** Whether [entries] are many enough to want the field ([FILTER_FROM]). */
+    fun filters(entries: List<AddEntry>): Boolean = entries.size >= FILTER_FROM
+
+    /** The [entries] whose name ([labelOf]) holds [query], in any case; the ways to name a column stay, as they add anything. */
+    fun matching(entries: List<AddEntry>, query: String, labelOf: (AddEntry) -> String): List<AddEntry> {
+        val words = query.trim()
+        if (words.isEmpty()) return entries
+        return entries.filter { it.choice is AddChoice.Ask || labelOf(it).contains(words, ignoreCase = true) }
+    }
+
+    /** What Enter in the field adds: the first column it leaves, not one to name. */
+    fun first(entries: List<AddEntry>): AddEntry? = entries.firstOrNull { it.choice is AddChoice.Column }
 }
 
 /** The search or account typed for a new column; Add column is offered once the text names one. */

@@ -94,4 +94,7 @@
     <string name="home_deck_width_same">Zoals de andere kolommen</string>
     <string name="home_deck_show_unread">Aantal ongelezen tonen</string>
     <string name="home_deck_profile">Berichten van een account</string>
+    <string name="home_deck_add_to">Toevoegen aan Deck</string>
+    <string name="home_deck_show_in">Tonen in Deck</string>
+    <string name="home_deck_added">Toegevoegd aan Deck</string>
 </resources>

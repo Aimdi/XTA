@@ -94,4 +94,7 @@
     <string name="home_deck_width_same">Som de andre kolonnene</string>
     <string name="home_deck_show_unread">Vis antall uleste</string>
     <string name="home_deck_profile">Innlegg fra en konto</string>
+    <string name="home_deck_add_to">Legg til i Kolonner</string>
+    <string name="home_deck_show_in">Vis i Kolonner</string>
+    <string name="home_deck_added">Lagt til i Kolonner</string>
 </resources>

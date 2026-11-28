@@ -96,4 +96,7 @@
     <string name="home_deck_width_same">Jak pozostałe kolumny</string>
     <string name="home_deck_show_unread">Pokazuj liczbę nieprzeczytanych</string>
     <string name="home_deck_profile">Posty konta</string>
+    <string name="home_deck_add_to">Dodaj do kolumn</string>
+    <string name="home_deck_show_in">Pokaż w kolumnach</string>
+    <string name="home_deck_added">Dodano do kolumn</string>
 </resources>

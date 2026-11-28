@@ -108,6 +108,7 @@ import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import com.aimdi.xtanative.ui.settings.SettingsSection
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import kotlin.coroutines.cancellation.CancellationException
+import com.aimdi.xtanative.ui.settings.isDesktop
 import org.jetbrains.compose.resources.stringResource
 
 /** Where the feed page's controls lead, in the shell that holds the drawer, the sheets and what opens over Home. */
@@ -575,7 +576,7 @@ internal fun NetworkActions(
     extras: List<PluginHomeTab> = emptyList(),
     menu: Boolean = true,
 ) {
-    PinnedOptions(id, networks.options(id), ui.topBarPins[id].orEmpty(), onPins, menu = menu) { close -> AppEntries(extras, routes, close) }
+    PinnedOptions(id, networks.options(id), ui.topBarPins[id].orEmpty(), onPins, menu = menu) { close -> AppEntries(extras, routes, close, deckColumnOfStrip(id)) }
 }
 
 /**
@@ -588,12 +589,12 @@ internal fun NetworkActions(
 internal fun ColumnScope.ShellEntries(id: String, ui: HomeUi, networks: HomeNetworks, extras: List<PluginHomeTab>, routes: HomeRoutes?, onPins: (String, List<String>) -> Unit, close: () -> Unit) {
     ReadingControlsPinRow()
     OptionItems(id, networks.options(id), ui.topBarPins[id].orEmpty(), onPins, close)
-    AppEntries(extras, routes, close)
+    AppEntries(extras, routes, close, deckColumnOfStrip(id))
 }
 
-/** The network's sections in its menu, then the plugin store and XTA's settings, where the app has them. */
+/** The network's sections in its menu, Add to Deck ([deck]), then the plugin store and XTA's settings, where the app has them. */
 @Composable
-private fun AppEntries(extras: List<PluginHomeTab>, routes: HomeRoutes?, close: () -> Unit) {
+private fun AppEntries(extras: List<PluginHomeTab>, routes: HomeRoutes?, close: () -> Unit, deck: DeckColumn) {
     extras.forEach { section ->
         DropdownMenuItem(
             text = { Text(section.label, fontWeight = if (section.selected) FontWeight.Bold else null) },
@@ -604,6 +605,8 @@ private fun AppEntries(extras: List<PluginHomeTab>, routes: HomeRoutes?, close: 
             },
         )
     }
+    // The desktop's deck stands beside the sidebar: the network goes on it from here.
+    if (isDesktop) DeckMenuItem(deck, close)
     if (routes == null) return
     if (routes.exists(HomeDestination.PLUGINS.route)) {
         DropdownMenuItem(text = { Text(stringResource(Res.string.home_manage_plugins)) }, onClick = {

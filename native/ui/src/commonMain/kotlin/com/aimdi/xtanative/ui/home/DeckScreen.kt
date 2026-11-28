@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
@@ -75,7 +74,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.backup.FollowGroup
-import com.aimdi.xtanative.core.feed.FeedStrip
 import com.aimdi.xtanative.core.session.DeckColumn
 import com.aimdi.xtanative.core.session.DeckColumnOptions
 import com.aimdi.xtanative.core.session.DeckColumns
@@ -120,10 +118,21 @@ import com.aimdi.xtanative.ui.post.MenuRowMetrics
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostScreen
 import com.aimdi.xtanative.ui.profile.ProfileScreen
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.ui.layout.positionInWindow
+import com.aimdi.xtanative.ui.common.SearchField
+import com.aimdi.xtanative.ui.generated.resources.home_deck_show_in
+import com.aimdi.xtanative.ui.generated.resources.home_groups
+import com.aimdi.xtanative.ui.generated.resources.home_networks
+import com.aimdi.xtanative.ui.generated.resources.search
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import com.aimdi.xtanative.ui.common.EmptyState
+
+/** How long a column asked for from elsewhere stays lit. */
+private const val LIT_MS = 1500L
 
 /** The narrowest the detail column gets: a post's conversation needs a page's width. */
 private const val DETAIL_MIN_WIDTH = 420
@@ -176,6 +185,21 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     val desk = LocalDesktopActions.current
     val shown = detail.pages.lastOrNull()
     LaunchedEffect(desk, shown, detail.pages.size) { if (shown != null) desk?.readOpened(DetailColumn) }
+    // A column asked for from elsewhere (Show in Deck, one just dropped here) is brought into view and chosen, lit a moment.
+    var lit by remember { mutableStateOf<String?>(null) }
+    val asked = DeckRequests.shown
+    LaunchedEffect(asked, columns) {
+        val id = asked?.takeIf { wanted -> columns.any { it.id == wanted } } ?: return@LaunchedEffect
+        DeckRequests.shownDone(id)
+        desk?.chooseColumn(id)
+        lit = id
+        delay(LIT_MS)
+        lit = null
+    }
+    // Where each column stands in the window, for a timeline dragged here from the account menu.
+    val spans = remember { HashMap<String, Pair<Float, Float>>() }
+    val ordered = { columns.mapNotNull { column -> spans[column.id]?.let { (left, right) -> Triple(column.id, left, right) } } }
+    val deckLeft = remember { FloatArray(1) }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -195,7 +219,16 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
         },
     ) { padding ->
         Row(Modifier.fillMaxSize().padding(padding)) {
-            BoxWithConstraints(Modifier.weight(1f).fillMaxHeight()) {
+            // Read as it is drawn, so a drag over the deck redraws the line, not the columns.
+            val dropLine = {
+                DeckRequests.dragged?.at?.let { at -> DeckRequests.landing(at)?.takeIf { it.first.onDeck }?.let { (_, before) -> DeckDrops.lineAt(before, ordered()) } }
+            }
+            BoxWithConstraints(
+                Modifier.weight(1f).fillMaxHeight()
+                    .onGloballyPositioned { deckLeft[0] = it.positionInWindow().x }
+                    .deckDropTarget(onDeck = true) { at -> DeckDrops.before(at.x, ordered()) }
+                    .deckDropLine(dropLine, { deckLeft[0] }, MaterialTheme.colorScheme.primary),
+            ) {
                 if (columns.isEmpty()) {
                     val emptyAdd = addAnchor.button(ADD_IN_EMPTY)
                     EmptyDeck(Modifier.anchoring(emptyAdd)) { openAdd(emptyAdd) }
@@ -224,12 +257,13 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
                                     options = options[column.id] ?: DeckColumnOptions(),
                                     onOptions = { chosen -> setOptions(column.id, chosen) },
                                 )
-                                Row(Modifier.fillMaxHeight().dragSlot(slots, column.id, MaterialTheme.colorScheme.primary).background(background)) {
+                                val spanned = Modifier.onGloballyPositioned { spans[column.id] = it.positionInWindow().x.let { left -> left to left + it.size.width } }
+                                Row(Modifier.fillMaxHeight().then(spanned).dragSlot(slots, column.id, MaterialTheme.colorScheme.primary).background(background)) {
                                     if (index > 0) VerticalDivider()
                                     ReadColumn(column.id) {
                                         DeckColumnView(
                                             column, labelOf(column, names), place, calls, toTop[column.id] ?: 0, refreshedAll,
-                                            columnActions, Modifier.width(widths[index].dp).fillMaxHeight().chosenMark(chosen == column.id),
+                                            columnActions, Modifier.width(widths[index].dp).fillMaxHeight().chosenMark(chosen == column.id || lit == column.id),
                                         )
                                     }
                                 }
@@ -247,10 +281,11 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
         }
     }
     if (adding) {
-        AddColumnSheet(addable(columns, names), networks, addAnchor, onDismiss = { adding = false }) { choice ->
+        AddColumnSheet(AddColumnList.of(columns, names), networks, addAnchor, onDismiss = { adding = false }) { entry ->
             adding = false
-            when (choice) {
-                is AddChoice.Column -> edit { DeckColumns.added(it, choice.column) }
+            when (val choice = entry.choice) {
+                // A column there already is shown, as Show in Deck shows it.
+                is AddChoice.Column -> if (entry.added) DeckRequests.show(choice.column.id) else edit { DeckColumns.added(it, choice.column) }
                 is AddChoice.Ask -> asking = choice.ask
             }
         }
@@ -475,20 +510,6 @@ private fun labelOf(column: DeckColumn, names: ColumnNames): String = when (colu
     else -> names.of(column)
 }
 
-/**
- * What Add column offers: Home's timelines, every network running, every
- * group, the searches followed, the antennas and Saved's folders, less the
- * columns already on the deck; then a search and an account of the reader's
- * choosing ([DeckAsk]).
- */
-private fun addable(columns: List<DeckColumn>, names: ColumnNames): List<AddChoice> {
-    val all = listOf(DeckColumn.Following, DeckColumn.ForYou) +
-        names.available.filter { it.id != FeedStrip.FOLLOWING && it.id != FeedStrip.FOR_YOU }.map { DeckColumn.Network(it.id) } +
-        names.groups.map { DeckColumn.Group(it.id) } +
-        names.addable()
-    return all.filterNot { it in columns }.map(AddChoice::Column) + DeckAsk.entries.map(AddChoice::Ask)
-}
-
 /** The Add column buttons, by the part of the deck they stand in: the top bar's +, and the empty deck's. */
 private const val ADD_IN_BAR = "bar"
 private const val ADD_IN_EMPTY = "empty"
@@ -498,59 +519,126 @@ private fun Modifier.anchoring(button: SwitcherButton): Modifier =
     onGloballyPositioned { button.bounds = it.boundsInWindow() }.focusRequester(button.focus)
 
 /**
- * Add column's choices: in the desktop's wide frame a drop-down under the
- * button that opened it ([SwitcherPopover]), its rows a pointer menu's;
- * elsewhere (a phone, a narrow window) the sheet.
+ * Add column's choices ([AddColumnList]): in the desktop's wide frame a
+ * drop-down under the button that opened it ([SwitcherPopover]), its rows a
+ * pointer menu's; elsewhere (a phone, a narrow window) the sheet. Home's
+ * timelines lead, then the networks and the groups under their names, then
+ * the rest; the columns there already are ticked. A long list starts with a
+ * field: what is typed keeps the rows whose name holds it, and Enter adds
+ * the first of them.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AddColumnSheet(choices: List<AddChoice>, networks: HomeNetworks, anchor: SwitcherAnchor, onDismiss: () -> Unit, onPick: (AddChoice) -> Unit) {
+private fun AddColumnSheet(entries: List<AddEntry>, networks: HomeNetworks, anchor: SwitcherAnchor, onDismiss: () -> Unit, onPick: (AddEntry) -> Unit) {
     val frame = LocalWideFrame.current
     // Taken once, whether or not it drops down, as the switcher takes its button.
     val button = remember { anchor.take()?.takeIf { frame != null && it.bounds != null } }
+    val names = rememberColumnNames(networks)
+    var query by remember { mutableStateOf("") }
+    val labels = entries.associate { it.key to entryLabel(it, names) }
+    val shown = AddColumnList.matching(entries, query) { labels[it.key].orEmpty() }
+    val filters = AddColumnList.filters(entries)
     if (button != null) {
         // The bar's + stands at its end: the list opens back across the page, its end under the +.
         SwitcherPopover(anchor, button, onDismiss = onDismiss, atEnd = button === anchor.button(ADD_IN_BAR)) {
-            Text(
-                stringResource(Res.string.home_deck_add),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp),
-            )
-            choices.forEach { choice -> key(choice.key) { AddColumnRow(choice, networks, onPick) } }
+            AddColumnTitle(pointer = true)
+            if (filters) AddColumnFilter(query, shown, onQuery = { query = it }, onPick = onPick)
+            shown.forEachIndexed { index, entry ->
+                key(entry.key) {
+                    AddSectionHead(entry, shown.getOrNull(index - 1))
+                    AddColumnRow(entry, labels[entry.key].orEmpty(), onPick)
+                }
+            }
             Spacer(Modifier.height(6.dp))
         }
         return
     }
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
-        Text(
-            stringResource(Res.string.home_deck_add),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-        )
+        AddColumnTitle(pointer = false)
+        if (filters) AddColumnFilter(query, shown, onQuery = { query = it }, onPick = onPick)
         LazyColumn(Modifier.fillMaxWidth().navigationBarsPadding(), state = rememberSheetList()) {
-            items(choices, key = { it.key }) { choice -> AddColumnRow(choice, networks, onPick) }
+            itemsIndexed(shown, key = { _, entry -> entry.key }) { index, entry ->
+                Column {
+                    AddSectionHead(entry, shown.getOrNull(index - 1))
+                    AddColumnRow(entry, labels[entry.key].orEmpty(), onPick)
+                }
+            }
         }
     }
 }
 
-/** One of Add column's choices, led by the mark its column's head will show: a group's emoji, else its people; denser in a pointer's menu. */
 @Composable
-private fun AddColumnRow(choice: AddChoice, networks: HomeNetworks, onPick: (AddChoice) -> Unit) {
-    val names = rememberColumnNames(networks)
+private fun AddColumnTitle(pointer: Boolean) {
+    Text(
+        stringResource(Res.string.home_deck_add),
+        style = if (pointer) MaterialTheme.typography.labelLarge else MaterialTheme.typography.titleMedium,
+        color = if (pointer) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+        modifier = if (pointer) Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp) else Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+    )
+}
+
+/** The field that narrows Add column's rows to [query]; Enter adds the first column left ([AddColumnList.first]). */
+@Composable
+private fun AddColumnFilter(query: String, shown: List<AddEntry>, onQuery: (String) -> Unit, onPick: (AddEntry) -> Unit) {
+    val closer = LocalSheetCloser.current
+    SearchField(
+        value = query,
+        onValueChange = onQuery,
+        placeholder = stringResource(Res.string.search),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
+        onSearch = { AddColumnList.first(shown)?.let { first -> closer.close { onPick(first) } } },
+    )
+}
+
+/** The name over a section's first row (the networks, the groups), a line over the rest; none over the first row or within a section. */
+@Composable
+private fun AddSectionHead(entry: AddEntry, before: AddEntry?) {
+    if (before?.section == entry.section) return
+    val title = when (entry.section) {
+        AddSection.NETWORKS -> Res.string.home_networks
+        AddSection.GROUPS -> Res.string.home_groups
+        AddSection.TIMELINES, AddSection.MORE -> null
+    }
+    if (title == null) {
+        if (before != null) HorizontalDivider(Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outlineVariant)
+        return
+    }
+    Text(
+        stringResource(title),
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 2.dp),
+    )
+}
+
+/** What a row of Add column is called: its column's name, or the column it asks the reader to name. */
+@Composable
+private fun entryLabel(entry: AddEntry, names: ColumnNames): String = when (val choice = entry.choice) {
+    is AddChoice.Column -> labelOf(choice.column, names)
+    is AddChoice.Ask -> stringResource(choice.ask.title)
+}
+
+/**
+ * One of Add column's choices, led by the mark its column's head will show:
+ * a group's emoji, else its people; a tick at its end where it is on the
+ * deck already. Denser in a pointer's menu.
+ */
+@Composable
+private fun AddColumnRow(entry: AddEntry, label: String, onPick: (AddEntry) -> Unit) {
     val closer = LocalSheetCloser.current
     val metrics = LocalMenuRowMetrics.current
     val pointer = metrics == MenuRowMetrics.Pointer
+    val choice = entry.choice
     Row(
         Modifier.fillMaxWidth().heightIn(min = if (pointer) metrics.minHeight else 56.dp)
-            .clickable { closer.close { onPick(choice) } }
+            .clickable { closer.close { onPick(entry) } }
             .padding(horizontal = if (pointer) metrics.padding else 24.dp, vertical = metrics.verticalPadding),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(if (pointer) metrics.gap else 16.dp),
     ) {
         val (emoji, name) = when (choice) {
-            is AddChoice.Column -> ColumnTitle.of(choice.column, labelOf(choice.column, names))
-            is AddChoice.Ask -> null to stringResource(choice.ask.title)
+            is AddChoice.Column -> ColumnTitle.of(choice.column, label)
+            is AddChoice.Ask -> null to label
         }
         Box(Modifier.size(24.dp), contentAlignment = Alignment.Center) {
             when {
@@ -559,7 +647,14 @@ private fun AddColumnRow(choice: AddChoice, networks: HomeNetworks, onPick: (Add
                 choice is AddChoice.Ask -> Icon(choice.ask.icon, contentDescription = null, modifier = Modifier.size(24.dp))
             }
         }
-        TipText(name, style = if (pointer) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        TipText(
+            name,
+            style = if (pointer) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+        )
+        if (entry.added) Icon(Icons.Filled.Check, stringResource(Res.string.home_deck_show_in), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
     }
 }
 

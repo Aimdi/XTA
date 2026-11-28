@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.core.session.DeckColumn
 import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Hairline
@@ -117,7 +118,7 @@ internal fun AccountMenu(
                 selected = destination.route == current,
                 onClick = { onGo(destination.route) },
                 icon = { Icon(menuIcon(destination, destination.route == current), contentDescription = null) },
-                modifier = if (destination.route == current) marked else Modifier,
+                modifier = (if (destination.route == current) marked else Modifier).then(if (destination == HomeDestination.DECK) Modifier.deckDropTarget() else Modifier),
             )
         }
         item(key = "groups") {
@@ -225,8 +226,9 @@ private fun GroupsHeader(count: Int, query: String, onQuery: (String) -> Unit) {
 
 /**
  * A group: its mark (with the unread dot, or how many posts are unread),
- * name and size; pinned groups say so. A right click offers Mark all as read
- * while it has unread posts.
+ * name and size; pinned groups say so. A right click (the Menu key, Shift+F10)
+ * offers Mark all as read while it has unread posts, and Add to Deck; the
+ * mouse drags it onto the deck ([dragsToDeck]).
  */
 @Composable
 private fun GroupRow(group: FollowGroup, unread: Boolean, selected: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
@@ -241,12 +243,16 @@ private fun GroupRow(group: FollowGroup, unread: Boolean, selected: Boolean, mod
             onClick = onClick,
             shape = NavRowTallShape,
             minHeight = NavRowSizes.groupRow(compact),
-            modifier = Modifier.padding(vertical = if (compact) 1.dp else 2.dp).onSecondaryClick { if (unread) menu = true }.then(modifier),
+            modifier = Modifier.padding(vertical = if (compact) 1.dp else 2.dp)
+                .onSecondaryClick { menu = true }
+                .opensMenuByKey { menu = true }
+                .dragsToDeck(DeckColumn.Group(group.id), group.name)
+                .then(modifier),
         ) {
             UnreadDot(unread, now.count(tab.key)) { GroupMark(group, NavRowSizes.groupMark(compact)) }
             GroupRowText(group)
         }
-        MarkReadMenu(menu, onDismiss = { menu = false }) { tally.markRead(tab) }
+        TimelineRowMenu(menu, DeckColumn.Group(group.id), onDismiss = { menu = false }, onMarkRead = if (unread) ({ tally.markRead(tab) }) else null)
     }
 }
 

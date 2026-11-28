@@ -22,6 +22,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import com.aimdi.xtanative.ui.home.DeckButton
+import com.aimdi.xtanative.ui.settings.isDesktop
 import com.aimdi.xtanative.ui.common.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -40,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.ui.common.SteadyChipLabel
 import com.aimdi.xtanative.ui.common.FilterIcons
 import com.aimdi.xtanative.core.feed.ContentFilter
+import com.aimdi.xtanative.core.session.DeckColumn
 import com.aimdi.xtanative.core.feed.FeedSort
 import com.aimdi.xtanative.ui.common.edgeFade
 import com.aimdi.xtanative.ui.common.wheelScrollsSideways
@@ -222,6 +225,7 @@ private fun GroupActions(state: GroupFeedUi, vm: GroupFeedViewModel, list: LazyL
         Icon(GroupIcons.ArrowUpward, stringResource(Res.string.groups_scroll_to_top))
     } }
     IconTip(stringResource(Res.string.groups_refresh)) { IconButton(onClick = { vm.refresh() }) { Icon(Icons.Filled.Refresh, stringResource(Res.string.groups_refresh)) } }
+    if (groupId != null && isDesktop) DeckButton(DeckColumn.Group(groupId))
 }
 
 /** The sheets a group's screen opens: its filters, the full group switcher and a new group. */

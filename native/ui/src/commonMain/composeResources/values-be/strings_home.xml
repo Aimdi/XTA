@@ -96,4 +96,7 @@
     <string name="home_deck_width_same">Як у іншых калонак</string>
     <string name="home_deck_show_unread">Паказваць колькасць непрачытанага</string>
     <string name="home_deck_profile">Допісы акаўнта</string>
+    <string name="home_deck_add_to">Дадаць у калонкі</string>
+    <string name="home_deck_show_in">Паказаць у калонках</string>
+    <string name="home_deck_added">Дададзена ў калонкі</string>
 </resources>

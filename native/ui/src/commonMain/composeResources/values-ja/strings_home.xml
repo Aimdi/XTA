@@ -93,4 +93,7 @@
     <string name="home_deck_width_same">ほかの列と同じ</string>
     <string name="home_deck_show_unread">未読数を表示</string>
     <string name="home_deck_profile">アカウントの投稿</string>
+    <string name="home_deck_add_to">デッキに追加</string>
+    <string name="home_deck_show_in">デッキで表示</string>
+    <string name="home_deck_added">デッキに追加しました</string>
 </resources>

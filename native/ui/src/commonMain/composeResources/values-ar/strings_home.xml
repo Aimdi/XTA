@@ -98,4 +98,7 @@
     <string name="home_deck_width_same">مثل باقي الأعمدة</string>
     <string name="home_deck_show_unread">إظهار عدد غير المقروء</string>
     <string name="home_deck_profile">منشورات حساب</string>
+    <string name="home_deck_add_to">إضافة إلى الأعمدة</string>
+    <string name="home_deck_show_in">إظهار في الأعمدة</string>
+    <string name="home_deck_added">أُضيف إلى الأعمدة</string>
 </resources>
