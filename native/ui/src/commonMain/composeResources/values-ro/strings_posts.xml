@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Marcaje</string>
     <string name="posts_filter_broadcasts">Transmisiuni</string>
     <string name="posts_filter_likes">Aprecieri</string>
+    <string name="posts_filter_own_posts">Postări proprii</string>
     <string name="posts_filter_photos">Fotografii</string>
-    <string name="posts_filter_posts">Postări</string>
     <string name="posts_filter_reposts">Retweeturi</string>
     <string name="posts_filter_videos">Videoclipuri</string>
     <string name="posts_filters">Filtre</string>

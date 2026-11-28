@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Segnalibri</string>
     <string name="posts_filter_broadcasts">Dirette</string>
     <string name="posts_filter_likes">Mi piace</string>
+    <string name="posts_filter_own_posts">Tweet propri</string>
     <string name="posts_filter_photos">Foto</string>
-    <string name="posts_filter_posts">Tweet</string>
     <string name="posts_filter_reposts">Retweet</string>
     <string name="posts_filter_videos">Video</string>
     <string name="posts_filters">Filtri</string>

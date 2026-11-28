@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Signets</string>
     <string name="posts_filter_broadcasts">Diffusions</string>
     <string name="posts_filter_likes">J'aime</string>
+    <string name="posts_filter_own_posts">Tweets personnels</string>
     <string name="posts_filter_photos">Photos</string>
-    <string name="posts_filter_posts">Tweets</string>
     <string name="posts_filter_reposts">Retweets</string>
     <string name="posts_filter_videos">Vidéos</string>
     <string name="posts_filters">Filtres</string>

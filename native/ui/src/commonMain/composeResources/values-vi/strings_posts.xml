@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Dấu trang</string>
     <string name="posts_filter_broadcasts">Phát sóng</string>
     <string name="posts_filter_likes">Lượt thích</string>
+    <string name="posts_filter_own_posts">Bài viết của chính họ</string>
     <string name="posts_filter_photos">Ảnh</string>
-    <string name="posts_filter_posts">Bài viết</string>
     <string name="posts_filter_reposts">Bài đăng lại</string>
     <string name="posts_filter_videos">Video</string>
     <string name="posts_filters">Bộ lọc</string>

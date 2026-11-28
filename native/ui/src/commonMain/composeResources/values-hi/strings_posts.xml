@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">बुकमार्क</string>
     <string name="posts_filter_broadcasts">प्रसारण</string>
     <string name="posts_filter_likes">पसंद</string>
+    <string name="posts_filter_own_posts">अपनी पोस्ट</string>
     <string name="posts_filter_photos">फ़ोटो</string>
-    <string name="posts_filter_posts">पोस्ट</string>
     <string name="posts_filter_reposts">रीट्वीट</string>
     <string name="posts_filter_videos">वीडियो</string>
     <string name="posts_filters">फ़िल्टर</string>

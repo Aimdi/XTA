@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">북마크</string>
     <string name="posts_filter_broadcasts">방송</string>
     <string name="posts_filter_likes">좋아요</string>
+    <string name="posts_filter_own_posts">본인 트윗</string>
     <string name="posts_filter_photos">사진</string>
-    <string name="posts_filter_posts">트윗</string>
     <string name="posts_filter_reposts">리트윗</string>
     <string name="posts_filter_videos">동영상</string>
     <string name="posts_filters">필터</string>

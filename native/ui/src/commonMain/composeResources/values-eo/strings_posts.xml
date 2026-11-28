@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Legosignoj</string>
     <string name="posts_filter_broadcasts">Elsendoj</string>
     <string name="posts_filter_likes">Ŝatoj</string>
+    <string name="posts_filter_own_posts">Propraj pepoj</string>
     <string name="posts_filter_photos">Fotoj</string>
-    <string name="posts_filter_posts">Pepoj</string>
     <string name="posts_filter_reposts">Repepoj</string>
     <string name="posts_filter_videos">Videoj</string>
     <string name="posts_filters">Filtriloj</string>

@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">书签</string>
     <string name="posts_filter_broadcasts">直播</string>
     <string name="posts_filter_likes">喜欢</string>
+    <string name="posts_filter_own_posts">本人推文</string>
     <string name="posts_filter_photos">照片</string>
-    <string name="posts_filter_posts">推文</string>
     <string name="posts_filter_reposts">转推</string>
     <string name="posts_filter_videos">视频</string>
     <string name="posts_filters">过滤器</string>

@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Bookmarks</string>
     <string name="posts_filter_broadcasts">Broadcasts</string>
     <string name="posts_filter_likes">Likes</string>
+    <string name="posts_filter_own_posts">Own posts</string>
     <string name="posts_filter_photos">Photos</string>
-    <string name="posts_filter_posts">Posts</string>
     <string name="posts_filter_reposts">Reposts</string>
     <string name="posts_filter_videos">Videos</string>
     <string name="posts_filters">Filters</string>

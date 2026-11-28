@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Adreces d’interès</string>
     <string name="posts_filter_broadcasts">Emissions</string>
     <string name="posts_filter_likes">M'agrada</string>
+    <string name="posts_filter_own_posts">Tuits propis</string>
     <string name="posts_filter_photos">Fotos</string>
-    <string name="posts_filter_posts">Tuits</string>
     <string name="posts_filter_reposts">Retuits</string>
     <string name="posts_filter_videos">Vídeos</string>
     <string name="posts_filters">Filtres</string>

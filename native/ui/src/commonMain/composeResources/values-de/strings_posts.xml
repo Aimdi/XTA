@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Lesezeichen</string>
     <string name="posts_filter_broadcasts">Livestreams</string>
     <string name="posts_filter_likes">Gefällt mir</string>
+    <string name="posts_filter_own_posts">Eigene Beiträge</string>
     <string name="posts_filter_photos">Fotos</string>
-    <string name="posts_filter_posts">Beiträge</string>
     <string name="posts_filter_reposts">Reposts</string>
     <string name="posts_filter_videos">Videos</string>
     <string name="posts_filters">Filter</string>

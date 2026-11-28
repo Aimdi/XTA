@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">ブックマーク</string>
     <string name="posts_filter_broadcasts">配信</string>
     <string name="posts_filter_likes">いいね</string>
+    <string name="posts_filter_own_posts">本人のツイート</string>
     <string name="posts_filter_photos">写真</string>
-    <string name="posts_filter_posts">ツイート</string>
     <string name="posts_filter_reposts">リツイート</string>
     <string name="posts_filter_videos">動画</string>
     <string name="posts_filters">フィルタ</string>

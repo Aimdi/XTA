@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Zakladki</string>
     <string name="posts_filter_broadcasts">Translacyi</string>
     <string name="posts_filter_likes">Upadabanaje</string>
+    <string name="posts_filter_own_posts">Ułasnyja tvity</string>
     <string name="posts_filter_photos">Fota</string>
-    <string name="posts_filter_posts">Tvity</string>
     <string name="posts_filter_reposts">Retvity</string>
     <string name="posts_filter_videos">Videa</string>
     <string name="posts_filters">Filtry</string>

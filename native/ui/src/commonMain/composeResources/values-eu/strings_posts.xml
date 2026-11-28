@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Laster-markak</string>
     <string name="posts_filter_broadcasts">Emisioak</string>
     <string name="posts_filter_likes">Atsegiteak</string>
+    <string name="posts_filter_own_posts">Txio propioak</string>
     <string name="posts_filter_photos">Argazkiak</string>
-    <string name="posts_filter_posts">Txioak</string>
     <string name="posts_filter_reposts">Birtxioak</string>
     <string name="posts_filter_videos">Bideoak</string>
     <string name="posts_filters">Filtroak</string>

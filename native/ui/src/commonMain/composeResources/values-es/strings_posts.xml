@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Marcadores</string>
     <string name="posts_filter_broadcasts">Emisiones</string>
     <string name="posts_filter_likes">Me gusta</string>
+    <string name="posts_filter_own_posts">Publicaciones propias</string>
     <string name="posts_filter_photos">Fotos</string>
-    <string name="posts_filter_posts">Publicaciones</string>
     <string name="posts_filter_reposts">Retweets</string>
     <string name="posts_filter_videos">Vídeos</string>
     <string name="posts_filters">Filtros</string>

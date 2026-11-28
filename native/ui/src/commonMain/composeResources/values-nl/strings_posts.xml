@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Bladwijzers</string>
     <string name="posts_filter_broadcasts">Uitzendingen</string>
     <string name="posts_filter_likes">Likes</string>
+    <string name="posts_filter_own_posts">Eigen berichten</string>
     <string name="posts_filter_photos">Foto's</string>
-    <string name="posts_filter_posts">Berichten</string>
     <string name="posts_filter_reposts">Retweets</string>
     <string name="posts_filter_videos">Video's</string>
     <string name="posts_filters">Filters</string>

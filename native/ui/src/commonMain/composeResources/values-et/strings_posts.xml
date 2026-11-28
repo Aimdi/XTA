@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Järjehoidjad</string>
     <string name="posts_filter_broadcasts">Ülekanded</string>
     <string name="posts_filter_likes">Meeldimised</string>
+    <string name="posts_filter_own_posts">Omad säutsud</string>
     <string name="posts_filter_photos">Fotod</string>
-    <string name="posts_filter_posts">Säutsud</string>
     <string name="posts_filter_reposts">Kordussäutsud</string>
     <string name="posts_filter_videos">Videod</string>
     <string name="posts_filters">Filtrid</string>

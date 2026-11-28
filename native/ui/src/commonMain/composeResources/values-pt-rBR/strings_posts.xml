@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Favoritos</string>
     <string name="posts_filter_broadcasts">Transmissões</string>
     <string name="posts_filter_likes">Curtidas</string>
+    <string name="posts_filter_own_posts">Tweets próprios</string>
     <string name="posts_filter_photos">Fotos</string>
-    <string name="posts_filter_posts">Tweets</string>
     <string name="posts_filter_reposts">Retweets</string>
     <string name="posts_filter_videos">Vídeos</string>
     <string name="posts_filters">Filtros</string>

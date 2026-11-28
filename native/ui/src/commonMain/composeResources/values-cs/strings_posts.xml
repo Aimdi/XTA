@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Záložky</string>
     <string name="posts_filter_broadcasts">Vysílání</string>
     <string name="posts_filter_likes">To se mi líbí</string>
+    <string name="posts_filter_own_posts">Vlastní tweety</string>
     <string name="posts_filter_photos">Fotky</string>
-    <string name="posts_filter_posts">Tweety</string>
     <string name="posts_filter_reposts">Retweety</string>
     <string name="posts_filter_videos">Videa</string>
     <string name="posts_filters">Filtry</string>

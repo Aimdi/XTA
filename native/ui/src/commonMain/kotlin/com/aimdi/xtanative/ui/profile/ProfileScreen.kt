@@ -9,6 +9,8 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -60,7 +62,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
@@ -79,6 +80,7 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.ArchiveFilter
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.ColumnTopAppBar
+import com.aimdi.xtanative.ui.common.FlatFilterChip
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.KeepsClearOfStickyHeader
@@ -106,7 +108,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_filter_bookmarks
 import com.aimdi.xtanative.ui.generated.resources.posts_filter_broadcasts
 import com.aimdi.xtanative.ui.generated.resources.posts_filter_likes
 import com.aimdi.xtanative.ui.generated.resources.posts_filter_photos
-import com.aimdi.xtanative.ui.generated.resources.posts_filter_posts
+import com.aimdi.xtanative.ui.generated.resources.posts_filter_own_posts
 import com.aimdi.xtanative.ui.generated.resources.posts_filter_reposts
 import com.aimdi.xtanative.ui.generated.resources.posts_filter_videos
 import com.aimdi.xtanative.ui.generated.resources.posts_filters
@@ -375,7 +377,7 @@ private fun LazyListScope.filterBar(state: ProfileUi, vm: ProfileViewModel) {
                 state.postsFilter,
                 listOf(
                     Filter(PostsFilter.ALL, PostIcons.Layers, Res.string.posts_filter_all),
-                    Filter(PostsFilter.POSTS, XIcons.Reply, Res.string.posts_filter_posts),
+                    Filter(PostsFilter.POSTS, PostIcons.PersonOutline, Res.string.posts_filter_own_posts),
                     Filter(PostsFilter.REPOSTS, XIcons.Repost, Res.string.posts_filter_reposts),
                 ),
                 vm::selectPosts,
@@ -406,23 +408,21 @@ private fun LazyListScope.filterBar(state: ProfileUi, vm: ProfileViewModel) {
 
 private class Filter<T>(val value: T, val icon: ImageVector, val label: StringResource)
 
-/** Every choice an icon in a row, the chosen one on a quiet pill, each named for a screen reader (ProfileFilterBar). */
+/** Every choice a chip with its icon and its name, the chosen one marked (ProfileFilterBar): a sub-filter's name is not left to an icon that guesses at it. */
 @Composable
 private fun <T> FilterBar(selected: T, options: List<Filter<T>>, onSelect: (T) -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+    Row(
+        Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
         options.forEach { option ->
             val chosen = option.value == selected
-            IconTip(stringResource(option.label)) { IconButton(
+            FlatFilterChip(
+                selected = chosen,
                 onClick = { if (!chosen) onSelect(option.value) },
-                modifier = Modifier.clip(CircleShape).background(if (chosen) MaterialTheme.colorScheme.surfaceContainerHigh else Color.Transparent),
-            ) {
-                Icon(
-                    option.icon,
-                    stringResource(option.label),
-                    tint = if (chosen) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp),
-                )
-            } }
+                label = { Text(stringResource(option.label), maxLines = 1) },
+                leadingIcon = { Icon(option.icon, contentDescription = null, modifier = Modifier.size(18.dp)) },
+            )
         }
     }
 }

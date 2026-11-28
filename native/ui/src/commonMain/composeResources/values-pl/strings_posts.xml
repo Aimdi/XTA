@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Zakładki</string>
     <string name="posts_filter_broadcasts">Transmisje</string>
     <string name="posts_filter_likes">Polubienia</string>
+    <string name="posts_filter_own_posts">Własne tweety</string>
     <string name="posts_filter_photos">Zdjęcia</string>
-    <string name="posts_filter_posts">Tweety</string>
     <string name="posts_filter_reposts">Retweety</string>
     <string name="posts_filter_videos">Filmy</string>
     <string name="posts_filters">Filtry</string>

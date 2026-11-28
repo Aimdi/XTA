@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">الإشارات المرجعية</string>
     <string name="posts_filter_broadcasts">البث</string>
     <string name="posts_filter_likes">الإعجابات</string>
+    <string name="posts_filter_own_posts">تغريداته فقط</string>
     <string name="posts_filter_photos">صور</string>
-    <string name="posts_filter_posts">التغريدات</string>
     <string name="posts_filter_reposts">إعادة التغريد</string>
     <string name="posts_filter_videos">مقاطع فيديو</string>
     <string name="posts_filters">المرشحات</string>

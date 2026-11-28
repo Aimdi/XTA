@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Закладки</string>
     <string name="posts_filter_broadcasts">Трансляции</string>
     <string name="posts_filter_likes">Нравится</string>
+    <string name="posts_filter_own_posts">Собственные твиты</string>
     <string name="posts_filter_photos">Фото</string>
-    <string name="posts_filter_posts">Твиты</string>
     <string name="posts_filter_reposts">Ретвиты</string>
     <string name="posts_filter_videos">Видео</string>
     <string name="posts_filters">Фильтры</string>

@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Markah</string>
     <string name="posts_filter_broadcasts">Siaran</string>
     <string name="posts_filter_likes">Suka</string>
+    <string name="posts_filter_own_posts">Cuitan sendiri</string>
     <string name="posts_filter_photos">Foto</string>
-    <string name="posts_filter_posts">Cuitan</string>
     <string name="posts_filter_reposts">Retweet</string>
     <string name="posts_filter_videos">Video</string>
     <string name="posts_filters">Filter</string>

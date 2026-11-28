@@ -16,8 +16,8 @@
     <string name="posts_filter_bookmarks">Yer imleri</string>
     <string name="posts_filter_broadcasts">Yayınlar</string>
     <string name="posts_filter_likes">Beğeniler</string>
+    <string name="posts_filter_own_posts">Kendi tweet'leri</string>
     <string name="posts_filter_photos">Fotoğraflar</string>
-    <string name="posts_filter_posts">Tweet'ler</string>
     <string name="posts_filter_reposts">Retweetler</string>
     <string name="posts_filter_videos">Videolar</string>
     <string name="posts_filters">Filtreler</string>
