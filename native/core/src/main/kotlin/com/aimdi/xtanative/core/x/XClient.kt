@@ -167,7 +167,7 @@ class XClient(
         // XTA sends the toggles under both names, the typo included, as x.com has.
         val toggles = json { put("withArticlePlainText", false) }
         XParser.timeline(
-            transport.graphql(
+            timelineGraphql(
                 XEndpoints.USER_MEDIA,
                 mapOf(
                     "variables" to JsonObject(userVariables(userId, cursor, count)).toString(),
@@ -187,7 +187,7 @@ class XClient(
         extra: Map<String, JsonPrimitive> = emptyMap(),
     ): XTimelinePage = parsing {
         XParser.timeline(
-            transport.graphql(
+            timelineGraphql(
                 endpoint,
                 mapOf(
                     "variables" to JsonObject(userVariables(userId, cursor, count) + extra).toString(),
@@ -240,7 +240,7 @@ class XClient(
      */
     suspend fun conversation(postId: String, cursor: String? = null, ranking: XReplyRanking = XReplyRanking.RELEVANCE): XTimelinePage = parsing {
         XParser.conversation(
-            transport.graphql(
+            timelineGraphql(
                 XEndpoints.TWEET_DETAIL,
                 mapOf(
                     "variables" to json {
@@ -545,6 +545,9 @@ class XClient(
     }
 
     /** X's answers are parsed away from the caller's thread, which may be the UI's. */
+    /** A GraphQL read that answers with a timeline: X's errors in place of one are thrown ([XParser.timelineOrError]). */
+    private suspend fun timelineGraphql(endpoint: String, params: Map<String, String>): J = XParser.timelineOrError(transport.graphql(endpoint, params))
+
     private suspend fun <T> parsing(block: suspend () -> T): T = withContext(Dispatchers.Default) { block() }
 
     companion object {

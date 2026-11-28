@@ -349,6 +349,20 @@ object XParser {
     }
 
     /** X's own error, when it answered with one in place of what was asked. */
+    /**
+     * [body] itself, unless it holds no timeline but X's errors: those are
+     * thrown, so a transient "Timeout: Unspecified" is a failure to retry,
+     * not an empty profile or thread. X's "no such post" stays the empty
+     * answer it always read as: a deleted post's thread is empty.
+     */
+    fun timelineOrError(body: J): J {
+        if (!instructionsOf(body).exists) error(body)?.takeIf { it.errorCode != NO_SUCH_POST }?.let { throw it }
+        return body
+    }
+
+    /** X's code for a post that is not there (deleted, or never was). */
+    private const val NO_SUCH_POST = 144
+
     fun error(body: J): XAnswerException? {
         val first = body["errors"][0]
         if (!first.exists) return null

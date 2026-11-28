@@ -2,6 +2,7 @@ package com.aimdi.xtanative.core.x.client
 
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.x.XAccount
+import com.aimdi.xtanative.core.x.XAnswerException
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.XEndpoints
 import com.aimdi.xtanative.core.x.XGuest
@@ -137,6 +138,17 @@ class XClientTest {
         val error = assertFailsWith<XRequestException> { runBlocking { client(x, listOf(account("a"), account("b"))).profile("quax_tests") } }
         assertEquals(500, error.code)
         assertEquals(1, x.asked.size)
+    }
+
+    @Test
+    fun aProfileTabOrThreadAnsweredWithOnlyXsErrorsIsAnErrorNotEmpty() = runBlocking {
+        val errors = """{"errors":[{"message":"Timeout: Unspecified","code":29}]}"""
+        val reader = client(FakeX { _, _ -> XResponse(200, errors) }, listOf(account("a")))
+        listOf<suspend () -> Unit>({ reader.userPosts("42") }, { reader.userReplies("42") }, { reader.userMedia("42") }, { reader.conversation("1") }).forEach { read ->
+            assertEquals(29, assertFailsWith<XAnswerException> { read() }.errorCode)
+        }
+        val gone = client(FakeX { _, _ -> XResponse(200, """{"errors":[{"message":"_Missing: No status found with that ID.","code":144}]}""") }, listOf(account("a")))
+        assertTrue(gone.conversation("1").threads.isEmpty(), "a deleted post's thread stays empty")
     }
 
     @Test
