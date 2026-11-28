@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.dp
-import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.FilterIcons
 
 /**
  * The icons the group screens draw that the core icon set lacks, and the
@@ -152,8 +152,8 @@ object GroupIcons {
     val InfoOutline: ImageVector by lazy { icon("InfoOutline", "M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z") }
     val PlaylistAddCheck: ImageVector by lazy { icon("PlaylistAddCheck", "M3 10h11v2H3zm0-4h11v2H3zm0 8h7v2H3zm17.59-2.07-4.25 4.24-2.12-2.12-1.41 1.41L16.34 19 22 13.34z") }
     val ArrowUpward: ImageVector by lazy { icon("ArrowUpward", "m4 12 1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z") }
-    /** [XIcons.Filter], under the name plugins know it by. */
-    val FilterAltOutlined: ImageVector get() = XIcons.Filter
+    /** [FilterIcons.Filter], under the name plugins know it by. */
+    val FilterAltOutlined: ImageVector get() = FilterIcons.Filter
     val TrendingUp: ImageVector by lazy { icon("TrendingUp", "m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z") }
     val SpeakerNotesOffOutlined: ImageVector by lazy { icon("SpeakerNotesOffOutlined", "M20 4v12h-1.34l1.91 1.91A2.01 2.01 0 0 0 22 16V4c0-1.1-.9-2-2-2H4.66l2 2H20zM6 12h2v2H6zm12-3h-6.34l2 2H18zm0-3h-8v1.34l.66.66H18zM1.41 1.59 0 3l2.01 2.01L2 22l4-4h9l5.73 5.73 1.41-1.41L1.41 1.59zM5.17 16 4 17.17V7l2 2v2h2l5 5H5.17z") }
     val UnfoldMore: ImageVector by lazy { icon("UnfoldMore", "M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z") }
@@ -176,15 +176,7 @@ object GroupIcons {
     val Language: ImageVector by lazy { icon("Language", "M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.987 7.987 0 0 1 5.08 16zm2.95-8H5.08a7.987 7.987 0 0 1 4.33-3.56A15.65 15.65 0 0 0 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z") }
     val Speed: ImageVector by lazy { icon("Speed", "m20.38 8.57-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44zm-9.79 6.84a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z") }
 
-    val PrintOutlined: ImageVector by lazy {
-        icon(
-            "PrintOutlined",
-            "M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 14H8v-4h8v4zm2-4v-2H6v2H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2z",
-            "M18 10.5a1 1 0 1 0 0 2 1 1 0 1 0 0-2z",
-        )
-    }
-
-    private fun icon(name: String, vararg paths: String, evenOdd: Boolean = false): ImageVector =
+    internal fun icon(name: String, vararg paths: String, evenOdd: Boolean = false): ImageVector =
         paths.fold(ImageVector.Builder(name = name, defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)) { builder, path ->
             builder.addPath(
                 pathData = PathParser().parsePathString(path).toNodes(),
@@ -192,4 +184,19 @@ object GroupIcons {
                 pathFillType = if (evenOdd) PathFillType.EvenOdd else PathFillType.NonZero,
             )
         }.build()
+}
+
+/**
+ * The app's own icons beside [GroupIcons], kept out of the plugin contract
+ * (GroupIcons is in it, so an icon added there is a plugin API change).
+ */
+internal object ExportIcons {
+    /** Export as a web page, ready to print. */
+    val PrintOutlined: ImageVector by lazy {
+        GroupIcons.icon(
+            "PrintOutlined",
+            "M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 14H8v-4h8v4zm2-4v-2H6v2H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2z",
+            "M18 10.5a1 1 0 1 0 0 2 1 1 0 1 0 0-2z",
+        )
+    }
 }

@@ -77,6 +77,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_rename
 import com.aimdi.xtanative.ui.generated.resources.saved_export_folder
 import com.aimdi.xtanative.ui.generated.resources.posts_export_html
 import com.aimdi.xtanative.ui.generated.resources.posts_export_markdown
+import com.aimdi.xtanative.ui.subscriptions.ExportIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.generated.resources.saved_save
 import com.aimdi.xtanative.ui.generated.resources.saved_some_unchecked
@@ -214,7 +215,7 @@ internal fun ExportFormatSheet(onDismiss: () -> Unit, onPick: (ExportFormat) -> 
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp)) {
             SheetRow(GroupIcons.FileDownloadOutlined, stringResource(Res.string.posts_export_markdown)) { onPick(ExportFormat.MARKDOWN) }
-            SheetRow(GroupIcons.PrintOutlined, stringResource(Res.string.posts_export_html)) { onPick(ExportFormat.HTML) }
+            SheetRow(ExportIcons.PrintOutlined, stringResource(Res.string.posts_export_html)) { onPick(ExportFormat.HTML) }
         }
     }
 }

@@ -58,7 +58,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.FilterIcons
 import com.aimdi.xtanative.core.feed.FeedSort
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -233,7 +233,7 @@ private fun OrderButton(feed: GroupFeedUi, onOrder: (FeedSort) -> Unit, onFilter
     val label = stringResource(sortLabel(feed.settings.sort)) + " · " + stringResource(Res.string.groups_filters)
     Box {
         IconTip(label) { IconButton(onClick = { open = true }, modifier = Modifier.semantics { contentDescription = label }) {
-            Counted(filters) { Icon(XIcons.SortAndFilter, contentDescription = null) }
+            Counted(filters) { Icon(FilterIcons.SortAndFilter, contentDescription = null) }
         } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             FollowingBar.ORDERS.forEach { sort ->
@@ -252,7 +252,7 @@ private fun OrderButton(feed: GroupFeedUi, onOrder: (FeedSort) -> Unit, onFilter
             HorizontalDivider()
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.groups_filters)) },
-                leadingIcon = { Icon(XIcons.Filter, contentDescription = null) },
+                leadingIcon = { Icon(FilterIcons.Filter, contentDescription = null) },
                 trailingIcon = if (filters > 0) ({ Badge { Text("$filters") } }) else null,
                 onClick = {
                     open = false

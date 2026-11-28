@@ -69,7 +69,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.ui.common.SteadyWidth
-import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.FilterIcons
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.LocalPost
 import com.aimdi.xtanative.store.saved.LocalPosts
@@ -439,7 +439,7 @@ private fun FilterButton(menu: SavedFilterMenu, sort: SavedSort, mediaOnly: Bool
     var open by remember { mutableStateOf(false) }
     Box {
         IconTip(stringResource(Res.string.saved_filter_and_sort)) { IconButton(onClick = { open = true }, enabled = menu.enabled) {
-            Icon(XIcons.SortAndFilter, stringResource(Res.string.saved_filter_and_sort), modifier = Modifier.size(20.dp))
+            Icon(FilterIcons.SortAndFilter, stringResource(Res.string.saved_filter_and_sort), modifier = Modifier.size(20.dp))
         } }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             @Composable

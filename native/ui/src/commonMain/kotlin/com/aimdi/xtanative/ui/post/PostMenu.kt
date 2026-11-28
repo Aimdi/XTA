@@ -24,6 +24,7 @@ import com.aimdi.xtanative.ui.saved.SaveSheet
 import com.aimdi.xtanative.ui.saved.isSaved
 import com.aimdi.xtanative.ui.saved.Keeper
 import com.aimdi.xtanative.ui.settings.isDesktop
+import com.aimdi.xtanative.ui.subscriptions.ExportIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_mute_account
@@ -114,7 +115,7 @@ private fun MenuSheet(post: XPost, actions: PostActions, onDismiss: () -> Unit, 
 @Composable
 private fun ExportRows(onStep: (MenuStep) -> Unit) {
     MenuRow(GroupIcons.FileDownloadOutlined, stringResource(PostExports.label(ExportFormat.MARKDOWN))) { onStep(MenuStep.EXPORT_MARKDOWN) }
-    MenuRow(GroupIcons.PrintOutlined, stringResource(PostExports.label(ExportFormat.HTML))) { onStep(MenuStep.EXPORT_HTML) }
+    MenuRow(ExportIcons.PrintOutlined, stringResource(PostExports.label(ExportFormat.HTML))) { onStep(MenuStep.EXPORT_HTML) }
 }
 
 /** Muting the post's author on this device, or no longer, and muting a word ([Mutes]). */

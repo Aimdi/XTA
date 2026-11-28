@@ -38,7 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.ui.common.SteadyChipLabel
-import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.FilterIcons
 import com.aimdi.xtanative.core.feed.ContentFilter
 import com.aimdi.xtanative.core.feed.FeedSort
 import com.aimdi.xtanative.ui.common.edgeFade
@@ -217,7 +217,7 @@ private fun GroupActions(state: GroupFeedUi, vm: GroupFeedViewModel, list: LazyL
         return
     }
     LoadedSearchButton { open(GroupLayer.LOADED_SEARCH) }
-    IconTip(stringResource(Res.string.groups_filters)) { IconButton(onClick = { open(GroupLayer.SETTINGS) }) { Icon(XIcons.Filter, stringResource(Res.string.groups_filters)) } }
+    IconTip(stringResource(Res.string.groups_filters)) { IconButton(onClick = { open(GroupLayer.SETTINGS) }) { Icon(FilterIcons.Filter, stringResource(Res.string.groups_filters)) } }
     IconTip(stringResource(Res.string.groups_scroll_to_top)) { IconButton(onClick = { scope.launch { list.scrollToTop(reduced) } }) {
         Icon(GroupIcons.ArrowUpward, stringResource(Res.string.groups_scroll_to_top))
     } }
@@ -282,7 +282,7 @@ private fun ControlBar(
                         selected = true,
                         onClick = onCustom,
                         label = { Text(contentFilterLabel(filter)) },
-                        leadingIcon = { Icon(XIcons.Filter, contentDescription = null, modifier = Modifier.size(18.dp)) },
+                        leadingIcon = { Icon(FilterIcons.Filter, contentDescription = null, modifier = Modifier.size(18.dp)) },
                     )
                 }
             }

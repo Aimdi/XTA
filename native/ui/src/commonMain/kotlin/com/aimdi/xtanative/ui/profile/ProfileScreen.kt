@@ -44,6 +44,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import com.aimdi.xtanative.ui.common.FilterIcons
 import com.aimdi.xtanative.ui.common.Scaffold
 import com.aimdi.xtanative.ui.common.XtaTab
 import androidx.compose.material3.TabRow
@@ -142,6 +143,7 @@ import com.aimdi.xtanative.ui.media.rememberMediaGridRows
 import com.aimdi.xtanative.ui.plugins.rememberShareText
 import com.aimdi.xtanative.ui.post.LocalPostScope
 import com.aimdi.xtanative.ui.post.PostActions
+import com.aimdi.xtanative.ui.post.LiveIcons
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.post.PostScopeProvider
 import com.aimdi.xtanative.ui.post.RunsText
@@ -388,7 +390,7 @@ private fun LazyListScope.filterBar(state: ProfileUi, vm: ProfileViewModel) {
                     Filter(MediaFilter.ALL, PostIcons.Layers, Res.string.posts_filter_all),
                     Filter(MediaFilter.PHOTOS, PostIcons.Image, Res.string.posts_filter_photos),
                     Filter(MediaFilter.VIDEOS, PostIcons.Videocam, Res.string.posts_filter_videos),
-                    Filter(MediaFilter.BROADCASTS, PostIcons.LiveTv, Res.string.posts_filter_broadcasts),
+                    Filter(MediaFilter.BROADCASTS, LiveIcons.LiveTv, Res.string.posts_filter_broadcasts),
                 ),
                 vm::selectMedia,
             )
@@ -521,7 +523,7 @@ private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actio
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (user != null && state.complete) {
-                IconTip(stringResource(Res.string.posts_filters)) { IconButton(onClick = { onSheet(ProfileSheet.FILTERS) }) { Icon(XIcons.Filter, stringResource(Res.string.posts_filters)) } }
+                IconTip(stringResource(Res.string.posts_filters)) { IconButton(onClick = { onSheet(ProfileSheet.FILTERS) }) { Icon(FilterIcons.Filter, stringResource(Res.string.posts_filters)) } }
                 ProfileFollowButton(user)
             }
         }

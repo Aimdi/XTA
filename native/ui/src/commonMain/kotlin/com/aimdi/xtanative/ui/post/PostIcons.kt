@@ -104,14 +104,6 @@ object PostIcons {
                 "s1.12,5.26 2.93,7.07l1.42,-1.42C4.9,16.21 4,14.21 4,12S4.9,7.79 6.35,6.35z",
         )
     }
-    /** A broadcast, on a post's live badge and the profile's media filter: not the antennas' waves. */
-    val LiveTv: ImageVector by lazy {
-        icon(
-            "LiveTv",
-            "M21,6h-7.59l3.29,-3.29L16,2l-4,4 -4,-4 -0.71,0.71L10.59,6H3c-1.1,0 -2,0.89 -2,2v12c0,1.1 0.9,2 2,2h18c1.1,0 2,-0.9 2,-2V8" +
-                "c0,-1.11 -0.9,-2 -2,-2zM21,20H3V8h18v12zM9,10v8l7,-4z",
-        )
-    }
     val Mic: ImageVector by lazy {
         icon(
             "Mic",
@@ -210,8 +202,23 @@ object PostIcons {
         )
     }
 
-    private fun icon(name: String, path: String): ImageVector =
+    internal fun icon(name: String, path: String): ImageVector =
         ImageVector.Builder(name = name, defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)
             .addPath(pathData = PathParser().parsePathString(path).toNodes(), fill = SolidColor(Color.Black))
             .build()
+}
+
+/**
+ * The app's own post icons beside [PostIcons], kept out of the plugin
+ * contract (PostIcons is in it, so an icon added there is a plugin API change).
+ */
+internal object LiveIcons {
+    /** A broadcast, on a post's live badge and the profile's media filter: not the antennas' waves. */
+    val LiveTv: ImageVector by lazy {
+        PostIcons.icon(
+            "LiveTv",
+            "M21,6h-7.59l3.29,-3.29L16,2l-4,4 -4,-4 -0.71,0.71L10.59,6H3c-1.1,0 -2,0.89 -2,2v12c0,1.1 0.9,2 2,2h18c1.1,0 2,-0.9 2,-2V8" +
+                "c0,-1.11 -0.9,-2 -2,-2zM21,20H3V8h18v12zM9,10v8l7,-4z",
+        )
+    }
 }
