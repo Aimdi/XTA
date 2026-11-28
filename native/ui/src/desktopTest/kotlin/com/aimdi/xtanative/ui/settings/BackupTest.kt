@@ -21,6 +21,7 @@ import com.aimdi.xtanative.store.backup.FeedFilterRow
 import com.aimdi.xtanative.store.backup.GroupMemberRow
 import com.aimdi.xtanative.store.backup.GroupRow
 import com.aimdi.xtanative.store.backup.LikedPostRow
+import com.aimdi.xtanative.store.backup.LocalBackupKind
 import com.aimdi.xtanative.store.backup.LocalMarkRow
 import com.aimdi.xtanative.store.backup.LocalPostMediaRow
 import com.aimdi.xtanative.store.backup.LocalPostRow
@@ -492,6 +493,22 @@ class DeviceBackupTest {
         assertEquals("Tech", graph.antennas.load().single().name)
         assertEquals("met at a conference", graph.profileNotes.of("1")?.note)
         assertEquals(ReadPosition("c1", null), ReadMarks(graph.feedCache(ReadMarks.key("g1"))).position())
+    }
+
+    @Test
+    fun noDailyCopyIsMadeWhileAStoreCannotBeRead(): Unit = runBlocking {
+        File(dir, "store/saved/notes.json").apply { parentFile.mkdirs(); writeText("{damaged") }
+        val graph = AppGraph(dir, flowOf(true), "test")
+        assertNull(DeviceBackup(graph).snapshot(LocalBackupKind.DAILY))
+        assertNotNull(DeviceBackup(graph).snapshot(LocalBackupKind.BEFORE_RESTORE), "what can be read is still kept before a restore")
+        assertEquals(listOf(LocalBackupKind.BEFORE_RESTORE), graph.localBackups.list().map { it.kind })
+    }
+
+    @Test
+    fun noDailyCopyIsMadeWhileTheSessionIsTheEmptyOneShownInItsPlace(): Unit = runBlocking {
+        File(dir, "session.json").writeText("{damaged")
+        val graph = AppGraph(dir, flowOf(true), "test")
+        assertNull(DeviceBackup(graph).snapshot(LocalBackupKind.DAILY))
     }
 
     @Test

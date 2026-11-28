@@ -69,11 +69,21 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
     /**
      * A copy of everything but the X sign-ins kept in the data folder as
      * [kind] ([com.aimdi.xtanative.store.backup.BackupRotation]); null when
-     * it could not be read or written, which stops nothing.
+     * it could not be read or written, which stops nothing. No daily copy is
+     * made while a store's file cannot be read (the app shows it empty): it
+     * would push a good copy out of the rotation.
      */
-    suspend fun snapshot(kind: LocalBackupKind): LocalBackup? = runCatching {
-        graph.localBackups.write(kind, export(LocalBackups.CHOICE), clock())
-    }.getOrNull()
+    suspend fun snapshot(kind: LocalBackupKind): LocalBackup? = try {
+        val text = export(LocalBackups.CHOICE)
+        if (kind == LocalBackupKind.DAILY && !wholyRead()) null else graph.localBackups.write(kind, text, clock())
+    } catch (cancelled: CancellationException) {
+        throw cancelled
+    } catch (_: Exception) {
+        null
+    }
+
+    /** Whether every store read its file: none is unreadable, and the session is not the empty one shown in place of its own. */
+    private fun wholyRead(): Boolean = graph.unreadableFiles.value.isEmpty() && graph.sessions.failure.value == null
 
     /** Whether a daily copy is due at [now]. */
     suspend fun dueDaily(now: Instant): Boolean = graph.localBackups.dueDaily(now)
