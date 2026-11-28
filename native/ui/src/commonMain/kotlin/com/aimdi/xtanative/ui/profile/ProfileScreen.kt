@@ -486,16 +486,21 @@ private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actio
         Box {
             val banner = user?.bannerUrl
             val owner = user?.screenName ?: screenName
-            AsyncImage(
-                model = banner?.let(ProfileHeader::bannerUrl),
-                contentDescription = user?.name,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(3f)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .let { if (banner != null) it.clickable { actions.openImage(banner, owner) } else it },
-            )
+            if (ProfileHeader.shortBand(user, state.complete)) {
+                // No banner: a short band in the accent's tint, not a banner's worth of empty grey.
+                Box(Modifier.fillMaxWidth().height(ProfileHeader.SHORT_BAND_HEIGHT.dp).background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)))
+            } else {
+                AsyncImage(
+                    model = banner?.let(ProfileHeader::bannerUrl),
+                    contentDescription = user?.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(3f)
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .let { if (banner != null) it.clickable { actions.openImage(banner, owner) } else it },
+                )
+            }
             Avatar(
                 user?.largeAvatarUrl,
                 80.dp,

@@ -119,6 +119,16 @@ object ProfileHeader {
     /** X's banners come in set sizes; a phone needs no more than this one. */
     fun bannerUrl(url: String): String = if (Regex("/\\d+x\\d+$").containsMatchIn(url)) url else "$url/1080x360"
 
+    /**
+     * Whether the header shows a short band in place of a banner: once the
+     * profile is read and it has none. Until then the banner's room stays, so
+     * the header does not jump when one arrives.
+     */
+    fun shortBand(user: XUser?, complete: Boolean): Boolean = complete && user != null && user.bannerUrl.isNullOrBlank()
+
+    /** The band's height in dp: the avatar, half over it, still clears the top bar. */
+    const val SHORT_BAND_HEIGHT = 64
+
     /** The avatar a tap opens: X's 400 × 400 in place of its `_normal`. */
     fun fullAvatarUrl(url: String): String = url.replace("_normal.", "_400x400.")
 

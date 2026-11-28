@@ -107,6 +107,15 @@ class ProfileRulesTest {
     }
 
     @Test
+    fun aReadProfileWithoutABannerGetsTheShortBandButOneStillReadingKeepsTheBannersRoom() {
+        assertTrue(ProfileHeader.shortBand(user("maya"), complete = true))
+        assertTrue(ProfileHeader.shortBand(user("maya").copy(bannerUrl = " "), complete = true))
+        assertFalse(ProfileHeader.shortBand(user("maya").copy(bannerUrl = "https://pbs.twimg.com/profile_banners/1/2"), complete = true))
+        assertFalse(ProfileHeader.shortBand(user("maya"), complete = false))
+        assertFalse(ProfileHeader.shortBand(null, complete = true))
+    }
+
+    @Test
     fun aProtectedAccountsPostsAreGatedUnlessItFollowsOrIsTheReadersOwn() {
         assertTrue(ProfileHeader.postsGated(user("maya", protected = true), listOf("someone")))
         assertFalse(ProfileHeader.postsGated(user("maya", protected = true, follows = true), listOf("someone")))
