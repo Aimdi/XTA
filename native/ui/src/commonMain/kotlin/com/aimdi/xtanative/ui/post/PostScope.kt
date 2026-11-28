@@ -7,6 +7,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -137,13 +138,16 @@ internal fun sharedSession(store: SessionStore): State<Session?>? = LocalSharedR
 @ReadOnlyComposable
 internal fun sharedPostPrefs(store: SettingsStore): PostPrefs? = LocalPostPrefs.current?.takeIf { sharedSettings(store.state) != null }
 
-/** [store]'s settings as they change: read from [SharedPostPrefs] where it follows them, else followed here. */
+/**
+ * The part [read] of the settings [flow] keeps as it changes, the settings
+ * read from [SharedPostPrefs] where it follows them, else followed here: the
+ * caller is redrawn when that part changes, not at every other setting's write.
+ * [read] is taken once, so it reads nothing but the settings it is given.
+ */
 @Composable
-internal fun settingsNow(store: SettingsStore): Settings? {
-    val shared = sharedSettings(store.state)
-    if (shared != null) return shared.value
-    val settings by store.state.collectAsStateWithLifecycle()
-    return settings
+internal fun <T> settingNow(flow: StateFlow<Settings?>, read: (Settings?) -> T): T {
+    val settings = sharedSettings(flow) ?: flow.collectAsStateWithLifecycle()
+    return remember(settings) { derivedStateOf { read(settings.value) } }.value
 }
 
 /**
