@@ -53,6 +53,17 @@ class BackupRotationTest {
     }
 
     @Test
+    fun aCopyReadBackToRestoreIsNotPrunedByTheCopyMadeBeforeThatRestore() = runBlocking {
+        val rotation = BackupRotation(folder(), keepDaily = 1, keepBeforeRestore = 1)
+        val chosen = assertNotNull(rotation.write(LocalBackupKind.BEFORE_RESTORE, "{\"old\":1}", start))
+        assertNotNull(rotation.read(chosen, 1024))
+        rotation.write(LocalBackupKind.BEFORE_RESTORE, "{}", start.plusSeconds(60))
+        assertTrue(chosen.file.isFile, "the copy being restored stays")
+        rotation.write(LocalBackupKind.DAILY, "{}", start.plusSeconds(120))
+        assertTrue(chosen.file.isFile)
+    }
+
+    @Test
     fun copiesPastTheBudgetGoButTheNewestOfEachKindStays() = runBlocking {
         val rotation = BackupRotation(folder(), budgetBytes = 25)
         val big = "x".repeat(10)

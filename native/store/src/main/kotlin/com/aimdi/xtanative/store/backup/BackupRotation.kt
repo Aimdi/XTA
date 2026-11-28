@@ -9,6 +9,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.Collections
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -45,6 +46,9 @@ class BackupRotation(
 ) {
     private val mutex = Mutex()
 
+    /** The copies read back to restore while the app runs: the copy made before that restore never prunes them. */
+    private val restoring: MutableSet<File> = Collections.synchronizedSet(HashSet())
+
     /** The copies there, newest first. */
     suspend fun list(): List<LocalBackup> = mutex.withLock { withContext(Dispatchers.IO) { found() } }
 
@@ -61,7 +65,7 @@ class BackupRotation(
                 runCatching { Files.setPosixFilePermissions(file.toPath(), PosixFilePermissions.fromString("rw-------")) }
                 LocalBackup(file, kind, now, file.length())
             }.getOrNull()
-            prune(found()).forEach { it.file.delete() }
+            prune(found()).filterNot { it.file.canonicalFile in restoring }.forEach { it.file.delete() }
             written
         }
     }
@@ -71,7 +75,7 @@ class BackupRotation(
         runCatching {
             val file = backup.file.canonicalFile
             if (file.parentFile != folder.canonicalFile || parse(file) == null || file.length() > maxBytes) throw IOException("Not a copy")
-            file.readText()
+            file.readText().also { restoring += file }
         }.getOrNull()
     }
 
