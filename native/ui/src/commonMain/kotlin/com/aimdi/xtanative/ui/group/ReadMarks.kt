@@ -23,25 +23,32 @@ import kotlinx.coroutines.flow.asSharedFlow
  * Both sit in a feed cache of their own beside the feed's ([cache], made for
  * `read-<group id>`): the last read post as its one thread, the newest post
  * read as its place. A new import clears them with the feeds they marked.
- * Each write is told on [changes], so the unread counts are read again.
+ * Each write that moves a mark is told on [changes], so the unread counts are read again.
  */
 class ReadMarks(private val cache: FeedCache) {
     /** The last read post, or null when the feed was never read here. */
     suspend fun position(): ReadPosition? = cache.read()?.threads?.firstOrNull()?.let(ReadPosition::of)
 
-    suspend fun record(thread: XThread, at: Long) {
+    /** Keeps [thread] as the last read post; false, and nothing told, when it already was. */
+    suspend fun record(thread: XThread, at: Long): Boolean {
+        val before = cache.read()?.threads?.firstOrNull()
+        if (before != null && sameMark(before, thread)) return false
         cache.write(SavedFeed(listOf(thread), null, savedAt = at))
         changed.tryEmit(Unit)
+        return true
     }
 
     /**
      * The newest post the feed read from X: what an unread dot compares the
      * read mark with. Its first post's id, which X gives in time order (a
-     * thread's own id is its root's).
+     * thread's own id is its root's). False, and nothing told, when it already was.
      */
-    suspend fun noteNewest(thread: XThread) {
-        cache.writePlace(FeedPlace(thread.posts.firstOrNull()?.id ?: thread.id, 0))
+    suspend fun noteNewest(thread: XThread): Boolean {
+        val newest = FeedPlace(thread.posts.firstOrNull()?.id ?: thread.id, 0)
+        if (cache.readPlace() == newest) return false
+        cache.writePlace(newest)
         changed.tryEmit(Unit)
+        return true
     }
 
     /** Whether the feed read something newer than its last read post, for a feed that [tracks] its position. */
@@ -85,6 +92,9 @@ class ReadMarks(private val cache: FeedCache) {
 
         /** [count] as a badge writes it: the number, or "99+" past [MOST_SHOWN]. */
         fun label(count: Int): String = if (count > MOST_SHOWN) "$MOST_SHOWN+" else count.toString()
+
+        /** Whether [a] and [b] mark the same place: the same position, read at the same time. */
+        fun sameMark(a: XThread, b: XThread): Boolean = ReadPosition.of(a) == ReadPosition.of(b) && readAt(a) == readAt(b)
 
         /** How many of [threads] were written after [lastReadAt], each once; all of them for a feed never read. */
         fun newerThan(threads: List<XThread>, lastReadAt: Long?): Int =

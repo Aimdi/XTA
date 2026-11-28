@@ -10,15 +10,19 @@ import com.aimdi.xtanative.ui.group.ReadMarks
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * The feeds with unread posts ([lit], by [HomeTab.key]) and, for those whose
@@ -37,7 +41,7 @@ data class UnreadNow(val lit: Set<String> = emptySet(), val counts: Map<String, 
  * ([ReadMarks]) and kept posts, for the whole app: Home's dots and counts,
  * and the window's title, the tray and the launcher on the desktop. Read
  * again a moment after it is asked ([reload]) or a read mark changes, and
- * as the session or Remember reading position does.
+ * as the home feeds ([countedBy]) or Remember reading position do.
  */
 @OptIn(FlowPreview::class)
 class UnreadTally(private val graph: AppGraph, private val scope: CoroutineScope, private val clock: () -> Long = System::currentTimeMillis) {
@@ -55,7 +59,9 @@ class UnreadTally(private val graph: AppGraph, private val scope: CoroutineScope
     private suspend fun follow() {
         // Only that one switch: every other setting written would read every group's posts again.
         val reading = graph.settings.observe(PostsPrefs.rememberReadingPosition)
-        merge(asked, ReadMarks.changes, graph.sessions.state, reading)
+        // Nor every session write: only one that changes which feeds count, or how.
+        val counted = graph.sessions.state.map(::countedBy).distinctUntilChanged()
+        merge(asked, ReadMarks.changes, counted, reading)
             .debounce(AFTER_MILLIS)
             .collectLatest { attempt { state.value = read() } }
     }
@@ -75,7 +81,9 @@ class UnreadTally(private val graph: AppGraph, private val scope: CoroutineScope
     }
 
     /** The marks as they are now. */
-    suspend fun read(): UnreadNow {
+    suspend fun read(): UnreadNow = withContext(Dispatchers.Default) { readNow() }
+
+    private suspend fun readNow(): UnreadNow {
         val session = graph.sessions.state.value ?: return UnreadNow()
         val reading = graph.settings.load()[PostsPrefs.rememberReadingPosition]
         val counted = HomeUnread.feeds(session).mapNotNull { tab ->
@@ -124,6 +132,14 @@ class UnreadTally(private val graph: AppGraph, private val scope: CoroutineScope
             DeckColumn.ForYou -> HomeTab.ForYou
             is DeckColumn.Group -> HomeTab.Group(column.groupId, "")
             is DeckColumn.Network, is DeckColumn.Search, is DeckColumn.Profile, is DeckColumn.Antenna, is DeckColumn.SavedFolder -> null
+        }
+
+        /**
+         * What of [session] its counts depend on: each home feed, and whether it
+         * keeps a reading position with Remember reading position on and off.
+         */
+        fun countedBy(session: Session?): List<Pair<String, List<Boolean>>>? = session?.let { now ->
+            HomeUnread.feeds(now).map { tab -> tab.key to listOf(false, true).map { HomeUnread.tracks(now, tab, it) } }
         }
 
         /** The read-mark keys of [session]'s home feeds that are [lit]. */
