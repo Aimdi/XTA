@@ -76,8 +76,17 @@ fun storeListing(
 
 /** Whether the store offers [entry] to someone who does not have it. */
 internal fun isOffered(entry: CatalogueEntry, platform: PluginPlatform, api: PluginApi, showPrivate: Boolean): Boolean =
-    entry.available && entry.artifact(platform) != null && (showPrivate || !entry.isPrivate) &&
-        api.refusal(entry.apiVersion) !is PluginFailure.NeedsNewerPlugin
+    notOfferedBecause(entry, platform, api, showPrivate) == null
+
+/** Why the store does not offer [entry] to someone who does not have it, in English for the log; null when it does. */
+internal fun notOfferedBecause(entry: CatalogueEntry?, platform: PluginPlatform, api: PluginApi, showPrivate: Boolean): String? = when {
+    entry == null -> "the catalogue does not name it"
+    !entry.available -> "the catalogue holds it back"
+    entry.artifact(platform) == null -> "the catalogue has no file of it for this platform"
+    entry.isPrivate && !showPrivate -> "it is private, and private plugins are hidden"
+    api.refusal(entry.apiVersion) is PluginFailure.NeedsNewerPlugin -> "it is built for plugin API ${entry.apiVersion}, older than this app loads"
+    else -> null
+}
 
 /** Whether [entry] is a version [plugin] can move to: offered on [platform], newer, and for an API this app loads. */
 internal fun isUpdate(entry: CatalogueEntry, plugin: InstalledPlugin, platform: PluginPlatform, api: PluginApi): Boolean =

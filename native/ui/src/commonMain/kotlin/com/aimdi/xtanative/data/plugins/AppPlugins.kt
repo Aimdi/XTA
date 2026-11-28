@@ -266,13 +266,16 @@ class AppPlugins(
 
     /** Installs [id] as the catalogue offers it, as the store's Install does, and says how that went in the log, which CI's checks read. */
     suspend fun install(id: String): Boolean = manager.install(id).also { done ->
-        println("XTA Native: plugin $id " + if (done) "installed" else "not installed: ${manager.state.value[id]?.status}")
+        println("XTA Native: plugin $id " + if (done) "installed" else "not installed: ${whyNot(id)}")
     }
 
     /** Uninstalls [id], as the store's Uninstall does, and says how that went in the log. */
     suspend fun uninstall(id: String): Boolean = manager.uninstall(id).also { done ->
-        println("XTA Native: plugin $id " + if (done) "uninstalled" else "not uninstalled: ${manager.state.value[id]?.status}")
+        println("XTA Native: plugin $id " + if (done) "uninstalled" else "not uninstalled: ${whyNot(id)}")
     }
+
+    /** Why an install or uninstall of [id] did not happen, for the log: the failure, else where the store has it. */
+    private fun whyNot(id: String): String = manager.failureText(id) ?: manager.state.value[id]?.status?.toString() ?: "no reason given"
 
     /**
      * What CI's desktop check, which cannot tap, asks of the store at start:

@@ -200,9 +200,15 @@ class PluginManagerTest {
         manager.refresh()
         listOf("reddit", "stocks", "pixiv", "nothing").forEach { assertFalse(manager.install(it), it) }
         assertEquals(emptyList(), artifacts.asked)
+        // None of them is listed, so the log has the manager's word for why.
+        assertEquals("not offered: the catalogue holds it back", manager.failureText("reddit"))
+        assertEquals("not offered: it is private, and private plugins are hidden", manager.failureText("stocks"))
+        assertEquals("not offered: the catalogue has no file of it for this platform", manager.failureText("pixiv"))
+        assertEquals("not offered: the catalogue does not name it", manager.failureText("nothing"))
 
         manager.showPrivate(true)
         assertTrue(manager.install("stocks"), "a private plugin, while private plugins are shown")
+        assertEquals(null, manager.failureText("stocks"))
     }
 
     @Test
