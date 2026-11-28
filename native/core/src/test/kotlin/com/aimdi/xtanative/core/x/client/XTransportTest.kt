@@ -156,6 +156,22 @@ class XTransportTest {
     }
 
     @Test
+    fun a429IsTriedOnOneMoreAccountOnly() {
+        val x = FakeX { _, _ -> XResponse(429, "", resetIn5Minutes) }
+        val reader = client(x, listOf(account("a"), account("b"), account("c"), account("d")))
+        val error = assertFailsWith<XRateLimitedException> { read(reader) }
+        assertEquals(2, x.asked.size, "one read never walks every account on X's limits")
+        assertEquals(null, error.resetsAt, "two accounts are still free here")
+    }
+
+    @Test
+    fun a429ThenARefusalEndsTheRead() {
+        val x = FakeX { call, _ -> if (call == 1) XResponse(429, "", resetIn5Minutes) else XResponse(403, "") }
+        assertEquals(403, assertFailsWith<XRequestException> { read(client(x, listOf(account("a"), account("b"), account("c")))) }.code)
+        assertEquals(2, x.asked.size)
+    }
+
+    @Test
     fun aSuccessLiftsAnOldRateLimitFlag() {
         val reader = client(FakeX { _, _ -> ok() }, listOf(account("a")))
         val path = "/i/api/graphql/AMIBMjtxEEATh4z8V9GtRg/UserByScreenName"

@@ -17,8 +17,8 @@ import okhttp3.HttpUrl
  * Every request XTA Native sends X, as XTA's transport.dart sends them: over
  * the stored accounts in turn, healthy ones first, a guest's when there is no
  * account. A 429 sets the account aside on that endpoint until X says it
- * resets and asks the next, each account once per read; one X refused with a
- * dated 429 is not asked there again before that reset. Accounts the reader
+ * resets and asks one more; one X refused with a dated 429 is not asked
+ * there again before that reset. Accounts the reader
  * turned off for the feeds stand in once every other one is limited, except
  * for the feeds' own reads ([XFeedRead]). A refusal (401, 403, 404) is tried on one more
  * account, and is only held against the account that gave it once another
@@ -130,7 +130,9 @@ internal class XTransport(
         // Held rather than blamed: only another account's answer proves them broken.
         val refused = ArrayList<XAccount>()
         var last: XResponse? = null
-        while (refused.size < MAX_REFUSALS) {
+        // A 429 spends a try as a refusal does: one read never walks the pool on X's limits.
+        var failed = 0
+        while (failed < MAX_TRIES) {
             val account = selector.pick(tried, first) ?: break
             tried += account.id
             limits.consume(account.id, path, now)
@@ -141,6 +143,7 @@ internal class XTransport(
                 response.code in REFUSALS -> refused += account
                 else -> throw XRequestException(response.code, "X answered $what with ${response.code}")
             }
+            failed++
             last = response
         }
         return when (val code = last?.code) {
@@ -229,8 +232,8 @@ internal class XTransport(
         /** X's own failures this transport tries once more: not 501, which no retry changes, nor 502–504, which [XHttp] already did. */
         internal fun triedAgainHere(code: Int): Boolean = code >= 500 && code != 501 && code !in 502..504
 
-        /** A refusal is tried on one more account; then it is surfaced, as XTA does. */
-        private const val MAX_REFUSALS = 2
+        /** A refusal or a 429 is tried on one more account; then it is surfaced. */
+        private const val MAX_TRIES = 2
 
         private const val BEARER =
             "Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA"
