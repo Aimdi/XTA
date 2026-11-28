@@ -8,11 +8,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -52,13 +54,11 @@ fun Scaffold(
         MaterialScaffold(modifier, topBar, bottomBar, snackbarHost, floatingActionButton, floatingActionButtonPosition, containerColor, contentColor, contentWindowInsets, content)
         return
     }
-    // Beside the desktop frame's navigation, Tab from the window's frame comes into the bar (WideFrame.pageBar).
-    val frame = LocalWideFrame.current
     val bar = remember { BarHeight() }
     Layout(
         modifier = modifier,
         content = {
-            Box(if (frame != null) Modifier.focusRequester(frame.pageBar) else Modifier) { topBar() }
+            Box(Modifier.pageBar()) { topBar() }
             MaterialScaffold(
                 bottomBar = bottomBar,
                 snackbarHost = snackbarHost,
@@ -67,7 +67,7 @@ fun Scaffold(
                 containerColor = containerColor,
                 contentColor = contentColor,
                 contentWindowInsets = contentWindowInsets,
-            ) { inner -> content(remember(inner) { UnderBar(inner, bar) }) }
+            ) { inner -> ClaimsPageBar(bar.height > 0.dp) { content(remember(inner) { UnderBar(inner, bar) }) } }
         },
     ) { (top, page), constraints ->
         val placedBar = top.measure(constraints.copy(minWidth = 0, minHeight = 0))
@@ -79,6 +79,27 @@ fun Scaffold(
             placedPage.place(0, 0)
         }
     }
+}
+
+/** Whether a page's bar around holds the frame's [com.aimdi.xtanative.ui.home.WideFrame.pageBar]: a scaffold within that page's then does not. */
+private val LocalPageBarClaimed = staticCompositionLocalOf { false }
+
+/**
+ * Where Tab from the desktop frame's navigation comes into the page
+ * ([com.aimdi.xtanative.ui.home.WideFrame.pageBar]): the outermost bar of
+ * the page that shows, never a bar nested under it (a scaffold without a bar,
+ * as Home's around its timelines, leaves it to the one within).
+ */
+@Composable
+internal fun Modifier.pageBar(): Modifier {
+    val frame = LocalWideFrame.current
+    return if (frame != null && !LocalPageBarClaimed.current) focusRequester(frame.pageBar) else this
+}
+
+/** [content], whose scaffolds leave the frame's page bar to the bar around them when [claims] ([pageBar]). */
+@Composable
+internal fun ClaimsPageBar(claims: Boolean, content: @Composable () -> Unit) {
+    CompositionLocalProvider(LocalPageBarClaimed provides (LocalPageBarClaimed.current || claims), content = content)
 }
 
 /** The height of a [Scaffold]'s bar, as last measured. */
