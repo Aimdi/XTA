@@ -40,4 +40,23 @@ class KeptWindowsTest {
         assertTrue(kept.read().isEmpty())
         folder.deleteRecursively()
     }
+
+    @Test
+    fun aRouteNoWindowOpensOnIsNotBroughtBack() {
+        val text = "[window0]\nroute=settings/data\n[window1]\nroute=community/42/about\n[window2]\nroute=gallery/x/1\n[window3]\nroute=list/7\n[window4]\nroute=post/\n"
+        assertEquals(listOf("community/42/about", "list/7"), KeptWindows.parse(text).map { it.route })
+    }
+
+    @Test
+    fun afterACrashNoWindowIsKept() {
+        val folder = createTempDirectory("kept").toFile()
+        val file = File(folder, "windows.ini")
+        val kept = KeptWindowsFile(file)
+        kept.write(two)
+        kept.crashed()
+        assertFalse(file.exists(), "removed as the app crashes")
+        kept.write(two)
+        assertFalse(file.exists(), "and not written again as it quits")
+        folder.deleteRecursively()
+    }
 }

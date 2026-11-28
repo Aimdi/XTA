@@ -200,7 +200,13 @@ fun main(args: Array<String>) {
             exitApplication()
         }
         // A window that breaks is written down as a crash and quits the app ([WindowCrash]), not hidden to the tray behind Swing's dialog.
-        val crashes = remember(graph) { WindowCrash.handlers({ graph.crashReports.recordCaught(it, Thread.currentThread().name) }, quit) }
+        // The windows open are not kept then: one that breaks as it opens would break every start.
+        val crashes = remember(graph) {
+            WindowCrash.handlers({ graph.crashReports.recordCaught(it, Thread.currentThread().name) }) {
+                keptWindows.crashed()
+                quit()
+            }
+        }
         // Here, outside the window, as a hidden window's content may not run.
         LaunchedEffect(Unit) {
             raises.collect {

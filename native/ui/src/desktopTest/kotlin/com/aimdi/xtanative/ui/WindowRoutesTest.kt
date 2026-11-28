@@ -53,4 +53,17 @@ class WindowRoutesTest {
         opens.community("8")
         assertEquals(listOf("profile/maya", "post/5", "profile/maya?id=42", "community/8"), opened)
     }
+
+    @Test
+    fun everyRouteAWindowOpensOnComesBackAtTheNextStart() {
+        val opened = mutableListOf<String>()
+        val opens = WindowRoutes.opens(opened::add, xScreens)
+        listOf("@maya", "#kotlin", "\$TSLA", "https://x.com/maya/status/123").forEach { opens.link(it)?.invoke() }
+        opens.post("5")
+        opens.profile("maya", "42")
+        opens.community("8")
+        opened += listOfNotNull(WindowRoutes.of(XLink.Community("7", about = true)), WindowRoutes.of(XLink.XList("9")), WindowRoutes.of(XLink.Profile("maya", XProfileTab.MEDIA)))
+        opened += listOf(Routes.post("a b", media = 2), Routes.search(null))
+        assertEquals(emptyList(), opened.filterNot(com.aimdi.xtanative.ui.chrome.KeptWindows::restorable))
+    }
 }
