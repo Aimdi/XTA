@@ -57,9 +57,9 @@ class AutostartEntryTest {
         val dir = Files.createTempDirectory("bin").toFile()
         try {
             val bin = File(dir, "xta-native").apply { writeText("#!/bin/sh\n"); setExecutable(true) }
-            assertEquals("xta-native", AutostartEntry.execFor("/opt/xta-native/bin/xta-native", dir.path, "/home/me"))
+            assertEquals("xta-native", AutostartEntry.execFor("/nonexistent-xta-test/opt/xta-native/bin/xta-native", dir.path, "/home/me"))
             // Not on PATH, or a copy in the home folder: its own path, quoted.
-            assertEquals("\"/opt/xta-native/bin/xta-native\"", AutostartEntry.execFor("/opt/xta-native/bin/xta-native", "/nowhere", "/home/me"))
+            assertEquals("\"/nonexistent-xta-test/opt/xta-native/bin/xta-native\"", AutostartEntry.execFor("/nonexistent-xta-test/opt/xta-native/bin/xta-native", "/nowhere", "/home/me"))
             assertEquals("\"/home/me/My Apps/xta-native/bin/xta-native\"", AutostartEntry.execFor("/home/me/My Apps/xta-native/bin/xta-native", dir.path, "/home/me"))
             // The Desktop Entry spec's two levels: a backslash inside the quotes, then every backslash doubled; % as %%.
             val odd = "/home/me/a\$b\"c/100%/x\\y/xta"
