@@ -90,14 +90,15 @@ fun File.replaceWithCopyOf(source: File) = replaceThrough { out -> source.inputS
  * One already there is replaced as [replaceWith] does but keeps its
  * permissions, so a write that fails or is cancelled leaves it as it was and
  * only the staging file goes. A new file, or one whose folder takes no file
- * beside it, is written in place and removed when the write fails. A file
+ * beside it, is written in place; removed when the write fails only if it
+ * was not there before, as a file of the reader's is never deleted. A file
  * its owner made read-only is refused, as writing into it would be.
  */
 fun File.saveChosen(write: (OutputStream) -> Unit) {
     val target = canonicalFile
     if (target.isFile && !target.canWrite()) throw AccessDeniedException(target, reason = "read-only")
     val staged = if (target.isFile) target.stagedBeside() else null
-    if (staged == null) return target.writeInPlace(write)
+    if (staged == null) return target.writeInPlace(write, existed = target.isFile)
     runCatching { Files.setPosixFilePermissions(staged, Files.getPosixFilePermissions(target.toPath())) }
     target.replaceFrom(staged, write)
 }
@@ -109,11 +110,11 @@ private fun File.stagedBeside(): Path? = try {
     null
 }
 
-private fun File.writeInPlace(write: (OutputStream) -> Unit) {
+private fun File.writeInPlace(write: (OutputStream) -> Unit, existed: Boolean) {
     try {
         FileOutputStream(this).use(write)
     } catch (failure: Throwable) {
-        delete()
+        if (!existed) delete()
         throw failure
     }
 }

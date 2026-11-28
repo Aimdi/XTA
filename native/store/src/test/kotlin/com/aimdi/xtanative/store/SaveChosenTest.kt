@@ -8,6 +8,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 /** A file the reader chose in a save dialog: a failed write over one already there leaves it as it was. */
 class SaveChosenTest {
@@ -71,5 +72,19 @@ class SaveChosenTest {
         assertEquals("new", real.readText())
         assertEquals(true, Files.isSymbolicLink(link.toPath()))
         folder.deleteRecursively()
+    }
+
+    @Test
+    fun aFileThereWhoseFolderTakesNoFileBesideIsNotDeletedByAFailedWrite() {
+        val folder = folder()
+        val file = File(folder, "shared.json").apply { writeText("old") }
+        folder.setWritable(false)
+        try {
+            assertFailsWith<IOException> { file.saveChosen { throw IOException("cancelled") } }
+            assertTrue(file.exists(), "the reader's file is not removed")
+        } finally {
+            folder.setWritable(true)
+            folder.deleteRecursively()
+        }
     }
 }
