@@ -36,7 +36,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -194,8 +193,6 @@ private fun VoiceSettingsList(vm: VoiceSettingsViewModel, padding: PaddingValues
     val ui by vm.ui.collectAsStateWithLifecycle()
     val parts = rememberSpeechParts()
     val page = VoicePage.of(systemEngine = parts.systemVoices != null, synthesis = parts.synthesisAvailable)
-    // Without a system engine the switch is not offered: a downloaded voice is the only reader, so it stays on.
-    LaunchedEffect(page.offlineSwitch, ui.offlineVoice) { if (!page.offlineSwitch && !ui.offlineVoice) vm.setOfflineVoice(true) }
     LazyColumn(modifier, state = rememberSheetList(), contentPadding = padding) {
         // The desktop reads with downloaded voices or not at all: it says which first, and offers only what does something.
         if (page.voicesOnlyIntro) item(key = "voices-only") { Note(stringResource(Res.string.reader_speech_voices_only)) }

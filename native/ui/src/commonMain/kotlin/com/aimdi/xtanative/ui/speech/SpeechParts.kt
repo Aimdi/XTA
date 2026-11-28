@@ -12,6 +12,7 @@ import com.aimdi.xtanative.services.speech.VoiceEnginePackage
 import com.aimdi.xtanative.services.speech.VoiceEngineStore
 import com.aimdi.xtanative.services.speech.VoiceSynthesizer
 import com.aimdi.xtanative.store.downloads.OkHttpMediaHttp
+import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.store.settings.SpeechPrefs
 import java.io.File
@@ -99,15 +100,16 @@ class SpeechParts private constructor(settings: SettingsStore, platform: SpeechP
     }
 
     val speech: AppSpeech = run {
-        val offline = synthesis?.let { offlineEngine(settings, it) }?.also { releasedWhenTurnedOff(it, settings) }
+        val voiceOn = offlineVoiceOn(systemEngine = platform.engine != null)
+        val offline = synthesis?.let { offlineEngine(settings, voiceOn, it) }?.also { releasedWhenTurnedOff(it, settings, voiceOn) }
         val engines = listOfNotNull(offline, platform.engine)
         AppSpeech(SpeechReader(engines, platform.session), settings, scope, hasEngine = engines.isNotEmpty(), voicesOnly = platform.engine == null && offline != null)
     }
 
     /** A downloaded voice reading, while the setting allows it and one speaks the text's language (offline_speech_setup.dart). */
-    private fun offlineEngine(settings: SettingsStore, synthesis: VoiceSynthesis) = OfflineSpeechEngine(
+    private fun offlineEngine(settings: SettingsStore, voiceOn: (Settings?) -> Boolean, synthesis: VoiceSynthesis) = OfflineSpeechEngine(
         voiceFor = voices::installedFor,
-        enabled = { settings.state.value?.get(SpeechPrefs.offlineVoice) ?: true },
+        enabled = { voiceOn(settings.state.value) },
         load = { installed -> synthesis.load(installed, voices.engine.loadFrom) },
         player = synthesis.player,
         discard = { path -> File(path).delete() },
@@ -116,11 +118,20 @@ class SpeechParts private constructor(settings: SettingsStore, platform: SpeechP
     )
 
     /** Turning offline voices off lets go of the loaded voice now, not at the next reading. */
-    private fun releasedWhenTurnedOff(engine: OfflineSpeechEngine, settings: SettingsStore) {
+    private fun releasedWhenTurnedOff(engine: OfflineSpeechEngine, settings: SettingsStore, voiceOn: (Settings?) -> Boolean) {
         scope.launch {
-            settings.state.map { it?.get(SpeechPrefs.offlineVoice) ?: true }.distinctUntilChanged().filter { !it }.collect { engine.release() }
+            settings.state.map(voiceOn).distinctUntilChanged().filter { !it }.collect { engine.release() }
         }
     }
+
+    /**
+     * Whether a downloaded voice reads: as the setting says where the system's
+     * engine reads otherwise (Android); always without one (the desktop),
+     * where turning it off, or a backup restored with it off, would leave
+     * nothing to read with.
+     */
+    private fun offlineVoiceOn(systemEngine: Boolean): (Settings?) -> Boolean =
+        if (systemEngine) { stored -> stored?.get(SpeechPrefs.offlineVoice) ?: true } else { _ -> true }
 
     companion object {
         private val made = WeakHashMap<SettingsStore, SpeechParts>()
