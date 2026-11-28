@@ -142,7 +142,8 @@ internal fun Modifier.worksGridKeys(
                 val target = GridKeys.target(key, marked, works.size, columns, GridPlaces.shownCount(grid, works.size), GridPlaces.firstShown(grid, works.size))
                     ?: return@onKeyEvent works.isNotEmpty()
                 mark.id.value = works[target]
-                scope.launch { GridPlaces.reveal(grid, works.size, target) }
+                // Home goes to the very top, the header above the works with it.
+                scope.launch { if (key == GridKey.FIRST) grid.animateScrollToItem(0) else GridPlaces.reveal(grid, works.size, target) }
             }
         }
         true

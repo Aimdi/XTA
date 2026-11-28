@@ -43,6 +43,7 @@ import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.links.LocalLinks
+import com.aimdi.xtanative.ui.plugins.PluginPlatform
 import com.aimdi.xtanative.ui.plugins.PluginPostMenuRows
 import com.aimdi.xtanative.ui.plugins.PluginSheet
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -125,7 +126,8 @@ internal fun WorkActionsSheet(illust: PixivIllust, sheets: PixivSheets, open: ((
             sheets.close()
             sheets.toggleBookmark(illust, haptics)
         })
-        SheetRow(XIcons.Link, pluginString(Strings.copy_link), { sheets.close(); copy(illust.url, Strings.link_copied) })
+        // On the desktop the shared entries below copy the link already.
+        if (!PluginPlatform.isDesktop) SheetRow(XIcons.Link, pluginString(Strings.copy_link), { sheets.close(); copy(illust.url, Strings.link_copied) })
         MuteRows(sheets, workMuteChoices(illust).take(2), leave = false)
         HorizontalDivider()
         // The creator's groups once signed in, when their works can be read for the group.
