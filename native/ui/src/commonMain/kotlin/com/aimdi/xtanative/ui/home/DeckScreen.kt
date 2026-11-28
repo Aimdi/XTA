@@ -64,6 +64,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.geometry.Size
@@ -130,6 +132,9 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import com.aimdi.xtanative.ui.common.EmptyState
+
+/** How many frames Add column's field waits to be laid out before it takes the keys. */
+private const val FIELD_FOCUS_TRIES = 3
 
 /** How long a column asked for from elsewhere stays lit. */
 private const val LIT_MS = 1500L
@@ -285,7 +290,11 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
             adding = false
             when (val choice = entry.choice) {
                 // A column there already is shown, as Show in Deck shows it.
-                is AddChoice.Column -> if (entry.added) DeckRequests.show(choice.column.id) else edit { DeckColumns.added(it, choice.column) }
+                // A new one is brought into view once it is there, as one dropped here is.
+                is AddChoice.Column -> {
+                    if (!entry.added) edit { DeckColumns.added(it, choice.column) }
+                    DeckRequests.show(choice.column.id)
+                }
                 is AddChoice.Ask -> asking = choice.ask
             }
         }
@@ -294,6 +303,7 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
         AskColumnDialog(ask, onDismiss = { asking = null }) { column ->
             asking = null
             edit { DeckColumns.added(it, column) }
+            DeckRequests.show(column.id)
         }
     }
 }
@@ -581,11 +591,19 @@ private fun AddColumnTitle(pointer: Boolean) {
 @Composable
 private fun AddColumnFilter(query: String, shown: List<AddEntry>, onQuery: (String) -> Unit, onPick: (AddEntry) -> Unit) {
     val closer = LocalSheetCloser.current
+    // Typing goes into it at once, however the list was opened.
+    val focus = remember { FocusRequester() }
+    LaunchedEffect(focus) {
+        repeat(FIELD_FOCUS_TRIES) {
+            withFrameNanos {}
+            if (runCatching { focus.requestFocus() }.isSuccess) return@LaunchedEffect
+        }
+    }
     SearchField(
         value = query,
         onValueChange = onQuery,
         placeholder = stringResource(Res.string.search),
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp).focusRequester(focus),
         onSearch = { AddColumnList.first(shown)?.let { first -> closer.close { onPick(first) } } },
     )
 }
