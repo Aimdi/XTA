@@ -178,4 +178,12 @@
     <string name="downloads_saved_to">Salvat în %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Setează un dosar de descărcări în Setări &gt; Media pentru descărcare automată.</string>
     <string name="saved_export_folder">Exportă dosarul</string>
+    <string name="history_title">Istoric</string>
+    <string name="history_clear">Șterge istoricul</string>
+    <string name="history_clear_ask">Ștergi tot istoricul?</string>
+    <string name="history_empty">Postările și profilurile pe care le deschizi apar aici</string>
+    <string name="history_keep">Păstrează un istoric</string>
+    <string name="history_keep_description">Până la 500 de postări și profiluri deschise, doar pe acest dispozitiv: niciodată în copii de rezervă sau sincronizate.</string>
+    <string name="history_remove">Elimină din istoric</string>
+    <string name="history_search">Caută în istoric</string>
 </resources>

@@ -172,4 +172,12 @@
     <string name="downloads_saved_to">Đã lưu vào %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Đặt thư mục tải xuống trong Cài đặt &gt; Đa phương tiện để tự động tải.</string>
     <string name="saved_export_folder">Xuất thư mục</string>
+    <string name="history_title">Lịch sử</string>
+    <string name="history_clear">Xóa lịch sử</string>
+    <string name="history_clear_ask">Xóa toàn bộ lịch sử?</string>
+    <string name="history_empty">Bài đăng và hồ sơ bạn mở sẽ hiện ở đây</string>
+    <string name="history_keep">Lưu lịch sử</string>
+    <string name="history_keep_description">Tối đa 500 bài đăng và hồ sơ đã mở, chỉ trên thiết bị này: không bao giờ được sao lưu hay đồng bộ.</string>
+    <string name="history_remove">Xóa khỏi lịch sử</string>
+    <string name="history_search">Tìm trong lịch sử</string>
 </resources>

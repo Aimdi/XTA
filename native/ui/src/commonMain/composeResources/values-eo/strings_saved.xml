@@ -175,4 +175,12 @@
     <string name="downloads_saved_to">Konservita en %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Agordu elŝut-dosierujon en Agordoj &gt; Aŭdvidaĵoj por aŭtomata elŝuto.</string>
     <string name="saved_export_folder">Eksporti dosierujon</string>
+    <string name="history_title">Historio</string>
+    <string name="history_clear">Viŝi historion</string>
+    <string name="history_clear_ask">Ĉu viŝi la tutan historion?</string>
+    <string name="history_empty">Ĉi tie aperas la afiŝoj kaj profiloj, kiujn vi malfermas</string>
+    <string name="history_keep">Konservi historion</string>
+    <string name="history_keep_description">Ĝis 500 malfermitaj afiŝoj kaj profiloj, nur en ĉi tiu aparato: neniam savkopiataj aŭ sinkronigataj.</string>
+    <string name="history_remove">Forigi el historio</string>
+    <string name="history_search">Serĉi en historio</string>
 </resources>

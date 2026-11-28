@@ -172,4 +172,12 @@
     <string name="downloads_saved_to">Disimpan ke %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Atur folder unduhan di Pengaturan &gt; Media untuk mengunduh otomatis.</string>
     <string name="saved_export_folder">Ekspor folder</string>
+    <string name="history_title">Riwayat</string>
+    <string name="history_clear">Hapus riwayat</string>
+    <string name="history_clear_ask">Hapus seluruh riwayat?</string>
+    <string name="history_empty">Postingan dan profil yang Anda buka tampil di sini</string>
+    <string name="history_keep">Simpan riwayat</string>
+    <string name="history_keep_description">Hingga 500 postingan dan profil yang dibuka, hanya di perangkat ini: tidak pernah dicadangkan atau disinkronkan.</string>
+    <string name="history_remove">Hapus dari riwayat</string>
+    <string name="history_search">Cari di riwayat</string>
 </resources>

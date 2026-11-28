@@ -175,4 +175,12 @@
     <string name="downloads_saved_to">Guardado en %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Configura una carpeta de descargas en Ajustes &gt; Multimedia para descargar automáticamente.</string>
     <string name="saved_export_folder">Exportar carpeta</string>
+    <string name="history_title">Historial</string>
+    <string name="history_clear">Borrar historial</string>
+    <string name="history_clear_ask">¿Borrar todo el historial?</string>
+    <string name="history_empty">Aquí aparecen las publicaciones y los perfiles que abres</string>
+    <string name="history_keep">Guardar un historial</string>
+    <string name="history_keep_description">Hasta 500 publicaciones y perfiles abiertos, solo en este dispositivo: nunca se copian ni se sincronizan.</string>
+    <string name="history_remove">Quitar del historial</string>
+    <string name="history_search">Buscar en el historial</string>
 </resources>

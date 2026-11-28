@@ -748,6 +748,7 @@ expect fun DesktopNavigation(
     openSettings: () -> Unit,
     openHome: () -> Unit = {},
     goForward: () -> Boolean = { false },
+    openHistory: () -> Unit = {},
     content: @Composable () -> Unit,
 )
 

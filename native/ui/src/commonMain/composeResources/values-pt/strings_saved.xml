@@ -175,4 +175,12 @@
     <string name="downloads_saved_to">Gravado em %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Define uma pasta de transferências em Definições &gt; Multimédia para transferir automaticamente.</string>
     <string name="saved_export_folder">Exportar pasta</string>
+    <string name="history_title">Histórico</string>
+    <string name="history_clear">Limpar histórico</string>
+    <string name="history_clear_ask">Limpar todo o histórico?</string>
+    <string name="history_empty">As publicações e os perfis que abrir aparecem aqui</string>
+    <string name="history_keep">Manter histórico</string>
+    <string name="history_keep_description">Até 500 publicações e perfis abertos, só neste dispositivo: nunca copiados nem sincronizados.</string>
+    <string name="history_remove">Remover do histórico</string>
+    <string name="history_search">Pesquisar no histórico</string>
 </resources>

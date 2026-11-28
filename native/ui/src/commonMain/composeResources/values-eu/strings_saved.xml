@@ -175,4 +175,12 @@
     <string name="downloads_saved_to">%1$s karpetan gorde da</string>
     <string name="set_a_download_folder_to_auto_download">Automatikoki deskargatzeko, ezarri deskarga-karpeta bat Ezarpenak &gt; Multimedia atalean.</string>
     <string name="saved_export_folder">Esportatu karpeta</string>
+    <string name="history_title">Historia</string>
+    <string name="history_clear">Garbitu historia</string>
+    <string name="history_clear_ask">Historia osoa garbitu?</string>
+    <string name="history_empty">Irekitzen dituzun argitalpenak eta profilak hemen agertzen dira</string>
+    <string name="history_keep">Gorde historia</string>
+    <string name="history_keep_description">Irekitako 500 argitalpen eta profil arte, gailu honetan bakarrik: ez dira inoiz babeskopian sartzen ezta sinkronizatzen ere.</string>
+    <string name="history_remove">Kendu historiatik</string>
+    <string name="history_search">Bilatu historian</string>
 </resources>

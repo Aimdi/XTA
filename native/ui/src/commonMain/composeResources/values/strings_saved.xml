@@ -175,4 +175,12 @@
     <string name="downloads_saved_to">Saved to %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Set a download folder in Settings &gt; Media to auto-download.</string>
     <string name="saved_export_folder">Export folder</string>
+    <string name="history_title">History</string>
+    <string name="history_clear">Clear history</string>
+    <string name="history_clear_ask">Clear the whole history?</string>
+    <string name="history_empty">Posts and profiles you open are listed here</string>
+    <string name="history_keep">Keep a history</string>
+    <string name="history_keep_description">Up to 500 posts and profiles you opened, on this device only: never backed up or synced.</string>
+    <string name="history_remove">Remove from history</string>
+    <string name="history_search">Search history</string>
 </resources>

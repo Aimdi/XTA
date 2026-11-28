@@ -175,4 +175,12 @@
     <string name="downloads_saved_to">S'ha desat a %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Defineix una carpeta de baixades a Configuració &gt; Multimèdia per baixar automàticament.</string>
     <string name="saved_export_folder">Exporta la carpeta</string>
+    <string name="history_title">Historial</string>
+    <string name="history_clear">Esborra l\'historial</string>
+    <string name="history_clear_ask">Vols esborrar tot l\'historial?</string>
+    <string name="history_empty">Aquí apareixen les publicacions i els perfils que obres</string>
+    <string name="history_keep">Desa un historial</string>
+    <string name="history_keep_description">Fins a 500 publicacions i perfils oberts, només en aquest dispositiu: mai no se\'n fa còpia de seguretat ni se sincronitzen.</string>
+    <string name="history_remove">Treu de l\'historial</string>
+    <string name="history_search">Cerca a l\'historial</string>
 </resources>

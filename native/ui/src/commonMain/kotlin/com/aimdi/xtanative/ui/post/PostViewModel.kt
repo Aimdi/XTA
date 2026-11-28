@@ -7,6 +7,7 @@ import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XWithheld
 import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.ui.history.HistoryRecorder
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.store.offline.TimelineCache
 import kotlinx.coroutines.CancellationException
@@ -84,6 +85,7 @@ class PostViewModel(private val graph: AppGraph, private val id: String) : ViewM
                         answered = true,
                     )
                 }
+                state.value.focal?.let { HistoryRecorder.post(graph, it) }
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Throwable) {

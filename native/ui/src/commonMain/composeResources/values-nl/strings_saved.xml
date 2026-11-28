@@ -175,4 +175,12 @@
     <string name="downloads_saved_to">Opgeslagen in %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Stel een downloadmap in bij Instellingen &gt; Media om automatisch te downloaden.</string>
     <string name="saved_export_folder">Map exporteren</string>
+    <string name="history_title">Geschiedenis</string>
+    <string name="history_clear">Geschiedenis wissen</string>
+    <string name="history_clear_ask">De hele geschiedenis wissen?</string>
+    <string name="history_empty">Berichten en profielen die je opent, staan hier</string>
+    <string name="history_keep">Geschiedenis bijhouden</string>
+    <string name="history_keep_description">Tot 500 geopende berichten en profielen, alleen op dit apparaat: nooit in een back-up en nooit gesynchroniseerd.</string>
+    <string name="history_remove">Uit geschiedenis verwijderen</string>
+    <string name="history_search">Geschiedenis doorzoeken</string>
 </resources>

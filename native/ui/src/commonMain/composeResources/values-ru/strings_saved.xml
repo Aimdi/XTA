@@ -181,4 +181,12 @@
     <string name="downloads_saved_to">Сохранено в %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Чтобы загружать автоматически, укажите папку загрузок в Настройки &gt; Медиа.</string>
     <string name="saved_export_folder">Экспортировать папку</string>
+    <string name="history_title">История</string>
+    <string name="history_clear">Очистить историю</string>
+    <string name="history_clear_ask">Очистить всю историю?</string>
+    <string name="history_empty">Здесь будут посты и профили, которые вы открываете</string>
+    <string name="history_keep">Вести историю</string>
+    <string name="history_keep_description">До 500 открытых постов и профилей, только на этом устройстве: никогда не попадают в резервную копию и не синхронизируются.</string>
+    <string name="history_remove">Удалить из истории</string>
+    <string name="history_search">Поиск по истории</string>
 </resources>

@@ -181,4 +181,12 @@
     <string name="downloads_saved_to">Захавана ў %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Задайце тэчку спамповак у Налады &gt; Медыя для аўтаспампоўкі.</string>
     <string name="saved_export_folder">Экспартаваць тэчку</string>
+    <string name="history_title">Гісторыя</string>
+    <string name="history_clear">Ачысціць гісторыю</string>
+    <string name="history_clear_ask">Ачысціць усю гісторыю?</string>
+    <string name="history_empty">Тут будуць допісы і профілі, якія вы адкрываеце</string>
+    <string name="history_keep">Весці гісторыю</string>
+    <string name="history_keep_description">Да 500 адкрытых допісаў і профіляў, толькі на гэтай прыладзе: ніколі не трапляюць у рэзервовую копію і не сінхранізуюцца.</string>
+    <string name="history_remove">Выдаліць з гісторыі</string>
+    <string name="history_search">Пошук у гісторыі</string>
 </resources>

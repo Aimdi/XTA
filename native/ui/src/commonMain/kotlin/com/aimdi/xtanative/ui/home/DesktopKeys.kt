@@ -4,7 +4,7 @@ import androidx.compose.ui.geometry.Offset
 import kotlin.math.abs
 
 /** The keys the desktop's navigation answers (XTA's desktop_navigation and desktop_pager). */
-enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, N, Z, F3, F6, U, T, M, P, OTHER }
+enum class DeskKey { ESCAPE, LEFT, RIGHT, F5, R, BACK, UP, DOWN, PAGE_UP, PAGE_DOWN, SPACE, HOME, END, TAB, Q, F, SLASH, PLUS, MINUS, ZERO, F1, QUESTION, COMMA, W, J, K, V, A, DELETE, ENTER, O, L, B, C, MENU, F10, N, Z, F3, F6, U, T, M, P, H, OTHER }
 
 /** A mouse's side buttons: back and forward, as in a browser. */
 enum class SideButton { BACK, FORWARD }
@@ -88,6 +88,9 @@ enum class DeskAction {
 
     /** Settings open, as Ctrl+, opens a desktop app's preferences. */
     OPEN_SETTINGS,
+
+    /** History opens ([com.aimdi.xtanative.ui.history.HistoryScreen]), as a browser's Ctrl+H does. */
+    OPEN_HISTORY,
 
     /** The page's own New opens ([DesktopActions.create]): a note in Saved, a group in Subscriptions, an antenna, as a desktop app's Ctrl+N makes a new document. */
     CREATE,
@@ -249,6 +252,7 @@ object DesktopKeys {
             key == DeskKey.Q && ctrl && !alt -> DeskAction.LEAVE_APP
             key == DeskKey.W && ctrl && !alt && !shift -> if (somethingOpen) DeskAction.CLOSE else DeskAction.NONE
             key == DeskKey.COMMA && ctrl && !alt && !shift -> if (somethingOpen) DeskAction.NONE else DeskAction.OPEN_SETTINGS
+            key == DeskKey.H && ctrl && !alt && !shift -> if (somethingOpen) DeskAction.NONE else DeskAction.OPEN_HISTORY
             ctrl && !alt && key in TAB_KEYS -> if (somethingOpen) DeskAction.NONE else tabTurn(key, shift)
             key == DeskKey.TAB && !focusInside && !alt && !ctrl -> DeskAction.ENTER_PAGE
             ctrl && !alt && key in TEXT_KEYS -> textSize(key)

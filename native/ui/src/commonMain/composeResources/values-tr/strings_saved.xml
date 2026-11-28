@@ -175,4 +175,12 @@
     <string name="downloads_saved_to">%1$s klasörüne kaydedildi</string>
     <string name="set_a_download_folder_to_auto_download">Otomatik indirmek için Ayarlar &gt; Medya bölümünde bir indirme klasörü belirleyin.</string>
     <string name="saved_export_folder">Klasörü dışa aktar</string>
+    <string name="history_title">Geçmiş</string>
+    <string name="history_clear">Geçmişi temizle</string>
+    <string name="history_clear_ask">Tüm geçmiş temizlensin mi?</string>
+    <string name="history_empty">Açtığınız gönderiler ve profiller burada listelenir</string>
+    <string name="history_keep">Geçmiş tut</string>
+    <string name="history_keep_description">Açılan en fazla 500 gönderi ve profil, yalnızca bu cihazda: asla yedeklenmez veya eşitlenmez.</string>
+    <string name="history_remove">Geçmişten kaldır</string>
+    <string name="history_search">Geçmişte ara</string>
 </resources>

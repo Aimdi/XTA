@@ -181,4 +181,12 @@
     <string name="downloads_saved_to">Zapisano w %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Aby pobierać automatycznie, ustaw folder pobierania w Ustawienia &gt; Multimedia.</string>
     <string name="saved_export_folder">Eksportuj folder</string>
+    <string name="history_title">Historia</string>
+    <string name="history_clear">Wyczyść historię</string>
+    <string name="history_clear_ask">Wyczyścić całą historię?</string>
+    <string name="history_empty">Tu pojawią się otwierane posty i profile</string>
+    <string name="history_keep">Prowadź historię</string>
+    <string name="history_keep_description">Do 500 otwartych postów i profili, tylko na tym urządzeniu: nigdy nie trafiają do kopii zapasowej ani synchronizacji.</string>
+    <string name="history_remove">Usuń z historii</string>
+    <string name="history_search">Szukaj w historii</string>
 </resources>

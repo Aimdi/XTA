@@ -112,7 +112,7 @@ private fun PagedPosts(posts: Paged<XThread>, actions: PostActions, toTop: Int, 
 @Composable
 internal fun ProfileColumnBody(screenName: String, actions: PostActions, reads: Int, toTop: Int) {
     val graph = LocalGraph.current
-    val vm: ProfileViewModel = viewModel(key = "deck-profile:" + screenName.lowercase()) { ProfileViewModel(graph, screenName, openingTab = ProfileTab.POSTS) }
+    val vm: ProfileViewModel = viewModel(key = "deck-profile:" + screenName.lowercase()) { ProfileViewModel(graph, screenName, openingTab = ProfileTab.POSTS, records = false) }
     val state by vm.ui.collectAsStateWithLifecycle()
     val tab = state.of(ProfileTab.POSTS)
     val list = rememberColumnList(toTop)

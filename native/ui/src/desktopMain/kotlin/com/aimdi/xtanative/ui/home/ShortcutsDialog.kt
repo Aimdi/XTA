@@ -55,6 +55,7 @@ import com.aimdi.xtanative.ui.generated.resources.keys_find_match
 import com.aimdi.xtanative.ui.generated.resources.keys_forward
 import com.aimdi.xtanative.ui.generated.resources.keys_full_screen
 import com.aimdi.xtanative.ui.generated.resources.keys_go_home
+import com.aimdi.xtanative.ui.generated.resources.history_title
 import com.aimdi.xtanative.ui.generated.resources.keys_help
 import com.aimdi.xtanative.ui.generated.resources.keys_home
 import com.aimdi.xtanative.ui.generated.resources.keys_interface_size
@@ -160,6 +161,7 @@ object DesktopShortcuts {
                 Shortcut(Res.string.keys_full_screen, listOf(listOf(sign("F11")))),
                 Shortcut(Res.string.keys_reopen_window, listOf(listOf(ctrl, shift, sign("T")))),
                 Shortcut(Res.string.settings_title, listOf(listOf(ctrl, sign(",")))),
+                Shortcut(Res.string.history_title, listOf(listOf(ctrl, sign("H")))),
                 Shortcut(Res.string.keys_quit, listOf(listOf(ctrl, sign("Q")))),
             ),
         ),

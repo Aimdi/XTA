@@ -570,6 +570,15 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun ctrlHOpensTheHistoryAsABrowsersDoes() {
+        assertEquals(DeskAction.OPEN_HISTORY, action(DeskKey.H, ctrl = true))
+        assertEquals(DeskAction.OPEN_HISTORY, action(DeskKey.H, ctrl = true, focusInside = true), "from a field too")
+        assertEquals(DeskAction.NONE, action(DeskKey.H, ctrl = true, open = true), "not over a sheet")
+        assertEquals(DeskAction.NONE, action(DeskKey.H, ctrl = true, shift = true))
+        assertEquals(DeskAction.NONE, action(DeskKey.H), "h alone is no key of the app's")
+    }
+
+    @Test
     fun ctrlCommaOpensTheSettingsAndCtrlWClosesWhatIsOpen() {
         assertEquals(DeskAction.OPEN_SETTINGS, action(DeskKey.COMMA, ctrl = true))
         assertEquals(DeskAction.OPEN_SETTINGS, action(DeskKey.COMMA, ctrl = true, focusInside = true), "from a field too")

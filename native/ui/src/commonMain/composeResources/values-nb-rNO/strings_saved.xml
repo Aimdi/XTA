@@ -175,4 +175,12 @@
     <string name="downloads_saved_to">Lagret i %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Angi en nedlastingsmappe i Innstillinger &gt; Medier for automatisk nedlasting.</string>
     <string name="saved_export_folder">Eksporter mappe</string>
+    <string name="history_title">Logg</string>
+    <string name="history_clear">Tøm loggen</string>
+    <string name="history_clear_ask">Tømme hele loggen?</string>
+    <string name="history_empty">Innlegg og profiler du åpner, vises her</string>
+    <string name="history_keep">Før logg</string>
+    <string name="history_keep_description">Opptil 500 åpnede innlegg og profiler, bare på denne enheten: aldri sikkerhetskopiert eller synkronisert.</string>
+    <string name="history_remove">Fjern fra loggen</string>
+    <string name="history_search">Søk i loggen</string>
 </resources>

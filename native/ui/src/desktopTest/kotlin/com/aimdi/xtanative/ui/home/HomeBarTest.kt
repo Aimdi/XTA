@@ -160,7 +160,7 @@ class HomeBarTest {
     @Test
     fun theMenuLeavesOutThePagesOnTheBar() {
         val all = HomeMenu.shown(HomeMenu.list, { true }, deckFits = true, onBar = setOf("feed", "subscriptions", "saved")).map { it.route }
-        assertEquals(listOf("trends", "downloads", "antennas", "plugins", "deck"), all)
+        assertEquals(listOf("trends", "downloads", "history", "antennas", "plugins", "deck"), all)
         assertEquals(HomeBar.TRENDING, HomeDestination.TRENDS.barPage)
     }
 }

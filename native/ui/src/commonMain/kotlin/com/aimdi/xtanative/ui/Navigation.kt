@@ -64,6 +64,7 @@ import com.aimdi.xtanative.ui.common.ProblemActions
 import com.aimdi.xtanative.ui.community.CommunityMembersScreen
 import com.aimdi.xtanative.ui.community.CommunityScreen
 import com.aimdi.xtanative.ui.downloads.DownloadsScreen
+import com.aimdi.xtanative.ui.history.HistoryScreen
 import com.aimdi.xtanative.ui.group.GroupDiscoveryScreen
 import com.aimdi.xtanative.ui.group.GroupFeedScreen
 import com.aimdi.xtanative.ui.home.DeckScreen
@@ -186,6 +187,7 @@ internal object Routes {
     const val SAVED_FOLDERS = "saved/folders"
     const val NOTE_THREAD = "notes?root={root}"
     const val DOWNLOADS = "downloads"
+    const val HISTORY = "history"
     const val OFFLINE = "offline"
     const val OFFLINE_MEDIA = "offline/media?id={id}"
     const val ARCHIVE = "archive?id={id}"
@@ -555,7 +557,15 @@ fun XtaNativeRoot() {
                 } ?: false
             }
         }
-        DesktopNavigation(nav, openSearch, openSettings, openHome, goForward) { OfflineFrame { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards, frameOpens)) } }
+        // Ctrl+H opens History as a browser's does, beside the wide frame's column as its row does.
+        val openHistory = remember(nav, frameOpens) {
+            {
+                if (nav.currentDestination?.route.let { it != null && it !in setOf(Routes.INTRO, Routes.SIGN_IN, Routes.IMPORT) }) {
+                    frameOpens.open(HomeDestination.HISTORY.route) { nav.push(Routes.HISTORY) }
+                }
+            }
+        }
+        DesktopNavigation(nav, openSearch, openSettings, openHome, goForward, openHistory) { OfflineFrame { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards, frameOpens)) } }
     }
     if (askSignIn) {
         NotLoggedInDialog(onImportBackup = { nav.push(Routes.IMPORT) }, onLogin = { nav.push(Routes.SIGN_IN) }, onDismiss = { askSignIn = false })
@@ -837,6 +847,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             NoteThreadScreen(entry.text("root").orEmpty(), actions, onBack = { nav.popBackStack() })
         }
         composable(Routes.DOWNLOADS) { DownloadsScreen(onBack = { nav.popBackStack() }) }
+        composable(Routes.HISTORY) { HistoryScreen(actions, onBack = { nav.popBackStack() }) }
         composable(Routes.OFFLINE) {
             val plugins = LocalPlugins.current
             OfflineLibraryScreen(

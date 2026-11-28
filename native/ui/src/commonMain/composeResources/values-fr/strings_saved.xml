@@ -175,4 +175,12 @@
     <string name="downloads_saved_to">Enregistré dans %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Définissez un dossier de téléchargement dans Paramètres &gt; Médias pour le téléchargement automatique.</string>
     <string name="saved_export_folder">Exporter le dossier</string>
+    <string name="history_title">Historique</string>
+    <string name="history_clear">Effacer l\'historique</string>
+    <string name="history_clear_ask">Effacer tout l\'historique ?</string>
+    <string name="history_empty">Les publications et profils que vous ouvrez apparaissent ici</string>
+    <string name="history_keep">Tenir un historique</string>
+    <string name="history_keep_description">Jusqu\'à 500 publications et profils ouverts, sur cet appareil seulement : jamais sauvegardés ni synchronisés.</string>
+    <string name="history_remove">Retirer de l\'historique</string>
+    <string name="history_search">Rechercher dans l\'historique</string>
 </resources>

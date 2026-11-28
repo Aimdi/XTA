@@ -82,7 +82,7 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, openHome: () -> Unit, goForward: () -> Boolean, content: @Composable () -> Unit) {
+actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, openSettings: () -> Unit, openHome: () -> Unit, goForward: () -> Boolean, openHistory: () -> Unit, content: @Composable () -> Unit) {
     val focus = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val inputModes = LocalInputModeManager.current
@@ -253,6 +253,10 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
         DeskAction.PREVIOUS_COLUMN -> actions.stepColumn(-1)
         DeskAction.OPEN_SETTINGS -> {
             openSettings()
+            true
+        }
+        DeskAction.OPEN_HISTORY -> {
+            openHistory()
             true
         }
         DeskAction.SHOW_KEYS -> {
@@ -544,6 +548,7 @@ internal fun deskKey(key: Key): DeskKey = when (key) {
     Key.F3 -> DeskKey.F3
     Key.F6 -> DeskKey.F6
     Key.Comma -> DeskKey.COMMA
+    Key.H -> DeskKey.H
     Key.W -> DeskKey.W
     Key.J -> DeskKey.J
     Key.V -> DeskKey.V

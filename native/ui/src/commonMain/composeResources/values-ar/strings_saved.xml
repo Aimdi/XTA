@@ -187,4 +187,12 @@
     <string name="downloads_saved_to">تم الحفظ في %1$s</string>
     <string name="set_a_download_folder_to_auto_download">عيّن مجلد تنزيل في الإعدادات &gt; الوسائط للتنزيل التلقائي.</string>
     <string name="saved_export_folder">تصدير المجلد</string>
+    <string name="history_title">السجل</string>
+    <string name="history_clear">مسح السجل</string>
+    <string name="history_clear_ask">هل تريد مسح السجل كله؟</string>
+    <string name="history_empty">تظهر هنا المنشورات والملفات الشخصية التي تفتحها</string>
+    <string name="history_keep">الاحتفاظ بسجل</string>
+    <string name="history_keep_description">حتى 500 منشور وملف شخصي فتحتها، على هذا الجهاز فقط: لا تُنسخ احتياطيًا ولا تُزامن أبدًا.</string>
+    <string name="history_remove">إزالة من السجل</string>
+    <string name="history_search">البحث في السجل</string>
 </resources>

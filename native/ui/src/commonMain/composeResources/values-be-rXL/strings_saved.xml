@@ -181,4 +181,12 @@
     <string name="downloads_saved_to">Zachavana ŭ %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Zadajcie tečku spampovak u Nalady &gt; Medyja dlia aŭtaspampoŭki.</string>
     <string name="saved_export_folder">Ekspartavać tečku</string>
+    <string name="history_title">Historyja</string>
+    <string name="history_clear">Ačyscić historyju</string>
+    <string name="history_clear_ask">Ačyscić usiu historyju?</string>
+    <string name="history_empty">Tut buduć dopisy i profili, jakija vy adkryvajecie</string>
+    <string name="history_keep">Viesci historyju</string>
+    <string name="history_keep_description">Da 500 adkrytych dopisaŭ i profilaŭ, tolki na hetaj pryladzie: nikoli nie traplajuć u rezervovuju kopiju i nie sinchranizujucca.</string>
+    <string name="history_remove">Vydalić z historyi</string>
+    <string name="history_search">Pošuk u historyi</string>
 </resources>

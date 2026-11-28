@@ -175,4 +175,12 @@
     <string name="downloads_saved_to">Gespeichert in %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Lege für den automatischen Download einen Download-Ordner unter Einstellungen &gt; Medien fest.</string>
     <string name="saved_export_folder">Ordner exportieren</string>
+    <string name="history_title">Verlauf</string>
+    <string name="history_clear">Verlauf löschen</string>
+    <string name="history_clear_ask">Den ganzen Verlauf löschen?</string>
+    <string name="history_empty">Hier stehen die Beiträge und Profile, die du öffnest</string>
+    <string name="history_keep">Verlauf führen</string>
+    <string name="history_keep_description">Bis zu 500 geöffnete Beiträge und Profile, nur auf diesem Gerät: nie in einer Sicherung, nie synchronisiert.</string>
+    <string name="history_remove">Aus dem Verlauf entfernen</string>
+    <string name="history_search">Verlauf durchsuchen</string>
 </resources>

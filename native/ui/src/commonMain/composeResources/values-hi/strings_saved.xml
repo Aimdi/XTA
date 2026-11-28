@@ -175,4 +175,12 @@
     <string name="downloads_saved_to">%1$s में सहेजा गया</string>
     <string name="set_a_download_folder_to_auto_download">स्वतः डाउनलोड के लिए सेटिंग्स &gt; मीडिया में डाउनलोड फ़ोल्डर सेट करें।</string>
     <string name="saved_export_folder">फ़ोल्डर निर्यात करें</string>
+    <string name="history_title">इतिहास</string>
+    <string name="history_clear">इतिहास साफ़ करें</string>
+    <string name="history_clear_ask">पूरा इतिहास साफ़ करें?</string>
+    <string name="history_empty">आप जो पोस्ट और प्रोफ़ाइल खोलते हैं, वे यहाँ दिखते हैं</string>
+    <string name="history_keep">इतिहास रखें</string>
+    <string name="history_keep_description">खोली गई 500 तक पोस्ट और प्रोफ़ाइल, केवल इसी डिवाइस पर: कभी बैकअप या सिंक नहीं होतीं।</string>
+    <string name="history_remove">इतिहास से हटाएँ</string>
+    <string name="history_search">इतिहास में खोजें</string>
 </resources>

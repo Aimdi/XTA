@@ -13,6 +13,7 @@ import com.aimdi.xtanative.data.plugins.PluginPrefs
 import com.aimdi.xtanative.store.StoreDir
 import com.aimdi.xtanative.store.antenna.AntennaStore
 import com.aimdi.xtanative.store.backup.BackupRotation
+import com.aimdi.xtanative.store.history.ViewHistory
 import com.aimdi.xtanative.store.backup.StoredWebDavBaselines
 import com.aimdi.xtanative.store.crash.CrashReport
 import com.aimdi.xtanative.store.crash.CrashReporter
@@ -107,6 +108,9 @@ class AppGraph(
     val profileNotes = ProfileNotesStore(store)
     val profileFilters = ProfileFiltersStore(store)
     val antennas = AntennaStore(store)
+
+    /** The posts and profiles opened, on this device only: no backup or sync reads it. */
+    val history = ViewHistory(store)
     val readingJournal = ReadingJournal(store)
     val readingAppearance = ReadingAppearanceStore(store)
     val timelineCache = TimelineCache(store)

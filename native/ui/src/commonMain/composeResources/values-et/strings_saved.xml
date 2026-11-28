@@ -175,4 +175,12 @@
     <string name="downloads_saved_to">Salvestatud kausta %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Automaatseks allalaadimiseks määra allalaadimiskaust menüüs Seaded &gt; Meedia.</string>
     <string name="saved_export_folder">Ekspordi kaust</string>
+    <string name="history_title">Ajalugu</string>
+    <string name="history_clear">Tühjenda ajalugu</string>
+    <string name="history_clear_ask">Kas tühjendada kogu ajalugu?</string>
+    <string name="history_empty">Siin on postitused ja profiilid, mida avad</string>
+    <string name="history_keep">Pea ajalugu</string>
+    <string name="history_keep_description">Kuni 500 avatud postitust ja profiili, ainult selles seadmes: neid ei varundata ega sünkroonita.</string>
+    <string name="history_remove">Eemalda ajaloost</string>
+    <string name="history_search">Otsi ajaloost</string>
 </resources>

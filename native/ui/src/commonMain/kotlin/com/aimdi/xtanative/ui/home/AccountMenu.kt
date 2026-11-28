@@ -57,6 +57,8 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.app_name
 import com.aimdi.xtanative.ui.generated.resources.close
 import com.aimdi.xtanative.ui.generated.resources.home_antennas
+import com.aimdi.xtanative.ui.generated.resources.history_title
+import com.aimdi.xtanative.ui.search.DiscoverIcons
 import com.aimdi.xtanative.ui.generated.resources.home_deck
 import com.aimdi.xtanative.ui.generated.resources.home_discover
 import com.aimdi.xtanative.ui.generated.resources.home_downloads
@@ -295,6 +297,7 @@ internal fun menuIcon(destination: HomeDestination, selected: Boolean): ImageVec
     HomeDestination.TRENDS -> HomeIcons.TrendingUp
     HomeDestination.SAVED -> if (selected) HomeIcons.BookmarkFilled else HomeIcons.Bookmark
     HomeDestination.DOWNLOADS -> if (selected) HomeIcons.Download else HomeIcons.DownloadOutlined
+    HomeDestination.HISTORY -> DiscoverIcons.History
     HomeDestination.ANTENNAS -> HomeIcons.Sensors
     HomeDestination.PLUGINS -> if (selected) HomeIcons.Extension else HomeIcons.ExtensionOutlined
     HomeDestination.DECK -> if (selected) HomeIcons.ViewColumn else HomeIcons.ViewColumnOutlined
@@ -309,6 +312,7 @@ internal fun menuLabel(destination: HomeDestination): String = when (destination
     HomeDestination.TRENDS -> stringResource(Res.string.home_discover)
     HomeDestination.SAVED -> stringResource(Res.string.home_saved)
     HomeDestination.DOWNLOADS -> stringResource(Res.string.home_downloads)
+    HomeDestination.HISTORY -> stringResource(Res.string.history_title)
     HomeDestination.ANTENNAS -> stringResource(Res.string.home_antennas)
     HomeDestination.PLUGINS -> stringResource(Res.string.home_plugin_store)
     HomeDestination.DECK -> stringResource(Res.string.home_deck)

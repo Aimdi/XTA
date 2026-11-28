@@ -175,4 +175,12 @@
     <string name="downloads_saved_to">Salvato in %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Imposta una cartella di download in Impostazioni &gt; Media per il download automatico.</string>
     <string name="saved_export_folder">Esporta cartella</string>
+    <string name="history_title">Cronologia</string>
+    <string name="history_clear">Cancella cronologia</string>
+    <string name="history_clear_ask">Cancellare tutta la cronologia?</string>
+    <string name="history_empty">Qui compaiono i post e i profili che apri</string>
+    <string name="history_keep">Tieni una cronologia</string>
+    <string name="history_keep_description">Fino a 500 post e profili aperti, solo su questo dispositivo: mai inclusi nei backup né sincronizzati.</string>
+    <string name="history_remove">Rimuovi dalla cronologia</string>
+    <string name="history_search">Cerca nella cronologia</string>
 </resources>

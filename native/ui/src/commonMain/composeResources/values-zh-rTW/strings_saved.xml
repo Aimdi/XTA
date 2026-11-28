@@ -172,4 +172,12 @@
     <string name="downloads_saved_to">已儲存到 %1$s</string>
     <string name="set_a_download_folder_to_auto_download">在設定 &gt; 媒體中設定下載資料夾以自動下載。</string>
     <string name="saved_export_folder">匯出資料夾</string>
+    <string name="history_title">瀏覽紀錄</string>
+    <string name="history_clear">清除瀏覽紀錄</string>
+    <string name="history_clear_ask">要清除全部瀏覽紀錄嗎？</string>
+    <string name="history_empty">你開啟的貼文和個人檔案會列在這裡</string>
+    <string name="history_keep">保留瀏覽紀錄</string>
+    <string name="history_keep_description">最多 500 筆開啟過的貼文和個人檔案，只存在這台裝置上：從不備份，也不同步。</string>
+    <string name="history_remove">從瀏覽紀錄中移除</string>
+    <string name="history_search">搜尋瀏覽紀錄</string>
 </resources>

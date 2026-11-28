@@ -11,6 +11,7 @@ import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XTimelinePage
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.ui.history.HistoryRecorder
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.store.follows.RememberedFollows
 import com.aimdi.xtanative.store.offline.KeptProfile
@@ -118,6 +119,8 @@ internal class ProfileViewModel(
     private val userId: String? = null,
     private val openingTab: ProfileTab? = null,
     private val reads: ProfileReads = graph.client.profileReads(),
+    /** Whether opening it adds it to History: a Deck column showing its posts is not opening it. */
+    private val records: Boolean = true,
 ) : ViewModel() {
     private val state = MutableStateFlow(ProfileUi(user = graph.posts.user(screenName)?.takeIf { userId == null || it.id == userId }))
     val ui: StateFlow<ProfileUi> = state.asStateFlow()
@@ -209,6 +212,7 @@ internal class ProfileViewModel(
     private suspend fun show(user: XUser, pins: List<String>, reloadTabs: Boolean) {
         pinnedIds = pins.toSet()
         graph.posts.remember(user)
+        if (records) HistoryRecorder.profile(graph, user)
         if (!reloadTabs) {
             state.update { it.copy(user = user, complete = true, loading = false) }
             return

@@ -19,7 +19,7 @@ class HomeMenuTest {
     @Test
     fun theMenuKeepsXtasOrder() {
         val everything = HomeMenu.shown(HomeMenu.list, { true }, deckFits = true).map { it.route }
-        assertEquals(listOf("subscriptions", "trends", "saved", "downloads", "antennas", "plugins", "deck"), everything)
+        assertEquals(listOf("subscriptions", "trends", "saved", "downloads", "history", "antennas", "plugins", "deck"), everything)
         assertEquals(HomeDestination.entries.toSet(), (HomeMenu.buttons + HomeMenu.list).toSet())
     }
 

@@ -181,4 +181,12 @@
     <string name="downloads_saved_to">Збережено в %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Щоб завантажувати автоматично, задайте теку завантажень у Налаштування &gt; Медіа.</string>
     <string name="saved_export_folder">Експортувати теку</string>
+    <string name="history_title">Історія</string>
+    <string name="history_clear">Очистити історію</string>
+    <string name="history_clear_ask">Очистити всю історію?</string>
+    <string name="history_empty">Тут будуть дописи й профілі, які ви відкриваєте</string>
+    <string name="history_keep">Вести історію</string>
+    <string name="history_keep_description">До 500 відкритих дописів і профілів, лише на цьому пристрої: ніколи не потрапляють до резервної копії й не синхронізуються.</string>
+    <string name="history_remove">Вилучити з історії</string>
+    <string name="history_search">Пошук в історії</string>
 </resources>

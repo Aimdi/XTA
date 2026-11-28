@@ -172,4 +172,12 @@
     <string name="downloads_saved_to">已保存到 %1$s</string>
     <string name="set_a_download_folder_to_auto_download">在设置 &gt; 媒体中设置下载文件夹以自动下载。</string>
     <string name="saved_export_folder">导出文件夹</string>
+    <string name="history_title">历史记录</string>
+    <string name="history_clear">清除历史记录</string>
+    <string name="history_clear_ask">要清除全部历史记录吗？</string>
+    <string name="history_empty">你打开的帖子和个人资料会列在这里</string>
+    <string name="history_keep">保留历史记录</string>
+    <string name="history_keep_description">最多 500 条打开过的帖子和个人资料，只存在这台设备上：从不备份，也不同步。</string>
+    <string name="history_remove">从历史记录中移除</string>
+    <string name="history_search">搜索历史记录</string>
 </resources>
