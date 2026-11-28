@@ -107,7 +107,7 @@ private fun Reader(illust: PixivIllust, start: Int, verticalFirst: Boolean) {
     val settings = pixivSettings()
     var vertical by rememberSaveable { mutableStateOf(verticalFirst) }
     var hd by rememberSaveable { mutableStateOf(PixivQualitySlot.READER.of(settings) == PixivImageQuality.ORIGINAL) }
-    val surface = remember(illust) { ReaderSurface(illust.viewerUrls.size, start) { vertical = !vertical } }
+    val surface = remember(illust) { ReaderSurface(illust.viewerUrls.size, start, illust.aspectRatio.toFloat()) { vertical = !vertical } }
     PluginScaffold(
         title = illust.title.ifEmpty { pluginString(Strings.title) },
         onBack = runtime.host::back,
@@ -185,8 +185,21 @@ private fun cachedPicture(context: PlatformContext, url: String): ByteArray? = r
 }.getOrNull()
 
 /** The reader's page and its way between pages, which the bar, the sheets and the overview move. */
-internal class ReaderSurface(private val pages: Int, start: Int, private val flip: () -> Unit) : PixivOverviewSurface {
+internal class ReaderSurface(private val pages: Int, start: Int, private val firstRatio: Float = 1f, private val flip: () -> Unit) : PixivOverviewSurface {
     var page by mutableIntStateOf(start.coerceIn(0, (pages - 1).coerceAtLeast(0)))
+
+    /** Each page's width over height as its picture came in; Pixiv tells only the first page's. */
+    var ratios by mutableStateOf(emptyMap<Int, Float>())
+        private set
+
+    /** The shape [page] takes in the column: its own once its picture is in, the first page's until then. */
+    fun ratioOf(page: Int): Float = (ratios[page] ?: firstRatio).takeIf { it.isFinite() && it > 0f }?.coerceIn(MIN_RATIO, MAX_RATIO) ?: 1f
+
+    fun measured(page: Int, width: Int, height: Int) {
+        if (width <= 0 || height <= 0) return
+        val ratio = width.toFloat() / height
+        if (ratios[page] != ratio) ratios = ratios + (page to ratio)
+    }
 
     /** A jump asked for, which the page list answers by scrolling there. */
     var jump by mutableStateOf<Int?>(null)
@@ -223,8 +236,9 @@ internal class ReaderSurface(private val pages: Int, start: Int, private val fli
 
 /**
  * Every page down one column at the screen's width, up to [COLUMN_MAX_WIDTH]
- * and centred in a wide window, the last one clear of the bar; the page most
- * on screen is the page. The column zooms as one.
+ * and centred in a wide window, each in its own shape once its picture is in,
+ * the last one clear of the bar; the page most on screen is the page. The
+ * column zooms as one.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -255,7 +269,7 @@ private fun ColumnPages(illust: PixivIllust, urls: List<String>, surface: Reader
             }
             PixivPicture(
                 urls[index],
-                Modifier.widthIn(max = COLUMN_MAX_WIDTH).fillMaxWidth().aspectRatio(illust.aspectRatio.toFloat().coerceIn(0.2f, 5f)).onContextClick(actions).combinedClickable(
+                Modifier.widthIn(max = COLUMN_MAX_WIDTH).fillMaxWidth().aspectRatio(surface.ratioOf(index)).onContextClick(actions).combinedClickable(
                     onClick = {},
                     onDoubleClick = { zoom.toggle(size) },
                     onLongClick = actions,
@@ -264,10 +278,15 @@ private fun ColumnPages(illust: PixivIllust, urls: List<String>, surface: Reader
                 contentDescription = pluginString(Strings.page_of, index + 1, urls.size),
                 onLoaded = { surface.shown(urls[index]) },
                 loading = true,
+                onSize = { width, height -> surface.measured(index, width, height) },
             )
         }
     }
 }
+
+/** The tallest and widest page shapes the column draws whole: a long webtoon strip, a panorama. */
+private const val MIN_RATIO = 0.02f
+private const val MAX_RATIO = 50f
 
 /** The widest a page grows in the column: a wide window shows it centred, not blown up to the window's width. */
 private val COLUMN_MAX_WIDTH = 960.dp

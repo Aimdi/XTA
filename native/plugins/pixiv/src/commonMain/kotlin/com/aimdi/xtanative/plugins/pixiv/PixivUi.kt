@@ -99,6 +99,7 @@ internal fun PixivPicture(
     onLoaded: (() -> Unit)? = null,
     loading: Boolean = false,
     failed: (@Composable BoxScope.(retry: () -> Unit) -> Unit)? = { retry -> PictureRetry(retry) },
+    onSize: ((width: Int, height: Int) -> Unit)? = null,
 ) {
     if (url.isNullOrEmpty()) {
         Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant))
@@ -115,9 +116,10 @@ internal fun PixivPicture(
                 contentDescription = contentDescription,
                 contentScale = contentScale,
                 onLoading = { phase = PicturePhase.LOADING },
-                onSuccess = {
+                onSuccess = { success ->
                     phase = PicturePhase.SHOWN
                     onLoaded?.invoke()
+                    onSize?.invoke(success.result.image.width, success.result.image.height)
                 },
                 onError = { phase = PicturePhase.FAILED },
                 modifier = Modifier.fillMaxSize(),
