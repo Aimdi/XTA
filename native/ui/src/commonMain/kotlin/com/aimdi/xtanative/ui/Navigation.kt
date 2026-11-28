@@ -163,6 +163,8 @@ import com.aimdi.xtanative.ui.subscriptions.UngroupedSorterScreen
 import com.aimdi.xtanative.ui.trends.TrendsActions
 import com.aimdi.xtanative.ui.trends.TrendsScreen
 import java.net.URLEncoder
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 
 internal object Routes {
@@ -385,11 +387,12 @@ private class ScreenMotion(private val reduced: State<Boolean>, private val desk
 @Composable
 fun XtaNativeRoot() {
     val graph = LocalGraph.current
-    val session by graph.sessions.state.collectAsStateWithLifecycle()
-    val settings by graph.settings.state.collectAsStateWithLifecycle()
-    val loaded = session
-    val prefs = settings
-    if (loaded == null || prefs == null) {
+    // Only whether both are read yet: what is read of them below is read once, so a later write redraws what shows it, not the root.
+    val ready by remember(graph) { combine(graph.sessions.state, graph.settings.state) { session, settings -> session != null && settings != null }.distinctUntilChanged() }
+        .collectAsStateWithLifecycle(graph.sessions.state.value != null && graph.settings.state.value != null)
+    val loaded = graph.sessions.state.value
+    val prefs = graph.settings.state.value
+    if (!ready || loaded == null || prefs == null) {
         // The session and settings are read in a few milliseconds; until then, the theme's background.
         Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
         return

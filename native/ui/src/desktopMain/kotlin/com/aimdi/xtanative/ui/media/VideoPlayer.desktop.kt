@@ -11,10 +11,17 @@ import com.aimdi.xtanative.ui.net.DesktopNetworkMonitor
  * libmpv's players, where the desktop has it ([MpvEngine]), as XTA's
  * media_kit plays on Linux: the feed's tiles, the viewer's page and full
  * screen take them as Android takes Media3's. None without it, so a video's
- * poster hands it to the system's player, as before.
+ * poster hands it to the system's player, as before. Whether it has it is
+ * asked without loading it ([MpvEngine.expected]); a tile on screen loads it.
  */
 @Composable
-internal actual fun rememberVideoPlayers(): VideoPlayers? = remember { if (MpvEngine.ready) VideoPlayers { options -> MpvVideoPlayer(options) } else null }
+internal actual fun rememberVideoPlayers(): VideoPlayers? = remember { if (MpvEngine.expected) MpvVideoPlayers else null }
+
+private object MpvVideoPlayers : VideoPlayers {
+    override fun make(options: VideoOptions): VideoPlayer = MpvVideoPlayer(options)
+
+    override fun warm() = MpvEngine.warmUp()
+}
 
 /**
  * The desktop's data saver: on while the connection is metered, as the

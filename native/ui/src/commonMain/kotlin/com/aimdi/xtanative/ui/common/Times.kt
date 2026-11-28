@@ -36,8 +36,8 @@ fun agoText(then: Instant?): String {
     val zone = ZoneId.systemDefault()
     val locale = currentLocale()
     // Measured against the shared minute clock, so "5m" becomes "6m" while the feed stays open.
-    val now = Instant.ofEpochMilli(minuteNow())
-    return when (val ago = Formats.ago(then, now) { it.atZone(zone).year }) {
+    val ago = minuteMeasured(then, zone) { nowMs -> Formats.ago(then, Instant.ofEpochMilli(nowMs)) { it.atZone(zone).year } }
+    return when (ago) {
         is Ago.Seconds -> stringResource(Res.string.ago_seconds, ago.n)
         is Ago.Minutes -> stringResource(Res.string.ago_minutes, ago.n)
         is Ago.Hours -> stringResource(Res.string.ago_hours, ago.n)

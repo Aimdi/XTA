@@ -173,6 +173,18 @@ class PluginManager(
     /** Shows private plugins on offer, or hides them again; the app keeps the switch with its settings. */
     fun showPrivate(show: Boolean) = change { it.copy(showPrivate = show) }
 
+    /**
+     * Why the last install, update or uninstall of [id] failed, in English for
+     * the log: also for a plugin the store does not list, whose [state] says
+     * nothing. Null when none failed.
+     */
+    fun failureText(id: String): String? {
+        val known = current()
+        val failure = known.failures[id] ?: return null
+        if (failure != PluginFailure.NotOffered) return failure.toString()
+        return "not offered" + (notOfferedBecause(known.catalogue?.entry(id), host.platform, api, known.showPrivate)?.let { ": $it" } ?: "")
+    }
+
     /** What is installed, for the app to load at start. */
     suspend fun installed(): List<InstalledPlugin> {
         open()

@@ -34,6 +34,8 @@ fun XtaTheme(content: @Composable () -> Unit) {
     val reducesMotion = systemReducesMotion()
     val tokens = XLook.tokens(settings, systemDark, systemAccent()).let { if (systemHighContrast()) XLook.highContrast(it) else it }
     val scheme = remember(tokens) { XLook.scheme(tokens) }
+    // Made once per look: Material's colours are handed down as a static value, so a new one at every settings write would redraw every screen.
+    val colors = remember(scheme) { colorSchemeOf(scheme) }
     val density = LocalDensity.current
     val textScale = settings[AccessibilityPrefs.textScale].toFloat()
     val interfaceScale = if (isDesktop) settings[DesktopPrefs.uiScale].toFloat() else 1f
@@ -49,7 +51,7 @@ fun XtaTheme(content: @Composable () -> Unit) {
     ) {
         // Inside the reader's text size: the desktop marks the density with the language.
         ProvideAppLanguage(language) {
-            MaterialTheme(colorScheme = colorSchemeOf(scheme), shapes = XtaShapes, typography = XtaTypography) {
+            MaterialTheme(colorScheme = colors, shapes = XtaShapes, typography = XtaTypography) {
                 ProvidePlatformLook(content)
             }
         }

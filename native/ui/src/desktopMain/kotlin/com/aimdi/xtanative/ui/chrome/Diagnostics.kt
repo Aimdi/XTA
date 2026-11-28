@@ -83,8 +83,15 @@ object Diagnostics {
 
     /** `--verbose`: the facts first, then every request's line ([RequestTrace]), into the log through stdout. */
     fun verbose() {
-        println("XTA Native: verbose\n" + text(facts()).lines().joinToString("\n") { "XTA Native: $it" })
+        println("XTA Native: verbose\n" + text(facts(video = ::videoEngineSoFar)).lines().joinToString("\n") { "XTA Native: $it" })
         RequestTrace.sink = { println(it) }
+    }
+
+    /** The engine as far as it is known without opening it: the log's first lines come before any video, which opens it and says so. */
+    private fun videoEngineSoFar(): String = when {
+        MpvEngine.opened -> videoEngine()
+        MpvEngine.expected -> "libmpv, opened at the first video"
+        else -> "no mpv (videos open in the system's player)"
     }
 
     private fun videoEngine(): String = when (val state = MpvEngine.state) {

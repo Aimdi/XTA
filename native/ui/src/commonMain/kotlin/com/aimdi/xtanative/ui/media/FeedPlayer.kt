@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.media
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -16,7 +17,7 @@ import com.aimdi.xtanative.ui.common.LocalSettingsStore
  * (`ui/plugins`' MediaTiles). [Video], a silent looping preview while
  * Autoplay videos is on and media loads by itself, stays for what calls it.
  */
-internal class FeedPlayer(val turns: PlayerTurns<VideoPlayer>) : InlinePlayer {
+internal class FeedPlayer(val turns: PlayerTurns<VideoPlayer>, val warm: () -> Unit = {}) : InlinePlayer {
     @Composable
     override fun Video(url: String, modifier: Modifier) {
         val settings by LocalSettingsStore.current.state.collectAsStateWithLifecycle()
@@ -33,14 +34,23 @@ internal class FeedPlayer(val turns: PlayerTurns<VideoPlayer>) : InlinePlayer {
 @Composable
 internal fun rememberFeedPlayer(players: VideoPlayers): InlinePlayer {
     val turns = rememberPlayerTurns(players, shared = true)
-    return remember(turns) { FeedPlayer(turns) }
+    return remember(turns) { FeedPlayer(turns, players::warm) }
 }
 
-/** The player a tile plays in: its feed's, else one of its own; null where nothing plays in place (a desktop without libmpv). */
+/**
+ * The player a tile plays in: its feed's, else one of its own; null where
+ * nothing plays in place (a desktop without libmpv). A tile on screen gets
+ * the players ready ([VideoPlayers.warm]): the desktop loads libmpv for the
+ * first video, not for every start.
+ */
 @Composable
 internal fun rememberTilePlayer(): PlayerTurns<VideoPlayer>? {
-    (LocalInlinePlayer.current as? FeedPlayer)?.let { return it.turns }
+    (LocalInlinePlayer.current as? FeedPlayer)?.let { feed ->
+        LaunchedEffect(feed) { feed.warm() }
+        return feed.turns
+    }
     val players = rememberVideoPlayers() ?: return null
+    LaunchedEffect(players) { players.warm() }
     return rememberPlayerTurns(players, shared = false)
 }
 

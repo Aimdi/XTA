@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -180,9 +181,9 @@ internal fun rememberPostTranslation(post: XPost, scope: PostScope): PostTransla
     val locale = currentLocale()
     val translations = LocalTranslation.current
     // The settings as the app's frame follows them for every post; else as the store keeps them current, followed here.
-    val shared = sharedSettings(translations.settingsNow)
-    val now = if (shared != null) shared.value else translations.settingsNow.collectAsState().value
-    val service = remember(now) { translations.configFor(now) }
+    // Only the service they set redraws the post: another setting's write leaves every card alone.
+    val settings = sharedSettings(translations.settingsNow) ?: translations.settingsNow.collectAsState()
+    val service = remember(settings, translations) { derivedStateOf { translations.configFor(settings.value) } }.value
     val appTarget = remember(scope.prefs.locale, locale) { scope.prefs.translationTarget(locale.toString()) }
     val target = if (service.enabled && service.target.isNotEmpty()) service.target.replace('_', '-') else appTarget
     if (!PostView.offersTranslation(post, target)) return null

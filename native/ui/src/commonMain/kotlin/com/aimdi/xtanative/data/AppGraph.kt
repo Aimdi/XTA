@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.data
 
+import com.aimdi.xtanative.core.feed.EarlyReads
+import com.aimdi.xtanative.core.feed.feedReads
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.FileAccountHealthStore
 import com.aimdi.xtanative.core.x.XAccountHealthStore
@@ -42,6 +44,7 @@ import com.aimdi.xtanative.store.saved.ProfileFiltersStore
 import com.aimdi.xtanative.store.saved.ProfileNotesStore
 import com.aimdi.xtanative.store.saved.SavedStore
 import com.aimdi.xtanative.store.search.RecentSearches
+import com.aimdi.xtanative.store.settings.AccountPrefs
 import com.aimdi.xtanative.store.settings.CrashReportPrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.downloads.Downloading
@@ -57,6 +60,7 @@ import com.aimdi.xtanative.ui.settings.PluginBackups
 import com.aimdi.xtanative.ui.settings.SettingsStart
 import com.aimdi.xtanative.ui.signin.forgetLeftWebSessionsOnce
 import java.io.File
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -212,6 +216,14 @@ class AppGraph(
         requestGapMillis = XPacer.PEOPLE_PACE,
     )
 
+    /** X's reads for the feeds, with those of the feed the app opens on made ahead as it starts ([EarlyReads]). */
+    val feedReads = EarlyReads(client.feedReads(), scope)
+
+    private val readsReady = CompletableDeferred<Unit>()
+
+    /** Waits until X is read as the reader set it up: the accounts they turned off and the kept query ids in force. */
+    suspend fun awaitReadsReady() = readsReady.await()
+
     /** The Following feed's cache for null, else the group's. */
     @Synchronized
     fun feedCache(groupId: String?): FeedCache {
@@ -257,12 +269,16 @@ class AppGraph(
         // Files a deleted note's undo set aside, left by the last run: no undo is offered any more.
         scope.launch { runCatching { localPosts.discardSetAside() } }
         scope.launch {
-            try {
+            val loaded = try {
                 settings.load()
             } catch (e: Exception) {
                 startFailed.value = e
                 return@launch
             }
+            // In force before any feed reads, which keepAccountsOffInStep and refreshEndpoints, launched below, keep up to date.
+            accountsOff = loaded[AccountPrefs.disabledAccountIds].toSet()
+            if (mockX == null) SettingsStart.applyKeptEndpoints(loaded, client)
+            readsReady.complete(Unit)
             // XTA's launch steps on the settings, once; then the feeds' switches follow the settings.
             scope.launch { SettingsStart.keepSessionInStep(settings, sessions) }
             if (mockX == null) forgetLeftWebSessionsOnce(files)

@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.media
 
 import com.aimdi.xtanative.ui.common.AppResources
 import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.concurrent.thread
 
 /** Whether the desktop plays videos and podcasts in the app, through which libmpv, or why not. */
@@ -73,27 +74,68 @@ internal object MpvEngines {
 }
 
 /**
- * The desktop's engine, chosen once: opening libmpv takes tens of
- * milliseconds, so the app does it on a thread of its own as it starts
- * ([warmUp]), beside its first frame, as XTA opens it right after its own:
- * a feed's tiles ask for players as soon as they are drawn, and wait only
- * for what is left of it. XTA_NATIVE_VIDEO_ENGINE names the shim's folder for
- * a build run from Gradle without the app's resources.
+ * The desktop's engine, chosen once, as the first video on screen asks for
+ * it ([warmUp], on a thread of its own: opening libmpv takes about 0.1 s and
+ * some 30 MB the app does not need while no video is shown). Until then,
+ * whether it is there is told without opening it ([expected]); a player
+ * made before it is open waits for it. XTA_NATIVE_VIDEO_ENGINE names the
+ * shim's folder for a build run from Gradle without the app's resources.
  */
 object MpvEngine {
-    internal val state: MpvEngineState by lazy { load().also { println(MpvEngines.describe(it)) } }
+    private val chosen = lazy { load().also { println(MpvEngines.describe(it)) } }
+    private val warming = AtomicBoolean(false)
+
+    internal val state: MpvEngineState by chosen
 
     internal val ready: Boolean get() = state is MpvEngineState.Ready
 
-    /** Chooses the engine on a thread of its own, now. */
-    fun warmUp() {
-        thread(name = "mpv-engine", isDaemon = true) { state }
+    /** Whether the engine was opened already: what the log's diagnostics say without opening it. */
+    internal val opened: Boolean get() = chosen.isInitialized()
+
+    /** Whether the engine is there to open: the app's shim, and a libmpv the dynamic linker finds ([MpvLibraries]). */
+    internal val expected: Boolean by lazy {
+        if (opened) ready else shim()?.isFile == true && MpvEngines.LIBRARIES.any { MpvLibraries.findable(it) }
     }
 
+    /** Chooses the engine on a thread of its own, now, once. */
+    fun warmUp() {
+        if (warming.compareAndSet(false, true)) thread(name = "mpv-engine", isDaemon = true) { state }
+    }
+
+    private fun shim(): File? = AppResources.folder(MpvEngines.FOLDER, System.getenv("XTA_NATIVE_VIDEO_ENGINE"))?.let { File(it, System.mapLibraryName(MpvEngines.SHIM)) }
+
     private fun load(): MpvEngineState = MpvEngines.choose(
-        shim = AppResources.folder(MpvEngines.FOLDER, System.getenv("XTA_NATIVE_VIDEO_ENGINE"))?.let { File(it, System.mapLibraryName(MpvEngines.SHIM)) },
+        shim = shim(),
         loadShim = { file -> runCatching { System.load(file.path) }.exceptionOrNull()?.let { it.message ?: it.toString() } },
         open = { library -> MpvJni.text(MpvJni.nativeOpen(MpvJni.cString(library))) },
         version = MpvJni::nativeApiVersion,
     )
+}
+
+/**
+ * Whether the dynamic linker would find a library by its name, as dlopen
+ * looks: the folders of LD_LIBRARY_PATH, the linker's cache
+ * (/etc/ld.so.cache, which names every library ldconfig found), then the
+ * system's own folders. Asked instead of opening libmpv, which loads
+ * ffmpeg and the rest with it.
+ */
+internal object MpvLibraries {
+    private val SYSTEM = listOf("/lib64", "/usr/lib64", "/lib", "/usr/lib", "/lib/x86_64-linux-gnu", "/usr/lib/x86_64-linux-gnu")
+
+    fun findable(
+        name: String,
+        libraryPath: String? = System.getenv("LD_LIBRARY_PATH"),
+        cache: File = File("/etc/ld.so.cache"),
+        system: List<String> = SYSTEM,
+    ): Boolean {
+        val folders = libraryPath.orEmpty().split(':').filter { it.isNotEmpty() }
+        return folders.any { File(it, name).exists() } || cached(cache, name) || system.any { File(it, name).exists() }
+    }
+
+    /** Whether [cache] names [name], as a bare name or the end of a path, among its NUL-ended strings. */
+    private fun cached(cache: File, name: String): Boolean {
+        val bytes = runCatching { cache.readBytes() }.getOrNull() ?: return false
+        val text = String(bytes, Charsets.ISO_8859_1)
+        return text.contains("/$name\u0000") || text.contains("\u0000$name\u0000")
+    }
 }

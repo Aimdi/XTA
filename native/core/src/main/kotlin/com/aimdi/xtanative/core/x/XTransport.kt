@@ -269,7 +269,7 @@ internal class XTransport(
      * automated rests it and ends the read: no other account is asked.
      */
     private fun verdictOf(account: XAccount, response: XResponse): Verdict {
-        val codes = XErrorCodes.of(response)
+        val codes = XErrorCodes.ofAccount(response)
         codes.firstOrNull { it in XErrorCodes.AUTOMATION }?.let { throw automated(account, response.code, it) }
         val kind = when {
             XErrorCodes.RATE_LIMITED in codes || response.code == 429 -> Kind.LIMITED

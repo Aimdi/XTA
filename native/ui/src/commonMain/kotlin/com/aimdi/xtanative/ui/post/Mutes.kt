@@ -91,8 +91,7 @@ internal fun Mutes.reason(mutes: MuteList, network: String, post: NetworkPost, n
 @Composable
 internal fun muteList(): MuteList {
     LocalMuteList.current?.let { return it }
-    val settings = settingsNow(LocalSettingsStore.current)
-    val raw = settings?.get(PostsPrefs.muteList)
+    val raw = settingNow(LocalSettingsStore.current.state) { it?.get(PostsPrefs.muteList) }
     return remember(raw) { MuteList.parse(raw) }
 }
 

@@ -1,10 +1,12 @@
 package com.aimdi.xtanative.ui.home
 
 import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.core.feed.FeedSettings
 import com.aimdi.xtanative.core.session.DeckColumn
 import com.aimdi.xtanative.core.session.Session
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 
 class UnreadTallyTest {
@@ -31,5 +33,16 @@ class UnreadTallyTest {
         val session = Session(groups = listOf(FollowGroup("g1", "One", emptyList()), FollowGroup("g2", "Two", emptyList())))
         val lit = setOf(HomeTab.Following.key, HomeTab.Group("g2", "").key)
         assertEquals(listOf("following", "g2"), UnreadTally.unreadFeeds(session, lit))
+    }
+
+    @Test
+    fun onlyASessionChangeOfTheCountedFeedsCountsAgain() {
+        val session = Session(groups = listOf(FollowGroup("g1", "One", emptyList())))
+        val counted = UnreadTally.countedBy(session)
+        assertEquals(counted, UnreadTally.countedBy(session.copy(autoplay = false, deck = listOf("g1"))))
+        assertEquals(counted, UnreadTally.countedBy(session.copy(groups = listOf(FollowGroup("g1", "One", listOf("someone"))))), "members feed the posts, not the count")
+        assertNotEquals(counted, UnreadTally.countedBy(session.copy(groups = session.groups + FollowGroup("g2", "Two", emptyList()))))
+        assertNotEquals(counted, UnreadTally.countedBy(session.copy(feeds = mapOf("g1" to FeedSettings(catchUp = true)))))
+        assertNull(UnreadTally.countedBy(null))
     }
 }

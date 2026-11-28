@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.common
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import kotlinx.coroutines.CoroutineScope
@@ -14,9 +15,9 @@ import kotlinx.coroutines.launch
 
 /**
  * One clock for every "5m" on screen: it ticks at each whole minute while
- * at least one time is drawn ([minuteNow]), and stops when the last is gone.
- * A card reads its state, so a tick redraws only the times, and no card runs
- * a timer of its own.
+ * at least one time is drawn ([minuteMeasured]), and stops when the last is gone.
+ * A card reads its state, so a tick redraws only the times that move on, and
+ * no card runs a timer of its own.
  */
 internal object MinuteClock {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -68,13 +69,16 @@ private class MinuteLease : RememberObserver {
 }
 
 /**
- * The wall clock's time in milliseconds, read again at every whole minute
- * while the caller is composed: what a relative time ("5m") is measured
- * against, so it moves on as a feed stays open.
+ * [measure] of the wall clock's time in milliseconds, measured again at
+ * every whole minute while the caller is composed: a relative time ("5m")
+ * moves on as a feed stays open. A tick redraws the caller only when what it
+ * measures changes, so "3h" and a date are left alone, and the cards on
+ * screen are not all redrawn on the same frame. [keys] are what [measure]
+ * reads besides the time.
  */
 @Composable
-internal fun minuteNow(): Long {
+internal fun <T> minuteMeasured(vararg keys: Any?, measure: (nowMs: Long) -> T): T {
     remember { MinuteLease() }
-    MinuteClock.ticks
-    return System.currentTimeMillis()
+    remember(*keys) { derivedStateOf { MinuteClock.ticks; measure(System.currentTimeMillis()) } }.value
+    return measure(System.currentTimeMillis())
 }

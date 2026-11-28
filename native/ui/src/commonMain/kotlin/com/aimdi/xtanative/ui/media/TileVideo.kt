@@ -43,7 +43,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_video
 import com.aimdi.xtanative.ui.generated.resources.reader_video_length
 import com.aimdi.xtanative.ui.generated.resources.reader_video_open_sound
 import com.aimdi.xtanative.ui.post.PlayBadge
-import com.aimdi.xtanative.ui.post.settingsNow
+import com.aimdi.xtanative.ui.post.settingNow
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
@@ -86,15 +86,17 @@ internal fun TileVideo(
         PlayBadge(Modifier.align(Alignment.Center))
         TileCorner(VideoRules.cornerTimeMs(null, durationMs), play = false, Modifier.align(Alignment.BottomStart))
     }
-    val settings = settingsNow(LocalSettingsStore.current)
+    // The two settings the tile shows by, each followed alone: another setting's write does not redraw every tile.
+    val store = LocalSettingsStore.current
+    val autoplaySetting = settingNow(store.state) { it?.get(MediaPrefs.autoplay) == true }
+    val muteSetting = settingNow(store.state) { it?.get(MediaPrefs.mute) ?: true }
     val key = remember { Any() }
     var seen by remember { mutableStateOf(false) }
     var share by remember { mutableFloatStateOf(0f) }
-    val autoplay = VideoRules.autoplays(settings?.get(MediaPrefs.autoplay) == true, LocalReducedMotion.current, rememberDataSaver())
-    val muteSetting = settings?.get(MediaPrefs.mute) ?: true
+    val autoplay = VideoRules.autoplays(autoplaySetting, LocalReducedMotion.current, rememberDataSaver())
     val chosen by tiles.seen.chosen.collectAsState()
     ReportsSeen(tiles, key, share, reports = autoplay && tiles.shared)
-    val ask by rememberUpdatedState<() -> Unit> { source(settings)?.let { tiles.ask(key, it) } }
+    val ask by rememberUpdatedState<() -> Unit> { source(store.state.value)?.let { tiles.ask(key, it) } }
     val byItself = VideoRules.startsByItself(autoplay, share, chosen === key, tiles.shared)
     LaunchedEffect(tiles, byItself) {
         if (!byItself) return@LaunchedEffect
@@ -116,7 +118,7 @@ internal fun TileVideo(
     val open: () -> Unit = open@{
         // Its sound on, from where it is: the tile takes the player first if it has not.
         val playing = tiles.playerOf(key)?.takeIf { tiles.holder.value?.key == key }
-            ?: source(settings)?.let { tiles.ask(key, it.copy(muted = false)); tiles.playerOf(key) }
+            ?: source(store.state.value)?.let { tiles.ask(key, it.copy(muted = false)); tiles.playerOf(key) }
             ?: return@open
         playing.setMuted(false)
         if (playing.state.value.completed) playing.seekTo(0)

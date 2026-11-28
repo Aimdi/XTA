@@ -18,6 +18,7 @@ import com.aimdi.xtanative.store.backup.NetworkMembers
 import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.settings.AccountPrefs
 import com.aimdi.xtanative.store.settings.DataPrefs
+import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.group.ReadMarks
 import java.time.Duration
@@ -237,13 +238,18 @@ object SettingsStart {
         fetch: suspend (url: String) -> String? = client::refreshEndpoints,
     ) {
         val current = settings.load()
-        current[DataPrefs.endpointRegistryCache].takeIf { it.isNotBlank() }?.let { kept -> apply(client, kept) }
+        applyKeptEndpoints(current, client)
         if (!current[DataPrefs.endpointRegistryEnabled]) return
         val fetchedAt = XtaTime.parse(current[DataPrefs.endpointRegistryFetchedAt])
         if (fetchedAt != null && Duration.between(fetchedAt, now()) < ENDPOINTS_EVERY) return
         val body = fetch(current[DataPrefs.endpointRegistryUrl])?.takeIf { XEndpoints.isDocument(J.parse(it)) } ?: return
         apply(client, body)
         settings.update { it.with(DataPrefs.endpointRegistryCache, body).with(DataPrefs.endpointRegistryFetchedAt, XtaTime.iso(now())) }
+    }
+
+    /** The query ids [current] kept from the published list's last read, put in force before X is asked anything. */
+    fun applyKeptEndpoints(current: Settings, client: XClient) {
+        current[DataPrefs.endpointRegistryCache].takeIf { it.isNotBlank() }?.let { kept -> apply(client, kept) }
     }
 
     private fun apply(client: XClient, registry: String) {

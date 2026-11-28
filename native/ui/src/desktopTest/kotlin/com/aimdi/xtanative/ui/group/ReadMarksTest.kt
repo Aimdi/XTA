@@ -43,6 +43,18 @@ class ReadMarksTest {
     }
 
     @Test
+    fun aMarkWrittenAgainAsItWasIsNoChange(): Unit = runBlocking {
+        val marks = marks()
+        val read = thread(Instant.parse("2026-05-01T10:00:00Z"))
+        assertTrue(marks.record(read, at = 1))
+        assertFalse(marks.record(read, at = 2), "the same post, read at the same time")
+        assertTrue(marks.record(thread(Instant.parse("2026-05-01T10:05:00Z")), at = 3))
+        assertTrue(marks.noteNewest(read))
+        assertFalse(marks.noteNewest(read))
+        assertTrue(marks.noteNewest(thread(Instant.parse("2026-05-01T11:00:00Z"))))
+    }
+
+    @Test
     fun anIdsTimeIsItsSnowflakes() {
         val at = Instant.parse("2026-05-01T10:00:00Z")
         assertEquals(at.toEpochMilli(), ReadMarks.timeOfId(thread(at).id))

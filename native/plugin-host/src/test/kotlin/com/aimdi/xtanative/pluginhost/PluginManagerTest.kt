@@ -200,9 +200,15 @@ class PluginManagerTest {
         manager.refresh()
         listOf("reddit", "stocks", "pixiv", "nothing").forEach { assertFalse(manager.install(it), it) }
         assertEquals(emptyList(), artifacts.asked)
+        // None of them is listed, so the log has the manager's word for why.
+        assertEquals("not offered: the catalogue holds it back", manager.failureText("reddit"))
+        assertEquals("not offered: it is private, and private plugins are hidden", manager.failureText("stocks"))
+        assertEquals("not offered: the catalogue has no file of it for this platform", manager.failureText("pixiv"))
+        assertEquals("not offered: the catalogue does not name it", manager.failureText("nothing"))
 
         manager.showPrivate(true)
         assertTrue(manager.install("stocks"), "a private plugin, while private plugins are shown")
+        assertEquals(null, manager.failureText("stocks"))
     }
 
     @Test
@@ -353,5 +359,38 @@ class PluginManagerTest {
         assertIs<PluginFailure.BadSignature>((manager.status("forged") as PluginStatus.Failed).reason)
         assertNull(manager.installed().firstOrNull { it.id == "forged" })
         assertFalse(File(plugins, "forged").exists())
+    }
+
+    @Test
+    fun pluginsLoadedAtOnceAreEachCheckedAsStrictlyAsAlone() = runBlocking {
+        val ids = listOf("alpha", "beta", "gamma", "delta", "epsilon")
+        val jars = ids.associateWith { TestKeys.sign(pluginJar(it, "1.0.0"), TestKeys.app) }
+        jars.forEach { (id, jar) -> served["https://plugins.example/xta-plugin-$id-1.0.0.jar"] = jar }
+        catalogue = catalogueJson(*jars.map { (id, jar) -> entryJson(id, "1.0.0", jar) }.toTypedArray())
+        val desktop = HostPlatform.desktop(TestKeys.fingerprint(TestKeys.app), testPluginsHidden)
+        val installing = manager(host = desktop)
+        installing.refresh()
+        ids.forEach { assertTrue(installing.install(it)) }
+
+        fun jarOf(id: String) = File(plugins, "$id/1.0.0/xta-plugin-$id-1.0.0.jar").apply { setWritable(true) }
+        // beta: a byte added after the install. gamma: re-signed by another key, its record rewritten to match.
+        jarOf("beta").appendBytes(byteArrayOf(0))
+        val forged = TestKeys.sign(pluginJar("gamma", "1.0.0"), TestKeys.other)
+        jarOf("gamma").writeBytes(forged)
+        val record = File(dir, "store/plugins/installed.json")
+        // Only gamma's own record: its checksum and the size right after it. A size alone can be alpha's or delta's too
+        // (same-length ids give same-size JARs whenever the signatures happen to match in length), which made this flaky.
+        val gammaRecord = Regex("(\"sha256\"\\s*:\\s*\")${sha256(jars.getValue("gamma"))}(\"\\s*,\\s*\"size\"\\s*:\\s*)${jars.getValue("gamma").size}\\b")
+        assertEquals(1, gammaRecord.findAll(record.readText()).count(), record.readText())
+        record.writeText(record.readText().replace(gammaRecord, "$1${sha256(forged)}$2${forged.size}"))
+
+        val manager = manager(host = desktop)
+        val loads = ids.map { async(Dispatchers.IO) { manager.load(it) } }.map { it.await() }
+        val byId = ids.zip(loads).toMap()
+        listOf("alpha", "delta", "epsilon").forEach { assertIs<PluginLoad.Loaded>(byId[it], "$it: ${byId[it]}") }
+        assertEquals(PluginLoad.Refused(PluginFailure.Damaged), byId["beta"])
+        assertEquals(PluginLoad.Refused(PluginFailure.Damaged), byId["gamma"], "the record vouches for the file, the signature does not")
+        assertEquals(PluginStatus.Failed(PluginFailure.Damaged, "1.0.0"), manager.status("beta"))
+        assertEquals(PluginStatus.Failed(PluginFailure.Damaged, "1.0.0"), manager.status("gamma"))
     }
 }
