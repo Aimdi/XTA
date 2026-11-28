@@ -24,6 +24,18 @@ class MergedTimelineTest {
     }
 
     @Test
+    fun theRetryCountKeepsSourcesThatFailedInAnEarlierLoad() = runBlocking {
+        val a = Source("a") { cursor -> if (cursor == null) page(thread(100), thread(90), next = "a2") else page(thread(80), next = "a3") }
+        val b = Source("b") { throw IOException("offline") }
+        val timeline = MergedTimeline(listOf(a.timeline, b.timeline))
+        timeline.first()
+        assertEquals(1, timeline.progress.value.failed)
+        timeline.more()
+        assertEquals(1, timeline.progress.value.failed, "a later page that read only a still leaves b to retry")
+        assertTrue(timeline.progress.value.canRetry)
+    }
+
+    @Test
     fun aPartialAnswerIsShownAndItsSourceStaysFailed() = runBlocking {
         val cause = IOException("half")
         val a = Source("a") { page(thread(100, by = "a"), next = null) }

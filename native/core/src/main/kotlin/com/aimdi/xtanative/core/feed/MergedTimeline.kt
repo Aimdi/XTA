@@ -384,7 +384,8 @@ class MergedTimeline(
                 reading.failure = failure
             }
         }
-        loading.value = FeedProgress(outcomes.size, keys.size, outcomes.count { it != null }, loading = false)
+        // Every source still failed counts, not only this load's: one that failed before is still to retry.
+        loading.value = FeedProgress(outcomes.size, keys.size, readings.count { it.failure != null }, loading = false)
         return outcomes.filterNotNull()
     }
 
