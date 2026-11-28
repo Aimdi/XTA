@@ -238,6 +238,26 @@ class XTransportTest {
     }
 
     @Test
+    fun aPartialErrorBesideDataIsAboutTheContentNotTheAccount() {
+        // A timeline with data and GraphQL's partial errors (a quoted post's locked author): 326 there is no lock of ours.
+        val partial = """{"data":{"user":{"result":{"rest_id":"1"}}},"errors":[{"message":"Authorization: locked","code":326}]}"""
+        val x = FakeX { _, _ -> XResponse(200, partial) }
+        val reader = client(x, listOf(account("a"), account("b")))
+        repeat(3) { runCatching { read(reader) } }
+        assertFalse(health.read("id-a").paused(now), "a")
+        assertFalse(health.read("id-b").paused(now), "b")
+        assertEquals(null, reader.readsPausedUntil.value, "no pause on every read")
+    }
+
+    @Test
+    fun aCodeInA200WithEmptyDataStillCounts() {
+        val x = FakeX { _, account -> if (account == "a") XResponse(200, """{"data":{},"errors":[{"message":"locked","code":326}]}""") else ok() }
+        val reader = client(x, listOf(account("a"), account("b")))
+        repeat(3) { runCatching { read(reader) } }
+        assertTrue(health.read("id-a").paused(now))
+    }
+
+    @Test
     fun twoAccountsCalledAutomatedWithinTenMinutesPauseEveryRead() {
         val x = FakeX { _, account -> if (account == "c") ok() else XResponse(403, xError(if (account == "a") 226 else 344)) }
         val reader = client(x, listOf(account("a"), account("b"), account("c")))
