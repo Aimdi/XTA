@@ -16,11 +16,16 @@ import okhttp3.HttpUrl
 private class FakeDav(var etags: Boolean = true, var reachable: Boolean = true) : WebDavHttp {
     val files = HashMap<String, String>()
     val folders = HashSet<String>()
-    val requests = ArrayList<String>()
-    val threads = HashSet<Thread>()
+    // Written on the upload's thread, read on the test's.
+    val requests: MutableList<String> = java.util.Collections.synchronizedList(ArrayList())
+    val threads: MutableSet<Thread> = java.util.Collections.synchronizedSet(HashSet())
 
     /** While set, a PUT to the document waits for it, as a slow upload does. */
+    @Volatile
     var mainPutGate: kotlinx.coroutines.CompletableDeferred<Unit>? = null
+
+    /** Completed once a PUT to the document waits at [mainPutGate]. */
+    val mainPutWaiting = kotlinx.coroutines.CompletableDeferred<Unit>()
 
     /** How a PUT to the document fails, when it should. */
     var mainPut: PutFailure? = null
@@ -38,7 +43,7 @@ private class FakeDav(var etags: Boolean = true, var reachable: Boolean = true) 
         val path = url.encodedPath
         return when (method) {
             "GET" -> if (getsLost) throw IOException("reset") else files[path]?.let { WebDavResponse(200, it, tag(path)) } ?: WebDavResponse(404)
-            "PUT" -> when (mainPut.also { if (path == "/xta/backup.json") mainPutGate?.await() }.takeIf { path == "/xta/backup.json" }) {
+            "PUT" -> when (mainPut.also { if (path == "/xta/backup.json") mainPutGate?.let { mainPutWaiting.complete(Unit); it.await() } }.takeIf { path == "/xta/backup.json" }) {
                 PutFailure.REFUSED -> WebDavResponse(507)
                 PutFailure.LOST -> throw IOException("reset")
                 PutFailure.ANSWER_LOST -> put(path, headers, body.orEmpty()).let { throw IOException("reset after write") }
@@ -171,10 +176,9 @@ class WebDavSyncTest {
         assertEquals(WebDavOutcome.SUCCESS, sync.upload(config, "{}").outcome)
         val gate = kotlinx.coroutines.CompletableDeferred<Unit>()
         server.mainPutGate = gate
-        fun puts() = server.requests.count { it == "PUT /xta/backup.json" }
-        val before = puts()
         val leaving = launch { sync.upload(config, """{"next":1}""") }
-        while (puts() == before) kotlinx.coroutines.yield()
+        // Signalled, not polled: a count read across threads may never be seen to change.
+        server.mainPutWaiting.await()
         leaving.cancel()
         gate.complete(Unit)
         leaving.join()
