@@ -156,9 +156,11 @@ class DiagnosticsHealthTest {
         val flaggedAt = now.toEpochMilli() - 60_000
         health.write("made-up-ct0", XAccountHealth(XAccountPolicy.NOT_FOUND_THRESHOLD, flaggedAt))
         health.write("stale-ct0", XAccountHealth(XAccountPolicy.NOT_FOUND_THRESHOLD, now.toEpochMilli() - XAccountPolicy.NOT_FOUND_COOLDOWN_MILLIS - 1))
+        val pausedUntil = now.toEpochMilli() + 600_000
+        health.write("paused-ct0", XAccountHealth(lastStatus = 403, lastCode = 226, pausedUntil = pausedUntil))
         val report = DiagnosticsReport.of(
             appVersion = "1.0",
-            accounts = listOf(XAccount("made-up-ct0", "reader", emptyMap()), XAccount("stale-ct0", "rested", emptyMap())),
+            accounts = listOf(XAccount("made-up-ct0", "reader", emptyMap()), XAccount("stale-ct0", "rested", emptyMap()), XAccount("paused-ct0", "paused", emptyMap())),
             endpoints = XEndpoints(),
             limits = XRateLimits(),
             settings = Settings(),
@@ -167,13 +169,16 @@ class DiagnosticsHealthTest {
             health = health,
             operations = listOf("2026-11-03T09:59:00Z UserTweets failed (unavailable 404) 120ms"),
         )
-        val (broken, rested) = report.accounts
+        val (broken, rested, paused) = report.accounts
+        assertEquals(Instant.ofEpochMilli(pausedUntil), paused.pausedUntil)
+        assertFalse(paused.isHealthy)
         assertEquals(Instant.ofEpochMilli(flaggedAt + XAccountPolicy.NOT_FOUND_COOLDOWN_MILLIS), broken.signInBrokenUntil)
         assertFalse(broken.isHealthy)
         assertNull(rested.signInBrokenUntil, "its rest is over")
         assertTrue(rested.isHealthy)
         val text = report.toPlainText()
         assertTrue("@reader: auth broken until ${broken.signInBrokenUntil}" in text, text)
+        assertTrue("@paused: paused (automation) until ${paused.pausedUntil}; last refusal HTTP 403, X code 226" in text, text)
         assertTrue(text.endsWith("recent reads (local timing, no request content):\n2026-11-03T09:59:00Z UserTweets failed (unavailable 404) 120ms"), text)
         assertFalse("made-up-ct0" in text)
     }

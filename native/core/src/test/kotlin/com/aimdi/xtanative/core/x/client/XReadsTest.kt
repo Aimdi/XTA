@@ -3,6 +3,7 @@ package com.aimdi.xtanative.core.x.client
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.core.x.XAnswerException
+import com.aimdi.xtanative.core.x.XRateLimitedException
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.XCommunityUnavailableException
 import com.aimdi.xtanative.core.x.XQuoteOrder
@@ -107,8 +108,10 @@ class XReadsTest {
         assertEquals("/i/api/graphql/ROjiuYueotTnWoI8m2YaiQ/Retweeters", sent.url.encodedPath)
         assertEquals("""{"tweetId":"2001","count":20,"includePromotedContent":false,"cursor":"c"}""", sent.url.queryParameter("variables"))
 
-        val refused = answering("""{"errors":[{"message":"Rate limit exceeded","code":88}]}""")
-        assertEquals("Rate limit exceeded", assertFailsWith<XAnswerException> { client(refused).reposters("2001") }.message)
+        val refused = answering("""{"errors":[{"message":"Not authorized to view","code":37}]}""")
+        assertEquals("Not authorized to view", assertFailsWith<XAnswerException> { client(refused).reposters("2001") }.message)
+        val limited = answering("""{"errors":[{"message":"Rate limit exceeded","code":88}]}""")
+        assertFailsWith<XRateLimitedException>("X's code 88 is its rate limit, even in a 200") { client(limited).reposters("2001") }
     }
 
     @Test

@@ -16,8 +16,16 @@ import java.time.Instant
  * rate-limiting it on, until when, and until when its sign-in rests once it
  * looks broken (XTA's notFoundUntil).
  */
-data class AccountDiagnostics(val screenName: String?, val rateLimited: Map<String, Instant>, val signInBrokenUntil: Instant? = null) {
-    val isHealthy: Boolean get() = rateLimited.isEmpty() && signInBrokenUntil == null
+data class AccountDiagnostics(
+    val screenName: String?,
+    val rateLimited: Map<String, Instant>,
+    val signInBrokenUntil: Instant? = null,
+    /** Until when it rests because X called its requests automated (or locked it). */
+    val pausedUntil: Instant? = null,
+    /** The last refusal or pause, as "HTTP 403, X code 353", for the copied report. */
+    val lastRefusal: String? = null,
+) {
+    val isHealthy: Boolean get() = rateLimited.isEmpty() && signInBrokenUntil == null && pausedUntil == null
 }
 
 /** One of X's operations: the query id asked with, and whether it came from the published list rather than this build. */
@@ -56,7 +64,11 @@ data class DiagnosticsReport(
         add("accounts (${accounts.size}):")
         if (accounts.isEmpty()) add("  none")
         accounts.forEach { account ->
-            val state = listOfNotNull(account.signInBrokenUntil?.let { "auth broken until $it" }) +
+            val state = listOfNotNull(
+                account.signInBrokenUntil?.let { "auth broken until $it" },
+                account.pausedUntil?.let { "paused (automation) until $it" },
+                account.lastRefusal?.let { "last refusal $it" },
+            ) +
                 account.rateLimited.map { (endpoint, until) -> "429 $endpoint until $until" }
             add("  ${account.screenName?.let { "@$it" } ?: "unnamed account"}: ${if (state.isEmpty()) "ok" else state.joinToString("; ")}")
         }
@@ -98,7 +110,8 @@ data class DiagnosticsReport(
                     val limited = paths.mapNotNull { (name, path) ->
                         limits.resetAt(account.id, path, now.toEpochMilli())?.let { name to Instant.ofEpochMilli(it) }
                     }.toMap()
-                    AccountDiagnostics(account.screenName, limited, signInBrokenUntil(health.read(account.id), now))
+                    val state = health.read(account.id)
+                    AccountDiagnostics(account.screenName, limited, signInBrokenUntil(state, now), pausedUntil(state, now), lastRefusal(state))
                 },
                 endpoints = XEndpoints.shipped.values.map { EndpointDiagnostics(it.name, it.host, endpoints.queryId(it.name), endpoints.isOverridden(it.name)) },
                 registryEnabled = settings[DataPrefs.endpointRegistryEnabled],
@@ -108,6 +121,12 @@ data class DiagnosticsReport(
                 mainThreadStalls = mainThreadStalls,
             )
         }
+
+        private fun pausedUntil(health: XAccountHealth, now: Instant): Instant? =
+            health.pausedUntil?.let(Instant::ofEpochMilli)?.takeIf { it.isAfter(now) }
+
+        private fun lastRefusal(health: XAccountHealth): String? =
+            listOfNotNull(health.lastStatus?.let { "HTTP $it" }, health.lastCode?.let { "X code $it" }).joinToString(", ").ifEmpty { null }
 
         /** When a flagged account's rest ends, while it lasts (XTA's lastNotFoundAt plus notFoundCooldown). */
         private fun signInBrokenUntil(health: XAccountHealth, now: Instant): Instant? =

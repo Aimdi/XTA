@@ -66,6 +66,9 @@ class XClient(
     /** What X said of each account's limits: when a rate-limited read may be tried again. */
     val rateLimits: XRateLimits get() = transport.limits
 
+    /** Until when every X read is paused because X called two accounts automated; null, or a time passed, while none is. */
+    val readsPausedUntil: kotlinx.coroutines.flow.StateFlow<Long?> get() = transport.pause.pausedUntil
+
     /** The reads asked of X lately, how each ended and how long it took (Diagnostics' recent reads). */
     val reads: XReadLog get() = transport.reads
 

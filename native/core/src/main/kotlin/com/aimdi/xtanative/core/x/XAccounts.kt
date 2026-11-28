@@ -21,6 +21,15 @@ object XAccountPolicy {
     /** How long a probe that settled nothing keeps the next one back. */
     const val PROBE_RETRY_MILLIS = 15 * 60 * 1000L
 
+    /** How long an account X called automated (or locked) is not asked. */
+    const val AUTOMATION_PAUSE_MILLIS = 60 * 60 * 1000L
+
+    /** Two accounts called automated within this pause every X read... */
+    const val AUTOMATION_WINDOW_MILLIS = 10 * 60 * 1000L
+
+    /** ...for this long. */
+    const val GLOBAL_PAUSE_MILLIS = 30 * 60 * 1000L
+
     /** The latest reset X's headers may name, in seconds: beyond it a header is junk. */
     internal const val LATEST_RESET_SECONDS = 8_640_000_000_000L
 }
@@ -28,29 +37,47 @@ object XAccountPolicy {
 /**
  * What XTA's accounts table remembers of an account's sign-in: how many
  * refusals in a row other accounts proved were its own, since when it is
- * flagged, and the HTTP status of the last refusal ([lastStatus], for
- * Diagnostics). A flagged account is not asked at all while its cooldown
- * runs; once it ran out, one probe request decides whether it is back
- * ([needsProbe]).
+ * flagged, and the HTTP status and X error code of the last refusal
+ * ([lastStatus], [lastCode], for Diagnostics). A flagged account is not
+ * asked at all while its cooldown runs; once it ran out, one probe request
+ * decides whether it is back ([needsProbe]). One X called automated rests
+ * until [pausedUntil].
  */
-data class XAccountHealth(val consecutiveNotFound: Int = 0, val notFoundAt: Long? = null, val lastStatus: Int? = null) {
-    val isClean: Boolean get() = consecutiveNotFound == 0 && notFoundAt == null
+data class XAccountHealth(
+    val consecutiveNotFound: Int = 0,
+    val notFoundAt: Long? = null,
+    val lastStatus: Int? = null,
+    val lastCode: Int? = null,
+    val pausedUntil: Long? = null,
+) {
+    val isClean: Boolean get() = consecutiveNotFound == 0 && notFoundAt == null && pausedUntil == null
 
     fun flagged(now: Long): Boolean = notFoundAt?.let { now < it + XAccountPolicy.NOT_FOUND_COOLDOWN_MILLIS } ?: false
+
+    /** Whether X called the account automated and its pause still runs. */
+    fun paused(now: Long): Boolean = pausedUntil?.let { now < it } ?: false
+
+    /** Not to be asked now: flagged, or paused. */
+    fun resting(now: Long): Boolean = flagged(now) || paused(now)
 
     /** Flagged once, its cooldown over, and not answered since: one request may find out whether it works again. */
     fun needsProbe(now: Long): Boolean = notFoundAt != null && consecutiveNotFound >= XAccountPolicy.NOT_FOUND_THRESHOLD && !flagged(now)
 
     /**
-     * One more refusal, [status] its HTTP status; the account is flagged once
-     * [XAccountPolicy.NOT_FOUND_THRESHOLD] are in a row. A flagged account's
-     * count stops there: a refused probe only starts its cooldown again.
+     * One more refusal, [status] its HTTP status and [code] X's; the account
+     * is flagged once [XAccountPolicy.NOT_FOUND_THRESHOLD] are in a row. A
+     * flagged account's count stops there: a refused probe only starts its
+     * cooldown again.
      */
-    fun afterRefusal(at: Long, status: Int? = lastStatus): XAccountHealth {
-        if (consecutiveNotFound >= XAccountPolicy.NOT_FOUND_THRESHOLD) return copy(notFoundAt = at, lastStatus = status)
+    fun afterRefusal(at: Long, status: Int? = lastStatus, code: Int? = null): XAccountHealth {
+        if (consecutiveNotFound >= XAccountPolicy.NOT_FOUND_THRESHOLD) return copy(notFoundAt = at, lastStatus = status, lastCode = code)
         val count = consecutiveNotFound + 1
-        return XAccountHealth(count, if (count >= XAccountPolicy.NOT_FOUND_THRESHOLD) at else notFoundAt, status)
+        return copy(consecutiveNotFound = count, notFoundAt = if (count >= XAccountPolicy.NOT_FOUND_THRESHOLD) at else notFoundAt, lastStatus = status, lastCode = code)
     }
+
+    /** X answered [code] from [XErrorCodes.AUTOMATION] with [status] at [at]: the account rests an hour. */
+    fun afterAutomation(at: Long, status: Int, code: Int): XAccountHealth =
+        copy(lastStatus = status, lastCode = code, pausedUntil = at + XAccountPolicy.AUTOMATION_PAUSE_MILLIS)
 }
 
 /**

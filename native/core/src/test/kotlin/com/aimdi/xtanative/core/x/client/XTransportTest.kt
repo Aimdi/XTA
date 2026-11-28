@@ -6,10 +6,12 @@ import com.aimdi.xtanative.core.x.XAccountHealthStore
 import com.aimdi.xtanative.core.x.XAccountPolicy
 import com.aimdi.xtanative.core.feed.feedReads
 import com.aimdi.xtanative.core.x.XClient
+import com.aimdi.xtanative.core.x.XAutomationSuspectedException
 import com.aimdi.xtanative.core.x.XEndpointRefusedException
 import com.aimdi.xtanative.core.x.XNoWorkingAccountException
 import com.aimdi.xtanative.core.x.XQuoteOrder
 import com.aimdi.xtanative.core.x.XRateLimitedException
+import com.aimdi.xtanative.core.x.XReadsPausedException
 import com.aimdi.xtanative.core.x.XRequestException
 import com.aimdi.xtanative.core.x.XSigners
 import com.aimdi.xtanative.core.x.http.XHttp
@@ -204,6 +206,95 @@ class XTransportTest {
         val x = FakeX { _, account -> if (account == "a") XResponse(401, "") else XResponse(403, "") }
         assertFailsWith<XRequestException> { read(client(x, listOf(account("a"), account("b"), account("c")))) }
         assertEquals(3, x.asked.size, "the probe, then the two tries any read has")
+    }
+
+    private fun xError(code: Int) = """{"errors":[{"message":"made up","code":$code}]}"""
+
+    @Test
+    fun anAccountXCallsAutomatedRestsAnHourAndNoOtherAccountIsAsked() {
+        val x = FakeX { call, _ -> if (call == 1) XResponse(403, xError(226)) else ok() }
+        val reader = client(x, listOf(account("a"), account("b")))
+        val error = assertFailsWith<XAutomationSuspectedException> { read(reader) }
+        assertEquals(226, error.errorCode)
+        assertEquals(1, x.asked.size, "a read X calls automated is not tried again elsewhere")
+        val first = x.asked.single()
+        assertEquals(now + 60 * 60_000, health.read("id-$first").pausedUntil)
+        assertEquals(226, health.read("id-$first").lastCode)
+        repeat(2) { read(reader) }
+        assertTrue(first !in x.asked.drop(1), "the paused account gets no request")
+        now += 60 * 60_000
+        assertFalse(health.read("id-$first").paused(now), "back after its hour")
+    }
+
+    @Test
+    fun aCodeInA200CountsToo() {
+        val x = FakeX { _, account -> if (account == "a") XResponse(200, xError(326)) else ok() }
+        val reader = client(x, listOf(account("a"), account("b")))
+        repeat(3) { runCatching { read(reader) } }
+        assertTrue(health.read("id-a").paused(now))
+        assertEquals(1, x.asked.count { it == "a" })
+    }
+
+    @Test
+    fun twoAccountsCalledAutomatedWithinTenMinutesPauseEveryRead() {
+        val x = FakeX { _, account -> if (account == "c") ok() else XResponse(403, xError(if (account == "a") 226 else 344)) }
+        val reader = client(x, listOf(account("a"), account("b"), account("c")))
+        health.write("id-c", XAccountHealth(pausedUntil = now + 20 * 60_000))
+        assertFailsWith<XAutomationSuspectedException> { read(reader) }
+        now += 5 * 60_000
+        val paused = assertFailsWith<XReadsPausedException> { read(reader) }
+        assertEquals(now + 30 * 60_000, paused.resetsAt)
+        assertEquals(now + 30 * 60_000, reader.readsPausedUntil.value)
+        val sent = x.asked.size
+        assertFailsWith<XReadsPausedException> { read(reader) }
+        assertFailsWith<XReadsPausedException> { runBlocking { reader.homeTimeline(account("c")) } }
+        assertEquals(sent, x.asked.size, "nothing goes to X while every read is paused")
+        now += 30 * 60_000
+        read(reader)
+        assertEquals("c", x.asked.last(), "after the pause only the account X did not call automated is asked")
+    }
+
+    @Test
+    fun accountsCalledAutomatedFarApartDoNotPauseEveryRead() {
+        val x = FakeX { _, account -> if (account == "c") ok() else XResponse(403, xError(226)) }
+        val reader = client(x, listOf(account("a"), account("b"), account("c")))
+        health.write("id-c", XAccountHealth(pausedUntil = now + 15 * 60_000))
+        assertFailsWith<XAutomationSuspectedException> { read(reader) }
+        now += 11 * 60_000
+        assertFailsWith<XAutomationSuspectedException> { read(reader) }
+        now += 5 * 60_000
+        read(reader)
+        assertEquals("c", x.asked.last())
+    }
+
+    @Test
+    fun withEveryAccountPausedTheReadSaysWhenTheFirstPauseEnds() {
+        health.write("id-a", XAccountHealth(pausedUntil = now + 120_000, lastCode = 226))
+        health.write("id-b", XAccountHealth(pausedUntil = now + 60_000, lastCode = 326))
+        val x = FakeX { _, _ -> ok() }
+        val error = assertFailsWith<XAutomationSuspectedException> { read(client(x, listOf(account("a"), account("b")))) }
+        assertEquals(now + 60_000, error.resetsAt)
+        assertEquals(326, error.errorCode)
+        assertTrue(x.asked.isEmpty())
+    }
+
+    @Test
+    fun code88IsARateLimitWhateverTheStatus() {
+        val x = FakeX { call, _ -> if (call == 1) XResponse(200, xError(88), resetIn5Minutes) else ok() }
+        val reader = client(x, listOf(account("a"), account("b")))
+        read(reader)
+        assertEquals(2, x.asked.toSet().size)
+        assertTrue(reader.rateLimits.isLimited("id-${x.asked.first()}", "/i/api/graphql/AMIBMjtxEEATh4z8V9GtRg/UserByScreenName", now))
+    }
+
+    @Test
+    fun aCsrfMismatchIsARefusalKeptWithItsCode() {
+        val x = FakeX { call, _ -> if (call == 1) XResponse(403, xError(353)) else ok() }
+        read(client(x, listOf(account("a"), account("b"))))
+        val blamed = health.read("id-${x.asked.first()}")
+        assertEquals(1, blamed.consecutiveNotFound)
+        assertEquals(403, blamed.lastStatus)
+        assertEquals(353, blamed.lastCode)
     }
 
     @Test

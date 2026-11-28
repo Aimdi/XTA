@@ -10,7 +10,8 @@ import kotlinx.serialization.json.put
 /**
  * [XAccountHealth] kept in one small file, as XTA keeps each account's
  * refusals and flag in its accounts table: an account whose sign-in looks
- * broken still rests after a restart. Fields added later (the last status)
+ * broken still rests after a restart. Fields added later (the last status
+ * and X code, an automation pause)
  * may be missing from an older file. An account goes by a digest of its id,
  * which is its session's `ct0`, so the file holds no session. Read once,
  * then kept in memory; written whenever an account's health changes.
@@ -34,7 +35,7 @@ class FileAccountHealthStore(private val file: File) : XAccountHealthStore {
         val accounts = root["accounts"]
         return accounts.keys.associateWith { key ->
             val row = accounts[key]
-            XAccountHealth(row["refusals"].int ?: 0, row["flaggedAt"].long, row["status"].int)
+            XAccountHealth(row["refusals"].int ?: 0, row["flaggedAt"].long, row["status"].int, row["code"].int, row["pausedUntil"].long)
         }.filterValues { !it.isClean }
     }
 
@@ -49,6 +50,8 @@ class FileAccountHealthStore(private val file: File) : XAccountHealthStore {
                             put("refusals", health.consecutiveNotFound)
                             health.notFoundAt?.let { put("flaggedAt", it) }
                             health.lastStatus?.let { put("status", it) }
+                            health.lastCode?.let { put("code", it) }
+                            health.pausedUntil?.let { put("pausedUntil", it) }
                         })
                     }
                 },

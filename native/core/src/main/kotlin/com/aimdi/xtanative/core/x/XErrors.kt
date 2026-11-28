@@ -13,7 +13,19 @@ open class XRequestException(val code: Int, message: String) : XReadException(me
  * Every account was rate-limited on this endpoint. [resetsAt] is when the
  * first of them frees up (epoch milliseconds), when X said for each.
  */
-class XRateLimitedException(val resetsAt: Long? = null) : XReadException("Every account is rate-limited here for now")
+open class XRateLimitedException protected constructor(val resetsAt: Long?, message: String) : XReadException(message) {
+    constructor(resetsAt: Long? = null) : this(resetsAt, "Every account is rate-limited here for now")
+}
+
+/**
+ * X answered with [errorCode], one of [XErrorCodes.AUTOMATION]: the account
+ * that asked rests until [resetsAt], and no other account is asked instead.
+ */
+class XAutomationSuspectedException(val errorCode: Int, resetsAt: Long?) :
+    XRateLimitedException(resetsAt, "X called the requests automated (code $errorCode)")
+
+/** Every X read is paused until [resetsAt]: X called two accounts automated in a short while. */
+class XReadsPausedException(resetsAt: Long) : XRateLimitedException(resetsAt, "X reads are paused")
 
 /** There is no X account to read with, and X did not answer a guest either: XTA's backup has to be imported first. */
 open class XNoAccountException(why: String = "No X account") : XReadException(why)
