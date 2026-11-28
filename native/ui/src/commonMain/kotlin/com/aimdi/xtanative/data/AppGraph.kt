@@ -5,6 +5,7 @@ import com.aimdi.xtanative.core.x.FileAccountHealthStore
 import com.aimdi.xtanative.core.x.XAccountHealthStore
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.XGuest
+import com.aimdi.xtanative.core.x.XPacer
 import com.aimdi.xtanative.core.x.XSigners
 import com.aimdi.xtanative.core.x.http.OkHttpXHttp
 import com.aimdi.xtanative.core.x.signing.FileSignerStore
@@ -208,6 +209,7 @@ class AppGraph(
         guest = XGuest(http),
         health = accountHealth,
         disabledAccounts = { accountsOff },
+        requestGapMillis = XPacer.PEOPLE_PACE,
     )
 
     /** The Following feed's cache for null, else the group's. */

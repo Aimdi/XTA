@@ -59,8 +59,10 @@ class XClient(
     disabledAccounts: () -> Set<String> = { emptySet() },
     /** How long a read may take in all, every account, signer and retry it tries included (XTA's 30 seconds). */
     requestTimeoutMillis: Long = XRequestBudget.READ_MILLIS,
+    /** The random gap between two requests of one account ([XPacer]); none unless the app asks for one. */
+    requestGapMillis: LongRange = 0L..0L,
 ) {
-    private val transport = XTransport(http, accounts, signers, endpoints, clock, guest, health, disabledAccounts, requestTimeoutMillis)
+    private val transport = XTransport(http, accounts, signers, endpoints, clock, guest, health, disabledAccounts, requestTimeoutMillis, XPacer(requestGapMillis))
     private val kept = ConcurrentHashMap<String, Pair<Long, Any>>()
 
     /** What X said of each account's limits: when a rate-limited read may be tried again. */

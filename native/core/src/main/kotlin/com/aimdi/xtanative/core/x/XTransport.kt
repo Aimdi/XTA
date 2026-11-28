@@ -10,6 +10,8 @@ import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 
@@ -39,6 +41,7 @@ internal class XTransport(
     private val health: XAccountHealthStore,
     private val disabled: () -> Set<String>,
     private val budgetMillis: Long = XRequestBudget.READ_MILLIS,
+    private val pacer: XPacer = XPacer(),
 ) {
     val limits = XRateLimits()
     private val load = XAccountLoad()
@@ -50,8 +53,18 @@ internal class XTransport(
     /** Each read, how it ended and how long it took, for Diagnostics. */
     val reads = XReadLog(clock = clock)
 
-    /** Reads take turns across the accounts, so no one account reaches X's limits first. */
+    /** Breaks ties when the reads move to another account. */
     private val turn = AtomicInteger()
+
+    /**
+     * The account the reads stay with while it has quota to spare: one user
+     * action, one feed refresh, reads as one account, as a browser would.
+     */
+    @Volatile
+    private var current: String? = null
+
+    /** X reads in flight at once, all accounts together. */
+    private val gate = Semaphore(MAX_IN_FLIGHT)
 
     private enum class Kind { ANSWER, LIMITED, REFUSED, OTHER }
 
@@ -151,13 +164,18 @@ internal class XTransport(
         if (askable.isEmpty()) throw XRateLimitedException(earliestReset(pool, path))
         val (probing, regular) = askable.partition { health.read(it.id).needsProbe(now) }
         var probe = probing.firstOrNull { probes.claim(it.id, now) }
+        val sticky = current
         val selector = XAccountSelector(
             regular,
             rateLimited = { limits.isLimited(it.id, path, now) },
             remaining = { limits.remaining(it.id, path, now) },
             inFlight = { load.of(it.id, path) },
             spare = { it.id in off },
+            low = { limits.isLow(it.id, path, now) },
+            preferred = sticky,
         )
+        // The reads move on only when the account they stay with is low, limited or gone; not when it is merely busy.
+        val keeps = selector.keeps(sticky)
         val first = turn.getAndIncrement()
         val tried = HashSet<String>()
         // Held rather than blamed: only another account's answer proves them broken.
@@ -175,7 +193,10 @@ internal class XTransport(
             val response = sendAgainOnServerError(account, url, path)
             val verdict = verdictOf(account, response)
             when {
-                verdict.kind == Kind.ANSWER -> return Outcome.Answer(answered(account, refused, path, response))
+                verdict.kind == Kind.ANSWER -> {
+                    if (!keeps && probed == null) current = account.id
+                    return Outcome.Answer(answered(account, refused, path, response))
+                }
                 // A probe refused is the old flag again, at no cost to the read.
                 probed != null && verdict.kind == Kind.REFUSED -> {
                     refusedAgain(account, response.code, verdict.code)
@@ -185,6 +206,7 @@ internal class XTransport(
                 verdict.kind == Kind.REFUSED -> refused += Refusal(account, response.code, verdict.code)
                 else -> throw XRequestException(response.code, "X answered $what with ${response.code}")
             }
+            if (account.id == current) current = null
             failed++
             last = verdict.kind
             lastStatus = response.code
@@ -218,7 +240,8 @@ internal class XTransport(
         val headers = BASE_HEADERS + account.headers + ("x-client-transaction-id" to signer.transactionId("GET", path))
         load.begin(account.id, path)
         try {
-            return http.get(url, headers, followRedirects = true)
+            pacer.await(account.id)
+            return gate.withPermit { http.get(url, headers, followRedirects = true) }
         } finally {
             load.end(account.id, path)
         }
@@ -317,6 +340,9 @@ internal class XTransport(
 
         /** A refusal or a 429 is tried on one more account; then it is surfaced. */
         private const val MAX_TRIES = 2
+
+        /** X reads in flight at once: a refresh's searches queue here rather than reach X in one burst. */
+        const val MAX_IN_FLIGHT = 4
 
         private const val BEARER =
             "Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA"

@@ -16,6 +16,7 @@ import com.aimdi.xtanative.core.x.http.XResponse
 import com.aimdi.xtanative.core.x.signing.TransactionSigner
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -89,8 +90,10 @@ class XClientTest {
         assertEquals(listOf("auth_token=a; ct0=ct0-a", "auth_token=b; ct0=ct0-b", "auth_token=b; ct0=ct0-b"), x.cookies)
 
         now += 61_000
+        val path = "/i/api/graphql/AMIBMjtxEEATh4z8V9GtRg/UserByScreenName"
+        assertFalse(reader.rateLimits.isRefused("ct0-a", path, now), "past the reset the account may be asked again")
         reader.profile("quax_tests")
-        assertEquals("auth_token=a; ct0=ct0-a", x.cookies.last(), "past the reset the account is asked again")
+        assertEquals("auth_token=b; ct0=ct0-b", x.cookies.last(), "while the reads stay with the account that has quota")
     }
 
     @Test

@@ -123,9 +123,13 @@ interface XAccountHealthStore {
 /**
  * Which account asks X next, as XTA's AccountSelector picks: one not tried yet
  * for this request, healthy ones (not flagged, not rate-limited here) before
- * the rest, which are still asked when nothing else is left. Among those, the
- * least busy, then the one with the most requests left; an account whose
- * quota is unknown ties with the best known one rather than beating it.
+ * the rest, which are still asked when nothing else is left; among the
+ * healthy, those with quota to spare before those [low] on it. Within that,
+ * the [preferred] account keeps the reads while it has fewer than
+ * [STICKY_IN_FLIGHT] in flight, so one user action reads with one account;
+ * otherwise the least busy, then the one with the most requests left (an
+ * account whose quota is unknown ties with the best known one rather than
+ * beating it).
  *
  * XTA picks at random among the ties; this takes turns by [turn], which
  * spreads the reads as evenly and can be followed in a test.
@@ -137,6 +141,8 @@ class XAccountSelector(
     private val remaining: (XAccount) -> Int? = { null },
     private val inFlight: (XAccount) -> Int = { 0 },
     private val spare: (XAccount) -> Boolean = { false },
+    private val low: (XAccount) -> Boolean = { false },
+    private val preferred: String? = null,
 ) {
     /**
      * The next account, healthy ones first; among each, the accounts left on
@@ -144,11 +150,20 @@ class XAccountSelector(
      * which stand in once every account left on is limited or flagged.
      */
     fun pick(exclude: Set<String>, turn: Int = 0): XAccount? {
-        val left = accounts.filter { it.id !in exclude }
+        val tier = best(accounts.filter { it.id !in exclude }) ?: return null
+        tier.firstOrNull { it.id == preferred && inFlight(it) < STICKY_IN_FLIGHT }?.let { return it }
+        val pool = leastUsed(tier)
+        return pool[Math.floorMod(turn, pool.size)]
+    }
+
+    /** Whether the reads may stay with [id]: it is among the best accounts there are, however busy. */
+    fun keeps(id: String?): Boolean = id != null && best(accounts)?.any { it.id == id } == true
+
+    private fun best(left: List<XAccount>): List<XAccount>? {
         if (left.isEmpty()) return null
         val healthy = left.filter { !flagged(it) && !rateLimited(it) }
-        val pool = leastUsed(preferringOn(healthy).ifEmpty { preferringOn(left) })
-        return pool[Math.floorMod(turn, pool.size)]
+        val roomy = healthy.filterNot(low)
+        return listOf(roomy.filterNot(spare), healthy.filterNot(spare), roomy, healthy).firstOrNull { it.isNotEmpty() } ?: preferringOn(left)
     }
 
     private fun preferringOn(pool: List<XAccount>): List<XAccount> = pool.filterNot(spare).ifEmpty { pool }
@@ -158,6 +173,11 @@ class XAccountSelector(
         val idle = pool.filter { inFlight(it) == fewest }
         val best = idle.mapNotNull(remaining).maxOrNull() ?: return idle
         return idle.filter { (remaining(it) ?: best) == best }
+    }
+
+    companion object {
+        /** Requests in flight that one account takes before a parallel read goes to another. */
+        const val STICKY_IN_FLIGHT = 2
     }
 }
 
@@ -169,7 +189,7 @@ class XAccountSelector(
  * before X refuses it. Times are epoch milliseconds.
  */
 class XRateLimits {
-    private class Quota(val remaining: Int, val resetAt: Long)
+    private class Quota(val remaining: Int, val resetAt: Long, val limit: Int?)
 
     private val resets = HashMap<Pair<String, String>, Long>()
     private val quotas = HashMap<Pair<String, String>, Quota>()
@@ -187,6 +207,18 @@ class XRateLimits {
     /** Requests left in the running window, or null when X reported none that still runs. */
     @Synchronized
     fun remaining(account: String, endpoint: String, now: Long): Int? = active(account, endpoint, now)?.remaining
+
+    /**
+     * Whether [account] is into the last [HEADROOM] of its quota on
+     * [endpoint]: the reads move on to an account with more to spare before
+     * X's limit is near. Unknown while X named no limit.
+     */
+    @Synchronized
+    fun isLow(account: String, endpoint: String, now: Long): Boolean {
+        val quota = active(account, endpoint, now) ?: return false
+        val limit = quota.limit ?: return false
+        return quota.remaining <= Math.ceil(limit * HEADROOM).toInt()
+    }
 
     /** When [account] frees up on [endpoint], or null when it is not limited there. */
     @Synchronized
@@ -226,13 +258,13 @@ class XRateLimits {
         }
         val known = active(account, endpoint, now)
         val left = if (known != null && known.resetAt == reported.resetAt && known.remaining < reported.remaining) known.remaining else reported.remaining
-        set(account, endpoint, left, reported.resetAt)
+        set(account, endpoint, left, reported.resetAt, reported.limit)
     }
 
     /** Counts a request against the known quota as it is sent; an unknown quota stays unknown. */
     @Synchronized
     fun consume(account: String, endpoint: String, now: Long) {
-        active(account, endpoint, now)?.let { set(account, endpoint, it.remaining - 1, it.resetAt) }
+        active(account, endpoint, now)?.let { set(account, endpoint, it.remaining - 1, it.resetAt, it.limit) }
     }
 
     /** The endpoints still limited for [account], with when each frees up. */
@@ -240,8 +272,8 @@ class XRateLimits {
     fun activeFor(account: String, now: Long): Map<String, Long> =
         resets.filter { (key, reset) -> key.first == account && reset > now }.mapKeys { it.key.second }
 
-    private fun set(account: String, endpoint: String, remaining: Int, resetAt: Long) {
-        quotas[account to endpoint] = Quota(remaining, resetAt)
+    private fun set(account: String, endpoint: String, remaining: Int, resetAt: Long, limit: Int?) {
+        quotas[account to endpoint] = Quota(remaining, resetAt, limit)
         if (remaining > 0) resets.remove(account to endpoint) else resets[account to endpoint] = resetAt
     }
 
@@ -250,10 +282,13 @@ class XRateLimits {
     private fun quotaOf(header: (String) -> String?): Quota? {
         val remaining = header("x-rate-limit-remaining")?.toIntOrNull() ?: return null
         val reset = resetSeconds(header("x-rate-limit-reset")) ?: return null
-        return Quota(remaining, reset * 1000)
+        return Quota(remaining, reset * 1000, header("x-rate-limit-limit")?.toIntOrNull()?.takeIf { it > 0 })
     }
 
     companion object {
+        /** The share of X's limit left alone: the reads rotate on before it is spent. */
+        const val HEADROOM = 0.2
+
         /** X's `x-rate-limit-reset`, in seconds, when it is one. */
         internal fun resetSeconds(value: String?): Long? =
             value?.toLongOrNull()?.takeIf { it in 1..XAccountPolicy.LATEST_RESET_SECONDS }

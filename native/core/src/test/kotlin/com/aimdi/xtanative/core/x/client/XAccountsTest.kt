@@ -129,6 +129,30 @@ class XAccountsTest {
         assertEquals("next", XAccountSelector(listOf(account("tried"), account("next")), remaining = { quota[it.id] }).pick(setOf("tried"))?.id)
     }
 
+    @Test
+    fun thePreferredAccountKeepsTheReadsUntilItIsBusyOrLow() {
+        val accounts = listOf(account("a"), account("b"))
+        assertEquals(setOf("b"), picks(XAccountSelector(accounts, preferred = "b")))
+        assertEquals(setOf("a"), picks(XAccountSelector(accounts, preferred = "b", inFlight = { if (it.id == "b") 2 else 0 })), "two in flight: the next goes elsewhere")
+        val low = XAccountSelector(accounts, preferred = "b", low = { it.id == "b" })
+        assertEquals(setOf("a"), picks(low))
+        assertFalse(low.keeps("b"))
+        assertTrue(XAccountSelector(accounts, preferred = "b", inFlight = { 5 }).keeps("b"), "busy is no reason to move on")
+        assertEquals(setOf("a", "b"), picks(XAccountSelector(accounts, low = { true })), "all low: still read")
+    }
+
+    @Test
+    fun anAccountIsLowInTheLastFifthOfTheLimitXNamed() {
+        val limits = XRateLimits()
+        val header = { remaining: Int -> mapOf("x-rate-limit-remaining" to "$remaining", "x-rate-limit-limit" to "50", "x-rate-limit-reset" to "${reset / 1000}")::get }
+        limits.record("a", search, header(11), now)
+        assertFalse(limits.isLow("a", search, now))
+        limits.consume("a", search, now)
+        assertTrue(limits.isLow("a", search, now), "10 of 50 left")
+        limits.record("b", search, quota(1), now)
+        assertFalse(limits.isLow("b", search, now), "no limit named: not judged")
+    }
+
     // ---- rate limits ----
 
     private val search = "/SearchTimeline"

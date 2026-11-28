@@ -22,6 +22,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 
@@ -128,8 +129,9 @@ class XTransportTest {
 
     @Test
     fun aRefusalProvenThreeTimesFlagsTheAccountWhichIsThenAskedLast() {
-        val reader = client(FakeX { _, account -> if (account == "a") XResponse(404, "") else ok() }, listOf(account("a"), account("b")))
-        repeat(6) { read(reader) }
+        // b turned off for the feeds, so every read asks a first.
+        val reader = client(FakeX { _, account -> if (account == "a") XResponse(404, "") else ok() }, listOf(account("a"), account("b")), disabled = setOf("id-b"))
+        repeat(3) { read(reader) }
         assertTrue(health.read("id-a").flagged(now))
         val x = FakeX { _, account -> if (account == "a") XResponse(404, "") else ok() }
         val later = client(x, listOf(account("a"), account("b")))
@@ -171,8 +173,8 @@ class XTransportTest {
     fun aFlaggedAccountsRefusalsStopCountingAndItsLastStatusIsKept() {
         health.write("id-a", XAccountHealth(2))
         val x = FakeX { _, account -> if (account == "a") XResponse(401, "") else ok() }
-        val reader = client(x, listOf(account("a"), account("b")))
-        while (health.read("id-a").notFoundAt == null) read(reader)
+        val reader = client(x, listOf(account("a"), account("b")), disabled = setOf("id-b"))
+        read(reader)
         assertEquals(XAccountHealth(3, now, 401), health.read("id-a"))
         now += cooldown
         read(reader)
@@ -295,6 +297,56 @@ class XTransportTest {
         assertEquals(1, blamed.consecutiveNotFound)
         assertEquals(403, blamed.lastStatus)
         assertEquals(353, blamed.lastCode)
+    }
+
+    private fun quota(remaining: Int, limit: Int = 150) = mapOf(
+        "x-rate-limit-remaining" to listOf("$remaining"),
+        "x-rate-limit-limit" to listOf("$limit"),
+        "x-rate-limit-reset" to listOf("${(now + 900_000) / 1000}"),
+    )
+
+    @Test
+    fun oneUserActionsReadsStayWithOneAccountWhileItHasQuota() {
+        val x = FakeX { _, _ -> XResponse(200, profile, quota(100)) }
+        val reader = client(x, listOf(account("a"), account("b"), account("c")))
+        repeat(6) { read(reader) }
+        assertEquals(1, x.asked.toSet().size, "no rotation on every read: ${x.asked}")
+    }
+
+    @Test
+    fun theReadsMoveOnOnceAnAccountIsIntoItsLastFifthOfQuota() {
+        val left = mutableMapOf("a" to 32, "b" to 100, "c" to 100)
+        val x = FakeX { _, account -> XResponse(200, profile, quota(left.getValue(account).also { left[account] = it - 1 })) }
+        val reader = client(x, listOf(account("a"), account("b"), account("c")))
+        repeat(6) { read(reader) }
+        val first = x.asked.first()
+        val switched = x.asked.indexOfFirst { it != first }
+        assertTrue(switched > 0, "${x.asked}")
+        assertEquals(1, x.asked.drop(switched).toSet().size, "and stay with the next one: ${x.asked}")
+        assertTrue(left.getValue(first) >= 150 * 0.2 - 1, "the first kept its headroom: ${left.getValue(first)}")
+    }
+
+    @Test
+    fun aRefusingAccountLosesTheReads() {
+        val x = FakeX { _, account -> if (account == "a") XResponse(403, "") else XResponse(200, profile, quota(100)) }
+        val reader = client(x, listOf(account("a"), account("b")))
+        repeat(4) { read(reader) }
+        assertTrue(x.asked.count { it == "a" } <= 1, "${x.asked}")
+    }
+
+    @Test
+    fun noMoreThanFourXReadsAreInFlightAtOnce() = runBlocking {
+        var inFlight = 0
+        var most = 0
+        val x = XHttp { _, _, _ ->
+            synchronized(this@XTransportTest) { inFlight++; most = maxOf(most, inFlight) }
+            kotlinx.coroutines.delay(50)
+            synchronized(this@XTransportTest) { inFlight-- }
+            ok()
+        }
+        val reader = client(x, (1..8).map { account("$it") })
+        kotlinx.coroutines.coroutineScope { repeat(12) { launch(kotlinx.coroutines.Dispatchers.Default) { reader.profile("quax_tests") } } }
+        assertEquals(4, most)
     }
 
     @Test
