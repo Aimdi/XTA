@@ -83,9 +83,17 @@ sealed interface InstanceMessage {
         }
 
         /**
-         * The web link among a start's [args] (`xta-native <url>`, as a
-         * desktop entry's %U passes it): the first http or https one, null
-         * when there is none, so a start without one only raises the window.
+         * The schemes besides the web's that the desktop entry claims
+         * (`x-scheme-handler/…`), whose links a plugin opens: `pixiv://`, where
+         * Pixiv's sign-in in the browser sends its one-time code back.
+         */
+        val APP_SCHEMES: Set<String> = setOf("pixiv")
+
+        /**
+         * The link among a start's [args] (`xta-native <url>`, as a
+         * desktop entry's %U passes it): the first http, https or
+         * [APP_SCHEMES] one, null when there is none, so a start without one
+         * only raises the window.
          */
         fun linkIn(args: Array<String>): String? = args.firstNotNullOfOrNull(::link)
 
@@ -94,10 +102,10 @@ sealed interface InstanceMessage {
             path.length <= MAX_URL && path.startsWith("/") && path.none { it.isISOControl() }
         }
 
-        /** [text] as a link to hand over: one http(s) address of no spaces, else null. */
+        /** [text] as a link to hand over: one http(s) or [APP_SCHEMES] address of no spaces, else null. */
         private fun link(text: String): String? = text.trim().takeIf { url ->
             url.length <= MAX_URL &&
-                (url.startsWith("https://") || url.startsWith("http://")) &&
+                (url.startsWith("https://") || url.startsWith("http://") || APP_SCHEMES.any { url.startsWith("$it://") }) &&
                 url.none { it.isWhitespace() || it.isISOControl() }
         }
     }

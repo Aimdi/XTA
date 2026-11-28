@@ -91,7 +91,9 @@ Keywords[zh_CN]=X;Twitter;阅读器;订阅源;新闻;推特;Bluesky;Mastodon;Red
 Keywords[zh_TW]=X;Twitter;閱讀器;訂閱源;新聞;推特;Bluesky;Mastodon;Reddit;RSS;
 # %U also brings the files a file manager opens with the app, as file: URIs: an XTA backup (its own type, see
 # com.aimdi.xtanative.mime.xml) to restore and an OPML list of feeds to follow, each asked about first.
-MimeType=application/x-xta-backup;text/x-opml+xml;text/x-opml;
+# x-scheme-handler/pixiv: Pixiv's sign-in in the browser ends at pixiv://account/login?code=…, which the browser
+# hands to xdg-open (Chrome and Brave ask "Open xdg-open?"); the Pixiv plugin trades the code for its account.
+MimeType=application/x-xta-backup;text/x-opml+xml;text/x-opml;x-scheme-handler/pixiv;
 # %U: `xta-native <url>` opens an X link (or a page a plugin reads) in the app; a link router (handlr, junction)
 # can send x.com links here. XTA claims no web scheme: it is no browser, and a link it hands
 # back to the browser within seconds is not taken again, so a router cannot loop.

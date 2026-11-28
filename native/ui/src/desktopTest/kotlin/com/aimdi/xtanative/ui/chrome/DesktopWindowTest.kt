@@ -160,6 +160,17 @@ class DesktopWindowTest {
     }
 
     @Test
+    fun pixivsSignInComingBackFromTheBrowserIsALinkToo() {
+        val back = "pixiv://account/login?code=abc-123&via=login"
+        assertEquals(back, InstanceMessage.linkIn(arrayOf(back)))
+        assertEquals(InstanceMessage.Open(back), InstanceMessage.parse(InstanceMessage.Open(back).line))
+        assertNull(InstanceMessage.linkIn(arrayOf("pixivx://account/login?code=a", "pixiv:account", "file:///etc/passwd")))
+        assertNull(InstanceMessage.parse("open pixiv://account/login?code=a b"))
+        assertTrue(CommandLine.filesIn(arrayOf(back)).isEmpty(), "no file to open")
+        assertEquals(CommandLine.Answer.RUN, CommandLine.answer(arrayOf(back)))
+    }
+
+    @Test
     fun aSecondStartHandsTheFirstItsLink() {
         val folder = Files.createTempDirectory("xta-instance").toFile()
         val first = assertNotNull(claim(folder))
