@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.post
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -9,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
@@ -77,7 +79,7 @@ object AuthorLineLayout {
 @Composable
 fun AuthorLine(name: String, handle: String, time: String, verified: Boolean, modifier: Modifier = Modifier) = AuthorLine(name, handle, time, verified, modifier, timeTip = null)
 
-/** The author an [AuthorLine]'s name shows a card about ([AuthorHoverCard]) with the picture at [avatarUrl], and what opens their profile from it. */
+/** The author an [AuthorLine]'s name shows a card about ([AuthorHoverCard]) with the picture at [avatarUrl], and what opens their profile from it and from a tap on the name or @handle. */
 internal data class AuthorLineCard(val user: XUser, val avatarUrl: String?, val onOpen: () -> Unit)
 
 /**
@@ -92,6 +94,8 @@ internal fun AuthorLine(name: String, handle: String, time: String, verified: Bo
     val style = MaterialTheme.typography.bodyMedium
     val fontScale = LocalDensity.current.fontScale
     val handleGap = 4.dp
+    // The name and @handle open the profile, as the picture beside them does; the keyboard reaches it on the picture.
+    val opens = if (card == null) Modifier else Modifier.focusProperties { canFocus = false }.clickable(onClick = card.onOpen)
     Layout(
         modifier = modifier,
         content = {
@@ -99,14 +103,14 @@ internal fun AuthorLine(name: String, handle: String, time: String, verified: Bo
             if (card == null) {
                 TipText(name, style = style, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
             } else {
-                AuthorHoverCard(card.user, card.avatarUrl, card.onOpen) { Text(name, style = style, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                AuthorHoverCard(card.user, card.avatarUrl, card.onOpen) { Text(name, opens, style = style, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis) }
             }
             if (verified) {
                 Icon(XIcons.Verified, contentDescription = null, tint = Color.Unspecified, modifier = Modifier.padding(start = 2.dp).size(17.dp))
             } else {
                 Spacer(Modifier)
             }
-            TipText(remember(handle, grey) { handleText(handle, grey) }, style = style, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            TipText(remember(handle, grey) { handleText(handle, grey) }, opens, style = style, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis)
             val timeText = @Composable { Text(if (time.isEmpty()) "" else " · $time", style = style, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.dragsLink(timeLink)) }
             if (timeTip.isNullOrEmpty() || timeTip == time) timeText() else IconTip(timeTip, timeText)
         },
