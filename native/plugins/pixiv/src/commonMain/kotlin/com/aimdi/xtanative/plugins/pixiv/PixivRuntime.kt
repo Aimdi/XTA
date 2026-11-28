@@ -10,6 +10,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivNovelApi
 import com.aimdi.xtanative.networks.pixiv.PixivSearchApi
 import com.aimdi.xtanative.networks.pixiv.PixivSocialApi
 import com.aimdi.xtanative.networks.pixiv.PixivUser
+import com.aimdi.xtanative.networks.pixiv.PixivWeb
 import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.PixivPrefs
@@ -62,6 +63,10 @@ internal class PixivRuntime(val host: PluginHost) {
         locale = { host.language },
         appInForce = { PixivApp.published(host.repairs.value) },
     )
+
+    init {
+        PixivWeb.published = { host.repairs.value }
+    }
 
     val discovery = PixivDiscoveryApi(client)
     val searchApi = PixivSearchApi(client)

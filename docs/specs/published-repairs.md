@@ -62,6 +62,7 @@ From the survey, those that have rotated or that a service checks:
 | `pixiv.user_agent` | header | the Pixiv app's user agent, the same two places |
 | `pixiv.client_id` | token | the Pixiv app's OAuth client id |
 | `pixiv.client_secret` | token | the Pixiv app's OAuth client secret (the public one every community client ships, not a reader's) |
+| `pixiv.web_user_agent` | header | the browser user agent Pixiv's image server and Pixivision are asked with |
 | `reddit.web_user_agent` | header | the browser user agent Reddit's website requires |
 | `stocks.user_agent` | header | the quote host's user agent |
 

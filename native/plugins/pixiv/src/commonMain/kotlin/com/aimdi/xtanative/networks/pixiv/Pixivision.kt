@@ -30,9 +30,8 @@ data class PixivisionArticle(
  * spotlight list announces ([PixivDiscoveryApi.spotlightArticles]) open here.
  */
 object Pixivision {
-    /** pixivision.net serves its whole article markup to desktop browsers only. */
-    const val USER_AGENT =
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+    /** pixivision.net serves its whole article markup to desktop browsers only: [PixivWeb]'s agent. */
+    val USER_AGENT: String get() = PixivWeb.userAgent
 
     private val artworkHref = Regex("""/artworks/(\d+)|[?&]illust_id=(\d+)""")
     private val userHref = Regex("""/users/(\d+)|member\.php\?(?:[^#]*&)?id=(\d+)""")

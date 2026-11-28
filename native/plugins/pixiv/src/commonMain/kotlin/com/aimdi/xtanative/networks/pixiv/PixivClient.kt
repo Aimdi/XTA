@@ -322,7 +322,7 @@ class PixivClient(
         return linkedMapOf(
             "User-Agent" to app.userAgent,
             "App-OS" to "android",
-            "App-OS-Version" to "11",
+            "App-OS-Version" to pixivAndroidVersion(app.userAgent),
             "App-Version" to app.version,
             "Accept" to "application/json",
             "Accept-Language" to pixivAcceptLanguage(locale()),
@@ -439,6 +439,10 @@ class PixivClient(
         put("filter", ANDROID)
     }
 }
+
+/** The Android version the app's [userAgent] names, so `App-OS-Version` never disagrees with it; 11 when it names none. */
+internal fun pixivAndroidVersion(userAgent: String): String =
+    Regex("""\(Android (\d+(?:\.\d+)*)""").find(userAgent)?.groupValues?.get(1) ?: "11"
 
 /** How many requests [PixivClient] has on their way at once. */
 internal const val MAX_IN_FLIGHT = 3

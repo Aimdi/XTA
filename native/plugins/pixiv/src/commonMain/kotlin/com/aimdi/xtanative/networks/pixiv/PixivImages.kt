@@ -1,7 +1,32 @@
 package com.aimdi.xtanative.networks.pixiv
 
+import com.aimdi.xtanative.core.repairs.RepairKind
+import com.aimdi.xtanative.core.repairs.RepairSlot
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+
+/**
+ * How Pixiv's websites are asked (its image server, Pixivision): as a current
+ * stable desktop Chrome in its reduced form, `pixiv.web_user_agent` in XTA's
+ * published repairs. A bare `Mozilla/5.0` or a browser years out of date is
+ * itself a bot tell; keep [USER_AGENT] and `repairs.json` in step.
+ */
+object PixivWeb {
+    const val USER_AGENT =
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36"
+
+    val USER_AGENT_SLOT = RepairSlot("pixiv.web_user_agent", USER_AGENT, RepairKind.HEADER)
+
+    /** XTA's published repairs as they stand, which the plugin's runtime hands over when it starts. */
+    @Volatile
+    var published: () -> Map<String, String> = { emptyMap() }
+
+    /** The agent in force: the published repair when it fits, else [USER_AGENT]. */
+    val userAgent: String get() = USER_AGENT_SLOT.valueIn(published())
+}
+
+/** Every Pixiv value `repairs.json` may replace: the app API's and the websites'. */
+val PIXIV_REPAIR_SLOTS = PixivApp.SLOTS + PixivWeb.USER_AGENT_SLOT
 
 /** Which image server a reader's setting names. */
 enum class PixivImageHostChoice { PIXIV, MIRROR, CUSTOM }
@@ -22,8 +47,8 @@ object PixivImages {
     /** The public reverse proxy of [HOST]. */
     const val MIRROR_HOST = "i.pixiv.re"
 
-    /** What every picture request sends: Pixiv's image server refuses one without its Referer. */
-    val HEADERS: Map<String, String> = mapOf("Referer" to "https://www.pixiv.net/", "User-Agent" to "Mozilla/5.0")
+    /** What every picture request sends: Pixiv's image server refuses one without its Referer, and is asked as a browser ([PixivWeb]). */
+    val HEADERS: Map<String, String> get() = mapOf("Referer" to "https://www.pixiv.net/", "User-Agent" to PixivWeb.userAgent)
 
     /** Which server a stored [host] setting names: blank is Pixiv's own. */
     fun hostChoice(host: String): PixivImageHostChoice = when (host.trim()) {
