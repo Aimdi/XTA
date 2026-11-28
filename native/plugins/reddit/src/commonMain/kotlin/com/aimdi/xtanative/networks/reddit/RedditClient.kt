@@ -66,8 +66,10 @@ class RedditClient(
     private val readBudgetMillis: Long = READ_BUDGET_MILLIS,
     /** How long one request may wait for its answer. */
     timeoutMillis: Long = RedditTransport.REQUEST_TIMEOUT_MILLIS,
+    /** Told of an account's token Reddit answered with a 401: [RedditSignIn.rejected]. */
+    onUserTokenRejected: (String) -> Unit = {},
 ) {
-    private val transport = RedditTransport(http, webUserAgent, clock, timeoutMillis)
+    private val transport = RedditTransport(http, webUserAgent, clock, timeoutMillis, onUserTokenRejected)
     private val routes = PublicRoutes(clock)
 
     /** www.reddit.com's pages are a megabyte each, mostly styles: parsed two at a time, so a refresh of many communities does not hold a dozen. */
@@ -118,8 +120,10 @@ class RedditClient(
         if (session.anonymous) {
             budgeted { publicListing(name, sort, query) }
         } else {
-            val token = transport.token(session)
-            listingOf(transport.read(redditUrl("$OAUTH/r/$name/${sort.path}", query), token))
+            // A token Reddit no longer takes is no reason for an empty feed: the public routes still serve one.
+            orElse({ listingOf(transport.read(redditUrl("$OAUTH/r/$name/${sort.path}", query), transport.token(session))) }) { failure ->
+                if (failure is NetworkRequestException && failure.code == 401) budgeted { publicListing(name, sort, query) } else throw failure
+            }
         }
     }
 
@@ -677,8 +681,16 @@ class RedditClient(
          */
         const val READ_BUDGET_MILLIS = 25_000L
 
-        /** For the API and its token endpoint: the shape Reddit's rules ask for, as XTA sends it. */
-        const val API_USER_AGENT = "android:com.aimdi.xta:1.0 (read-only, account-free)"
+        /** The plugin's version, as `plugin.json` gives it (RedditUserAgentTest holds them together). */
+        const val PLUGIN_VERSION = "1.0.0"
+
+        /**
+         * For the API and its token endpoint, in the shape Reddit's API rules
+         * ask for, `<platform>:<app id>:<version> (by /u/<name>)`. The app has
+         * no Reddit account of its own to name, so the parentheses name its
+         * maker as the other plugins' agents do, rather than a made-up user.
+         */
+        val API_USER_AGENT = "${platform()}:com.aimdi.xtanative.reddit:$PLUGIN_VERSION (by Aimdi; read-only XTA reader)"
 
         /** For the website, which turns away anything announcing itself as a bot: XTA's shipped `reddit.web_user_agent`. */
         const val WEB_USER_AGENT =
@@ -697,6 +709,12 @@ class RedditClient(
         private val OVER18 = mapOf("over18" to "1")
         private const val STYLES = "styles.redditmedia.com"
         private val userPrefix = Regex("^/?u(?:ser)?/", RegexOption.IGNORE_CASE)
+
+        /** Which system the plugin runs on, as Reddit's agent rules name it first. */
+        private fun platform(): String {
+            val vm = "${System.getProperty("java.vm.name")} ${System.getProperty("java.vm.vendor")}"
+            return if ("dalvik" in vm.lowercase() || "android" in vm.lowercase()) "android" else "linux"
+        }
     }
 }
 

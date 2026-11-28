@@ -14,7 +14,8 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
  * a Reddit that stops answering must not hold a screen indefinitely.
  */
 class RedditTransportTest {
-    private fun transport(fake: FakeReddit, timeoutMillis: Long = 50) =
+    /** Long enough that an answered retry never misses it on a loaded runner; a stall of seconds still ends it. */
+    private fun transport(fake: FakeReddit, timeoutMillis: Long = 1_000) =
         RedditTransport(fake, RedditClient.WEB_USER_AGENT, clock = { 0L }, timeoutMillis = timeoutMillis)
 
     @Test
@@ -65,7 +66,7 @@ class RedditTransportTest {
      */
     @Test
     fun aBlockingAnswerIsGivenUpOnAtTheDeadline() = runBlocking {
-        val transport = transport(FakeReddit { Thread.sleep(2_000); page("") })
+        val transport = transport(FakeReddit { Thread.sleep(2_000); page("") }, timeoutMillis = 50)
         val started = System.currentTimeMillis()
 
         assertFailsWith<SocketTimeoutException> {

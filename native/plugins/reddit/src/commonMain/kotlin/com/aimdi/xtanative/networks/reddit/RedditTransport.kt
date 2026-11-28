@@ -9,7 +9,9 @@ import java.time.Instant
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Base64
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -28,6 +30,8 @@ internal class RedditTransport(
     private val clock: () -> Long,
     /** How long one request may wait for its answer: XTA's `_timeout`, 20 seconds. */
     private val timeoutMillis: Long = REQUEST_TIMEOUT_MILLIS,
+    /** Told of an account's token Reddit answered with a 401, so whoever minted it drops it. */
+    private val onUserTokenRejected: (String) -> Unit = {},
 ) {
     /**
      * Cookies the public hosts set, kept for the client's life: a client that
@@ -42,6 +46,8 @@ internal class RedditTransport(
      * Reddit as one burst, which is what its network security blocks.
      */
     private val inFlight = Semaphore(MAX_IN_FLIGHT)
+
+    private val minting = Mutex()
 
     @Volatile private var token: String? = null
 
@@ -67,6 +73,11 @@ internal class RedditTransport(
     suspend fun authorize(clientId: String): String {
         token?.takeIf { hasToken }?.let { return it }
         require(clientId.isNotBlank()) { "Missing client id" }
+        // Reads starting together on a cold token share one request for it.
+        return minting.withLock { token?.takeIf { hasToken } ?: mint(clientId) }
+    }
+
+    private suspend fun mint(clientId: String): String {
         val response = withDeadline(allowance(timeoutMillis, TOKEN_URL), TOKEN_URL) {
             http.post(
                 TOKEN_URL,
@@ -86,7 +97,8 @@ internal class RedditTransport(
 
     /**
      * One GET, with [token] when there is one and with [consent] cookies on
-     * top of the kept ones. A 401 drops the cached token so the next read
+     * top of the kept ones. A 401 drops the token it was asked with (the
+     * app-only one here, an account's where it was minted) so the next read
      * authorises again; with a token, anything but 200 is a failure.
      */
     suspend fun read(url: HttpUrl, token: String? = null, consent: Map<String, String> = emptyMap()): XResponse {
@@ -104,7 +116,9 @@ internal class RedditTransport(
         }
         val response = inTurn { withDeadline(allowance(timeoutMillis, url), url) { http.get(url, headers, followRedirects = true) } }
         remember(response, consent)
-        if (response.code == 401) forgetToken()
+        if (response.code == 401) {
+            if (token != null && token != this.token) onUserTokenRejected(token) else forgetToken()
+        }
         if (token != null && response.code != 200) throw failureOf(response, url)
         return response
     }

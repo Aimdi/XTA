@@ -7,8 +7,13 @@ import com.aimdi.xtanative.core.x.http.XHttp
  * surfaces share, the merged feed of followed communities and the gallery
  * loader, all through that client.
  */
-class RedditReading internal constructor(val agent: String, http: XHttp, session: suspend () -> RedditSession = { RedditSession.ANONYMOUS }) {
-    val client = RedditClient(http, agent)
+class RedditReading internal constructor(
+    val agent: String,
+    http: XHttp,
+    session: suspend () -> RedditSession = { RedditSession.ANONYMOUS },
+    onUserTokenRejected: (String) -> Unit = {},
+) {
+    val client = RedditClient(http, agent, onUserTokenRejected = onUserTokenRejected)
     val cache = RedditListingCache()
     val feed = RedditFollowingFeed(client, cache)
     val galleries = RedditGalleryLoader(client, session)
@@ -25,6 +30,8 @@ class RedditReaders(
     private val http: XHttp,
     /** How reads reach Reddit now, for the reads asked without a screen naming it: the gallery cards. */
     private val session: suspend () -> RedditSession = { RedditSession.ANONYMOUS },
+    /** Told of an account's token Reddit refused: [RedditSignIn.rejected]. */
+    private val onUserTokenRejected: (String) -> Unit = {},
     private val published: () -> Map<String, String>,
 ) {
     @Volatile private var made: RedditReading? = null
@@ -32,6 +39,6 @@ class RedditReaders(
     fun current(): RedditReading {
         val agent = RedditClient.WEB_USER_AGENT_SLOT.valueIn(published())
         made?.takeIf { it.agent == agent }?.let { return it }
-        return synchronized(this) { made?.takeIf { it.agent == agent } ?: RedditReading(agent, http, session).also { made = it } }
+        return synchronized(this) { made?.takeIf { it.agent == agent } ?: RedditReading(agent, http, session, onUserTokenRejected).also { made = it } }
     }
 }

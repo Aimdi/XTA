@@ -207,7 +207,7 @@ class RedditAuthTest {
             if (++calls == 1) delay(5_000)
             page("""{"access_token":"fresh"}""")
         }
-        val auth = RedditAuth(fake, timeoutMillis = 50)
+        val auth = RedditAuth(fake, timeoutMillis = 1_000)
 
         assertFailsWith<SocketTimeoutException> { auth.accessToken("cid", "refresh") }
         assertEquals("fresh", auth.accessToken("cid", "refresh"), "the stalled request must not poison the next one")
@@ -215,13 +215,15 @@ class RedditAuthTest {
     }
 
     @Test
-    fun aStalledSharedRenewalLetsEverySurfaceFallBackAndRetriesLater() = runBlocking {
+    fun aStalledSharedRenewalLetsEverySurfaceFallBackAtOnceAndRetriesLater() = runBlocking {
         var calls = 0
+        var now = 0L
         val fake = FakeReddit {
-            if (++calls <= 2) delay(5_000)
+            if (++calls == 1) delay(10_000)
             page("""{"access_token":"token-$calls"}""")
         }
-        val signIn = RedditSignIn(RedditAuth(fake, timeoutMillis = 50))
+        // Long enough that the answered retry never misses it on a loaded runner; the stall still ends it.
+        val signIn = RedditSignIn(RedditAuth(fake, timeoutMillis = 1_000), clock = { now })
 
         val results = listOf(
             async { signIn.resolve("cid", "refresh", false) },
@@ -229,7 +231,22 @@ class RedditAuthTest {
         ).awaitAll()
 
         assertTrue(results.all { it.session.userToken == null && !it.signedOut }, "a deadline must hand both surfaces the public fallback, not sign them out")
-        assertEquals("token-3", signIn.resolve("cid", "refresh", false).session.userToken, "the stalled shared mint must be cleared")
-        assertEquals(3, fake.asked.size)
+        assertEquals(1, fake.asked.size, "the surface waiting behind a stalled mint does not wait out one of its own")
+        assertEquals(null, signIn.resolve("cid", "refresh", false).session.userToken, "a mint that just failed is not tried again at once")
+        now += RedditSignIn.FAILED_MINT_PAUSE_MILLIS
+        assertEquals("token-2", signIn.resolve("cid", "refresh", false).session.userToken, "the stalled shared mint must be cleared")
+        assertEquals(2, fake.asked.size)
+    }
+
+    @Test
+    fun aTokenRedditRefusesIsDroppedAndTheNextReadMintsAnother() = runBlocking {
+        var minted = 0
+        val signIn = RedditSignIn(RedditAuth(FakeReddit { page("""{"access_token":"token-${++minted}"}""") }))
+        val first = signIn.resolve("cid", "refresh", false).session.userToken!!
+
+        signIn.rejected("someone else's")
+        assertEquals(first, signIn.resolve("cid", "refresh", false).session.userToken)
+        signIn.rejected(first)
+        assertEquals("token-2", signIn.resolve("cid", "refresh", false).session.userToken)
     }
 }

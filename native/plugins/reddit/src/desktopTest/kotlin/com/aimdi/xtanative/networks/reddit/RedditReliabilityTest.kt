@@ -198,4 +198,40 @@ class RedditReliabilityTest {
         assertEquals(setOf("gone"), read.failures.keys)
         assertEquals(403, (read.failure as NetworkRequestException).code)
     }
+
+    @Test
+    fun anAccountsRefusedTokenIsReportedAndTheListingReadWithoutIt() = runBlocking {
+        val rejected = mutableListOf<String>()
+        val fake = FakeReddit { if (it.url.host == "oauth.reddit.com") page("", 401) else page(WWW_LISTING) }
+        val client = RedditClient(fake, onUserTokenRejected = { synchronized(rejected) { rejected += it } })
+        val listing = client.listing("dartlang", session = RedditSession(userToken = "user-token"))
+
+        assertEquals("abc123", listing.items.single().id, "the public routes still serve the feed")
+        assertEquals(listOf("user-token"), rejected)
+    }
+
+    @Test
+    fun readsOnAColdAppOnlyTokenShareOneRequestForIt() = runBlocking {
+        val fake = FakeReddit {
+            if (it.url.encodedPath.contains("access_token")) {
+                delay(100)
+                page(tokenBody())
+            } else {
+                page(listingBody())
+            }
+        }
+        val client = RedditClient(fake)
+        (1..5).map { async { client.listing("community$it", session = RedditSession(clientId = "cid")) } }.awaitAll()
+
+        assertEquals(1, fake.asked.count { it.url.encodedPath.contains("access_token") })
+    }
+
+    @Test
+    fun theApiAgentHasTheShapeRedditAsksFor() {
+        val agent = RedditClient.API_USER_AGENT
+        assertTrue(Regex("""^(linux|android):com\.aimdi\.xtanative\.reddit:\d+\.\d+\.\d+ \(by [^)]+\)$""").matches(agent), agent)
+        assertTrue(agent.startsWith("linux:"), "these tests run on the desktop")
+        val manifest = java.io.File("plugin.json").takeIf { it.exists() } ?: java.io.File("native/plugins/reddit/plugin.json")
+        assertTrue("\"version\": \"${RedditClient.PLUGIN_VERSION}\"" in manifest.readText(), "the agent's version is plugin.json's")
+    }
 }

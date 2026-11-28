@@ -374,9 +374,11 @@ class RedditClientTest {
         }
         val client = RedditClient(fake)
 
-        assertFailsWith<NetworkRequestException> { client.listing("dartlang", session = app) }
+        assertTrue(client.listing("dartlang", session = app).items.isNotEmpty(), "the public routes answer meanwhile")
         assertFalse(client.hasToken)
+        assertTrue(fake.hosts.contains("www.reddit.com"))
         client.listing("dartlang", session = app)
+        assertEquals("oauth.reddit.com", fake.hosts.last())
         assertEquals(2, fake.asked.count { it.url.encodedPath.contains("access_token") })
     }
 

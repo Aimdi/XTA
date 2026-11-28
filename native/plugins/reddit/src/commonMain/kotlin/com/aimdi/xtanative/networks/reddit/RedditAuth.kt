@@ -166,7 +166,12 @@ class RedditSignIn(private val auth: RedditAuth, private val clock: () -> Long =
 
     @Volatile private var minted: Minted? = null
 
+    /** The last mint that failed for a passing reason, so the reads waiting behind it fall back at once rather than each waiting out its own. */
+    @Volatile private var failed: Failed? = null
+
     private data class Minted(val refreshToken: String, val clientId: String, val token: String, val expiresAt: Long)
+
+    private data class Failed(val refreshToken: String, val clientId: String, val until: Long)
 
     /**
      * The account-free route when [preferPublic], even with a credential
@@ -182,21 +187,37 @@ class RedditSignIn(private val auth: RedditAuth, private val clock: () -> Long =
         return minting.withLock {
             minted?.takeIf { it.refreshToken == refreshToken && it.clientId == clientId && clock() < it.expiresAt }
                 ?.let { return@withLock ResolvedRedditSession(fallback.copy(userToken = it.token)) }
+            failed?.takeIf { it.refreshToken == refreshToken && it.clientId == clientId && clock() < it.until }
+                ?.let { return@withLock ResolvedRedditSession(fallback) }
             orElse({
                 val token = auth.accessToken(clientId, refreshToken)
                 minted = Minted(refreshToken, clientId, token, clock() + TOKEN_TTL_MILLIS)
+                failed = null
                 ResolvedRedditSession(fallback.copy(userToken = token))
-            }) { failure -> ResolvedRedditSession(fallback, signedOut = (failure as? NetworkRequestException)?.code == 401) }
+            }) { failure ->
+                val signedOut = (failure as? NetworkRequestException)?.code == 401
+                failed = if (signedOut) null else Failed(refreshToken, clientId, clock() + FAILED_MINT_PAUSE_MILLIS)
+                ResolvedRedditSession(fallback, signedOut = signedOut)
+            }
         }
     }
 
     /** Forgets the minted token: the reader signed out or in as someone else. */
     fun forget() {
         minted = null
+        failed = null
+    }
+
+    /** Forgets [token] when it is the one minted: Reddit answered it with a 401, so the next read mints a fresh one rather than failing for the rest of its hour. */
+    fun rejected(token: String) {
+        if (minted?.token == token) minted = null
     }
 
     companion object {
         /** Reddit's access tokens live an hour; minting one is a request, so one is kept a little less than that. */
         const val TOKEN_TTL_MILLIS = 50 * 60 * 1000L
+
+        /** How long a mint that failed for a passing reason is not tried again: the reads in between use the fallback. */
+        const val FAILED_MINT_PAUSE_MILLIS = 30 * 1000L
     }
 }
