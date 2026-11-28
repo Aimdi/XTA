@@ -119,7 +119,7 @@ internal fun PixivWorksGrid(
             ) {
                 header()
                 pagedState(state, shown.isEmpty(), empty, onRetry = list::refresh)
-                itemsIndexed(shown, key = { _, illust -> "work-" + illust.id }) { index, illust ->
+                itemsIndexed(shown, key = { _, illust -> "work-" + illust.id }, contentType = { _, _ -> "work" }) { index, illust ->
                     if (tile != null) tile(shown, index) else WorkTile(illust, onOpen = { runtime.openWork(shown, index, list) })
                 }
                 pagedFooter(state, list::retryMore)
@@ -131,15 +131,15 @@ internal fun PixivWorksGrid(
 /** A list's first load (XTA's grid bones, two across), failure or emptiness, across the whole grid. */
 internal fun <T> LazyStaggeredGridScope.pagedState(state: PixivListState<T>, nothingShown: Boolean, empty: String, onRetry: () -> Unit) {
     when {
-        state.items.isEmpty() && state.error != null -> item(key = "state", span = StaggeredGridItemSpan.FullLine) { PixivProblem(state.error, onRetry) }
-        state.waiting -> item(key = "state", span = StaggeredGridItemSpan.FullLine) { GridSkeleton(columns = 2) }
-        nothingShown && state.loaded && !state.loading -> item(key = "state", span = StaggeredGridItemSpan.FullLine) { PixivEmpty(empty, onRetry) }
+        state.items.isEmpty() && state.error != null -> item(key = "state", contentType = "state", span = StaggeredGridItemSpan.FullLine) { PixivProblem(state.error, onRetry) }
+        state.waiting -> item(key = "state", contentType = "state", span = StaggeredGridItemSpan.FullLine) { GridSkeleton(columns = 2) }
+        nothingShown && state.loaded && !state.loading -> item(key = "state", contentType = "state", span = StaggeredGridItemSpan.FullLine) { PixivEmpty(empty, onRetry) }
     }
 }
 
 /** The next page's spinner, or Retry after it failed. */
 internal fun <T> LazyStaggeredGridScope.pagedFooter(state: PixivListState<T>, onRetry: () -> Unit) {
-    item(key = "footer", span = StaggeredGridItemSpan.FullLine) {
+    item(key = "footer", contentType = "footer", span = StaggeredGridItemSpan.FullLine) {
         when {
             state.loadingMore -> LoadingRow()
             state.moreFailed -> Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {

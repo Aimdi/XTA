@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -164,7 +163,7 @@ private fun PageOverview(illust: PixivIllust, current: Int, selectingFirst: Bool
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                items((0 until pages).toList()) { index ->
+                items(pages, key = { "page-$it" }) { index ->
                     PageThumb(illust, index, current = index == current, selected = if (picking) index in picked else null, onTap = {
                         if (picking) {
                             picked = if (index in picked) picked - index else picked + index
