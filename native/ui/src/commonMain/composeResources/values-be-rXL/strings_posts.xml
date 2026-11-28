@@ -135,4 +135,6 @@
     <string name="posts_mute_word">Scišyć słova…</string>
     <string name="posts_mute_word_title">Scišyć słova abo frazu</string>
     <string name="posts_mute_confirm">Scišyć</string>
+    <string name="posts_export_markdown">Zachavać jak Markdown…</string>
+    <string name="posts_export_html">Zachavać jak staronku dla druku…</string>
 </resources>

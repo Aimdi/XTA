@@ -132,4 +132,6 @@
     <string name="posts_mute_word">Ignoră un cuvânt…</string>
     <string name="posts_mute_word_title">Ignoră un cuvânt sau o expresie</string>
     <string name="posts_mute_confirm">Ignoră</string>
+    <string name="posts_export_markdown">Salvează ca Markdown…</string>
+    <string name="posts_export_html">Salvează ca pagină de tipărit…</string>
 </resources>

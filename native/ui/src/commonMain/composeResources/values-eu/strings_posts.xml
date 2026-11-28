@@ -129,4 +129,6 @@
     <string name="posts_mute_word">Isilarazi hitz bat…</string>
     <string name="posts_mute_word_title">Isilarazi hitz edo esaldi bat</string>
     <string name="posts_mute_confirm">Isilarazi</string>
+    <string name="posts_export_markdown">Gorde Markdown gisa…</string>
+    <string name="posts_export_html">Gorde inprimatzeko orri gisa…</string>
 </resources>

@@ -129,4 +129,6 @@
     <string name="posts_mute_word">Wort stummschalten…</string>
     <string name="posts_mute_word_title">Wort oder Ausdruck stummschalten</string>
     <string name="posts_mute_confirm">Stummschalten</string>
+    <string name="posts_export_markdown">Als Markdown speichern…</string>
+    <string name="posts_export_html">Als druckbare Seite speichern…</string>
 </resources>

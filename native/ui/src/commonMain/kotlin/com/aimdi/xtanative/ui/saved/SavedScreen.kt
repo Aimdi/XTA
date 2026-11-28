@@ -95,6 +95,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_are_you_sure
 import com.aimdi.xtanative.ui.generated.resources.saved_clear_search
 import com.aimdi.xtanative.ui.generated.resources.saved_clear_selection
 import com.aimdi.xtanative.ui.generated.resources.saved_delete
+import com.aimdi.xtanative.ui.generated.resources.saved_export_folder
 import com.aimdi.xtanative.ui.generated.resources.saved_filter_and_sort
 import com.aimdi.xtanative.ui.generated.resources.saved_find_deleted
 import com.aimdi.xtanative.ui.generated.resources.saved_manage_folders
@@ -155,6 +156,8 @@ private sealed interface SavedDialog {
     data class FolderMenu(val folder: SavedFolder) : SavedDialog
 
     data class DeleteFolder(val folder: SavedFolder) : SavedDialog
+
+    data class ExportFolder(val folder: SavedFolder, val format: ExportFormat? = null) : SavedDialog
 
     data object MoveSelected : SavedDialog
 
@@ -284,8 +287,13 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
             onRename = { dialog = SavedDialog.EditFolder(open.folder) },
             onDelete = { dialog = SavedDialog.DeleteFolder(open.folder) },
             onManage = { dialog = null; links.openFolders() },
+            onExport = { dialog = SavedDialog.ExportFolder(open.folder) },
             onDismiss = { dialog = null },
         )
+        is SavedDialog.ExportFolder -> when (val format = open.format) {
+            null -> ExportFormatSheet(onDismiss = { dialog = null }) { dialog = open.copy(format = it) }
+            else -> ExportFolder(open.folder, state.library, format, stringResource(Res.string.saved_export_folder), onDone = { dialog = null })
+        }
         is SavedDialog.DeleteFolder -> DeleteFolderDialog(onDismiss = { dialog = null }) {
             vm.deleteFolder(open.folder.id)
             dialog = null

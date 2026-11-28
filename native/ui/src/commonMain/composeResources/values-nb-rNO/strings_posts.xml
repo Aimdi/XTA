@@ -129,4 +129,6 @@
     <string name="posts_mute_word">Demp et ord…</string>
     <string name="posts_mute_word_title">Demp et ord eller uttrykk</string>
     <string name="posts_mute_confirm">Demp</string>
+    <string name="posts_export_markdown">Lagre som Markdown…</string>
+    <string name="posts_export_html">Lagre som utskriftsvennlig side…</string>
 </resources>

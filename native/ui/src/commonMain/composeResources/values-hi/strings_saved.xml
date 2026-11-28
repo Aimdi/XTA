@@ -174,4 +174,5 @@
     <string name="downloads_batch">सहेजी गई फ़ाइलें: %1$d / %2$d</string>
     <string name="downloads_saved_to">%1$s में सहेजा गया</string>
     <string name="set_a_download_folder_to_auto_download">स्वतः डाउनलोड के लिए सेटिंग्स &gt; मीडिया में डाउनलोड फ़ोल्डर सेट करें।</string>
+    <string name="saved_export_folder">फ़ोल्डर निर्यात करें</string>
 </resources>

@@ -174,4 +174,5 @@
     <string name="downloads_batch">Gordetako fitxategiak: %1$d / %2$d</string>
     <string name="downloads_saved_to">%1$s karpetan gorde da</string>
     <string name="set_a_download_folder_to_auto_download">Automatikoki deskargatzeko, ezarri deskarga-karpeta bat Ezarpenak &gt; Multimedia atalean.</string>
+    <string name="saved_export_folder">Esportatu karpeta</string>
 </resources>

@@ -129,4 +129,6 @@
     <string name="posts_mute_word">Woord dempen…</string>
     <string name="posts_mute_word_title">Woord of zin dempen</string>
     <string name="posts_mute_confirm">Dempen</string>
+    <string name="posts_export_markdown">Opslaan als Markdown…</string>
+    <string name="posts_export_html">Opslaan als afdrukbare pagina…</string>
 </resources>

@@ -135,4 +135,6 @@
     <string name="posts_mute_word">Сцішыць слова…</string>
     <string name="posts_mute_word_title">Сцішыць слова або фразу</string>
     <string name="posts_mute_confirm">Сцішыць</string>
+    <string name="posts_export_markdown">Захаваць як Markdown…</string>
+    <string name="posts_export_html">Захаваць як старонку для друку…</string>
 </resources>

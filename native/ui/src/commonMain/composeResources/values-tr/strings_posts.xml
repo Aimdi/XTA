@@ -128,4 +128,6 @@
     <string name="posts_mute_word">Bir kelimeyi sessize al…</string>
     <string name="posts_mute_word_title">Bir kelimeyi veya ifadeyi sessize al</string>
     <string name="posts_mute_confirm">Sessize al</string>
+    <string name="posts_export_markdown">Markdown olarak kaydet…</string>
+    <string name="posts_export_html">Yazdırılabilir sayfa olarak kaydet…</string>
 </resources>

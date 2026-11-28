@@ -174,4 +174,5 @@
     <string name="downloads_batch">Salvestatud failid: %1$d / %2$d</string>
     <string name="downloads_saved_to">Salvestatud kausta %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Automaatseks allalaadimiseks määra allalaadimiskaust menüüs Seaded &gt; Meedia.</string>
+    <string name="saved_export_folder">Ekspordi kaust</string>
 </resources>

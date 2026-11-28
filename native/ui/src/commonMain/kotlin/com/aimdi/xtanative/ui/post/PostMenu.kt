@@ -16,12 +16,14 @@ import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.PostMenuHandlers
 import com.aimdi.xtanative.ui.plugins.PostMenuRows
 import com.aimdi.xtanative.ui.profile.AuthorGroupsSheet
+import com.aimdi.xtanative.ui.saved.ExportFormat
 import com.aimdi.xtanative.ui.saved.Keepable
 import com.aimdi.xtanative.ui.saved.LocalKeeper
 import com.aimdi.xtanative.ui.saved.NoteSheet
 import com.aimdi.xtanative.ui.saved.SaveSheet
 import com.aimdi.xtanative.ui.saved.isSaved
 import com.aimdi.xtanative.ui.saved.Keeper
+import com.aimdi.xtanative.ui.settings.isDesktop
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_mute_account
@@ -31,14 +33,15 @@ import java.time.Instant
 import org.jetbrains.compose.resources.stringResource
 
 /** What an X post's ⋯ sheet opens once it has closed: the note on the post, its folders, its author's groups; or nothing more. */
-private enum class MenuStep { MENU, NOTE, FOLDERS, GROUPS, MUTE_WORD, CLOSED }
+private enum class MenuStep { MENU, NOTE, FOLDERS, GROUPS, MUTE_WORD, EXPORT_MARKDOWN, EXPORT_HTML, CLOSED }
 
 /**
  * An X post's ⋯ sheet, in XTA's order (plugin_post_actions.dart, as
  * tweet_post_menu.dart opens it for an X post): save it on this device or
  * take it out, the note on it in Saved, Add to group for its author, Open
  * profile, Share link (Copy link on the desktop), Copy text, Save to folder…, Reposted by, Quotes, Open in new window (on the
- * desktop) and Open in browser. None of it
+ * desktop) and Open in browser; then, on the desktop, saving it as Markdown or a
+ * printable page, and muting. None of it
  * writes to X; what the running plugins add is in the post's share sheet,
  * where XTA has it.
  */
@@ -57,6 +60,8 @@ fun PostMenu(post: XPost, actions: PostActions, onDismiss: () -> Unit) {
                 Mutes.change(keeper, offerUndo = true) { it.withWord(term, duration?.let(Instant.now()::plus)) }
             }
         }
+        MenuStep.EXPORT_MARKDOWN -> ExportPost(post, ExportFormat.MARKDOWN, onDismiss)
+        MenuStep.EXPORT_HTML -> ExportPost(post, ExportFormat.HTML, onDismiss)
         MenuStep.CLOSED -> LaunchedEffect(Unit) { onDismiss() }
     }
 }
@@ -96,9 +101,20 @@ private fun MenuSheet(post: XPost, actions: PostActions, onDismiss: () -> Unit, 
     val inWindow = remember(windows, shown.id) { windows?.let { open -> { open.post(shown.id) } } }
     PostMenuSurface(onDismiss) {
         PostMenuRows(menu, saved, handlers, onDone = { onStep(MenuStep.CLOSED) }, newWindow = inWindow, hints = true, openAuthor = openAuthor, copyText = copyText)
+        if (isDesktop) {
+            MenuGroupDivider()
+            ExportRows(onStep)
+        }
         MenuGroupDivider()
         MuteRows(shown, keeper, onStep)
     }
+}
+
+/** Saving the post, with its thread, as a file to read or print ([ExportPost]). */
+@Composable
+private fun ExportRows(onStep: (MenuStep) -> Unit) {
+    MenuRow(GroupIcons.FileDownloadOutlined, stringResource(PostExports.label(ExportFormat.MARKDOWN))) { onStep(MenuStep.EXPORT_MARKDOWN) }
+    MenuRow(GroupIcons.PrintOutlined, stringResource(PostExports.label(ExportFormat.HTML))) { onStep(MenuStep.EXPORT_HTML) }
 }
 
 /** Muting the post's author on this device, or no longer, and muting a word ([Mutes]). */

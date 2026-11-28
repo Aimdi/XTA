@@ -126,4 +126,6 @@
     <string name="posts_mute_word">Bisukan kata…</string>
     <string name="posts_mute_word_title">Bisukan kata atau frasa</string>
     <string name="posts_mute_confirm">Bisukan</string>
+    <string name="posts_export_markdown">Simpan sebagai Markdown…</string>
+    <string name="posts_export_html">Simpan sebagai halaman cetak…</string>
 </resources>

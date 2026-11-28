@@ -129,4 +129,6 @@
     <string name="posts_mute_word">Silencia una paraula…</string>
     <string name="posts_mute_word_title">Silencia una paraula o frase</string>
     <string name="posts_mute_confirm">Silencia</string>
+    <string name="posts_export_markdown">Desa com a Markdown…</string>
+    <string name="posts_export_html">Desa com a pàgina imprimible…</string>
 </resources>

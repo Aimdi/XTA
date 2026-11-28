@@ -129,4 +129,6 @@
     <string name="posts_mute_word">Vaigista sõna…</string>
     <string name="posts_mute_word_title">Vaigista sõna või fraas</string>
     <string name="posts_mute_confirm">Vaigista</string>
+    <string name="posts_export_markdown">Salvesta Markdownina…</string>
+    <string name="posts_export_html">Salvesta prinditava lehena…</string>
 </resources>

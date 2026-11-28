@@ -135,4 +135,6 @@
     <string name="posts_mute_word">Скрыть слово…</string>
     <string name="posts_mute_word_title">Скрыть слово или фразу</string>
     <string name="posts_mute_confirm">Скрыть</string>
+    <string name="posts_export_markdown">Сохранить как Markdown…</string>
+    <string name="posts_export_html">Сохранить как страницу для печати…</string>
 </resources>

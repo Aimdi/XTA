@@ -174,4 +174,5 @@
     <string name="downloads_batch">Konservitaj dosieroj: %1$d / %2$d</string>
     <string name="downloads_saved_to">Konservita en %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Agordu elŝut-dosierujon en Agordoj &gt; Aŭdvidaĵoj por aŭtomata elŝuto.</string>
+    <string name="saved_export_folder">Eksporti dosierujon</string>
 </resources>

@@ -127,4 +127,6 @@ Bấm để xem thêm</string>
     <string name="posts_mute_word">Ẩn một từ…</string>
     <string name="posts_mute_word_title">Ẩn một từ hoặc cụm từ</string>
     <string name="posts_mute_confirm">Ẩn</string>
+    <string name="posts_export_markdown">Lưu dạng Markdown…</string>
+    <string name="posts_export_html">Lưu dạng trang để in…</string>
 </resources>

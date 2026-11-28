@@ -127,4 +127,6 @@ Click to show more..</string>
     <string name="posts_mute_word">単語をミュート…</string>
     <string name="posts_mute_word_title">単語やフレーズをミュート</string>
     <string name="posts_mute_confirm">ミュート</string>
+    <string name="posts_export_markdown">Markdown で保存…</string>
+    <string name="posts_export_html">印刷用ページとして保存…</string>
 </resources>

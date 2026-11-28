@@ -141,4 +141,6 @@
     <string name="posts_mute_word">كتم كلمة…</string>
     <string name="posts_mute_word_title">كتم كلمة أو عبارة</string>
     <string name="posts_mute_confirm">كتم</string>
+    <string name="posts_export_markdown">حفظ بتنسيق Markdown…</string>
+    <string name="posts_export_html">حفظ كصفحة قابلة للطباعة…</string>
 </resources>

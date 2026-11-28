@@ -180,4 +180,5 @@
     <string name="downloads_batch">Uložené soubory: %1$d / %2$d</string>
     <string name="downloads_saved_to">Uloženo do %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Nastavte složku stahování v Nastavení &gt; Média pro automatické stahování.</string>
+    <string name="saved_export_folder">Exportovat složku</string>
 </resources>

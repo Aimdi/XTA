@@ -114,7 +114,8 @@ fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = e
 @Composable
 private fun ThreadPosts(thread: XThread, actions: PostActions, pinnedIds: Set<String>) {
     val threaded = thread.posts.size > 1
-    Column(Modifier.fillMaxWidth()) {
+    // A post's menu saves the whole thread it is drawn in ([LocalShownThread]).
+    CompositionLocalProvider(LocalShownThread provides thread.takeIf { threaded }) { Column(Modifier.fillMaxWidth()) {
         thread.posts.forEachIndexed { index, post ->
             PostCard(
                 post,
@@ -135,8 +136,11 @@ private fun ThreadPosts(thread: XThread, actions: PostActions, pinnedIds: Set<St
             )
         }
         Hairline()
-    }
+    } }
 }
+
+/** The thread of more than one post a card is drawn in by [ThreadRows], which "Save as Markdown…" saves whole; null for a post alone. */
+internal val LocalShownThread = staticCompositionLocalOf<XThread?> { null }
 
 private val AvatarSize = PostGeometry.AVATAR_SIZE.dp
 

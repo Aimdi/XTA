@@ -129,4 +129,6 @@
     <string name="posts_mute_word">Silenzia una parola…</string>
     <string name="posts_mute_word_title">Silenzia una parola o frase</string>
     <string name="posts_mute_confirm">Silenzia</string>
+    <string name="posts_export_markdown">Salva come Markdown…</string>
+    <string name="posts_export_html">Salva come pagina stampabile…</string>
 </resources>

@@ -171,4 +171,5 @@
     <string name="downloads_batch">已儲存檔案：%1$d / %2$d</string>
     <string name="downloads_saved_to">已儲存到 %1$s</string>
     <string name="set_a_download_folder_to_auto_download">在設定 &gt; 媒體中設定下載資料夾以自動下載。</string>
+    <string name="saved_export_folder">匯出資料夾</string>
 </resources>

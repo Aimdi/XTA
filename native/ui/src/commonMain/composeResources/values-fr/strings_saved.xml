@@ -174,4 +174,5 @@
     <string name="downloads_batch">Fichiers enregistrés : %1$d / %2$d</string>
     <string name="downloads_saved_to">Enregistré dans %1$s</string>
     <string name="set_a_download_folder_to_auto_download">Définissez un dossier de téléchargement dans Paramètres &gt; Médias pour le téléchargement automatique.</string>
+    <string name="saved_export_folder">Exporter le dossier</string>
 </resources>

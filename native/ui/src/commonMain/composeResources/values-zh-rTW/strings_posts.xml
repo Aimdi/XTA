@@ -127,4 +127,6 @@
     <string name="posts_mute_word">靜音字詞…</string>
     <string name="posts_mute_word_title">靜音字詞或片語</string>
     <string name="posts_mute_confirm">靜音</string>
+    <string name="posts_export_markdown">另存為 Markdown…</string>
+    <string name="posts_export_html">另存為可列印頁面…</string>
 </resources>

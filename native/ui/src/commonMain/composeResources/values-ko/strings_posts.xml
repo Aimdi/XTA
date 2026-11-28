@@ -126,4 +126,6 @@
     <string name="posts_mute_word">단어 뮤트…</string>
     <string name="posts_mute_word_title">단어 또는 문구 뮤트</string>
     <string name="posts_mute_confirm">뮤트</string>
+    <string name="posts_export_markdown">Markdown으로 저장…</string>
+    <string name="posts_export_html">인쇄용 페이지로 저장…</string>
 </resources>

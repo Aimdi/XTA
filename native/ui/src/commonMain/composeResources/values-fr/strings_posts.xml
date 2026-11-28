@@ -129,4 +129,6 @@
     <string name="posts_mute_word">Masquer un mot…</string>
     <string name="posts_mute_word_title">Masquer un mot ou une expression</string>
     <string name="posts_mute_confirm">Masquer</string>
+    <string name="posts_export_markdown">Enregistrer en Markdown…</string>
+    <string name="posts_export_html">Enregistrer en page imprimable…</string>
 </resources>

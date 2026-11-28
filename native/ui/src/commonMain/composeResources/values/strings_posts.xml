@@ -129,4 +129,6 @@
     <string name="posts_mute_word">Mute a word…</string>
     <string name="posts_mute_word_title">Mute a word or phrase</string>
     <string name="posts_mute_confirm">Mute</string>
+    <string name="posts_export_markdown">Save as Markdown…</string>
+    <string name="posts_export_html">Save as printable page…</string>
 </resources>

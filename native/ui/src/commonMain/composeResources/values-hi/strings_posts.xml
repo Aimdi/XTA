@@ -129,4 +129,6 @@
     <string name="posts_mute_word">कोई शब्द म्यूट करें…</string>
     <string name="posts_mute_word_title">कोई शब्द या वाक्यांश म्यूट करें</string>
     <string name="posts_mute_confirm">म्यूट करें</string>
+    <string name="posts_export_markdown">Markdown के रूप में सहेजें…</string>
+    <string name="posts_export_html">प्रिंट करने योग्य पेज के रूप में सहेजें…</string>
 </resources>

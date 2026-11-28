@@ -126,4 +126,6 @@
     <string name="posts_mute_word">屏蔽词语…</string>
     <string name="posts_mute_word_title">屏蔽词语或短语</string>
     <string name="posts_mute_confirm">屏蔽</string>
+    <string name="posts_export_markdown">另存为 Markdown…</string>
+    <string name="posts_export_html">另存为可打印页面…</string>
 </resources>

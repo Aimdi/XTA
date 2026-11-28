@@ -74,6 +74,10 @@ import com.aimdi.xtanative.ui.generated.resources.saved_manage_folders
 import com.aimdi.xtanative.ui.generated.resources.saved_new_folder
 import com.aimdi.xtanative.ui.generated.resources.saved_none_deleted
 import com.aimdi.xtanative.ui.generated.resources.saved_rename
+import com.aimdi.xtanative.ui.generated.resources.saved_export_folder
+import com.aimdi.xtanative.ui.generated.resources.posts_export_html
+import com.aimdi.xtanative.ui.generated.resources.posts_export_markdown
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.generated.resources.saved_save
 import com.aimdi.xtanative.ui.generated.resources.saved_some_unchecked
 import com.aimdi.xtanative.ui.generated.resources.saved_tab_unfiled
@@ -180,14 +184,15 @@ fun DeleteFolderDialog(onDismiss: () -> Unit, onDelete: () -> Unit) {
     )
 }
 
-/** What a long press on a folder's chip offers: rename it, delete it, or manage every folder. */
+/** What a long press on a folder's chip offers: rename it, delete it, export it, or manage every folder. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun FolderMenuSheet(onRename: () -> Unit, onDelete: () -> Unit, onManage: () -> Unit, onDismiss: () -> Unit) {
+internal fun FolderMenuSheet(onRename: () -> Unit, onDelete: () -> Unit, onManage: () -> Unit, onExport: () -> Unit, onDismiss: () -> Unit) {
     KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp)) {
             SheetRow(Icons.Filled.Edit, stringResource(Res.string.saved_rename), onRename)
             SheetRow(Icons.Filled.Delete, stringResource(Res.string.saved_delete), onDelete)
+            SheetRow(GroupIcons.FileDownloadOutlined, stringResource(Res.string.saved_export_folder), onExport)
             SheetRow(SavedIcons.Folder, stringResource(Res.string.saved_manage_folders), onManage)
         }
     }
@@ -200,6 +205,18 @@ private fun SheetRow(icon: androidx.compose.ui.graphics.vector.ImageVector, labe
         leadingContent = { Icon(icon, contentDescription = null) },
         modifier = Modifier.clickable(onClick = LocalSheetCloser.current.closing(onClick)).padding(horizontal = 8.dp),
     )
+}
+
+/** The kind of file a folder's export writes: Markdown for a notes app, or a page to print. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun ExportFormatSheet(onDismiss: () -> Unit, onPick: (ExportFormat) -> Unit) {
+    KeyedSheet(sheetState = rememberSheetState(), onDismissRequest = onDismiss) {
+        Column(Modifier.padding(bottom = 16.dp)) {
+            SheetRow(GroupIcons.FileDownloadOutlined, stringResource(Res.string.posts_export_markdown)) { onPick(ExportFormat.MARKDOWN) }
+            SheetRow(GroupIcons.PrintOutlined, stringResource(Res.string.posts_export_html)) { onPick(ExportFormat.HTML) }
+        }
+    }
 }
 
 /** Where the selected posts go: out of every folder, or into one. */

@@ -171,4 +171,5 @@
     <string name="downloads_batch">저장된 파일: %1$d / %2$d</string>
     <string name="downloads_saved_to">%1$s에 저장됨</string>
     <string name="set_a_download_folder_to_auto_download">자동 다운로드하려면 설정 &gt; 미디어에서 다운로드 폴더를 설정하세요.</string>
+    <string name="saved_export_folder">폴더 내보내기</string>
 </resources>

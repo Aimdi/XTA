@@ -135,4 +135,6 @@
     <string name="posts_mute_word">Приховати слово…</string>
     <string name="posts_mute_word_title">Приховати слово або фразу</string>
     <string name="posts_mute_confirm">Приховати</string>
+    <string name="posts_export_markdown">Зберегти як Markdown…</string>
+    <string name="posts_export_html">Зберегти як сторінку для друку…</string>
 </resources>

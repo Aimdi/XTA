@@ -135,4 +135,6 @@
     <string name="posts_mute_word">Ztlumit slovo…</string>
     <string name="posts_mute_word_title">Ztlumit slovo nebo frázi</string>
     <string name="posts_mute_confirm">Ztlumit</string>
+    <string name="posts_export_markdown">Uložit jako Markdown…</string>
+    <string name="posts_export_html">Uložit jako stránku k tisku…</string>
 </resources>

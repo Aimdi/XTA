@@ -135,4 +135,6 @@
     <string name="posts_mute_word">Wycisz słowo…</string>
     <string name="posts_mute_word_title">Wycisz słowo lub frazę</string>
     <string name="posts_mute_confirm">Wycisz</string>
+    <string name="posts_export_markdown">Zapisz jako Markdown…</string>
+    <string name="posts_export_html">Zapisz jako stronę do druku…</string>
 </resources>

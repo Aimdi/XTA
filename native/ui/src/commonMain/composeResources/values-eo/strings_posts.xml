@@ -129,4 +129,6 @@
     <string name="posts_mute_word">Silentigi vorton…</string>
     <string name="posts_mute_word_title">Silentigi vorton aŭ frazon</string>
     <string name="posts_mute_confirm">Silentigi</string>
+    <string name="posts_export_markdown">Konservi kiel Markdown…</string>
+    <string name="posts_export_html">Konservi kiel presebla paĝo…</string>
 </resources>
