@@ -388,7 +388,7 @@ private fun LazyListScope.filterBar(state: ProfileUi, vm: ProfileViewModel) {
                     Filter(MediaFilter.ALL, PostIcons.Layers, Res.string.posts_filter_all),
                     Filter(MediaFilter.PHOTOS, PostIcons.Image, Res.string.posts_filter_photos),
                     Filter(MediaFilter.VIDEOS, PostIcons.Videocam, Res.string.posts_filter_videos),
-                    Filter(MediaFilter.BROADCASTS, PostIcons.Sensors, Res.string.posts_filter_broadcasts),
+                    Filter(MediaFilter.BROADCASTS, PostIcons.LiveTv, Res.string.posts_filter_broadcasts),
                 ),
                 vm::selectMedia,
             )

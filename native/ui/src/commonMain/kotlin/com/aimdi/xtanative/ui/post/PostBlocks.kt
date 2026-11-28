@@ -241,7 +241,7 @@ internal fun LiveBlock(live: XLive, onOpen: () -> Unit, modifier: Modifier = Mod
                     .padding(horizontal = 6.dp, vertical = 2.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(if (live.isSpace) PostIcons.Mic else PostIcons.Sensors, contentDescription = label, tint = Color.White, modifier = Modifier.size(14.dp))
+                Icon(if (live.isSpace) PostIcons.Mic else PostIcons.LiveTv, contentDescription = label, tint = Color.White, modifier = Modifier.size(14.dp))
             }
         }
     }

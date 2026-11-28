@@ -22,7 +22,7 @@ object DiscoverIcons {
         icon("DeleteSweep", "M15,16h4v2h-4zM15,8h7v2h-7zM15,12h6v2h-6zM3,18c0,1.1 0.9,2 2,2h6c1.1,0 2,-0.9 2,-2L13,8L3,8v10zM14,5h-3l-1,-1L6,4L5,5L2,5v2h12z")
     }
 
-    /** XTA's antennas, in the search bar and on Discover. */
+    /** XTA's antennas, in the search bar, on Discover and on each antenna in the antennas list, as in the sidebar. */
     val Sensors: ImageVector by lazy {
         icon(
             "Sensors",
@@ -34,7 +34,7 @@ object DiscoverIcons {
         )
     }
 
-    /** An antenna in the antennas list. */
+    /** A radar; the antennas list no longer draws it (its rows show [Sensors]), kept because plugins may use it. */
     val Radar: ImageVector by lazy {
         icon(
             "Radar",
