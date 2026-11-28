@@ -8,6 +8,7 @@ import com.aimdi.xtanative.store.settings.DesktopPrefs
 import com.aimdi.xtanative.ui.chrome.DesktopAttention
 import com.aimdi.xtanative.ui.common.XdgFolders
 import com.aimdi.xtanative.ui.downloads.DesktopFiles
+import com.aimdi.xtanative.ui.group.EarlyFollowing
 import com.aimdi.xtanative.ui.media.MpvEngine
 import com.aimdi.xtanative.ui.media.VideoCheck
 import com.aimdi.xtanative.ui.net.DesktopNetworkMonitor
@@ -18,8 +19,11 @@ import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermissions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 /** The desktop app's graph and the plugins beside it. */
@@ -92,6 +96,8 @@ internal fun DesktopApp.start() {
     DesktopProxy.follow(graph.settings)
     seedInterfaceSize()
     graph.start()
+    // Home's first posts are read while the window is made, not after its first frame; a start opening a plugin's page reads nothing ahead.
+    if (plugins.openAtStart == null) CoroutineScope(Dispatchers.Default).launch { runCatching { EarlyFollowing.read(graph) } }
     plugins.start()
     plugins.startWith(ids("XTA_NATIVE_PLUGIN_INSTALL"), ids("XTA_NATIVE_PLUGIN_PIN"), ids("XTA_NATIVE_PLUGIN_UNINSTALL"))
     if (env("XTA_NATIVE_VOICE_CHECK") != null) VoiceCheck.ask()

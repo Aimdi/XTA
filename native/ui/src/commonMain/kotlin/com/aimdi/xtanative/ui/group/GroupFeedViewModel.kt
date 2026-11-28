@@ -16,7 +16,6 @@ import com.aimdi.xtanative.core.feed.GroupFeedPlan
 import com.aimdi.xtanative.core.feed.HeldRefresh
 import com.aimdi.xtanative.core.feed.ReadPosition
 import com.aimdi.xtanative.core.feed.SavedFeed
-import com.aimdi.xtanative.core.feed.feedReads
 import com.aimdi.xtanative.core.session.CombinedGroups
 import com.aimdi.xtanative.core.session.ProfileRefresh
 import com.aimdi.xtanative.core.session.Session
@@ -153,7 +152,7 @@ class GroupFeedViewModel(
     private val graph: AppGraph,
     private val groupId: String?,
     private val feeds: PluginFeeds = PluginFeeds.None,
-    private val reads: FeedReads = graph.client.feedReads(),
+    private val reads: FeedReads = graph.feedReads,
     private val sessions: FeedSessionCache = FeedSessions.feeds,
 ) : ViewModel() {
     /** The feed's key: its group's id, or the Following feed's. */
