@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">Monogram gebruiken</string>
     <string name="settings_diagnostics_recent_reads">Recente leesbewerkingen</string>
     <string name="settings_diagnostics_sign_in_broken">De aanmelding lijkt niet meer geldig, pauze tot %1$s</string>
+    <string name="settings_diagnostics_paused">X vond de verzoeken geautomatiseerd, pauze tot %1$s</string>
+    <string name="home_notice_signed_out">%1$s lijkt afgemeld — meld je opnieuw aan</string>
+    <string name="home_notice_reads_paused">X vond de verzoeken geautomatiseerd: lezen van X is gepauzeerd tot %1$s</string>
 </resources>

@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">استخدم الحرف الأول بدلًا من ذلك</string>
     <string name="settings_diagnostics_recent_reads">عمليات القراءة الأخيرة</string>
     <string name="settings_diagnostics_sign_in_broken">يبدو أن تسجيل الدخول لم يعد صالحًا، سيُعاد المحاولة في %1$s</string>
+    <string name="settings_diagnostics_paused">اعتبر X طلباته آلية، متوقف حتى %1$s</string>
+    <string name="home_notice_signed_out">يبدو أن %1$s سجّل الخروج — سجّل الدخول مجددًا</string>
+    <string name="home_notice_reads_paused">اعتبر X الطلبات آلية: القراءة من X متوقفة حتى %1$s</string>
 </resources>

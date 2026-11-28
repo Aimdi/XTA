@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">Monogramm verwenden</string>
     <string name="settings_diagnostics_recent_reads">Letzte Ladevorgänge</string>
     <string name="settings_diagnostics_sign_in_broken">Die Anmeldung scheint nicht mehr zu gelten, Pause bis %1$s</string>
+    <string name="settings_diagnostics_paused">X hält die Anfragen für automatisiert, Pause bis %1$s</string>
+    <string name="home_notice_signed_out">%1$s scheint abgemeldet zu sein – bitte neu anmelden</string>
+    <string name="home_notice_reads_paused">X hält die Anfragen für automatisiert: Laden von X pausiert bis %1$s</string>
 </resources>

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -383,7 +384,9 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
         // The bottom bar's height changes at every frame of its slide: the pages are measured with it, not composed again.
         val bottom = rememberLiveEdges(padding).second
         CompositionLocalProvider(LocalNetworkBarTakeover provides takeover) {
-        Box(Modifier.fillMaxSize().padding(bottom).consumeWindowInsets(bottom).nestedScroll(shell.bars.connection)) {
+        Column(Modifier.fillMaxSize().padding(bottom).consumeWindowInsets(bottom)) {
+        XReadNoticeBar(onAccounts = { if (parts.routes.exists(HomeDestination.SETTINGS.route)) parts.routes.open(SettingsRoutes.of(SettingsSection.ACCOUNT)) })
+        Box(Modifier.weight(1f).fillMaxWidth().nestedScroll(shell.bars.connection)) {
             BarPageHost(page, shell.retaps) { shown ->
                 when (shown) {
                     BarPage.Feed -> HomeFeedPage(
@@ -408,6 +411,7 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
                     is BarPage.Group -> GroupFeedScreen(shown.groupId, parts.actions, onBack = null)
                 }
             }
+        }
         }
         }
     }

@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">Dùng chữ cái viết tắt</string>
     <string name="settings_diagnostics_recent_reads">Các thao tác đọc gần đây</string>
     <string name="settings_diagnostics_sign_in_broken">Đăng nhập có vẻ không còn hiệu lực, tạm dừng đến %1$s</string>
+    <string name="settings_diagnostics_paused">X cho rằng các yêu cầu là tự động, tạm nghỉ đến %1$s</string>
+    <string name="home_notice_signed_out">%1$s có vẻ đã đăng xuất — hãy đăng nhập lại</string>
+    <string name="home_notice_reads_paused">X cho rằng các yêu cầu là tự động: việc đọc X tạm dừng đến %1$s</string>
 </resources>

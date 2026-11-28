@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">मोनोग्राम इस्तेमाल करें</string>
     <string name="settings_diagnostics_recent_reads">हाल के पढ़ने के कार्य</string>
     <string name="settings_diagnostics_sign_in_broken">साइन-इन अब मान्य नहीं लगता, %1$s तक विराम</string>
+    <string name="settings_diagnostics_paused">X ने इसके अनुरोधों को स्वचालित माना, %1$s तक विराम</string>
+    <string name="home_notice_signed_out">%1$s साइन आउट लगता है — फिर से साइन इन करें</string>
+    <string name="home_notice_reads_paused">X ने अनुरोधों को स्वचालित माना: X से पढ़ना %1$s तक रुका है</string>
 </resources>

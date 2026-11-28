@@ -686,6 +686,7 @@ private fun RecentReads(lines: List<String>, shown: Boolean, onToggle: () -> Uni
 private fun AccountHealthRow(account: AccountDiagnostics, locale: Locale) {
     val problems = listOfNotNull(
         account.signInBrokenUntil?.let { stringResource(Res.string.settings_diagnostics_sign_in_broken, shortDateTime(it, locale)) },
+        account.pausedUntil?.let { stringResource(Res.string.settings_diagnostics_paused, shortDateTime(it, locale)) },
         account.rateLimited.size.takeIf { it > 0 }?.let { pluralStringResource(Res.plurals.settings_diagnostics_rate_limited, it, it) },
     )
     Row(

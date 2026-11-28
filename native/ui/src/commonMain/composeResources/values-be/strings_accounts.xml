@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">Выкарыстоўваць манаграму</string>
     <string name="settings_diagnostics_recent_reads">Апошнія аперацыі чытання</string>
     <string name="settings_diagnostics_sign_in_broken">Здаецца, уваход больш не дзейнічае, паўза да %1$s</string>
+    <string name="settings_diagnostics_paused">X палічыў запыты аўтаматызаванымі, паўза да %1$s</string>
+    <string name="home_notice_signed_out">%1$s, падобна, выйшаў з уліковага запісу — увайдзіце зноў</string>
+    <string name="home_notice_reads_paused">X палічыў запыты аўтаматызаванымі: загрузка з X прыпынена да %1$s</string>
 </resources>

@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">Uzi monogramon</string>
     <string name="settings_diagnostics_recent_reads">Lastatempaj legoperacioj</string>
     <string name="settings_diagnostics_sign_in_broken">La ensaluto ŝajnas ne plu validi, paŭzo ĝis %1$s</string>
+    <string name="settings_diagnostics_paused">X taksis la petojn aŭtomataj, paŭzo ĝis %1$s</string>
+    <string name="home_notice_signed_out">%1$s ŝajne elsalutis — ensalutu denove</string>
+    <string name="home_notice_reads_paused">X taksis la petojn aŭtomataj: legado de X paŭzas ĝis %1$s</string>
 </resources>

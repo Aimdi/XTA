@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">Erabili monograma</string>
     <string name="settings_diagnostics_recent_reads">Azken irakurketa-eragiketak</string>
     <string name="settings_diagnostics_sign_in_broken">Saioa jada ez dela baliozkoa dirudi; %1$sean berrekingo da</string>
+    <string name="settings_diagnostics_paused">X-ek eskaerak automatikotzat jo ditu, pausan %1$s arte</string>
+    <string name="home_notice_signed_out">%1$s saioa itxita dagoela dirudi — hasi saioa berriro</string>
+    <string name="home_notice_reads_paused">X-ek eskaerak automatikotzat jo ditu: X irakurtzea pausan dago %1$s arte</string>
 </resources>

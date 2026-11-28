@@ -1,5 +1,8 @@
 package com.aimdi.xtanative.ui.settings
 
+import com.aimdi.xtanative.ui.common.currentLocale
+import com.aimdi.xtanative.core.x.XAccountPolicy
+import java.time.Instant
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -186,7 +189,8 @@ internal fun AccountSettings(title: String, vm: SettingsViewModel, onBack: () ->
                 )
                 session.accounts.forEach { account ->
                     val on = ForYouAccounts.isOn(account.id, hidden)
-                    AccountRow(account, on, locked = on && !ForYouAccounts.canTurnOff(account.id, ids, hidden), onDelete = { deleting = account.id }) { next ->
+                    val rest = accountRest(vm.graph.accountHealth.read(account.id))
+                    AccountRow(account, on, locked = on && !ForYouAccounts.canTurnOff(account.id, ids, hidden), rest, onDelete = { deleting = account.id }) { next ->
                         vm.update { current ->
                             ForYouAccounts.toggled(current[AccountPrefs.disabledAccountIds], account.id, next, ids)
                                 ?.let { current.with(AccountPrefs.disabledAccountIds, it) } ?: current
@@ -267,7 +271,7 @@ private fun AvatarRow(account: XAccount?, revision: Int, onClick: () -> Unit) {
  * then the way to remove it.
  */
 @Composable
-private fun AccountRow(account: XAccount, on: Boolean, locked: Boolean, onDelete: () -> Unit, onToggle: (Boolean) -> Unit) {
+private fun AccountRow(account: XAccount, on: Boolean, locked: Boolean, rest: String?, onDelete: () -> Unit, onToggle: (Boolean) -> Unit) {
     Row(
         Modifier.fillMaxWidth().heightIn(min = 56.dp)
             .selectable(selected = on, enabled = !locked, role = Role.Checkbox) { onToggle(!on) }
@@ -283,9 +287,27 @@ private fun AccountRow(account: XAccount, on: Boolean, locked: Boolean, onDelete
             if (locked) {
                 TipText(stringResource(Res.string.home_filter_keep_one), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
+            if (rest != null) {
+                TipText(rest, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            }
         }
         Checkbox(checked = on, onCheckedChange = null, enabled = !locked)
         IconTip(stringResource(Res.string.settings_delete)) { IconButton(onClick = onDelete) { Icon(Icons.Outlined.Delete, stringResource(Res.string.settings_delete)) } }
+    }
+}
+
+/** Why an account gets no reads now, and until when: X called it automated, or its sign-in looks broken. */
+@Composable
+private fun accountRest(health: XAccountHealth): String? {
+    val now = System.currentTimeMillis()
+    val locale = currentLocale()
+    return when {
+        health.paused(now) -> stringResource(Res.string.settings_diagnostics_paused, shortDateTime(Instant.ofEpochMilli(health.pausedUntil!!), locale))
+        health.flagged(now) -> stringResource(
+            Res.string.settings_diagnostics_sign_in_broken,
+            shortDateTime(Instant.ofEpochMilli(health.notFoundAt!! + XAccountPolicy.NOT_FOUND_COOLDOWN_MILLIS), locale),
+        )
+        else -> null
     }
 }
 

@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">Bruk monogram</string>
     <string name="settings_diagnostics_recent_reads">Nylige leseoperasjoner</string>
     <string name="settings_diagnostics_sign_in_broken">Innloggingen ser ikke ut til å gjelde lenger, pause til %1$s</string>
+    <string name="settings_diagnostics_paused">X anså forespørslene som automatiserte, pause til %1$s</string>
+    <string name="home_notice_signed_out">%1$s ser ut til å være logget ut — logg inn på nytt</string>
+    <string name="home_notice_reads_paused">X anså forespørslene som automatiserte: lesing fra X er satt på pause til %1$s</string>
 </resources>

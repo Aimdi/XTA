@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">Użyj monogramu</string>
     <string name="settings_diagnostics_recent_reads">Ostatnie operacje odczytu</string>
     <string name="settings_diagnostics_sign_in_broken">Logowanie wygląda na nieważne, przerwa do %1$s</string>
+    <string name="settings_diagnostics_paused">X uznał żądania za zautomatyzowane, przerwa do %1$s</string>
+    <string name="home_notice_signed_out">%1$s wygląda na wylogowane — zaloguj się ponownie</string>
+    <string name="home_notice_reads_paused">X uznał żądania za zautomatyzowane: wczytywanie z X wstrzymane do %1$s</string>
 </resources>

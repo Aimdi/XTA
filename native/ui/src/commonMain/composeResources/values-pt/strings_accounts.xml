@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">Usar monograma</string>
     <string name="settings_diagnostics_recent_reads">Operações de leitura recentes</string>
     <string name="settings_diagnostics_sign_in_broken">A sessão parece já não ser válida, em pausa até às %1$s</string>
+    <string name="settings_diagnostics_paused">O X considerou os pedidos automatizados, em pausa até %1$s</string>
+    <string name="home_notice_signed_out">%1$s parece ter terminado sessão — inicie sessão novamente</string>
+    <string name="home_notice_reads_paused">O X considerou os pedidos automatizados: a leitura do X está em pausa até %1$s</string>
 </resources>

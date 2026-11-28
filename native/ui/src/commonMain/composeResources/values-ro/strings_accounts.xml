@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">Folosește monograma</string>
     <string name="settings_diagnostics_recent_reads">Operațiuni de citire recente</string>
     <string name="settings_diagnostics_sign_in_broken">Autentificarea pare să nu mai fie valabilă, pauză până la %1$s</string>
+    <string name="settings_diagnostics_paused">X a considerat cererile automatizate, pauză până la %1$s</string>
+    <string name="home_notice_signed_out">%1$s pare deconectat — conectează-te din nou</string>
+    <string name="home_notice_reads_paused">X a considerat cererile automatizate: citirea din X e în pauză până la %1$s</string>
 </resources>

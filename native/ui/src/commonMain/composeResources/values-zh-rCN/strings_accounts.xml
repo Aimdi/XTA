@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">改用字母头像</string>
     <string name="settings_diagnostics_recent_reads">最近的读取操作</string>
     <string name="settings_diagnostics_sign_in_broken">登录似乎已失效，暂停至 %1$s</string>
+    <string name="settings_diagnostics_paused">X 认为其请求为自动化请求，暂停至 %1$s</string>
+    <string name="home_notice_signed_out">%1$s 似乎已退出登录——请重新登录</string>
+    <string name="home_notice_reads_paused">X 认为请求是自动化的：X 的读取已暂停至 %1$s</string>
 </resources>

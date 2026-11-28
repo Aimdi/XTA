@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">Use monogram instead</string>
     <string name="settings_diagnostics_recent_reads">Recent read operations</string>
     <string name="settings_diagnostics_sign_in_broken">Sign-in looks broken, resting until %1$s</string>
+    <string name="settings_diagnostics_paused">X called its requests automated, resting until %1$s</string>
+    <string name="home_notice_signed_out">%1$s looks signed out — sign in again</string>
+    <string name="home_notice_reads_paused">X took the requests for automated ones: reading X is paused until %1$s</string>
 </resources>

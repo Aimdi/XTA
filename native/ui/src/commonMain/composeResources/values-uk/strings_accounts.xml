@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">Використовувати монограму</string>
     <string name="settings_diagnostics_recent_reads">Останні операції читання</string>
     <string name="settings_diagnostics_sign_in_broken">Схоже, вхід більше не дійсний, пауза до %1$s</string>
+    <string name="settings_diagnostics_paused">X визнав запити автоматизованими, пауза до %1$s</string>
+    <string name="home_notice_signed_out">%1$s, схоже, вийшов з облікового запису — увійдіть знову</string>
+    <string name="home_notice_reads_paused">X визнав запити автоматизованими: завантаження з X призупинено до %1$s</string>
 </resources>

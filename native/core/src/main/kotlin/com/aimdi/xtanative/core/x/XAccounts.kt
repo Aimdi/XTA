@@ -1,6 +1,10 @@
 package com.aimdi.xtanative.core.x
 
 import java.util.concurrent.ConcurrentHashMap
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /** An X session XTA stored: its id (the `ct0`), its name and the headers it signs in with. */
 data class XAccount(val id: String, val screenName: String?, val headers: Map<String, String>) {
@@ -117,6 +121,23 @@ interface XAccountHealthStore {
                 if (health.isClean) kept.remove(accountId) else kept[accountId] = health
             }
         }
+    }
+}
+
+/**
+ * [store], counting its writes ([changes]), so a screen that shows the
+ * accounts' health knows when to read it again.
+ */
+class XObservedHealthStore(private val store: XAccountHealthStore) : XAccountHealthStore {
+    private val writes = MutableStateFlow(0)
+
+    val changes: StateFlow<Int> = writes.asStateFlow()
+
+    override fun read(accountId: String): XAccountHealth = store.read(accountId)
+
+    override fun write(accountId: String, health: XAccountHealth) {
+        store.write(accountId, health)
+        writes.update { it + 1 }
     }
 }
 

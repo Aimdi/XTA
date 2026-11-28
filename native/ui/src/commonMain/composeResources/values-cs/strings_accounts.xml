@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">Použít monogram</string>
     <string name="settings_diagnostics_recent_reads">Nedávné operace čtení</string>
     <string name="settings_diagnostics_sign_in_broken">Přihlášení zřejmě přestalo platit, pauza do %1$s</string>
+    <string name="settings_diagnostics_paused">X považuje požadavky za automatizované, pauza do %1$s</string>
+    <string name="home_notice_signed_out">%1$s se zdá být odhlášen — přihlaste se znovu</string>
+    <string name="home_notice_reads_paused">X považuje požadavky za automatizované: načítání z X je pozastaveno do %1$s</string>
 </resources>

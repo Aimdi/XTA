@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">Monogram kullan</string>
     <string name="settings_diagnostics_recent_reads">Son okuma işlemleri</string>
     <string name="settings_diagnostics_sign_in_broken">Oturum artık geçerli görünmüyor, %1$s saatine kadar duraklatıldı</string>
+    <string name="settings_diagnostics_paused">X istekleri otomatik saydı; bekleme bitişi: %1$s</string>
+    <string name="home_notice_signed_out">%1$s oturumu kapanmış görünüyor — yeniden giriş yapın</string>
+    <string name="home_notice_reads_paused">X istekleri otomatik saydı: X okuması duraklatıldı, bitiş: %1$s</string>
 </resources>

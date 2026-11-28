@@ -62,7 +62,11 @@ class XClient(
     /** The random gap between two requests of one account ([XPacer]); none unless the app asks for one. */
     requestGapMillis: LongRange = 0L..0L,
 ) {
-    private val transport = XTransport(http, accounts, signers, endpoints, clock, guest, health, disabledAccounts, requestTimeoutMillis, XPacer(requestGapMillis))
+    private val health = XObservedHealthStore(health)
+    private val transport = XTransport(http, accounts, signers, endpoints, clock, guest, this.health, disabledAccounts, requestTimeoutMillis, XPacer(requestGapMillis))
+
+    /** Counts the reads' changes to the accounts' health: a notice of signed-out accounts reads it again on each. */
+    val accountHealthChanges: kotlinx.coroutines.flow.StateFlow<Int> get() = health.changes
     private val kept = ConcurrentHashMap<String, Pair<Long, Any>>()
 
     /** What X said of each account's limits: when a rate-limited read may be tried again. */
