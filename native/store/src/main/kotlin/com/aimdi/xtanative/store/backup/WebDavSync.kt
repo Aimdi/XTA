@@ -120,8 +120,11 @@ class WebDavSync(
             val sent = put(config, config.address!!, payload, condition)
             val result = if (sent.isSuccess) sent else landed(config, sent, payload)
             if (result == null) {
-                // The copy kept for a replacement that never happened would only pile up on the server.
-                archivedFile?.let { file -> runCatching { http.send("DELETE", versionAddress(config, file), config.authHeaders, null) } }
+                // The copy kept for a replacement that never happened would only pile up on the server; one
+                // that may have landed unanswered stays, as the only copy of the document it replaced.
+                if (archivedFile != null && neverLanded(config, sent, remote)) {
+                    runCatching { http.send("DELETE", versionAddress(config, archivedFile), config.authHeaders, null) }
+                }
                 return sent
             }
             // A lost validator must never become permission to overwrite on a retry.
@@ -144,6 +147,13 @@ class WebDavSync(
     private suspend fun landed(config: WebDavConfig, sent: WebDavResult, payload: String): WebDavResult? {
         if (sent.outcome != WebDavOutcome.NETWORK_ERROR) return null
         return download(config).takeIf { it.isSuccess && it.etag != null && it.body == payload }
+    }
+
+    /** Whether the PUT that failed with [sent] surely left the document [remote] was: the server answered no, or still holds it unchanged. */
+    private suspend fun neverLanded(config: WebDavConfig, sent: WebDavResult, remote: WebDavResult): Boolean {
+        if (sent.outcome != WebDavOutcome.NETWORK_ERROR) return true
+        val now = download(config)
+        return now.isSuccess && now.etag != null && now.etag == remote.etag
     }
 
     private fun invalid(config: WebDavConfig): WebDavResult? = when {

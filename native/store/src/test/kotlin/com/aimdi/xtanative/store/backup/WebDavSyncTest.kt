@@ -24,6 +24,9 @@ private class FakeDav(var etags: Boolean = true, var reachable: Boolean = true) 
 
     /** How a PUT to the document fails, when it should. */
     var mainPut: PutFailure? = null
+
+    /** While set, every GET goes unanswered, as when the link drops for a moment. */
+    var getsLost = false
     private val revisions = HashMap<String, Int>()
     private var revision = 0
 
@@ -34,11 +37,15 @@ private class FakeDav(var etags: Boolean = true, var reachable: Boolean = true) 
         if (headers["authorization"] != "Basic dXNlcjpwYXNz") return WebDavResponse(401)
         val path = url.encodedPath
         return when (method) {
-            "GET" -> files[path]?.let { WebDavResponse(200, it, tag(path)) } ?: WebDavResponse(404)
+            "GET" -> if (getsLost) throw IOException("reset") else files[path]?.let { WebDavResponse(200, it, tag(path)) } ?: WebDavResponse(404)
             "PUT" -> when (mainPut.also { if (path == "/xta/backup.json") mainPutGate?.await() }.takeIf { path == "/xta/backup.json" }) {
                 PutFailure.REFUSED -> WebDavResponse(507)
                 PutFailure.LOST -> throw IOException("reset")
                 PutFailure.ANSWER_LOST -> put(path, headers, body.orEmpty()).let { throw IOException("reset after write") }
+                PutFailure.ANSWER_AND_CHECK_LOST -> put(path, headers, body.orEmpty()).let {
+                    getsLost = true
+                    throw IOException("reset after write")
+                }
                 null -> put(path, headers, body.orEmpty())
             }
             "MKCOL" -> WebDavResponse(if (folders.add(path)) 201 else 405)
@@ -60,7 +67,7 @@ private class FakeDav(var etags: Boolean = true, var reachable: Boolean = true) 
     private fun tag(path: String): String? = if (etags && path in files) "\"${revisions[path]}\"" else null
 }
 
-private enum class PutFailure { REFUSED, LOST, ANSWER_LOST }
+private enum class PutFailure { REFUSED, LOST, ANSWER_LOST, ANSWER_AND_CHECK_LOST }
 
 private class MemoryBaselines : WebDavBaselines {
     val kept = HashMap<String, String>()
@@ -128,6 +135,19 @@ class WebDavSyncTest {
             server.mainPut = null
             assertEquals(WebDavOutcome.SUCCESS, sync.upload(config, """{"next":2}""").outcome)
         }
+    }
+
+    /** Unanswered and not seen since, the document may have been replaced: the kept copy is then the only one of what it replaced. */
+    @Test
+    fun aReplacementThatMayHaveLandedKeepsItsCopy(): Unit = runBlocking {
+        val server = FakeDav()
+        val sync = WebDavSync(server, MemoryBaselines()) { now }
+        assertEquals(WebDavOutcome.SUCCESS, sync.upload(config, "{}").outcome)
+        server.mainPut = PutFailure.ANSWER_AND_CHECK_LOST
+        assertEquals(WebDavOutcome.NETWORK_ERROR, sync.upload(config, """{"next":1}""").outcome)
+        val copy = server.files.keys.single { it != "/xta/backup.json" }
+        assertTrue(copy.startsWith("/xta/backup.json.versions/"))
+        assertTrue(server.files["/xta/backup.json"]!!.contains("\"next\":1"), "the replacement landed")
     }
 
     @Test
