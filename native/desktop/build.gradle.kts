@@ -135,6 +135,10 @@ compose.desktop {
         // and only then returns free regions to the system (measured: 23-37 MB less after a minute idle, 0.1 s of
         // processor time in two minutes). A smaller MaxHeapFreeRatio gave little more and was left out.
         jvmArgs("-XX:G1PeriodicGCInterval=30000")
+        // Skia's frame watcher asks for a full collection (System.gc) every 30 s while frames are drawn: a 33-49 ms
+        // stop in the middle of a scroll, two thirds of the pause time of one (measured with JFR). G1 collects
+        // as it goes and the periodic collection above gives memory back when idle, so it is turned off.
+        jvmArgs("-Dskiko.gc.auto=false")
         nativeDistributions {
             packageName = "xta-native"
             packageVersion = versionName
