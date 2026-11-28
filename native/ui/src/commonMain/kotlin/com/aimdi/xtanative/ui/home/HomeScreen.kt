@@ -375,7 +375,7 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
                 onPage = { index -> barTapped(shell, ui, index) },
                 onNetworks = { shell.sheet = HomeSheet.NETWORKS },
                 onHoldHome = { shell.sheet = HomeSheet.PICKER },
-                sections = takeover.on(page),
+                sections = takeover.onBar(page),
                 hidden = takeover.hidesBar(page),
                 beside = wide,
             )

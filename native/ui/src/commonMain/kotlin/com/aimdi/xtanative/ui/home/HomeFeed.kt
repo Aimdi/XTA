@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import com.aimdi.xtanative.ui.common.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -171,6 +172,7 @@ internal fun HomeFeedPage(
                         ui, vm, timelines, following, networks, actions, routes, refresh, calls,
                         // The foot's notices centre under the timeline read, not across the line beside it.
                         Modifier.width(each).fillMaxHeight().chosenMark(shown != null && chosen == shown).noticeArea(),
+                        column = true,
                     )
                 }
                 beside.forEach { tab ->
@@ -218,6 +220,7 @@ private fun ShownTimeline(
     refresh: () -> Unit,
     calls: FeedPageCalls,
     modifier: Modifier,
+    column: Boolean = false,
 ) {
     val tabs = ui.tabs
     val reader = rememberScreenReaderOn()
@@ -236,7 +239,7 @@ private fun ShownTimeline(
     // The bar's house, while a network has it, leads back to Following and so to the app's own bar.
     val toFollowing by rememberUpdatedState({ calls.onTab(tabs.indexOf(HomeTab.Following).coerceAtLeast(0)) })
     DisposableEffect(takeover, source, client) {
-        takeover?.show(NetworkBarRules.FEED, source, client.takeIf { source != null }, onHome = { toFollowing() }, house = false)
+        takeover?.show(NetworkBarRules.FEED, source, client.takeIf { source != null }, onHome = { toFollowing() }, house = false, inColumn = column)
         onDispose { takeover?.show(NetworkBarRules.FEED, null, null) }
     }
     val sectionsBelow = takeover?.on(BarPage.Feed)?.network == source && source != null
@@ -255,11 +258,14 @@ private fun ShownTimeline(
             false
         }
     }
+    // Read beside other columns, a network's sections are this column's own bar, not one across all of Home.
+    val columnBar = takeover?.on(BarPage.Feed)?.takeIf { column && it.inColumn && it.network == source }
     CompositionLocalProvider(LocalHomeReading provides reading.takeIf { source != null }) {
+    Column(modifier) {
     // On the desktop Tab walks the bar before the timeline under it, as the eye reads them.
     BarFirstScaffold(
         barFirst = desktop,
-        modifier = modifier.nestedScroll(reading.connection).nestedScroll(bar.nestedScrollConnection),
+        modifier = Modifier.weight(1f).nestedScroll(reading.connection).nestedScroll(bar.nestedScrollConnection),
         topBar = {
             if (current == HomeTab.Following) {
                 FollowingTopBar(following, followingCalls(calls, desktop, refresh), bar)
@@ -306,6 +312,8 @@ private fun ShownTimeline(
                 }
             }
         }
+    }
+    if (columnBar != null) NetworkSectionsBar(ui, rememberHomeBars(enabled = false), columnBar) { toFollowing() }
     }
     }
 }

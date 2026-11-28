@@ -267,7 +267,7 @@ internal fun HomeBottomBar(
  * the network's menu, not here.
  */
 @Composable
-private fun NetworkSectionsBar(ui: HomeUi, state: HomeBarsState, takeover: NetworkBarSections, onHome: () -> Unit) {
+internal fun NetworkSectionsBar(ui: HomeUi, state: HomeBarsState, takeover: NetworkBarSections, onHome: () -> Unit) {
     val accent = pluginAccent(takeover.accent)
     val split = takeover.split
     Column(
