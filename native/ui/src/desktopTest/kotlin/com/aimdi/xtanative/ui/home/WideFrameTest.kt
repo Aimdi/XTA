@@ -70,6 +70,22 @@ class WideFrameTest {
     }
 
     @Test
+    fun aPluginsPageMarksItsOwnRowElseNothingButHomeUnderIt() {
+        val pixivPage = BarPage.Network("pixiv").id
+        val fromStore = listOf(FrameRoute(home), FrameRoute("plugins"), FrameRoute("plugin/{pluginId}", plugin = "pixiv"))
+        assertEquals(FrameMark(), FrameMarks.ofStack(fromStore, home, HomeBar.FEED, defaultBar), "not the store it was opened from")
+        assertEquals(FrameMark(page = pixivPage), FrameMarks.ofStack(fromStore, home, HomeBar.FEED, defaultBar + pixivPage))
+        val link = listOf(FrameRoute(home), FrameRoute("search?q={q}&tab={tab}&focus={focus}"), FrameRoute("plugin/{pluginId}/screen?route={route}", plugin = "pixiv"))
+        assertEquals(FrameMark(), FrameMarks.ofStack(link, home, HomeBar.FEED, defaultBar), "a link found by the search is not Search")
+        val post = link + FrameRoute("post/{id}?media={media}")
+        assertEquals(FrameMark(page = pixivPage), FrameMarks.ofStack(post, home, HomeBar.FEED, defaultBar + pixivPage), "what it opens leaves its row marked")
+        val fromHome = listOf(FrameRoute(home), FrameRoute("plugin/{pluginId}/card?route={route}", plugin = "pixiv"))
+        assertEquals(FrameMark(page = HomeBar.FEED), FrameMarks.ofStack(fromHome, home, HomeBar.FEED, defaultBar), "opened from Home's pinned column")
+        val settings = listOf(FrameRoute(home), FrameRoute("plugins"), FrameRoute("plugin/{pluginId}/settings"))
+        assertEquals(FrameMark(screen = "plugins"), FrameMarks.ofStack(settings, home, HomeBar.FEED, defaultBar), "its settings stay the store's")
+    }
+
+    @Test
     fun onlyTheScreensTheColumnOpenedAreItsRootsForAsLongAsTheyAreInTheNavigation() {
         val roots = FrameRoots()
         assertEquals(emptySet(), roots.among(listOf("home", "search")), "Search from a hashtag keeps its Back")
