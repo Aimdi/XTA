@@ -408,7 +408,7 @@
     <string name="settings_unread_outside_description">Tiêu đề cửa sổ, biểu tượng khay hệ thống và trình khởi chạy cho biết có bao nhiêu bài chưa đọc, không bao giờ hiện nội dung</string>
     <string name="settings_unreadable_files">Không thể đọc một số dữ liệu của bạn: %1$s. Dữ liệu được giữ nguyên, và các thay đổi sẽ không được lưu cho đến khi đọc lại được.</string>
     <string name="settings_local_backups">Sao lưu tự động</string>
-    <string name="settings_local_backups_description">Các bản sao lưu trên máy tính này, được tạo mỗi ngày và trước mỗi lần nhập hoặc khôi phục. Không gồm thông tin đăng nhập X.</string>
+    <string name="settings_local_backups_description">Các bản sao lưu trên thiết bị này, được tạo mỗi ngày và trước mỗi lần nhập hoặc khôi phục. Không gồm thông tin đăng nhập X.</string>
     <string name="settings_local_backup_daily">Bản sao hằng ngày · %1$s</string>
     <string name="settings_local_backup_before_restore">Trước khi khôi phục · %1$s</string>
     <string name="settings_local_backup_restore">Khôi phục</string>

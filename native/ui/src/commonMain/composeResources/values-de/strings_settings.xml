@@ -410,7 +410,7 @@
     <string name="settings_unread_outside_description">Fenstertitel, Symbol in der Leiste und Starter zeigen, wie viele Beiträge ungelesen sind, nie ihren Inhalt</string>
     <string name="settings_unreadable_files">Einige deiner Daten konnten nicht gelesen werden: %1$s. Sie bleiben unverändert, und Änderungen daran werden erst gespeichert, wenn sie wieder lesbar sind.</string>
     <string name="settings_local_backups">Automatische Sicherungen</string>
-    <string name="settings_local_backups_description">Kopien auf diesem Computer, jeden Tag und vor jedem Import oder jeder Wiederherstellung angelegt. X-Anmeldungen sind nicht enthalten.</string>
+    <string name="settings_local_backups_description">Kopien auf diesem Gerät, jeden Tag und vor jedem Import oder jeder Wiederherstellung angelegt. X-Anmeldungen sind nicht enthalten.</string>
     <string name="settings_local_backup_daily">Tageskopie · %1$s</string>
     <string name="settings_local_backup_before_restore">Vor einer Wiederherstellung · %1$s</string>
     <string name="settings_local_backup_restore">Wiederherstellen</string>

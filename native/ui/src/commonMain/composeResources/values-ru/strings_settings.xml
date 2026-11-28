@@ -414,7 +414,7 @@
     <string name="settings_unread_outside_description">Заголовок окна, значок в трее и панель запуска показывают, сколько постов не прочитано, но никогда — что в них написано</string>
     <string name="settings_unreadable_files">Не удалось прочитать часть ваших данных: %1$s. Они остаются как есть, а изменения в них не сохраняются, пока их снова не удастся прочитать.</string>
     <string name="settings_local_backups">Автоматические копии</string>
-    <string name="settings_local_backups_description">Копии на этом компьютере, создаются каждый день и перед каждым импортом или восстановлением. Входы в X в них не попадают.</string>
+    <string name="settings_local_backups_description">Копии на этом устройстве, создаются каждый день и перед каждым импортом или восстановлением. Входы в X в них не попадают.</string>
     <string name="settings_local_backup_daily">Ежедневная копия · %1$s</string>
     <string name="settings_local_backup_before_restore">Перед восстановлением · %1$s</string>
     <string name="settings_local_backup_restore">Восстановить</string>

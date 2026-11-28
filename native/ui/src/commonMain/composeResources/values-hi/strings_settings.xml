@@ -410,7 +410,7 @@
     <string name="settings_unread_outside_description">विंडो का शीर्षक, ट्रे आइकन और लॉन्चर दिखाते हैं कि कितनी पोस्ट अपठित हैं, उनमें क्या लिखा है यह कभी नहीं</string>
     <string name="settings_unreadable_files">आपका कुछ डेटा पढ़ा नहीं जा सका: %1$s. उसे जैसा है वैसा छोड़ दिया गया है, और जब तक वह फिर से पढ़ा न जा सके, उसमें किए बदलाव सहेजे नहीं जाते।</string>
     <string name="settings_local_backups">स्वचालित बैकअप</string>
-    <string name="settings_local_backups_description">इस कंप्यूटर पर रखी गई प्रतियाँ, जो हर दिन और हर आयात या पुनर्स्थापना से पहले बनती हैं। X के साइन-इन इनमें शामिल नहीं होते।</string>
+    <string name="settings_local_backups_description">इस डिवाइस पर रखी गई प्रतियाँ, जो हर दिन और हर आयात या पुनर्स्थापना से पहले बनती हैं। X के साइन-इन इनमें शामिल नहीं होते।</string>
     <string name="settings_local_backup_daily">दैनिक प्रति · %1$s</string>
     <string name="settings_local_backup_before_restore">पुनर्स्थापना से पहले · %1$s</string>
     <string name="settings_local_backup_restore">पुनर्स्थापित करें</string>

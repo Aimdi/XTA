@@ -414,7 +414,7 @@
     <string name="settings_unread_outside_description">Tytuł okna, ikona w zasobniku i program uruchamiający pokazują, ile wpisów jest nieprzeczytanych, nigdy ich treści</string>
     <string name="settings_unreadable_files">Nie udało się odczytać części Twoich danych: %1$s. Pozostają bez zmian, a zmiany w nich nie są zapisywane, dopóki nie da się ich znów odczytać.</string>
     <string name="settings_local_backups">Automatyczne kopie zapasowe</string>
-    <string name="settings_local_backups_description">Kopie przechowywane na tym komputerze, tworzone codziennie oraz przed każdym importem lub przywróceniem. Logowania do X nie są w nich zapisywane.</string>
+    <string name="settings_local_backups_description">Kopie przechowywane na tym urządzeniu, tworzone codziennie oraz przed każdym importem lub przywróceniem. Logowania do X nie są w nich zapisywane.</string>
     <string name="settings_local_backup_daily">Kopia dzienna · %1$s</string>
     <string name="settings_local_backup_before_restore">Przed przywróceniem · %1$s</string>
     <string name="settings_local_backup_restore">Przywróć</string>

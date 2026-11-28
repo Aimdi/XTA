@@ -412,7 +412,7 @@
     <string name="settings_unread_outside_description">Il titolo della finestra, l\'icona nell\'area di notifica e il launcher mostrano quanti post non hai letto, mai cosa dicono</string>
     <string name="settings_unreadable_files">Non è stato possibile leggere alcuni dei tuoi dati: %1$s. Restano come sono e le modifiche non vengono salvate finché non si potranno leggere di nuovo.</string>
     <string name="settings_local_backups">Backup automatici</string>
-    <string name="settings_local_backups_description">Copie conservate su questo computer, create ogni giorno e prima di ogni importazione o ripristino. Gli accessi a X non sono inclusi.</string>
+    <string name="settings_local_backups_description">Copie conservate su questo dispositivo, create ogni giorno e prima di ogni importazione o ripristino. Gli accessi a X non sono inclusi.</string>
     <string name="settings_local_backup_daily">Copia giornaliera · %1$s</string>
     <string name="settings_local_backup_before_restore">Prima di un ripristino · %1$s</string>
     <string name="settings_local_backup_restore">Ripristina</string>

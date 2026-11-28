@@ -412,7 +412,7 @@
     <string name="settings_unread_outside_description">El título de la ventana, el icono de la bandeja y el lanzador muestran cuántas publicaciones no has leído, nunca lo que dicen</string>
     <string name="settings_unreadable_files">No se han podido leer algunos de tus datos: %1$s. Se dejan tal cual y los cambios no se guardan hasta que se puedan volver a leer.</string>
     <string name="settings_local_backups">Copias de seguridad automáticas</string>
-    <string name="settings_local_backups_description">Copias guardadas en este ordenador, hechas cada día y antes de cada importación o restauración. No incluyen los inicios de sesión de X.</string>
+    <string name="settings_local_backups_description">Copias guardadas en este dispositivo, hechas cada día y antes de cada importación o restauración. No incluyen los inicios de sesión de X.</string>
     <string name="settings_local_backup_daily">Copia diaria · %1$s</string>
     <string name="settings_local_backup_before_restore">Antes de una restauración · %1$s</string>
     <string name="settings_local_backup_restore">Restaurar</string>

@@ -410,7 +410,7 @@
     <string name="settings_unread_outside_description">Pencere başlığı, tepsi simgesi ve başlatıcı kaç gönderinin okunmadığını gösterir, ne yazdıklarını asla göstermez</string>
     <string name="settings_unreadable_files">Verilerinizin bir kısmı okunamadı: %1$s. Olduğu gibi bırakıldı ve yeniden okunabilene kadar üzerindeki değişiklikler kaydedilmiyor.</string>
     <string name="settings_local_backups">Otomatik yedekler</string>
-    <string name="settings_local_backups_description">Bu bilgisayarda tutulan, her gün ve her içe aktarma ya da geri yüklemeden önce alınan kopyalar. X oturum açma bilgileri dahil edilmez.</string>
+    <string name="settings_local_backups_description">Bu cihazda tutulan, her gün ve her içe aktarma ya da geri yüklemeden önce alınan kopyalar. X oturum açma bilgileri dahil edilmez.</string>
     <string name="settings_local_backup_daily">Günlük kopya · %1$s</string>
     <string name="settings_local_backup_before_restore">Geri yüklemeden önce · %1$s</string>
     <string name="settings_local_backup_restore">Geri yükle</string>

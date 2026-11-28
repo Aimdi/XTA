@@ -408,7 +408,7 @@
     <string name="settings_unread_outside_description">視窗標題、系統匣圖示與啟動器顯示有多少貼文未讀，絕不顯示其內容</string>
     <string name="settings_unreadable_files">無法讀取你的部分資料：%1$s。它們維持原樣，在能再次讀取之前，對它們的變更不會儲存。</string>
     <string name="settings_local_backups">自動備份</string>
-    <string name="settings_local_backups_description">保存在這台電腦上的副本，每天以及每次匯入或還原之前建立。不包含 X 登入資訊。</string>
+    <string name="settings_local_backups_description">保存在此裝置上的副本，每天以及每次匯入或還原之前建立。不包含 X 登入資訊。</string>
     <string name="settings_local_backup_daily">每日副本 · %1$s</string>
     <string name="settings_local_backup_before_restore">還原之前 · %1$s</string>
     <string name="settings_local_backup_restore">還原</string>

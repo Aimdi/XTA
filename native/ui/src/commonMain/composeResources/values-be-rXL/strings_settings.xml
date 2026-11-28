@@ -414,7 +414,7 @@
     <string name="settings_unread_outside_description">Zahalovak akna, značok u trei i panel zapusku pakazvajuć, kolki dopisaŭ nie pračytana, ale nikoli nie toje, što ŭ ich napisana</string>
     <string name="settings_unreadable_files">Nie ŭdałosia pračytać častku vašych danych: %1$s. Jany zastajucca jak jość, a zmieny ŭ ich nie zachoŭvajucca, pakul ich nie ŭdasca pračytać znoŭ.</string>
     <string name="settings_local_backups">Aŭtamatyčnyja kopii</string>
-    <string name="settings_local_backups_description">Kopii na hetym kampjutary, jakija robiacca kožny dzień i pierad kožnym impartam abo adnaŭlenniem. Uvachody ŭ X u ich nie traplajuć.</string>
+    <string name="settings_local_backups_description">Kopii na hetaj pryladzie, jakija robiacca kožny dzień i pierad kožnym impartam abo adnaŭlenniem. Uvachody ŭ X u ich nie traplajuć.</string>
     <string name="settings_local_backup_daily">Štodzionnaja kopija · %1$s</string>
     <string name="settings_local_backup_before_restore">Pierad adnaŭlenniem · %1$s</string>
     <string name="settings_local_backup_restore">Adnavić</string>

@@ -410,7 +410,7 @@
     <string name="settings_unread_outside_description">De venstertitel, het pictogram in het systeemvak en de starter tonen hoeveel berichten ongelezen zijn, nooit wat erin staat</string>
     <string name="settings_unreadable_files">Sommige van je gegevens konden niet worden gelezen: %1$s. Ze blijven zoals ze zijn, en wijzigingen erin worden pas opgeslagen als ze weer leesbaar zijn.</string>
     <string name="settings_local_backups">Automatische back-ups</string>
-    <string name="settings_local_backups_description">Kopieën op deze computer, elke dag gemaakt en vóór elke import of herstelactie. X-aanmeldingen zitten er niet in.</string>
+    <string name="settings_local_backups_description">Kopieën op dit apparaat, elke dag gemaakt en vóór elke import of herstelactie. X-aanmeldingen zitten er niet in.</string>
     <string name="settings_local_backup_daily">Dagelijkse kopie · %1$s</string>
     <string name="settings_local_backup_before_restore">Vóór een herstelactie · %1$s</string>
     <string name="settings_local_backup_restore">Herstellen</string>

@@ -408,7 +408,7 @@
     <string name="settings_unread_outside_description">ウィンドウのタイトル、トレイのアイコン、ランチャーに未読の投稿数を表示します。内容は表示しません</string>
     <string name="settings_unreadable_files">一部のデータを読み込めませんでした: %1$s。そのまま残されており、再び読み込めるようになるまで変更は保存されません。</string>
     <string name="settings_local_backups">自動バックアップ</string>
-    <string name="settings_local_backups_description">このコンピューターに保存されるコピーです。毎日、およびインポートや復元の前に作成されます。X のログイン情報は含まれません。</string>
+    <string name="settings_local_backups_description">この端末に保存されるコピーです。毎日、およびインポートや復元の前に作成されます。X のログイン情報は含まれません。</string>
     <string name="settings_local_backup_daily">毎日のコピー · %1$s</string>
     <string name="settings_local_backup_before_restore">復元の前 · %1$s</string>
     <string name="settings_local_backup_restore">復元</string>

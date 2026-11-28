@@ -410,7 +410,7 @@
     <string name="settings_unread_outside_description">Akna pealkiri, salve ikoon ja käivitaja näitavad, mitu postitust on lugemata, kuid mitte kunagi nende sisu</string>
     <string name="settings_unreadable_files">Osa sinu andmetest ei õnnestunud lugeda: %1$s. Need jäetakse nii, nagu on, ja muudatusi neis ei salvestata enne, kui neid saab jälle lugeda.</string>
     <string name="settings_local_backups">Automaatsed varukoopiad</string>
-    <string name="settings_local_backups_description">Selles arvutis hoitavad koopiad, mis tehakse iga päev ning enne iga importi või taastamist. X-i sisselogimised neis ei ole.</string>
+    <string name="settings_local_backups_description">Selles seadmes hoitavad koopiad, mis tehakse iga päev ning enne iga importi või taastamist. X-i sisselogimised neis ei ole.</string>
     <string name="settings_local_backup_daily">Päevane koopia · %1$s</string>
     <string name="settings_local_backup_before_restore">Enne taastamist · %1$s</string>
     <string name="settings_local_backup_restore">Taasta</string>
