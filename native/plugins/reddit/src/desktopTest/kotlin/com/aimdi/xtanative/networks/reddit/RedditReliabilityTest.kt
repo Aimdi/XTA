@@ -234,4 +234,12 @@ class RedditReliabilityTest {
         val manifest = java.io.File("plugin.json").takeIf { it.exists() } ?: java.io.File("native/plugins/reddit/plugin.json")
         assertTrue("\"version\": \"${RedditClient.PLUGIN_VERSION}\"" in manifest.readText(), "the agent's version is plugin.json's")
     }
+
+    @Test
+    fun theWebsiteIsAskedAsACurrentDesktopChrome() {
+        val agent = RedditClient.WEB_USER_AGENT
+        val major = Regex("""Chrome/(\d+)\.""").find(agent)?.groupValues?.get(1)?.toInt() ?: 0
+        assertTrue(major >= 157, "a browser years out of date is a bot tell: $agent")
+        assertTrue("Mobile" !in agent && "Windows NT 10.0; Win64; x64" in agent, agent)
+    }
 }

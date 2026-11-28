@@ -692,9 +692,14 @@ class RedditClient(
          */
         val API_USER_AGENT = "${platform()}:com.aimdi.xtanative.reddit:$PLUGIN_VERSION (by Aimdi; read-only XTA reader)"
 
-        /** For the website, which turns away anything announcing itself as a bot: XTA's shipped `reddit.web_user_agent`. */
+        /**
+         * For the website, which turns away anything announcing itself as a
+         * bot: XTA's shipped `reddit.web_user_agent`, a current stable desktop
+         * Chrome in its reduced form (Chrome 157, November 2026). A browser
+         * years out of date is itself a tell; keep it and `repairs.json` in step.
+         */
         const val WEB_USER_AGENT =
-            "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36"
 
         /** The website's agent as `repairs.json` may replace it; give [RepairSlot.valueIn]'s answer as `webUserAgent`. */
         val WEB_USER_AGENT_SLOT = RepairSlot("reddit.web_user_agent", WEB_USER_AGENT, RepairKind.HEADER)
