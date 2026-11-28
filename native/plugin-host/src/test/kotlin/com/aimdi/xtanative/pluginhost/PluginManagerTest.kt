@@ -378,14 +378,16 @@ class PluginManagerTest {
         val forged = TestKeys.sign(pluginJar("gamma", "1.0.0"), TestKeys.other)
         jarOf("gamma").writeBytes(forged)
         val record = File(dir, "store/plugins/installed.json")
-        val sizeOfGamma = Regex("\"size\"\\s*:\\s*${jars.getValue("gamma").size}\\b")
-        assertTrue(sizeOfGamma.containsMatchIn(record.readText()) && record.readText().contains(sha256(jars.getValue("gamma"))), record.readText())
-        record.writeText(record.readText().replace(sha256(jars.getValue("gamma")), sha256(forged)).replace(sizeOfGamma, "\"size\": ${forged.size}"))
+        // Only gamma's own record: its checksum and the size right after it. A size alone can be alpha's or delta's too
+        // (same-length ids give same-size JARs whenever the signatures happen to match in length), which made this flaky.
+        val gammaRecord = Regex("(\"sha256\"\\s*:\\s*\")${sha256(jars.getValue("gamma"))}(\"\\s*,\\s*\"size\"\\s*:\\s*)${jars.getValue("gamma").size}\\b")
+        assertEquals(1, gammaRecord.findAll(record.readText()).count(), record.readText())
+        record.writeText(record.readText().replace(gammaRecord, "$1${sha256(forged)}$2${forged.size}"))
 
         val manager = manager(host = desktop)
         val loads = ids.map { async(Dispatchers.IO) { manager.load(it) } }.map { it.await() }
         val byId = ids.zip(loads).toMap()
-        listOf("alpha", "delta", "epsilon").forEach { assertIs<PluginLoad.Loaded>(byId[it], it) }
+        listOf("alpha", "delta", "epsilon").forEach { assertIs<PluginLoad.Loaded>(byId[it], "$it: ${byId[it]}") }
         assertEquals(PluginLoad.Refused(PluginFailure.Damaged), byId["beta"])
         assertEquals(PluginLoad.Refused(PluginFailure.Damaged), byId["gamma"], "the record vouches for the file, the signature does not")
         assertEquals(PluginStatus.Failed(PluginFailure.Damaged, "1.0.0"), manager.status("beta"))
