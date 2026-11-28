@@ -1,6 +1,9 @@
 package com.aimdi.xtanative.networks.pixiv
 
+import com.aimdi.xtanative.networks.NetworkFailure
 import com.aimdi.xtanative.networks.NetworkRequestException
+import java.io.IOException
+import java.time.Instant
 
 /** The network name Pixiv's refusals carry, so a screen can say who refused. */
 const val PIXIV_NETWORK = "pixiv"
@@ -10,6 +13,16 @@ const val PIXIVISION_NETWORK = "pixivision"
 
 /** No Pixiv account is signed in, so there is no token to read with. */
 class PixivNoAccountException : Exception("No Pixiv account is signed in")
+
+/**
+ * Pixiv, or the edge in front of it, refused a request that carried no
+ * token (the walkthrough before sign-in, most likely a block of the address):
+ * no account had any part in it, so it never reads as a rejected token.
+ */
+class PixivAnonymousRefusal(override val code: Int, message: String) : Exception(message), NetworkFailure {
+    override val network: String get() = PIXIV_NETWORK
+    override val retryAt: Instant? get() = null
+}
 
 /**
  * What went wrong with a Pixiv read, in the six kinds XTA words for the
@@ -34,10 +47,13 @@ enum class PixivFailure {
     ;
 
     companion object {
+        /** Only a failure to get an answer at all is the network's; anything else unreadable is a bad answer, not "offline". */
         fun of(error: Throwable): PixivFailure = when (error) {
             is PixivNoAccountException -> NOT_SIGNED_IN
             is NetworkRequestException -> ofAnswer(error)
-            else -> NETWORK
+            is PixivAnonymousRefusal -> BAD_RESPONSE
+            is IOException -> NETWORK
+            else -> BAD_RESPONSE
         }
 
         /** Pixivision holds no token and keeps no limits of Pixiv's, so its refusals are only missing pages or bad answers. */

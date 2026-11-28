@@ -292,7 +292,7 @@ class PixivClient(
     }
 
     private suspend fun sendNow(url: HttpUrl, auth: Boolean, request: suspend (Map<String, String>) -> XResponse): XResponse {
-        if (!auth || url.host != API_HOST) return checked(url, request(baseHeaders()))
+        if (!auth || url.host != API_HOST) return checked(url, request(baseHeaders()), anonymous = true)
         val token = accessToken()
         val first = request(bearer(token))
         val answer = if (isTokenRefused(first)) request(bearer(reauthorize(token))) else first
@@ -331,11 +331,13 @@ class PixivClient(
         )
     }
 
-    private fun checked(url: HttpUrl, response: XResponse): XResponse {
+    /** [response] when it is an answer, else what it is: a refusal of a request without a token never reads as the account's. */
+    private fun checked(url: HttpUrl, response: XResponse, anonymous: Boolean = false): XResponse {
         if (response.isSuccessful) return response
         val endpoint = url.encodedPath
         throw when {
             isRateLimited(response) -> NetworkRequestException(PIXIV_NETWORK, 429, "$endpoint: rate limited (HTTP ${response.code})", retryAt = limitedBy(response))
+            anonymous && response.code in 401..403 -> PixivAnonymousRefusal(response.code, "$endpoint: refused without a token (HTTP ${response.code})")
             isTokenRefused(response) -> NetworkRequestException(PIXIV_NETWORK, 401, "$endpoint: token refused (HTTP ${response.code})")
             else -> NetworkRequestException(PIXIV_NETWORK, response.code, "$endpoint: HTTP ${response.code}")
         }
