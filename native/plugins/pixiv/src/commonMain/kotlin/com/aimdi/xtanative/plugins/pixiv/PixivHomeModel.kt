@@ -77,6 +77,7 @@ internal class PixivHomeModel(private val runtime: PixivRuntime, private val sco
 
     val following = PixivList(scope, { it.id }, ::followingPage, works)
     val deviceFollowing = PixivList(scope, { it.id }, { next -> if (next != null) Page(emptyList(), null) else PixivFollowedHere.read(runtime) }, works)
+        .apply { budgetMillis = PixivFollowedHere.BUDGET_MILLIS }
     val recommended = PixivList(scope, { it.id }, { runtime.client.recommended(it) }, works)
     val spotlight = PixivList(scope, { it.id }, { runtime.discovery.spotlightArticles(it) })
     val users = PixivList<PixivUserPreview>(scope, { it.user.id }, { runtime.discovery.recommendedUsers(it) })

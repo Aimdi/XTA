@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.pixiv
 
+import com.aimdi.xtanative.core.x.http.withRequestBudget
 import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.pixiv.PixivPages
 import kotlinx.coroutines.CancellationException
@@ -35,7 +36,8 @@ internal data class PixivListState<T>(
  * loading; a later refresh keeps the list up, and keeps it when it fails. A
  * page the [visible] filter empties is read past ([PixivPages.visiblePage]).
  * Swapping the source ([use]) or a refresh drops whatever was still on its
- * way, so a slow page of the old source never joins the new list.
+ * way, so a slow page of the old source never joins the new list. Each read,
+ * with the pages it reads past, has [budgetMillis] in all.
  */
 internal class PixivList<T : Any>(
     private val scope: CoroutineScope,
@@ -43,6 +45,9 @@ internal class PixivList<T : Any>(
     private var load: suspend (next: String?) -> Page<T>,
     private val visible: (List<T>) -> List<T> = { it },
 ) {
+    /** What each read may spend, the pages it reads past included; a fan-out over many creators is given more. */
+    var budgetMillis: Long = PixivPages.READ_BUDGET_MILLIS
+
     private val mutable = MutableStateFlow(PixivListState<T>())
     val state: StateFlow<PixivListState<T>> = mutable.asStateFlow()
 
@@ -59,7 +64,7 @@ internal class PixivList<T : Any>(
         mutable.update { it.copy(loading = true, error = null, loadingMore = false, moreFailed = false) }
         job = scope.launch {
             try {
-                val page = PixivPages.visiblePage(null, load, visible)
+                val page = read(null)
                 used.clear()
                 next = page.next
                 mutable.value = PixivListState(items = page.items.distinctBy(key), loaded = true, hasMore = page.next != null)
@@ -85,7 +90,7 @@ internal class PixivList<T : Any>(
         mutable.update { it.copy(loadingMore = true) }
         moreJob = scope.launch {
             try {
-                val page = PixivPages.visiblePage(cursor, load, visible)
+                val page = read(cursor)
                 used += cursor
                 next = page.next?.takeIf { it !in used }
                 mutable.update { it.copy(items = PixivPages.merge(it.items, page.items, key), loadingMore = false, hasMore = next != null) }
@@ -96,6 +101,9 @@ internal class PixivList<T : Any>(
             }
         }
     }
+
+    private suspend fun read(cursor: String?): Page<T> =
+        withRequestBudget(budgetMillis, "pixiv list") { PixivPages.visiblePage(cursor, load, visible) }
 
     /** Asks for the page that failed again. */
     fun retryMore() {
@@ -134,7 +142,11 @@ internal class PixivLocalList<S, T : Any>(scope: CoroutineScope, key: (T) -> Any
 /** Something Pixiv answers in one read, [value] once it arrived; [load] reads it again, as Retry and a pull do. */
 internal data class PixivFetchState<T>(val value: T? = null, val loading: Boolean = false, val error: Throwable? = null)
 
-internal class PixivFetch<T : Any>(private val scope: CoroutineScope, private val read: suspend () -> T) {
+internal class PixivFetch<T : Any>(
+    private val scope: CoroutineScope,
+    private val budgetMillis: Long = PixivPages.READ_BUDGET_MILLIS,
+    private val read: suspend () -> T,
+) {
     private val mutable = MutableStateFlow(PixivFetchState<T>())
     val state: StateFlow<PixivFetchState<T>> = mutable.asStateFlow()
 
@@ -150,7 +162,7 @@ internal class PixivFetch<T : Any>(private val scope: CoroutineScope, private va
         mutable.update { it.copy(loading = true, error = null) }
         job = scope.launch {
             try {
-                val value = read()
+                val value = withRequestBudget(budgetMillis, "pixiv read") { read() }
                 mutable.value = PixivFetchState(value)
             } catch (e: CancellationException) {
                 throw e

@@ -9,12 +9,15 @@ import java.net.URLEncoder
 import java.security.MessageDigest
 import java.time.Instant
 import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -45,6 +48,8 @@ internal const val CLIENT_HASH_SALT = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4
  * refuses it. Refreshes asked for together share one round trip. The token
  * only ever goes to the app API's own host. A connection Pixiv's edge drops
  * before answering is sent again by [XHttp] (and OkHttp) below this client.
+ * At most [MAX_IN_FLIGHT] requests are on their way at once, and once Pixiv
+ * rate-limits one, none is sent until the wait it named (or a minute) is over.
  *
  * The feature reads live beside it over this transport: [PixivDiscoveryApi],
  * [PixivSearchApi], [PixivSocialApi], [PixivNovelApi], [PixivCommentsApi] and
@@ -65,6 +70,17 @@ class PixivClient(
 
     private val writing = Any()
     private val refreshing = Mutex()
+
+    /**
+     * How many requests may be on their way at once: a home refresh, the
+     * next work's asides and the device follows' fan-out would otherwise
+     * reach Pixiv as one burst, which is what it rate-limits.
+     */
+    private val inFlight = Semaphore(MAX_IN_FLIGHT)
+
+    /** Until when (epoch milliseconds) Pixiv asked not to be asked: no request goes out before, as none would get an answer. */
+    @Volatile
+    private var limitedUntil = 0L
 
     @Volatile
     private var refreshes = 0
@@ -261,13 +277,41 @@ class PixivClient(
     private suspend fun call(url: HttpUrl, auth: Boolean, extra: Map<String, String> = emptyMap()): XResponse =
         send(url, auth) { headers -> http.get(url, headers + extra, true) }
 
-    /** Sends [request] with the bearer token, refreshing once and replaying when Pixiv refuses it; the token only ever goes to the app API's own host. */
+    /**
+     * Sends [request] in turn, with the bearer token, refreshing once and
+     * replaying when Pixiv refuses it; the token only ever goes to the app
+     * API's own host. While Pixiv's rate limit lasts it fails at once.
+     */
     private suspend fun send(url: HttpUrl, auth: Boolean, request: suspend (Map<String, String>) -> XResponse): XResponse {
+        holdOff(url)
+        return inFlight.withPermit {
+            // A limit another request ran into while this one waited for its turn holds it too.
+            holdOff(url)
+            sendNow(url, auth, request)
+        }
+    }
+
+    private suspend fun sendNow(url: HttpUrl, auth: Boolean, request: suspend (Map<String, String>) -> XResponse): XResponse {
         if (!auth || url.host != API_HOST) return checked(url, request(baseHeaders()))
         val token = accessToken()
         val first = request(bearer(token))
         val answer = if (isTokenRefused(first)) request(bearer(reauthorize(token))) else first
         return checked(url, answer)
+    }
+
+    /** Fails at once, as the rate limit it is, while Pixiv's last one lasts. */
+    private fun holdOff(url: HttpUrl) {
+        val until = limitedUntil
+        if (until > clock()) {
+            throw NetworkRequestException(PIXIV_NETWORK, 429, "${url.encodedPath}: rate limited, not asked again yet", retryAt = Instant.ofEpochMilli(until))
+        }
+    }
+
+    /** Holds every request back for as long as [response] (a rate limit) asks, kept between ten seconds and half an hour. */
+    private fun limitedBy(response: XResponse): Instant {
+        val until = clock() + pixivRetryAfterMillis(response.header("retry-after"), clock())
+        limitedUntil = maxOf(limitedUntil, until)
+        return Instant.ofEpochMilli(limitedUntil)
     }
 
     private fun bearer(token: String): Map<String, String> = baseHeaders() + ("Authorization" to "Bearer $token")
@@ -291,7 +335,7 @@ class PixivClient(
         if (response.isSuccessful) return response
         val endpoint = url.encodedPath
         throw when {
-            isRateLimited(response) -> NetworkRequestException(PIXIV_NETWORK, 429, "$endpoint: rate limited (HTTP ${response.code})")
+            isRateLimited(response) -> NetworkRequestException(PIXIV_NETWORK, 429, "$endpoint: rate limited (HTTP ${response.code})", retryAt = limitedBy(response))
             isTokenRefused(response) -> NetworkRequestException(PIXIV_NETWORK, 401, "$endpoint: token refused (HTTP ${response.code})")
             else -> NetworkRequestException(PIXIV_NETWORK, response.code, "$endpoint: HTTP ${response.code}")
         }
@@ -392,6 +436,26 @@ class PixivClient(
         if (!tag.isNullOrEmpty()) put("tag", tag)
         put("filter", ANDROID)
     }
+}
+
+/** How many requests [PixivClient] has on their way at once. */
+internal const val MAX_IN_FLIGHT = 3
+
+/** How long a rate limit holds requests back when Pixiv names no wait: a minute. */
+internal const val RATE_LIMIT_FALLBACK_MILLIS = 60_000L
+internal const val RATE_LIMIT_MIN_MILLIS = 10_000L
+internal const val RATE_LIMIT_MAX_MILLIS = 30 * 60_000L
+
+/**
+ * How long to wait after a rate limit: [retryAfter] in seconds or as an HTTP
+ * date, else [RATE_LIMIT_FALLBACK_MILLIS], kept between ten seconds and half
+ * an hour so neither a zero nor a far-off date holds the reader badly.
+ */
+internal fun pixivRetryAfterMillis(retryAfter: String?, now: Long): Long {
+    val value = retryAfter?.trim().orEmpty()
+    val named = value.toLongOrNull()?.times(1000)
+        ?: runCatching { ZonedDateTime.parse(value, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant().toEpochMilli() - now }.getOrNull()
+    return (named ?: RATE_LIMIT_FALLBACK_MILLIS).coerceIn(RATE_LIMIT_MIN_MILLIS, RATE_LIMIT_MAX_MILLIS)
 }
 
 /**
