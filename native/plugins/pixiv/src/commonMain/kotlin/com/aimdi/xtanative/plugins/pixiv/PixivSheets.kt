@@ -218,7 +218,7 @@ internal class PixivSheets(private val runtime: PixivRuntime, private val langua
 
     private fun startZip(illust: PixivIllust) {
         runtime.launch {
-            val archive: PixivUgoira = runCatching { runtime.client.ugoiraMetadata(illust.id) }.getOrNull() ?: return@launch runtime.tell(Strings.ugoira_export_failed.get(language()))
+            val archive: PixivUgoira = catchingFailures { runtime.client.ugoiraMetadata(illust.id) }.getOrNull() ?: return@launch runtime.tell(Strings.ugoira_export_failed.get(language()))
             val naming = PixivSaveNaming.of(runtime.settings.now)
             val file = PluginDownload(archive.archiveUrl(runtime.settings[PixivPrefs.imageHost]), naming.workName(illust, ".zip"))
             val saved = runtime.host.downloadAll(listOf(file), naming.subfolder(illust)).firstOrNull() == true

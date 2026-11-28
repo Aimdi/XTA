@@ -6,11 +6,28 @@ import com.aimdi.xtanative.networks.pixiv.PixivPages
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+/**
+ * [block]'s outcome as `runCatching` gives it, except that a cancellation
+ * stays one: a reader who left, or a read dropped for a newer one, is not a
+ * failure to report or to keep as a value.
+ */
+internal inline fun <T> catchingFailures(block: () -> T): Result<T> = try {
+    Result.success(block())
+} catch (cancelled: CancellationException) {
+    throw cancelled
+} catch (failure: Exception) {
+    Result.failure(failure)
+}
 
 /** Where a list Pixiv hands out page by page stands. */
 internal data class PixivListState<T>(
@@ -51,6 +68,11 @@ internal class PixivList<T : Any>(
     private val mutable = MutableStateFlow(PixivListState<T>())
     val state: StateFlow<PixivListState<T>> = mutable.asStateFlow()
 
+    private val failedRefreshes = staleFailures()
+
+    /** Why a refresh failed while the list stayed up: the list itself shows nothing wrong, so a screen says it ([TellsFailedRefresh]). */
+    val refreshFailures: SharedFlow<Throwable> = failedRefreshes.asSharedFlow()
+
     private var next: String? = null
     private val used = HashSet<String>()
     private var job: Job? = null
@@ -72,6 +94,7 @@ internal class PixivList<T : Any>(
                 throw e
             } catch (e: Exception) {
                 mutable.update { if (soft) it.copy(loading = false) else it.copy(loading = false, loaded = true, error = e) }
+                if (soft) failedRefreshes.tryEmit(e)
             }
         }
     }
@@ -150,6 +173,11 @@ internal class PixivFetch<T : Any>(
     private val mutable = MutableStateFlow(PixivFetchState<T>())
     val state: StateFlow<PixivFetchState<T>> = mutable.asStateFlow()
 
+    private val failedRefreshes = staleFailures()
+
+    /** Why a pull failed while what was read stayed up. */
+    val refreshFailures: SharedFlow<Throwable> = failedRefreshes.asSharedFlow()
+
     private var job: Job? = null
 
     fun load() = read(keep = false)
@@ -167,7 +195,9 @@ internal class PixivFetch<T : Any>(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                mutable.update { it.copy(loading = false, error = if (keep && it.value != null) null else e) }
+                val stale = keep && mutable.value.value != null
+                mutable.update { it.copy(loading = false, error = if (stale) null else e) }
+                if (stale) failedRefreshes.tryEmit(e)
             }
         }
     }
@@ -183,3 +213,6 @@ internal class PixivFetch<T : Any>(
         mutable.value = PixivFetchState()
     }
 }
+
+/** Where a list or read keeps the failures of refreshes that left the old content up, until a screen says them. */
+private fun staleFailures() = MutableSharedFlow<Throwable>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)

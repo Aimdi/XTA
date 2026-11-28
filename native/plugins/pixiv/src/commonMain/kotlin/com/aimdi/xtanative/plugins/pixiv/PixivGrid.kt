@@ -106,6 +106,7 @@ internal fun PixivWorksGrid(
     GridToTop(grid, toTop)
     RefreshesOn(refresh) { list.refresh() }
     ReadsAhead(grid, state) { list.more() }
+    TellsFailedRefresh(list.refreshFailures)
     PullToRefreshBox(isRefreshing = state.loading && state.items.isNotEmpty(), onRefresh = list::refresh, modifier = modifier.fillMaxSize()) {
         BoxWithConstraints(Modifier.fillMaxSize()) {
             LazyVerticalStaggeredGrid(

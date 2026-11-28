@@ -67,6 +67,7 @@ internal fun PixivisionArticleScreen(id: Long, language: String) {
     val outside = rememberOutside()
     val fetch = rememberKept("pixiv-pixivision-$id") { scope -> PixivFetch(scope) { runtime.discovery.pixivisionArticle(id) }.also { it.ensure() } }
     val state by fetch.state.collectAsState()
+    TellsFailedRefresh(fetch.refreshFailures)
     val url = Pixivision.articleUrl(id, language)
     PluginScaffold(
         title = state.value?.title?.ifEmpty { null } ?: pluginString(Strings.pixivision_articles),

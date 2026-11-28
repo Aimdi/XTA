@@ -60,7 +60,7 @@ internal class PixivNovelModel(private val runtime: PixivRuntime, private val sc
 
     private suspend fun remember(novel: PixivNovel) {
         if (runtime.historyPaused) return
-        runCatching { runtime.novelHistory.record(PixivVisit(PixivKept.of(novel), Instant.now())) }
+        catchingFailures { runtime.novelHistory.record(PixivVisit(PixivKept.of(novel), Instant.now())) }
     }
 
     /** Keeps where the reader is: [block] of [total], finished once the last is reached. */

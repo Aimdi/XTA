@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.plugins.pixiv
 
+import com.aimdi.xtanative.core.x.http.withRequestBudget
 import com.aimdi.xtanative.networks.Page
+import com.aimdi.xtanative.networks.pixiv.PixivPages
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivSeriesContext
 import java.time.Instant
@@ -23,8 +25,12 @@ internal data class PixivWorkState(
     /** The page on screen. */
     val page: Int = 0,
     val series: PixivSeriesContext? = null,
+    /** Why the work's place in its series did not arrive; the series link stays. */
+    val seriesError: Throwable? = null,
     /** The creator's other works, at most [PixivWorkModel.AUTHOR_WORKS]. */
     val authorWorks: List<PixivIllust> = emptyList(),
+    /** Why the creator's other works did not arrive: a rate limit is not "no other works". */
+    val authorWorksError: Throwable? = null,
 )
 
 /**
@@ -53,7 +59,7 @@ internal class PixivWorkModel(private val runtime: PixivRuntime, private val sco
         mutable.update { it.copy(error = null) }
         job = scope.launch {
             try {
-                val illust = runtime.client.illustDetail(id)
+                val illust = withinBudget { runtime.client.illustDetail(id) }
                 val first = !mutable.value.loaded
                 mutable.update { it.copy(illust = illust, loaded = true) }
                 if (first) {
@@ -83,20 +89,39 @@ internal class PixivWorkModel(private val runtime: PixivRuntime, private val sco
         }
     }
 
+    /** The creator's other works again, after they failed. */
+    fun retryAuthorWorks() {
+        val illust = mutable.value.illust ?: return
+        mutable.update { it.copy(authorWorksError = null) }
+        scope.launch { readAuthorWorks(illust) }
+    }
+
+    /** The work's place in its series again, after it failed. */
+    fun retrySeries() {
+        mutable.update { it.copy(seriesError = null) }
+        scope.launch { readSeries() }
+    }
+
     private suspend fun readAuthorWorks(illust: PixivIllust) {
-        val works = runCatching { runtime.client.userIllusts(illust.userId).items }.getOrDefault(emptyList())
-        val shown = runtime.mutes.now.filter(works).filter { it.id != illust.id }.take(AUTHOR_WORKS)
-        mutable.update { it.copy(authorWorks = shown) }
+        catchingFailures { withinBudget { runtime.client.userIllusts(illust.userId).items } }
+            .onSuccess { works ->
+                val shown = runtime.mutes.now.filter(works).filter { it.id != illust.id }.take(AUTHOR_WORKS)
+                mutable.update { it.copy(authorWorks = shown, authorWorksError = null) }
+            }
+            .onFailure { error -> mutable.update { it.copy(authorWorksError = error) } }
     }
 
     private suspend fun readSeries() {
-        val place = runCatching { runtime.discovery.seriesContext(id) }.getOrNull()
-        mutable.update { it.copy(series = place) }
+        catchingFailures { withinBudget { runtime.discovery.seriesContext(id) } }
+            .onSuccess { place -> mutable.update { it.copy(series = place, seriesError = null) } }
+            .onFailure { error -> mutable.update { it.copy(seriesError = error) } }
     }
+
+    private suspend fun <T> withinBudget(read: suspend () -> T): T = withRequestBudget(PixivPages.READ_BUDGET_MILLIS, "pixiv work") { read() }
 
     private suspend fun remember(illust: PixivIllust) {
         if (runtime.historyPaused) return
-        runCatching { runtime.history.record(PixivVisit(PixivKept.of(illust), Instant.now())) }
+        catchingFailures { runtime.history.record(PixivVisit(PixivKept.of(illust), Instant.now())) }
     }
 
     companion object {

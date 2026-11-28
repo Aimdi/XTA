@@ -63,8 +63,10 @@ import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.common.rememberSwitchedHaptics
 import com.aimdi.xtanative.ui.plugins.PluginText
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberImageRequest
+import kotlinx.coroutines.flow.SharedFlow
 
 /** The running plugin, for every composable of its screens. */
 internal val LocalPixiv = staticCompositionLocalOf<PixivRuntime> { error("No Pixiv plugin runtime here") }
@@ -192,6 +194,30 @@ internal fun PixivProblem(error: Throwable?, onRetry: () -> Unit, modifier: Modi
             Spacer(Modifier.width(8.dp))
             Text(pluginString(Strings.retry))
         }
+    }
+}
+
+/** Tells the reader when a pull to refresh failed and [failures]' list or read kept what it showed before. */
+@Composable
+internal fun TellsFailedRefresh(failures: SharedFlow<Throwable>) {
+    val runtime = LocalPixiv.current
+    val language = currentLanguage()
+    LaunchedEffect(failures, language) {
+        failures.collect { runtime.tell(failureText(PixivFailure.of(it)).get(language)) }
+    }
+}
+
+/** A small part of a screen that did not load (a creator's other works, a series' place): why, in one line, and Retry. */
+@Composable
+internal fun PixivAsideProblem(error: Throwable?, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            pixivErrorText(error),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f),
+        )
+        TextButton(onClick = onRetry) { Text(pluginString(Strings.retry)) }
     }
 }
 

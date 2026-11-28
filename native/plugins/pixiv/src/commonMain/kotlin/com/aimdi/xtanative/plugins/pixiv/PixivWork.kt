@@ -294,6 +294,7 @@ private fun DetailGrid(
     val works = remember(related.items, mutes) { mutes.filter(related.items) }
     val grid = rememberLazyStaggeredGridState()
     ReadsAhead(grid, related) { model.related.more() }
+    TellsFailedRefresh(model.related.refreshFailures)
     PullToRefreshBox(isRefreshing = related.loading && related.items.isNotEmpty(), onRefresh = model::load, modifier = Modifier.fillMaxSize()) {
         BoxWithConstraints(Modifier.fillMaxSize()) {
             LazyVerticalStaggeredGrid(
@@ -306,7 +307,12 @@ private fun DetailGrid(
             ) {
                 top()
                 item(key = "meta", span = StaggeredGridItemSpan.FullLine) { WorkMeta(illust, state, surface) }
-                if (state.authorWorks.isNotEmpty()) item(key = "author", span = StaggeredGridItemSpan.FullLine) { AuthorWorks(illust, state.authorWorks) }
+                when {
+                    state.authorWorks.isNotEmpty() -> item(key = "author", span = StaggeredGridItemSpan.FullLine) { AuthorWorks(illust, state.authorWorks) }
+                    state.authorWorksError != null -> item(key = "author", span = StaggeredGridItemSpan.FullLine) {
+                        AuthorWorksProblem(illust, state.authorWorksError, model::retryAuthorWorks)
+                    }
+                }
                 relatedWorks(works, related, state, runtime, model)
             }
         }
@@ -380,6 +386,8 @@ internal class WorkSurface(private val model: PixivWorkModel, private val runtim
     override val offersVertical: Boolean get() = true
 
     override fun showPage(page: Int) = model.showPage(page)
+
+    fun retrySeries() = model.retrySeries()
 
     override fun changeDirection() = openReader(page, vertical = true)
 

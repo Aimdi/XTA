@@ -86,6 +86,7 @@ internal fun <T : Any> PixivRows(
     ListToTop(scroll, toTop)
     RefreshesOn(refresh) { list.refresh() }
     RowsReadAhead(scroll, state) { list.more() }
+    TellsFailedRefresh(list.refreshFailures)
     PullToRefreshBox(isRefreshing = state.loading && state.items.isNotEmpty(), onRefresh = list::refresh, modifier = Modifier.fillMaxSize()) {
         PluginReadingColumn(padding, scroll) { column -> LazyColumn(state = scroll, modifier = Modifier.fillMaxSize(), contentPadding = column) {
             header()
