@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G semanal</string>
     <string name="read_horizontally">Ler na horizontal</string>
     <string name="read_vertically">Ler na vertical</string>
+    <string name="reader_right_to_left">Ler da direita para a esquerda</string>
+    <string name="reader_right_to_left_description">As páginas de mangá viram no estilo japonês ao deslizar: a próxima página entra pela esquerda e ← avança</string>
     <string name="recommended_empty">Nada recomendado no momento — puxe para atualizar</string>
     <string name="recommended_users">Criadores sugeridos</string>
     <string name="recommended_users_empty">Nenhum criador sugerido no momento</string>

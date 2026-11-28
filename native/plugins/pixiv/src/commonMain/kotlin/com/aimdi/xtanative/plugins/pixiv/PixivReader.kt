@@ -74,6 +74,8 @@ import com.aimdi.xtanative.networks.pixiv.PixivImageQuality
 import com.aimdi.xtanative.networks.pixiv.PixivImages
 import com.aimdi.xtanative.store.downloads.OkHttpMediaHttp
 import com.aimdi.xtanative.store.settings.PixivPrefs
+import com.aimdi.xtanative.store.settings.PrefValue
+import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
@@ -123,6 +125,7 @@ private fun Reader(illust: PixivIllust, start: Int, verticalFirst: Boolean) {
                     pluginString(if (vertical) Strings.read_horizontally else Strings.read_vertically),
                 )
             } }
+            if (!vertical) RightToLeftButton()
             SavePageButton(illust, surface.currentPage) { sheets.savePages(illust, listOf(surface.currentPage)) }
             IconTip(pluginString(Strings.more_actions)) { IconButton(onClick = { sheets.show(PixivSheet.PageActions(illust, surface.currentPage, surface)) }) {
                 Icon(Icons.Filled.MoreVert, pluginString(Strings.more_actions))
@@ -130,7 +133,7 @@ private fun Reader(illust: PixivIllust, start: Int, verticalFirst: Boolean) {
         },
     ) { padding ->
         val settled = sheets.open == null && surface.overviewRequest == null
-        val rightToLeft = LocalLayoutDirection.current == LayoutDirection.Rtl
+        val rightToLeft = readsRightToLeft(settings)
         val keys = Modifier.readerKeys(settled, rightToLeft) { key ->
             when (key) {
                 ReaderKey.DOWNLOAD -> true.also { sheets.savePages(illust, listOf(surface.currentPage)) }
@@ -142,7 +145,7 @@ private fun Reader(illust: PixivIllust, start: Int, verticalFirst: Boolean) {
             val urls = remember(illust, hd) { illust.viewerUrls.indices.map { if (hd) illust.downloadUrlAt(it) else illust.viewerUrls[it] } }
             var barHeight by remember { mutableIntStateOf(0) }
             val underBar = with(LocalDensity.current) { barHeight.toDp() }
-            if (vertical) ColumnPages(illust, urls, surface, underBar) else SwipedPages(illust, urls, surface)
+            if (vertical) ColumnPages(illust, urls, surface, underBar) else SwipedPages(illust, urls, surface, pagesReversed(settings))
             val share = rememberShareImage(illust)
             val shown = urls.getOrNull(surface.page)
             ReaderBar(
@@ -348,7 +351,7 @@ private fun visibleHeight(offset: Int, size: Int, end: Int): Int = (minOf(offset
 
 /** One page at a time, swiped across, the next one asked for already; a page zooms with two fingers or a double tap, and a long press opens its actions. */
 @Composable
-private fun SwipedPages(illust: PixivIllust, urls: List<String>, surface: ReaderSurface) {
+private fun SwipedPages(illust: PixivIllust, urls: List<String>, surface: ReaderSurface, reversed: Boolean) {
     val sheets = LocalPixivSheets.current
     val haptics = rememberHaptics()
     val pager = rememberPagerState(initialPage = surface.page) { urls.size }
@@ -364,7 +367,7 @@ private fun SwipedPages(illust: PixivIllust, urls: List<String>, surface: Reader
         surface.modeKeys = { key -> zoomStep(key)?.let { step -> zooms.getOrNull(pager.currentPage)?.step(step); true } ?: false }
         onDispose { surface.modeKeys = null }
     }
-    HorizontalPager(pager, Modifier.fillMaxSize(), beyondViewportPageCount = 1) { index ->
+    HorizontalPager(pager, Modifier.fillMaxSize(), beyondViewportPageCount = 1, reverseLayout = reversed) { index ->
         ZoomablePage(urls[index], onLoaded = { surface.shown(urls[index]) }, zoom = zooms[index], onLongPress = {
             haptics.medium()
             sheets.show(PixivSheet.PageActions(illust, index, surface))
@@ -415,6 +418,43 @@ internal fun ZoomablePage(url: String, onLoaded: (() -> Unit)? = null, zoom: Pag
             },
     ) {
         PixivPicture(url, Modifier.fillMaxSize(), ContentScale.Fit, onLoaded = onLoaded, loading = true)
+    }
+}
+
+/**
+ * Whether swiped pages read right to left, as manga does. It is a key of the
+ * plugin's own under its `plugin.pixiv.` prefix, which the app keeps and backs
+ * up with the rest of its settings without declaring it.
+ */
+internal object PixivRightToLeft {
+    const val KEY = "plugin.pixiv.reader_right_to_left"
+
+    fun of(settings: Settings): Boolean = (settings.values[KEY] as? PrefValue.Bool)?.value == true
+
+    fun with(settings: Settings, on: Boolean): Settings = settings.with(KEY, PrefValue.Bool(on))
+
+    /** Whether a pager is laid out reversed for [on]: a right-to-left layout already reads that way. */
+    fun reversed(on: Boolean, layoutRightToLeft: Boolean): Boolean = on && !layoutRightToLeft
+}
+
+/** Whether ← goes on: the pages read right to left, or the whole layout does. */
+@Composable
+internal fun readsRightToLeft(settings: Settings): Boolean = PixivRightToLeft.of(settings) || LocalLayoutDirection.current == LayoutDirection.Rtl
+
+/** Whether a pager of a work's pages lays them out reversed ([PixivRightToLeft.reversed]). */
+@Composable
+internal fun pagesReversed(settings: Settings): Boolean = PixivRightToLeft.reversed(PixivRightToLeft.of(settings), LocalLayoutDirection.current == LayoutDirection.Rtl)
+
+/** The swiped reader's way across, right to left as manga reads or left to right, kept for every work; the work page's own pages stay as they are, inside the pager of works. */
+@Composable
+private fun RightToLeftButton() {
+    val runtime = LocalPixiv.current
+    val on = PixivRightToLeft.of(pixivSettings())
+    val label = pluginString(Strings.reader_right_to_left)
+    IconTip(label) {
+        IconToggleButton(checked = on, onCheckedChange = { checked -> runtime.settings.update { PixivRightToLeft.with(it, checked) } }) {
+            Icon(PixivIcons.RightToLeft, label, tint = if (on) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
+        }
     }
 }
 

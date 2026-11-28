@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G settimanale</string>
     <string name="read_horizontally">Leggi in orizzontale</string>
     <string name="read_vertically">Leggi in verticale</string>
+    <string name="reader_right_to_left">Leggi da destra a sinistra</string>
+    <string name="reader_right_to_left_description">Le pagine dei manga si sfogliano alla giapponese: la pagina successiva arriva da sinistra e ← va avanti</string>
     <string name="recommended_empty">Niente da consigliare al momento — scorri per aggiornare</string>
     <string name="recommended_users">Creatori consigliati</string>
     <string name="recommended_users_empty">Nessun creatore consigliato al momento</string>

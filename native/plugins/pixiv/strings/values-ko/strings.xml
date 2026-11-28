@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G 주간</string>
     <string name="read_horizontally">가로로 읽기</string>
     <string name="read_vertically">세로로 읽기</string>
+    <string name="reader_right_to_left">오른쪽에서 왼쪽으로 읽기</string>
+    <string name="reader_right_to_left_description">넘길 때 만화 페이지가 일본식으로 넘어갑니다. 다음 페이지가 왼쪽에서 나오고 ←로 앞으로 갑니다</string>
     <string name="recommended_empty">지금은 추천이 없습니다 — 당겨서 새로고침</string>
     <string name="recommended_users">추천 크리에이터</string>
     <string name="recommended_users_empty">지금은 추천 크리에이터가 없습니다</string>

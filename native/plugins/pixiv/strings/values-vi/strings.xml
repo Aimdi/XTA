@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G hàng tuần</string>
     <string name="read_horizontally">Đọc ngang</string>
     <string name="read_vertically">Đọc dọc</string>
+    <string name="reader_right_to_left">Đọc từ phải sang trái</string>
+    <string name="reader_right_to_left_description">Trang manga lật kiểu Nhật khi vuốt: trang tiếp theo đến từ bên trái, và ← đi tiếp</string>
     <string name="recommended_empty">Hiện không có gợi ý — kéo để làm mới</string>
     <string name="recommended_users">Người sáng tạo gợi ý</string>
     <string name="recommended_users_empty">Hiện không có người sáng tạo gợi ý</string>

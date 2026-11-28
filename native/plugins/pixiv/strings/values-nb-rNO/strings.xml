@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G ukentlig</string>
     <string name="read_horizontally">Les horisontalt</string>
     <string name="read_vertically">Les vertikalt</string>
+    <string name="reader_right_to_left">Les fra høyre mot venstre</string>
+    <string name="reader_right_to_left_description">Mangasider blas på japansk vis når du sveiper: neste side kommer inn fra venstre, og ← går videre</string>
     <string name="recommended_empty">Ingenting anbefalt akkurat nå — dra for å oppdatere</string>
     <string name="recommended_users">Foreslåtte skapere</string>
     <string name="recommended_users_empty">Ingen foreslåtte skapere akkurat nå</string>

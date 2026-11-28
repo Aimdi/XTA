@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G mingguan</string>
     <string name="read_horizontally">Baca horizontal</string>
     <string name="read_vertically">Baca vertikal</string>
+    <string name="reader_right_to_left">Baca dari kanan ke kiri</string>
+    <string name="reader_right_to_left_description">Halaman manga berganti ala Jepang saat digeser: halaman berikutnya datang dari kiri, dan ← maju</string>
     <string name="recommended_empty">Tidak ada rekomendasi saat ini — tarik untuk menyegarkan</string>
     <string name="recommended_users">Kreator yang disarankan</string>
     <string name="recommended_users_empty">Belum ada kreator yang disarankan</string>

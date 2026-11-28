@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G týdenní</string>
     <string name="read_horizontally">Číst vodorovně</string>
     <string name="read_vertically">Číst svisle</string>
+    <string name="reader_right_to_left">Číst zprava doleva</string>
+    <string name="reader_right_to_left_description">Stránky mangy se při přejetí otáčejí po japonsku: další stránka přijde zleva a ← jde dál</string>
     <string name="recommended_empty">Teď nic doporučeného — potáhněte pro obnovení</string>
     <string name="recommended_users">Navrhovaní tvůrci</string>
     <string name="recommended_users_empty">Teď žádní navrhovaní tvůrci</string>

@@ -64,3 +64,23 @@ class PixivReaderSurfaceTest {
         assertEquals(0.02f, ReaderSurface(1, 0, firstRatio = 0.001f) {}.ratioOf(0))
     }
 }
+
+/** The swiped reader's right-to-left choice, a key of the plugin's own. */
+class PixivRightToLeftTest {
+    @Test
+    fun theChoiceIsKeptUnderThePluginsOwnPrefixAndReadsOffUntilSet() {
+        val empty = com.aimdi.xtanative.store.settings.Settings()
+        assertEquals(false, PixivRightToLeft.of(empty))
+        val on = PixivRightToLeft.with(empty, true)
+        assertEquals(true, PixivRightToLeft.of(on))
+        assertTrue(PixivRightToLeft.KEY.startsWith(com.aimdi.xtanative.ui.plugins.PluginSettings.prefixOf("pixiv")), "the app keeps only the plugin's own keys")
+        assertEquals(false, PixivRightToLeft.of(PixivRightToLeft.with(on, false)))
+    }
+
+    @Test
+    fun aRightToLeftLayoutAlreadyReadsThatWay() {
+        assertEquals(true, PixivRightToLeft.reversed(on = true, layoutRightToLeft = false))
+        assertEquals(false, PixivRightToLeft.reversed(on = true, layoutRightToLeft = true))
+        assertEquals(false, PixivRightToLeft.reversed(on = false, layoutRightToLeft = true))
+    }
+}

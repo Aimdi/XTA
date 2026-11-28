@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G nädalane</string>
     <string name="read_horizontally">Loe horisontaalselt</string>
     <string name="read_vertically">Loe vertikaalselt</string>
+    <string name="reader_right_to_left">Loe paremalt vasakule</string>
+    <string name="reader_right_to_left_description">Manga lehed pöörduvad libistades jaapani moodi: järgmine leht tuleb vasakult ja ← liigub edasi</string>
     <string name="recommended_empty">Praegu soovitusi pole — tõmba värskendamiseks</string>
     <string name="recommended_users">Soovitatud loojad</string>
     <string name="recommended_users_empty">Praegu soovitatud loojaid pole</string>

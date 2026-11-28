@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G тыднёвы</string>
     <string name="read_horizontally">Чытаць гарызантальна</string>
     <string name="read_vertically">Чытаць вертыкальна</string>
+    <string name="reader_right_to_left">Чытаць справа налева</string>
+    <string name="reader_right_to_left_description">Старонкі мангі гартаюцца па-японску: наступная старонка з\'яўляецца злева, а ← вядзе далей</string>
     <string name="recommended_empty">Пакуль няма рэкамендацый — пацягніце, каб абнавіць</string>
     <string name="recommended_users">Рэкамендаваныя аўтары</string>
     <string name="recommended_users_empty">Пакуль няма рэкамендаваных аўтараў</string>

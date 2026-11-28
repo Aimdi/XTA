@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G haftalık</string>
     <string name="read_horizontally">Yatay oku</string>
     <string name="read_vertically">Dikey oku</string>
+    <string name="reader_right_to_left">Sağdan sola oku</string>
+    <string name="reader_right_to_left_description">Kaydırınca manga sayfaları Japon usulü çevrilir: sonraki sayfa soldan gelir ve ← ileri gider</string>
     <string name="recommended_empty">Şu an öneri yok — yenilemek için çekin</string>
     <string name="recommended_users">Önerilen yaratıcılar</string>
     <string name="recommended_users_empty">Şu an önerilen yaratıcı yok</string>

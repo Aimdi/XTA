@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G setmanal</string>
     <string name="read_horizontally">Llegeix en horitzontal</string>
     <string name="read_vertically">Llegeix en vertical</string>
+    <string name="reader_right_to_left">Llegeix de dreta a esquerra</string>
+    <string name="reader_right_to_left_description">Les pàgines de manga passen a la japonesa en lliscar: la pàgina següent entra per l\'esquerra, i ← avança</string>
     <string name="recommended_empty">Res de recomanat ara mateix — estira per actualitzar</string>
     <string name="recommended_users">Creadors suggerits</string>
     <string name="recommended_users_empty">Ara mateix no hi ha creadors suggerits</string>

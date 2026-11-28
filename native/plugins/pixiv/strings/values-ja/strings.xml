@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G ウィークリー</string>
     <string name="read_horizontally">横読み</string>
     <string name="read_vertically">縦読み</string>
+    <string name="reader_right_to_left">右から左に読む</string>
+    <string name="reader_right_to_left_description">スワイプでマンガのページを日本式にめくります。次のページは左から現れ、← で進みます</string>
     <string name="recommended_empty">いまおすすめはありません — 引っ張って更新</string>
     <string name="recommended_users">おすすめのクリエイター</string>
     <string name="recommended_users_empty">いまおすすめのクリエイターはいません</string>

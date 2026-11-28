@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G 周榜</string>
     <string name="read_horizontally">横向阅读</string>
     <string name="read_vertically">竖向阅读</string>
+    <string name="reader_right_to_left">从右往左阅读</string>
+    <string name="reader_right_to_left_description">滑动时漫画按日式翻页：下一页从左边进来，← 前进</string>
     <string name="recommended_empty">暂时没有推荐 — 下拉刷新</string>
     <string name="recommended_users">推荐创作者</string>
     <string name="recommended_users_empty">暂时没有推荐创作者</string>

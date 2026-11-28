@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G tydniovy</string>
     <string name="read_horizontally">Čytać haryzantalna</string>
     <string name="read_vertically">Čytać viertykalna</string>
+    <string name="reader_right_to_left">Čytać sprava nalieva</string>
+    <string name="reader_right_to_left_description">Staronki manhi hartajucca pa-japonsku: nastupnaja staronka zjaŭlajecca źleva, a ← viadzie dalej</string>
     <string name="recommended_empty">Pakul niama rekamendacyj — paciahnicie, kab abnavić</string>
     <string name="recommended_users">Rekamendavanyja aŭtary</string>
     <string name="recommended_users_empty">Pakul niama rekamendavanych aŭtaraŭ</string>

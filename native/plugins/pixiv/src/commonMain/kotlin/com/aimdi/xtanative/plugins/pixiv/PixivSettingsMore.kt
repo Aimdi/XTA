@@ -77,6 +77,9 @@ internal fun ViewingSettings() {
         ),
     ) { runtime.settings.set(PixivPrefs.detailLayout, it) }
     SwitchRow(pluginString(Strings.swipe_works), pluginString(Strings.swipe_works_description), settings[PixivPrefs.swipeBetweenWorks]) { runtime.settings.set(PixivPrefs.swipeBetweenWorks, it) }
+    SwitchRow(pluginString(Strings.reader_right_to_left), pluginString(Strings.reader_right_to_left_description), PixivRightToLeft.of(settings)) { on ->
+        runtime.settings.update { PixivRightToLeft.with(it, on) }
+    }
     SwitchRow(pluginString(Strings.ai_badge), pluginString(Strings.ai_badge_description), settings[PixivPrefs.aiBadge]) { runtime.settings.set(PixivPrefs.aiBadge, it) }
     if (host) ImageHostDialog { host = false }
 }

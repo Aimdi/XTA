@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G wekelijks</string>
     <string name="read_horizontally">Horizontaal lezen</string>
     <string name="read_vertically">Verticaal lezen</string>
+    <string name="reader_right_to_left">Van rechts naar links lezen</string>
+    <string name="reader_right_to_left_description">Mangapagina\'s slaan op de Japanse manier om bij vegen: de volgende pagina komt van links, en ← gaat verder</string>
     <string name="recommended_empty">Nu niets aanbevolen — trek om te vernieuwen</string>
     <string name="recommended_users">Voorgestelde makers</string>
     <string name="recommended_users_empty">Nu geen voorgestelde makers</string>

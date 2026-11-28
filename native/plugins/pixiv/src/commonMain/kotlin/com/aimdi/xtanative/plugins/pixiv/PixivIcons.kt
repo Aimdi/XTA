@@ -86,6 +86,9 @@ internal object PixivIcons {
                 "H11v6zM13,9h4c0.55,0 1,0.45 1,1v4c0,0.55 -0.45,1 -1,1h-4V9zM14.5,13.5h2v-3h-2v3z",
         )
     }
+    val RightToLeft: ImageVector by lazy {
+        icon("FormatTextdirectionRToL", "M10,10v5h2V4h2v11h2V4h2V2h-8C7.79,2 6,3.79 6,6s1.79,4 4,4zM8,17v-3l-4,4 4,4v-3h12v-2H8z")
+    }
     val AspectRatio: ImageVector by lazy {
         icon(
             "AspectRatio",

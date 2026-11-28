@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G साप्ताहिक</string>
     <string name="read_horizontally">क्षैतिज पढ़ें</string>
     <string name="read_vertically">लंबवत पढ़ें</string>
+    <string name="reader_right_to_left">दाएँ से बाएँ पढ़ें</string>
+    <string name="reader_right_to_left_description">स्वाइप करने पर मांगा के पन्ने जापानी तरीके से पलटते हैं: अगला पन्ना बाईं ओर से आता है, और ← आगे बढ़ता है</string>
     <string name="recommended_empty">अभी कोई सुझाव नहीं — रीफ़्रेश करने के लिए खींचें</string>
     <string name="recommended_users">सुझाए गए रचनाकार</string>
     <string name="recommended_users_empty">अभी कोई सुझाए गए रचनाकार नहीं</string>

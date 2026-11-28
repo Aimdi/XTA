@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G astekoa</string>
     <string name="read_horizontally">Irakurri horizontalki</string>
     <string name="read_vertically">Irakurri bertikalki</string>
+    <string name="reader_right_to_left">Irakurri eskuinetik ezkerrera</string>
+    <string name="reader_right_to_left_description">Mangaren orriak japoniar eran pasatzen dira irristatzean: hurrengo orria ezkerretik dator, eta ← aurrera doa</string>
     <string name="recommended_empty">Une honetan ez dago gomendiorik — tira freskatzeko</string>
     <string name="recommended_users">Iradokitako sortzaileak</string>
     <string name="recommended_users_empty">Une honetan ez dago iradokitako sortzailerik</string>

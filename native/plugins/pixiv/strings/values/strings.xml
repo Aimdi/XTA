@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G weekly</string>
     <string name="read_horizontally">Read horizontally</string>
     <string name="read_vertically">Read vertically</string>
+    <string name="reader_right_to_left">Read right to left</string>
+    <string name="reader_right_to_left_description">Manga pages turn the Japanese way when swiped: the next page comes in from the left, and ← goes on</string>
     <string name="recommended_empty">Nothing recommended right now — pull to refresh</string>
     <string name="recommended_users">Suggested creators</string>
     <string name="recommended_users_empty">No suggested creators right now</string>

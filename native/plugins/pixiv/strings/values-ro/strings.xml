@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G săptămânal</string>
     <string name="read_horizontally">Citește orizontal</string>
     <string name="read_vertically">Citește vertical</string>
+    <string name="reader_right_to_left">Citește de la dreapta la stânga</string>
+    <string name="reader_right_to_left_description">Paginile de manga se întorc în stil japonez la glisare: pagina următoare vine din stânga, iar ← merge înainte</string>
     <string name="recommended_empty">Nimic recomandat acum — trage pentru a reîmprospăta</string>
     <string name="recommended_users">Creatori sugerați</string>
     <string name="recommended_users_empty">Niciun creator sugerat acum</string>

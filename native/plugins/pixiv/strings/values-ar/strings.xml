@@ -330,6 +330,8 @@
     <string name="ranking_week_r18g">R-18G أسبوعي</string>
     <string name="read_horizontally">القراءة أفقيًا</string>
     <string name="read_vertically">القراءة عموديًا</string>
+    <string name="reader_right_to_left">القراءة من اليمين إلى اليسار</string>
+    <string name="reader_right_to_left_description">تُقلب صفحات المانغا على الطريقة اليابانية عند السحب: تأتي الصفحة التالية من اليسار، ومفتاح ← يتقدّم</string>
     <string name="recommended_empty">لا توصيات حالياً — اسحب للتحديث</string>
     <string name="recommended_users">مبدعون مقترَحون</string>
     <string name="recommended_users_empty">لا مبدعين مقترَحين حالياً</string>
