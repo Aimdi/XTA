@@ -580,36 +580,57 @@ class AppPlugins(
         val wanted = installed.associateBy { it.id }
         mutableRunning.value.filter { wanted[it.plugin.id]?.version != it.installed.version }.forEach { stop(it) }
         val started = mutableRunning.value.mapTo(HashSet()) { it.plugin.id }
-        installed.filter { it.id !in started }.forEach { startPlugin(it) }
+        startPlugins(installed.filter { it.id !in started })
     }
 
-    private suspend fun startPlugin(installed: InstalledPlugin) {
+    /**
+     * Loads [plugins] side by side ([PluginStarts]), then attaches them one
+     * after another in their order and shows them running all at once: one
+     * change of [running] for the screens, however many started.
+     */
+    private suspend fun startPlugins(plugins: List<InstalledPlugin>) {
+        if (plugins.isEmpty()) return
+        val loads = PluginStarts.loadAll(plugins) { manager.load(it.id) }
+        val starts = plugins.zip(loads).map { (installed, load) -> started(installed, load) }
+        val now = starts.mapNotNull { it.running }
+        if (now.isNotEmpty()) {
+            val ids = now.mapTo(HashSet()) { it.plugin.id }
+            mutableRunning.update { list -> (list.filter { it.plugin.id !in ids } + now).sortedBy { it.plugin.id } }
+        }
+        mutableProblems.update { problems ->
+            starts.fold(problems) { all, start -> start.problem?.let { all + (start.id to it) } ?: (all - start.id) }
+        }
+    }
+
+    /** What starting plugin [id] came to: it [running], or the [problem] why it is not. */
+    private class Start(val id: String, val running: RunningPlugin? = null, val problem: String? = null)
+
+    private fun started(installed: InstalledPlugin, load: PluginLoad): Start {
         val id = installed.id
-        val problem = when (val load = manager.load(id)) {
-            is PluginLoad.Refused -> "refused: ${load.reason}"
+        val start = when (load) {
+            is PluginLoad.Refused -> Start(id, problem = "refused: ${load.reason}")
             is PluginLoad.Loaded -> {
                 val plugin = load.plugin as? XtaPlugin
                 when {
-                    plugin == null -> "${load.plugin.javaClass.name} is no XtaPlugin"
-                    plugin.id != id -> "its entry says it is ${plugin.id}"
+                    plugin == null -> Start(id, problem = "${load.plugin.javaClass.name} is no XtaPlugin")
+                    plugin.id != id -> Start(id, problem = "its entry says it is ${plugin.id}")
                     else -> attach(plugin, load.installed)
                 }
             }
         }
-        mutableProblems.update { if (problem == null) it - id else it + (id to problem) }
-        println("XTA Native: plugin $id ${installed.version} " + (problem?.let { "not started: $it" } ?: "loaded"))
+        println("XTA Native: plugin $id ${installed.version} " + (start.problem?.let { "not started: $it" } ?: "loaded"))
+        return start
     }
 
-    /** Gives [plugin] its host and runs it; why it would not attach, or null. */
-    private fun attach(plugin: XtaPlugin, installed: InstalledPlugin): String? = try {
+    /** Gives [plugin] its host and runs it, or says why it would not attach. */
+    private fun attach(plugin: XtaPlugin, installed: InstalledPlugin): Start = try {
         plugin.attach(AppPluginHost(installed.id, this))
-        mutableRunning.update { list -> (list.filter { it.plugin.id != installed.id } + RunningPlugin(plugin, installed)).sortedBy { it.plugin.id } }
-        null
+        Start(installed.id, running = RunningPlugin(plugin, installed))
     } catch (e: Exception) {
-        "attach: $e"
+        Start(installed.id, problem = "attach: $e")
     } catch (e: LinkageError) {
         // Built against an API this app does not have after all.
-        "attach: $e"
+        Start(installed.id, problem = "attach: $e")
     }
 
     private fun stop(running: RunningPlugin) {
