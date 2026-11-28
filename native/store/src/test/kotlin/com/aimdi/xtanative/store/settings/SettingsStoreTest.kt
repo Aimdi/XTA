@@ -90,11 +90,18 @@ class SettingsStoreTest {
         File(root, "settings.json").writeText("{not json")
         val store = SettingsStore(StoreDir(root))
         assertEquals(MediaQuality.MEDIUM, store.get(MediaPrefs.imageQuality))
-        assertEquals("{not json", File(root, "settings.json.unreadable").readText())
+        assertEquals(listOf("{not json"), asides())
         assertTrue(store.get(GeneralPrefs.introSeen), "it was no first launch")
         store.set(PostsPrefs.calmMode, true)
         assertTrue(SettingsStore(StoreDir(root)).get(PostsPrefs.calmMode))
+
+        File(root, "settings.json").writeText("{damaged again")
+        SettingsStore(StoreDir(root)).get(PostsPrefs.calmMode)
+        assertEquals(setOf("{not json", "{damaged again"), asides().toSet(), "a second damaged file does not replace the first one kept")
     }
+
+    private fun asides(): List<String> =
+        root.listFiles { f -> f.name.startsWith("settings.json.unreadable") }.orEmpty().map { it.readText() }
 
     @Test
     fun aChangeIsMadeOffTheCallersThreadAndTheLastOneAskedIsKept() {

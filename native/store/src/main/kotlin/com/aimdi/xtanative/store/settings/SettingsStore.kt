@@ -26,7 +26,7 @@ import kotlinx.serialization.json.put
  * The settings on disk, in one file of the store. The file is read on first
  * use and XTA's launch steps ([SettingsMigrations]) run then, as they do at
  * every XTA launch; each change is written whole and reaches every observer.
- * A file that cannot be read is kept as `settings.json.unreadable`.
+ * A file that cannot be read is first copied aside to `settings.json.unreadable-<millis>`.
  */
 class SettingsStore(private val dir: StoreDir) {
     private val file = dir.file(FILE)
@@ -89,7 +89,7 @@ class SettingsStore(private val dir: StoreDir) {
         current.value?.let { return it }
         val text = file.read()
         val stored = withContext(Dispatchers.Default) { text?.let(::decode) }
-        if (text != null && stored == null) dir.file("$FILE.unreadable").write(text)
+        if (text != null && stored == null) file.keepUnreadable()
         val migrated = SettingsMigrations.apply(stored ?: Settings(), firstLaunch = text == null)
         // Like [save]: what cannot be written (a full disk, a folder the reader cannot write) is kept for this run.
         if (migrated != stored) {
