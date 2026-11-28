@@ -69,7 +69,7 @@ fun ConfirmClose() {
 /**
  * The system's Back on the first screen ([enabled]) closes the app,
  * through [ConfirmClose], instead of leaving it there. Android alone: the
- * desktop's first screen asks on its mouse's back button.
+ * desktop quits with Ctrl+Q, its mouse's back button going to Home.
  */
 @Composable
 fun CloseOnBack(enabled: Boolean) {

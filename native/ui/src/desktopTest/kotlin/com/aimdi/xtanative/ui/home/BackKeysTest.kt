@@ -29,7 +29,7 @@ class BackKeysTest {
         assertEquals(DeskAction.LINE_DOWN, action(DeskKey.DOWN))
         assertEquals(DeskAction.FIND_IN_PAGE, action(DeskKey.F, ctrl = true))
         assertEquals(DeskAction.NONE, action(DeskKey.W, ctrl = true), "Ctrl+W closes only what is open over the page")
-        assertEquals(DeskAction.LEAVE_APP, DesktopKeys.mouseBack(canGoBack = false, somethingOpen = false))
+        assertEquals(DeskAction.GO_HOME, DesktopKeys.mouseBack(canGoBack = false, somethingOpen = false))
     }
 
     @Test

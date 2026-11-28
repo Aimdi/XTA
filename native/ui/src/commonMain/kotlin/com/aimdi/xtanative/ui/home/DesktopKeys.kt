@@ -157,8 +157,7 @@ object DesktopKeys {
      * something is open over the page. Ctrl+Tab and Ctrl+Page Down turn to
      * the next page, Ctrl+Shift+Tab and Ctrl+Page Up to the one before, as a
      * browser turns its tabs, even from a field. Ctrl+Q closes the app, as
-     * Linux apps quit, asking first as the mouse's back button on the first
-     * screen does. Tab while the window's frame holds the focus (at launch,
+     * Linux apps quit, asking first. Tab while the window's frame holds the focus (at launch,
      * after a screen changes) moves it into the page, to its first control,
      * where Tab and Shift+Tab then go on from one to the next. Ctrl+F, even
      * from a field, and / while nothing is being typed in, go to the search,
@@ -677,9 +676,14 @@ object DesktopKeys {
     fun closesWindow(key: DeskKey, alt: Boolean, ctrl: Boolean, shift: Boolean, action: DeskAction): Boolean =
         action == DeskAction.NONE && !alt && !shift && ((key == DeskKey.ESCAPE && !ctrl) || (key == DeskKey.W && ctrl))
 
-    /** The mouse's back button: as the keys, but on the first screen it closes the app, as XTA's goes back from Home. */
-    fun mouseBack(canGoBack: Boolean, somethingOpen: Boolean): DeskAction =
-        back(canGoBack, somethingOpen).takeIf { it != DeskAction.NONE } ?: DeskAction.LEAVE_APP
+    /**
+     * The mouse's back button: as the keys, and where they would do nothing
+     * (a first screen, such as a page of the sidebar) it goes to Home's start
+     * page, as Alt+Home does; a click too many never quits, which is Ctrl+Q's.
+     * A window of the app's own beside the main one ([ownWindow]) closes instead.
+     */
+    fun mouseBack(canGoBack: Boolean, somethingOpen: Boolean, ownWindow: Boolean = false): DeskAction =
+        back(canGoBack, somethingOpen).takeIf { it != DeskAction.NONE } ?: if (ownWindow) DeskAction.LEAVE_APP else DeskAction.GO_HOME
 
     /**
      * The column of [count] that Ctrl+← or Ctrl+→ ([by] -1 or 1) gives the

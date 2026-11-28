@@ -399,7 +399,7 @@ actual fun DesktopNavigation(nav: NavHostController, openSearch: () -> Unit, ope
                                 val awtButton = (event.nativeEvent as? MouseEvent)?.button
                                 when (DesktopKeys.pressedSide(awtButton, event.buttons.isBackPressed, event.buttons.isForwardPressed)) {
                                     SideButton.BACK -> {
-                                        val back = DesktopKeys.mouseBack(nav.previousBackStackEntry != null, actions.somethingOpen() || actions.backOpen())
+                                        val back = DesktopKeys.mouseBack(nav.previousBackStackEntry != null, actions.somethingOpen() || actions.backOpen(), closeWindow != null)
                                         if (back == DeskAction.LEAVE_APP && closeWindow != null) closeWindow() else act(back)
                                     }
                                     SideButton.FORWARD -> act(DeskAction.FORWARD)
