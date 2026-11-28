@@ -27,9 +27,6 @@ enum class CleanupCheck {
  * kept without asking X about them.
  */
 object SavedCleanup {
-    /** The time between two checks, so the scan reads X gently. */
-    const val PAUSE_MS = 200L
-
     suspend fun check(post: SavedPost, read: suspend (id: String) -> XConversation): CleanupCheck {
         if (!isXPost(post)) return CleanupCheck.OK
         return try {

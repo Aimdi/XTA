@@ -11,4 +11,7 @@
     <string name="settings_avatar_clear">Usa il monogramma</string>
     <string name="settings_diagnostics_recent_reads">Operazioni di lettura recenti</string>
     <string name="settings_diagnostics_sign_in_broken">L'accesso sembra non essere più valido, in pausa fino alle %1$s</string>
+    <string name="settings_diagnostics_paused">X ha ritenuto automatizzate le sue richieste, in pausa fino a %1$s</string>
+    <string name="home_notice_signed_out">%1$s sembra disconnesso: accedi di nuovo</string>
+    <string name="home_notice_reads_paused">X ha ritenuto automatizzate le richieste: la lettura di X è in pausa fino a %1$s</string>
 </resources>

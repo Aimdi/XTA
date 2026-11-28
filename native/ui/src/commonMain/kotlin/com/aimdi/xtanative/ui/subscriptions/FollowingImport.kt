@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.subscriptions
 
+import com.aimdi.xtanative.ui.common.BulkPace
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.core.x.model.XUserPage
@@ -20,8 +21,9 @@ object FollowingImport {
      * Reads whom [screenName] follows, page by page, handing [onPage] each
      * page's accounts not seen before. Paging ends on a missing, `0` or
      * repeated cursor, or a page that brought nobody new. Returns how many.
+     * [pause] comes between two pages ([BulkPace]); X's first failure ends it.
      */
-    suspend fun read(screenName: String, reads: FollowingReads, onPage: suspend (List<XUser>) -> Unit): Int {
+    suspend fun read(screenName: String, reads: FollowingReads, pause: suspend () -> Unit = BulkPace::pause, onPage: suspend (List<XUser>) -> Unit): Int {
         val userId = reads.userId(screenName)
         val seen = HashSet<String>()
         var cursor: String? = null
@@ -36,6 +38,7 @@ object FollowingImport {
             val next = page.bottomCursor
             if (next.isNullOrEmpty() || next == "0" || next == cursor || fresh.isEmpty()) break
             cursor = next
+            pause()
         }
         return total
     }

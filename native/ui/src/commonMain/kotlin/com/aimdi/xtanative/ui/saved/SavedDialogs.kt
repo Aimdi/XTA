@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.saved
 
+import com.aimdi.xtanative.ui.common.BulkPace
 import com.aimdi.xtanative.ui.common.destructiveTextColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -86,7 +87,6 @@ import com.aimdi.xtanative.ui.home.rememberSheetList
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.theme.xSwitchColors
-import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -260,7 +260,7 @@ internal fun CleanupDialog(posts: List<SavedPost>, onDismiss: () -> Unit) {
             val check = SavedCleanup.check(post) { id -> XConversation.of(client.conversation(id), id) }
             scan = scan.after(post, check)
             if (scan.done) break
-            if (SavedCleanup.isXPost(post)) delay(SavedCleanup.PAUSE_MS)
+            if (SavedCleanup.isXPost(post)) BulkPace.pause()
         }
         if (!scan.done) scan = scan.finished()
     }

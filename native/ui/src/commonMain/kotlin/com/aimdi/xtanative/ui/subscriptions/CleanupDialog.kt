@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.subscriptions
 
+import com.aimdi.xtanative.ui.common.BulkPace
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -41,7 +42,6 @@ import com.aimdi.xtanative.ui.generated.resources.groups_renamed_updated
 import com.aimdi.xtanative.ui.generated.resources.groups_some_unchecked
 import com.aimdi.xtanative.ui.generated.resources.groups_user_not_found
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -65,7 +65,7 @@ fun BrokenSubscriptionsDialog(onDismiss: () -> Unit) {
             )
             if (check is CleanupCheck.Renamed) graph.sessions.update { it.withProfilesFrom(listOf(check.user)) }
             state = CleanupScan.after(state, account, check) ?: break
-            delay(CleanupScan.PAUSE_MILLIS)
+            BulkPace.pause()
         }
         state = CleanupScan.finished(state)
     }

@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.subscriptions
 
+import com.aimdi.xtanative.ui.common.BulkPace
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aimdi.xtanative.core.session.ImportHandles
@@ -64,7 +65,8 @@ class ImportFollowingViewModel(private val graph: AppGraph) : ViewModel() {
             val at = System.currentTimeMillis()
             var total = 0
             try {
-                for (handle in handles) {
+                for ((index, handle) in handles.withIndex()) {
+                    if (index > 0) BulkPace.pause()
                     val before = total
                     state.update { it.copy(run = ImportRun.Reading(before, handle)) }
                     total += FollowingImport.read(handle, reads) { users ->

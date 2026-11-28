@@ -32,8 +32,10 @@ class FollowingImportTest {
             ),
         )
         val pages = ArrayList<List<String>>()
-        val total = FollowingImport.read("maya", reads) { users -> pages += users.map { it.id } }
+        var pauses = 0
+        val total = FollowingImport.read("maya", reads, pause = { pauses++ }) { users -> pages += users.map { it.id } }
         assertEquals(4, total)
+        assertEquals(2, pauses, "a pause between two pages, none after the last")
         assertEquals(listOf(listOf("1", "2"), listOf("3"), listOf("4")), pages)
         assertEquals(listOf(null, "a", "b"), reads.asked)
     }
@@ -41,10 +43,10 @@ class FollowingImportTest {
     @Test
     fun aPageThatBringsNobodyNewOrTheSameCursorEndsIt(): Unit = runBlocking {
         val repeated = Pages(mapOf(null to XUserPage(listOf(user("1")), "a"), "a" to XUserPage(listOf(user("1")), "b")))
-        assertEquals(1, FollowingImport.read("maya", repeated) {})
+        assertEquals(1, FollowingImport.read("maya", repeated, pause = {}) {})
         assertEquals(listOf(null, "a"), repeated.asked)
         val stuck = Pages(mapOf(null to XUserPage(listOf(user("1")), "a"), "a" to XUserPage(listOf(user("2")), "a")))
-        assertEquals(2, FollowingImport.read("maya", stuck) {})
+        assertEquals(2, FollowingImport.read("maya", stuck, pause = {}) {})
         assertEquals(listOf(null, "a"), stuck.asked)
     }
 

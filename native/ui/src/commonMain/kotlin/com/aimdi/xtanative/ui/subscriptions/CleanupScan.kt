@@ -50,9 +50,6 @@ data class CleanupState(
  * removed. Only what X confirmed gone is offered for removal.
  */
 object CleanupScan {
-    /** How long the scan waits between two accounts, so it does not hammer X. */
-    const val PAUSE_MILLIS = 200L
-
     /** What X's answer about a lookup means: an error naming the account gone, or the account itself. */
     fun lookupOf(error: Throwable): AccountLookup<XUser>? = when {
         error is XUserUnavailableException && error.reason.equals("Suspended", ignoreCase = true) -> AccountLookup.Suspended
