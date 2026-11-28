@@ -136,7 +136,7 @@ class RedditClient(
                 is RouteAttempt.Hit -> return attempt.page.also { routes.remember(route) }
                 is RouteAttempt.Verdict -> throw attempt.failure.also { routes.remember(route) }
                 is RouteAttempt.Miss -> {
-                    routes.refuse(route)
+                    cooldownOf(attempt.failure)?.let { routes.refuse(route, it) }
                     worst = moreTelling(worst, attempt.failure)
                 }
             }
@@ -144,7 +144,20 @@ class RedditClient(
         throw publicFailure(worst, name)
     }
 
-    /** One route's turn: only what the answer says comes back; a failed connection is a miss like a refusal. */
+    /**
+     * How long a route that failed so is left alone, or null when it is not
+     * left alone at all: only a refusal (403, 429, a block or browser-check
+     * page, a login wall) is worth waiting out, for as long as Reddit said
+     * when it said. A timeout or a dropped connection says nothing about the
+     * route, so the next read asks it again.
+     */
+    private fun cooldownOf(failure: Exception): Long? {
+        val refusal = (failure as? NetworkRequestException)?.takeIf { it.code == 403 || it.code == 429 } ?: return null
+        val asked = refusal.retryAt?.toEpochMilli()?.minus(clock()) ?: return PublicRoutes.COOLDOWN_MILLIS
+        return asked.coerceIn(PublicRoutes.MIN_COOLDOWN_MILLIS, PublicRoutes.MAX_COOLDOWN_MILLIS)
+    }
+
+    /** One route's turn: only what the answer says comes back; a failed connection is a miss like a refusal, though not one that parks the route. */
     private suspend fun attempt(route: PublicRoute, name: String, sort: RedditSort, query: Map<String, String>): RouteAttempt =
         orElse({
             when (route) {
@@ -709,8 +722,9 @@ internal class PublicRoutes(private val clock: () -> Long) {
 
     private fun isRefused(route: PublicRoute) = (refusedUntil[route] ?: 0L) > clock()
 
-    fun refuse(route: PublicRoute) {
-        refusedUntil[route] = clock() + COOLDOWN_MILLIS
+    /** Leaves [route] last for [forMillis]: Reddit's Retry-After when it sent one. */
+    fun refuse(route: PublicRoute, forMillis: Long = COOLDOWN_MILLIS) {
+        refusedUntil[route] = clock() + forMillis
     }
 
     fun remember(route: PublicRoute) {
@@ -721,6 +735,10 @@ internal class PublicRoutes(private val clock: () -> Long) {
     companion object {
         /** Long enough that a refresh does not find the same refusal once per community, short enough that a passing throttle is forgotten. */
         const val COOLDOWN_MILLIS = 5 * 60 * 1000L
+
+        /** The bounds on a wait Reddit names: a Retry-After of zero is no reason to ask again at once, nor one of a day to give up on a route. */
+        const val MIN_COOLDOWN_MILLIS = 10 * 1000L
+        const val MAX_COOLDOWN_MILLIS = 30 * 60 * 1000L
     }
 }
 

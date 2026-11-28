@@ -5,6 +5,9 @@ import com.aimdi.xtanative.core.x.http.XHttp
 import com.aimdi.xtanative.core.x.http.XResponse
 import com.aimdi.xtanative.networks.NetworkRequestException
 import java.net.URLEncoder
+import java.time.Instant
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Base64
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -134,8 +137,26 @@ internal class RedditTransport(
     }
 
     /** Reddit's answer as a failure, naming the host: which tells an account's read from an account-free one. */
-    fun failureOf(response: XResponse, url: HttpUrl? = null): NetworkRequestException =
-        refused(response.code, if (url == null) "HTTP ${response.code}" else "HTTP ${response.code} from ${url.host}")
+    fun failureOf(response: XResponse, url: HttpUrl? = null): NetworkRequestException = NetworkRequestException(
+        REDDIT,
+        response.code,
+        if (url == null) "HTTP ${response.code}" else "HTTP ${response.code} from ${url.host}",
+        retryAt = retryAtOf(response),
+    )
+
+    /**
+     * When Reddit said to ask again: its `Retry-After` (seconds or a date),
+     * or on a throttle the API's `x-ratelimit-reset` (seconds to the window's end).
+     */
+    private fun retryAtOf(response: XResponse): Instant? {
+        val retryAfter = response.header("retry-after")?.trim()?.let { value ->
+            value.toLongOrNull()?.times(1000)
+                ?: runCatching { ZonedDateTime.parse(value, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant().toEpochMilli() - clock() }.getOrNull()
+        }
+        val reset = response.header("x-ratelimit-reset")?.trim()?.toDoubleOrNull()?.takeIf { response.code == 429 }?.let { (it * 1000).toLong() }
+        val waitMillis = (retryAfter ?: reset)?.takeIf { it >= 0 } ?: return null
+        return Instant.ofEpochMilli(clock() + waitMillis)
+    }
 
     /** The JSON object [response] holds; a page that is not one (a block page, most likely) is a failure. */
     fun objectOf(response: XResponse): J =
