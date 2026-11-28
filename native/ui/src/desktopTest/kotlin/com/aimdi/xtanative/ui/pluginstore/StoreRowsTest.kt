@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.ui.pluginstore
 
+import com.aimdi.xtanative.pluginhost.PluginFailure
+import com.aimdi.xtanative.pluginhost.PluginStatus
 import kotlin.test.assertTrue
 import kotlin.test.assertFalse
 import kotlin.test.Test
@@ -74,5 +76,18 @@ class StoreRowsTest {
         assertEquals(false, StoreRows.offerStacks(1f))
         assertEquals(true, StoreRows.stacks(390f, 1f), "an installed row with several buttons still stacks on a phone")
         assertEquals(true, StoreRows.offerStacks(1.3f))
+    }
+
+    @Test
+    fun aPluginOnOfferInstallsOnAClickOfItsRowWhereItsButtonWould() {
+        assertTrue(StoreRows.offerInstalls(PluginStatus.Available))
+        assertTrue(StoreRows.offerInstalls(PluginStatus.Failed(PluginFailure.WrongChecksum, installed = null)), "a failed install can be asked for again")
+    }
+
+    @Test
+    fun aRowUnderWayOrTooNewIgnoresItsClicks() {
+        assertFalse(StoreRows.offerInstalls(PluginStatus.Downloading(10, 100)), "a second click while it downloads does nothing")
+        assertFalse(StoreRows.offerInstalls(PluginStatus.Installing))
+        assertFalse(StoreRows.offerInstalls(PluginStatus.NeedsNewerApp(apiVersion = 99)))
     }
 }

@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.ui.pluginstore
 
+import com.aimdi.xtanative.pluginhost.PluginStatus
+
 /**
  * The store's list after an install. The plugin's row moves up under
  * Installed, where it shows Open; a list that keeps the row it had at its
@@ -56,6 +58,16 @@ internal object StoreRows {
 
     /** Whether a plugin on offer puts its one button under its name: only with large text, whatever the width. */
     fun offerStacks(fontScale: Float): Boolean = fontScale >= STACK_FROM_SCALE
+
+    /**
+     * Whether a plugin on offer in [status] installs on a click of its row,
+     * as its Install button does: not while it downloads or is put in place,
+     * so a second click does nothing, nor when it needs a newer app.
+     */
+    fun offerInstalls(status: PluginStatus): Boolean = when (status) {
+        is PluginStatus.Downloading, PluginStatus.Installing, is PluginStatus.NeedsNewerApp -> false
+        else -> true
+    }
 
     fun afterInstall(position: Int, refreshing: Boolean, unreachable: Boolean, searchField: Boolean = false): Int =
         listOf(searchField, refreshing, unreachable).count { it } + position

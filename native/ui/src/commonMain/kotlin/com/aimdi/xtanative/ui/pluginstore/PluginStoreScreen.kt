@@ -478,6 +478,7 @@ private fun InstalledRow(shown: InstalledPlugin, plugins: AppPlugins, locale: Lo
 private fun AvailableRow(state: PluginState, locale: Locale, actions: StoreActions) {
     val name = state.name(locale)
     val status = state.status
+    val installs = StoreRows.offerInstalls(status)
     Column(Modifier.fillMaxWidth()) {
         StoreTile(
             leading = { StoreMark(null, name, state.id) },
@@ -488,13 +489,12 @@ private fun AvailableRow(state: PluginState, locale: Locale, actions: StoreActio
                 }
                 offerStatus(status, locale)?.let { StatusLine(it, failed = status is PluginStatus.Failed) }
             },
-            onClick = null,
+            onClick = if (installs) ({ actions.install(state.id) }) else null,
             inline = true,
         ) {
-            when (status) {
-                is PluginStatus.Downloading -> TextButton(onClick = { actions.cancel(state.id) }) { Text(stringResource(Res.string.cancel)) }
-                PluginStatus.Installing, is PluginStatus.NeedsNewerApp -> Unit
-                else -> TextButton(onClick = { actions.install(state.id) }) { Text(stringResource(Res.string.plugin_install)) }
+            when {
+                status is PluginStatus.Downloading -> TextButton(onClick = { actions.cancel(state.id) }) { Text(stringResource(Res.string.cancel)) }
+                installs -> TextButton(onClick = { actions.install(state.id) }) { Text(stringResource(Res.string.plugin_install)) }
             }
         }
         Progress(status)
