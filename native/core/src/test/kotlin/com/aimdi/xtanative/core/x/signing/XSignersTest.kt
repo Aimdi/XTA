@@ -8,7 +8,11 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 
 class XSignersTest {
     private var now = 1_000_000L
@@ -64,6 +68,46 @@ class XSignersTest {
         now += 31_000
         assertFailsWith<SigningUnavailableException> { runBlocking { signers.forSession(null) } }
         assertEquals(2, attempts)
+    }
+
+    @Test
+    fun aNetworkFailurePausesTheSessionsNextDerivationAFewSeconds() {
+        var attempts = 0
+        val signers = XSigners(derive = { attempts++; throw java.io.IOException("offline") }, clock = { now })
+        repeat(2) { assertFailsWith<java.io.IOException> { runBlocking { signers.forSession("auth_token=a") } } }
+        assertEquals(1, attempts, "the second read gets the same failure without asking x.com")
+        now += 5_000
+        assertFailsWith<java.io.IOException> { runBlocking { signers.forSession("auth_token=a") } }
+        assertEquals(2, attempts)
+    }
+
+    @Test
+    fun signersDerivedTogetherDoNotAllRunOutTogether() {
+        val signers = signers(null)
+        val lifetimes = (1..14).map { signers.lifetimeOf("key-$it") }
+        assertTrue(lifetimes.toSet().size > 10, "spread over the hour: $lifetimes")
+        assertTrue(lifetimes.all { it in 5 * 60 * 60 * 1000L..6 * 60 * 60 * 1000L })
+        assertEquals(lifetimes, (1..14).map { signers.lifetimeOf("key-$it") }, "each session always gets the same share")
+    }
+
+    @Test
+    fun aSlowDerivationHoldsBackOnlyItsOwnSession() = runBlocking {
+        val slowStarted = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        val signers = XSigners(
+            derive = { cookie ->
+                if (cookie == "auth_token=slow") { slowStarted.complete(Unit); release.await() }
+                TransactionSigner(IntArray(48) { it }, "animation-$cookie")
+            },
+            clock = { now },
+            timeoutMillis = 60_000,
+        )
+        val slow = async { signers.forSession("auth_token=slow") }
+        slowStarted.await()
+        val fast = withTimeout(2_000) { signers.forSession("auth_token=fast") }
+        assertEquals("animation-auth_token=fast", fast.animationKey)
+        release.complete(Unit)
+        assertEquals("animation-auth_token=slow", slow.await().animationKey)
     }
 
     @Test
