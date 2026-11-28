@@ -93,7 +93,7 @@ internal fun <T : Any> PixivRows(
             when {
                 state.items.isEmpty() && state.error != null -> item(key = "state") { PixivProblem(state.error, list::refresh) }
                 state.waiting -> item(key = "state") { FeedSkeleton(count = 4) }
-                rows.isEmpty() && state.loaded && !state.loading -> item(key = "state") { PixivEmpty(empty, list::refresh) }
+                rows.isEmpty() && state.loaded && !state.loading -> item(key = "state") { PixivEmpty(empty, (list::refresh).takeIf { list.offersRetry }) }
             }
             items(rows, key = { "row-" + key(it) }) { item ->
                 row(item)

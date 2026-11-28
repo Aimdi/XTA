@@ -306,7 +306,11 @@ private fun NovelHomeSection(model: PixivHomeModel, view: PixivHomeView, padding
 @Composable
 private fun SignInBody(padding: PaddingValues) {
     val runtime = LocalPixiv.current
-    val preview = rememberKept("pixiv-walkthrough") { scope -> PixivList(scope, { it.id }, { runtime.discovery.walkthrough(it) }, { runtime.mutes.now.filter(it) }).also { it.ensure() } }
+    val preview = rememberKept("pixiv-walkthrough") { scope ->
+        PixivList(scope, { it.id }, { runtime.discovery.walkthrough(it) }, { runtime.mutes.now.filter(it) })
+            .sharedThrough(runtime.firstPages) { runtime.firstPageKey("walkthrough") }
+            .also { it.ensure() }
+    }
     PixivWorksGrid(preview, empty = "", padding = padding, tile = { works, index -> WalkthroughTile(works, index, preview) }, header = {
         item(key = "sign-in", span = StaggeredGridItemSpan.FullLine) {
             Column(Modifier.fillMaxWidth().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally) {

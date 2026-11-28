@@ -50,6 +50,17 @@ class PixivRulesTest {
     }
 
     @Test
+    fun theDesktopsTextSizeScalesTheTiles() {
+        assertEquals(4, PixivLayout.desktopColumns(1340f, 0, 1f), "the app's own size: XTA's layout")
+        assertEquals(3, PixivLayout.desktopColumns(1340f, 0, 1.25f), "larger text, larger tiles")
+        assertEquals(2, PixivLayout.desktopColumns(1340f, 0, 2f))
+        assertEquals(5, PixivLayout.desktopColumns(1340f, 0, 0.8f), "smaller text, more tiles")
+        assertEquals(8, PixivLayout.desktopColumns(1340f, 0, 0.4f), "eight at most")
+        assertEquals(3, PixivLayout.desktopColumns(1340f, 3, 2f), "a picked count stays")
+        assertEquals(1, PixivLayout.desktopColumns(150f, 0, 0.5f), "never slivers")
+    }
+
+    @Test
     fun aWorkSplitsOnlyWideOrWhenAsked() {
         assertTrue(PixivLayout.splits(900f, PixivDetailLayout.AUTO))
         assertFalse(PixivLayout.splits(700f, PixivDetailLayout.AUTO))

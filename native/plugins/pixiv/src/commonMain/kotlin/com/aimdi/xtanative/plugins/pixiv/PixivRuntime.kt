@@ -98,6 +98,12 @@ internal class PixivRuntime(val host: PluginHost) {
     /** A sign-in in the reader's browser, waiting for the code Pixiv hands back (the desktop has no web view). */
     val browserSignIn = PixivBrowserSignIn()
 
+    /** The first pages every surface shows alike, kept a while for all of them. */
+    val firstPages = PixivFirstPages()
+
+    /** [name]'s key among [firstPages] for the account and choices in use now, so one account's pages never show under another. */
+    fun firstPageKey(name: String): String = name + "|" + PixivSessionKey.of(settings.now)
+
     /** What a screen hands the next one it opens (the work as its list had it, the list itself), by key. */
     val shelf = PixivShelf()
 

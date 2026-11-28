@@ -9,6 +9,7 @@ import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.store.settings.PixivSection
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.Settings
+import kotlin.math.roundToInt
 
 /** The ranking boards pinned as chips, one list for works and one for novels, as XTA keeps them. */
 internal object PixivRankingPins {
@@ -77,6 +78,20 @@ internal object PixivLayout {
         if (picked !in COLUMN_CHOICES) return galleryColumns(width, largeText)
         return picked.coerceAtMost((width / MIN_TILE_WIDTH).toInt()).coerceAtLeast(1)
     }
+
+    /**
+     * The desktop's columns: XTA's gallery layout at the app's own text
+     * size, then fewer and larger tiles as the reader makes the text larger
+     * (Ctrl and the wheel, Ctrl and +) and more and smaller ones as they make
+     * it smaller, eight at most; a count the reader picked stays as it is.
+     */
+    fun desktopColumns(width: Float, picked: Int, textScale: Float): Int {
+        if (picked in COLUMN_CHOICES) return columns(width, picked, largeText = false)
+        val scaled = (galleryColumns(width, largeText = false) / textScale.coerceAtLeast(0.25f)).roundToInt()
+        return scaled.coerceAtMost((width / MIN_TILE_WIDTH).toInt()).coerceIn(1, MAX_DESKTOP_COLUMNS)
+    }
+
+    private const val MAX_DESKTOP_COLUMNS = 8
 
     /** XTA's gallery layout: artwork stays readable at large text and gains columns on wide views, four at most. */
     fun galleryColumns(width: Float, largeText: Boolean): Int = (width / (if (largeText) 240f else 152f)).toInt().coerceIn(1, 4)

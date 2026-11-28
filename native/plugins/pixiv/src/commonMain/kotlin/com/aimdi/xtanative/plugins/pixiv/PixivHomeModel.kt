@@ -76,12 +76,15 @@ internal class PixivHomeModel(private val runtime: PixivRuntime, private val sco
     private val novelsShown: (List<PixivNovel>) -> List<PixivNovel> = { runtime.mutes.now.filterNovels(it) }
 
     val following = PixivList(scope, { it.id }, ::followingPage, works)
+        .sharedThrough(runtime.firstPages) { runtime.firstPageKey("following-" + view.value.restrict.api) }
     val deviceFollowing = PixivList(scope, { it.id }, { next -> if (next != null) Page(emptyList(), null) else PixivFollowedHere.read(runtime) }, works)
         .apply { budgetMillis = PixivFollowedHere.BUDGET_MILLIS }
     val recommended = PixivList(scope, { it.id }, { runtime.client.recommended(it) }, works)
+        .sharedThrough(runtime.firstPages) { runtime.firstPageKey("recommended") }
     val spotlight = PixivList(scope, { it.id }, { runtime.discovery.spotlightArticles(it) })
     val users = PixivList<PixivUserPreview>(scope, { it.user.id }, { runtime.discovery.recommendedUsers(it) })
     val manga = PixivList(scope, { it.id }, { runtime.discovery.mangaRecommended(it) }, works)
+        .sharedThrough(runtime.firstPages) { runtime.firstPageKey("manga") }
     val watchlist = PixivList<PixivWatchlistSeries>(scope, { it.id }, { runtime.discovery.mangaWatchlist(it) })
     val ranking = PixivList(scope, { it.id }, ::rankingPage, works)
     val bookmarks = PixivList(scope, { it.id }, ::bookmarksPage)
@@ -224,6 +227,7 @@ internal class PixivHomeModel(private val runtime: PixivRuntime, private val sco
 
     /** Empties every list: another account, or other content choices. */
     private fun forget() {
+        runtime.firstPages.clear()
         all.forEach { it.clear() }
         ensureShown()
     }
