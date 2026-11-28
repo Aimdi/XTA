@@ -259,7 +259,7 @@ class GroupFeedTest {
 
     @Test
     fun eachUsableAccountAddsAboutTwoSearchesBetweenThreeAndSix() {
-        assertEquals(listOf(3, 3, 4, 6, 6), listOf(0, 1, 2, 3, 12).map(ChunkConcurrency::forAccounts))
+        assertEquals(listOf(3, 3, 4, 4, 4), listOf(0, 1, 2, 3, 12).map(ChunkConcurrency::forAccounts))
         val accounts = listOf("a", "b", "c", "d").map { XAccount(it, it, emptyMap()) }
         assertEquals(2, ChunkConcurrency.usableAccounts(accounts, setOf("d"), broken = { it.id == "c" }))
         assertEquals(2, ChunkConcurrency.usableAccounts(accounts.take(3), setOf("a", "b", "c"), broken = { it.id == "c" }), "with every account off, all working ones count")

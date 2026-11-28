@@ -289,7 +289,7 @@ object ChunkConcurrency {
     const val MIN = 3
 
     /** However many accounts there are. */
-    const val MAX = 6
+    const val MAX = 4
 
     /** About two searches per usable account. */
     fun forAccounts(usable: Int): Int = (usable * 2).coerceIn(MIN, MAX)
