@@ -9,6 +9,8 @@ import java.time.Instant
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,9 +39,17 @@ internal data class PixivWorkState(
  * A work opened: its full record (a failed fetch keeps the list's copy),
  * the works Pixiv relates to it, the creator's other works and its place in
  * its series, each read on its own. Once the full record arrives the work
- * joins the viewing history, unless the reader paused it.
+ * joins the viewing history, unless the reader paused it. Nothing is read
+ * before [start]; a model made with [autoStart] starts at once, a pager's
+ * once the reader stops on its work.
  */
-internal class PixivWorkModel(private val runtime: PixivRuntime, private val scope: CoroutineScope, val id: Long, seed: PixivIllust?) {
+internal class PixivWorkModel(
+    private val runtime: PixivRuntime,
+    private val scope: CoroutineScope,
+    val id: Long,
+    private val seed: PixivIllust?,
+    autoStart: Boolean = true,
+) {
     private val mutable = MutableStateFlow(PixivWorkState(seed))
     val state: StateFlow<PixivWorkState> = mutable.asStateFlow()
 
@@ -48,7 +58,16 @@ internal class PixivWorkModel(private val runtime: PixivRuntime, private val sco
     private var job: Job? = null
     private var asides: Job? = null
 
+    private var started = false
+
     init {
+        if (autoStart) start()
+    }
+
+    /** Reads the work and what goes with it, the first time only. */
+    fun start() {
+        if (started) return
+        started = true
         load()
         seed?.let(::readAsides)
     }
@@ -126,5 +145,51 @@ internal class PixivWorkModel(private val runtime: PixivRuntime, private val sco
 
     companion object {
         const val AUTHOR_WORKS = 12
+    }
+}
+
+/**
+ * The work models of a pager: one per work the reader passes, but read only
+ * for the work they stopped on ([settle]) and kept only around it, so a
+ * fling through twenty works neither sends their requests nor holds their
+ * related lists until the pager closes. A work's model dropped here has its
+ * requests cancelled with it.
+ */
+internal class PixivPagerWorks(
+    private val parent: CoroutineScope,
+    private val make: (scope: CoroutineScope, work: PixivIllust) -> PixivWorkModel,
+) {
+    private class Held(val model: PixivWorkModel, val scope: CoroutineScope)
+
+    private val held = LinkedHashMap<Long, Held>()
+
+    /** Whether the pager settled once: the work it opened on is read at once, later ones after a pause. */
+    var settledOnce = false
+        private set
+
+    /** [work]'s model, made (and not yet reading) the first time it is asked for. */
+    fun model(work: PixivIllust): PixivWorkModel = held.getOrPut(work.id) {
+        val scope = CoroutineScope(parent.coroutineContext + SupervisorJob(parent.coroutineContext[Job]))
+        Held(make(scope, work), scope)
+    }.model
+
+    /** The reader stopped on [index] of [ids]: its work starts reading, and every model further than [KEEP] works from it goes. */
+    fun settle(ids: List<Long>, index: Int) {
+        settledOnce = true
+        val kept = ids.subList((index - KEEP).coerceIn(0, ids.size), (index + KEEP + 1).coerceIn(0, ids.size)).toSet()
+        val gone = held.keys.filter { it !in kept }
+        gone.forEach { id -> held.remove(id)?.scope?.cancel() }
+        ids.getOrNull(index)?.let { held[it]?.model?.start() }
+    }
+
+    /** The works whose models are held, for tests. */
+    val heldIds: Set<Long> get() = held.keys.toSet()
+
+    companion object {
+        /** How many works on each side of the one on screen keep their models: swiping back a little reads nothing again. */
+        const val KEEP = 2
+
+        /** How long the pager must rest on a work before it is read: a fling's works in passing are not. */
+        const val SETTLE_MILLIS = 300L
     }
 }
