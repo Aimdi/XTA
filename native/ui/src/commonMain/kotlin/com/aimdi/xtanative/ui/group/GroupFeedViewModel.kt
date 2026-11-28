@@ -392,7 +392,9 @@ class GroupFeedViewModel(
             val page = try {
                 // Merged and sorted off the screen's thread; what a chunk brought is shown from the screen's.
                 val preview: ((FeedPage) -> Unit)? = if (previewing) ({ page -> viewModelScope.launch { arrived(page) } }) else null
-                withContext(Dispatchers.Default) { saved?.let { feed.reopen(it) } ?: feed.first(preview) }
+                // A first page the feed's hiding stopped reads only the searches that had not answered.
+                val resumed: suspend () -> FeedPage? = { if (byReader) null else feed.resumeFirst(preview) }
+                withContext(Dispatchers.Default) { saved?.let { feed.reopen(it) } ?: resumed() ?: feed.first(preview) }
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Throwable) {

@@ -79,6 +79,9 @@ data class FeedState(val chunks: List<ChunkState>) {
  */
 class PartialReadException(val threads: List<XThread>, override val cause: Throwable) : Exception(cause.message, cause)
 
+/** How long a first page stopped halfway may be finished instead of read again: what answered before is still fresh. */
+const val RESUME_MILLIS: Long = 5 * 60 * 1000L
+
 /** One newest-first timeline, read page by page; [key] tells it apart in a saved state. */
 class TimelineSource(val key: String, val read: suspend (cursor: String?) -> XTimelinePage)
 
@@ -93,6 +96,14 @@ interface FeedTimeline {
      * where all of them have been read: a preview while the rest are read.
      */
     suspend fun first(onArrived: ((FeedPage) -> Unit)? = null): FeedPage
+
+    /**
+     * The end of a [first] that was stopped halfway (its feed went out of
+     * sight), when it began less than [RESUME_MILLIS] ago: only the sources
+     * that had not answered are read, the others keep what they brought.
+     * Null when there is no such load: the caller reads [first] again.
+     */
+    suspend fun resumeFirst(onArrived: ((FeedPage) -> Unit)? = null): FeedPage? = null
 
     /** The next posts in time order, reading on in the sources that hold the rest back. */
     suspend fun more(): FeedPage
@@ -138,6 +149,7 @@ class MergedTimeline(
     private val wanted: (XThread) -> Boolean = { true },
     readMillis: Long = 35_000,
     loadMillis: Long = 90_000,
+    private val clock: () -> Long = System::currentTimeMillis,
 ) : FeedTimeline {
     private class Reading(val index: Int, val source: TimelineSource) {
         var cursor: String? = null
@@ -163,14 +175,33 @@ class MergedTimeline(
     private var newerPages = 1
     private val newerFailed = HashSet<Int>()
 
+    /** The sources a [first] stopped halfway has still to read, and when it began; null once it ended. */
+    private var unanswered: MutableSet<Int>? = null
+    private var firstAt = 0L
+
     override val progress: StateFlow<FeedProgress> = loading.asStateFlow()
 
     override suspend fun first(onArrived: ((FeedPage) -> Unit)?): FeedPage = mutex.withLock {
         clearShown()
         forgetNewer()
         readings.forEach { it.cursor = null; it.exhausted = false; it.oldest = null; it.unread.clear(); it.failure = null }
-        val failures = read(readings, onArrived)
-        FeedPage(drain(), failures, hasMore())
+        unanswered = readings.mapTo(HashSet()) { it.index }
+        firstAt = clock()
+        read(readings, onArrived)
+        endFirst()
+    }
+
+    override suspend fun resumeFirst(onArrived: ((FeedPage) -> Unit)?): FeedPage? = mutex.withLock {
+        val left = unanswered ?: return@withLock null
+        if (clock() - firstAt !in 0 until RESUME_MILLIS) return@withLock null
+        read(readings.filter { it.index in synchronized(readings) { left.toSet() } }, onArrived)
+        endFirst()
+    }
+
+    /** A first page's end, whether read at once or resumed: every source that failed is said, not only the last ones read. */
+    private fun endFirst(): FeedPage {
+        unanswered = null
+        return FeedPage(drain(), readings.mapNotNull { it.failure }, hasMore())
     }
 
     override suspend fun more(): FeedPage = mutex.withLock {
@@ -297,6 +328,7 @@ class MergedTimeline(
         }
         clearShown()
         forgetNewer()
+        unanswered = null
         shownThreads += shownIds
         val failed = readings.count { it.failure != null }
         loading.value = FeedProgress(readings.size, readings.size, failed, loading = false)
@@ -365,7 +397,7 @@ class MergedTimeline(
         val outcomes = try {
             batch.load(
                 keys,
-                fetch = { key -> readOne(readings[key.toInt()]) },
+                fetch = { key -> answer(readings[key.toInt()]) },
                 onError = { it },
                 failed = { it != null },
                 concurrency = concurrency,
@@ -387,6 +419,20 @@ class MergedTimeline(
         // Every source still failed counts, not only this load's: one that failed before is still to retry.
         loading.value = FeedProgress(outcomes.size, keys.size, readings.count { it.failure != null }, loading = false)
         return outcomes.filterNotNull()
+    }
+
+    /**
+     * [readOne], its outcome kept as it comes, so a load stopped halfway
+     * keeps what each source that answered brought, its failure included.
+     */
+    private suspend fun answer(reading: Reading): Throwable? = readOne(reading).also { failure ->
+        synchronized(readings) {
+            if (failure != null) {
+                reading.exhausted = true
+                reading.failure = failure
+            }
+            unanswered?.remove(reading.index)
+        }
     }
 
     /** Reads one more page of [reading]; returns why it brought nothing, if it did not. */

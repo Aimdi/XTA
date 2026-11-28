@@ -130,6 +130,11 @@ class GroupFeed(
         shaped(timeline.first(onArrived?.let { arrived -> { page -> arrived(shaped(page)) } }))
     }
 
+    /** A first page stopped halfway, finished: the unrelated-posts notice as the searches already read left it. */
+    override suspend fun resumeFirst(onArrived: ((FeedPage) -> Unit)?): FeedPage? = mutex.withLock {
+        timeline.resumeFirst(onArrived?.let { arrived -> { page -> arrived(shaped(page)) } })?.let(::shaped)
+    }
+
     /**
      * The first page of a feed opened again from [saved], as XTA's first page
      * shows each chunk's stored posts under its fresh ones: every chunk reads

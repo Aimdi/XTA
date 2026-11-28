@@ -36,6 +36,60 @@ class MergedTimelineTest {
     }
 
     @Test
+    fun aFirstPageStoppedHalfwayReadsOnlyTheSourcesThatHadNotAnswered() = runBlocking {
+        val bAsked = CompletableDeferred<Unit>()
+        val never = CompletableDeferred<XTimelinePage>()
+        val a = Source("a") { page(thread(100, by = "a"), next = null) }
+        val b = Source("b") { bAsked.complete(Unit); never.await() }
+        val timeline = MergedTimeline(listOf(a.timeline, b.timeline))
+        val load = launch { timeline.first() }
+        bAsked.await()
+        while (synchronized(a.reads) { a.reads.isEmpty() }) kotlinx.coroutines.yield()
+        load.cancelAndJoin()
+
+        b.answer = { page(thread(95, by = "b"), next = null) }
+        val resumed = timeline.resumeFirst()!!
+        assertEquals(listOf("100", "95"), ids(resumed.threads), "what a brought before stays")
+        assertEquals(1, a.reads.size, "a is not asked again")
+        assertEquals(2, b.reads.size)
+        assertNull(timeline.resumeFirst(), "once ended there is nothing to resume")
+    }
+
+    @Test
+    fun aFirstPageStoppedLongAgoIsReadAgainFromTheTop() = runBlocking {
+        var now = 0L
+        val asked = CompletableDeferred<Unit>()
+        val never = CompletableDeferred<XTimelinePage>()
+        val a = Source("a") { asked.complete(Unit); never.await() }
+        val timeline = MergedTimeline(listOf(a.timeline), clock = { now })
+        val load = launch { timeline.first() }
+        asked.await()
+        load.cancelAndJoin()
+        now += RESUME_MILLIS
+        assertNull(timeline.resumeFirst())
+    }
+
+    @Test
+    fun aFailureInAStoppedLoadIsKeptForTheResumedOne() = runBlocking {
+        val bAsked = CompletableDeferred<Unit>()
+        val never = CompletableDeferred<XTimelinePage>()
+        val failure = IOException("offline")
+        val a = Source("a") { throw failure }
+        val b = Source("b") { bAsked.complete(Unit); never.await() }
+        val timeline = MergedTimeline(listOf(a.timeline, b.timeline))
+        val load = launch { timeline.first() }
+        bAsked.await()
+        while (synchronized(a.reads) { a.reads.isEmpty() }) kotlinx.coroutines.yield()
+        load.cancelAndJoin()
+
+        b.answer = { page(thread(95, by = "b"), next = null) }
+        val resumed = timeline.resumeFirst()!!
+        assertSame(failure, resumed.failures.single())
+        assertEquals(1, a.reads.size)
+        assertEquals(1, timeline.progress.value.failed)
+    }
+
+    @Test
     fun aPartialAnswerIsShownAndItsSourceStaysFailed() = runBlocking {
         val cause = IOException("half")
         val a = Source("a") { page(thread(100, by = "a"), next = null) }
