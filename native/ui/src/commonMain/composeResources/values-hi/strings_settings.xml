@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">आयात नहीं किया जा सका</string>
     <string name="settings_import_unsupported">यह बैकअप XTA के नए संस्करण से बनाया गया है। ऐप अपडेट करें, फिर इसे दोबारा आयात करें।</string>
     <string name="settings_imported">डेटा सफलतापूर्वक आयात किया गया</string>
+    <string name="settings_imported_except">आयात किया गया, %1$s को छोड़कर: इस डिवाइस पर वह डेटा पढ़ा नहीं जा सका, इसलिए उसे जैसा है वैसा छोड़ दिया गया।</string>
     <string name="settings_exported_to">डेटा %1$s में निर्यात किया गया</string>
     <string name="settings_export_settings">सेटिंग निर्यात करें</string>
     <string name="settings_export_subscriptions">सदस्यताएँ निर्यात करें</string>

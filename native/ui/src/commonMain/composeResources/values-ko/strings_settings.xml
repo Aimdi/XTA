@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">가져올 수 없습니다</string>
     <string name="settings_import_unsupported">이 백업은 더 새로운 버전의 XTA에서 만들었습니다. 앱을 업데이트한 뒤 다시 가져오세요.</string>
     <string name="settings_imported">데이터가 성공적으로 내보내졌습니다</string>
+    <string name="settings_imported_except">%1$s을(를) 제외하고 가져왔습니다. 이 기기의 해당 데이터를 읽을 수 없어 그대로 두었습니다.</string>
     <string name="settings_exported_to">정보를 %1$s(으)로 내보냈습니다</string>
     <string name="settings_export_settings">내보내기 설정?</string>
     <string name="settings_export_subscriptions">구독 내보내기?</string>

@@ -164,6 +164,11 @@ internal fun categoryLabel(category: BackupCategory): String = when (category) {
     BackupCategory.PLUGINS -> stringResource(Res.string.settings_cat_plugins)
 }
 
+/** A restore's notice that the sections [skipped] were left as they were: their stores could not take them. */
+@Composable
+internal fun restoredExcept(skipped: Set<BackupCategory>): String =
+    stringResource(Res.string.settings_imported_except, skipped.map { categoryLabel(it) }.joinToString())
+
 /** A section's title and what it holds, as Settings lists it. */
 internal fun sectionTitle(section: SettingsSection): StringResource = when (section) {
     SettingsSection.GENERAL -> Res.string.settings_general

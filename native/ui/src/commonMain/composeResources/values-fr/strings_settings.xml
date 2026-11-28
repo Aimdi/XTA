@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">Impossible d'importer</string>
     <string name="settings_import_unsupported">Cette sauvegarde a été créée avec une version plus récente de XTA. Mettez l'application à jour, puis réimportez-la.</string>
     <string name="settings_imported">Données importées avec succès</string>
+    <string name="settings_imported_except">Importé, sauf %1$s : ces données de l'appareil n'ont pas pu être lues, elles restent telles quelles.</string>
     <string name="settings_exported_to">Données exportées vers %1$s</string>
     <string name="settings_export_settings">Exporter les paramètres ?</string>
     <string name="settings_export_subscriptions">Exporter les abonnements ?</string>

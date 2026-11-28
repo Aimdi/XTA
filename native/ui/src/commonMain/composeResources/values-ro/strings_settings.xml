@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">Nu se poate importa</string>
     <string name="settings_import_unsupported">Această copie de rezervă a fost creată cu o versiune mai nouă de XTA. Actualizează aplicația și importă-o din nou.</string>
     <string name="settings_imported">Date importate cu succes</string>
+    <string name="settings_imported_except">Importat, cu excepția %1$s: aceste date de pe dispozitiv nu au putut fi citite, așa că rămân neschimbate.</string>
     <string name="settings_exported_to">Date exportate în %1$s</string>
     <string name="settings_export_settings">Exportați setări</string>
     <string name="settings_export_subscriptions">Exportați abonamente</string>

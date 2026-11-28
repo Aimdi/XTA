@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">No s'ha pogut importar</string>
     <string name="settings_import_unsupported">Aquesta còpia de seguretat s'ha fet amb una versió més nova del XTA. Actualitza l'aplicació i torna-la a importar.</string>
     <string name="settings_imported">Dades importades correctament</string>
+    <string name="settings_imported_except">Importat, excepte %1$s: aquestes dades d'aquest dispositiu no s'han pogut llegir, així que es deixen com estan.</string>
     <string name="settings_exported_to">Dades exportades a %1$s</string>
     <string name="settings_export_settings">Exportar la configuració?</string>
     <string name="settings_export_subscriptions">Exportar les subscripcions?</string>

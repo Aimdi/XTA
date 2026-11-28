@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.importer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.store.backup.BackupCategory
 import com.aimdi.xtanative.store.backup.BackupDocument
 import com.aimdi.xtanative.ui.settings.BackupRead
 import com.aimdi.xtanative.ui.settings.DeviceBackup
@@ -22,7 +23,9 @@ sealed interface ImportUi {
     /** Not a backup this build can restore: [read] says why. */
     data class Refused(val read: BackupRead) : ImportUi
     data object Restoring : ImportUi
-    data object Done : ImportUi
+
+    /** Restored, but for the sections a store refused: [skipped]. */
+    data class Done(val skipped: Set<BackupCategory> = emptySet()) : ImportUi
 }
 
 /** Reads a file XTA exported and, once confirmed, restores every section of it, as XTA's import does. */
@@ -43,8 +46,8 @@ class ImportViewModel(private val graph: AppGraph) : ViewModel() {
     fun use(document: BackupDocument, includeReadPositions: Boolean) {
         state.value = ImportUi.Restoring
         viewModelScope.launch {
-            withContext(NonCancellable) { DeviceBackup(graph).restore(document, includeReadPositions) }
-            state.value = ImportUi.Done
+            val skipped = withContext(NonCancellable) { DeviceBackup(graph).restore(document, includeReadPositions) }
+            state.value = ImportUi.Done(skipped)
         }
     }
 

@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">غير قادر على الاستيراد</string>
     <string name="settings_import_unsupported">أُنشئت هذه النسخة الاحتياطية بإصدار أحدث من XTA. حدّث التطبيق ثم أعد الاستيراد.</string>
     <string name="settings_imported">استوردت البيانات بنجاح</string>
+    <string name="settings_imported_except">تم الاستيراد، باستثناء %1$s: تعذّرت قراءة هذه البيانات على هذا الجهاز، لذا تُركت كما هي.</string>
     <string name="settings_exported_to">صُدِّرَت البيانات إلى %1$s</string>
     <string name="settings_export_settings">تصدير الإعدادات؟</string>
     <string name="settings_export_subscriptions">تصدير الاشتراكات؟</string>

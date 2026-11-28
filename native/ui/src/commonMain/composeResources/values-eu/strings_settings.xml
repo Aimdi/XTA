@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">Ezin da inportatu</string>
     <string name="settings_import_unsupported">Babeskopia hau XTA-en bertsio berriago batekin egin da. Eguneratu aplikazioa eta inportatu berriro.</string>
     <string name="settings_imported">Datuak behar bezala inportatu dira</string>
+    <string name="settings_imported_except">Inportatuta, %1$s izan ezik: gailuko datu horiek ezin izan dira irakurri, beraz dauden bezala geratzen dira.</string>
     <string name="settings_exported_to">%1$s-era esportatu dira datuak</string>
     <string name="settings_export_settings">Ezarpenak esportatu nahi dituzu?</string>
     <string name="settings_export_subscriptions">Harpidetzak esportatu nahi dituzu?</string>

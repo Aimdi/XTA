@@ -8,6 +8,7 @@ import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.XEndpoints
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.SessionStore
+import com.aimdi.xtanative.store.backup.BackupCategory
 import com.aimdi.xtanative.store.backup.BackupDocument
 import com.aimdi.xtanative.store.backup.ExportChoice
 import com.aimdi.xtanative.store.backup.LocalBackup
@@ -21,6 +22,7 @@ import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.group.ReadMarks
 import java.time.Duration
 import java.time.Instant
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -93,32 +95,47 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
      * accounts' health goes to the client's store, the plugin store's private
      * plugins to its own. Reading positions, Following's, For you's and the
      * groups', only when [includeReadPositions], into the read marks the
-     * feeds keep ([ReadMarks]).
+     * feeds keep ([ReadMarks]). A store that refuses its section (a file it
+     * cannot read, a full disk) is skipped, the rest still restored: what was
+     * skipped comes back, by the category the import preview names it.
      */
-    suspend fun restore(document: BackupDocument, includeReadPositions: Boolean) {
+    suspend fun restore(document: BackupDocument, includeReadPositions: Boolean): Set<BackupCategory> {
         snapshot(LocalBackupKind.BEFORE_RESTORE)
         val restoring = document.forRestore(includeReadPositions)
         val now = clock().toEpochMilli()
-        restoring.settings?.let { graph.settings.restore(it) }
+        val steps = RestoreSteps()
+        steps.run(BackupCategory.SETTINGS) { restoring.settings?.let { graph.settings.restore(it) } }
+        steps.run(BackupCategory.SUBSCRIPTIONS) { restoreSession(restoring) }
+        steps.run(BackupCategory.ACCOUNTS) { BackupRestore.accountHealth(restoring)?.forEach { (id, health) -> graph.accountHealth.write(id, health) } }
+        steps.run(BackupCategory.PLUGINS) { BackupRestore.showPrivate(restoring)?.let { show -> graph.pluginPrefs.update { it.copy(showPrivate = show) } } }
+        // Merged under each store's lock: a post saved or liked while the restore runs stays.
+        steps.run(BackupCategory.SAVED_POSTS) { graph.saved.restore { BackupRestore.library(it, restoring, now) } }
+        steps.run(BackupCategory.LIKED_POSTS) { graph.likes.restore { BackupRestore.likes(it, restoring, now) } }
+        steps.run(BackupCategory.LOCAL_POSTS) { graph.localPosts.restore { BackupRestore.localPosts(it, restoring, now) } }
+        steps.run(BackupCategory.ARCHIVE_ANNOTATIONS) { BackupRestore.annotations(restoring)?.let { graph.archiveNotes.merge(it) } }
+        steps.run(BackupCategory.ANTENNAS) { BackupRestore.antennas(restoring, now)?.let { graph.antennas.merge(it) } }
+        steps.run(BackupCategory.SAVED_POSTS) { BackupRestore.journal(restoring)?.let { graph.readingJournal.merge(it) } }
+        steps.run(BackupCategory.SETTINGS) { BackupRestore.appearance(restoring)?.let { graph.readingAppearance.set(it) } }
+        steps.run(BackupCategory.PROFILE_NOTES) { graph.profileNotes.restore { BackupRestore.profileNotes(it, restoring) } }
+        steps.run(BackupCategory.FILTERS) { graph.profileFilters.restore { BackupRestore.profileFilters(it, restoring) } }
+        steps.run(BackupCategory.PLUGINS) {
+            graph.kept.merge(KeptSections.keptOf(restoring))
+            graph.pluginBackups.handOver()
+        }
+        steps.run(BackupCategory.READ_POSITIONS) { restorePositions(restoring, now) }
+        return steps.skipped
+    }
+
+    private suspend fun restoreSession(restoring: BackupDocument) {
         val settings = graph.settings.load()
         graph.sessions.load()
         val accounts = networkAccounts(restoring)
         graph.sessions.update { FeedSwitches.mirrored(BackupRestore.session(it, restoring, accounts), settings) }
-        BackupRestore.accountHealth(restoring)?.forEach { (id, health) -> graph.accountHealth.write(id, health) }
-        BackupRestore.showPrivate(restoring)?.let { show -> graph.pluginPrefs.update { it.copy(showPrivate = show) } }
-        // Merged under each store's lock: a post saved or liked while the restore runs stays.
-        graph.saved.restore { BackupRestore.library(it, restoring, now) }
-        graph.likes.restore { BackupRestore.likes(it, restoring, now) }
-        graph.localPosts.restore { BackupRestore.localPosts(it, restoring, now) }
-        BackupRestore.annotations(restoring)?.let { graph.archiveNotes.merge(it) }
-        BackupRestore.antennas(restoring, now)?.let { graph.antennas.merge(it) }
-        BackupRestore.journal(restoring)?.let { graph.readingJournal.merge(it) }
-        BackupRestore.appearance(restoring)?.let { graph.readingAppearance.set(it) }
-        restoreProfiles(restoring)
-        graph.kept.merge(KeptSections.keptOf(restoring))
-        graph.pluginBackups.handOver()
         // The feeds shown last may hold accounts no longer followed.
         if (restoring.subscriptions != null || restoring.groups != null || restoring.groupMembers != null) graph.clearFeedCaches()
+    }
+
+    private suspend fun restorePositions(restoring: BackupDocument, now: Long) {
         val groups = graph.sessions.state.value?.groups.orEmpty().mapTo(HashSet()) { it.id }
         BackupRestore.readPositions(restoring, groups).forEach { (key, position) -> marksOf(key).record(BackupRestore.markedThread(position), now) }
     }
@@ -138,7 +155,7 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
     }
 
     /** The profile notes and filters an older build kept aside on restoring a backup, put into their stores once. */
-    suspend fun adoptKeptProfiles() = graph.kept.adoptProfiles(::restoreProfiles)
+    suspend fun adoptKeptProfiles() = RestoreSteps().run(BackupCategory.PROFILE_NOTES) { graph.kept.adoptProfiles(::restoreProfiles) }
 
     /** The look and creation time an older build kept aside for restored groups, given to the groups that lack them. */
     suspend fun adoptKeptGroups() {
@@ -151,6 +168,21 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
     private suspend fun restoreProfiles(document: BackupDocument) {
         graph.profileNotes.restore { BackupRestore.profileNotes(it, document) }
         graph.profileFilters.restore { BackupRestore.profileFilters(it, document) }
+    }
+}
+
+/** A restore's steps, each run to its end or, when its store refuses it, skipped and kept in [skipped]. */
+internal class RestoreSteps {
+    val skipped = LinkedHashSet<BackupCategory>()
+
+    suspend fun run(category: BackupCategory, step: suspend () -> Unit) {
+        try {
+            step()
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            skipped += category
+        }
     }
 }
 

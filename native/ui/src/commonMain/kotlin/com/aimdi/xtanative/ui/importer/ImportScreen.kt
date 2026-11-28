@@ -45,6 +45,7 @@ import com.aimdi.xtanative.ui.generated.resources.import_steps
 import com.aimdi.xtanative.ui.generated.resources.import_steps_desktop
 import com.aimdi.xtanative.ui.generated.resources.import_use
 import com.aimdi.xtanative.ui.generated.resources.settings_import_from
+import com.aimdi.xtanative.ui.generated.resources.settings_ok
 import com.aimdi.xtanative.ui.generated.resources.settings_import_read_positions
 import com.aimdi.xtanative.ui.generated.resources.settings_import_read_positions_description
 import com.aimdi.xtanative.ui.generated.resources.signin_add_account
@@ -52,6 +53,7 @@ import com.aimdi.xtanative.ui.home.verticalScrollByKeys
 import com.aimdi.xtanative.ui.settings.backupProblem
 import com.aimdi.xtanative.ui.settings.categoryLabel
 import com.aimdi.xtanative.ui.settings.isDesktop
+import com.aimdi.xtanative.ui.settings.restoredExcept
 import com.aimdi.xtanative.ui.settings.shortDateTime
 import org.jetbrains.compose.resources.stringResource
 
@@ -73,7 +75,7 @@ fun ImportScreen(onImported: () -> Unit, onSignIn: () -> Unit) {
     var fewest by rememberSaveable { mutableIntStateOf(accounts) }
 
     LaunchedEffect(state) {
-        if (state == ImportUi.Done) {
+        if (state == ImportUi.Done()) {
             vm.reset()
             onImported()
         }
@@ -92,7 +94,11 @@ fun ImportScreen(onImported: () -> Unit, onSignIn: () -> Unit) {
         Text(stringResource(Res.string.import_intro), style = MaterialTheme.typography.bodyLarge)
         Text(stringResource(if (isDesktop) Res.string.import_steps_desktop else Res.string.import_steps), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         when (val now = state) {
-            ImportUi.Idle, ImportUi.Done -> {
+            is ImportUi.Done -> {
+                Text(restoredExcept(now.skipped), color = MaterialTheme.colorScheme.error)
+                Button(onClick = { vm.reset(); onImported() }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.settings_ok)) }
+            }
+            ImportUi.Idle -> {
                 Button(onClick = choose, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.import_choose)) }
                 TextButton(onClick = onSignIn, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.signin_add_account)) }
             }

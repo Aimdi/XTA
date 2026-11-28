@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">Não foi possível importar</string>
     <string name="settings_import_unsupported">Este backup foi criado por uma versão mais nova do XTA. Atualize o app e importe novamente.</string>
     <string name="settings_imported">Dados importados com sucesso</string>
+    <string name="settings_imported_except">Importado, exceto %1$s: esses dados do dispositivo não puderam ser lidos, então ficam como estão.</string>
     <string name="settings_exported_to">Dados exportados para %1$s</string>
     <string name="settings_export_settings">Exportar configurações?</string>
     <string name="settings_export_subscriptions">Exportar inscrições?</string>

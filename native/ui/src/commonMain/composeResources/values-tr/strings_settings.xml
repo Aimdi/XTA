@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">İçe aktarılamıyor</string>
     <string name="settings_import_unsupported">Bu yedek, XTA'in daha yeni bir sürümüyle oluşturulmuş. Uygulamayı güncelleyip yeniden içe aktarın.</string>
     <string name="settings_imported">Veriler başarıyla içe aktarıldı</string>
+    <string name="settings_imported_except">%1$s dışında içe aktarıldı: bu cihazdaki o veriler okunamadı, bu yüzden olduğu gibi bırakıldı.</string>
     <string name="settings_exported_to">Veriler %1$s'a aktarıldı</string>
     <string name="settings_export_settings">Ayarlar aktarılsın mı?</string>
     <string name="settings_export_subscriptions">Abonelikler aktarılsın mı?</string>

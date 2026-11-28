@@ -482,6 +482,19 @@ class DeviceBackupTest {
     }
 
     @Test
+    fun aStoreThatCannotBeReadIsSkippedAndNamedWhileTheOtherSectionsAreRestored(): Unit = runBlocking {
+        val notes = File(dir, "store/saved/notes.json").apply { parentFile.mkdirs(); writeText("{damaged") }
+        val graph = AppGraph(dir, flowOf(true), "test")
+        val skipped = DeviceBackup(graph).restore(backup(), includeReadPositions = true)
+        assertEquals(setOf(BackupCategory.LOCAL_POSTS), skipped)
+        assertEquals("{damaged", notes.readText(), "never written over")
+        assertFalse(graph.localPosts.mediaFile("n1", "m1").exists(), "no file of a note that was not kept")
+        assertEquals("Tech", graph.antennas.load().single().name)
+        assertEquals("met at a conference", graph.profileNotes.of("1")?.note)
+        assertEquals(ReadPosition("c1", null), ReadMarks(graph.feedCache(ReadMarks.key("g1"))).position())
+    }
+
+    @Test
     fun aSectionAPluginCannotTakeStaysKeptAndGoesOut(): Unit = runBlocking {
         val graph = AppGraph(dir, flowOf(true), "test")
         graph.pluginBackups.attach(listOf(FakeSection("broken.data", failing = true).section))

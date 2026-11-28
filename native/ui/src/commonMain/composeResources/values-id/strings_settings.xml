@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">Tidak bisa mengimpor</string>
     <string name="settings_import_unsupported">Cadangan ini dibuat oleh versi XTA yang lebih baru. Perbarui aplikasi, lalu impor lagi.</string>
     <string name="settings_imported">Data berhasil diimpor</string>
+    <string name="settings_imported_except">Diimpor, kecuali %1$s: data tersebut di perangkat ini tidak dapat dibaca, jadi dibiarkan apa adanya.</string>
     <string name="settings_exported_to">Data diekspor ke %1$s</string>
     <string name="settings_export_settings">Ekspor pengaturan?</string>
     <string name="settings_export_subscriptions">Ekspor langganan?</string>

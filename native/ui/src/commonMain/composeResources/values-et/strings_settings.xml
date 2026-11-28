@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">Ei ole võimalik importida</string>
     <string name="settings_import_unsupported">See varukoopia on tehtud XTAi uuema versiooniga. Uuenda rakendust ja impordi see uuesti.</string>
     <string name="settings_imported">Andmete importimine õnnestus</string>
+    <string name="settings_imported_except">Imporditud, välja arvatud %1$s: neid andmeid seadmes ei saanud lugeda, seega jäävad need muutmata.</string>
     <string name="settings_exported_to">Andmed on eksporditud faili %1$s</string>
     <string name="settings_export_settings">Kas ekspordime seadistused?</string>
     <string name="settings_export_subscriptions">Kas ekspordime tellimused?</string>

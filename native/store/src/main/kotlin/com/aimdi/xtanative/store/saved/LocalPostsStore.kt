@@ -138,13 +138,12 @@ class LocalPostsStore(
      * the backup is skipped, not the import.
      */
     suspend fun restore(merge: (List<LocalPost>) -> List<LocalPost>?) {
-        val dropped = withContext(Dispatchers.IO) {
-            stored.updateWith { notes ->
-                val kept = merge(notes)?.distinctBy { it.id } ?: return@updateWith notes to emptySet()
-                kept.forEach(::materialize)
+        val (_, dropped) = withContext(Dispatchers.IO) {
+            stored.updateWith<Pair<List<LocalPost>, Set<String>>>(beforeWrite = { (kept, _) -> kept.forEach(::materialize) }) { notes ->
+                val kept = merge(notes)?.distinctBy { it.id } ?: return@updateWith notes to (emptyList<LocalPost>() to emptySet<String>())
                 val folders = kept.mapTo(HashSet()) { safeName(it.id) }
                 kept.map { post -> post.copy(media = post.media.map { it.copy(data = null) }) } to
-                    notes.mapTo(HashSet()) { safeName(it.id) }.filterNotTo(HashSet()) { it in folders }
+                    (kept to notes.mapTo(HashSet()) { safeName(it.id) }.filterNotTo(HashSet()) { it in folders })
             }
         }
         if (dropped.isEmpty()) return

@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">Import se nezdařil</string>
     <string name="settings_import_unsupported">Tato záloha byla vytvořena novější verzí XTA. Aktualizujte aplikaci a import zopakujte.</string>
     <string name="settings_imported">Data úspěšně importována</string>
+    <string name="settings_imported_except">Importováno kromě %1$s: tato data v zařízení nešlo přečíst, proto zůstala beze změny.</string>
     <string name="settings_exported_to">Data exportována do %1$s</string>
     <string name="settings_export_settings">Exportovat nastavení?</string>
     <string name="settings_export_subscriptions">Exportovat odběry?</string>

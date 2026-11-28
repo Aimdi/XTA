@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">インポートできませんでした</string>
     <string name="settings_import_unsupported">このバックアップは新しいバージョンの XTA で作成されています。アプリを更新してから、もう一度インポートしてください。</string>
     <string name="settings_imported">データのインポートに成功しました</string>
+    <string name="settings_imported_except">%1$s 以外をインポートしました。この端末のそのデータは読み取れなかったため、そのままにしてあります。</string>
     <string name="settings_exported_to">データが%1$sにエクスポートされました</string>
     <string name="settings_export_settings">設定をエクスポート？</string>
     <string name="settings_export_subscriptions">登録アカウントをエクスポート？</string>

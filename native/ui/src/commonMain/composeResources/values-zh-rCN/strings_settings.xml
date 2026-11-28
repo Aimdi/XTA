@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">无法导入</string>
     <string name="settings_import_unsupported">此备份由更新版本的 XTA 创建。请先更新应用，再重新导入。</string>
     <string name="settings_imported">数据导入成功</string>
+    <string name="settings_imported_except">已导入，%1$s 除外：无法读取此设备上的这些数据，因此保持原样。</string>
     <string name="settings_exported_to">导出数据至文件 %1$s</string>
     <string name="settings_export_settings">导出设置？</string>
     <string name="settings_export_subscriptions">导出订阅？</string>

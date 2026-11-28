@@ -47,12 +47,17 @@ internal class StoredJson<T : Any>(
     /** Replaces the value with what [change] makes of it; returning the same instance writes nothing. */
     suspend fun update(change: (T) -> T): T = updateWith { old -> change(old).let { it to it } }
 
-    /** Like [update], also handing back what [change] says alongside the new value; throws while the file cannot be read. */
-    suspend fun <R> updateWith(change: (T) -> Pair<T, R>): R = lock.withLock {
+    /**
+     * Like [update], also handing back what [change] says alongside the new
+     * value; throws while the file cannot be read. [beforeWrite] gets that
+     * result once the change is known to be written, just before it is.
+     */
+    suspend fun <R> updateWith(beforeWrite: (R) -> Unit = {}, change: (T) -> Pair<T, R>): R = lock.withLock {
         val old = if (failed) read().also { current.value = it } else loaded()
         val (next, result) = change(old)
         if (next !== old) {
             if (failed) throw IOException("$name could not be read, so it is not written over")
+            beforeWrite(result)
             dir.file(name).write(encode(next).toString())
             current.value = next
         }

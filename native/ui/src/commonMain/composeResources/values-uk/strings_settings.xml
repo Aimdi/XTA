@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">Не вдалося імпортувати</string>
     <string name="settings_import_unsupported">Цю резервну копію створено новішою версією XTA. Оновіть застосунок і повторіть імпорт.</string>
     <string name="settings_imported">Дані успішно імпортовано</string>
+    <string name="settings_imported_except">Імпортовано, крім %1$s: ці дані на пристрої не вдалося прочитати, тому їх залишено як є.</string>
     <string name="settings_exported_to">Дані експортовано до %1$s</string>
     <string name="settings_export_settings">Експортувати налаштування?</string>
     <string name="settings_export_subscriptions">Експортувати підписки?</string>

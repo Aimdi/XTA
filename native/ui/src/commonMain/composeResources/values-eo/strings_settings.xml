@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">Ne eblas importi</string>
     <string name="settings_import_unsupported">Ĉi tiu sekurkopio estis kreita per pli nova versio de XTA. Ĝisdatigu la aplikaĵon kaj reimportu ĝin.</string>
     <string name="settings_imported">Datumoj importiĝis sukcese</string>
+    <string name="settings_imported_except">Importita, krom %1$s: tiuj datumoj en ĉi tiu aparato ne legeblis, do ili restas kiel ili estas.</string>
     <string name="settings_exported_to">Datumoj eksportiĝis al %1$s</string>
     <string name="settings_export_settings">Ĉu eksporti la agordojn?</string>
     <string name="settings_export_subscriptions">Ĉu eksporti la abonojn?</string>

@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">Kan ikke importere</string>
     <string name="settings_import_unsupported">Denne sikkerhetskopien ble laget med en nyere versjon av XTA. Oppdater appen og importer den på nytt.</string>
     <string name="settings_imported">Data importert</string>
+    <string name="settings_imported_except">Importert, unntatt %1$s: de dataene på enheten kunne ikke leses, så de er latt være som de er.</string>
     <string name="settings_exported_to">Data eksportert til %1$s</string>
     <string name="settings_export_settings">Eksporter innstillinger?</string>
     <string name="settings_export_subscriptions">Eksporter abonnementer?</string>

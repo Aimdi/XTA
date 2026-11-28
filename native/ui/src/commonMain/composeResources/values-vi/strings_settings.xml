@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">Không thể nhập</string>
     <string name="settings_import_unsupported">Bản sao lưu này được tạo bởi phiên bản XTA mới hơn. Hãy cập nhật ứng dụng rồi nhập lại.</string>
     <string name="settings_imported">Dữ liệu đã được nhập thành công</string>
+    <string name="settings_imported_except">Đã nhập, trừ %1$s: không đọc được dữ liệu đó trên thiết bị này nên giữ nguyên.</string>
     <string name="settings_exported_to">Dữ liệu đã xuất ra %1$s</string>
     <string name="settings_export_settings">Xuất cài đặt </string>
     <string name="settings_export_subscriptions">Xuất đăng kí </string>

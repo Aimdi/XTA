@@ -35,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -177,21 +178,37 @@ internal fun ImportPreviewDialog(document: BackupDocument, onDismiss: () -> Unit
 /**
  * A backup the reader chose, previewed and, once they agree, restored into
  * every store, then [onRestored]. Both run to their end even when the
- * screen goes away.
+ * screen goes away. The sections a store refused are named after, in
+ * [snackbar] or, without one, a dialog: so the caller keeps this shown
+ * while [document] is null.
  */
 @Composable
 internal fun RestoreDialog(document: BackupDocument?, graph: AppGraph, snackbar: SnackbarHostState?, onClose: () -> Unit, onRestored: suspend () -> Unit = {}) {
-    if (document == null) return
+    // Before the return below: the restore outlives the dialog it started in.
     val scope = rememberCoroutineScope()
     val imported = stringResource(Res.string.settings_imported)
+    var skipped by remember { mutableStateOf<Set<BackupCategory>>(emptySet()) }
+    val except = if (skipped.isEmpty()) null else restoredExcept(skipped)
+    LaunchedEffect(except) {
+        if (except == null || snackbar == null) return@LaunchedEffect
+        snackbar.showSnackbar(except, withDismissAction = true, duration = SnackbarDuration.Long)
+        skipped = emptySet()
+    }
+    if (except != null && snackbar == null) {
+        AlertDialog(
+            onDismissRequest = { skipped = emptySet() },
+            text = { Text(except) },
+            confirmButton = { TextButton(onClick = { skipped = emptySet() }) { Text(stringResource(Res.string.settings_ok)) } },
+        )
+    }
+    if (document == null) return
     ImportPreviewDialog(document, onDismiss = onClose) { includeReadPositions ->
         onClose()
         scope.launch {
-            withContext(NonCancellable + Dispatchers.Default) {
-                DeviceBackup(graph).restore(document, includeReadPositions)
-                onRestored()
+            val refused = withContext(NonCancellable + Dispatchers.Default) {
+                DeviceBackup(graph).restore(document, includeReadPositions).also { onRestored() }
             }
-            snackbar?.showSnackbar(imported)
+            if (refused.isEmpty()) snackbar?.showSnackbar(imported) else skipped = refused
         }
     }
 }
@@ -532,11 +549,10 @@ internal fun SyncSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
         )
     }
 
-    offered?.let { (document, downloaded) ->
-        RestoreDialog(document, vm.graph, snackbar, onClose = { offered = null }) {
-            // Only a confirmed restore becomes the baseline the next upload is checked against.
-            if (downloaded != null) sync.acknowledge(config, downloaded)
-        }
+    val downloaded = offered?.second
+    RestoreDialog(offered?.first, vm.graph, snackbar, onClose = { offered = null }) {
+        // Only a confirmed restore becomes the baseline the next upload is checked against.
+        if (downloaded != null) sync.acknowledge(config, downloaded)
     }
 }
 

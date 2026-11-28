@@ -91,8 +91,9 @@ sealed interface OpenedFile {
 internal fun OpenedFileDialogs() {
     var shown by remember { mutableStateOf<OpenedFile?>(null) }
     LaunchedEffect(Unit) { OpenRequests.openedFiles.collect { path -> shown = OpenedFile.read(path) } }
+    RestoreDialog((shown as? OpenedFile.Backup)?.document, LocalGraph.current, null, onClose = { shown = null })
     when (val opened = shown) {
-        is OpenedFile.Backup -> RestoreDialog(opened.document, LocalGraph.current, null, onClose = { shown = null })
+        is OpenedFile.Backup -> Unit
         is OpenedFile.Opml -> OpmlDialog(opened) { shown = null }
         is OpenedFile.Refused -> RefusedDialog(opened.read) { shown = null }
         null -> Unit

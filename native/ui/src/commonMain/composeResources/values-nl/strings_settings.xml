@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">Kan niet importeren</string>
     <string name="settings_import_unsupported">Deze back-up is gemaakt met een nieuwere versie van XTA. Werk de app bij en importeer hem opnieuw.</string>
     <string name="settings_imported">Gegevens succesvol geïmporteerd</string>
+    <string name="settings_imported_except">Geïmporteerd, behalve %1$s: die gegevens op dit apparaat konden niet worden gelezen en blijven zoals ze zijn.</string>
     <string name="settings_exported_to">Gegevens geëxporteerd naar %1$s</string>
     <string name="settings_export_settings">Instellingen exporteren</string>
     <string name="settings_export_subscriptions">Abonnementen exporteren</string>

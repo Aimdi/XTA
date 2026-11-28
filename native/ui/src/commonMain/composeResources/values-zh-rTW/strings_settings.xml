@@ -210,6 +210,7 @@
     <string name="settings_unable_to_import">無法匯入</string>
     <string name="settings_import_unsupported">此備份由較新版本的 XTA 建立。請先更新應用程式，再重新匯入。</string>
     <string name="settings_imported">資料匯入成功</string>
+    <string name="settings_imported_except">已匯入，%1$s 除外：無法讀取此裝置上的這些資料，因此保持原樣。</string>
     <string name="settings_exported_to">資料已匯出至 %1$s</string>
     <string name="settings_export_settings">匯出設定？</string>
     <string name="settings_export_subscriptions">匯出訂閱？</string>
