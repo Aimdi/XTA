@@ -90,6 +90,7 @@ import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.clickableNoRipple
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.common.RingedFocus
 import com.aimdi.xtanative.ui.common.keyboardFocusRing
 import com.aimdi.xtanative.ui.common.monthText
 import com.aimdi.xtanative.ui.common.pointerOnlyFocus
@@ -501,12 +502,17 @@ private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actio
                         .let { if (banner != null) it.clickable { actions.openImage(banner, owner) } else it },
                 )
             }
-            Avatar(
-                user?.largeAvatarUrl,
-                80.dp,
-                Modifier.align(Alignment.BottomStart).offset(x = 16.dp, y = 40.dp).border(4.dp, background, CircleShape),
-                onClick = user?.avatarUrl?.let { avatar -> { actions.openImage(ProfileHeader.fullAvatarUrl(avatar), owner) } },
-            )
+            val openAvatar = user?.avatarUrl?.let { avatar -> { actions.openImage(ProfileHeader.fullAvatarUrl(avatar), owner) } }
+            // The keyboard's ring on the rim round the picture, drawn over it: Material's focus inside the clipped picture hid under the rim.
+            RingedFocus {
+                Box(
+                    Modifier
+                        .align(Alignment.BottomStart)
+                        .offset(x = 16.dp, y = 40.dp)
+                        .keyboardFocusRing(outset = (-2).dp)
+                        .let { if (openAvatar != null) it.clip(CircleShape).clickable(onClick = openAvatar) else it },
+                ) { Avatar(user?.largeAvatarUrl, 80.dp, Modifier.border(4.dp, background, CircleShape)) }
+            }
         }
         // Beside the avatar's lower half, as X places it: the feed filters, then following here.
         Row(
