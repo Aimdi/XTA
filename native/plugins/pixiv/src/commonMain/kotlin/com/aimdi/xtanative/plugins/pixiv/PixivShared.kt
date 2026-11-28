@@ -30,6 +30,20 @@ internal object PixivShared {
     /** The shared post sheet's part of a work's or novel's sheet. */
     fun menu(illust: PixivIllust): PluginPostMenu = PluginPostMenu(archive(illust), illust.url)
 
+    /** [menu] with the creator's groups among its entries, [follow] keeping them here first. */
+    fun menu(illust: PixivIllust, follow: suspend () -> Unit): PluginPostMenu =
+        PluginPostMenu(archive(illust), illust.url, author = "${illust.userId}", follow = follow)
+
+    /** Every page of [illust] as the app's media viewer opens them, from [imageHost]; the viewer asks Pixiv's server with its Referer. */
+    fun pages(illust: PixivIllust, imageHost: String): List<MediaItem> = illust.viewerUrls.mapIndexed { page, url ->
+        MediaItem(
+            PixivImages.url(url, imageHost),
+            aspectRatio = illust.aspectRatio.toFloat().takeIf { page == 0 && it > 0f },
+            alt = illust.title.ifEmpty { null },
+            thumbUrl = PixivImages.url(illust.thumbUrlAt(page), imageHost),
+        )
+    }
+
     fun menu(novel: PixivNovel): PluginPostMenu = PluginPostMenu(archive(novel), novel.url)
 
     /** A record of this plugin's in Saved, the id and author it was kept under; null for another. */

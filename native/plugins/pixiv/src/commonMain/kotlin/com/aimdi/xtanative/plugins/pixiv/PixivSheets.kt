@@ -24,6 +24,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivNovel
 import com.aimdi.xtanative.networks.pixiv.PixivTag
 import com.aimdi.xtanative.networks.pixiv.PixivUgoira
 import com.aimdi.xtanative.networks.pixiv.PixivUser
+import com.aimdi.xtanative.networks.pixiv.PixivisionWork
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.PluginDownload
@@ -36,7 +37,8 @@ import kotlinx.coroutines.launch
 
 /** What a screen of the plugin has open over it: a sheet of actions, the bookmark editor, a question. One at a time. */
 internal sealed interface PixivSheet {
-    data class WorkActions(val illust: PixivIllust) : PixivSheet
+    /** A work's actions; [open] opens it as its list would (among its neighbours), else alone. */
+    data class WorkActions(val illust: PixivIllust, val open: (() -> Unit)? = null) : PixivSheet
 
     data class PageActions(val illust: PixivIllust, val page: Int, val surface: PixivPageSurface) : PixivSheet
 
@@ -51,6 +53,9 @@ internal sealed interface PixivSheet {
     data class Follow(val user: PixivUser) : PixivSheet
 
     data class NovelActions(val novel: PixivNovel) : PixivSheet
+
+    /** A picture a Pixivision article features, which leads to its work. */
+    data class FeaturedActions(val work: PixivisionWork) : PixivSheet
 
     data class Resave(val illust: PixivIllust, val pages: List<Int>, val saved: List<Int>, val kind: PixivSaveKind) : PixivSheet
 }
@@ -268,13 +273,14 @@ internal fun PixivRoot(runtime: PixivRuntime, content: @Composable () -> Unit) {
 @Composable
 private fun PixivSheetHost(sheets: PixivSheets) {
     when (val sheet = sheets.open) {
-        is PixivSheet.WorkActions -> WorkActionsSheet(sheet.illust, sheets)
+        is PixivSheet.WorkActions -> WorkActionsSheet(sheet.illust, sheets, sheet.open)
         is PixivSheet.PageActions -> PageActionsSheet(sheet, sheets)
         is PixivSheet.Mute -> MuteSheet(sheet.illust, sheets)
         is PixivSheet.Tag -> TagSheet(sheet, sheets)
         is PixivSheet.EditWork -> BookmarkEditor(sheet, sheets)
         is PixivSheet.Follow -> FollowDialog(sheet.user, sheets)
         is PixivSheet.NovelActions -> NovelActionsSheet(sheet.novel, sheets)
+        is PixivSheet.FeaturedActions -> FeaturedActionsSheet(sheet.work, sheets)
         is PixivSheet.Resave -> ResaveDialog(sheet, sheets)
         null -> Unit
     }

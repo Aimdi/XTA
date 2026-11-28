@@ -121,6 +121,26 @@ object Pixivision {
         image?.attr(name)?.trim()?.takeIf { it.isNotEmpty() && !it.startsWith("data:") }?.let { if (it.startsWith("//")) "https:$it" else it }
     }
 
+    private val crop = Regex("""^(https://[^/]+)/c/(\d+)x(\d+)[^/]*(/.+)$""")
+
+    /**
+     * A featured work's picture for a place [widthPx] pixels wide: the
+     * article's own preview while it is wide enough, else the same picture
+     * without its preview size (Pixiv's 1200-pixel master), never a blurry
+     * stretch of a small preview.
+     */
+    fun sized(url: String, widthPx: Int): String {
+        val match = crop.find(url) ?: return url
+        return if (widthPx > match.groupValues[2].toInt()) full(url) else url
+    }
+
+    /** What an article's cover may show, in turn: its page's own picture, then its first featured work's. */
+    fun covers(article: PixivisionArticle): List<String> =
+        listOfNotNull(article.coverUrl, article.works.firstNotNullOfOrNull { it.imageUrl }?.let(::full)).filter { it.isNotBlank() }.distinct()
+
+    /** A featured work's picture at the largest size its address gives: its preview size taken off. */
+    fun full(url: String): String = crop.find(url)?.let { it.groupValues[1] + it.groupValues[4] } ?: url
+
     private fun artworkIdOf(link: Element): Long? = idIn(artworkHref, link.attr("href"))
 
     private fun userIdOf(link: Element): Long? = idIn(userHref, link.attr("href"))

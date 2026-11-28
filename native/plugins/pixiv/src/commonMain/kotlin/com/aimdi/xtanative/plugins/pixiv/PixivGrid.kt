@@ -124,7 +124,7 @@ internal fun PixivWorksGrid(
                 modifier = Modifier.fillMaxSize().worksGridKeys(
                     grid, ids, columns, mark, takeKeys,
                     onOpen = { index -> runtime.openWork(shown, index, list) },
-                    onMenu = { index -> shown.getOrNull(index)?.let { sheets.show(PixivSheet.WorkActions(it)) } },
+                    onMenu = { index -> shown.getOrNull(index)?.let { sheets.show(PixivSheet.WorkActions(it) { runtime.openWork(shown, index, list) }) } },
                 ),
             ) {
                 header()

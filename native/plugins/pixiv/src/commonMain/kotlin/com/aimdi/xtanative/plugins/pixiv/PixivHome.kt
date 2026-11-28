@@ -69,6 +69,7 @@ import com.aimdi.xtanative.ui.plugins.ShellFilter
 import com.aimdi.xtanative.ui.plugins.ShellSortOption
 import com.aimdi.xtanative.ui.plugins.ShellSortSheet
 import com.aimdi.xtanative.ui.plugins.ShellSubtitle
+import com.aimdi.xtanative.ui.plugins.onContextClick
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -327,11 +328,14 @@ private fun SignInBody(padding: PaddingValues) {
 @Composable
 private fun WalkthroughTile(works: List<PixivIllust>, index: Int, list: PixivList<PixivIllust>) {
     val runtime = LocalPixiv.current
+    val sheets = LocalPixivSheets.current
     val illust = works[index]
+    val open = { runtime.openWork(works, index, list) }
     PixivPicture(
         illust.thumbnailUrl,
         Modifier.fillMaxWidth().aspectRatio(illust.aspectRatio.toFloat().coerceIn(0.45f, 1.6f)).clip(RoundedCornerShape(8.dp))
-            .clickable { runtime.openWork(works, index, list) },
+            .onContextClick { sheets.show(PixivSheet.WorkActions(illust, open)) }
+            .clickable(onClick = open),
         contentDescription = illust.title,
     )
 }
