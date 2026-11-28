@@ -353,7 +353,7 @@ internal class XTransport(
          * The one browser every X request says it is, the signer's x.com
          * pages included: a desktop Chrome, as the web app's sign-in is.
          */
-        const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+        const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36"
 
         /**
          * What every signed-in request carries before the account's own
