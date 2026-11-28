@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Eigen server van Pixiv</string>
     <string name="image_host_privacy">Een mirror of je eigen server ziet elke afbeelding die je opent, ook R-18, en je IP-adres.</string>
     <string name="image_host_reset">Standaard herstellen</string>
+    <string name="in_home_feed">Tonen in de hometijdlijn</string>
+    <string name="in_home_feed_description">Mengt nieuwe werken van de makers die je hier volgt door Volgend en Voor jou</string>
     <string name="info_copied">Info gekopieerd</string>
     <string name="link_copied">Link gekopieerd</string>
     <string name="manage_account">Account beheren op pixiv.net</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">R-18-werken tonen</string>
     <string name="show_r18_description">Standaard uit. Als uit, worden beperkte werken in feeds verborgen.</string>
     <string name="sign_in">Aanmelden met Pixiv</string>
+    <string name="sign_in_browser_intro">De aanmeldpagina van Pixiv opent in je browser. Na het aanmelden vraagt de browser om XTA te openen: sta dat toe, dan ben je hier aangemeld.</string>
+    <string name="sign_in_expired">Deze aanmelding is verlopen. Open de aanmeldpagina van Pixiv opnieuw.</string>
     <string name="sign_in_failed">Aanmelden bij Pixiv mislukt</string>
-    <string name="sign_in_needs_android">Inloggen kan hier alleen met de ingebouwde browser van de Android-app, en die heeft de desktopapp niet.</string>
+    <string name="sign_in_no_code">Daar staat geen aanmeldcode in</string>
+    <string name="sign_in_open_browser">Aanmeldpagina van Pixiv openen</string>
+    <string name="sign_in_paste_hint">Plak het pixiv://…-adres of de code</string>
+    <string name="sign_in_paste_steps">Open vóór het aanmelden de ontwikkelaarstools van de browser (F12) op het tabblad Netwerk. Zoek na het aanmelden het adres dat begint met pixiv://account/login, kopieer het en plak het hier meteen: de code is maar zo'n 30 seconden geldig.</string>
+    <string name="sign_in_paste_title">Als de browser de aanmelding niet teruggeeft</string>
+    <string name="sign_in_paste_use">Aanmelden met deze code</string>
+    <string name="sign_in_to_see">Pixiv toont dit alleen aan aangemelde lezers.</string>
+    <string name="sign_in_waiting">Wachten op Pixiv… Meld je aan in je browser.</string>
     <string name="sign_out">Afmelden</string>
     <string name="sign_out_named">%1$s afmelden?</string>
     <string name="sign_out_question">Afmelden bij Pixiv?</string>
@@ -482,7 +493,6 @@
     <string name="unmute">Dempen opheffen</string>
     <string name="unmute_question">%1$s niet meer dempen?</string>
     <string name="viewing_section">Weergave</string>
-    <string name="walkthrough_sign_in">Meld je aan om dit werk te openen</string>
     <string name="walkthrough_title">Populair op Pixiv</string>
     <string name="watchlist_add">Aan volglijst toevoegen</string>
     <string name="watchlist_empty">Mangareeksen die je aan je volglijst toevoegt, verschijnen hier</string>

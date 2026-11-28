@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Ułasny server Pixiv</string>
     <string name="image_host_privacy">Liusterka abo vaš server bačyć kožnuju vyjavu, jakuju vy adkryvajecie, u tym liku R-18, i vaš IP-adras.</string>
     <string name="image_host_reset">Skinuć da pradvyznačanaha</string>
+    <string name="in_home_feed">Pakazvać u chatniaj stužcy</string>
+    <string name="in_home_feed_description">Damiešvaje novyja pracy aŭtaraŭ, za jakimi vy sočycie tut, u «Padpiski» i «Dla vas»</string>
     <string name="info_copied">Zviestki skapijavany</string>
     <string name="link_copied">Spasyłka skapijavana</string>
     <string name="manage_account">Kiravać ulikovym zapisam na pixiv.net</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">Pakazvać pracy R-18</string>
     <string name="show_r18_description">Pa zmaŭčanni vyklučana. Kali vyklučana, abmiežavanyja pracy chavajucca.</string>
     <string name="sign_in">Uvajsci praz Pixiv</string>
+    <string name="sign_in_browser_intro">Staronka ŭvachodu Pixiv adkryjecca ŭ braŭzery. Pasla ŭvachodu braŭzer spytaje, ci adkryć XTA: dazvolcie, i vy ŭvojdziecie tut.</string>
+    <string name="sign_in_expired">Termin hetaha ŭvachodu skončyŭsia. Adkryjcie staronku ŭvachodu Pixiv jašče raz.</string>
     <string name="sign_in_failed">Nie ŭdałosia ŭvajsci ŭ Pixiv</string>
-    <string name="sign_in_needs_android">Dla ŭvachodu tut patrebny ŭbudavany braŭzer prahramy dla Android, jakoha niama ŭ versii dla kampjutara.</string>
+    <string name="sign_in_no_code">Tut niama koda ŭvachodu</string>
+    <string name="sign_in_open_browser">Adkryć staronku ŭvachodu Pixiv</string>
+    <string name="sign_in_paste_hint">Ustaŭcie adras pixiv://… abo kod</string>
+    <string name="sign_in_paste_steps">Pierad uvachodam adkryjcie instrumienty raspracoŭščyka braŭzera (F12) na ŭkładcy «Sietka». Pasla ŭvachodu znajdzicie adras, jaki pačynajecca z pixiv://account/login, skapirujcie jaho i adrazu ŭstaŭcie siudy: jaho kod dziejničaje tolki kala 30 siekund.</string>
+    <string name="sign_in_paste_title">Kali braŭzer nie viernie ŭvachod</string>
+    <string name="sign_in_paste_use">Uvajsci z hetym kodam</string>
+    <string name="sign_in_to_see">Pixiv pakazvaje heta tolki čytačam, jakija ŭvajšli.</string>
+    <string name="sign_in_waiting">Čakajem Pixiv… Uvajdzicie ŭ braŭzery.</string>
     <string name="sign_out">Vyjsci</string>
     <string name="sign_out_named">Vyjsci z ulikovaha zapisu %1$s?</string>
     <string name="sign_out_question">Vyjsci z Pixiv?</string>
@@ -482,7 +493,6 @@
     <string name="unmute">Pakazvać znoŭ</string>
     <string name="unmute_question">Bolš nie chavać %1$s?</string>
     <string name="viewing_section">Prahliad</string>
-    <string name="walkthrough_sign_in">Uvajdzicie, kab adkryć hetuju pracu</string>
     <string name="walkthrough_title">Papuliarnaje na Pixiv</string>
     <string name="watchlist_add">Dadać u spis nazirańnia</string>
     <string name="watchlist_empty">Tut zjaviacca seryi manhi, jakija vy dadascie ŭ spis nazirańnia</string>

@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">خادم Pixiv نفسه</string>
     <string name="image_host_privacy">ترى المرآة أو خادمك الخاص كل صورة تفتحها، بما فيها صور R-18، وعنوان IP الخاص بك.</string>
     <string name="image_host_reset">استعادة الافتراضي</string>
+    <string name="in_home_feed">العرض في الخط الزمني الرئيسي</string>
+    <string name="in_home_feed_description">يمزج الأعمال الجديدة للمبدعين الذين تتابعهم هنا في «المتابَعون» و«لك»</string>
     <string name="info_copied">تم نسخ المعلومات</string>
     <string name="link_copied">تم نسخ الرابط</string>
     <string name="manage_account">إدارة الحساب على pixiv.net</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">إظهار أعمال R-18</string>
     <string name="show_r18_description">إيقاف افتراضيًا. عند الإيقاف تُخفى الأعمال المقيّدة من الخلاصات.</string>
     <string name="sign_in">تسجيل الدخول عبر Pixiv</string>
+    <string name="sign_in_browser_intro">تُفتح صفحة تسجيل الدخول إلى Pixiv في متصفحك. بعد تسجيل الدخول يطلب المتصفح فتح XTA: اسمح بذلك وستكون مسجَّل الدخول هنا.</string>
+    <string name="sign_in_expired">انتهت صلاحية تسجيل الدخول هذا. افتح صفحة تسجيل الدخول إلى Pixiv مرة أخرى.</string>
     <string name="sign_in_failed">تعذّر تسجيل الدخول إلى Pixiv</string>
-    <string name="sign_in_needs_android">يتطلب تسجيل الدخول هنا المتصفح المدمج في تطبيق Android، وهو غير متوفر في تطبيق سطح المكتب.</string>
+    <string name="sign_in_no_code">لا يحتوي هذا على رمز تسجيل دخول</string>
+    <string name="sign_in_open_browser">فتح صفحة تسجيل الدخول إلى Pixiv</string>
+    <string name="sign_in_paste_hint">الصق عنوان pixiv://… أو الرمز</string>
+    <string name="sign_in_paste_steps">قبل تسجيل الدخول، افتح أدوات المطوّرين في المتصفح (F12) على تبويب «الشبكة». بعد تسجيل الدخول، ابحث عن العنوان الذي يبدأ بـ pixiv://account/login وانسخه والصقه هنا فورًا: رمزه صالح لنحو 30 ثانية فقط.</string>
+    <string name="sign_in_paste_title">إن لم يُعِد المتصفح تسجيل الدخول</string>
+    <string name="sign_in_paste_use">تسجيل الدخول بهذا الرمز</string>
+    <string name="sign_in_to_see">لا يعرض Pixiv هذا إلا للقرّاء المسجَّلين.</string>
+    <string name="sign_in_waiting">في انتظار Pixiv… سجّل الدخول في متصفحك.</string>
     <string name="sign_out">تسجيل الخروج</string>
     <string name="sign_out_named">هل تريد تسجيل خروج %1$s؟</string>
     <string name="sign_out_question">هل تريد تسجيل الخروج من Pixiv؟</string>
@@ -482,7 +493,6 @@
     <string name="unmute">إلغاء الكتم</string>
     <string name="unmute_question">هل تريد إلغاء كتم %1$s؟</string>
     <string name="viewing_section">العرض</string>
-    <string name="walkthrough_sign_in">سجّل الدخول لفتح هذا العمل</string>
     <string name="walkthrough_title">الرائج على Pixiv</string>
     <string name="watchlist_add">إضافة إلى قائمة المتابعة</string>
     <string name="watchlist_empty">تظهر هنا سلاسل المانجا التي تضيفها إلى قائمة المتابعة</string>

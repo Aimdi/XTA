@@ -37,6 +37,8 @@ import com.aimdi.xtanative.networks.pixiv.PixivFailure
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.store.settings.PixivSection
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.plugins.HomeTimelineIcon
+import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -192,11 +194,12 @@ private fun AccountAiRow(userId: Long) {
 
 private const val VIEWING_SETTINGS_URL = "https://www.pixiv.net/settings/viewing"
 
-/** Where the plugin opens, the history and its pause, the copy template and, on Android, opening Pixiv's links here (pixiv_settings_browsing.dart). */
+/** Whether the creators followed here join Home's timelines, where the plugin opens, the history and its pause, the copy template and, on Android, opening Pixiv's links here (pixiv_settings_browsing.dart). */
 @Composable
 private fun BrowsingSettings() {
     val runtime = LocalPixiv.current
     val settings = pixivSettings()
+    HomeTimelineSwitch(runtime.host.settings, pluginString(Strings.in_home_feed), pluginString(Strings.in_home_feed_description), HomeTimelineIcon)
     ChoiceRow(
         pluginString(Strings.start_section),
         settings[PixivPrefs.startSection],

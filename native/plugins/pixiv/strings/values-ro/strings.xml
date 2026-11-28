@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Serverul propriu Pixiv</string>
     <string name="image_host_privacy">O oglindă sau serverul tău vede fiecare imagine pe care o deschizi, inclusiv cele R-18, și adresa ta IP.</string>
     <string name="image_host_reset">Revino la implicit</string>
+    <string name="in_home_feed">Afișează în cronologia principală</string>
+    <string name="in_home_feed_description">Amestecă lucrările noi ale creatorilor pe care îi urmărești aici în Urmăriți și Pentru tine</string>
     <string name="info_copied">Informații copiate</string>
     <string name="link_copied">Link copiat</string>
     <string name="manage_account">Gestionează contul pe pixiv.net</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">Afișează lucrări R-18</string>
     <string name="show_r18_description">Dezactivat implicit. Când e dezactivat, lucrările restricționate sunt ascunse din fluxuri.</string>
     <string name="sign_in">Conectare cu Pixiv</string>
+    <string name="sign_in_browser_intro">Pagina de conectare Pixiv se deschide în browser. După ce te-ai conectat, browserul cere să deschidă XTA: permite, și vei fi conectat aici.</string>
+    <string name="sign_in_expired">Această conectare a expirat. Deschide din nou pagina de conectare Pixiv.</string>
     <string name="sign_in_failed">Nu s-a putut conecta la Pixiv</string>
-    <string name="sign_in_needs_android">Conectarea aici necesită browserul integrat al aplicației Android, pe care aplicația pentru desktop nu îl are.</string>
+    <string name="sign_in_no_code">Nu conține niciun cod de conectare</string>
+    <string name="sign_in_open_browser">Deschide pagina de conectare Pixiv</string>
+    <string name="sign_in_paste_hint">Lipește adresa pixiv://… sau codul</string>
+    <string name="sign_in_paste_steps">Înainte de conectare, deschide instrumentele pentru dezvoltatori ale browserului (F12) în fila Rețea. După conectare, caută adresa care începe cu pixiv://account/login, copiaz-o și lipește-o aici imediat: codul ei durează doar vreo 30 de secunde.</string>
+    <string name="sign_in_paste_title">Dacă browserul nu predă conectarea înapoi</string>
+    <string name="sign_in_paste_use">Conectează-te cu acest cod</string>
+    <string name="sign_in_to_see">Pixiv arată asta doar cititorilor conectați.</string>
+    <string name="sign_in_waiting">Se așteaptă Pixiv… Conectează-te în browser.</string>
     <string name="sign_out">Deconectare</string>
     <string name="sign_out_named">Deconectezi %1$s?</string>
     <string name="sign_out_question">Te deconectezi de la Pixiv?</string>
@@ -482,7 +493,6 @@
     <string name="unmute">Anulează ascunderea</string>
     <string name="unmute_question">Anulezi ascunderea pentru %1$s?</string>
     <string name="viewing_section">Vizualizare</string>
-    <string name="walkthrough_sign_in">Conectează-te pentru a deschide această lucrare</string>
     <string name="walkthrough_title">Populare pe Pixiv</string>
     <string name="watchlist_add">Adaugă în lista de urmărire</string>
     <string name="watchlist_empty">Seriile manga adăugate în lista de urmărire apar aici</string>

@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Pixivs eigener Server</string>
     <string name="image_host_privacy">Ein Spiegelserver oder dein eigener Server sieht jedes Bild, das du öffnest, auch R-18-Werke, und deine IP-Adresse.</string>
     <string name="image_host_reset">Auf Standard zurücksetzen</string>
+    <string name="in_home_feed">In der Home-Timeline anzeigen</string>
+    <string name="in_home_feed_description">Mischt neue Werke der Künstler, denen du hier folgst, in Folge ich und Für dich</string>
     <string name="info_copied">Infos kopiert</string>
     <string name="link_copied">Link kopiert</string>
     <string name="manage_account">Konto auf pixiv.net verwalten</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">R-18-Werke anzeigen</string>
     <string name="show_r18_description">Standardmäßig aus. Wenn aus, werden eingeschränkte Werke in Feeds ausgeblendet.</string>
     <string name="sign_in">Mit Pixiv anmelden</string>
+    <string name="sign_in_browser_intro">Die Anmeldeseite von Pixiv öffnet sich in deinem Browser. Nach der Anmeldung fragt der Browser, ob er XTA öffnen darf: Erlaube es, dann bist du hier angemeldet.</string>
+    <string name="sign_in_expired">Diese Anmeldung ist abgelaufen. Öffne die Anmeldeseite von Pixiv erneut.</string>
     <string name="sign_in_failed">Anmeldung bei Pixiv fehlgeschlagen</string>
-    <string name="sign_in_needs_android">Die Anmeldung hier braucht den integrierten Browser der Android-App, den die Desktop-App nicht hat.</string>
+    <string name="sign_in_no_code">Darin ist kein Anmeldecode</string>
+    <string name="sign_in_open_browser">Anmeldeseite von Pixiv öffnen</string>
+    <string name="sign_in_paste_hint">pixiv://…-Adresse oder Code einfügen</string>
+    <string name="sign_in_paste_steps">Öffne vor der Anmeldung die Entwicklertools des Browsers (F12) im Tab „Netzwerk“. Suche nach der Anmeldung die Adresse, die mit pixiv://account/login beginnt, kopiere sie und füge sie sofort hier ein: Ihr Code gilt nur etwa 30 Sekunden.</string>
+    <string name="sign_in_paste_title">Falls der Browser die Anmeldung nicht zurückgibt</string>
+    <string name="sign_in_paste_use">Mit diesem Code anmelden</string>
+    <string name="sign_in_to_see">Pixiv zeigt das nur angemeldeten Lesern.</string>
+    <string name="sign_in_waiting">Warte auf Pixiv… Melde dich in deinem Browser an.</string>
     <string name="sign_out">Abmelden</string>
     <string name="sign_out_named">Von %1$s abmelden?</string>
     <string name="sign_out_question">Von Pixiv abmelden?</string>
@@ -482,7 +493,6 @@
     <string name="unmute">Stummschaltung aufheben</string>
     <string name="unmute_question">Stummschaltung für %1$s aufheben?</string>
     <string name="viewing_section">Ansicht</string>
-    <string name="walkthrough_sign_in">Melde dich an, um dieses Werk zu öffnen</string>
     <string name="walkthrough_title">Beliebt auf Pixiv</string>
     <string name="watchlist_add">Zur Merkliste hinzufügen</string>
     <string name="watchlist_empty">Manga-Reihen auf deiner Merkliste erscheinen hier</string>

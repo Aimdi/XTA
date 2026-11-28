@@ -177,9 +177,14 @@ internal fun failureText(failure: PixivFailure): PluginText = when (failure) {
     PixivFailure.BAD_RESPONSE -> Strings.error_response
 }
 
-/** A read that failed with nothing to show: why, and Retry. */
+/** A read that failed with nothing to show: why, and Retry; signed out, the way to sign in instead. */
 @Composable
 internal fun PixivProblem(error: Throwable?, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    // Signed out, Retry can never work: the way to sign in takes its place, and a sign-in since reads again.
+    if (PixivFailure.of(error ?: Exception()) == PixivFailure.NOT_SIGNED_IN) {
+        if (!PixivAccounts.signedIn(pixivSettings())) return PixivSignInPrompt(pluginString(Strings.sign_in_to_see), modifier)
+        LaunchedEffect(Unit) { onRetry() }
+    }
     Column(
         modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 40.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

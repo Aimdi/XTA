@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Собственный сервер Pixiv</string>
     <string name="image_host_privacy">Зеркало или ваш сервер видит каждое изображение, которое вы открываете, включая R-18, и ваш IP-адрес.</string>
     <string name="image_host_reset">Вернуть стандартный</string>
+    <string name="in_home_feed">Показывать в домашней ленте</string>
+    <string name="in_home_feed_description">Подмешивает новые работы авторов, на которых вы подписаны здесь, в «Подписки» и «Для вас»</string>
     <string name="info_copied">Сведения скопированы</string>
     <string name="link_copied">Ссылка скопирована</string>
     <string name="manage_account">Управление аккаунтом на pixiv.net</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">Показывать работы R-18</string>
     <string name="show_r18_description">По умолчанию выключено. Когда выключено, ограниченные работы скрываются из лент.</string>
     <string name="sign_in">Войти через Pixiv</string>
+    <string name="sign_in_browser_intro">Страница входа Pixiv откроется в браузере. После входа браузер спросит, открыть ли XTA: разрешите, и вы войдёте здесь.</string>
+    <string name="sign_in_expired">Срок этого входа истёк. Откройте страницу входа Pixiv ещё раз.</string>
     <string name="sign_in_failed">Не удалось войти в Pixiv</string>
-    <string name="sign_in_needs_android">Для входа здесь нужен встроенный браузер приложения для Android, которого нет в версии для компьютера.</string>
+    <string name="sign_in_no_code">Здесь нет кода входа</string>
+    <string name="sign_in_open_browser">Открыть страницу входа Pixiv</string>
+    <string name="sign_in_paste_hint">Вставьте адрес pixiv://… или код</string>
+    <string name="sign_in_paste_steps">Перед входом откройте инструменты разработчика браузера (F12) на вкладке «Сеть». После входа найдите адрес, начинающийся с pixiv://account/login, скопируйте его и сразу вставьте сюда: его код действует всего около 30 секунд.</string>
+    <string name="sign_in_paste_title">Если браузер не вернёт вход</string>
+    <string name="sign_in_paste_use">Войти с этим кодом</string>
+    <string name="sign_in_to_see">Pixiv показывает это только вошедшим читателям.</string>
+    <string name="sign_in_waiting">Ждём Pixiv… Войдите в браузере.</string>
     <string name="sign_out">Выйти</string>
     <string name="sign_out_named">Выйти из аккаунта %1$s?</string>
     <string name="sign_out_question">Выйти из Pixiv?</string>
@@ -482,7 +493,6 @@
     <string name="unmute">Не скрывать</string>
     <string name="unmute_question">Больше не скрывать %1$s?</string>
     <string name="viewing_section">Просмотр</string>
-    <string name="walkthrough_sign_in">Войдите, чтобы открыть эту работу</string>
     <string name="walkthrough_title">Популярное на Pixiv</string>
     <string name="watchlist_add">Добавить в список отслеживания</string>
     <string name="watchlist_empty">Здесь появятся серии манги, добавленные в список отслеживания</string>

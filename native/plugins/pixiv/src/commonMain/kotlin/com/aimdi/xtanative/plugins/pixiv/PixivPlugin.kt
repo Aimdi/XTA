@@ -77,7 +77,7 @@ class PixivPlugin : XtaPlugin() {
         return { PixivRoot(runtime) { PixivScreenOf(opened) } }
     }
 
-    /** The creators followed here, in the groups that hold them; XTA has no switch for Home's timelines. */
+    /** The creators followed here, in the groups that hold them, and in Home's timelines once the settings' switch is on. */
     override val feed: PluginFeed get() = runtime.feed
 
     override val subscriptions: Flow<List<PluginSubscription>> get() = runtime.subscriptions
@@ -121,6 +121,7 @@ internal fun PixivScreenOf(route: PixivRoute) {
         PixivRoute.Mute -> PixivMuteScreen()
         PixivRoute.CopyTemplate -> PixivCopyTemplateScreen()
         PixivRoute.SignIn -> PixivSignInScreen()
+        is PixivRoute.SignInReturn -> PixivSignInReturnScreen(route.code)
         PixivRoute.Settings -> PixivSettingsScreen()
         is PixivRoute.Picture -> (runtime.shelf.get(route.shelf) as? String)?.let { PixivPictureScreen(it) } ?: LostScreen()
     }

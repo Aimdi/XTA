@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Pixiv 官方服务器</string>
     <string name="image_host_privacy">镜像或自定义服务器能看到你打开的每张图片（包括 R-18）以及你的 IP 地址。</string>
     <string name="image_host_reset">恢复默认</string>
+    <string name="in_home_feed">在主页时间线中显示</string>
+    <string name="in_home_feed_description">将你在这里关注的创作者的新作品混入“关注”和“为你推荐”</string>
     <string name="info_copied">已复制作品信息</string>
     <string name="link_copied">已复制链接</string>
     <string name="manage_account">在 pixiv.net 管理账号</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">显示 R-18 作品</string>
     <string name="show_r18_description">默认关闭。关闭时，受限作品会从动态中隐藏。</string>
     <string name="sign_in">使用 Pixiv 登录</string>
+    <string name="sign_in_browser_intro">Pixiv 的登录页面会在浏览器中打开。登录后，浏览器会询问是否打开 XTA：允许即可在这里登录。</string>
+    <string name="sign_in_expired">此次登录已过期。请重新打开 Pixiv 登录页面。</string>
     <string name="sign_in_failed">无法登录 Pixiv</string>
-    <string name="sign_in_needs_android">在此登录需要 Android 应用的内置浏览器，桌面版没有这个浏览器。</string>
+    <string name="sign_in_no_code">其中没有登录代码</string>
+    <string name="sign_in_open_browser">打开 Pixiv 登录页面</string>
+    <string name="sign_in_paste_hint">粘贴 pixiv://… 地址或代码</string>
+    <string name="sign_in_paste_steps">登录前，先在浏览器中打开开发者工具（F12）的“网络”标签。登录后，找到以 pixiv://account/login 开头的地址，复制后立刻粘贴到这里：其中的代码只在约 30 秒内有效。</string>
+    <string name="sign_in_paste_title">如果浏览器没有把登录交回来</string>
+    <string name="sign_in_paste_use">用此代码登录</string>
+    <string name="sign_in_to_see">Pixiv 只向已登录的读者显示此内容。</string>
+    <string name="sign_in_waiting">正在等待 Pixiv… 请在浏览器中登录。</string>
     <string name="sign_out">退出登录</string>
     <string name="sign_out_named">退出 %1$s 的登录？</string>
     <string name="sign_out_question">退出 Pixiv 登录？</string>
@@ -482,7 +493,6 @@
     <string name="unmute">取消屏蔽</string>
     <string name="unmute_question">取消屏蔽 %1$s？</string>
     <string name="viewing_section">浏览</string>
-    <string name="walkthrough_sign_in">登录后才能打开此作品</string>
     <string name="walkthrough_title">Pixiv 热门</string>
     <string name="watchlist_add">加入追更列表</string>
     <string name="watchlist_empty">加入追更列表的漫画系列会显示在这里</string>

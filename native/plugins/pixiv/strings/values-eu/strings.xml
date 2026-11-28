@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Pixiven zerbitzari propioa</string>
     <string name="image_host_privacy">Ispilu batek edo zure zerbitzariak irekitzen duzun irudi oro ikusten du, R-18 direnak barne, baita zure IP helbidea ere.</string>
     <string name="image_host_reset">Berrezarri lehenetsia</string>
+    <string name="in_home_feed">Erakutsi hasierako denbora-lerroan</string>
+    <string name="in_home_feed_description">Hemen jarraitzen dituzun sortzaileen lan berriak Jarraitzen eta Zuretzat zerrendetan nahasten ditu</string>
     <string name="info_copied">Informazioa kopiatu da</string>
     <string name="link_copied">Esteka kopiatu da</string>
     <string name="manage_account">Kudeatu kontua pixiv.net-en</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">Erakutsi R-18 lanak</string>
     <string name="show_r18_description">Desaktibatuta lehenespenez. Desaktibatuta dagoenean, lan murriztuak ezkutatzen dira jarioetan.</string>
     <string name="sign_in">Hasi saioa Pixivekin</string>
+    <string name="sign_in_browser_intro">Pixiv-en saio-hasierako orria nabigatzailean irekiko da. Saioa hasi ondoren, nabigatzaileak XTA irekitzeko baimena eskatuko du: eman, eta hemen saioa hasita izango duzu.</string>
+    <string name="sign_in_expired">Saio-hasiera hau iraungi da. Ireki berriro Pixiv-en saio-hasierako orria.</string>
     <string name="sign_in_failed">Ezin izan da Pixiven saioa hasi</string>
-    <string name="sign_in_needs_android">Hemen saioa hasteko Android aplikazioaren nabigatzaile integratua behar da, eta mahaigaineko aplikazioak ez du.</string>
+    <string name="sign_in_no_code">Horrek ez du saio-hasierako koderik</string>
+    <string name="sign_in_open_browser">Ireki Pixiv-en saio-hasierako orria</string>
+    <string name="sign_in_paste_hint">Itsatsi pixiv://… helbidea edo kodea</string>
+    <string name="sign_in_paste_steps">Saioa hasi aurretik, ireki nabigatzailearen garatzaile-tresnak (F12) Sarea fitxan. Saioa hasi ondoren, bilatu pixiv://account/login-ekin hasten den helbidea, kopiatu eta itsatsi hemen berehala: kodeak 30 segundo inguru baino ez du irauten.</string>
+    <string name="sign_in_paste_title">Nabigatzaileak saio-hasiera itzultzen ez badu</string>
+    <string name="sign_in_paste_use">Hasi saioa kode honekin</string>
+    <string name="sign_in_to_see">Saioa hasita duten irakurleei bakarrik erakusten die Pixiv-ek hau.</string>
+    <string name="sign_in_waiting">Pixiv-en zain… Hasi saioa nabigatzailean.</string>
     <string name="sign_out">Itxi saioa</string>
     <string name="sign_out_named">%1$s kontuaren saioa itxi nahi duzu?</string>
     <string name="sign_out_question">Pixiv-eko saioa itxi nahi duzu?</string>
@@ -482,7 +493,6 @@
     <string name="unmute">Kendu isilaraztea</string>
     <string name="unmute_question">%1$s isilarazteari utzi nahi diozu?</string>
     <string name="viewing_section">Ikustea</string>
-    <string name="walkthrough_sign_in">Hasi saioa lan hau irekitzeko</string>
     <string name="walkthrough_title">Ezagunak Pixiven</string>
     <string name="watchlist_add">Gehitu jarraipen-zerrendara</string>
     <string name="watchlist_empty">Jarraipen-zerrendara gehitzen dituzun manga-serieak hemen agertzen dira</string>

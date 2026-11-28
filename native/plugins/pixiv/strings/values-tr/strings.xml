@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Pixiv'in kendi sunucusu</string>
     <string name="image_host_privacy">Bir yansı veya kendi sunucunuz, açtığınız her görseli (R-18 olanlar dahil) ve IP adresinizi görür.</string>
     <string name="image_host_reset">Varsayılana sıfırla</string>
+    <string name="in_home_feed">Ana zaman akışında göster</string>
+    <string name="in_home_feed_description">Burada takip ettiğin sanatçıların yeni eserlerini Takip edilenler ve Sana özel akışlarına katar</string>
     <string name="info_copied">Bilgiler kopyalandı</string>
     <string name="link_copied">Bağlantı kopyalandı</string>
     <string name="manage_account">Hesabı pixiv.net'te yönet</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">R-18 eserleri göster</string>
     <string name="show_r18_description">Varsayılan olarak kapalı. Kapalıyken kısıtlı eserler akışlardan gizlenir.</string>
     <string name="sign_in">Pixiv ile oturum aç</string>
+    <string name="sign_in_browser_intro">Pixiv'in giriş sayfası tarayıcında açılır. Giriş yaptıktan sonra tarayıcı XTA'yı açmak için izin ister: izin ver, burada da giriş yapmış olursun.</string>
+    <string name="sign_in_expired">Bu girişin süresi doldu. Pixiv'in giriş sayfasını yeniden aç.</string>
     <string name="sign_in_failed">Pixiv’de oturum açılamadı</string>
-    <string name="sign_in_needs_android">Burada giriş yapmak için Android uygulamasının yerleşik tarayıcısı gerekir; masaüstü uygulamasında bu tarayıcı yok.</string>
+    <string name="sign_in_no_code">Bunda giriş kodu yok</string>
+    <string name="sign_in_open_browser">Pixiv'in giriş sayfasını aç</string>
+    <string name="sign_in_paste_hint">pixiv://… adresini veya kodu yapıştır</string>
+    <string name="sign_in_paste_steps">Giriş yapmadan önce tarayıcının geliştirici araçlarını (F12) Ağ sekmesinde aç. Giriş yaptıktan sonra pixiv://account/login ile başlayan adresi bul, kopyala ve hemen buraya yapıştır: kodu yalnızca 30 saniye kadar geçerli.</string>
+    <string name="sign_in_paste_title">Tarayıcı girişi geri vermezse</string>
+    <string name="sign_in_paste_use">Bu kodla giriş yap</string>
+    <string name="sign_in_to_see">Pixiv bunu yalnızca giriş yapmış okuyuculara gösterir.</string>
+    <string name="sign_in_waiting">Pixiv bekleniyor… Tarayıcında giriş yap.</string>
     <string name="sign_out">Oturumu kapat</string>
     <string name="sign_out_named">%1$s oturumu kapatılsın mı?</string>
     <string name="sign_out_question">Pixiv oturumu kapatılsın mı?</string>
@@ -482,7 +493,6 @@
     <string name="unmute">Sessizi kaldır</string>
     <string name="unmute_question">%1$s sessizden çıkarılsın mı?</string>
     <string name="viewing_section">Görüntüleme</string>
-    <string name="walkthrough_sign_in">Bu eseri açmak için oturum açın</string>
     <string name="walkthrough_title">Pixiv’de popüler</string>
     <string name="watchlist_add">İzleme listesine ekle</string>
     <string name="watchlist_empty">İzleme listenize eklediğiniz manga serileri burada görünür</string>

@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Server di Pixiv</string>
     <string name="image_host_privacy">Un mirror o il tuo server vede ogni immagine che apri, anche quelle R-18, e il tuo indirizzo IP.</string>
     <string name="image_host_reset">Ripristina predefinito</string>
+    <string name="in_home_feed">Mostra nella timeline Home</string>
+    <string name="in_home_feed_description">Mescola le nuove opere dei creatori che segui qui in Seguiti e Per te</string>
     <string name="info_copied">Informazioni copiate</string>
     <string name="link_copied">Link copiato</string>
     <string name="manage_account">Gestisci l’account su pixiv.net</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">Mostra opere R-18</string>
     <string name="show_r18_description">Disattivato per impostazione predefinita. Se disattivato, le opere limitate sono nascoste dai feed.</string>
     <string name="sign_in">Accedi con Pixiv</string>
+    <string name="sign_in_browser_intro">La pagina di accesso di Pixiv si apre nel browser. Dopo l'accesso, il browser chiede di aprire XTA: consentilo e sarai connesso qui.</string>
+    <string name="sign_in_expired">Questo accesso è scaduto. Riapri la pagina di accesso di Pixiv.</string>
     <string name="sign_in_failed">Impossibile accedere a Pixiv</string>
-    <string name="sign_in_needs_android">Per accedere qui serve il browser integrato dell'app Android, che l'app desktop non ha.</string>
+    <string name="sign_in_no_code">Non contiene alcun codice di accesso</string>
+    <string name="sign_in_open_browser">Apri la pagina di accesso di Pixiv</string>
+    <string name="sign_in_paste_hint">Incolla l'indirizzo pixiv://… o il codice</string>
+    <string name="sign_in_paste_steps">Prima di accedere, apri gli strumenti per sviluppatori del browser (F12) nella scheda Rete. Dopo l'accesso, trova l'indirizzo che inizia con pixiv://account/login, copialo e incollalo subito qui: il suo codice dura solo circa 30 secondi.</string>
+    <string name="sign_in_paste_title">Se il browser non restituisce l'accesso</string>
+    <string name="sign_in_paste_use">Accedi con questo codice</string>
+    <string name="sign_in_to_see">Pixiv lo mostra solo a chi ha effettuato l'accesso.</string>
+    <string name="sign_in_waiting">In attesa di Pixiv… Accedi nel browser.</string>
     <string name="sign_out">Esci</string>
     <string name="sign_out_named">Uscire da %1$s?</string>
     <string name="sign_out_question">Uscire da Pixiv?</string>
@@ -482,7 +493,6 @@
     <string name="unmute">Riattiva</string>
     <string name="unmute_question">Riattivare %1$s?</string>
     <string name="viewing_section">Visualizzazione</string>
-    <string name="walkthrough_sign_in">Accedi per aprire questa opera</string>
     <string name="walkthrough_title">Popolari su Pixiv</string>
     <string name="watchlist_add">Aggiungi alle serie seguite</string>
     <string name="watchlist_empty">Qui compaiono le serie manga che aggiungi alle serie seguite</string>

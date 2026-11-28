@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Pixivs egen server</string>
     <string name="image_host_privacy">Et speil eller din egen server ser hvert bilde du åpner, også R-18-bilder, og IP-adressen din.</string>
     <string name="image_host_reset">Tilbakestill til standard</string>
+    <string name="in_home_feed">Vis i hjem-tidslinjen</string>
+    <string name="in_home_feed_description">Blander nye verk fra skaperne du følger her inn i Følger og For deg</string>
     <string name="info_copied">Info kopiert</string>
     <string name="link_copied">Lenke kopiert</string>
     <string name="manage_account">Administrer kontoen på pixiv.net</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">Vis R-18-verk</string>
     <string name="show_r18_description">Av som standard. Når av, skjules begrensede verk fra feeder.</string>
     <string name="sign_in">Logg inn med Pixiv</string>
+    <string name="sign_in_browser_intro">Pixivs påloggingsside åpnes i nettleseren din. Når du har logget på, spør nettleseren om å åpne XTA: tillat det, så er du logget på her.</string>
+    <string name="sign_in_expired">Denne påloggingen er utløpt. Åpne Pixivs påloggingsside på nytt.</string>
     <string name="sign_in_failed">Kunne ikke logge inn på Pixiv</string>
-    <string name="sign_in_needs_android">Innlogging her krever den innebygde nettleseren i Android-appen, som skrivebordsappen ikke har.</string>
+    <string name="sign_in_no_code">Det inneholder ingen påloggingskode</string>
+    <string name="sign_in_open_browser">Åpne Pixivs påloggingsside</string>
+    <string name="sign_in_paste_hint">Lim inn pixiv://…-adressen eller koden</string>
+    <string name="sign_in_paste_steps">Før du logger på, åpne utviklerverktøyene i nettleseren (F12) på fanen Nettverk. Etter påloggingen finner du adressen som begynner med pixiv://account/login, kopierer den og limer den inn her med en gang: koden varer bare rundt 30 sekunder.</string>
+    <string name="sign_in_paste_title">Hvis nettleseren ikke gir påloggingen tilbake</string>
+    <string name="sign_in_paste_use">Logg på med denne koden</string>
+    <string name="sign_in_to_see">Pixiv viser dette bare til lesere som er logget på.</string>
+    <string name="sign_in_waiting">Venter på Pixiv … Logg på i nettleseren.</string>
     <string name="sign_out">Logg ut</string>
     <string name="sign_out_named">Logge ut av %1$s?</string>
     <string name="sign_out_question">Logge ut av Pixiv?</string>
@@ -482,7 +493,6 @@
     <string name="unmute">Opphev demping</string>
     <string name="unmute_question">Oppheve demping av %1$s?</string>
     <string name="viewing_section">Visning</string>
-    <string name="walkthrough_sign_in">Logg inn for å åpne dette verket</string>
     <string name="walkthrough_title">Populært på Pixiv</string>
     <string name="watchlist_add">Legg til i følgelisten</string>
     <string name="watchlist_empty">Mangaserier du legger til i følgelisten, vises her</string>

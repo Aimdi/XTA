@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Pixiv का अपना सर्वर</string>
     <string name="image_host_privacy">मिरर या आपका अपना सर्वर आपकी खोली हर छवि, R-18 वाली भी, और आपका IP पता देखता है।</string>
     <string name="image_host_reset">डिफ़ॉल्ट पर लौटाएँ</string>
+    <string name="in_home_feed">होम टाइमलाइन में दिखाएँ</string>
+    <string name="in_home_feed_description">यहाँ फ़ॉलो किए गए रचनाकारों की नई कृतियाँ फ़ॉलोइंग और आपके लिए में मिलाता है</string>
     <string name="info_copied">जानकारी कॉपी हो गई</string>
     <string name="link_copied">लिंक कॉपी हो गया</string>
     <string name="manage_account">pixiv.net पर खाता प्रबंधित करें</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">R-18 कृतियाँ दिखाएँ</string>
     <string name="show_r18_description">डिफ़ॉल्ट रूप से बंद। बंद होने पर प्रतिबंधित कृतियाँ फ़ीड से छिपती हैं।</string>
     <string name="sign_in">Pixiv से साइन इन करें</string>
+    <string name="sign_in_browser_intro">Pixiv का साइन-इन पेज आपके ब्राउज़र में खुलेगा। साइन इन करने के बाद ब्राउज़र XTA खोलने की अनुमति माँगेगा: अनुमति दें, और आप यहाँ साइन इन हो जाएँगे।</string>
+    <string name="sign_in_expired">यह साइन-इन समाप्त हो गया। Pixiv का साइन-इन पेज फिर से खोलें।</string>
     <string name="sign_in_failed">Pixiv में साइन इन नहीं हो सका</string>
-    <string name="sign_in_needs_android">यहाँ साइन इन करने के लिए Android ऐप का बिल्ट-इन ब्राउज़र चाहिए, जो डेस्कटॉप ऐप में नहीं है।</string>
+    <string name="sign_in_no_code">इसमें कोई साइन-इन कोड नहीं है</string>
+    <string name="sign_in_open_browser">Pixiv का साइन-इन पेज खोलें</string>
+    <string name="sign_in_paste_hint">pixiv://… पता या कोड चिपकाएँ</string>
+    <string name="sign_in_paste_steps">साइन इन करने से पहले ब्राउज़र के डेवलपर टूल (F12) का नेटवर्क टैब खोलें। साइन इन के बाद pixiv://account/login से शुरू होने वाला पता ढूँढें, उसे कॉपी करें और तुरंत यहाँ चिपकाएँ: उसका कोड सिर्फ़ लगभग 30 सेकंड चलता है।</string>
+    <string name="sign_in_paste_title">अगर ब्राउज़र साइन-इन वापस न दे</string>
+    <string name="sign_in_paste_use">इस कोड से साइन इन करें</string>
+    <string name="sign_in_to_see">Pixiv इसे सिर्फ़ साइन इन किए हुए पाठकों को दिखाता है।</string>
+    <string name="sign_in_waiting">Pixiv की प्रतीक्षा… अपने ब्राउज़र में साइन इन करें।</string>
     <string name="sign_out">साइन आउट</string>
     <string name="sign_out_named">%1$s से साइन आउट करें?</string>
     <string name="sign_out_question">Pixiv से साइन आउट करें?</string>
@@ -482,7 +493,6 @@
     <string name="unmute">म्यूट हटाएँ</string>
     <string name="unmute_question">%1$s से म्यूट हटाएँ?</string>
     <string name="viewing_section">देखना</string>
-    <string name="walkthrough_sign_in">यह कृति खोलने के लिए साइन इन करें</string>
     <string name="walkthrough_title">Pixiv पर लोकप्रिय</string>
     <string name="watchlist_add">वॉचलिस्ट में जोड़ें</string>
     <string name="watchlist_empty">वॉचलिस्ट में जोड़ी गई मांगा शृंखलाएँ यहाँ दिखती हैं</string>

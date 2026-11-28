@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Servidor do próprio Pixiv</string>
     <string name="image_host_privacy">Um espelho ou seu próprio servidor vê cada imagem que você abre, incluindo as R-18, e seu endereço IP.</string>
     <string name="image_host_reset">Restaurar o padrão</string>
+    <string name="in_home_feed">Mostrar na linha do tempo inicial</string>
+    <string name="in_home_feed_description">Mistura as obras novas dos criadores que você segue aqui em Seguindo e Para você</string>
     <string name="info_copied">Informações copiadas</string>
     <string name="link_copied">Link copiado</string>
     <string name="manage_account">Gerenciar a conta em pixiv.net</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">Mostrar obras R-18</string>
     <string name="show_r18_description">Desativado por padrão. Quando desativado, obras restritas ficam ocultas nos feeds.</string>
     <string name="sign_in">Entrar com Pixiv</string>
+    <string name="sign_in_browser_intro">A página de login do Pixiv abre no seu navegador. Depois de entrar, o navegador pede para abrir o XTA: permita e você estará conectado aqui.</string>
+    <string name="sign_in_expired">Este login expirou. Abra a página de login do Pixiv de novo.</string>
     <string name="sign_in_failed">Não foi possível entrar no Pixiv</string>
-    <string name="sign_in_needs_android">Entrar aqui exige o navegador integrado do app para Android, que o app para computador não tem.</string>
+    <string name="sign_in_no_code">Isso não tem nenhum código de login</string>
+    <string name="sign_in_open_browser">Abrir a página de login do Pixiv</string>
+    <string name="sign_in_paste_hint">Cole o endereço pixiv://… ou o código</string>
+    <string name="sign_in_paste_steps">Antes de entrar, abra as ferramentas de desenvolvedor do navegador (F12) na aba Rede. Depois de entrar, encontre o endereço que começa com pixiv://account/login, copie e cole aqui na hora: o código vale só uns 30 segundos.</string>
+    <string name="sign_in_paste_title">Se o navegador não devolver o login</string>
+    <string name="sign_in_paste_use">Entrar com este código</string>
+    <string name="sign_in_to_see">O Pixiv só mostra isto para quem está conectado.</string>
+    <string name="sign_in_waiting">Aguardando o Pixiv… Entre no seu navegador.</string>
     <string name="sign_out">Sair</string>
     <string name="sign_out_named">Sair da conta %1$s?</string>
     <string name="sign_out_question">Sair do Pixiv?</string>
@@ -482,7 +493,6 @@
     <string name="unmute">Desfazer silêncio</string>
     <string name="unmute_question">Desfazer o silêncio de %1$s?</string>
     <string name="viewing_section">Visualização</string>
-    <string name="walkthrough_sign_in">Entre para abrir esta obra</string>
     <string name="walkthrough_title">Popular no Pixiv</string>
     <string name="watchlist_add">Adicionar à lista de acompanhamento</string>
     <string name="watchlist_empty">As séries de mangá que você adicionar à lista de acompanhamento aparecem aqui</string>

@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Servidor propio de Pixiv</string>
     <string name="image_host_privacy">Un espejo o tu propio servidor ve cada imagen que abres, también las R-18, y tu dirección IP.</string>
     <string name="image_host_reset">Restablecer el predeterminado</string>
+    <string name="in_home_feed">Mostrar en la cronología de inicio</string>
+    <string name="in_home_feed_description">Mezcla las obras nuevas de los creadores que sigues aquí en Siguiendo y Para ti</string>
     <string name="info_copied">Información copiada</string>
     <string name="link_copied">Enlace copiado</string>
     <string name="manage_account">Gestionar la cuenta en pixiv.net</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">Mostrar obras R-18</string>
     <string name="show_r18_description">Desactivado por defecto. Si está desactivado, las obras restringidas se ocultan de los feeds.</string>
     <string name="sign_in">Iniciar sesión con Pixiv</string>
+    <string name="sign_in_browser_intro">La página de inicio de sesión de Pixiv se abre en tu navegador. Cuando hayas iniciado sesión, el navegador pedirá abrir XTA: permítelo y quedarás conectado aquí.</string>
+    <string name="sign_in_expired">Este inicio de sesión ha caducado. Vuelve a abrir la página de inicio de sesión de Pixiv.</string>
     <string name="sign_in_failed">No se pudo iniciar sesión en Pixiv</string>
-    <string name="sign_in_needs_android">Para iniciar sesión aquí hace falta el navegador integrado de la app de Android, que la app de escritorio no tiene.</string>
+    <string name="sign_in_no_code">Eso no contiene ningún código de inicio de sesión</string>
+    <string name="sign_in_open_browser">Abrir la página de inicio de sesión de Pixiv</string>
+    <string name="sign_in_paste_hint">Pega la dirección pixiv://… o el código</string>
+    <string name="sign_in_paste_steps">Antes de iniciar sesión, abre las herramientas para desarrolladores del navegador (F12) en la pestaña Red. Después, busca la dirección que empieza por pixiv://account/login, cópiala y pégala aquí enseguida: su código solo dura unos 30 segundos.</string>
+    <string name="sign_in_paste_title">Si el navegador no devuelve el inicio de sesión</string>
+    <string name="sign_in_paste_use">Iniciar sesión con este código</string>
+    <string name="sign_in_to_see">Pixiv solo muestra esto a quienes han iniciado sesión.</string>
+    <string name="sign_in_waiting">Esperando a Pixiv… Inicia sesión en tu navegador.</string>
     <string name="sign_out">Cerrar sesión</string>
     <string name="sign_out_named">¿Cerrar la sesión de %1$s?</string>
     <string name="sign_out_question">¿Cerrar sesión en Pixiv?</string>
@@ -482,7 +493,6 @@
     <string name="unmute">Dejar de silenciar</string>
     <string name="unmute_question">¿Dejar de silenciar %1$s?</string>
     <string name="viewing_section">Visualización</string>
-    <string name="walkthrough_sign_in">Inicia sesión para abrir esta obra</string>
     <string name="walkthrough_title">Popular en Pixiv</string>
     <string name="watchlist_add">Añadir a la lista de seguimiento</string>
     <string name="watchlist_empty">Aquí aparecen las series de manga que añadas a tu lista de seguimiento</string>

@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Уласны сервер Pixiv</string>
     <string name="image_host_privacy">Люстэрка або ваш сервер бачыць кожную выяву, якую вы адкрываеце, у тым ліку R-18, і ваш IP-адрас.</string>
     <string name="image_host_reset">Скінуць да прадвызначанага</string>
+    <string name="in_home_feed">Паказваць у хатняй стужцы</string>
+    <string name="in_home_feed_description">Дамешвае новыя працы аўтараў, за якімі вы сочыце тут, у «Падпіскі» і «Для вас»</string>
     <string name="info_copied">Звесткі скапіяваны</string>
     <string name="link_copied">Спасылка скапіявана</string>
     <string name="manage_account">Кіраваць уліковым запісам на pixiv.net</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">Паказваць працы R-18</string>
     <string name="show_r18_description">Па змаўчанні выключана. Калі выключана, абмежаваныя працы хаваюцца са стужак.</string>
     <string name="sign_in">Увайсці праз Pixiv</string>
+    <string name="sign_in_browser_intro">Старонка ўваходу Pixiv адкрыецца ў браўзеры. Пасля ўваходу браўзер спытае, ці адкрыць XTA: дазвольце, і вы ўвойдзеце тут.</string>
+    <string name="sign_in_expired">Тэрмін гэтага ўваходу скончыўся. Адкрыйце старонку ўваходу Pixiv яшчэ раз.</string>
     <string name="sign_in_failed">Не ўдалося ўвайсці ў Pixiv</string>
-    <string name="sign_in_needs_android">Для ўваходу тут патрэбны ўбудаваны браўзер праграмы для Android, якога няма ў версіі для камп'ютара.</string>
+    <string name="sign_in_no_code">Тут няма кода ўваходу</string>
+    <string name="sign_in_open_browser">Адкрыць старонку ўваходу Pixiv</string>
+    <string name="sign_in_paste_hint">Устаўце адрас pixiv://… або код</string>
+    <string name="sign_in_paste_steps">Перад уваходам адкрыйце інструменты распрацоўшчыка браўзера (F12) на ўкладцы «Сетка». Пасля ўваходу знайдзіце адрас, які пачынаецца з pixiv://account/login, скапіруйце яго і адразу ўстаўце сюды: яго код дзейнічае толькі каля 30 секунд.</string>
+    <string name="sign_in_paste_title">Калі браўзер не верне ўваход</string>
+    <string name="sign_in_paste_use">Увайсці з гэтым кодам</string>
+    <string name="sign_in_to_see">Pixiv паказвае гэта толькі чытачам, якія ўвайшлі.</string>
+    <string name="sign_in_waiting">Чакаем Pixiv… Увайдзіце ў браўзеры.</string>
     <string name="sign_out">Выйсці</string>
     <string name="sign_out_named">Выйсці з уліковага запісу %1$s?</string>
     <string name="sign_out_question">Выйсці з Pixiv?</string>
@@ -482,7 +493,6 @@
     <string name="unmute">Паказваць зноў</string>
     <string name="unmute_question">Больш не хаваць %1$s?</string>
     <string name="viewing_section">Прагляд</string>
-    <string name="walkthrough_sign_in">Увайдзіце, каб адкрыць гэтую працу</string>
     <string name="walkthrough_title">Папулярнае на Pixiv</string>
     <string name="watchlist_add">Дадаць у спіс назірання</string>
     <string name="watchlist_empty">Тут з’явяцца серыі мангі, якія вы дадасце ў спіс назірання</string>

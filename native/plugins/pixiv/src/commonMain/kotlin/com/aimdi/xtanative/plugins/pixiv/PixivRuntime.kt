@@ -95,6 +95,9 @@ internal class PixivRuntime(val host: PluginHost) {
 
     fun revealComment(id: Long) = revealed.update { it + id }
 
+    /** A sign-in in the reader's browser, waiting for the code Pixiv hands back (the desktop has no web view). */
+    val browserSignIn = PixivBrowserSignIn()
+
     /** What a screen hands the next one it opens (the work as its list had it, the list itself), by key. */
     val shelf = PixivShelf()
 
@@ -202,7 +205,7 @@ internal class PixivRuntime(val host: PluginHost) {
     /**
      * The creators followed here in the groups that hold them (pixiv_group.dart's
      * loadPixivGroupPosts): each one's newest works, those muted left out, those
-     * with a date. Home's timelines have no switch for them in XTA.
+     * with a date; Home's timelines take them while the settings' switch is on.
      */
     val feed: PluginFeed = object : PluginFeed() {
         override suspend fun followed(): List<String> = PixivFollows.of(settings.load()).map { "${it.id}" }

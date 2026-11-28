@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Vlastní server Pixivu</string>
     <string name="image_host_privacy">Zrcadlo nebo váš server vidí každý obrázek, který otevřete, včetně R-18, i vaši IP adresu.</string>
     <string name="image_host_reset">Obnovit výchozí</string>
+    <string name="in_home_feed">Zobrazit na domovské časové ose</string>
+    <string name="in_home_feed_description">Přimíchá nová díla autorů, které tu sledujete, do Sledovaných a Pro vás</string>
     <string name="info_copied">Informace zkopírovány</string>
     <string name="link_copied">Odkaz zkopírován</string>
     <string name="manage_account">Spravovat účet na pixiv.net</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">Zobrazit díla R-18</string>
     <string name="show_r18_description">Ve výchozím stavu vypnuto. Když je vypnuto, omezená díla se ve feedech skrývají.</string>
     <string name="sign_in">Přihlásit se přes Pixiv</string>
+    <string name="sign_in_browser_intro">Přihlašovací stránka Pixivu se otevře v prohlížeči. Po přihlášení se prohlížeč zeptá, zda smí otevřít XTA: povolte to a budete přihlášeni i tady.</string>
+    <string name="sign_in_expired">Toto přihlášení vypršelo. Otevřete přihlašovací stránku Pixivu znovu.</string>
     <string name="sign_in_failed">Nepodařilo se přihlásit k Pixiv</string>
-    <string name="sign_in_needs_android">Přihlášení zde vyžaduje vestavěný prohlížeč aplikace pro Android, který desktopová aplikace nemá.</string>
+    <string name="sign_in_no_code">Není v tom žádný přihlašovací kód</string>
+    <string name="sign_in_open_browser">Otevřít přihlašovací stránku Pixivu</string>
+    <string name="sign_in_paste_hint">Vložte adresu pixiv://… nebo kód</string>
+    <string name="sign_in_paste_steps">Před přihlášením otevřete vývojářské nástroje prohlížeče (F12) na kartě Síť. Po přihlášení najděte adresu začínající pixiv://account/login, zkopírujte ji a hned ji sem vložte: její kód platí jen asi 30 sekund.</string>
+    <string name="sign_in_paste_title">Pokud prohlížeč přihlášení nevrátí</string>
+    <string name="sign_in_paste_use">Přihlásit se tímto kódem</string>
+    <string name="sign_in_to_see">Pixiv tohle ukazuje jen přihlášeným čtenářům.</string>
+    <string name="sign_in_waiting">Čeká se na Pixiv… Přihlaste se v prohlížeči.</string>
     <string name="sign_out">Odhlásit se</string>
     <string name="sign_out_named">Odhlásit účet %1$s?</string>
     <string name="sign_out_question">Odhlásit se z Pixivu?</string>
@@ -482,7 +493,6 @@
     <string name="unmute">Zrušit ztlumení</string>
     <string name="unmute_question">Zrušit ztlumení %1$s?</string>
     <string name="viewing_section">Zobrazení</string>
-    <string name="walkthrough_sign_in">Pro otevření díla se přihlaste</string>
     <string name="walkthrough_title">Oblíbené na Pixivu</string>
     <string name="watchlist_add">Přidat do sledovaných</string>
     <string name="watchlist_empty">Zde se objeví série mangy, které přidáte do sledovaných</string>

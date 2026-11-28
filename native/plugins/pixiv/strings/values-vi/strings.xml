@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Máy chủ của Pixiv</string>
     <string name="image_host_privacy">Máy chủ gương hoặc máy chủ riêng của bạn thấy mọi ảnh bạn mở, kể cả ảnh R-18, và địa chỉ IP của bạn.</string>
     <string name="image_host_reset">Đặt lại mặc định</string>
+    <string name="in_home_feed">Hiện trong dòng thời gian trang chủ</string>
+    <string name="in_home_feed_description">Trộn tác phẩm mới của những tác giả bạn theo dõi tại đây vào Đang theo dõi và Dành cho bạn</string>
     <string name="info_copied">Đã sao chép thông tin</string>
     <string name="link_copied">Đã sao chép liên kết</string>
     <string name="manage_account">Quản lý tài khoản trên pixiv.net</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">Hiện tác phẩm R-18</string>
     <string name="show_r18_description">Mặc định tắt. Khi tắt, tác phẩm bị hạn chế được ẩn khỏi bảng tin.</string>
     <string name="sign_in">Đăng nhập bằng Pixiv</string>
+    <string name="sign_in_browser_intro">Trang đăng nhập của Pixiv sẽ mở trong trình duyệt. Sau khi đăng nhập, trình duyệt sẽ hỏi có mở XTA không: hãy cho phép, và bạn sẽ được đăng nhập tại đây.</string>
+    <string name="sign_in_expired">Lần đăng nhập này đã hết hạn. Hãy mở lại trang đăng nhập của Pixiv.</string>
     <string name="sign_in_failed">Không thể đăng nhập Pixiv</string>
-    <string name="sign_in_needs_android">Đăng nhập ở đây cần trình duyệt tích hợp của ứng dụng Android, mà ứng dụng máy tính không có.</string>
+    <string name="sign_in_no_code">Trong đó không có mã đăng nhập</string>
+    <string name="sign_in_open_browser">Mở trang đăng nhập của Pixiv</string>
+    <string name="sign_in_paste_hint">Dán địa chỉ pixiv://… hoặc mã</string>
+    <string name="sign_in_paste_steps">Trước khi đăng nhập, mở công cụ dành cho nhà phát triển của trình duyệt (F12) ở thẻ Network. Sau khi đăng nhập, tìm địa chỉ bắt đầu bằng pixiv://account/login, sao chép rồi dán ngay vào đây: mã của nó chỉ có hiệu lực khoảng 30 giây.</string>
+    <string name="sign_in_paste_title">Nếu trình duyệt không trả lại việc đăng nhập</string>
+    <string name="sign_in_paste_use">Đăng nhập bằng mã này</string>
+    <string name="sign_in_to_see">Pixiv chỉ hiện nội dung này cho người đọc đã đăng nhập.</string>
+    <string name="sign_in_waiting">Đang chờ Pixiv… Hãy đăng nhập trong trình duyệt.</string>
     <string name="sign_out">Đăng xuất</string>
     <string name="sign_out_named">Đăng xuất %1$s?</string>
     <string name="sign_out_question">Đăng xuất khỏi Pixiv?</string>
@@ -482,7 +493,6 @@
     <string name="unmute">Bỏ ẩn</string>
     <string name="unmute_question">Bỏ ẩn %1$s?</string>
     <string name="viewing_section">Hiển thị</string>
-    <string name="walkthrough_sign_in">Đăng nhập để mở tác phẩm này</string>
     <string name="walkthrough_title">Phổ biến trên Pixiv</string>
     <string name="watchlist_add">Thêm vào truyện theo dõi</string>
     <string name="watchlist_empty">Các bộ manga bạn thêm vào truyện theo dõi sẽ hiện ở đây</string>

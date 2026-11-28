@@ -178,6 +178,8 @@
     <string name="image_host_pixiv">Pixiv 官方伺服器</string>
     <string name="image_host_privacy">鏡像或自訂伺服器能看到你開啟的每張圖片（包括 R-18）以及你的 IP 位址。</string>
     <string name="image_host_reset">恢復預設</string>
+    <string name="in_home_feed">在首頁時間軸中顯示</string>
+    <string name="in_home_feed_description">將你在這裡追蹤的創作者的新作品混入「追蹤中」和「為你推薦」</string>
     <string name="info_copied">已複製作品資訊</string>
     <string name="link_copied">已複製連結</string>
     <string name="manage_account">在 pixiv.net 管理帳號</string>
@@ -437,8 +439,17 @@
     <string name="show_r18">顯示 R-18 作品</string>
     <string name="show_r18_description">預設關閉。關閉時，受限作品會從動態中隱藏。</string>
     <string name="sign_in">使用 Pixiv 登入</string>
+    <string name="sign_in_browser_intro">Pixiv 的登入頁面會在瀏覽器中開啟。登入後，瀏覽器會詢問是否開啟 XTA：允許即可在這裡登入。</string>
+    <string name="sign_in_expired">此次登入已過期。請重新開啟 Pixiv 登入頁面。</string>
     <string name="sign_in_failed">無法登入 Pixiv</string>
-    <string name="sign_in_needs_android">在此登入需要 Android 應用程式的內建瀏覽器，桌面版沒有這個瀏覽器。</string>
+    <string name="sign_in_no_code">其中沒有登入代碼</string>
+    <string name="sign_in_open_browser">開啟 Pixiv 登入頁面</string>
+    <string name="sign_in_paste_hint">貼上 pixiv://… 網址或代碼</string>
+    <string name="sign_in_paste_steps">登入前，先在瀏覽器中開啟開發人員工具（F12）的「網路」分頁。登入後，找到以 pixiv://account/login 開頭的網址，複製後立刻貼到這裡：其中的代碼只在約 30 秒內有效。</string>
+    <string name="sign_in_paste_title">如果瀏覽器沒有把登入交回來</string>
+    <string name="sign_in_paste_use">用此代碼登入</string>
+    <string name="sign_in_to_see">Pixiv 只向已登入的讀者顯示此內容。</string>
+    <string name="sign_in_waiting">正在等待 Pixiv… 請在瀏覽器中登入。</string>
     <string name="sign_out">登出</string>
     <string name="sign_out_named">登出 %1$s？</string>
     <string name="sign_out_question">登出 Pixiv？</string>
@@ -482,7 +493,6 @@
     <string name="unmute">取消封鎖</string>
     <string name="unmute_question">取消封鎖 %1$s？</string>
     <string name="viewing_section">瀏覽</string>
-    <string name="walkthrough_sign_in">登入後才能開啟此作品</string>
     <string name="walkthrough_title">Pixiv 熱門</string>
     <string name="watchlist_add">加入追更清單</string>
     <string name="watchlist_empty">加入追更清單的漫畫系列會顯示在這裡</string>

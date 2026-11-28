@@ -86,7 +86,7 @@ internal class PixivAppSearch(private val runtime: () -> PixivRuntime) : PluginS
     override fun Results(query: String, frame: PluginFrame) {
         PixivRoot(runtime()) {
             if (!PixivAccounts.signedIn(pixivSettings())) {
-                PixivEmpty(pluginString(Strings.not_configured))
+                PixivSignInPrompt(pluginString(Strings.not_configured))
             } else {
                 val model = rememberSearch(PixivSearchKind.WORKS, query)
                 SearchBody(model, frame.padding, typing = null)
