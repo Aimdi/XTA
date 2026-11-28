@@ -12,11 +12,14 @@ object XAccountPolicy {
     /** How long an account rate-limited without a reset X named is set aside. */
     const val RATE_LIMIT_FALLBACK_MILLIS = 15 * 60 * 1000L
 
-    /** How long an account whose sign-in looks broken is tried last. */
+    /** How long an account whose sign-in looks broken is not asked. */
     const val NOT_FOUND_COOLDOWN_MILLIS = 6 * 60 * 60 * 1000L
 
     /** Refusals in a row, each proven by another account, before an account is flagged. */
     const val NOT_FOUND_THRESHOLD = 3
+
+    /** How long a probe that settled nothing keeps the next one back. */
+    const val PROBE_RETRY_MILLIS = 15 * 60 * 1000L
 
     /** The latest reset X's headers may name, in seconds: beyond it a header is junk. */
     internal const val LATEST_RESET_SECONDS = 8_640_000_000_000L
@@ -24,19 +27,49 @@ object XAccountPolicy {
 
 /**
  * What XTA's accounts table remembers of an account's sign-in: how many
- * refusals in a row other accounts proved were its own, and since when it is
- * flagged. Flags only order accounts; a flagged one is still asked when no
- * other is left.
+ * refusals in a row other accounts proved were its own, since when it is
+ * flagged, and the HTTP status of the last refusal ([lastStatus], for
+ * Diagnostics). A flagged account is not asked at all while its cooldown
+ * runs; once it ran out, one probe request decides whether it is back
+ * ([needsProbe]).
  */
-data class XAccountHealth(val consecutiveNotFound: Int = 0, val notFoundAt: Long? = null) {
+data class XAccountHealth(val consecutiveNotFound: Int = 0, val notFoundAt: Long? = null, val lastStatus: Int? = null) {
     val isClean: Boolean get() = consecutiveNotFound == 0 && notFoundAt == null
 
     fun flagged(now: Long): Boolean = notFoundAt?.let { now < it + XAccountPolicy.NOT_FOUND_COOLDOWN_MILLIS } ?: false
 
-    /** One more refusal; the account is flagged once [XAccountPolicy.NOT_FOUND_THRESHOLD] are in a row. */
-    fun afterRefusal(at: Long): XAccountHealth {
+    /** Flagged once, its cooldown over, and not answered since: one request may find out whether it works again. */
+    fun needsProbe(now: Long): Boolean = notFoundAt != null && consecutiveNotFound >= XAccountPolicy.NOT_FOUND_THRESHOLD && !flagged(now)
+
+    /**
+     * One more refusal, [status] its HTTP status; the account is flagged once
+     * [XAccountPolicy.NOT_FOUND_THRESHOLD] are in a row. A flagged account's
+     * count stops there: a refused probe only starts its cooldown again.
+     */
+    fun afterRefusal(at: Long, status: Int? = lastStatus): XAccountHealth {
+        if (consecutiveNotFound >= XAccountPolicy.NOT_FOUND_THRESHOLD) return copy(notFoundAt = at, lastStatus = status)
         val count = consecutiveNotFound + 1
-        return XAccountHealth(count, if (count >= XAccountPolicy.NOT_FOUND_THRESHOLD) at else notFoundAt)
+        return XAccountHealth(count, if (count >= XAccountPolicy.NOT_FOUND_THRESHOLD) at else notFoundAt, status)
+    }
+}
+
+/**
+ * The accounts whose cooldown ran out and that are being probed: one request
+ * each, and another only after [retryMillis] when that one settled nothing
+ * (a 429, a lost connection).
+ */
+internal class XProbes(private val retryMillis: Long = XAccountPolicy.PROBE_RETRY_MILLIS) {
+    private val started = ConcurrentHashMap<String, Long>()
+
+    /** Whether [account] may send its probe now; true claims it. */
+    fun claim(account: String, now: Long): Boolean {
+        var claimed = false
+        started.compute(account) { _, at -> if (at == null || now - at >= retryMillis) now.also { claimed = true } else at }
+        return claimed
+    }
+
+    fun settled(account: String) {
+        started.remove(account)
     }
 }
 

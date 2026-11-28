@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.core.x.client
 
+import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.x.FileAccountHealthStore
 import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.core.x.XAccountHealth
@@ -121,6 +122,15 @@ class FileAccountHealthStoreTest {
         FileAccountHealthStore(file).write("ct0-made-up", XAccountHealth(3, 1_000L))
         assertEquals(XAccountHealth(3, 1_000L), FileAccountHealthStore(file).read("ct0-made-up"))
         assertTrue(FileAccountHealthStore(file).read("another").isClean)
+    }
+
+    @Test
+    fun theLastRefusalsStatusIsKeptAndAnOlderFileWithoutItStillReads() {
+        FileAccountHealthStore(file).write("ct0-made-up", XAccountHealth(3, 1_000L, lastStatus = 401))
+        assertEquals(401, FileAccountHealthStore(file).read("ct0-made-up").lastStatus)
+        val key = J.parse(file.readText())["accounts"].keys.single()
+        file.writeText("""{"v":1,"accounts":{"$key":{"refusals":44,"flaggedAt":1000}}}""")
+        assertEquals(XAccountHealth(44, 1_000L), FileAccountHealthStore(file).read("ct0-made-up"), "v1 files from 1.0.18 have no status")
     }
 
     @Test

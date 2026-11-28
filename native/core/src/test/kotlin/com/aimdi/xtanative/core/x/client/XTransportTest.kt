@@ -3,6 +3,7 @@ package com.aimdi.xtanative.core.x.client
 import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.core.x.XAccountHealth
 import com.aimdi.xtanative.core.x.XAccountHealthStore
+import com.aimdi.xtanative.core.x.XAccountPolicy
 import com.aimdi.xtanative.core.feed.feedReads
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.XEndpointRefusedException
@@ -132,6 +133,77 @@ class XTransportTest {
         val later = client(x, listOf(account("a"), account("b")))
         repeat(4) { read(later) }
         assertEquals(listOf("b", "b", "b", "b"), x.asked, "a flagged account is no longer asked first")
+    }
+
+    private val cooldown = XAccountPolicy.NOT_FOUND_COOLDOWN_MILLIS
+
+    @Test
+    fun aFlaggedAccountGetsNoRequestAtAll() {
+        health.write("id-a", XAccountHealth(3, now - 60_000))
+        val x = FakeX { _, account -> if (account == "a") XResponse(404, "") else ok() }
+        val reader = client(x, listOf(account("a"), account("b")))
+        repeat(3) { read(reader) }
+        val limited = FakeX { _, _ -> XResponse(429, "", resetIn5Minutes) }
+        assertFailsWith<XRateLimitedException> { read(client(limited, listOf(account("a"), account("b")))) }
+        assertEquals(listOf("b", "b", "b"), x.asked)
+        assertEquals(listOf("b"), limited.asked, "not even once every other account is limited")
+    }
+
+    @Test
+    fun withEveryAccountFlaggedNothingIsSent() {
+        listOf("id-a", "id-b").forEach { health.write(it, XAccountHealth(3, now - 60_000)) }
+        val x = FakeX { _, _ -> ok() }
+        assertFailsWith<XNoWorkingAccountException> { read(client(x, listOf(account("a"), account("b")))) }
+        assertTrue(x.asked.isEmpty())
+    }
+
+    @Test
+    fun aFlaggedAccountsOwnHomeTimelineIsNotAskedEither() {
+        health.write("id-b", XAccountHealth(3, now - 60_000))
+        val x = FakeX { _, _ -> ok() }
+        assertFailsWith<XNoWorkingAccountException> { runBlocking { client(x, listOf(account("a"), account("b"))).homeTimeline(account("b")) } }
+        assertTrue(x.asked.isEmpty())
+    }
+
+    @Test
+    fun aFlaggedAccountsRefusalsStopCountingAndItsLastStatusIsKept() {
+        health.write("id-a", XAccountHealth(2))
+        val x = FakeX { _, account -> if (account == "a") XResponse(401, "") else ok() }
+        val reader = client(x, listOf(account("a"), account("b")))
+        while (health.read("id-a").notFoundAt == null) read(reader)
+        assertEquals(XAccountHealth(3, now, 401), health.read("id-a"))
+        now += cooldown
+        read(reader)
+        assertEquals(3, health.read("id-a").consecutiveNotFound, "a refused probe flags it again without counting on")
+    }
+
+    @Test
+    fun pastItsCooldownAFlaggedAccountGetsOneProbe() {
+        health.write("id-a", XAccountHealth(3, now - cooldown))
+        val x = FakeX { _, account -> if (account == "a") XResponse(401, "") else ok() }
+        val reader = client(x, listOf(account("a"), account("b")))
+        read(reader)
+        assertEquals(listOf("a", "b"), x.asked, "the probe is refused; the read goes on and is answered")
+        assertTrue(health.read("id-a").flagged(now), "resting again for a whole cooldown")
+        repeat(3) { read(reader) }
+        assertEquals(listOf("a", "b", "b", "b", "b"), x.asked)
+    }
+
+    @Test
+    fun aProbeAnsweredBringsTheAccountBack() {
+        health.write("id-a", XAccountHealth(3, now - cooldown, 401))
+        val x = FakeX { _, _ -> ok() }
+        read(client(x, listOf(account("a"), account("b"))))
+        assertEquals(listOf("a"), x.asked)
+        assertTrue(health.read("id-a").isClean)
+    }
+
+    @Test
+    fun aRefusedProbeSpendsNoneOfTheReadsTries() {
+        health.write("id-a", XAccountHealth(3, now - cooldown))
+        val x = FakeX { _, account -> if (account == "a") XResponse(401, "") else XResponse(403, "") }
+        assertFailsWith<XRequestException> { read(client(x, listOf(account("a"), account("b"), account("c")))) }
+        assertEquals(3, x.asked.size, "the probe, then the two tries any read has")
     }
 
     @Test

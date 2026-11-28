@@ -22,9 +22,11 @@ import okhttp3.HttpUrl
  * turned off for the feeds stand in once every other one is limited, except
  * for the feeds' own reads ([XFeedRead]). A refusal (401, 403, 404) is tried on one more
  * account, and is only held against the account that gave it once another
- * account was answered on the same endpoint. X's own failure (500) is asked
- * of the same account once more after a short pause; any other failure is
- * surfaced at once: another account would get the same. Every read, whatever it tries,
+ * account was answered on the same endpoint. An account flagged for it gets
+ * no request until its cooldown ends, then a single probe. X's own failure
+ * (500) is asked of the same account once more after a short pause; any
+ * other failure is surfaced at once: another account would get the same.
+ * Every read, whatever it tries,
  * has [budgetMillis] in all, as XTA's RequestBudget gives it.
  */
 internal class XTransport(
@@ -40,6 +42,7 @@ internal class XTransport(
 ) {
     val limits = XRateLimits()
     private val load = XAccountLoad()
+    private val probes = XProbes()
 
     /** Each read, how it ended and how long it took, for Diagnostics. */
     val reads = XReadLog(clock = clock)
@@ -76,7 +79,12 @@ internal class XTransport(
 
     private suspend fun readAs(account: XAccount, url: HttpUrl, what: String): J {
         val path = url.encodedPath
+        val now = clock()
+        val state = health.read(account.id)
+        // A flagged account is not asked, not even for its own timeline; past its cooldown, one probe is.
+        if (state.flagged(now) || (state.needsProbe(now) && !probes.claim(account.id, now))) throw XNoWorkingAccountException()
         val response = send(account, url, path)
+        if (state.needsProbe(now) && response.code in REFUSALS) refusedAgain(account, response.code)
         return when {
             response.isSuccessful -> answered(account, emptyList(), path, response)
             response.code == 429 -> {
@@ -95,7 +103,8 @@ internal class XTransport(
      */
     suspend fun post(url: HttpUrl, body: String, contentType: String): XResponse = withRequestBudget(budgetMillis, url.encodedPath) {
         val now = clock()
-        val account = XAccountSelector(accounts(), flagged = { health.read(it.id).flagged(now) }).pick(emptySet(), turn.getAndIncrement())
+        val account = XAccountSelector(accounts().filterNot { health.read(it.id).let { state -> state.flagged(now) || state.needsProbe(now) } })
+            .pick(emptySet(), turn.getAndIncrement())
         val signer = signers.forSession(account?.cookie)
         val headers = (BASE_HEADERS - "content-type") + account?.headers.orEmpty() + ("x-client-transaction-id" to signer.transactionId("GET", url.encodedPath))
         http.post(url, headers, body, contentType)
@@ -114,12 +123,16 @@ internal class XTransport(
     private suspend fun rotate(pool: List<XAccount>, off: Set<String>, url: HttpUrl, what: String): Outcome {
         val path = url.encodedPath
         val now = clock()
+        // A flagged account gets no request while its cooldown runs.
+        val resting = pool.filter { health.read(it.id).flagged(now) }
+        if (resting.size == pool.size) throw XNoWorkingAccountException()
         // X dated these refusals itself: another request before then is only refused again.
-        val askable = pool.filterNot { limits.isRefused(it.id, path, now) }
+        val askable = (pool - resting.toSet()).filterNot { limits.isRefused(it.id, path, now) }
         if (askable.isEmpty()) throw XRateLimitedException(earliestReset(pool, path))
+        val (probing, regular) = askable.partition { health.read(it.id).needsProbe(now) }
+        var probe = probing.firstOrNull { probes.claim(it.id, now) }
         val selector = XAccountSelector(
-            askable,
-            flagged = { health.read(it.id).flagged(now) },
+            regular,
             rateLimited = { limits.isLimited(it.id, path, now) },
             remaining = { limits.remaining(it.id, path, now) },
             inFlight = { load.of(it.id, path) },
@@ -128,19 +141,26 @@ internal class XTransport(
         val first = turn.getAndIncrement()
         val tried = HashSet<String>()
         // Held rather than blamed: only another account's answer proves them broken.
-        val refused = ArrayList<XAccount>()
+        val refused = ArrayList<Pair<XAccount, Int>>()
         var last: XResponse? = null
         // A 429 spends a try as a refusal does: one read never walks the pool on X's limits.
         var failed = 0
         while (failed < MAX_TRIES) {
-            val account = selector.pick(tried, first) ?: break
+            val probed = probe
+            probe = null
+            val account = probed ?: selector.pick(tried, first) ?: break
             tried += account.id
             limits.consume(account.id, path, now)
             val response = sendAgainOnServerError(account, url, path)
             when {
                 response.isSuccessful -> return Outcome.Answer(answered(account, refused, path, response))
+                // A probe refused is the old flag again, at no cost to the read.
+                probed != null && response.code in REFUSALS -> {
+                    refusedAgain(account, response.code)
+                    continue
+                }
                 response.code == 429 -> flagLimited(account, path, response)
-                response.code in REFUSALS -> refused += account
+                response.code in REFUSALS -> refused += account to response.code
                 else -> throw XRequestException(response.code, "X answered $what with ${response.code}")
             }
             failed++
@@ -148,8 +168,9 @@ internal class XTransport(
         }
         return when (val code = last?.code) {
             429 -> throw XRateLimitedException(earliestReset(pool, path))
-            404 -> Outcome.Refused(refused)
-            else -> throw XRequestException(code ?: 0, "X refused $what ($code)")
+            404 -> Outcome.Refused(refused.map { it.first })
+            null -> throw XNoWorkingAccountException()
+            else -> throw XRequestException(code, "X refused $what ($code)")
         }
     }
 
@@ -180,11 +201,18 @@ internal class XTransport(
         }
     }
 
-    private fun answered(account: XAccount, refused: List<XAccount>, path: String, response: XResponse): J {
+    private fun answered(account: XAccount, refused: List<Pair<XAccount, Int>>, path: String, response: XResponse): J {
         limits.record(account.id, path, response::header, clock())
+        probes.settled(account.id)
         if (!health.read(account.id).isClean) health.write(account.id, XAccountHealth())
-        refused.forEach { health.write(it.id, health.read(it.id).afterRefusal(clock())) }
+        refused.forEach { (other, status) -> health.write(other.id, health.read(other.id).afterRefusal(clock(), status)) }
         return J.parse(response.body)
+    }
+
+    /** A probed account refused once more: its cooldown starts again, its count stays. */
+    private fun refusedAgain(account: XAccount, status: Int) {
+        probes.settled(account.id)
+        health.write(account.id, health.read(account.id).afterRefusal(clock(), status))
     }
 
     /** No account proved the endpoint works: the accounts are only blamed when each was flagged before. */
