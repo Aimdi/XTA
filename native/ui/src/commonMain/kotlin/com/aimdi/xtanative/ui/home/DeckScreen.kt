@@ -58,8 +58,11 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -79,6 +82,7 @@ import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.DeckColumn
 import com.aimdi.xtanative.core.session.DeckColumnOptions
 import com.aimdi.xtanative.core.session.DeckColumns
+import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.DeckWidth
 import com.aimdi.xtanative.store.settings.HomePrefs
@@ -128,6 +132,8 @@ import com.aimdi.xtanative.ui.generated.resources.home_groups
 import com.aimdi.xtanative.ui.generated.resources.home_networks
 import com.aimdi.xtanative.ui.generated.resources.search
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -160,15 +166,17 @@ private const val DETAIL_MIN_WIDTH = 420
 @Composable
 fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     val graph = LocalGraph.current
-    val session by graph.sessions.state.collectAsStateWithLifecycle()
-    val columns = session?.deckColumns.orEmpty()
+    // The deck's own part of the session: a write to the rest (a follow, a read mark) redraws no column.
+    val deck by remember(graph) { graph.sessions.state.map(DeckState::of).distinctUntilChanged() }
+        .collectAsStateWithLifecycle(remember(graph) { DeckState.of(graph.sessions.state.value) })
+    val columns = deck.columns
     val networks = LocalHomeNetworks.current
     val names = rememberColumnNames()
     val settings = LocalSettingsStore.current
     val width by remember(settings) { settings.observe(HomePrefs.deckColumnWidth) }.collectAsStateWithLifecycle(DeckWidth.MEDIUM)
     val scope = rememberCoroutineScope()
     val edit: (change: (List<String>) -> List<String>) -> Unit = { change -> scope.launch { graph.sessions.update { it.copy(deck = change(it.deck)) } } }
-    val options = session?.deckOptions.orEmpty()
+    val options = deck.options
     val setOptions: (String, DeckColumnOptions) -> Unit = { id, chosen -> scope.launch { graph.sessions.update { it.withDeckOptions(id, chosen) } } }
     val detail = remember { DeckDetail() }
     val columnActions = remember(actions, detail) { detail.actionsOver(actions) }
@@ -185,13 +193,15 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     // The detail beside the columns closes first at Esc, but covers nothing: the reading keys move it, and Ctrl+→ reaches it.
     DesktopShortcuts(refresh = { refreshedAll++ }, turn = {}, isOpen = { detail.open }, close = { detail.back() }, readsOpen = { detail.open })
     ReadColumns(columns.map { it.id } + listOfNotNull(DetailColumn.takeIf { detail.open }))
-    val chosen = chosenReadColumn()
     // What the detail has just opened (a post, a profile, one back) is what the reading keys move next.
     val desk = LocalDesktopActions.current
     val shown = detail.pages.lastOrNull()
     LaunchedEffect(desk, shown, detail.pages.size) { if (shown != null) desk?.readOpened(DetailColumn) }
     // A column asked for from elsewhere (Show in Deck, one just dropped here) is brought into view and chosen, lit a moment.
-    var lit by remember { mutableStateOf<String?>(null) }
+    val litState = remember { mutableStateOf<String?>(null) }
+    var lit by litState
+    // Read as the columns are drawn, so choosing a column (Ctrl+← and Ctrl+→) or lighting one redraws its line, not the columns.
+    val marked: (Any) -> Boolean = remember(desk) { { id -> desk?.chosen() == id || litState.value == id } }
     val asked = DeckRequests.shown
     LaunchedEffect(asked, columns) {
         val id = asked?.takeIf { wanted -> columns.any { it.id == wanted } } ?: return@LaunchedEffect
@@ -244,34 +254,30 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
                     // A column's header dragged with the mouse moves it, the deck scrolling at its edges and Esc putting it back.
                     val slots = rememberSlotDrag(scroll, vertical = false)
                     val shownIds: List<Any> = columns.map { it.id }
-                    val background = MaterialTheme.colorScheme.background
                     Row(Modifier.fillMaxHeight().slotViewport(slots).horizontalScroll(scroll)) {
                         columns.forEachIndexed { index, column ->
                             key(column.id) {
-                                val place = ColumnPlace(first = index == 0, last = index == columns.lastIndex)
                                 val handle = Modifier.slotDragHandle(slots, column.id, shownIds, mouseOnly = true) { _, to ->
                                     val beside = shownIds[to]
                                     edit { ids -> ids.indexOf(column.id).let { from -> DeckColumns.moved(ids, from, ids.indexOf(beside) - from) } }
                                 }
-                                val calls = ColumnCalls(
-                                    onTitle = { toTop[column.id] = (toTop[column.id] ?: 0) + 1 },
-                                    onMove = { by -> edit { DeckColumns.moved(it, index, by) } },
-                                    onRemove = { scope.launch { graph.sessions.update { it.withoutDeckColumn(column.id) } } },
-                                    handle = handle,
-                                    onMarkRead = UnreadTally.tabOf(column)?.let { tab -> { tally.markRead(tab) } },
-                                    options = options[column.id] ?: DeckColumnOptions(),
-                                    onOptions = { chosen -> setOptions(column.id, chosen) },
-                                )
-                                val spanned = Modifier.onGloballyPositioned { spans[column.id] = it.positionInWindow().x.let { left -> left to left + it.size.width } }
-                                Row(Modifier.fillMaxHeight().then(spanned).dragSlot(slots, column.id, MaterialTheme.colorScheme.primary).background(background)) {
-                                    if (index > 0) VerticalDivider()
-                                    ReadColumn(column.id) {
-                                        DeckColumnView(
-                                            column, labelOf(column, names), place, calls, toTop[column.id] ?: 0, refreshedAll,
-                                            columnActions, Modifier.width(widths[index].dp).fillMaxHeight().chosenMark(chosen == column.id || lit == column.id),
-                                        )
-                                    }
+                                val own = options[column.id] ?: DeckColumnOptions()
+                                // Made again only when what it does changes, so a column whose header and menu stay the same is not redrawn.
+                                val calls = remember(column, index, handle, own) {
+                                    ColumnCalls(
+                                        onTitle = { toTop[column.id] = (toTop[column.id] ?: 0) + 1 },
+                                        onMove = { by -> edit { DeckColumns.moved(it, index, by) } },
+                                        onRemove = { scope.launch { graph.sessions.update { it.withoutDeckColumn(column.id) } } },
+                                        handle = handle,
+                                        onMarkRead = UnreadTally.tabOf(column)?.let { tab -> { tally.markRead(tab) } },
+                                        options = own,
+                                        onOptions = { chosen -> setOptions(column.id, chosen) },
+                                    )
                                 }
+                                DeckSlot(
+                                    column, labelOf(column, names), ColumnPlace(first = index == 0, last = index == columns.lastIndex), calls,
+                                    widths[index].dp, toTop, refreshedAll, marked, columnActions, slots, spans,
+                                )
                             }
                         }
                     }
@@ -279,7 +285,7 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
             }
             if (detail.open) {
                 VerticalDivider()
-                Box(Modifier.width(maxOf(width.dp, DETAIL_MIN_WIDTH).dp).fillMaxHeight().chosenMark(chosen == DetailColumn)) {
+                Box(Modifier.width(maxOf(width.dp, DETAIL_MIN_WIDTH).dp).fillMaxHeight().chosenMark { desk?.chosen() == DetailColumn }) {
                     ReadColumn(DetailColumn) { DetailView(detail, columnActions) }
                 }
             }
@@ -316,20 +322,74 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
  */
 @Composable
 internal fun Modifier.chosenMark(chosen: Boolean): Modifier {
+    val now by rememberUpdatedState(chosen)
+    return chosenMark { now }
+}
+
+/**
+ * [chosenMark] with [chosen] read as the line is drawn: the column's
+ * content is not composed again when another column is chosen.
+ */
+@Composable
+internal fun Modifier.chosenMark(chosen: () -> Boolean): Modifier {
     val view = remember { BringIntoViewRequester() }
-    LaunchedEffect(chosen) { if (chosen) view.bringIntoView() }
+    val latest by rememberUpdatedState(chosen)
+    LaunchedEffect(view) { snapshotFlow { latest() }.collect { if (it) view.bringIntoView() } }
     val color = MaterialTheme.colorScheme.primary
-    return bringIntoViewRequester(view).drawWithContent {
-        drawContent()
-        if (chosen) drawRect(color, size = Size(size.width, CHOSEN_MARK.toPx()))
-    }
+    return then(
+        remember(view, color) {
+            Modifier.bringIntoViewRequester(view).drawWithContent {
+                drawContent()
+                if (latest()) drawRect(color, size = Size(size.width, CHOSEN_MARK.toPx()))
+            }
+        },
+    )
 }
 
 /** How thick the chosen column's line is. */
 private val CHOSEN_MARK = 3.dp
 
 /** Where a column stands among the others: the first moves no further left, the last no further right. */
-internal class ColumnPlace(val first: Boolean, val last: Boolean)
+internal data class ColumnPlace(val first: Boolean, val last: Boolean)
+
+/** The deck's columns and their own choices: all of the session the deck redraws for. */
+internal data class DeckState(val columns: List<DeckColumn>, val options: Map<String, DeckColumnOptions>) {
+    companion object {
+        fun of(session: Session?): DeckState = DeckState(session?.deckColumns.orEmpty(), session?.deckOptions.orEmpty())
+    }
+}
+
+/**
+ * One column on the deck, by the line before it, where the mouse drags it
+ * and where it lands. What the deck changes under every column is read here,
+ * by the column it concerns alone: its [toTop] count by its id, and whether
+ * it is [marked] (chosen, or lit a moment), read as its line is drawn.
+ */
+@Composable
+private fun DeckSlot(
+    column: DeckColumn,
+    label: String,
+    place: ColumnPlace,
+    calls: ColumnCalls,
+    width: Dp,
+    toTop: SnapshotStateMap<String, Int>,
+    refreshedAll: Int,
+    marked: (Any) -> Boolean,
+    actions: PostActions,
+    slots: SlotDrag,
+    spans: HashMap<String, Pair<Float, Float>>,
+) {
+    val spanned = Modifier.onGloballyPositioned { spans[column.id] = it.positionInWindow().x.let { left -> left to left + it.size.width } }
+    Row(Modifier.fillMaxHeight().then(spanned).dragSlot(slots, column.id, MaterialTheme.colorScheme.primary).background(MaterialTheme.colorScheme.background)) {
+        if (!place.first) VerticalDivider()
+        ReadColumn(column.id) {
+            DeckColumnView(
+                column, label, place, calls, toTop[column.id] ?: 0, refreshedAll,
+                actions, Modifier.width(width).fillMaxHeight().chosenMark { marked(column.id) },
+            )
+        }
+    }
+}
 
 /**
  * What a column's header does: its title back to the top, its menu moving it by a place or taking it off,
