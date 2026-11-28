@@ -425,4 +425,19 @@ class KeptPostsTest {
             watching.cancel()
         }
     }
+
+    @Test
+    fun contentReadWhileNothingWatchesIsLetGoToo() = timed {
+        val watching = CoroutineScope(Dispatchers.Default + SupervisorJob())
+        try {
+            val kept = KeptPosts(dir, "likes", LikesShape, watching, releaseAfterMillis = 100)
+            kept.edit { Edit(listOf(LikedPost("1", "u1", content("1"), 10)), Unit, fresh = "1") }
+            delay(300)
+            kept.whole()
+            waitUntil { kept.whole.value == null }
+            assertEquals(listOf("1"), kept.bare.value?.map { it.id }, "the index stays")
+        } finally {
+            watching.cancel()
+        }
+    }
 }

@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -132,12 +133,17 @@ internal class KeptPosts<T : Any, P : Any, X>(
     @Volatile
     private var released = false
 
+    /** How many times [whole] was read from the disk. */
+    private val reads = MutableStateFlow(0)
+
     init {
         scope?.launch { releaseWhileUnwatched() }
     }
 
     private suspend fun releaseWhileUnwatched() {
-        wholeState.subscriptionCount.map { it > 0 }.distinctUntilChanged().collectLatest { watched ->
+        val watched = wholeState.subscriptionCount.map { it > 0 }.distinctUntilChanged()
+        // Each read restarts the wait: one nothing watches (a backup, an export) is let go too.
+        combine(watched, reads) { now, _ -> now }.collectLatest { watched ->
             when {
                 !watched -> {
                     delay(releaseAfterMillis)
@@ -264,6 +270,7 @@ internal class KeptPosts<T : Any, P : Any, X>(
         return wholeState.value ?: wholeOf(now).also {
             released = false
             wholeState.value = it
+            reads.value++
         }
     }
 
