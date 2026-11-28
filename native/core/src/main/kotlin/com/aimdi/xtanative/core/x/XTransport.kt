@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 
@@ -21,8 +22,9 @@ import okhttp3.HttpUrl
  * turned off for the feeds stand in once every other one is limited, except
  * for the feeds' own reads ([XFeedRead]). A refusal (401, 403, 404) is tried on one more
  * account, and is only held against the account that gave it once another
- * account was answered on the same endpoint. Any other failure is surfaced at
- * once: another account would get the same. Every read, whatever it tries,
+ * account was answered on the same endpoint. X's own failure (500) is asked
+ * of the same account once more after a short pause; any other failure is
+ * surfaced at once: another account would get the same. Every read, whatever it tries,
  * has [budgetMillis] in all, as XTA's RequestBudget gives it.
  */
 internal class XTransport(
@@ -132,7 +134,7 @@ internal class XTransport(
             val account = selector.pick(tried, first) ?: break
             tried += account.id
             limits.consume(account.id, path, now)
-            val response = send(account, url, path)
+            val response = sendAgainOnServerError(account, url, path)
             when {
                 response.isSuccessful -> return Outcome.Answer(answered(account, refused, path, response))
                 response.code == 429 -> flagLimited(account, path, response)
@@ -146,6 +148,22 @@ internal class XTransport(
             404 -> Outcome.Refused(refused)
             else -> throw XRequestException(code ?: 0, "X refused $what ($code)")
         }
+    }
+
+    /**
+     * [send], and once more with the same account after [SERVER_RETRY_MILLIS]
+     * when X failed on its side with a status [XHttp] did not already try
+     * again (500, 505 and up), if the read has the time. Never another
+     * account: X's failure is no account's, and spreading it would only
+     * spend more of them.
+     */
+    private suspend fun sendAgainOnServerError(account: XAccount, url: HttpUrl, path: String): XResponse {
+        val first = send(account, url, path)
+        if (!triedAgainHere(first.code)) return first
+        val left = currentCoroutineContext()[XRequestBudget]?.remainingMillis
+        if (left != null && left < 2 * SERVER_RETRY_MILLIS) return first
+        delay(SERVER_RETRY_MILLIS)
+        return send(account, url, path)
     }
 
     private suspend fun send(account: XAccount, url: HttpUrl, path: String): XResponse {
@@ -204,6 +222,12 @@ internal class XTransport(
 
     companion object {
         private val REFUSALS = setOf(401, 403, 404)
+
+        /** The pause before a server error is asked of the same account once more. */
+        const val SERVER_RETRY_MILLIS = 1_000L
+
+        /** X's own failures this transport tries once more: not 501, which no retry changes, nor 502–504, which [XHttp] already did. */
+        internal fun triedAgainHere(code: Int): Boolean = code >= 500 && code != 501 && code !in 502..504
 
         /** A refusal is tried on one more account; then it is surfaced, as XTA does. */
         private const val MAX_REFUSALS = 2

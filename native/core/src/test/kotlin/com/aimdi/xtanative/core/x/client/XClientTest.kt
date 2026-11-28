@@ -10,12 +10,14 @@ import com.aimdi.xtanative.core.x.XNoAccountException
 import com.aimdi.xtanative.core.x.XRateLimitedException
 import com.aimdi.xtanative.core.x.XRequestException
 import com.aimdi.xtanative.core.x.XSigners
+import com.aimdi.xtanative.core.x.XTransport
 import com.aimdi.xtanative.core.x.http.XHttp
 import com.aimdi.xtanative.core.x.http.XResponse
 import com.aimdi.xtanative.core.x.signing.TransactionSigner
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
@@ -133,11 +135,26 @@ class XClientTest {
     }
 
     @Test
-    fun aServerErrorIsNotPassedToTheNextAccount() {
+    fun aServerErrorIsAskedOfTheSameAccountOnceMoreAndNeverOfTheNext() {
         val x = FakeX { _, _ -> XResponse(500, "") }
         val error = assertFailsWith<XRequestException> { runBlocking { client(x, listOf(account("a"), account("b"))).profile("quax_tests") } }
         assertEquals(500, error.code)
-        assertEquals(1, x.asked.size)
+        assertEquals(2, x.asked.size, "one retry after a short pause")
+        assertEquals(1, x.cookies.toSet().size, "both with the same account")
+    }
+
+    @Test
+    fun aServerErrorThatPassesOnIsAnswered() = runBlocking {
+        val x = FakeX { call, _ -> if (call == 1) XResponse(500, "") else XResponse(200, profileBody) }
+        client(x, listOf(account("a"), account("b"))).profile("quax_tests")
+        assertEquals(1, x.cookies.toSet().size)
+    }
+
+    @Test
+    fun onlyTheServerErrorsHttpDidNotTryAgainAreTriedHere() {
+        assertTrue(XTransport.triedAgainHere(500))
+        assertTrue(XTransport.triedAgainHere(507))
+        listOf(200, 404, 429, 501, 502, 503, 504).forEach { assertFalse(XTransport.triedAgainHere(it), "$it") }
     }
 
     @Test
