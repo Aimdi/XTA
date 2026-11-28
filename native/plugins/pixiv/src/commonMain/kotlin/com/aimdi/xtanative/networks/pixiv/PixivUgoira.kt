@@ -1,10 +1,12 @@
 package com.aimdi.xtanative.networks.pixiv
 
 import com.aimdi.xtanative.core.json.J
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.util.zip.Inflater
+import java.io.FilterInputStream
+import java.io.IOException
+import java.io.InputStream
+import java.util.zip.ZipInputStream
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -24,8 +26,16 @@ data class PixivUgoira(val zipUrl: String, val frames: List<PixivUgoiraFrame>) {
     fun archiveUrl(imageHost: String = PixivImages.HOST): String = PixivImages.url(zipUrl, imageHost)
 
     /** The frames of [archive] in this metadata's order, each with its delay; frames the archive lacks are skipped. */
-    fun framesIn(archive: ByteArray): List<PixivFrameBytes> {
-        val files = PixivZip.read(archive) ?: return emptyList()
+    fun framesIn(archive: ByteArray): List<PixivFrameBytes> = runCatching { framesFrom(ByteArrayInputStream(archive)) }.getOrDefault(emptyList())
+
+    /**
+     * The frames of the archive streaming in from [input], as [framesIn] gives them, the archive
+     * read entry by entry and only this metadata's frames kept. Throws [IOException] for an archive
+     * past [maxBytes] or one that will not read; [check] runs between reads.
+     */
+    fun framesFrom(input: InputStream, maxBytes: Long = Long.MAX_VALUE, check: () -> Unit = {}): List<PixivFrameBytes> {
+        val names = frames.mapTo(HashSet()) { it.file }
+        val files = PixivZip.stream(input, wanted = { it in names }, maxBytes = maxBytes, check = check) ?: return emptyList()
         return frames.mapNotNull { frame -> files[frame.file]?.let { PixivFrameBytes(it, frame.delay) } }
     }
 
@@ -44,60 +54,59 @@ data class PixivUgoira(val zipUrl: String, val frames: List<PixivUgoiraFrame>) {
     }
 }
 
-/** The files of a ZIP archive by name, read from its central directory. Pixiv packs ugoira frames stored or deflated. */
+/**
+ * The files of a ZIP archive by name, read entry by entry as the archive
+ * streams in, so the archive itself is never held whole beside its files.
+ * Pixiv packs ugoira frames stored (sizes in each entry's header) or deflated.
+ */
 object PixivZip {
-    private const val CENTRAL_ENTRY = 0x02014b50
-    private const val LOCAL_ENTRY = 0x04034b50
-    private const val END_OF_DIRECTORY = 0x06054b50
-
     /** Null for anything that is not a ZIP this can read. */
-    fun read(bytes: ByteArray): Map<String, ByteArray>? = runCatching { entries(bytes) }.getOrNull()
+    fun read(bytes: ByteArray): Map<String, ByteArray>? = runCatching { stream(ByteArrayInputStream(bytes)) }.getOrNull()
 
-    private fun entries(bytes: ByteArray): Map<String, ByteArray> {
-        val data = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
-        val end = (bytes.size - 22 downTo 0).first { data.getInt(it) == END_OF_DIRECTORY }
-        var offset = data.u32(end + 16)
-        return buildMap {
-            repeat(data.u16(end + 10)) {
-                check(data.getInt(offset) == CENTRAL_ENTRY) { "Broken ZIP directory" }
-                val nameLength = data.u16(offset + 28)
-                val name = String(bytes, offset + 46, nameLength, Charsets.UTF_8)
-                put(name, entry(bytes, data, local = data.u32(offset + 42), method = data.u16(offset + 10), size = data.u32(offset + 20)))
-                offset += 46 + nameLength + data.u16(offset + 30) + data.u16(offset + 32)
+    /**
+     * The files of [input] that [wanted] takes (every file when null), the
+     * others skipped. More than [maxBytes] read from [input], or kept, is an
+     * [IOException]; [check] runs between reads, so a cancelled read stops on its way.
+     * Null when [input] holds no ZIP entry at all.
+     */
+    fun stream(input: InputStream, wanted: ((String) -> Boolean)? = null, maxBytes: Long = Long.MAX_VALUE, check: () -> Unit = {}): Map<String, ByteArray>? {
+        val counted = CappedInput(input, maxBytes)
+        val files = LinkedHashMap<String, ByteArray>()
+        var kept = 0L
+        ZipInputStream(counted).use { zip ->
+            val buffer = ByteArray(64 * 1024)
+            while (true) {
+                check()
+                val entry = zip.nextEntry ?: break
+                if (entry.isDirectory || (wanted != null && !wanted(entry.name))) continue
+                val out = ByteArrayOutputStream(entry.size.takeIf { it in 0..maxBytes }?.toInt() ?: 8192)
+                while (true) {
+                    check()
+                    val read = zip.read(buffer)
+                    if (read < 0) break
+                    kept += read
+                    if (kept > maxBytes) throw IOException("ugoira archive too large")
+                    out.write(buffer, 0, read)
+                }
+                files[entry.name] = out.toByteArray()
             }
         }
+        return files.takeIf { it.isNotEmpty() }
     }
 
-    private fun entry(bytes: ByteArray, data: ByteBuffer, local: Int, method: Int, size: Int): ByteArray {
-        check(data.getInt(local) == LOCAL_ENTRY) { "Broken ZIP entry" }
-        val start = local + 30 + data.u16(local + 26) + data.u16(local + 28)
-        val raw = bytes.copyOfRange(start, start + size)
-        return when (method) {
-            0 -> raw
-            8 -> inflate(raw)
-            else -> error("Unsupported ZIP method $method")
+    /** [input] that refuses to give more than [max] bytes. */
+    private class CappedInput(input: InputStream, private val max: Long) : FilterInputStream(input) {
+        private var count = 0L
+
+        override fun read(): Int = super.read().also { if (it >= 0) counted(1) }
+
+        override fun read(b: ByteArray, off: Int, len: Int): Int = super.read(b, off, len).also { if (it > 0) counted(it) }
+
+        override fun skip(n: Long): Long = super.skip(n).also { if (it > 0) counted(it) }
+
+        private fun counted(read: Number) {
+            count += read.toLong()
+            if (count > max) throw IOException("ugoira archive too large")
         }
     }
-
-    private fun inflate(raw: ByteArray): ByteArray {
-        val inflater = Inflater(true)
-        try {
-            // A raw stream wants one byte past its end, as Inflater's own documentation says.
-            inflater.setInput(raw + 0.toByte())
-            val out = ByteArrayOutputStream(raw.size * 2)
-            val buffer = ByteArray(8192)
-            while (!inflater.finished()) {
-                val read = inflater.inflate(buffer)
-                check(read > 0 || inflater.finished()) { "Broken ZIP entry" }
-                out.write(buffer, 0, read)
-            }
-            return out.toByteArray()
-        } finally {
-            inflater.end()
-        }
-    }
-
-    private fun ByteBuffer.u16(at: Int): Int = getShort(at).toInt() and 0xffff
-
-    private fun ByteBuffer.u32(at: Int): Int = getInt(at)
 }
