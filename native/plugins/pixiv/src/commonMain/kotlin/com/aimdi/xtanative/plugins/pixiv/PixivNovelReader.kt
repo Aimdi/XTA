@@ -49,6 +49,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivSearchKind
 import com.aimdi.xtanative.store.reading.ReadingAppearance
 import com.aimdi.xtanative.store.reading.ReadingAppearanceStore
 import com.aimdi.xtanative.store.settings.PixivPrefs
+import com.aimdi.xtanative.ui.common.IconTip
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.PluginReadingColumn
@@ -78,7 +79,7 @@ internal fun PixivNovelScreen(id: Long, seed: PixivNovel?) {
     PluginScaffold(
         title = novel?.title?.ifEmpty { null } ?: pluginString(Strings.novel),
         onBack = runtime.host::back,
-        actions = { if (novel != null) IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, null) } },
+        actions = { if (novel != null) IconTip(pluginString(Strings.more_actions)) { IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_actions)) } } },
     ) { padding ->
         Box(Modifier.padding(padding).fillMaxSize()) {
             when {
