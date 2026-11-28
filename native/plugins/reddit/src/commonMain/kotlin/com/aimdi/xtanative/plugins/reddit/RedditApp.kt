@@ -63,9 +63,9 @@ import kotlinx.coroutines.withTimeoutOrNull
  */
 internal class RedditApp(val host: PluginHost) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private val readers = RedditReaders(host.http) { host.repairs.value }
     private val auth = RedditAuth(host.http)
     private val sessions = RedditSignIn(auth)
+    private val readers = RedditReaders(host.http, session = ::session) { host.repairs.value }
 
     val prefs = RedditPreferences(host.settings.state) { change -> host.settings.update(change) }
     val credentials = RedditCredentials(host.store.file("credentials.json"))

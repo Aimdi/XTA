@@ -274,11 +274,12 @@ class RedditFeedsTest {
     /** A loader whose answers per permalink are scripted call by call, counting what it was asked. */
     private class Scripted(val script: Map<String, List<List<String>>>) {
         val asked = HashMap<String, Int>()
+        var now = 1_000_000L
         val loader = RedditGalleryLoader(fetch = { permalink ->
             val n = synchronized(asked) { asked.merge(permalink, 1, Int::plus)!! }
             val answers = script[permalink] ?: listOf(emptyList())
             answers[(n - 1).coerceAtMost(answers.size - 1)]
-        })
+        }, clock = { now })
     }
 
     @Test
@@ -295,11 +296,17 @@ class RedditFeedsTest {
     fun anEmptyAnswerIsAskedAgainAndCanRecoverButNotForever() = runBlocking {
         val recovering = Scripted(mapOf("/p/a" to listOf(emptyList(), two)))
         assertTrue(recovering.loader.images("/p/a").isEmpty())
+        assertTrue(recovering.loader.images("/p/a").isEmpty(), "not asked again on the next draw of the card")
+        assertEquals(1, recovering.asked["/p/a"])
+        recovering.now += RedditGalleryLoader.EMPTY_RETRY_AFTER_MILLIS
         assertEquals(two, recovering.loader.images("/p/a"))
         assertEquals(2, recovering.asked["/p/a"])
 
         val plain = Scripted(mapOf("/p/plain" to listOf(emptyList())))
-        repeat(10) { plain.loader.images("/p/plain") }
+        repeat(10) {
+            plain.loader.images("/p/plain")
+            plain.now += RedditGalleryLoader.EMPTY_RETRY_AFTER_MILLIS
+        }
         assertEquals(RedditGalleryLoader.EMPTY_RETRIES, plain.asked["/p/plain"], "more than once, far fewer than every scroll-past")
     }
 

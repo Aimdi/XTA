@@ -219,20 +219,25 @@ private fun newer(a: RedditPost, b: RedditPost): Boolean {
  * `RedditGalleryLoader`), from the post's own JSON: one request per post,
  * remembered for the session, shared by two cards asking at once, and
  * bounded so it does not grow for the app's life. An empty answer is also
- * what a refusal looks like, so it is asked again a few times before it is
- * taken as final.
+ * what a refusal looks like, so it is asked once more, a while later, before
+ * it is taken as final: not again each time the card is drawn.
  */
 class RedditGalleryLoader(
     private val fetch: suspend (String) -> List<String>,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+    private val clock: () -> Long = System::currentTimeMillis,
 ) {
-    constructor(client: RedditClient) : this(client::galleryImages)
+    constructor(client: RedditClient, session: suspend () -> RedditSession = { RedditSession.ANONYMOUS }) :
+        this({ permalink -> client.galleryImages(permalink, session()) })
 
     private val lock = Any()
 
     /** Answers by permalink, oldest first. */
     private val known = LinkedHashMap<String, List<String>>()
     private val emptyAnswers = LinkedHashMap<String, Int>()
+
+    /** When each empty answer came. */
+    private val emptyAt = HashMap<String, Long>()
     private val inFlight = HashMap<String, Deferred<List<String>>>()
 
     val size: Int get() = synchronized(lock) { known.size }
@@ -244,7 +249,7 @@ class RedditGalleryLoader(
     suspend fun images(permalink: String): List<String> {
         val fetching = synchronized(lock) {
             val answer = known[permalink]
-            if (answer != null && (answer.isNotEmpty() || (emptyAnswers[permalink] ?: 0) >= EMPTY_RETRIES)) return answer
+            if (answer != null && (answer.isNotEmpty() || settledEmpty(permalink))) return answer
             inFlight[permalink] ?: start(permalink)
         }
         return fetching.await()
@@ -266,12 +271,19 @@ class RedditGalleryLoader(
         return job
     }
 
+    /** An empty answer stands: it was asked again already, or it is too recent to ask again. */
+    private fun settledEmpty(permalink: String): Boolean =
+        (emptyAnswers[permalink] ?: 0) >= EMPTY_RETRIES || clock() - (emptyAt[permalink] ?: 0L) < EMPTY_RETRY_AFTER_MILLIS
+
     private fun remember(permalink: String, images: List<String>): List<String> = synchronized(lock) {
         if (images.isEmpty()) {
             emptyAnswers[permalink] = (emptyAnswers.remove(permalink) ?: 0) + 1
+            emptyAt[permalink] = clock()
             trim(emptyAnswers)
+            emptyAt.keys.retainAll(emptyAnswers.keys)
         } else {
             emptyAnswers.remove(permalink)
+            emptyAt.remove(permalink)
         }
         known.remove(permalink)
         known[permalink] = images
@@ -287,7 +299,10 @@ class RedditGalleryLoader(
         /** A session's worth of scrolling, not the app's lifetime. */
         const val CACHE_CAP = 200
 
-        /** How often an empty answer is asked again before it is final: enough for a refusal to pass, few enough not to pelt Reddit. */
-        const val EMPTY_RETRIES = 3
+        /** How many empty answers make one final: one more ask, after [EMPTY_RETRY_AFTER_MILLIS], is enough for a refusal to pass. */
+        const val EMPTY_RETRIES = 2
+
+        /** How long an empty answer stands before it is asked again: not on every draw of the card. */
+        const val EMPTY_RETRY_AFTER_MILLIS = 2 * 60 * 1000L
     }
 }

@@ -613,15 +613,22 @@ class RedditClient(
     }
 
     /**
-     * The pictures of a gallery post, from the post's own public JSON, for a
-     * gallery an old.reddit listing carried as a link and a thumbnail. Never
-     * throws: a refusal costs that card its pictures, not the feed its posts.
+     * The pictures of a gallery post, for a gallery a listing carried as a
+     * link and a thumbnail: the API's `by_id` with an account, else the
+     * post's www embed card, which still carries its gallery; the public
+     * JSON, mostly shut down, only when neither had them. Never throws: a
+     * refusal costs that card its pictures, not the feed its posts.
      */
-    suspend fun galleryImages(permalink: String): List<String> = reading {
-        quietly {
-            val response = transport.read(redditUrl("$WWW${RedditLinks.commentsJsonPath(permalink)}", RAW_JSON))
-            if (response.code != 200) emptyList() else RedditJson.thread(transport.arrayOf(response)).postImages
-        }.orEmpty()
+    suspend fun galleryImages(permalink: String, session: RedditSession = RedditSession.ANONYMOUS): List<String> = budgetedRead {
+        val fromApi = if (session.anonymous) null else quietly { postFromApi(permalink, transport.token(session))?.galleryImages }
+        fromApi?.takeIf { it.isNotEmpty() }
+            ?: quietly { postFromEmbed(permalink)?.galleryImages }?.takeIf { it.isNotEmpty() }
+            ?: quietly { galleryFromPublicJson(permalink) }.orEmpty()
+    }
+
+    private suspend fun galleryFromPublicJson(permalink: String): List<String> {
+        val response = transport.read(redditUrl("$WWW${RedditLinks.commentsJsonPath(permalink)}", RAW_JSON))
+        return if (response.code != 200) emptyList() else RedditJson.thread(transport.arrayOf(response)).postImages
     }
 
     /** One page of old.reddit with the over-18 gate answered, or null when even the answered gate is all it shows. */

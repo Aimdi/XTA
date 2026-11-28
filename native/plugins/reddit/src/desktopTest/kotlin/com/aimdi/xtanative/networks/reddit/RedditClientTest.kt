@@ -822,12 +822,32 @@ class RedditClientTest {
         """{"kind":"Listing","data":{"children":[]}}]"""
 
     @Test
-    fun aScrapedGallerysPicturesAreReadFromThePostsOwnJsonInOrder() = runBlocking {
+    fun aScrapedGallerysPicturesFallBackToThePostsOwnJsonInOrder() = runBlocking {
         val fake = reddit { page(galleryThread) }
         val images = RedditClient(fake).galleryImages("/r/pics/comments/g1/a_gallery/")
 
         assertEquals(listOf("https://preview.redd.it/two.jpg?width=640&s=def", "https://preview.redd.it/one.jpg?width=640&s=abc"), images)
-        assertEquals("/r/pics/comments/g1/a_gallery.json", fake.urls.single().encodedPath, "no account: the public JSON")
+        assertEquals("/r/pics/comments/g1/a_gallery.json", fake.urls.last().encodedPath, "no account and no embed card: the public JSON")
+    }
+
+    @Test
+    fun aGallerysPicturesComeFromItsEmbedCardWithoutAnAccount() = runBlocking {
+        val fake = reddit { page(fixture("embed_gallery.html")) }
+        val images = RedditClient(fake).galleryImages("/r/pics/comments/1xb4rqw/i_painted_an_ocean_front_tennis_court_scene_set/")
+
+        assertEquals(9, images.size)
+        assertTrue(fake.urls.none { it.encodedPath.endsWith(".json") }, "the shut-down JSON is not asked when the card answers")
+    }
+
+    @Test
+    fun aGallerysPicturesComeFromTheApiWithAnAccount() = runBlocking {
+        val gallery = galleryThread.removePrefix("[").substringBeforeLast(",{\"kind\":\"Listing\"")
+        val fake = reddit { if (it.url.encodedPath.contains("access_token")) page(tokenBody()) else page(gallery) }
+        val images = RedditClient(fake).galleryImages("/r/pics/comments/g1/a_gallery/", app)
+
+        assertEquals(2, images.size)
+        assertEquals("/by_id/t3_g1", fake.urls.last().encodedPath)
+        assertEquals("oauth.reddit.com", fake.urls.last().host)
     }
 
     @Test
