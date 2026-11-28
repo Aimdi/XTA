@@ -47,6 +47,12 @@ internal class ColumnZoom {
         }
     }
 
+    /** + and − a step in or out, 0 ([by] 0) back to the column's own size, as the reader's keys zoom it. */
+    fun step(by: Int, size: IntSize) {
+        scale = steppedScale(scale, by, MAX_SCALE)
+        offset = if (zoomed) clamped(offset, scale, size) else Offset.Zero
+    }
+
     companion object {
         const val MAX_SCALE = 4f
         const val DOUBLE_TAP_SCALE = 2.5f
@@ -57,6 +63,36 @@ internal class ColumnZoom {
             val y = (scale - 1f) * size.height / 2f
             return Offset(offset.x.coerceIn(-x, x), offset.y.coerceIn(-y, y))
         }
+    }
+}
+
+/** How much a zoom key magnifies at a time. */
+internal const val KEY_ZOOM_STEP = 1.25f
+
+/** [scale] a key's step in ([by] > 0) or out, between 1 and [max]; back to 1 for [by] 0. */
+internal fun steppedScale(scale: Float, by: Int, max: Float): Float = when {
+    by > 0 -> (scale * KEY_ZOOM_STEP).coerceAtMost(max)
+    by < 0 -> (scale / KEY_ZOOM_STEP).let { if (it < 1.01f) 1f else it }
+    else -> 1f
+}
+
+/**
+ * A page of the swiped reader magnified: by two fingers, a double tap at a
+ * spot, or the reader's keys, which zoom about its middle.
+ */
+@Stable
+internal class PageZoom {
+    var scale by mutableFloatStateOf(1f)
+    var offset by mutableStateOf(Offset.Zero)
+
+    fun step(by: Int) {
+        val next = steppedScale(scale, by, MAX_PAGE_SCALE)
+        offset = if (next == 1f) Offset.Zero else offset * (next / scale)
+        scale = next
+    }
+
+    companion object {
+        const val MAX_PAGE_SCALE = 5f
     }
 }
 

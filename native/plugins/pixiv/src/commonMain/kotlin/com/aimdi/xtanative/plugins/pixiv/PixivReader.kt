@@ -2,6 +2,7 @@ package com.aimdi.xtanative.plugins.pixiv
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculatePan
@@ -39,14 +40,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -59,6 +61,8 @@ import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -80,6 +84,7 @@ import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /** The reader of a work's pages: the work handed over, else read by its id. */
@@ -124,7 +129,16 @@ private fun Reader(illust: PixivIllust, start: Int, verticalFirst: Boolean) {
             } }
         },
     ) { padding ->
-        Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
+        val settled = sheets.open == null && surface.overviewRequest == null
+        val rightToLeft = LocalLayoutDirection.current == LayoutDirection.Rtl
+        val keys = Modifier.readerKeys(settled, rightToLeft) { key ->
+            when (key) {
+                ReaderKey.DOWNLOAD -> true.also { sheets.savePages(illust, listOf(surface.currentPage)) }
+                ReaderKey.HD -> true.also { hd = !hd }
+                else -> surface.key(key)
+            }
+        }
+        Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()).then(keys)) {
             val urls = remember(illust, hd) { illust.viewerUrls.indices.map { if (hd) illust.downloadUrlAt(it) else illust.viewerUrls[it] } }
             var barHeight by remember { mutableIntStateOf(0) }
             val underBar = with(LocalDensity.current) { barHeight.toDp() }
@@ -215,6 +229,15 @@ internal class ReaderSurface(private val pages: Int, start: Int, private val fir
     override var overviewRequest by mutableStateOf<Boolean?>(null)
         private set
 
+    /** What the way of reading shown (the column, the swiped pages) does with the keys it has of its own: moving, zooming. */
+    var modeKeys: ((ReaderKey) -> Boolean)? = null
+
+    /** A reader key: a page turned (none past either end), else the way of reading's own; whether the key was the reader's. */
+    fun key(key: ReaderKey): Boolean = when (key) {
+        in ReaderKeys.TURNS -> true.also { ReaderKeys.target(key, page, pages)?.let(::showPage) }
+        else -> modeKeys?.invoke(key) ?: false
+    }
+
     override val currentPage: Int get() = page
 
     override val offersVertical: Boolean get() = true
@@ -256,6 +279,24 @@ private fun ColumnPages(illust: PixivIllust, urls: List<String>, surface: Reader
     }
     val zoom = remember { ColumnZoom() }
     var size by remember { mutableStateOf(IntSize.Zero) }
+    val scope = rememberCoroutineScope()
+    val line = with(LocalDensity.current) { KEY_LINE.toPx() }
+    DisposableEffect(surface, list) {
+        surface.modeKeys = { key ->
+            val by = when (key) {
+                ReaderKey.LINE_UP -> -line
+                ReaderKey.LINE_DOWN -> line
+                ReaderKey.SCREEN_UP -> -size.height * SCREEN_STEP
+                ReaderKey.SCREEN_DOWN -> size.height * SCREEN_STEP
+                else -> null
+            }
+            when {
+                by != null -> true.also { scope.launch { list.animateScrollBy(by) } }
+                else -> zoomStep(key)?.let { zoom.step(it, size); true } ?: false
+            }
+        }
+        onDispose { surface.modeKeys = null }
+    }
     LazyColumn(
         state = list,
         contentPadding = PaddingValues(bottom = underBar),
@@ -288,6 +329,18 @@ private fun ColumnPages(illust: PixivIllust, urls: List<String>, surface: Reader
 private const val MIN_RATIO = 0.02f
 private const val MAX_RATIO = 50f
 
+/** How far ↑ and ↓ move the column, and Space a screen of it. */
+private val KEY_LINE = 64.dp
+private const val SCREEN_STEP = 0.9f
+
+/** The zoom step a key asks for: in, out, or 0 back to the page's own size; null for any other key. */
+internal fun zoomStep(key: ReaderKey): Int? = when (key) {
+    ReaderKey.ZOOM_IN -> 1
+    ReaderKey.ZOOM_OUT -> -1
+    ReaderKey.ZOOM_RESET -> 0
+    else -> null
+}
+
 /** The widest a page grows in the column: a wide window shows it centred, not blown up to the window's width. */
 private val COLUMN_MAX_WIDTH = 960.dp
 
@@ -306,8 +359,13 @@ private fun SwipedPages(illust: PixivIllust, urls: List<String>, surface: Reader
             surface.jump = null
         }
     }
+    val zooms = remember(urls.size) { List(urls.size) { PageZoom() } }
+    DisposableEffect(surface, pager, zooms) {
+        surface.modeKeys = { key -> zoomStep(key)?.let { step -> zooms.getOrNull(pager.currentPage)?.step(step); true } ?: false }
+        onDispose { surface.modeKeys = null }
+    }
     HorizontalPager(pager, Modifier.fillMaxSize(), beyondViewportPageCount = 1) { index ->
-        ZoomablePage(urls[index], onLoaded = { surface.shown(urls[index]) }, onLongPress = {
+        ZoomablePage(urls[index], onLoaded = { surface.shown(urls[index]) }, zoom = zooms[index], onLongPress = {
             haptics.medium()
             sheets.show(PixivSheet.PageActions(illust, index, surface))
         })
@@ -315,9 +373,9 @@ private fun SwipedPages(illust: PixivIllust, urls: List<String>, surface: Reader
 }
 
 @Composable
-internal fun ZoomablePage(url: String, onLoaded: (() -> Unit)? = null, onLongPress: () -> Unit) {
-    var scale by remember { mutableFloatStateOf(1f) }
-    var offset by remember { mutableStateOf(Offset.Zero) }
+internal fun ZoomablePage(url: String, onLoaded: (() -> Unit)? = null, zoom: PageZoom = remember { PageZoom() }, onLongPress: () -> Unit) {
+    var scale by zoom::scale
+    var offset by zoom::offset
     Box(
         Modifier.fillMaxSize()
             .onContextClick(onLongPress)
@@ -342,7 +400,7 @@ internal fun ZoomablePage(url: String, onLoaded: (() -> Unit)? = null, onLongPre
                     do {
                         val event = awaitPointerEvent()
                         if (event.changes.size > 1 || scale > 1f) {
-                            scale = (scale * event.calculateZoom()).coerceIn(1f, 5f)
+                            scale = (scale * event.calculateZoom()).coerceIn(1f, PageZoom.MAX_PAGE_SCALE)
                             offset = if (scale == 1f) Offset.Zero else offset + event.calculatePan()
                             event.changes.forEach { if (it.positionChanged()) it.consume() }
                         }
